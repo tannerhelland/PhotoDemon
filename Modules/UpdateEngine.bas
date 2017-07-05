@@ -373,7 +373,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                         newFilename = g_UserPreferences.GetLanguagePath() & newFilename
                     End If
                     
-                    If cFile.FileExist(newFilename) Then
+                    If cFile.FileExists(newFilename) Then
                         
                         'Make a temporary backup of the existing file, then delete it
                         cFile.LoadFileAsByteArray newFilename, rawOldFile
@@ -790,7 +790,7 @@ Public Function WasProgramStartedViaRestart() As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(restartFile) Then
+    If cFile.FileExists(restartFile) Then
         
         cFile.KillFile restartFile
         

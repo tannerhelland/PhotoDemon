@@ -121,7 +121,7 @@ Public Function LoadICCFromFile(ByVal profilePath As String) As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
         
-    If cFile.FileExist(profilePath) Then
+    If cFile.FileExists(profilePath) Then
         
         If cFile.LoadFileAsByteArray(profilePath, m_ICCData) Then
             LoadICCFromFile = True

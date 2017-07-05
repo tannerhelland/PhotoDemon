@@ -74,7 +74,7 @@ Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName A
     m_ToolName = toolName
     m_ToolDescription = toolDescription
     
-    If m_File.FileExist(srcPresetFilePath) Then
+    If m_File.FileExists(srcPresetFilePath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.LoadXMLFile(srcPresetFilePath)) Or Not (m_XMLEngine.ValidateLoadedXMLData("toolName")) Then
@@ -189,7 +189,7 @@ Public Sub BeginPresetWrite(ByVal presetName As String)
             'Note that we also write the preset name here; this is the exact string we are handed, spaces and all
             m_XMLEngine.WriteTag "fullPresetName", presetName
             
-        m_XMLEngine.closeTag "presetEntry"
+        m_XMLEngine.CloseTag "presetEntry"
         m_XMLEngine.WriteBlankLine
         
     End If

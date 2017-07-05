@@ -170,7 +170,7 @@ Private Type SECURITY_ATTRIBUTES
     bInheritHandle As Long
 End Type
 
-'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
+'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExistss Function"
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
@@ -240,72 +240,164 @@ Private m_FileDataReturn As WIN32_FIND_DATA
 Private m_FileDataReturnPtr As Long
 Private m_SearchHandle As Long
 
-'Returns a VB boolean indicating whether a given file exists.  This should also work on system files that prevent direct access;
-' the ERROR_SHARING_VIOLATION check below is meant to capture such files.
-' (IMPORTANT NOTE: wildcards are not supported by this function.)
+'Append binary data to an arbitrary file.  The caller is responsible for supplying a source pointer and length (in bytes).
 '
-'Thank you to Bonnie West for the original implementation of this function.
-Friend Function FileExist(ByRef fName As String) As Boolean
-    Select Case (GetFileAttributesW(StrPtr(fName)) And vbDirectory) = 0
-        Case True: FileExist = True
-        Case Else: FileExist = (Err.LastDllError = ERROR_SHARING_VIOLATION)
-    End Select
+'Returns TRUE if successful, FALSE otherwise.
+' (FALSE generally only occurs if write access to the destination folder is restricted.)
+Friend Function AppendBinaryToFile(ByVal srcPointer As Long, ByVal srcLengthInBytes As Long, ByRef dstFilename As String) As Boolean
+    
+    On Error GoTo StopAppendBinary
+    
+    'Open the file with append rights only
+    Dim hFile As Long
+    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
+        
+        'Write the byte array and exit!
+        Me.WriteDataToFile hFile, srcPointer, srcLengthInBytes
+        Me.CloseFileHandle hFile
+        AppendBinaryToFile = True
+        
+    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+    Else
+        AppendBinaryToFile = False
+    End If
+    
+    Exit Function
+    
+StopAppendBinary:
+    FSOError "AppendBinaryToFile", "internal error on " & dstFilename, Err.Number
+    AppendBinaryToFile = False
 End Function
 
-'Returns a boolean as to whether or not a given directory exists.  Write access can optionally be tested, too.
-Friend Function FolderExist(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
+'Write a string out to text file.  UTF-8 output is enforced.
+'
+'Returns TRUE if successful, FALSE otherwise.
+' (FALSE generally only occurs if write access to the destination folder is restricted.)
+Friend Function AppendTextToFile(ByVal srcString As String, ByRef dstFilename As String) As Boolean
     
-    'First, make sure the directory exists
-    Dim chkExistence As Boolean
-    chkExistence = (Abs(GetFileAttributesW(StrPtr(fullPath))) And vbDirectory)
+    On Error GoTo StopAppendText
     
-    'The folder was found, but the caller wants to know about write access, so a few more checks are needed.
-    If (chkExistence And checkWriteAccessAsWell) Then
+    'Convert the incoming string to UTF-8
+    Dim fileBytes() As Byte
+    m_Unicode.StringToUTF8Bytes srcString, fileBytes
+    
+    'Open the file with append rights only
+    Dim hFile As Long
+    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
         
-        Dim tmpFilename As String
-        tmpFilename = EnforcePathSlash(fullPath) & "writecheck.tmp"
+        'Write the byte array and exit!
+        Me.WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+        Me.CloseFileHandle hFile
+        AppendTextToFile = True
         
-        'Attempt to open a temp file handle inside the given folder
-        Dim hFile As Long
-        If Me.CreateFileHandle(tmpFilename, hFile, True, True, OptimizeTempFile) Then
-            
-            'The folder is writable!  Close and kill the temp file.
-            Me.CloseFileHandle hFile
-            Me.KillFile tmpFilename
-            FolderExist = True
-            
+    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+    Else
+        AppendTextToFile = False
+    End If
+    
+    Exit Function
+    
+StopAppendText:
+    FSOError "AppendTextToFile", "internal error on " & dstFilename, Err.Number
+    AppendTextToFile = False
+End Function
+
+'Use the API to retrieve a Unicode-friendly version of App.Path
+Friend Function AppPathW() As String
+    
+    'When running from the IDE, App.Path is our only option
+    If (Not g_IsProgramCompiled) Then
+        AppPathW = App.Path
+        AppPathW = Me.EnforcePathSlash(AppPathW)
+    Else
+    
+        'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
+        ' (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) it's easier to just go with a
+        ' huge buffer, then manually trim the result.
+        Dim TEMPORARY_LARGE_BUFFER As Long
+        TEMPORARY_LARGE_BUFFER = 1024
+        
+        Dim tmpString As String
+        tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
+        
+        If (GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER \ 2) <> 0) Then
+            AppPathW = Strings.TrimNull(tmpString)
+            AppPathW = Me.GetPathOnly(AppPathW)
+            FSOFeedback "AppPathW", "App.Path equivalent: " & AppPathW
         Else
-            FolderExist = False
+            FSOError "AppPathW", "couldn't retrieve Unicode-friendly version of App.Path.  Falling back to the default VB path."
+            AppPathW = App.Path
+            AppPathW = Me.EnforcePathSlash(AppPathW)
         End If
         
-    'If the caller doesn't care about write access, or the folder wasn't found, exit now.
-    Else
-        FolderExist = chkExistence
     End If
     
 End Function
 
-'Kill a given file.  Returns TRUE if the file does not exist after the operation completes.  (Thus, if the file doesn't exist prior
-' to calling this function, it will still return TRUE.)
+'Close an open file handle.
+' Returns: TRUE if successful.
+Friend Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
+    
+    If (srcHandle <> 0) Then
+        CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
+    Else
+        FSOError "CloseFileHandle", "was passed an empty handle.  Ask yourself why this handle was already closed!"
+    End If
+    
+    'As a convenience to the caller, manually reset the handle to 0.  (This is why it's passed ByRef.)
+    srcHandle = 0
+    
+End Function
+
+'Given a file handle successfully created by CreateFileHandle, above, create a memory-mapped view of the file and return
+' a pointer to the start of the map.  This is effectively a "shortcut" function that maps the entire file view at once,
+' enabling the caller to CopyMemory whatever they want directly into the file itself, which the system can then flush
+' at its leisure (enabling a sort of poor man's asynchronicity).
 '
-'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
-Friend Function KillFile(ByVal srcFilename As String) As Boolean
+'IMPORTANT: read/write access is required by this function, so you *must* specify both read+write attributes on the
+' originally created file handle.  If you do not, the mmap handle creation will fail.
+'
+'Besides returning a basic pass/fail result, this function fills two output values: a handle to the mapped object,
+' and a pointer for writing.  The pointer can be immediately used with CopyMemory, and the mapped object handle must
+' be retained as we need it to close the map after writing has finished.  Do not confuse the two values!
+'
+'ALSO: you *must* remember the value of dstBaseAddress.  The *same* base address value must be passed to the UnmapView
+' function upon completion, so for things like offset calculations, you should use a separate variable.
+Friend Function ConvertFileHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByRef dstBaseAddress As Long, ByVal sizeInBytes As Long, Optional ByVal nameOfMap As String = vbNullString) As Boolean
     
-    'If the file doesn't exist, return TRUE in advance.
-    If FileExist(srcFilename) Then
-        KillFile = (DeleteFileW(StrPtr(srcFilename)) <> 0)
-        If (Not KillFile) Then FSOError "KillFile", "unable to kill " & srcFilename & " due to WAPI error " & Err.LastDllError
+    Dim ptrName As Long
+    If (Len(nameOfMap) <> 0) Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
+    dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, PAGE_READWRITE, 0&, sizeInBytes, ptrName)
+                                 
+    If (dstMappedHandle = 0) Then
+        FSOError "ConvertFileHandleToMMPtr", " failed to create a handle for #" & srcFileHandle & ".  Relevant last error: " & Err.LastDllError
+        ConvertFileHandleToMMPtr = False
+    
+    'Handle creation appears to be successful
     Else
-        KillFile = True
+        
+        'Immediately map a full-sized view of the file, and retrieve a pointer to the initial offset
+        dstBaseAddress = MapViewOfFile(dstMappedHandle, FILE_MAP_WRITE, 0&, 0&, 0&)
+        
+        If (dstBaseAddress = 0) Then
+            CloseHandle dstMappedHandle
+            FSOError "ConvertFileHandleToMMPtr", "failed to map the created handle for " & nameOfMap & ".  Relevant last error: " & Err.LastDllError
+            ConvertFileHandleToMMPtr = False
+        Else
+            ConvertFileHandleToMMPtr = True
+        End If
+        
     End If
     
 End Function
 
-'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will contain additional failure information.
+'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will provide additional failure information.
 Friend Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As String) As Boolean
 
     'Failsafe "source file exists" check
-    If FileExist(srcFilename) Then
+    If Me.FileExists(srcFilename) Then
         CopyFile = (CopyFileW(StrPtr(srcFilename), StrPtr(dstFilename), 0) <> 0)
         If (Not CopyFile) Then FSOError "CopyFile", "unable to copy " & srcFilename & " due to WAPI error " & Err.LastDllError
     Else
@@ -315,14 +407,117 @@ Friend Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As Strin
 
 End Function
 
-'Create a given directory.  Returns TRUE if folder already exists, or folder was successfully created.  FALSE otherwise.
+'Given a file path, access indicators, and a destination long, retrieve an hFile handle that DOESN'T ERASE OR OTHERWISE
+' MODIFY THE TARGET FILE, IF IT ALREADY EXISTS.  (If it doesn't exist, it will be created.)
+'
+'If the file *does* exist, the file's pointer will automatically be moved to the *end* of the file, so any subsequent
+' write requests will be naturally appended without any special work on the caller's part.
+'
+'Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
+' access files opened via this function).  If this behavior is not desired, modify the attributeFlags and shareFlags
+' settings below.
+'
+'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
+Friend Function CreateAppendFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long) As Boolean
+    
+    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
+    accessFlags = GENERIC_READ Or GENERIC_WRITE
+    
+    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
+    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
+    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
+    
+    'The OPEN_ALWAYS flag is important because it lets us use the file as-is if it exists, or create the file automatically
+    ' if it doesn't exist.
+    createFlags = OPEN_ALWAYS
+    attributeFlags = FILE_ATTRIBUTE_NORMAL
+    
+    'Because we're appending to an existing file, assume sequential access
+    optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
+    
+    'If the file already exists, make a note of it, and we'll move the file pointer accordingly.
+    Dim fileAlreadyExisted As Boolean
+    fileAlreadyExisted = Me.FileExists(srcFilePath)
+    
+    'Create the handle!
+    Dim hFile As Long
+    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
+    
+    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
+        FSOError "CreateFileHandle", "failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
+        CreateAppendFileHandle = False
+    Else
+    
+        dstFileHandle = hFile
+        CreateAppendFileHandle = True
+        
+        'If the file existed prior to us accessing it, move the file pointer to the end of the file.
+        If fileAlreadyExisted Then SetFilePointer dstFileHandle, 0&, 0&, FILE_END
+        
+    End If
+    
+End Function
+
+'Given a file path, access indicators, and a destination long, retrieve a generic hFile handle.
+' Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
+' access files we currently have open).  If this behavior is not desired, modify the attributeFlags and shareFlags
+' settings below.
+'
+'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
+Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long, Optional ByVal requestReadAccess As Boolean = False, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+    
+    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
+    accessFlags = 0
+    
+    If requestReadAccess Then accessFlags = accessFlags Or GENERIC_READ
+    If requestWriteAccess Then accessFlags = accessFlags Or GENERIC_WRITE
+    
+    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
+    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
+    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
+    If requestWriteAccess Then createFlags = CREATE_ALWAYS Else createFlags = OPEN_EXISTING
+    
+    attributeFlags = FILE_ATTRIBUTE_NORMAL
+    
+    Select Case optimizeAccess
+        
+        Case OptimizeNone
+            optimizeFlags = 0
+        
+        Case OptimizeRandomAccess
+            optimizeFlags = FILE_FLAG_RANDOM_ACCESS
+        
+        Case OptimizeSequentialAccess
+            optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
+        
+        Case OptimizeTempFile
+            optimizeFlags = 0
+            attributeFlags = attributeFlags Or FILE_ATTRIBUTE_TEMPORARY
+        
+    End Select
+    
+    'Create the handle!
+    Dim hFile As Long
+    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
+    
+    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
+        FSOError "CreateFileHandle", "failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
+        CreateFileHandle = False
+    Else
+        dstFileHandle = hFile
+        CreateFileHandle = True
+    End If
+    
+End Function
+
+'Create a given directory.  Returns TRUE if folder already exists, or the folder was successfully created.  FALSE otherwise.
 '
 'An optional parameter, "createIntermediateFoldersAsNecessary", can be specified.  This instructs the function to create as many
 ' missing subfolders as are necessary in order to ensure the full source path exists.
 Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createIntermediateFoldersAsNecessary As Boolean = False) As Boolean
     
     'If the folder already exists, great!
-    If FolderExist(fullPath, False) Then
+    If Me.FolderExists(fullPath, False) Then
         CreateFolder = True
         
     'The folder doesn't exist, so we need to make it
@@ -331,12 +526,11 @@ Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
         Dim cSuccess As Long
         cSuccess = CreateDirectoryW(StrPtr(fullPath), 0&)
         
-        If (cSuccess <> 0) Then
-            CreateFolder = True
-        Else
-            CreateFolder = False
+        CreateFolder = (cSuccess <> 0)
+        
+        If (Not CreateFolder) Then
             
-            'Check relevant errors
+            'Check for any relevant errors
             
             'PATH NOT FOUND means one or more parent folders do not exist.
             If (Err.LastDllError = ERROR_PATH_NOT_FOUND) Then
@@ -347,15 +541,15 @@ Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
                     'Starting at the base and working our way forward, create all necessary folders.
                     
                     'First, normalize against backslashes
-                    If InStr(1, fullPath, "/", vbBinaryCompare) Then fullPath = Replace$(fullPath, "/", "\")
-                    fullPath = EnforcePathSlash(fullPath)
+                    If (InStr(1, fullPath, "/", vbBinaryCompare) <> 0) Then fullPath = Replace$(fullPath, "/", "\")
+                    fullPath = Me.EnforcePathSlash(fullPath)
                     
                     'Assume a drive letter is present.  We'll use that as our starting point.
                     Dim startPos As Long, endPos As Long
                     startPos = InStr(1, fullPath, ":", vbBinaryCompare)
                     
                     'Find the first "\"
-                    startPos = InStr(startPos, fullPath, "\")
+                    startPos = InStr(startPos, fullPath, "\", vbBinaryCompare)
                     
                     If (startPos > 0) Then
                     
@@ -367,7 +561,7 @@ Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
                             'We're going to ignore return values during creation of these child folders, because permissions may not exist
                             ' for creating some parent folders.  Instead, to verify that everything worked, we'll re-test the full folder
                             ' existence after attempting to create the entire hierarchy.
-                            CreateFolder Left$(fullPath, endPos), False
+                            Me.CreateFolder Left$(fullPath, endPos), False
                             
                             'Find the next folder in the path and repeat!
                             startPos = endPos
@@ -376,7 +570,7 @@ Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
                         Loop
                         
                         'Now we check to see if the full path exists; if it doesn't, we're SOL.
-                        CreateFolder = FolderExist(fullPath, True)
+                        CreateFolder = Me.FolderExists(fullPath, True)
                     
                     Else
                         FSOError "CreateFolder", "failed; no folders were specified in the path parameter...?"
@@ -397,24 +591,864 @@ Friend Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
 
 End Function
 
-'Given a base folder, return all files within that folder (including subfolders).  Subfolder recursion is assumed, but can be waived by setting
-' recurseSubfolders to FALSE.
+'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
+' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
+' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
+Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
+    
+    Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
+    Dim retValue As Long
+    Dim retString As String
+    
+    'IMPORTANT NOTE!  Because this function has been designed to work like VB's Dir() function, it has an important caveat:
+    ' you should continue to call it until no more files exist.  (Unlike VB's Dir() function, it can't auto-detect when its
+    ' caller goes out of scope, so its file handle will remain open.)  As a failsafe, any open file handles will be released
+    ' when the class is closed, but it's not ideal to leave search handles open any longer than you need them.
+
+    'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() does not.
+    If (Len(sParam) <> 0) Then
+    
+        'First, prepend "\\?\" to sParam.  This enables long file paths.
+        If (Not Strings.StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
+    
+        'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
+        ' want to iterate all files and folders within that folder.
+        If (Strings.StringsEqual(Right$(sParam, 1), "\") Or Strings.StringsEqual(Right$(sParam, 1), "/")) Then sParam = sParam & "*"
+        
+    End If
+    
+    'Next, we need to separate our handling into two cases: when a parameter is passed (meaning initiate a search),
+    ' vs no parameter (meaning iterate upon the previous search).
+    
+    'Parameter provided: initiate a new search
+    If (Len(sParam) <> 0) Then
+        
+        'Close any previous searches
+        If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
+        
+        'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
+        handleJustCreated = True
+        m_SearchHandle = FindFirstFileW(StrPtr(sParam), m_FileDataReturnPtr)
+        
+        'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
+        If (m_SearchHandle = INVALID_HANDLE_VALUE) Then
+            
+            'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
+            If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "DirW", "possibly handed a bad path (" & sParam & "). Please investigate."
+            Exit Function
+        
+        End If
+        
+    End If
+      
+    'Now it's time to return an actual file to the caller.
+    
+    'Make sure a valid search handle exists
+    If (m_SearchHandle <> 0) Then
+        
+        'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
+        ' not relevant for PD's purposes.
+        allFilesFound = False
+        keepSearching = False
+                    
+        Do
+            
+            'FindNextFile will return a non-zero value if successful, but in the case of the *first* retrieved file,
+            ' we already pulled its info from FindFirstFileW, above.
+            If handleJustCreated Then
+                retValue = 1
+                handleJustCreated = False
+            Else
+                retValue = FindNextFileW(m_SearchHandle, m_FileDataReturnPtr)
+            End If
+                
+            If (retValue <> 0) Then
+                
+                'If the return value is "." or "..", ignore it and keep looking for the next file
+                retString = Strings.TrimNull(m_FileDataReturn.cFileName)
+                
+                If (Len(retString) <= 2) Then
+                    keepSearching = False
+                    keepSearching = Strings.StringsEqual(retString, ".")
+                    If (Not keepSearching) Then keepSearching = Strings.StringsEqual(retString, "..")
+                Else
+                    keepSearching = False
+                End If
+                
+            Else
+                keepSearching = False
+                allFilesFound = True
+            End If
+        
+        Loop While keepSearching
+        
+        'If all files were found, it's time to exist.  (Note that this value is triggered by a 0 return from FindNextFileW,
+        ' which can indicate other error states as well - we'll check this momentarily.)
+        If allFilesFound Then
+            
+            'Close the search handle and report any irregularities
+            FindClose m_SearchHandle
+            m_SearchHandle = 0
+            
+            'Check for unexpected errors
+            Dim lastDllErr As Long
+            lastDllErr = Err.LastDllError
+            If (lastDllErr <> ERROR_NO_MORE_FILES) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
+            
+        Else
+            DirW = retString
+        End If
+    
+    Else
+        FSOError "DirW", "tried to iterate a previous search, but no search handle exists.  Please investigate."
+    End If
+    
+    
+End Function
+
+'Returns a VB boolean indicating whether a given file exists.  This should also work on system files that prevent direct access;
+' the ERROR_SHARING_VIOLATION check below is meant to capture such files.
+' (IMPORTANT NOTE: wildcards are not supported by this function.)
 '
-'If returnRelativeStrings is true, strings are (obviously) returned relative to the base folder.  So for e.g. base folder "C:\Folder",
-' "C:\Folder\Subfolder\file.txt" will be returned as "Subfolder\file.txt".
+'Thank you to Bonnie West for the original implementation of this function.
+Friend Function FileExists(ByRef fName As String) As Boolean
+    Select Case (GetFileAttributesW(StrPtr(fName)) And vbDirectory) = 0
+        Case True: FileExists = True
+        Case Else: FileExists = (Err.LastDllError = ERROR_SHARING_VIOLATION)
+    End Select
+End Function
+
+'Returns a boolean as to whether or not a given directory exists.  Write access can optionally be tested, too.
+Friend Function FolderExists(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
+    
+    'First, make sure the directory exists
+    Dim chkExistence As Boolean
+    chkExistence = (Abs(GetFileAttributesW(StrPtr(fullPath))) And vbDirectory)
+    
+    'The folder was found, but the caller wants to know about write access, so a few more checks are needed.
+    If (chkExistence And checkWriteAccessAsWell) Then
+        
+        Dim tmpFilename As String
+        tmpFilename = Me.EnforcePathSlash(fullPath) & "writecheck.tmp"
+        
+        'Attempt to open a temp file handle inside the given folder
+        Dim hFile As Long
+        If Me.CreateFileHandle(tmpFilename, hFile, True, True, OptimizeTempFile) Then
+            
+            'The folder is writable!  Close and kill the temp file.
+            Me.CloseFileHandle hFile
+            Me.KillFile tmpFilename
+            FolderExists = True
+            
+        Else
+            FolderExists = False
+        End If
+        
+    'If the caller doesn't care about write access, or the folder wasn't found, exit now.
+    Else
+        FolderExists = chkExistence
+    End If
+    
+End Function
+
+'Given a path, make sure the right backslash is existant
+Friend Function EnforcePathSlash(ByRef srcPath As String) As String
+    
+    If (Not Strings.StringsEqual(Right$(srcPath, 1), "\")) And (Not Strings.StringsEqual(Right$(srcPath, 1), "/")) Then
+        EnforcePathSlash = srcPath & "\"
+    Else
+        EnforcePathSlash = srcPath
+    End If
+    
+End Function
+
+'Return the size of a file with a Unicode filename.  For now, only the low 4-bytes (signed!) of the full 8-byte return are used.
+' This is all PD requires at present, since it can't work with 2 GB+ images anyway.
+' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
+Friend Function FileLenW(ByRef srcPath As String) As Long
+    
+    Dim hFile As Long
+    If Me.CreateFileHandle(srcPath, hFile, True) Then
+        FileLenW = CLng(FileLenW_Large(hFile))
+        CloseHandle hFile
+    Else
+        FileLenW = 0
+    End If
+    
+End Function
+
+'Unicode-compatible LOF variant.  Note that the hFile must have generic read attributes active; write-alone won't work.
+' Note also the specific currency-type workaround; DO NOT cast the result directly into a long int.
+Friend Function FileLenW_Large(ByVal hFile As Long) As Currency
+    
+    Dim tmpVal As Currency
+    tmpVal = 0
+    
+    If (GetFileSizeEx(hFile, tmpVal) <> 0) Then
+        FileLenW_Large = tmpVal * 10000
+    Else
+        FSOError "FileLenW_Large", "failed on hFile " & hFile & ".  LastDllErr = " & Err.LastDllError
+        FileLenW_Large = 0
+    End If
+    
+End Function
+
+'Given a base folder and some other path (with or without filename), generate a relative path between the two.
+' It's assumed that thisFolder contains baseFolder within its path; if it doesn't, a copy of the full thisFolder string is returned.
+Friend Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
+    
+    'Start by forcing each string to have a trailing path
+    If (Not normalizationCanBeSkipped) Then baseFolder = EnforcePathSlash(baseFolder)
+    
+    'Make sure a relative path is possible
+    If (InStr(1, thisFolder, baseFolder) = 1) Then
+        
+        'Check equality first; equal strings mean no relative folder is required
+        If Strings.StringsEqual(baseFolder, thisFolder) Then
+            GenerateRelativePath = vbNullString
+        
+        'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
+        Else
+            GenerateRelativePath = Right$(thisFolder, Len(thisFolder) - Len(baseFolder))
+        End If
+            
+    Else
+        GenerateRelativePath = thisFolder
+    End If
+
+End Function
+
+'Return the .dwFileAttributes parameter of the last DirW() return.  This provides on-demand file attribute access, without any
+' performance penalty to the DirW loop.
+Friend Function GetAttributesOfLastDirWReturn() As Long
+    GetAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
+End Function
+
+'After a file has been opened, you can use this function to query the current file pointer position
+Friend Function GetCurrentFilePointer(ByVal srcHandle As Long) As Long
+    GetCurrentFilePointer = SetFilePointer(srcHandle, 0&, 0&, FILE_CURRENT)
+End Function
+
+'Function to return the extension from a filename.
+Friend Function GetFileExtension(sFile As String) As String
+    
+    GetFileExtension = vbNullString
+    
+    Dim i As Long
+    For i = Len(sFile) To 1 Step -1
+    
+        'If we find a path before we find an extension, return a blank string
+        If Strings.StringsEqual(Mid$(sFile, i, 1), "\") Or Strings.StringsEqual(Mid$(sFile, i, 1), "/") Then
+            GetFileExtension = vbNullString
+            Exit For
+        End If
+        
+        If Strings.StringsEqual(Mid$(sFile, i, 1), ".") Then
+            GetFileExtension = Right$(sFile, Len(sFile) - i)
+            Exit For
+        End If
+                
+    Next i
+            
+End Function
+
+'Return just the filename from a full path.  Optionally, you can have the function also strip the extension from the filename;
+' if stripExtension is FALSE, the full filename + extension will be returned (e.g. "file.txt").
+Friend Function GetFilename(ByRef srcPath As String, Optional ByVal stripExtension As Boolean = False) As String
+
+    'If the function fails (because no slash is found), we'll simply return the entire incoming string, under the
+    ' assumption that it's already just a filename.
+    GetFilename = srcPath
+    
+    'Normalize path
+    'TODO!
+    
+    Dim i As Long
+    For i = Len(srcPath) - 1 To 1 Step -1
+        If (Mid$(srcPath, i, 1) = "/") Or (Mid$(srcPath, i, 1) = "\") Then
+            GetFilename = Right$(srcPath, Len(srcPath) - i)
+            Exit For
+        End If
+    Next i
+    
+    'If the caller wants us to strip the extension, do so before exiting
+    If stripExtension Then
+        
+        Dim dotPos As Long
+        dotPos = InStrRev(GetFilename, ".")
+        
+        If (dotPos > 1) Then
+            GetFilename = Left$(GetFilename, dotPos - 1)
+        ElseIf (dotPos = 1) Then
+            GetFilename = vbNullString
+        End If
+        
+    End If
+    
+End Function
+
+'Return varies types of file times in currency format.  By default, WAPI functions return file times using a custom
+' FILETIME struct.  This can be converted to system time objects via helper functions.  At present, this function
+' simply collates the two values into a Currency and returns that, which is good enough for current PD usage
+' (checksums of changed files, mostly).
 '
-'Returns TRUE if at least one file is found; FALSE otherwise.  If the incoming dstFiles parameter already contains strings, TRUE will
-' always be returned.
+'RETURNS: non-zero value if successful.
+Friend Function GetFileTimeAsCurrency(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Currency
+    
+    GetFileTimeAsCurrency = 0
+    
+    Dim hFile As Long
+    If CreateFileHandle(srcFile, hFile, True) Then
+        
+        Dim apiReturn As Long
+        
+        Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
+        If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
+        
+            Dim srcTime As WAPI_FILETIME
+            
+            If (typeOfTime = PDFT_AccessTime) Then
+                srcTime = accessTime
+            ElseIf (typeOfTime = PDFT_WriteTime) Then
+                srcTime = writeTime
+            Else
+                srcTime = createTime
+            End If
+            
+            'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
+            ' comparison functions, but for now, you have to deal with times being returned as currency.
+            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
+            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
+        
+        End If
+        
+        CloseHandle hFile
+    
+    End If
+
+End Function
+
+'Given an arbitrary file path, return embeded versioning information.  The optional getProductVersionInstead value sets whether file or product
+' version values are returned.  These are often the same, as Visual Studio inheritance rules typically make the Product value match the File value
+' if it isn't explicitly given (http://all-things-pure.blogspot.com/2009/09/assembly-version-file-version-product.html).  But this rule is not
+' foolproof, so double-check 3rd-party sources in particular.
+'
+'Returns TRUE if successful; FALSE otherwise.  If the function fails, DLL error info will be dumped to the debug window.
+Friend Function GetFileVersion(ByVal FullFileName As String, ByRef verMajor As Long, ByRef verMinor As Long, ByRef verBuild As Long, ByRef verRevision As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
+    
+    Dim lDummy As Long, sBuffer() As Byte
+    Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
+    Dim lVerbufferLen As Long
+    
+    'Start by retrieving the size of the required buffer
+    lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
+    If (lBufferLen > 0) Then
+     
+        'Retrieve the root versioning block, without any localization edits (https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464%28v=vs.85%29.aspx)
+        ReDim sBuffer(lBufferLen) As Byte
+        If (GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0)) > 0) Then
+            
+            If VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen) Then
+                
+                CopyMemory_Strict VarPtr(udtVerBuffer), lVerPointer, Len(udtVerBuffer)
+                
+                'Return file or product version number, depending on the optional getProductVersionInstead parameter.  Note that these do not currently
+                ' mask the integer return values, so they will provide bogus results for versions > 32767; I could fix this, but it's not relevant to
+                ' PD's usage.
+                If getProductVersionInstead Then
+                    With udtVerBuffer
+                        verMajor = .dwProductVersionMSh
+                        verMinor = .dwProductVersionMSl
+                        verBuild = .dwProductVersionLSh
+                        verRevision = .dwProductVersionLSl
+                    End With
+                Else
+                    With udtVerBuffer
+                        verMajor = .dwFileVersionMSh
+                        verMinor = .dwFileVersionMSl
+                        verBuild = .dwFileVersionLSh
+                        verRevision = .dwFileVersionLSl
+                    End With
+                End If
+                
+                GetFileVersion = True
+                
+            Else
+                FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to VerQueryValue error.", Err.Last
+                GetFileVersion = False
+            End If
+            
+        Else
+            FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to GetFileVersionInfo error.", Err.LastDllError
+            GetFileVersion = False
+        End If
+        
+    Else
+        FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to buffer allocation failure.", Err.LastDllError
+        GetFileVersion = False
+    End If
+
+End Function
+
+'Convenience wrapper to GetFileVersion, above.
+Friend Function GetFileVersionAsString(ByVal FullFileName As String, ByRef dstVersionString As String, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
+    Dim tmpLong1 As Long, tmpLong2 As Long, tmpLong3 As Long, tmpLong4 As Long
+    GetFileVersionAsString = GetFileVersion(FullFileName, tmpLong1, tmpLong2, tmpLong3, tmpLong4, getProductVersionInstead)
+    dstVersionString = CStr(tmpLong1) & "." & CStr(tmpLong2) & "." & CStr(tmpLong3) & "." & CStr(tmpLong4)
+End Function
+
+'Given a full path+filename string, return only the folder portion.
+' Returns a blank string if a folder cannot be extracted.
+Friend Function GetPathOnly(ByRef sFilename As String) As String
+    Dim slashPosition As Long
+    slashPosition = InStrRev(sFilename, "\", -1, vbBinaryCompare)
+    If (slashPosition <> 0) Then GetPathOnly = Left$(sFilename, slashPosition)
+End Function
+
+'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
+' even on Unicode pathnames.
+Friend Function GetShortPath(ByRef longPath As String) As String
+    
+    Dim tmpString As String
+    tmpString = Space$(MAX_PATH)
+    
+    Dim lenFinalBuffer As Long
+    lenFinalBuffer = GetShortPathNameW(StrPtr(longPath), StrPtr(tmpString), Len(tmpString))
+    
+    If (lenFinalBuffer > 0) Then
+        GetShortPath = Left$(tmpString, lenFinalBuffer)
+    Else
+        GetShortPath = longPath
+    End If
+    
+End Function
+
+'Kill a given file.  Returns TRUE if the file does not exist after the operation completes.  (Thus, if the file doesn't exist prior
+' to calling this function, it will still return TRUE.)
+'
+'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
+Friend Function KillFile(ByVal srcFilename As String) As Boolean
+    
+    'If the file doesn't exist, return TRUE in advance.
+    If Me.FileExists(srcFilename) Then
+        KillFile = (DeleteFileW(StrPtr(srcFilename)) <> 0)
+        If (Not KillFile) Then FSOError "KillFile", "unable to kill " & srcFilename & " due to WAPI error " & Err.LastDllError
+    Else
+        KillFile = True
+    End If
+    
+End Function
+
+'Dump a specified file directly into a VB byte array.  No additional processing is performed.
+'
+'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
+Friend Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
+
+    On Error GoTo StopFileLoad
+    
+    'Before doing anything else, make sure the file exists
+    If (Not FileExists(srcFile)) Then
+        FSOError "LoadFileAsByteArray", "can't find " & srcFile & ".  Abandoning load."
+        LoadFileAsByteArray = False
+        Exit Function
+    End If
+    
+    'Dump file contents into a byte array.
+    Dim hFile As Long
+    If CreateFileHandle(srcFile, hFile, True, False, OptimizeSequentialAccess) Then
+        
+        'Prep the destination buffer
+        Dim lenOfFile As Long
+        lenOfFile = CLng(FileLenW_Large(hFile))
+        ReDim dstArray(0 To lenOfFile - 1) As Byte
+        
+        'Retrieve the full file contents
+        Dim tmpVerify As Long
+        If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
+            LoadFileAsByteArray = True
+        Else
+            FSOError "LoadFileAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
+        End If
+        
+        CloseHandle hFile
+        
+    Else
+        FSOError "LoadFileAsByteArray", "failed to create a valid handle for " & srcFile & ". Abandoning load."
+    End If
+    
+    Exit Function
+    
+StopFileLoad:
+    FSOError "LoadFileAsByteArray", "internal error on " & srcFile & ". Abandoning load.", Err.Number
+    LoadFileAsByteArray = False
+End Function
+
+'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
+' BOM and other markers are unclear.
+'
+'The optional forceWindowsLineEndings parameter will apply additional checks, to make sure line endings are consistently vbCrLf
+' (vs Unix-style vbLf only).
+'
+'Many thanks to Dana Seaman and cyberactivex.com.  This function was originally based off Dana's excellent "GenericFileRead" function,
+' available via http://www.cyberactivex.com/UnicodeTutorialVb.htm
+'
+'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
+Friend Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
+
+    On Error GoTo StopTextFileRead
+    
+    'Use a wrapper function to dump the file's contents into a byte array.
+    Dim fileBytes() As Byte
+    If LoadFileAsByteArray(srcFile, fileBytes) Then
+        LoadTextFileAsString = m_Unicode.ConvertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
+    Else
+        LoadTextFileAsString = False
+    End If
+    
+    Exit Function
+    
+StopTextFileRead:
+    FSOError "LoadTextFileAsString", " internal error on " & srcFile & ". Abandoning load.", Err.Number
+    LoadTextFileAsString = False
+End Function
+
+'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
+Friend Function MakeValidWindowsFilename(ByVal srcFilename As String, Optional ByVal replacementChar As String = "_") As String
+    
+    Dim strInvalidChars As String
+    strInvalidChars = "\/*?""<>|:"
+    
+    'Replace each invalid character occurrence with whatever char the user specified
+    Dim i As Long
+    For i = 1 To Len(strInvalidChars)
+        If InStr(1, srcFilename, Mid$(strInvalidChars, i, 1), vbBinaryCompare) Then srcFilename = Replace$(srcFilename, Mid$(strInvalidChars, i, 1), replacementChar)
+    Next i
+    
+    MakeValidWindowsFilename = srcFilename
+
+End Function
+
+'After a file has been opened, you can use this function to manually move the file pointer around
+Friend Function MoveFilePointer(ByVal srcHandle As Long, ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
+    MoveFilePointer = CBool(SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
+End Function
+
+'Reads arbitrary binary data from file.  It is up to the caller to make sure the requested number of bytes are valid and accurate,
+' and most importantly, *that the destination memory is already sized appropriately*.
+' - The read will be performed synchronously, FYI.
+' - An optional newFilePointer value can be passed.  A pointer move method can also be specified.  Note that by default, the pointer
+'   will be reset *relative to the start of the file*, *not relative to its current position*.  This is meant to mimic file positions
+'   from old VB file access code, but you can change it to be relative to the current pointer position by modifying the
+'   filePointerMoveMethod param.
+'
+' Returns: TRUE if successful; FALSE otherwise.
+Friend Function ReadDataFromFile(ByVal srcHandle As Long, ByVal ptrToDestinationObject As Long, ByVal numOfBytesToRead As Long, Optional ByVal newFilePointer As Long = -1, Optional ByVal filePointerMoveMethod As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
+    
+    'Manually move the pointer only if required
+    If (newFilePointer <> -1) Then SetFilePointer srcHandle, newFilePointer, ByVal 0&, filePointerMoveMethod
+    
+    'Read the data!
+    Dim tmpReturn As Long
+    ReadDataFromFile = CBool(ReadFile(srcHandle, ptrToDestinationObject, numOfBytesToRead, tmpReturn, 0&) <> 0)
+    
+    'As a convenience to the caller, print out scenarios where the actual amount read differs from the amount of data requested.
+    If (tmpReturn <> numOfBytesToRead) Then FSOError "ReadDataFromFile", "retrieved " & CStr(tmpReturn) & " bytes instead of the " & CStr(numOfBytesToRead) & " bytes you requested.  Check your math."
+    
+End Function
+
+'Partner function to ConvertFileHandleToMMPtr, above.  The same values output by that function must be passed here,
+' including an identical value for the base address.  Also, note that the flushImmediately parameter is asynchronous;
+' it will not wait for the flush to cpmlete before returning, so you should take that into account if you plan to
+' immediately access the written file via a separate method like ReadFile.  (If you want to enforce an immediate full
+' write to the actual physical media, you'd need to follow this function with a manual call to FlushFileBuffers.)
+Friend Function ReleaseMMHandle(ByVal srcMappedHandle As Long, ByVal srcBaseAddress As Long, Optional ByVal srcFileHandleToo As Long = 0, Optional ByVal flushImmediately As Boolean = False) As Boolean
+    
+    If (srcMappedHandle <> 0) And (srcBaseAddress <> 0) Then
+        
+        'Unmapping the view frees up the corresponding memory chunk in our address space; do this first
+        UnmapViewOfFile srcBaseAddress
+        
+        'If the caller wants a flush, initiate it before we release the mapping handle
+        If flushImmediately Then FlushViewOfFile srcBaseAddress, 0&
+        
+        'Release the mapped file object
+        ReleaseMMHandle = CBool(CloseHandle(srcMappedHandle) <> 0)
+        
+        'As a convenience to the caller, we can close the original file handle now as well.
+        If (srcFileHandleToo <> 0) Then ReleaseMMHandle = ReleaseMMHandle And Me.CloseFileHandle(srcFileHandleToo)
+        
+    Else
+        FSOError "ReleaseMMHandle", "passed null values.  Fix this!"
+        ReleaseMMHandle = False
+    End If
+    
+End Function
+
+'Replace an arbitrary file with another arbitrary file, with optional backup file of the original created during the process.
+'
+'All files must reside on the same volume.  The target file should exist, but to be safe, I have added some custom code to address instances
+' where the target file does not exist (this function will silently fall back to a "Move file" action instead).
+'
+'IMPORTANT NOTE: the ReplaceFileW function has rare-but-not-impossible failure outcomes where the original file is deleted, but the new file is
+'                 not renamed.  Because this failure could be catastrophic during an update process, PD will forcibly create backups of any files
+'                 patched via this function, and restore them as necessary.  The "customBackupFile" parameter only exists if you want to specify
+'                 a CUSTOM backup filename + location; it does not affect whether or not a backup IS created.  (TL;DR - backups are always created.)
+Friend Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "") As FILE_PATCH_RESULT
+    
+    'Because this function is capable of botching an existing PD install if catastrophic failure occurs, error handling must be comprehensive.
+    On Error GoTo ReplaceFailure
+    
+    Dim backupFile As String
+    Dim rfReturn As Long, mfReturn As Long
+    
+    'Make sure the target file exists.  If it doesn't, we need to use a different set of APIs
+    If Me.FileExists(oldFile) Then
+    
+        'Consider forcibly specifying a backup path if the user didn't provide their own
+        If (Len(customBackupFile) = 0) Then
+        
+            'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
+            ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
+            
+            'For example, in PhotoDemon I use the standard Data/Updates folder for backups when patching, like this:
+            'backupFile = g_UserPreferences.GetUpdatePath & GetFilename(oldFile)
+            
+            'This ensures that we always have a way to undo the replace step if something goes wrong
+        
+        Else
+            backupFile = customBackupFile
+        End If
+        
+        'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  Because this function is used to patch PhotoDemon.exe,
+        ' there is no margin for failure, so detailed handling of every possible outcome is required.
+        rfReturn = ReplaceFileW(StrPtr(oldFile), StrPtr(newFile), StrPtr(backupFile), REPLACEFILE_IGNORE_MERGE_ERRORS, 0&, 0&)
+        
+        'Success means we can exit immediately
+        If (rfReturn <> 0) Then
+            
+            'Remove the backup file, then report success
+            Me.KillFile backupFile
+            ReplaceFile = FPR_SUCCESS
+            Exit Function
+        
+        'Failure is a problem.  Retrieve the error cause, and do whatever we can to resolve it.
+        Else
+        
+            Select Case Err.LastDllError
+            
+                'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced and replacement files retain their original
+                ' file names. Otherwise, the replaced file no longer exists and the replacement file exists under its original name.
+                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT
+                    
+                    'See if the old file exists
+                    If Me.FileExists(oldFile) Then
+                    
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+                        ' to this function being invoked, the caller is free to try again.
+                        Me.KillFile customBackupFile
+                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                        Exit Function
+                       
+                    Else
+                    
+                        'The old file no longer exists.  Restore the backup file, if at all possible.
+                        If Me.FileExists(backupFile) Then
+                        
+                            'The backup file exists.  Try to restore it to the location of the original file.
+                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+                            
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+                            ' restored to its original state.
+                            If (mfReturn <> 0) Then
+                                Me.KillFile backupFile
+                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                                Exit Function
+                            
+                            'The move failed.  This should never happen.
+                            Else
+                                FSOError "ReplaceFile", "Impossible outcome 1 occurred in ReplaceFile.  Please investigate."
+                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                                Exit Function
+                            End If
+                        
+                        'The backup file does not exist.  This should never happen.
+                        Else
+                            FSOError "ReplaceFile", "Impossible outcome 2 occurred in ReplaceFile.  Please investigate."
+                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                            Exit Function
+                        End If
+                    
+                    End If
+                
+                'The replacement file could not be moved. The replacement file still exists under its original name; however, it has inherited the file streams
+                ' and attributes from the file it is replacing. The file to be replaced still exists with a different name. If lpBackupFileName is specified,
+                ' it will be the name of the replaced file.
+                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2
+                
+                    'See if the old file exists; this should never happen.
+                    If Me.FileExists(oldFile) Then
+                    
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+                        ' to this function being invoked, the caller is free to try again.
+                        Me.KillFile customBackupFile
+                        
+                        FSOError "ReplaceFile", "Impossible outcome 3 occurred in ReplaceFile.  Please investigate."
+                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                        Exit Function
+                       
+                    Else
+                    
+                        'The old file no longer exists.  Restore the backup file.  (The backup file is supposedly guaranteed to exist with this error code.)
+                        If Me.FileExists(backupFile) Then
+                        
+                            'The backup file exists.  Try to restore it to the location of the original file.
+                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+                            
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+                            ' restored to its original state.
+                            If (mfReturn <> 0) Then
+                                Me.KillFile backupFile
+                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                                Exit Function
+                            
+                            'The move failed.  This should never happen.
+                            Else
+                                FSOError "ReplaceFile", "Impossible outcome 4 occurred in ReplaceFile.  Please investigate."
+                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                                Exit Function
+                            End If
+                        
+                        'The backup file does not exist.  This should never happen.
+                        Else
+                            FSOError "ReplaceFile", "Impossible outcome 5 occurred in ReplaceFile.  Please investigate."
+                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                            Exit Function
+                        End If
+                    
+                    End If
+                
+                'The replaced file could not be deleted. The replaced and replacement files retain their original file names.
+                Case ERROR_UNABLE_TO_REMOVE_REPLACED
+                
+                    'MSDN is unclear on the state of the backup file on this error.  As a failsafe, remove it if it exists.
+                    Me.KillFile backupFile
+                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                    Exit Function
+                
+                'Other failure states are more problematic.  Defer to the primary error handler, which will try to restore the
+                ' original file setup as best as it can.
+                Case Else
+                    GoTo ReplaceFailure
+            
+            End Select
+        
+        End If
+    
+    'The file-to-be-replaced does *not* exist.  Use MoveFile instead of ReplaceFile.
+    Else
+    
+        'Use the API to attempt a move.  (Note that a backup file isn't required in this case, as nothing will be deleted unless the
+        ' operation is successful.)
+        mfReturn = MoveFileExW(StrPtr(oldFile), StrPtr(newFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+        
+        'The move succeeded!  Exit immediately.
+        If (mfReturn <> 0) Then
+            
+            ReplaceFile = FPR_SUCCESS
+            Exit Function
+        
+        'The move failed.  This should not happen (as the target file is known to not exist), but if it does, no harm is done as we haven't
+        ' changed the filesystem at all.
+        Else
+            FSOError "ReplaceFile", "Impossible outcome 10 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+            Exit Function
+        End If
+    
+    End If
+    
+    Exit Function
+    
+    
+'Arbitrary failure states are problematic.  Basically, our goal is to restore the original file setup as best as we can.  We do this by attempting
+' to restore the backup file (if it exists), and applying any renames or moves required to get everything back to the way it was.
+ReplaceFailure:
+
+    'See if the old file exists
+    If Me.FileExists(oldFile) Then
+    
+        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+        ' to this function being invoked, the caller is free to try again.
+        Me.KillFile customBackupFile
+        
+        If Me.FileExists(newFile) Then
+            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+        Else
+            FSOError "ReplaceFile", "Impossible outcome 6 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
+        End If
+        
+        Exit Function
+       
+    Else
+    
+        'The old file no longer exists.  Restore the backup file, if at all possible.
+        If Me.FileExists(backupFile) Then
+        
+            'The backup file exists.  Try to restore it to the location of the original file.
+            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+            
+            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+            ' restored to its original state.
+            If (mfReturn <> 0) Then
+                
+                KillFile backupFile
+                
+                If Me.FileExists(newFile) Then
+                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                Else
+                    FSOError "ReplaceFile", "Impossible outcome 7 occurred in ReplaceFile.  Please investigate."
+                    ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
+                End If
+                
+                Exit Function
+            
+            'The move failed.  This should never happen.
+            Else
+                FSOError "ReplaceFile", "Impossible outcome 8 occurred in ReplaceFile.  Please investigate."
+                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                Exit Function
+            End If
+        
+        'The backup file does not exist.  This should never happen.
+        Else
+            FSOError "ReplaceFile", "Impossible outcome 9 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+            Exit Function
+        End If
+    
+    End If
+
+End Function
+
+'Given a base folder, return all files within that folder (including subfolders).  Subfolder recursion is assumed,
+' but can be waived by setting recurseSubfolders to FALSE.
+'
+'If returnRelativeStrings is true, strings are (obviously) returned relative to the base folder.
+' So for e.g. base folder "C:\Folder", "C:\Folder\Subfolder\file.txt" will be returned as "Subfolder\file.txt".
+'
+'Returns TRUE if at least one file is found; FALSE otherwise.
+' If the incoming dstFiles parameter already contains strings, TRUE will always be returned (by design).
 '
 'As an additional convenience, files can be restricted in one of two ways:
 ' 1) by restricting allowed extensions, using a pipe-delimited list of acceptable extensions (e.g. "jpg|bmp|gif")
 ' 2) by avoiding disallowed extensions, using a pipe-delimited list of unacceptable extensions (e.g. "bak|tmp")
 '
-'Use either the whitelist or the blacklist option, but not both (obviously).
+'Obviously, you should use either the whitelist or the blacklist option, but never both.
 Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
         
     'Enforce strict trailing slash formatting of the base folder
-    srcFolder = EnforcePathSlash(srcFolder)
+    srcFolder = Me.EnforcePathSlash(srcFolder)
         
     'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized; this is by design, so the caller
     ' can concatenate multiple search results together if desired.
@@ -496,7 +1530,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                 
                 'White-listing check required
                 If whiteListInUse Then
-                    fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & GetFileExtension(chkFile) & "|", vbBinaryCompare) > 0)
+                    fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & GetFileExtension(chkFile) & "|", vbBinaryCompare) <> 0)
                     
                 'Black-listing check required
                 ElseIf blackListInUse Then
@@ -510,7 +1544,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                 'If we are allowed to add this file, do so now
                 If fileValid Then
                     If returnRelativeStrings Then
-                        dstFiles.AddString GenerateRelativePath(srcFolder, curFolder & chkFile, True)
+                        dstFiles.AddString Me.GenerateRelativePath(srcFolder, curFolder & chkFile, True)
                     Else
                         dstFiles.AddString curFolder & chkFile
                     End If
@@ -546,7 +1580,7 @@ End Function
 Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders As pdStringStack, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal returnRelativeStrings As Boolean = True) As Boolean
 
     'Enforce strict trailing slash formatting of the base folder
-    srcFolder = EnforcePathSlash(srcFolder)
+    srcFolder = Me.EnforcePathSlash(srcFolder)
     
     'Initialize dstStrings as necessary.  Note that nothing happens if dstStrings is already initialized; this is by design, so the caller
     ' can concatenate multiple results together if desired.
@@ -577,12 +1611,12 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
             
                 'This is a folder.  Add it to the "folders to check" collection.
                 If recurseSubfolders Then
-                    cFoldersToCheck.AddString EnforcePathSlash(curFolder & chkFile)
+                    cFoldersToCheck.AddString Me.EnforcePathSlash(curFolder & chkFile)
                 Else
                     If returnRelativeStrings Then
-                        dstFolders.AddString GenerateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+                        dstFolders.AddString Me.GenerateRelativePath(srcFolder, Me.EnforcePathSlash(curFolder & chkFile), True)
                     Else
-                        dstFolders.AddString EnforcePathSlash(curFolder & chkFile)
+                        dstFolders.AddString Me.EnforcePathSlash(curFolder & chkFile)
                     End If
                 End If
             
@@ -598,7 +1632,7 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
         If isNotFirstFolder Then
             
             If returnRelativeStrings Then
-                dstFolders.AddString GenerateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+                dstFolders.AddString Me.GenerateRelativePath(srcFolder, Me.EnforcePathSlash(curFolder & chkFile), True)
             Else
                 dstFolders.AddString curFolder
             End If
@@ -614,619 +1648,6 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     ' the assumption is they'll process the stack as one continuous list, so individual returns don't matter.)
     RetrieveAllFolders = (dstFolders.GetNumOfStrings > 0)
     
-End Function
-
-'Given a base folder and some other path (with or without filename), generate a relative path between the two.
-' It's assumed that thisFolder contains baseFolder within its path; if it doesn't, a copy of the full thisFolder string is returned.
-Friend Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
-    
-    'Start by forcing each string to have a trailing path
-    If (Not normalizationCanBeSkipped) Then baseFolder = EnforcePathSlash(baseFolder)
-    
-    'Make sure a relative path is possible
-    If (InStr(1, thisFolder, baseFolder) = 1) Then
-        
-        'Check equality first; equal strings mean no relative folder is required
-        If Strings.StringsEqual(baseFolder, thisFolder) Then
-            GenerateRelativePath = ""
-        
-        'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
-        Else
-            GenerateRelativePath = Right$(thisFolder, Len(thisFolder) - Len(baseFolder))
-        End If
-            
-    Else
-        GenerateRelativePath = thisFolder
-    End If
-
-End Function
-
-'Return the .dwFileAttributes parameter of the last DirW() return.  This provides on-demand file attribute access, without any
-' performance penalty to the DirW loop.
-Friend Function GetAttributesOfLastDirWReturn() As Long
-    GetAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
-End Function
-
-'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
-' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
-' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
-Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
-    
-    Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
-    Dim retValue As Long
-    Dim retString As String
-    
-    'IMPORTANT NOTE!  Because this function has been designed to work like VB's Dir() function, it has an important caveat:
-    ' you should continue to call it until no more files exist.  (Unlike VB's Dir() function, it can't auto-detect when its
-    ' caller goes out of scope, so its file handle will remain open.)  As a failsafe, any open file handles will be released
-    ' when the class is closed, but it's not ideal to leave search handles open any longer than you need them.
-
-    'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() does not.
-    If (Len(sParam) > 0) Then
-    
-        'First, prepend "\\?\" to sParam.  This enables long file paths.
-        If (Not Strings.StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
-    
-        'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
-        ' want to iterate all files and folders within that folder.
-        If (Strings.StringsEqual(Right$(sParam, 1), "\") Or Strings.StringsEqual(Right$(sParam, 1), "/")) Then sParam = sParam & "*"
-        
-    End If
-    
-    'Next, we need to separate our handling into two cases: when a parameter is passed (meaning initiate a search),
-    ' vs no parameter (meaning iterate upon the previous search).
-    
-    'Parameter provided: initiate a new search
-    If (Len(sParam) <> 0) Then
-        
-        'Close any previous searches
-        If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
-        
-        'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
-        handleJustCreated = True
-        m_SearchHandle = FindFirstFileW(StrPtr(sParam), m_FileDataReturnPtr)
-        
-        'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
-        If (m_SearchHandle = INVALID_HANDLE_VALUE) Then
-            
-            'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
-            If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "DirW", "possibly handed a bad path (" & sParam & "). Please investigate."
-            Exit Function
-        
-        End If
-        
-    End If
-      
-    'Now it's time to return an actual file to the caller.
-    
-    'Make sure a valid search handle exists
-    If (m_SearchHandle <> 0) Then
-        
-        'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
-        ' not relevant for PD's purposes.
-        allFilesFound = False
-        keepSearching = False
-                    
-        Do
-            
-            'FindNextFile will return a non-zero value if successful, but in the case of the *first* retrieved file,
-            ' we already pulled its info from FindFirstFileW, above.
-            If handleJustCreated Then
-                retValue = 1
-                handleJustCreated = False
-            Else
-                retValue = FindNextFileW(m_SearchHandle, m_FileDataReturnPtr)
-            End If
-                
-            If (retValue <> 0) Then
-                
-                'If the return value is "." or "..", ignore it and keep looking for the next file
-                retString = TrimNull(m_FileDataReturn.cFileName)
-                
-                If (Len(retString) <= 2) Then
-                    keepSearching = False
-                    keepSearching = Strings.StringsEqual(retString, ".")
-                    If (Not keepSearching) Then keepSearching = Strings.StringsEqual(retString, "..")
-                Else
-                    keepSearching = False
-                End If
-                
-            Else
-                keepSearching = False
-                allFilesFound = True
-            End If
-        
-        Loop While keepSearching
-        
-        'If all files were found, it's time to exist.  (Note that this value is triggered by a 0 return from FindNextFileW,
-        ' which can indicate other error states as well - we'll check this momentarily.)
-        If allFilesFound Then
-            
-            'Close the search handle and report any irregularities
-            FindClose m_SearchHandle
-            m_SearchHandle = 0
-            
-            'Check for unexpected errors
-            Dim lastDllErr As Long
-            lastDllErr = Err.LastDllError
-            If (lastDllErr <> ERROR_NO_MORE_FILES) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
-            
-        Else
-            DirW = retString
-        End If
-    
-    Else
-        FSOError "DirW", "tried to iterate a previous search, but no search handle exists.  Please investigate."
-    End If
-    
-    
-End Function
-
-'Replace an arbitrary file with another arbitrary file, with optional backup file of the original created during the process.
-'
-'All files must reside on the same volume.  The target file should exist, but to be safe, I have added some custom code to address instances
-' where the target file does not exist (this function will silently fall back to a "Move file" action instead).
-'
-'IMPORTANT NOTE: the ReplaceFileW function has rare-but-not-impossible failure outcomes where the original file is deleted, but the new file is
-'                 not renamed.  Because this failure could be catastrophic during an update process, PD will forcibly create backups of any files
-'                 patched via this function, and restore them as necessary.  The "customBackupFile" parameter only exists if you want to specify
-'                 a CUSTOM backup filename + location; it does not affect whether or not a backup IS created.  (TL;DR - backups are always created.)
-Friend Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "") As FILE_PATCH_RESULT
-    
-    'Because this function is capable of botching an existing PD install if catastrophic failure occurs, error handling must be comprehensive.
-    On Error GoTo replaceFailure
-    
-    Dim backupFile As String
-    Dim rfReturn As Long, mfReturn As Long
-    
-    'Make sure the target file exists.  If it doesn't, we need to use a different set of APIs
-    If Me.FileExist(oldFile) Then
-    
-        'Consider forcibly specifying a backup path if the user didn't provide their own
-        If (Len(customBackupFile) = 0) Then
-        
-            'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
-            ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
-            
-            'For example, in PhotoDemon I use the standard Data/Updates folder for backups when patching, like this:
-            'backupFile = getFilename(oldFile)
-            'backupFile = g_UserPreferences.getUpdatePath & backupFile
-            
-            'This ensures that we always have a way to undo the replace step if something goes wrong
-        
-        Else
-            backupFile = customBackupFile
-        End If
-        
-        'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  Because this function is used to patch PhotoDemon.exe,
-        ' there is no margin for failure, so detailed handling of every possible outcome is required.
-        rfReturn = ReplaceFileW(StrPtr(oldFile), StrPtr(newFile), StrPtr(backupFile), REPLACEFILE_IGNORE_MERGE_ERRORS, 0&, 0&)
-        
-        'Success means we can exit immediately
-        If (rfReturn <> 0) Then
-            
-            'Remove the backup file, then report success
-            KillFile backupFile
-            ReplaceFile = FPR_SUCCESS
-            Exit Function
-        
-        'Failure is a problem.  Retrieve the error cause, and do whatever we can to resolve it.
-        Else
-        
-            Select Case Err.LastDllError
-            
-                'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced and replacement files retain their original
-                ' file names. Otherwise, the replaced file no longer exists and the replacement file exists under its original name.
-                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT
-                    
-                    'See if the old file exists
-                    If Me.FileExist(oldFile) Then
-                    
-                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-                        ' to this function being invoked, the caller is free to try again.
-                        KillFile customBackupFile
-                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                        Exit Function
-                       
-                    Else
-                    
-                        'The old file no longer exists.  Restore the backup file, if at all possible.
-                        If Me.FileExist(backupFile) Then
-                        
-                            'The backup file exists.  Try to restore it to the location of the original file.
-                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
-                            
-                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-                            ' restored to its original state.
-                            If (mfReturn <> 0) Then
-                                KillFile backupFile
-                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                                Exit Function
-                            
-                            'The move failed.  This should never happen.
-                            Else
-                                FSOError "ReplaceFile", "Impossible outcome 1 occurred in ReplaceFile.  Please investigate."
-                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-                                Exit Function
-                            End If
-                        
-                        'The backup file does not exist.  This should never happen.
-                        Else
-                            FSOError "ReplaceFile", "Impossible outcome 2 occurred in ReplaceFile.  Please investigate."
-                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-                            Exit Function
-                        End If
-                    
-                    End If
-                
-                'The replacement file could not be moved. The replacement file still exists under its original name; however, it has inherited the file streams
-                ' and attributes from the file it is replacing. The file to be replaced still exists with a different name. If lpBackupFileName is specified,
-                ' it will be the name of the replaced file.
-                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2
-                
-                    'See if the old file exists; this should never happen.
-                    If Me.FileExist(oldFile) Then
-                    
-                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-                        ' to this function being invoked, the caller is free to try again.
-                        KillFile customBackupFile
-                        
-                        FSOError "ReplaceFile", "Impossible outcome 3 occurred in ReplaceFile.  Please investigate."
-                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                        Exit Function
-                       
-                    Else
-                    
-                        'The old file no longer exists.  Restore the backup file.  (The backup file is supposedly guaranteed to exist with this error code.)
-                        If Me.FileExist(backupFile) Then
-                        
-                            'The backup file exists.  Try to restore it to the location of the original file.
-                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
-                            
-                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-                            ' restored to its original state.
-                            If (mfReturn <> 0) Then
-                                KillFile backupFile
-                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                                Exit Function
-                            
-                            'The move failed.  This should never happen.
-                            Else
-                                FSOError "ReplaceFile", "Impossible outcome 4 occurred in ReplaceFile.  Please investigate."
-                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-                                Exit Function
-                            End If
-                        
-                        'The backup file does not exist.  This should never happen.
-                        Else
-                            FSOError "ReplaceFile", "Impossible outcome 5 occurred in ReplaceFile.  Please investigate."
-                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-                            Exit Function
-                        End If
-                    
-                    End If
-                
-                'The replaced file could not be deleted. The replaced and replacement files retain their original file names.
-                Case ERROR_UNABLE_TO_REMOVE_REPLACED
-                
-                    'MSDN is unclear on the state of the backup file on this error.  As a failsafe, remove it if it exists.
-                    KillFile backupFile
-                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                    Exit Function
-                
-                'Other failure states are more problematic.  Defer to the primary error handler, which will try to restore the
-                ' original file setup as best as it can.
-                Case Else
-                    GoTo replaceFailure
-            
-            End Select
-        
-        End If
-    
-    'The file-to-be-replaced does *not* exist.  Use MoveFile instead of ReplaceFile.
-    Else
-    
-        'Use the API to attempt a move.  (Note that a backup file isn't required in this case, as nothing will be deleted unless the
-        ' operation is successful.)
-        mfReturn = MoveFileExW(StrPtr(oldFile), StrPtr(newFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
-        
-        'The move succeeded!  Exit immediately.
-        If (mfReturn <> 0) Then
-            
-            ReplaceFile = FPR_SUCCESS
-            Exit Function
-        
-        'The move failed.  This should not happen (as the target file is known to not exist), but if it does, no harm is done as we haven't
-        ' changed the filesystem at all.
-        Else
-            FSOError "ReplaceFile", "Impossible outcome 10 occurred in ReplaceFile.  Please investigate."
-            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-            Exit Function
-        End If
-    
-    End If
-    
-    Exit Function
-    
-    
-'Arbitrary failure states are problematic.  Basically, our goal is to restore the original file setup as best as we can.  We do this by attempting
-' to restore the backup file (if it exists), and applying any renames or moves required to get everything back to the way it was.
-replaceFailure:
-
-    'See if the old file exists
-    If FileExist(oldFile) Then
-    
-        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
-        ' to this function being invoked, the caller is free to try again.
-        KillFile customBackupFile
-        
-        If FileExist(newFile) Then
-            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-        Else
-            FSOError "ReplaceFile", "Impossible outcome 6 occurred in ReplaceFile.  Please investigate."
-            ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
-        End If
-        
-        Exit Function
-       
-    Else
-    
-        'The old file no longer exists.  Restore the backup file, if at all possible.
-        If FileExist(backupFile) Then
-        
-            'The backup file exists.  Try to restore it to the location of the original file.
-            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
-            
-            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
-            ' restored to its original state.
-            If (mfReturn <> 0) Then
-                
-                KillFile backupFile
-                
-                If FileExist(newFile) Then
-                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
-                Else
-                    FSOError "ReplaceFile", "Impossible outcome 7 occurred in ReplaceFile.  Please investigate."
-                    ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
-                End If
-                
-                Exit Function
-            
-            'The move failed.  This should never happen.
-            Else
-                FSOError "ReplaceFile", "Impossible outcome 8 occurred in ReplaceFile.  Please investigate."
-                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-                Exit Function
-            End If
-        
-        'The backup file does not exist.  This should never happen.
-        Else
-            FSOError "ReplaceFile", "Impossible outcome 9 occurred in ReplaceFile.  Please investigate."
-            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
-            Exit Function
-        End If
-    
-    End If
-
-End Function
-
-'Given an arbitrary file path, return embeded versioning information.  The optional getProductVersionInstead value sets whether file or product
-' version values are returned.  These are often the same, as Visual Studio inheritance rules typically make the Product value match the File value
-' if it isn't explicitly given (http://all-things-pure.blogspot.com/2009/09/assembly-version-file-version-product.html).  But this rule is not
-' foolproof, so double-check 3rd-party sources in particular.
-'
-'Returns TRUE if successful; FALSE otherwise.  If the function fails, DLL error info will be dumped to the debug window.
-Friend Function GetFileVersion(ByVal FullFileName As String, ByRef verMajor As Long, ByRef verMinor As Long, ByRef verBuild As Long, ByRef verRevision As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
-    
-    Dim lDummy As Long, sBuffer() As Byte
-    Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
-    Dim lVerbufferLen As Long
-    
-    'Start by retrieving the size of the required buffer
-    lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
-    If (lBufferLen > 0) Then
-     
-        'Retrieve the root versioning block, without any localization edits (https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464%28v=vs.85%29.aspx)
-        ReDim sBuffer(lBufferLen) As Byte
-        If (GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0)) > 0) Then
-            
-            If VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen) Then
-                
-                CopyMemory_Strict VarPtr(udtVerBuffer), lVerPointer, Len(udtVerBuffer)
-                
-                'Return file or product version number, depending on the optional getProductVersionInstead parameter.  Note that these do not currently
-                ' mask the integer return values, so they will provide bogus results for versions > 32767; I could fix this, but it's not relevant to
-                ' PD's usage.
-                If getProductVersionInstead Then
-                    With udtVerBuffer
-                        verMajor = .dwProductVersionMSh
-                        verMinor = .dwProductVersionMSl
-                        verBuild = .dwProductVersionLSh
-                        verRevision = .dwProductVersionLSl
-                    End With
-                Else
-                    With udtVerBuffer
-                        verMajor = .dwFileVersionMSh
-                        verMinor = .dwFileVersionMSl
-                        verBuild = .dwFileVersionLSh
-                        verRevision = .dwFileVersionLSl
-                    End With
-                End If
-                
-                GetFileVersion = True
-                
-            Else
-                FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to VerQueryValue error.", Err.Last
-                GetFileVersion = False
-            End If
-            
-        Else
-            FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to GetFileVersionInfo error.", Err.LastDllError
-            GetFileVersion = False
-        End If
-        
-    Else
-        FSOError "GetFileVersion", "Could not retrieve version information for (" & FullFileName & ") due to buffer allocation failure.", Err.LastDllError
-        GetFileVersion = False
-    End If
-
-End Function
-
-'Convenience wrapper to GetFileVersion, above.
-Friend Function GetFileVersionAsString(ByVal FullFileName As String, ByRef dstVersionString As String, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
-    Dim tmpLong1 As Long, tmpLong2 As Long, tmpLong3 As Long, tmpLong4 As Long
-    GetFileVersionAsString = GetFileVersion(FullFileName, tmpLong1, tmpLong2, tmpLong3, tmpLong4, getProductVersionInstead)
-    dstVersionString = CStr(tmpLong1) & "." & CStr(tmpLong2) & "." & CStr(tmpLong3) & "." & CStr(tmpLong4)
-End Function
-
-'Given a path, make sure the right backslash is existant
-Friend Function EnforcePathSlash(ByRef srcPath As String) As String
-    
-    If (Not Strings.StringsEqual(Right$(srcPath, 1), "\")) And (Not Strings.StringsEqual(Right$(srcPath, 1), "/")) Then
-        EnforcePathSlash = srcPath & "\"
-    Else
-        EnforcePathSlash = srcPath
-    End If
-    
-End Function
-
-'Return just the filename from a full path
-Friend Function GetFilename(ByRef sString As String, Optional ByVal stripExtension As Boolean = False) As String
-
-    'If the function fails (because no slash is found), we'll simply return the entire incoming string, under the
-    ' assumption that it's already just a filename.
-    GetFilename = sString
-    
-    Dim i As Long
-    For i = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            GetFilename = Right$(sString, Len(sString) - i)
-            Exit For
-        End If
-    Next i
-    
-    'If the caller wants us to strip the extension, do so before exiting
-    If stripExtension Then
-        
-        Dim dotPos As Long
-        dotPos = InStrRev(GetFilename, ".")
-        
-        If (dotPos > 1) Then
-            GetFilename = Left$(GetFilename, dotPos - 1)
-        ElseIf (dotPos = 1) Then
-            GetFilename = vbNullString
-        End If
-        
-    End If
-    
-End Function
-
-'Function to return the extension from a filename.
-Friend Function GetFileExtension(sFile As String) As String
-    
-    GetFileExtension = vbNullString
-    
-    Dim i As Long
-    For i = Len(sFile) To 1 Step -1
-    
-        'If we find a path before we find an extension, return a blank string
-        If Strings.StringsEqual(Mid$(sFile, i, 1), "\") Or Strings.StringsEqual(Mid$(sFile, i, 1), "/") Then
-            GetFileExtension = vbNullString
-            Exit For
-        End If
-        
-        If Strings.StringsEqual(Mid$(sFile, i, 1), ".") Then
-            GetFileExtension = Right$(sFile, Len(sFile) - i)
-            Exit For
-        End If
-                
-    Next i
-            
-End Function
-
-'Given a full path+filename string, return only the folder portion.
-' Returns a blank string if a folder cannot be extracted.
-Friend Function GetPathOnly(ByRef sFilename As String) As String
-    Dim slashPosition As Long
-    slashPosition = InStrRev(sFilename, "\", , vbBinaryCompare)
-    If (slashPosition <> 0) Then GetPathOnly = Left$(sFilename, slashPosition)
-End Function
-
-'When passing file and path strings to WAPI functions, we often have to pre-initialize them to some arbitrary buffer length
-' (typically MAX_PATH).  When finished, the string needs to be trimmed to remove unused null chars.
-Friend Function TrimNull(ByRef origString As String) As String
-    
-    'Start by double-checking that null chars actually exist in the string
-    Dim nullPosition As Long
-    nullPosition = InStr(origString, Chr$(0))
-    
-    'Remove null chars if present; otherwise, return a copy of the input string
-    If (nullPosition <> 0) Then
-       TrimNull = Left$(origString, nullPosition - 1)
-    Else
-       TrimNull = origString
-    End If
-    
-End Function
-
-'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
-Friend Function MakeValidWindowsFilename(ByVal srcFilename As String, Optional ByVal replacementChar As String = "_") As String
-    
-    Dim strInvalidChars As String
-    strInvalidChars = "\/*?""<>|:"
-    
-    'Replace each invalid character occurrence with whatever char the user specified
-    Dim i As Long
-    For i = 1 To Len(strInvalidChars)
-        If InStr(1, srcFilename, Mid$(strInvalidChars, i, 1), vbBinaryCompare) Then srcFilename = Replace$(srcFilename, Mid$(strInvalidChars, i, 1), replacementChar)
-    Next i
-    
-    MakeValidWindowsFilename = srcFilename
-
-End Function
-
-'Dump a specified file directly into a VB byte array.  No additional processing is performed.
-'
-'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
-Friend Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
-
-    On Error GoTo StopFileLoad
-    
-    'Before doing anything else, make sure the file exists
-    If (Not FileExist(srcFile)) Then
-        FSOError "LoadFileAsByteArray", "can't find " & srcFile & ".  Abandoning load."
-        LoadFileAsByteArray = False
-        Exit Function
-    End If
-    
-    'Dump file contents into a byte array.
-    Dim hFile As Long
-    If CreateFileHandle(srcFile, hFile, True, False, OptimizeSequentialAccess) Then
-        
-        'Prep the destination buffer
-        Dim lenOfFile As Long
-        lenOfFile = CLng(FileLengthLarge(hFile))
-        ReDim dstArray(0 To lenOfFile - 1) As Byte
-        
-        'Retrieve the full file contents
-        Dim tmpVerify As Long
-        If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
-            LoadFileAsByteArray = True
-        Else
-            FSOError "LoadFileAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
-        End If
-        
-        CloseHandle hFile
-        
-    Else
-        FSOError "LoadFileAsByteArray", "failed to create a valid handle for " & srcFile & ". Abandoning load."
-    End If
-    
-    Exit Function
-    
-StopFileLoad:
-    FSOError "LoadFileAsByteArray", "internal error on " & srcFile & ". Abandoning load.", Err.Number
-    LoadFileAsByteArray = False
 End Function
 
 'Shortcut function for dumping a byte array into a file.
@@ -1246,7 +1667,7 @@ Friend Function SavePtrToFile(ByVal ptrSrc As Long, ByVal dataLength As Long, By
     On Error GoTo SavePtrToFile_Failure
     
     'See if the file exists, and delete as necessary
-    If FileExist(pathToFile) Then
+    If FileExists(pathToFile) Then
     
         If (Not overwriteExistingIfPresent) Then
             FSOError "SavePtrToFile", "file passed already exists, and overwrites not allowed.  Write abandoned."
@@ -1279,265 +1700,6 @@ SavePtrToFile_Failure:
     SavePtrToFile = False
 End Function
 
-'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
-' BOM and other markers are unclear.
-'
-'The optional forceWindowsLineEndings parameter will apply additional checks, to make sure line endings are consistently vbCrLf
-' (vs Unix-style vbLf only).
-'
-'Many thanks to Dana Seaman and cyberactivex.com.  This function was originally based off Dana's excellent "GenericFileRead" function,
-' available via http://www.cyberactivex.com/UnicodeTutorialVb.htm
-'
-'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
-Friend Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
-
-    On Error GoTo StopTextFileRead
-    
-    'Use a wrapper function to dump the file's contents into a byte array.
-    Dim fileBytes() As Byte
-    If LoadFileAsByteArray(srcFile, fileBytes) Then
-        LoadTextFileAsString = m_Unicode.ConvertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
-    Else
-        LoadTextFileAsString = False
-    End If
-    
-    Exit Function
-    
-StopTextFileRead:
-    FSOError "LoadTextFileAsString", " internal error on " & srcFile & ". Abandoning load.", Err.Number
-    LoadTextFileAsString = False
-End Function
-
-'Given a file path, access indicators, and a destination long, retrieve a generic hFile handle.
-' Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
-' access files we currently have open).  If this behavior is not desired, modify the attributeFlags and shareFlags
-' settings below.
-'
-'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
-Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long, Optional ByVal requestReadAccess As Boolean = False, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
-    
-    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
-    accessFlags = 0
-    
-    If requestReadAccess Then accessFlags = accessFlags Or GENERIC_READ
-    If requestWriteAccess Then accessFlags = accessFlags Or GENERIC_WRITE
-    
-    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
-    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
-    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
-    If requestWriteAccess Then createFlags = CREATE_ALWAYS Else createFlags = OPEN_EXISTING
-    
-    attributeFlags = FILE_ATTRIBUTE_NORMAL
-    
-    Select Case optimizeAccess
-        
-        Case OptimizeNone
-            optimizeFlags = 0
-        
-        Case OptimizeRandomAccess
-            optimizeFlags = FILE_FLAG_RANDOM_ACCESS
-        
-        Case OptimizeSequentialAccess
-            optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
-        
-        Case OptimizeTempFile
-            optimizeFlags = 0
-            attributeFlags = attributeFlags Or FILE_ATTRIBUTE_TEMPORARY
-        
-    End Select
-    
-    'Create the handle!
-    Dim hFile As Long
-    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
-    
-    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
-        FSOError "CreateFileHandle", "failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
-        CreateFileHandle = False
-    Else
-        dstFileHandle = hFile
-        CreateFileHandle = True
-    End If
-    
-End Function
-
-'Given a file path, access indicators, and a destination long, retrieve an hFile handle that DOESN'T ERASE OR OTHERWISE
-' MODIFY THE TARGET FILE, IF IT ALREADY EXISTS.  (If it doesn't exist, it will be created.)
-'
-'If the file *does* exist, the file's pointer will automatically be moved to the *end* of the file, so any subsequent
-' write requests will be naturally appended without any special work on the caller's part.
-'
-'Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
-' access files opened via this function).  If this behavior is not desired, modify the attributeFlags and shareFlags
-' settings below.
-'
-'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
-Friend Function CreateAppendFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long) As Boolean
-    
-    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
-    accessFlags = GENERIC_READ Or GENERIC_WRITE
-    
-    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
-    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
-    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
-    
-    'The OPEN_ALWAYS flag is important because it lets us use the file as-is if it exists, or create the file automatically
-    ' if it doesn't exist.
-    createFlags = OPEN_ALWAYS
-    attributeFlags = FILE_ATTRIBUTE_NORMAL
-    
-    'Because we're appending to an existing file, assume sequential access
-    optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
-    
-    'If the file already exists, make a note of it, and we'll move the file pointer accordingly.
-    Dim fileAlreadyExisted As Boolean
-    fileAlreadyExisted = Me.FileExist(srcFilePath)
-    
-    'Create the handle!
-    Dim hFile As Long
-    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
-    
-    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
-        FSOError "CreateFileHandle", "failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
-        CreateAppendFileHandle = False
-    Else
-    
-        dstFileHandle = hFile
-        CreateAppendFileHandle = True
-        
-        'If the file existed prior to us accessing it, move the file pointer to the end of the file.
-        If fileAlreadyExisted Then SetFilePointer dstFileHandle, 0&, 0&, FILE_END
-        
-    End If
-    
-End Function
-
-'Given a file handle successfully created by CreateFileHandle, above, create a memory-mapped view of the file and return
-' a pointer to the start of the map.  This is effectively a "shortcut" function that maps the entire file view at once,
-' enabling the caller to CopyMemory whatever they want directly into the file itself, which the system can then flush
-' at its leisure (enabling a sort of poor man's asynchronicity).
-'
-'IMPORTANT: read/write access is required by this function, so you *must* specify both read+write attributes on the
-' originally created file handle.  If you do not, the mmap handle creation will fail.
-'
-'Besides returning a basic pass/fail result, this function fills two output values: a handle to the mapped object,
-' and a pointer for writing.  The pointer can be immediately used with CopyMemory, and the mapped object handle must
-' be retained as we need it to close the map after writing has finished.  Do not confuse the two values!
-'
-'ALSO: you *must* remember the value of dstBaseAddress.  The *same* base address value must be passed to the UnmapView
-' function upon completion, so for things like offset calculations, you should use a separate variable.
-Friend Function ConvertFileHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByRef dstBaseAddress As Long, ByVal sizeInBytes As Long, Optional ByVal nameOfMap As String = vbNullString) As Boolean
-    
-    Dim ptrName As Long
-    If Len(nameOfMap) <> 0 Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
-    dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, PAGE_READWRITE, 0&, sizeInBytes, ptrName)
-                                 
-    If (dstMappedHandle = 0) Then
-        FSOError "ConvertFileHandleToMMPtr", " failed to create a handle for #" & srcFileHandle & ".  Relevant last error: " & Err.LastDllError
-        ConvertFileHandleToMMPtr = False
-    
-    'Handle creation appears to be successful
-    Else
-        
-        'Immediately map a full-sized view of the file, and retrieve a pointer to the initial offset
-        dstBaseAddress = MapViewOfFile(dstMappedHandle, FILE_MAP_WRITE, 0&, 0&, 0&)
-        
-        If (dstBaseAddress = 0) Then
-            CloseHandle dstMappedHandle
-            FSOError "ConvertFileHandleToMMPtr", "failed to map the created handle for " & nameOfMap & ".  Relevant last error: " & Err.LastDllError
-            ConvertFileHandleToMMPtr = False
-        Else
-            ConvertFileHandleToMMPtr = True
-        End If
-        
-    End If
-    
-End Function
-
-'Partner function to ConvertFileHandleToMMPtr, above.  The same values output by that function must be passed here,
-' including an identical value for the base address.  Also, note that the flushImmediately parameter is asynchronous;
-' it will not wait for the flush to cpmlete before returning, so you should take that into account if you plan to
-' immediately access the written file via a separate method like ReadFile.  (If you want to enforce an immediate full
-' write to the actual physical media, you'd need to follow this function with a manual call to FlushFileBuffers.)
-Friend Function ReleaseMMHandle(ByVal srcMappedHandle As Long, ByVal srcBaseAddress As Long, Optional ByVal srcFileHandleToo As Long = 0, Optional ByVal flushImmediately As Boolean = False) As Boolean
-    
-    If (srcMappedHandle <> 0) And (srcBaseAddress <> 0) Then
-        
-        'Unmapping the view frees up the corresponding memory chunk in our address space; do this first
-        UnmapViewOfFile srcBaseAddress
-        
-        'If the caller wants a flush, initiate it before we release the mapping handle
-        If flushImmediately Then FlushViewOfFile srcBaseAddress, 0&
-        
-        'Release the mapped file object
-        ReleaseMMHandle = CBool(CloseHandle(srcMappedHandle) <> 0)
-        
-        'As a convenience to the caller, we can close the original file handle now as well.
-        If (srcFileHandleToo <> 0) Then ReleaseMMHandle = ReleaseMMHandle And CloseFileHandle(srcFileHandleToo)
-        
-    Else
-        FSOError "ReleaseMMHandle", "passed null values.  Fix this!"
-        ReleaseMMHandle = False
-    End If
-    
-End Function
-
-'After a file has been opened, you can use this function to manually move the file pointer around
-Friend Function MoveFilePointer(ByVal srcHandle As Long, ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
-    MoveFilePointer = CBool(SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
-End Function
-
-'After a file has been opened, you can use this function to query the current file pointer position
-Friend Function GetCurrentFilePointer(ByVal srcHandle As Long) As Long
-    GetCurrentFilePointer = SetFilePointer(srcHandle, 0&, 0&, FILE_CURRENT)
-End Function
-
-'Close an open file handle.
-' Returns: TRUE if successful.
-Friend Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
-    
-    If (srcHandle <> 0) Then
-        CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
-    Else
-        FSOError "CloseFileHandle", "was passed an empty handle.  Ask yourself why this handle was already closed!"
-    End If
-    
-    'As a convenience to the caller, manually reset the handle to 0.  (This is why it's passed ByRef.)
-    srcHandle = 0
-    
-End Function
-
-'Reads arbitrary binary data from file.  It is up to the caller to make sure the requested number of bytes are valid and accurate,
-' and most importantly, *that the destination memory is already sized appropriately*.
-' - The read will be performed synchronously, FYI.
-' - An optional newFilePointer value can be passed.  A pointer move method can also be specified.  Note that by default, the pointer
-'   will be reset *relative to the start of the file*, *not relative to its current position*.  This is meant to mimic file positions
-'   from old VB file access code, but you can change it to be relative to the current pointer position by modifying the
-'   filePointerMoveMethod param.
-'
-' Returns: TRUE if successful; FALSE otherwise.
-Friend Function ReadDataFromFile(ByVal srcHandle As Long, ByVal ptrToDestinationObject As Long, ByVal numOfBytesToRead As Long, Optional ByVal newFilePointer As Long = -1, Optional ByVal filePointerMoveMethod As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
-    
-    'Manually move the pointer only if required
-    If (newFilePointer <> -1) Then SetFilePointer srcHandle, newFilePointer, ByVal 0&, filePointerMoveMethod
-    
-    'Read the data!
-    Dim tmpReturn As Long
-    ReadDataFromFile = CBool(ReadFile(srcHandle, ptrToDestinationObject, numOfBytesToRead, tmpReturn, 0&) <> 0)
-    
-    'As a convenience to the caller, print out scenarios where the actual amount read differs from the amount of data requested.
-    If (tmpReturn <> numOfBytesToRead) Then FSOError "ReadDataFromFile", "retrieved " & CStr(tmpReturn) & " bytes instead of the " & CStr(numOfBytesToRead) & " bytes you requested.  Check your math."
-    
-End Function
-
-'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
-' (The write will be performed synchronously, FYI.)
-' Returns: TRUE if successful; FALSE otherwise.
-Friend Function WriteDataToFile(ByVal dstHandle As Long, ByVal srcDataPointer As Long, ByVal numOfBytesToWrite As Long) As Boolean
-    Dim tmpReturn As Long
-    WriteDataToFile = CBool(WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
-    If (Not WriteDataToFile) Then FSOError "WriteDataToFile", " failed to write to handle " & dstHandle & ".  Relevant error is " & Err.LastDllError & "."
-End Function
-
 'Write a string out to text file.  UTF-8 is assumed, but old-style ANSI can also be used by setting the optional useUTF8 parameter to FALSE.
 ' If UTF-8 is requested, the optional parameter useUTF8_BOM specifies whether to preface the file with a BOM.
 '
@@ -1560,19 +1722,19 @@ Friend Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
         
         'Open the file
         Dim hFile As Long
-        If CreateFileHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
+        If Me.CreateFileHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
         
             'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
             ' ones vs old Windows-1252 ones.
             If useUTF8_BOM Then
                 Dim bomMarker(0 To 2) As Byte
                 bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
-                WriteDataToFile hFile, VarPtr(bomMarker(0)), 3
+               Me.WriteDataToFile hFile, VarPtr(bomMarker(0)), 3
             End If
             
             'Write the byte array and exit!
-            WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
-            CloseFileHandle hFile
+            Me.WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+            Me.CloseFileHandle hFile
             
         'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
         ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
@@ -1589,7 +1751,7 @@ Friend Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
         Dim fileNum As Integer
         fileNum = FreeFile
         
-        Open GetShortPath(dstFilename) For Output As #fileNum
+        Open Me.GetShortPath(dstFilename) For Output As #fileNum
             Print #fileNum, srcString
         Close #fileNum
         
@@ -1604,119 +1766,6 @@ StopSaveStringToTextFile:
     SaveStringToTextFile = False
 End Function
 
-'Write a string out to text file.  UTF-8 output is enforced.
-'
-'Returns TRUE if successful, FALSE otherwise.
-' (FALSE generally only occurs if write access to the destination folder is restricted.)
-Friend Function AppendTextToFile(ByVal srcString As String, ByRef dstFilename As String) As Boolean
-    
-    On Error GoTo StopAppendText
-    
-    'Convert the incoming string to UTF-8
-    Dim fileBytes() As Byte
-    m_Unicode.StringToUTF8Bytes srcString, fileBytes
-    
-    'Open the file with append rights only
-    Dim hFile As Long
-    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
-        
-        'Write the byte array and exit!
-        WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
-        CloseFileHandle hFile
-        AppendTextToFile = True
-        
-    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
-    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
-    Else
-        AppendTextToFile = False
-    End If
-    
-    Exit Function
-    
-StopAppendText:
-    FSOError "AppendTextToFile", "internal error on " & dstFilename, Err.Number
-    AppendTextToFile = False
-End Function
-
-'Append binary data to an arbitrary file.  The caller is responsible for supplying a source pointer and length (in bytes).
-'
-'Returns TRUE if successful, FALSE otherwise.
-' (FALSE generally only occurs if write access to the destination folder is restricted.)
-Friend Function AppendBinaryToFile(ByVal srcPointer As Long, ByVal srcLengthInBytes As Long, ByRef dstFilename As String) As Boolean
-    
-    On Error GoTo StopAppendBinary
-    
-    'Open the file with append rights only
-    Dim hFile As Long
-    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
-        
-        'Write the byte array and exit!
-        WriteDataToFile hFile, srcPointer, srcLengthInBytes
-        CloseFileHandle hFile
-        AppendBinaryToFile = True
-        
-    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
-    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
-    Else
-        AppendBinaryToFile = False
-    End If
-    
-    Exit Function
-    
-StopAppendBinary:
-    FSOError "AppendBinaryToFile", "internal error on " & dstFilename, Err.Number
-    AppendBinaryToFile = False
-End Function
-
-'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
-' even on Unicode pathnames.
-Friend Function GetShortPath(ByRef longPath As String) As String
-    
-    Dim tmpString As String
-    tmpString = Space$(MAX_PATH)
-    
-    Dim lenFinalBuffer As Long
-    lenFinalBuffer = GetShortPathNameW(StrPtr(longPath), StrPtr(tmpString), Len(tmpString))
-    
-    If (lenFinalBuffer > 0) Then
-        GetShortPath = Left$(tmpString, lenFinalBuffer)
-    Else
-        GetShortPath = longPath
-    End If
-    
-End Function
-
-'Return the size of a file with a Unicode filename.  For now, only the low 4-bytes (signed!) of the full 8-byte return are used.
-' This is all PD requires at present, since it can't work with 2 GB+ images anyway.
-' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
-Friend Function FileLenW(ByRef srcPath As String) As Long
-    
-    Dim hFile As Long
-    If CreateFileHandle(srcPath, hFile, True) Then
-        FileLenW = CLng(FileLengthLarge(hFile))
-        CloseHandle hFile
-    Else
-        FileLenW = 0
-    End If
-    
-End Function
-
-'Unicode-compatible LOF variant.  Note that the hFile must have generic read attributes active; write-alone won't work.
-' Note also the specific currency-type workaround; DO NOT cast the result directly into a long int.
-Friend Function FileLengthLarge(ByVal hFile As Long) As Currency
-    
-    Dim tmpVal As Currency
-    tmpVal = 0
-    
-    If (GetFileSizeEx(hFile, tmpVal) <> 0) Then
-        FileLengthLarge = tmpVal * 10000
-    Else
-        FSOError "FileLengthLarge", "failed on hFile " & hFile & ".  LastDllErr = " & Err.LastDllError
-        FileLengthLarge = 0
-    End If
-    
-End Function
-
 'Reverse function of GetFileLength.  Note that special considerations are required when using memory-mapped files;
 ' see MSDN for details: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365531(v=vs.85).aspx
 Friend Function SetFileLength(ByVal hFile As Long, ByVal newLength As Long) As Boolean
@@ -1725,79 +1774,16 @@ Friend Function SetFileLength(ByVal hFile As Long, ByVal newLength As Long) As B
     End If
 End Function
 
-'Return varies types of file times in currency format.  By default, WAPI functions return file times using a custom
-' FILETIME struct.  This can be converted to system time objects via helper functions.  At present, this function
-' simply collates the two values into a Currency and returns that, which is good enough for current PD usage
-' (checksums of changed files, mostly).
-'
-'RETURNS: non-zero value if successful.
-Friend Function GetFileTimeAsCurrency(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Currency
-    
-    GetFileTimeAsCurrency = 0
-    
-    Dim hFile As Long
-    If CreateFileHandle(srcFile, hFile, True) Then
-        
-        Dim apiReturn As Long
-        
-        Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
-        If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
-        
-            Dim srcTime As WAPI_FILETIME
-            
-            If (typeOfTime = PDFT_AccessTime) Then
-                srcTime = accessTime
-            ElseIf (typeOfTime = PDFT_WriteTime) Then
-                srcTime = writeTime
-            Else
-                srcTime = createTime
-            End If
-            
-            'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
-            ' comparison functions, but for now, you have to deal with times being returned as currency.
-            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
-            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
-        
-        End If
-        
-        CloseHandle hFile
-    
-    End If
-
+'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
+' (The write will be performed synchronously, FYI.)
+' Returns: TRUE if successful; FALSE otherwise.
+Friend Function WriteDataToFile(ByVal dstHandle As Long, ByVal srcDataPointer As Long, ByVal numOfBytesToWrite As Long) As Boolean
+    Dim tmpReturn As Long
+    WriteDataToFile = CBool(WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
+    If (Not WriteDataToFile) Then FSOError "WriteDataToFile", " failed to write to handle " & dstHandle & ".  Relevant error is " & Err.LastDllError & "."
 End Function
 
-'Use the API to retrieve a Unicode-friendly version of App.Path
-Friend Function AppPathW() As String
-    
-    'When running from the IDE, App.Path is our only option
-    If (Not g_IsProgramCompiled) Then
-        AppPathW = App.Path
-        AppPathW = Me.EnforcePathSlash(AppPathW)
-        Exit Function
-    Else
-    
-        'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
-        ' (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) it's easier to just go with a
-        ' huge buffer, then manually trim the result.
-        Dim TEMPORARY_LARGE_BUFFER As Long
-        TEMPORARY_LARGE_BUFFER = 1024
-        
-        Dim tmpString As String
-        tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
-        
-        If (GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER \ 2) <> 0) Then
-            AppPathW = Me.TrimNull(tmpString)
-            AppPathW = Me.GetPathOnly(AppPathW)
-            FSOFeedback "AppPathW", "App.Path equivalent: " & AppPathW
-        Else
-            FSOError "AppPathW", "couldn't retrieve Unicode-friendly version of App.Path.  Falling back to the default VB path."
-            AppPathW = App.Path
-            AppPathW = Me.EnforcePathSlash(AppPathW)
-        End If
-        
-    End If
-    
-End Function
+'INTERNAL FUNCTIONS FOLLOW
 
 'Internal error messages should be passed through this function.  Note that individual functions may choose to handle the error
 ' and continue operation; that's fine.  (This function is primarily used for reporting, to reduce the number of internal #ifdefs.)

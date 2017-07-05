@@ -283,6 +283,7 @@ Private Sub Form_Load()
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateContributor "Lemuel Cushing", "https://github.com/LemuelCushing"
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateContributor "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
@@ -332,7 +333,7 @@ End Sub
 
 Private Sub lstContributors_Click()
     If ((lstContributors.ListIndex < m_numOfContributors) And (lstContributors.ListIndex >= 0)) Then
-        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then FileSystem.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
+        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then Files.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
     End If
 End Sub
 

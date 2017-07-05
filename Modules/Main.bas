@@ -19,8 +19,13 @@ Attribute VB_Name = "MainModule"
 
 Option Explicit
 
+'If critical errors are affecting PD at startup time, you can activate this constant to forcibly write incomplete debug
+' data during the program intialization steps.
+' (This constant should always be DISABLED, unless you are doing purely local testing on an egregious startup bug.)
+Private Const ENABLE_EMERGENCY_DEBUGGER As Boolean = False
+
 Private Declare Sub InitCommonControls Lib "comctl32" ()
-Private Declare Function InitCommonControlsEx Lib "comctl32" (iccex As InitCommonControlsExStruct) As Boolean
+Private Declare Function InitCommonControlsEx Lib "comctl32" (ByRef iccex As InitCommonControlsExStruct) As Long
 Private Type InitCommonControlsExStruct
     lngSize As Long
     lngICC As Long
@@ -250,6 +255,18 @@ Public Sub ContinueLoadingProgram()
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
     ImageImporter.ResetImageImportPreferenceCache
+    
+    
+    '*************************************************************************************************************************************
+    ' If this is an emergency debug session, write our first log
+    '*************************************************************************************************************************************
+    
+    'Normally, PD logs a bunch of internal data before exporting its first debug log, but if things are really dire,
+    ' we can forcibly initialize debugging here.  (Just note that things like plugin data will *not* be accurate,
+    ' as they haven't been loaded yet!)
+    #If DEBUGMODE = 1 Then
+        If ENABLE_EMERGENCY_DEBUGGER Then pdDebug.InitializeDebugger True, False
+    #End If
     
     
     '*************************************************************************************************************************************
@@ -753,7 +770,7 @@ Public Sub FinalShutdown()
         pdDebug.LogAction "Clearing temp file cache..."
     #End If
     
-    FileSystem.DeleteTempFiles
+    Files.DeleteTempFiles
     
     'Release each potentially active plugin in turn
     PluginManager.TerminateAllPlugins

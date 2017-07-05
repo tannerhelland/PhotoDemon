@@ -946,7 +946,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 If Len(tmpFile) <> 0 Then
                     Dim cFile As pdFSO
                     Set cFile = New pdFSO
-                    If cFile.FileExist(tmpFile) Then cFile.KillFile tmpFile
+                    If cFile.FileExists(tmpFile) Then cFile.KillFile tmpFile
                     FreeImage_SaveEx fThumbnail, tmpFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
                 End If
                 
@@ -1827,7 +1827,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Start by creating a blank multipage object
         Dim cFile As pdFSO
         Set cFile = New pdFSO
-        If cFile.FileExist(dstFile) Then cFile.KillFile dstFile
+        If cFile.FileExists(dstFile) Then cFile.KillFile dstFile
         
         Dim fi_MasterHandle As Long
         fi_MasterHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)

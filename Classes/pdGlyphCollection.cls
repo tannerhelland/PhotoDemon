@@ -218,7 +218,7 @@ Public Sub RequestGDIFontRelease()
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal stringRemap As PD_STRING_REMAP = PDRS_NONE) As Boolean
+Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal stringRemap As PD_STRING_REMAP = PDSR_NONE) As Boolean
         
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
@@ -226,7 +226,7 @@ Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
     Dim glyphAdded As Boolean
     
     'If an optional string remap is specified, apply it now.
-    If (stringRemap <> PDRS_NONE) Then
+    If (stringRemap <> PDSR_NONE) Then
         Dim cUnicode As pdUnicode
         Set cUnicode = New pdUnicode
         srcString = cUnicode.RemapString(srcString, stringRemap)

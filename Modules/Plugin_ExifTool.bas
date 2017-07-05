@@ -386,7 +386,7 @@ Private Sub StopVerificationMode()
         m_VerificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        If cFile.FileExist(m_tmpMetadataFilePath) Then cFile.KillFile m_tmpMetadataFilePath
+        If cFile.FileExists(m_tmpMetadataFilePath) Then cFile.KillFile m_tmpMetadataFilePath
     
     Else
         
@@ -665,7 +665,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If cFile.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -711,7 +711,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
     ' ICC profile out to file.)
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If cFile.FileExist(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If cFile.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -726,7 +726,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
         ' use "-o" which lets us specify the full output path.
         Dim tmpFilename As String
         If (Len(dstFilename) = 0) Then
-            tmpFilename = FileSystem.RequestTempFile()
+            tmpFilename = Files.RequestTempFile()
             tmpFilename = tmpFilename & ".icc"
         Else
             tmpFilename = dstFilename
@@ -762,7 +762,7 @@ End Function
 Public Function DoesTagDatabaseExist() As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    DoesTagDatabaseExist = cFile.FileExist(m_ExifToolDataFolder & "exifToolDatabase.xml")
+    DoesTagDatabaseExist = cFile.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml")
 End Function
 
 Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef parentForm As Form = Nothing) As Boolean
@@ -835,7 +835,7 @@ Public Function WriteTagDatabase() As Boolean
     
     'If the database already exists, there's no need to recreate it
     ' (TODO: check the database version number, as new tags may be added between releases...)
-    If cFile.FileExist(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
+    If cFile.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
         WriteTagDatabase = True
     Else
     
@@ -887,7 +887,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
-        If cFile.FileExist(srcMetadataFile) Then cFile.KillFile srcMetadataFile
+        If cFile.FileExists(srcMetadataFile) Then cFile.KillFile srcMetadataFile
         WriteMetadata = True
         Exit Function
     End If

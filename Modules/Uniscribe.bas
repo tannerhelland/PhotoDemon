@@ -267,18 +267,6 @@ Private m_ScriptFontNames() As String
 Private m_ScriptCache() As PD_FONT_PROPERTY
 Private m_NumOfScripts As Long
 
-'While not technically Uniscribe-specific, this class wraps some other Unicode bits as a convenience
-Public Enum PD_STRING_REMAP
-    PDRS_NONE = 0
-    PDRS_LOWERCASE = 1
-    PDRS_UPPERCASE = 2
-    PDRS_HIRAGANA = 3
-    PDRS_KATAKANA = 4
-    PDRS_SIMPLE_CHINESE = 5
-    PDRS_TRADITIONAL_CHINESE = 6
-    PDRS_TITLECASE_WIN7 = 7
-End Enum
-
 'Valid OpenType Script Tag values.  This list is *not* comprehensive!
 ' A full list is available here: https://www.microsoft.com/typography/otspec/scripttags.htm
 Public Enum OPENTYPE_SCRIPT_TAG

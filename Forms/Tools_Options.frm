@@ -1299,7 +1299,7 @@ Private Sub cmdColorProfilePath_Click()
     
     If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".icc", FormPreferences.hWnd) Then
         
-        sFile = FileSystem.TrimNull(sFile)
+        sFile = Strings.TrimNull(sFile)
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -1360,7 +1360,7 @@ End Sub
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
-    tString = FileSystem.BrowseForFolder(Me.hWnd, g_UserPreferences.GetTempPath)
+    tString = Files.BrowseForFolder(Me.hWnd, g_UserPreferences.GetTempPath)
     If (Len(tString) <> 0) Then txtTempPath.Text = FixPath(tString)
 End Sub
 
@@ -1795,7 +1795,7 @@ Private Sub TxtTempPath_Change()
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If (Not cFile.FolderExist(txtTempPath.Text)) Then
+    If (Not cFile.FolderExists(txtTempPath.Text)) Then
         lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.")
     Else
         lblTempPathWarning.Caption = g_Language.TranslateMessage("This new temporary folder location will not take effect until you restart the program.")

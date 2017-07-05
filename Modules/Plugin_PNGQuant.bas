@@ -126,14 +126,14 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
             
             'Make sure both FreeImage and PNGQuant were able to generate valid files, then rewrite the FreeImage one
             ' with the PNGQuant one.
-            If cFile.FileExist(filenameCheck) And cFile.FileExist(dstFilename) Then
+            If cFile.FileExists(filenameCheck) And cFile.FileExists(dstFilename) Then
                 cFile.ReplaceFile dstFilename, filenameCheck
                 Message "pngquant optimization successful!"
             Else
             
                 'If the original filename's extension was not ".png", pngquant will just cram "-8bpp.png" onto
                 ' the existing filename+extension.  Check for this case now.
-                If cFile.FileExist(dstFilename & "-8bpp.png") And cFile.FileExist(dstFilename) Then
+                If cFile.FileExists(dstFilename & "-8bpp.png") And cFile.FileExists(dstFilename) Then
                     cFile.ReplaceFile dstFilename, dstFilename & "-8bpp.png"
                     Message "pngquant optimization successful!"
                 Else

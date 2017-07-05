@@ -1329,7 +1329,7 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
     'The first layer of single-layer images use a simpler naming system
     Else
         If Len(suggestedFilename) = 0 Then
-            GenerateInitialLayerName = FileSystem.GetFilenameWithoutExtension(srcFile)
+            GenerateInitialLayerName = Files.GetFilenameWithoutExtension(srcFile)
         Else
             GenerateInitialLayerName = suggestedFilename
         End If

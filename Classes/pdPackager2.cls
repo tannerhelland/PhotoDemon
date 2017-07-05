@@ -692,7 +692,7 @@ Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
     Do While srcStringStack.PopString(curFile)
     
         'See if this is a file or a folder
-        If m_File.FileExist(curFile) Then
+        If m_File.FileExists(curFile) Then
         
             'This is a file.  Add it via the file function
             If relativeFoldersInUse Then
@@ -705,7 +705,7 @@ Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
                 autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType)
             End If
         
-        ElseIf m_File.FolderExist(curFile, False) Then
+        ElseIf m_File.FolderExists(curFile, False) Then
         
             'This is a folder.  Add it via the folder function.
             If relativeFoldersInUse Then
@@ -792,7 +792,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     'If this is a memory-backed stream, kill the destination file if it already exists (because we will be writing the entire
     ' thing from scratch).
     If (m_StreamMode = PD_SM_MemoryBacked) Then
-        If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
+        If m_File.FileExists(dstFilename) Then m_File.KillFile dstFilename
     
     'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
     ' and the dictionary.  Close the stream.
@@ -940,7 +940,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
     
     'Before doing anything else, make sure the file exists
-    If (Not m_File.FileExist(srcFilename)) Then
+    If (Not m_File.FileExists(srcFilename)) Then
         InternalErrorMsg "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
@@ -1515,7 +1515,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         
             'Retrieve this node's contents
             If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
-                If m_File.FileExist(fullDestinationPath) Then m_File.KillFile fullDestinationPath
+                If m_File.FileExists(fullDestinationPath) Then m_File.KillFile fullDestinationPath
                 m_File.SaveByteArrayToFile retBytes, fullDestinationPath, True
                 AutoExtractSingleFile = True
             Else
@@ -1664,7 +1664,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                             If GetNodeDataByIndex(i, False, retBytes()) Then
                             
                                 'Dump the node's contents to file
-                                If m_File.FileExist(fullDestinationPath) Then m_File.KillFile fullDestinationPath
+                                If m_File.FileExists(fullDestinationPath) Then m_File.KillFile fullDestinationPath
                                 m_File.SaveByteArrayToFile retBytes, fullDestinationPath
                                 
                             Else

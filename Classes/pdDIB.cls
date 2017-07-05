@@ -1324,7 +1324,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     
     'If we are not embedding the data inside an existing file, create a new file now.
     If (Not embedInFile) Then
-        If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
+        If cFile.FileExists(dstFilename) Then cFile.KillFile dstFilename
         If (Not cFile.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdDIB.WriteToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
@@ -1451,7 +1451,7 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
+    If cFile.FileExists(dstFilename) Then cFile.KillFile dstFilename
     
     'Writing the file is easy; just dump the two headers and image data into it!
     

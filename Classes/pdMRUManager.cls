@@ -77,7 +77,7 @@ Private Function GetMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If (g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
-        GetMRUCaption = FileSystem.GetFilename(newFile)
+        GetMRUCaption = Files.GetFilename(newFile)
     Else
         GetMRUCaption = GetShortMRU(newFile)
     End If
@@ -127,7 +127,7 @@ End Function
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    If m_FSO.FileExist(m_XMLFilename) Then
+    If m_FSO.FileExists(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.LoadXMLFile(m_XMLFilename)) Then
@@ -248,7 +248,7 @@ End Sub
 Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pdImage = Nothing)
     
     'The filename is sometimes passed via dialogs, and as such may contain nulls
-    newFile = m_Unicode.TrimNull(newFile)
+    newFile = Strings.TrimNull(newFile)
     
     'Allow the child to perform any necessary UI prep work.  The child also has the option to cancel this operation.
     Dim Cancel As Boolean

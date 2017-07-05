@@ -89,7 +89,7 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExist(resourceFilename) Then
+    If cFile.FileExists(resourceFilename) Then
         AttemptResourceRecovery = True
     
     'The file is missing.  Let's see if we can find it.
@@ -99,7 +99,7 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
-        If cFile.FileExist(g_UserPreferences.GetProgramPath & resourceFile) Then
+        If cFile.FileExists(g_UserPreferences.GetProgramPath & resourceFile) Then
             
             RaiseResourceError "Resource file found in the base PD folder.  Attempting to relocate...", True
             
@@ -139,7 +139,7 @@ Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(srcPath) Then
+    If cFile.FileExists(srcPath) Then
         RaiseResourceError "Loading core resource collection from file...", True
         m_ResourcesAvailable = m_Resources.ReadPackageFromFile(srcPath, PD_RES_IDENTIFIER, PD_SM_MemoryBacked)
     Else

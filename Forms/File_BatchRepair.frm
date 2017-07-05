@@ -238,7 +238,7 @@ Private Sub cmdBar_OKClick()
     Dim dstFolder As String
     dstFolder = FixPath(txtDstFolder.Text)
     
-    If (Not cFSO.FolderExist(dstFolder, False)) Then cFSO.CreateFolder dstFolder, True
+    If (Not cFSO.FolderExists(dstFolder, False)) Then cFSO.CreateFolder dstFolder, True
     
     'Start by preparing the list of files to be processed
     Dim listOfFiles As pdStringStack
@@ -355,7 +355,7 @@ Private Sub cmdBar_OKClick()
                     'The user can optionally request to overwrite files in the destination folder; if this option
                     ' is selected, check for matching filenames before writing.
                     If eraseDestinationMatches Then
-                        fileWasRepaired = Not cFSO.FileExist(newFilename)
+                        fileWasRepaired = Not cFSO.FileExists(newFilename)
                     End If
                     
                     'Move the file - with its new extension - to the repaired folder
@@ -404,7 +404,7 @@ End Sub
 
 Private Sub cmdDstFolder_Click()
     Dim folderPath As String
-    folderPath = FileSystem.BrowseForFolder(Me.hWnd, txtDstFolder.Text)
+    folderPath = Files.BrowseForFolder(Me.hWnd, txtDstFolder.Text)
     If (Len(folderPath) <> 0) Then
         txtDstFolder.Text = FixPath(folderPath)
         g_UserPreferences.SetPref_String "BatchProcess", "RepairDstFolder", txtDstFolder.Text
@@ -413,7 +413,7 @@ End Sub
 
 Private Sub cmdSrcFolder_Click()
     Dim folderPath As String
-    folderPath = FileSystem.BrowseForFolder(Me.hWnd, txtSrcFolder.Text)
+    folderPath = Files.BrowseForFolder(Me.hWnd, txtSrcFolder.Text)
     If (Len(folderPath) <> 0) Then
         txtSrcFolder.Text = FixPath(folderPath)
         g_UserPreferences.SetPref_String "BatchProcess", "RepairSrcFolder", txtSrcFolder.Text

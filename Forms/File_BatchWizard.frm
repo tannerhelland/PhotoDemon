@@ -862,7 +862,7 @@ Private Sub cmdAddFolders_Click()
     If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
     
     Dim folderPath As String
-    folderPath = FileSystem.BrowseForFolder(Me.hWnd, m_LastBatchFolder)
+    folderPath = Files.BrowseForFolder(Me.hWnd, m_LastBatchFolder)
     
     If (Len(folderPath) <> 0) Then
         
@@ -1150,7 +1150,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         Case 3
             
             'Make sure we have write access to the output folder.  If we don't, cancel and warn the user.
-            If (Not m_FSO.FolderExist(txtOutputPath)) Then
+            If (Not m_FSO.FolderExists(txtOutputPath)) Then
                 
                 If (Not m_FSO.CreateFolder(txtOutputPath)) Then
                     PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
@@ -1503,12 +1503,12 @@ Private Sub Form_Load()
     'Build default paths from preference file values
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
-    If (tempPathString <> "") And (m_FSO.FolderExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    If (tempPathString <> "") And (m_FSO.FolderExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
     
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
-'    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Drive1 = tempPathString
+'    If (tempPathString <> "") And (cFile.FolderExists(tempPathString)) Then Drive1 = tempPathString
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Input Folder", "")
-'    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
+'    If (tempPathString <> "") And (cFile.FolderExists(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -1569,7 +1569,7 @@ Private Sub lstFiles_Click()
         Dim targetFile As String
         targetFile = lstFiles.List(lstFiles.ListIndex)
         
-        If m_FSO.FileExist(targetFile) Then
+        If m_FSO.FileExists(targetFile) Then
             cmdRemove.Enabled = True
             UpdatePreview targetFile
         Else
@@ -1631,7 +1631,7 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
     ' a previously saved batch list from file)
     If novelAddition Then
-        If m_FSO.FileExist(srcFile) Then
+        If m_FSO.FileExists(srcFile) Then
             lstFiles.AddItem srcFile
             UpdateBatchListCount
         End If
@@ -1702,7 +1702,7 @@ Private Sub PrepareForBatchConversion()
     'Prepare the folder that will receive the processed images
     Dim outputPath As String
     outputPath = m_FSO.EnforcePathSlash(txtOutputPath)
-    If (Not m_FSO.FolderExist(outputPath)) Then m_FSO.CreateFolder outputPath, True
+    If (Not m_FSO.FolderExists(outputPath)) Then m_FSO.CreateFolder outputPath, True
     
     'Prepare the progress bar, which will keep the user updated on our progress.
     Set sysProgBar = New cProgressBarOfficial
@@ -1741,7 +1741,7 @@ Private Sub PrepareForBatchConversion()
         sysProgBar.Refresh
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If m_FSO.FileExist(tmpFilename) Then
+        If m_FSO.FileExists(tmpFilename) Then
             
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
