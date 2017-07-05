@@ -321,7 +321,7 @@ Public Sub ResetMenuIcons()
             If (Len(tmpFilename) <> 0) Then
             
                 'If the file exists, add it to the MRU icon handler
-                If cFile.FileExist(tmpFilename) Then
+                If cFile.FileExists(tmpFilename) Then
                     
                     iconLocation = iconLocation + 1
                     cMRUIcons.AddImageFromFile tmpFilename
@@ -523,13 +523,13 @@ End Sub
 Public Function CreateIconFromResource(ByVal resTitle As String) As Long
     
     'Start by extracting the PNG data into a bytestream
-    Dim ImageData() As Byte
-    ImageData() = LoadResData(resTitle, "CUSTOM")
+    Dim imageData() As Byte
+    imageData() = LoadResData(resTitle, "CUSTOM")
     
     Dim hBitmap As Long, hIcon As Long
     
     Dim IStream As IUnknown
-    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
+    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(imageData(0)), UBound(imageData) - LBound(imageData) + 1)
     
     If Not (IStream Is Nothing) Then
         

@@ -271,7 +271,7 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'Various non-font-specific WAPI functions helpful for font assembly
-Private Const LogPixelsX = 88
+Private Const logPixelsX = 88
 Private Const LOGPIXELSY = 90
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
@@ -445,7 +445,7 @@ End Function
 Private Sub UpdateLogFontValues()
     Dim tmpDC As Long
     tmpDC = GDI.GetMemoryDC()
-    m_LogPixelsX = GetDeviceCaps(tmpDC, LogPixelsX)
+    m_LogPixelsX = GetDeviceCaps(tmpDC, logPixelsX)
     m_LogPixelsY = GetDeviceCaps(tmpDC, LOGPIXELSY)
     GDI.FreeMemoryDC tmpDC
 End Sub
@@ -493,7 +493,7 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     Dim thisFontFace As String
     thisFontFace = String$(LF_FACESIZEA, 0)
     CopyMemory ByVal StrPtr(thisFontFace), ByVal VarPtr(lpElfe.lfFaceName(0)), LF_FACESIZEW
-    thisFontFace = m_Unicode.TrimNull(thisFontFace)
+    thisFontFace = Strings.TrimNull(thisFontFace)
     
     'If this font face is identical to the previous font face, do not add it
     Dim fontUsable As Boolean

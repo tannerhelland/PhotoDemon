@@ -644,7 +644,7 @@ Public Function GetOSVersionAsString() As String
     End Select
     
     Dim buildString As String
-    buildString = Trim$(TrimNull(m_OSVI.szCSDVersion))
+    buildString = Trim$(Strings.TrimNull(m_OSVI.szCSDVersion))
     
     With m_OSVI
         GetOSVersionAsString = osName & IIf(Len(buildString) <> 0, " " & buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
@@ -728,11 +728,11 @@ Private Function GetPhotoDemonProcessID() As Long
     
         'Prep a process enumerator.  We're going to search the active process list, looking for PD.
         hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
-        If hSnapShot <> INVALID_HANDLE_VALUE Then
+        If (hSnapShot <> INVALID_HANDLE_VALUE) Then
     
             'Attempt to enumerate the first entry in the list
             uProcess.dwSize = Len(uProcess)
-            If ProcessFirst(hSnapShot, uProcess) <> 0 Then
+            If (ProcessFirst(hSnapShot, uProcess) <> 0) Then
             
                 'The enumerator is working correctly.  Check each uProcess entry for PD's name.
                 Dim processName As String
@@ -740,16 +740,13 @@ Private Function GetPhotoDemonProcessID() As Long
                 
                 Dim testProcessName As String, procFound As Boolean
                 procFound = False
-            
-                Dim cUnicode As pdUnicode
-                Set cUnicode = New pdUnicode
                 
                 Do
-                    testProcessName = cUnicode.TrimNull(uProcess.szExeFile)
+                    testProcessName = Strings.TrimNull(uProcess.szExeFile)
                     
-                    If Len(testProcessName) <> 0 Then
-                        If StrComp(LCase(testProcessName), processName, vbBinaryCompare) = 0 Then
-                                procFound = True
+                    If (Len(testProcessName) <> 0) Then
+                        If Strings.StringsEqual(testProcessName, processName, True) Then
+                            procFound = True
                             Exit Do
                         End If
                     End If
@@ -800,7 +797,7 @@ Private Function GetPhotoDemonProcessHandle() As Long
     Dim procID As Long
     procID = GetPhotoDemonProcessID()
     
-    If procID <> 0 Then
+    If (procID <> 0) Then
         GetPhotoDemonProcessHandle = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0&, procID)
     Else
         GetPhotoDemonProcessHandle = 0

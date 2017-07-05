@@ -123,7 +123,7 @@ Public Sub InitializePluginManager()
     'Make sure the plugin path exists
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If (Not cFile.FolderExist(PluginManager.GetPluginPath)) Then cFile.CreateFolder PluginManager.GetPluginPath, True
+    If (Not cFile.FolderExists(PluginManager.GetPluginPath)) Then cFile.CreateFolder PluginManager.GetPluginPath, True
     
 End Sub
 
@@ -154,7 +154,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             #End If
         
             'Before doing anything else, see if the plugin file actually exists.
-            m_PluginExists(i) = DoesPluginFileExist(i)
+            m_PluginExists(i) = DoesPluginFileExists(i)
             
             'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
             ' we can initialize it.  (Some plugins may not require this step; that's okay.)
@@ -415,7 +415,7 @@ End Sub
 Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    IsPluginCurrentlyInstalled = cFile.FileExist(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
+    IsPluginCurrentlyInstalled = cFile.FileExists(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
 'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.  These include the
@@ -684,7 +684,7 @@ End Sub
 ' 3) If it finds a missing plugin in the program folder, it will automatically move the file to the plugin folder, including any
 '     helper files (README, LICENSE, etc).
 ' 4) If the move is successful, it will return TRUE and exit.
-Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function DoesPluginFileExists(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     'Start by getting the filename of the plugin in question
     Dim pluginFilename As String
@@ -695,8 +695,8 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExist(PluginManager.GetPluginPath & pluginFilename) Then
-        DoesPluginFileExist = True
+    If cFile.FileExists(PluginManager.GetPluginPath & pluginFilename) Then
+        DoesPluginFileExists = True
     
     'The plugin file is missing.  Let's see if we can find it.
     Else
@@ -708,7 +708,7 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     
         'See if the plugin file exists in the base PD folder.  This can happen if a user unknowingly extracts the PD .zip without
         ' folders preserved.
-        If cFile.FileExist(g_UserPreferences.GetProgramPath & pluginFilename) Then
+        If cFile.FileExists(g_UserPreferences.GetProgramPath & pluginFilename) Then
             
             pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
@@ -734,19 +734,19 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
                 End If
                 
                 'Return success!
-                DoesPluginFileExist = True
+                DoesPluginFileExists = True
             
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case the program
             ' as a whole is pretty much doomed.  Exit now.
             Else
                 pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
-                DoesPluginFileExist = False
+                DoesPluginFileExists = False
             End If
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
             pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
-            DoesPluginFileExist = False
+            DoesPluginFileExists = False
         End If
     
     End If

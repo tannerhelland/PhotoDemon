@@ -137,7 +137,7 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     LoadFileAsNewImage tmpFilename, sTitlePlusDate, False
     
     'Erase the temp file
-    If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
+    If cFile.FileExists(tmpFilename) Then cFile.KillFile tmpFilename
     
     Message "Screen capture complete."
     

@@ -1210,11 +1210,13 @@ MainErrHandler:
     
     'Ignore errors that aren't actually errors
     If (Err.Number = 0) Then
+        Err.Clear
         On Error GoTo 0
         Exit Sub
     
     'Object was unloaded before it could be shown - this is intentional, so ignore the error
     ElseIf (Err.Number = 364) Then
+        Err.Clear
         On Error GoTo 0
         Exit Sub
     

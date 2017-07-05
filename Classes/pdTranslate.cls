@@ -268,7 +268,7 @@ Friend Sub DetermineLanguage()
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
         Else
-            If m_FSO.FileExist(curLangFile) Then
+            If m_FSO.FileExists(curLangFile) Then
                 m_currentLanguage = GetLangIndexFromFile(curLangFile)
             Else
                 m_currentLanguage = m_defaultLanguage
@@ -535,7 +535,7 @@ Friend Sub CheckAvailableLanguages()
     Set m_LangCacheXML = New pdXML
     m_LangCacheXML.SetTextCompareMode vbBinaryCompare
     
-    If m_FSO.FileExist(langCacheFilename) Then
+    If m_FSO.FileExists(langCacheFilename) Then
         cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     End If
     

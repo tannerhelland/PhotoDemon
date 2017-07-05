@@ -648,7 +648,7 @@ Public Function LCMS_LoadProfileFromFile(ByVal profilePath As String) As Long
     'Start by loading the specified path into a byte array
     Dim tmpProfileArray() As Byte
         
-    If cFile.FileExist(profilePath) Then
+    If cFile.FileExists(profilePath) Then
         
         If (Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray)) Then
             LCMS_LoadProfileFromFile = 0

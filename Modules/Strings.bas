@@ -42,6 +42,18 @@ End Enum
     Private Const LINGUISTIC_IGNORECASE = &H10, LINGUISTIC_IGNOREDIACRITIC = &H20, NORM_IGNORECASE = &H1, NORM_IGNORENONSPACE = &H2, NORM_IGNORESYMBOLS = &H4, NORM_IGNOREWIDTH = &H20000, NORM_IGNOREKANATYPE = &H10000, NORM_LINGUISTIC_CASING = &H8000000, SORT_DIGITSASNUMBERS = &H8, SORT_STRINGSORT = &H1000
 #End If
 
+'While not technically Uniscribe-specific, this class wraps some other Unicode bits as a convenience
+Public Enum PD_STRING_REMAP
+    PDSR_NONE = 0
+    PDSR_LOWERCASE = 1
+    PDSR_UPPERCASE = 2
+    PDSR_HIRAGANA = 3
+    PDSR_KATAKANA = 4
+    PDSR_SIMPLE_CHINESE = 5
+    PDSR_TRADITIONAL_CHINESE = 6
+    PDSR_TITLECASE_WIN7 = 7
+End Enum
+
 Private Declare Function CompareStringW Lib "kernel32" (ByVal lcID As PD_LocaleIdentifier, ByVal cmpFlags As StrCmpFlags, ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long) As Long
 Private Declare Function CompareStringOrdinal Lib "kernel32" (ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long, ByVal bIgnoreCase As Long) As Long
 
@@ -53,7 +65,11 @@ Public Function StringsEqual(ByVal firstString As String, ByVal secondString As 
         StringsEqual = False
     Else
         If ignoreCase Then
-            StringsEqual = (CompareStringOrdinal(StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString), 1) = 2)
+            If g_IsVistaOrLater Then
+                StringsEqual = (CompareStringOrdinal(StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString), 1&) = 2&)
+            Else
+                StringsEqual = (CompareStringW(pdli_SystemDefault, NORM_IGNORECASE, StrPtr(firstString), -1&, StrPtr(secondString), -1&) = 2&)
+            End If
         Else
             StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), Len(firstString) * 2)
         End If
@@ -65,3 +81,20 @@ End Function
 Public Function StringsNotEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     StringsNotEqual = Not StringsEqual(firstString, secondString, ignoreCase)
 End Function
+
+'When passing file and path strings among API calls, they often have to be pre-initialized to some arbitrary buffer length
+' (typically MAX_PATH).  When finished, the string needs to be resized to remove any null chars.  Use this function to do so.
+Public Function TrimNull(ByRef origString As String) As String
+
+    'Find a null char, if any
+    Dim nullPosition As Long
+    nullPosition = InStr(origString, Chr$(0))
+    
+    If (nullPosition > 0) Then
+       TrimNull = Left$(origString, nullPosition - 1)
+    Else
+       TrimNull = origString
+    End If
+  
+End Function
+

@@ -738,7 +738,7 @@ Private Sub ReadData()
                     
                     rfReturn = ReadFile(hChildOutPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
                     Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
-                    Buffer = m_Unicode.TrimNull(Buffer)
+                    Buffer = Strings.TrimNull(Buffer)
                 
                 'Original code follows:
                 Else
@@ -805,7 +805,7 @@ Private Sub ReadData()
                     
                     rfReturn = ReadFile(hChildErrPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
                     Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
-                    Buffer = m_Unicode.TrimNull(Buffer)
+                    Buffer = Strings.TrimNull(Buffer)
                 
                 'Original code follows:
                 Else

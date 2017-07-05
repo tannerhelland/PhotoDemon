@@ -289,16 +289,16 @@ Private Sub AttemptThemeRecovery()
     ' however, there is no failsafe if the theme folder breaks, and PD is unlikely to be usable.
     
     'NOTE!  YOU MUST UPDATE THIS LIST if new theme files become required for basic program functionality.
-    DoesThemeFileExist "Colors_Blue.xml"
-    DoesThemeFileExist "Colors_Brown.xml"
-    DoesThemeFileExist "Colors_Green.xml"
-    DoesThemeFileExist "Colors_Orange.xml"
-    DoesThemeFileExist "Colors_Pink.xml"
-    DoesThemeFileExist "Colors_Purple.xml"
-    DoesThemeFileExist "Colors_Red.xml"
-    DoesThemeFileExist "Colors_Teal.xml"
-    DoesThemeFileExist "Default_Dark.xml"
-    DoesThemeFileExist "Default_Light.xml"
+    DoesThemeFileExists "Colors_Blue.xml"
+    DoesThemeFileExists "Colors_Brown.xml"
+    DoesThemeFileExists "Colors_Green.xml"
+    DoesThemeFileExists "Colors_Orange.xml"
+    DoesThemeFileExists "Colors_Pink.xml"
+    DoesThemeFileExists "Colors_Purple.xml"
+    DoesThemeFileExists "Colors_Red.xml"
+    DoesThemeFileExists "Colors_Teal.xml"
+    DoesThemeFileExists "Default_Dark.xml"
+    DoesThemeFileExists "Default_Light.xml"
     
 End Sub
 
@@ -309,7 +309,7 @@ End Sub
 ' 3) If it finds a missing theme in the program folder, it will automatically move the file to the theme folder,
 '     where it belongs.
 ' 4) If the move is successful, it will return TRUE and exit.
-Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
+Private Function DoesThemeFileExists(ByVal themeFile As String) As Boolean
     
     Dim themeFilename As String
     themeFilename = g_UserPreferences.GetThemePath(False) & themeFile
@@ -319,8 +319,8 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExist(themeFilename) Then
-        DoesThemeFileExist = True
+    If cFile.FileExists(themeFilename) Then
+        DoesThemeFileExists = True
     
     'The theme file is missing.  Let's see if we can find it.
     Else
@@ -329,7 +329,7 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
-        If cFile.FileExist(g_UserPreferences.GetProgramPath & themeFile) Then
+        If cFile.FileExists(g_UserPreferences.GetProgramPath & themeFile) Then
             
             pdDebug.LogAction "UPDATE!  Theme file found in the base PD folder.  Attempting to relocate..."
             
@@ -342,13 +342,13 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
                 cFile.KillFile g_UserPreferences.GetProgramPath & themeFile
                 
                 'Return success!
-                DoesThemeFileExist = True
+                DoesThemeFileExists = True
             
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case
             ' this program session is pretty much doomed.  Exit now.
             Else
                 pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> could not be relocated.  Initialization abandoned."
-                DoesThemeFileExist = False
+                DoesThemeFileExists = False
             End If
         
         'If the theme file doesn't exist in the base folder either, we're SOL.  Exit now.
@@ -356,7 +356,7 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
         ' TODO 7.0!
         Else
             pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> wasn't found in alternate locations.  Initialization abandoned."
-            DoesThemeFileExist = False
+            DoesThemeFileExists = False
         End If
     
     End If
@@ -528,7 +528,7 @@ Private Function LoadThemeWithAllFallbacks(ByVal themeFilename As String, ByRef 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(fullThemePath) Then
+    If cFile.FileExists(fullThemePath) Then
         loadSuccess = dstXML.LoadXMLFile(fullThemePath)
         If loadSuccess Then loadSuccess = dstXML.IsPDDataType("Visual theme") And dstXML.ValidateLoadedXMLData("Colors")
     End If
@@ -576,7 +576,7 @@ Private Function LoadAccentWithAllFallbacks(ByVal accentFilename As String, ByRe
     ' we pull theme files directly from the .exe.
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If cFile.FileExist(fullAccentPath) Then
+    If cFile.FileExists(fullAccentPath) Then
         loadSuccess = dstXML.LoadXMLFile(fullAccentPath)
         loadSuccess = dstXML.IsPDDataType("Color definitions") And m_XML.ValidateLoadedXMLData("Definitions")
     End If

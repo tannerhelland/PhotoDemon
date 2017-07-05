@@ -448,7 +448,7 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExist(m_StashFile) Then
+        If cFile.FileExists(m_StashFile) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Loading internal PD clipboard data now..."
@@ -822,9 +822,9 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
                 
                 Dim cFile As pdFSO
                 Set cFile = New pdFSO
-                If cFile.FileExist(clipText) Then
+                If cFile.FileExists(clipText) Then
                     targetFile = clipText
-                ElseIf cFile.FileExist(Trim$(clipText)) Then
+                ElseIf cFile.FileExists(Trim$(clipText)) Then
                     targetFile = Trim$(clipText)
                 End If
                 
@@ -1058,7 +1058,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     'pdFSO is used to ensure Unicode subfolder compatibility
                     Dim cFile As pdFSO
                     Set cFile = New pdFSO
-                    If cFile.FileExist(tmpClipboardFile) Then cFile.KillFile tmpClipboardFile
+                    If cFile.FileExists(tmpClipboardFile) Then cFile.KillFile tmpClipboardFile
                     
                     'Populate the BMP file header; it's a simple 14-byte, unchanging struct that requires only a magic number,
                     ' a total filesize, and an offset that points at the pixel bits (NOT the BMP file header, or the embedded
@@ -1291,7 +1291,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     
                         'Any valid files get added to the collection.  (Note that we only validate file existence; validating the
                         ' actual image data is handled by the load image function.)
-                        If cFile.FileExist(tmpString) Then cFiles.AddString tmpString
+                        If cFile.FileExists(tmpString) Then cFiles.AddString tmpString
                     End If
                         
                     'Manually move the pointer to the next file, and note that we add two extra bytes because of the
@@ -1485,7 +1485,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
-                        If cFile.FileExist(listOfFiles.GetString(i)) Then
+                        If cFile.FileExists(listOfFiles.GetString(i)) Then
                             Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
                             cFile.KillFile listOfFiles.GetString(i)
                         End If
@@ -1498,7 +1498,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                     ' supply a custom title for each file.
                     Dim sTitle As String
                     Do While listOfFiles.PopString(tmpFilename)
-                        If cFile.FileExist(tmpFilename) Then
+                        If cFile.FileExists(tmpFilename) Then
                             sTitle = cFile.GetFilename(tmpFilename, True)
                             LoadFileAsNewImage tmpFilename, sTitle, False
                             cFile.KillFile tmpFilename
@@ -1564,7 +1564,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
         
     'Be polite and remove the temporary file
     Dim cFile As pdFSO: Set cFile = New pdFSO
-    If cFile.FileExist(tmpDragDropFile) Then cFile.KillFile tmpDragDropFile
+    If cFile.FileExists(tmpDragDropFile) Then cFile.KillFile tmpDragDropFile
     
     'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
     ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
@@ -1627,9 +1627,9 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             targetFile = ""
             
             Dim cFile As pdFSO: Set cFile = New pdFSO
-            If cFile.FileExist(dragText) Then
+            If cFile.FileExists(dragText) Then
                 targetFile = dragText
-            ElseIf cFile.FileExist(Trim$(dragText)) Then
+            ElseIf cFile.FileExists(Trim$(dragText)) Then
                 targetFile = Trim$(dragText)
             End If
             
@@ -1699,7 +1699,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExist(m_StashFile) Then cFile.KillFile m_StashFile
+        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
     End If
     
     'Grab a new temporary path name (TODO: use system-generated temp file names)
@@ -1731,7 +1731,7 @@ Private Function UnstashClipboardData() As Boolean
     
         Dim cFile As pdFSO
         Set cFile = New pdFSO
-        If cFile.FileExist(m_StashFile) Then
+        If cFile.FileExists(m_StashFile) Then
         
             'Load the temp file into memory.  This is ALL this function does; actually uploading the data to the clipboard
             ' is handled externally.
@@ -1750,7 +1750,7 @@ Private Sub DestroyStashedData()
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExist(m_StashFile) Then cFile.KillFile m_StashFile
+        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
     End If
 End Sub
 
@@ -2209,7 +2209,7 @@ Private Sub Class_Terminate()
     If (Len(m_StashFile) <> 0) Then
         Dim cFile As pdFSO
         Set cFile = New pdFSO
-        If cFile.FileExist(m_StashFile) Then cFile.KillFile m_StashFile
+        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
     End If
     
 End Sub

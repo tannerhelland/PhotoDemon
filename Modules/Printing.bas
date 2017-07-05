@@ -115,7 +115,7 @@ Public Sub PerformPrinterCleanup()
         Dim cFile As pdFSO
         Set cFile = New pdFSO
         
-        If cFile.FileExist(m_temporaryPrintPath) Then cFile.KillFile m_temporaryPrintPath
+        If cFile.FileExists(m_temporaryPrintPath) Then cFile.KillFile m_temporaryPrintPath
         
     End If
 
@@ -189,7 +189,7 @@ Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames()
     
     For i = 0 To numOfPaperSizes - 1
         tmpString = Mid$(giantPaperNameList, (i * 64) + 1, 64)
-        tmpString = TrimNull(tmpString)
+        tmpString = Strings.TrimNull(tmpString)
         paperSizeNames(i) = tmpString
     Next i
     

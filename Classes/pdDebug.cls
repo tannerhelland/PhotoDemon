@@ -91,12 +91,12 @@ Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 Private cSysInfo As pdSystemInfo
 
 'File I/O is handled via pdFSO
-Private cFile As pdFSO
+Private m_FSO As pdFSO
 
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
-Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
+Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True) As Boolean
     
     If writeLogDataToFile Then
         
@@ -106,7 +106,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         m_logPath = g_UserPreferences.GetDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If (Not cFile.FolderExist(m_logPath)) Then
+        If (Not m_FSO.FolderExists(m_logPath)) Then
             
             Debug.Print "Log path invalid.  Debug logs not available for this session."
             
@@ -127,13 +127,16 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Dim overwroteOldLog As Boolean
         overwroteOldLog = False
         
-        If cFile.FileExist(m_logPath) Then
-            cFile.KillFile m_logPath
+        If m_FSO.FileExists(m_logPath) Then
+            m_FSO.KillFile m_logPath
             overwroteOldLog = True
         End If
         
         'Assemble a basic collection of relevant debug data.
         Dim debugHeader As String
+        
+        If writeHeaderToo Then
+        
             debugHeader = "**********************************************" & vbCrLf & vbCrLf
             debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
             
@@ -169,14 +172,16 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
                 End If
                 debugHeader = debugHeader & vbCrLf
             Next i
-            
-            debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
-            debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
+        
+        End If
+        
+        debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
+        debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
         
         'Build a new log file, and dump the debug string into it
         m_logDatatoFile = True
         
-        If Not cFile.SaveStringToTextFile(debugHeader, m_logPath) Then
+        If Not m_FSO.SaveStringToTextFile(debugHeader, m_logPath) Then
             Debug.Print "WARNING!  Debug file could not be created!"
         End If
         
@@ -225,7 +230,7 @@ Private Function GetLogID() As Long
     
     'Retrieve the first matching file from the folder (if any)
     Dim chkFile As String
-    chkFile = cFile.DirW(m_logPath & "DebugReport_*.log")
+    chkFile = m_FSO.DirW(m_logPath & "DebugReport_*.log")
     
     'Continue checking potential autosave XML entries until all have been analyzed
     Do While (Len(chkFile) <> 0)
@@ -235,7 +240,7 @@ Private Function GetLogID() As Long
         numFiles = numFiles + 1
         
         'Check the next file in the folder
-        chkFile = cFile.DirW
+        chkFile = m_FSO.DirW
         
     Loop
     
@@ -246,14 +251,14 @@ Private Function GetLogID() As Long
         Dim minDate As Date, minID As Long
         
         'Grab the date of the first file.
-        minDate = FileSystem.FileAnyDateTime(logFiles(0))
+        minDate = Files.FileAnyDateTime(logFiles(0))
         minID = 0
         
         'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
         Dim i As Long
         For i = 1 To 9
-            If (FileSystem.FileAnyDateTime(logFiles(i)) < minDate) Then
-                minDate = FileSystem.FileAnyDateTime(logFiles(i))
+            If (Files.FileAnyDateTime(logFiles(i)) < minDate) Then
+                minDate = Files.FileAnyDateTime(logFiles(i))
                 minID = i
             End If
         Next i
@@ -263,8 +268,13 @@ Private Function GetLogID() As Long
     
     Else
     
-        'There are not yet 10 log files.  Use the next ID number in line.
-        GetLogID = numFiles
+        'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
+        For i = 0 To 9
+            If (Not m_FSO.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
+                GetLogID = i
+                Exit For
+            End If
+        Next i
     
     End If
     
@@ -411,7 +421,7 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     If m_debuggerActive Then
         
         If m_logDatatoFile Then
-            cFile.AppendTextToFile actionString & vbCrLf, m_logPath
+            m_FSO.AppendTextToFile actionString & vbCrLf, m_logPath
         End If
     
     Else
@@ -452,7 +462,7 @@ Private Sub Class_Initialize()
     m_lastMemCheck = 0
     
     Set cSysInfo = New pdSystemInfo
-    Set cFile = New pdFSO
+    Set m_FSO = New pdFSO
 
 End Sub
 
@@ -460,7 +470,7 @@ Public Sub TerminateDebugger()
 
     'If logging is active, post a final message
     If m_logDatatoFile Then
-        cFile.AppendTextToFile "-- END SESSION REPORT --", m_logPath
+        m_FSO.AppendTextToFile "-- END SESSION REPORT --", m_logPath
         m_logDatatoFile = False
     End If
     

@@ -120,12 +120,12 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         'Unique to this particular import is remembering the full filename + extension (because this method of import
         ' actually supplies a file extension, unlike scanning or screen capturing or something else)
         If Not (pdImages(g_CurrentImage) Is Nothing) Then
-            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(downloadedFilename, True)
-            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(downloadedFilename)
+            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(downloadedFilename, True)
+            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(downloadedFilename)
         End If
         
         'Delete the temporary file
-        If cFile.FileExist(downloadedFilename) Then cFile.KillFile downloadedFilename
+        If cFile.FileExists(downloadedFilename) Then cFile.KillFile downloadedFilename
         
         Message "Image download complete. "
         ImportImageFromInternet = True
@@ -234,7 +234,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
                 
                 PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
                 
-                If cFile.FileExist(tmpFile) Then
+                If cFile.FileExists(tmpFile) Then
                     cFile.CloseFileHandle hFile
                     cFile.KillFile tmpFile
                 End If
@@ -298,7 +298,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
         domainName = GetDomainName(URL)
         PDMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
         
-        If cFile.FileExist(tmpFile) Then cFile.KillFile tmpFile
+        If cFile.FileExists(tmpFile) Then cFile.KillFile tmpFile
         If hUrl Then InternetCloseHandle hUrl
         If hInternetSession Then InternetCloseHandle hInternetSession
         

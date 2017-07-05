@@ -459,7 +459,7 @@ End Function
 
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
-    For i = picCategory.lBound To picCategory.UBound
+    For i = picCategory.lBound To picCategory.ubound
         picCategory(i).Visible = CBool(btsMasterType.ListIndex = i)
     Next i
 End Sub
@@ -563,8 +563,8 @@ Private Sub cmdBar_ResetClick()
     chkInterlace.Value = vbUnchecked
     
     If (Not m_SrcImage Is Nothing) Then
-        If m_SrcImage.imgStorage.DoesKeyExist("pngBackgroundColor") Then
-            clsBackground.Color = m_SrcImage.imgStorage.GetEntry_Long("pngBackgroundColor")
+        If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
+            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
             chkEmbedBackground.Value = vbChecked
         Else
             clsBackground.Color = vbWhite
@@ -607,7 +607,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
     ' is allowed open at a time.
     Dim i As Long
-    For i = picContainer.lBound To picContainer.UBound
+    For i = picContainer.lBound To picContainer.ubound
         picContainer(i).SetLeft 0
     Next i
     
@@ -639,8 +639,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'If the source image was a PNG, and it also contained a background color, retrieve and set the matching color now
     If (Not m_SrcImage Is Nothing) Then
-        If m_SrcImage.imgStorage.DoesKeyExist("pngBackgroundColor") Then
-            clsBackground.Color = m_SrcImage.imgStorage.GetEntry_Long("pngBackgroundColor")
+        If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
+            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
             chkEmbedBackground.Value = vbChecked
         End If
     End If
@@ -687,7 +687,7 @@ Private Sub cmdUpdateLossyPreview_Click()
         
         'Write that image out to a temporary file
         Dim tmpFilename As String
-        tmpFilename = FileSystem.RequestTempFile()
+        tmpFilename = Files.RequestTempFile()
         If FreeImage_Save(FIF_PNG, m_FIHandle, tmpFilename, FISO_PNG_Z_BEST_SPEED) Then
             
             'Retrieve the size of the base PNG file
@@ -715,7 +715,7 @@ Private Sub cmdUpdateLossyPreview_Click()
                 #End If
             End If
             
-            If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
+            If cFile.FileExists(tmpFilename) Then cFile.KillFile tmpFilename
             
         End If
         
@@ -915,7 +915,7 @@ Private Sub UpdateStandardTitlebars()
     
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
+    For i = ttlStandard.lBound To ttlStandard.ubound
         ttlStandard(i).Value = CBool(i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
@@ -938,7 +938,7 @@ Private Sub UpdateStandardPanelVisibility()
     yPadding = FixDPI(8)
     
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
+    For i = ttlStandard.lBound To ttlStandard.ubound
     
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding

@@ -591,10 +591,10 @@ Option Compare Text
 
 'The current list of available languages.  This list is not currently updated with the language the user is working on.
 ' It only contains a list of languages already stored in the /App/PhotoDemon/Languages and Data/Languages folders.
-Private m_ListOfLanguages() As pdLanguageFile
+Private m_ListOfLanguages() As PDLanguageFile
 
 'The language currently being edited.  This m_curLanguage variable will contain all metadata for the language file.
-Private m_curLanguage As pdLanguageFile
+Private m_curLanguage As PDLanguageFile
 
 'All phrases that need to be translated will be stored in this array
 Private Type Phrase
@@ -777,7 +777,7 @@ Private Sub cmdDeleteLanguage_Click()
     If m_ListOfLanguages(GetLanguageIndexFromListIndex()).LangType = "Official" Then
         
         'Make sure we have write access to this folder before attempting to delete anything
-        If cFile.FolderExist(GetDirectory(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
+        If cFile.FolderExists(GetDirectory(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
             msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
@@ -1404,7 +1404,7 @@ Private Sub PopulateAvailableLanguages()
             'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
             If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
             
-                ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As pdLanguageFile
+                ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As PDLanguageFile
                 
                 With m_ListOfLanguages(UBound(m_ListOfLanguages))
                     'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
@@ -1559,7 +1559,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                 Next i
                 
                 'See if the first word used titlecase
-                origStringTitlecase = (StrComp(firstWord, m_Unicode.RemapString(firstWord, PDRS_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                origStringTitlecase = (StrComp(firstWord, m_Unicode.RemapString(firstWord, PDSR_TITLECASE_WIN7), vbBinaryCompare) = 0)
                 
                 'If it did, apply titlecase to the first word of the translated string as well
                 If origStringTitlecase Then
@@ -1574,7 +1574,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                     Next i
                     
                     Dim tmpString As String
-                    tmpString = m_Unicode.RemapString(firstWord, PDRS_TITLECASE_WIN7)
+                    tmpString = m_Unicode.RemapString(firstWord, PDSR_TITLECASE_WIN7)
                     
                     If (Len(tmpString) <> 0) Then
                     
@@ -1600,11 +1600,11 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
             Else
             
                 'See if the original string used titlecase
-                origStringTitlecase = (StrComp(origString, m_Unicode.RemapString(origString, PDRS_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                origStringTitlecase = (StrComp(origString, m_Unicode.RemapString(origString, PDSR_TITLECASE_WIN7), vbBinaryCompare) = 0)
                 
                 'If it did, apply titlecase to the translated string as well
                 If origStringTitlecase Then
-                    GetFixedTitlecase = m_Unicode.RemapString(translatedString, PDRS_TITLECASE_WIN7)
+                    GetFixedTitlecase = m_Unicode.RemapString(translatedString, PDSR_TITLECASE_WIN7)
                 Else
                     GetFixedTitlecase = translatedString
                 End If

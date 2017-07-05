@@ -1,4 +1,4 @@
-Attribute VB_Name = "FileSystem"
+Attribute VB_Name = "Files"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright 2001-2017 by Tanner Helland
@@ -46,7 +46,7 @@ Private Const rMillisecondPerDay As Double = 10000000# * 60# * 60# * 24# / 10000
 Private Const datMin As Date = #1/1/100#
 Private Const datMax As Date = #12/31/9999 11:59:59 PM#
 
-'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
+'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExistss Function"
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
@@ -66,6 +66,12 @@ Private m_NumOfTempFiles As Long
 Private m_ListOfTempFiles() As String
 Private Const INIT_TEMP_FILE_CACHE As Long = 16
 
+'pdFSO is the primary workhorse for file-level interactions.  (I use a class because it is sometimes helpful to cache certain values internally,
+' especially for operations that may be running in parallel; pdFSO makes this possible.)  However, for trivial operations that don't require a
+' dedicated class instance, pdFSO can be a pain.  We work around that by caching a local pdFSO instance, and wrapping it for any relevant
+' one-off operations.
+Private m_FSO As pdFSO
+
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the auto-incremented filename WITHOUT an extension and WITHOUT a prepended folder,
 ' by design, so that the result can be passed to a common dialog without further parsing.
@@ -80,7 +86,7 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If Not cFile.FileExist(dstDirectory & fName & "." & desiredExtension) Then
+    If Not cFile.FileExists(dstDirectory & fName & "." & desiredExtension) Then
         IncrementFilename = fName
     Else
 
@@ -127,7 +133,7 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
         End If
         
         'Loop through the folder, looking for the first "Filename (###).ext" variant that is not already taken.
-        Do While cFile.FileExist(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
+        Do While cFile.FileExists(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
             numToAppend = numToAppend + 1
         Loop
             
@@ -388,27 +394,11 @@ Public Function GetDomainName(ByVal Address As String) As String
         Loop
     
     End If
-        
+    
     strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
     strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbBinaryCompare) - 1)
     GetDomainName = strOutput
 
-End Function
-
-'When passing file and path strings among API calls, they often have to be pre-initialized to some arbitrary buffer length
-' (typically MAX_PATH).  When finished, the string needs to be resized to remove any null chars.  Use this function.
-Public Function TrimNull(ByVal origString As String) As String
-
-    Dim nullPosition As Long
-   
-   'double check that there is a chr$(0) in the string
-    nullPosition = InStr(origString, Chr$(0))
-    If nullPosition Then
-       TrimNull = Left$(origString, nullPosition - 1)
-    Else
-       TrimNull = origString
-    End If
-  
 End Function
 
 'Retrieve the requested date type (creation, access, or last-modified time) of a file.
@@ -487,7 +477,7 @@ Public Sub DeleteTempFiles()
         Dim i As Long
         For i = 0 To m_NumOfTempFiles - 1
             If Len(m_ListOfTempFiles(i)) <> 0 Then
-                If cFile.FileExist(m_ListOfTempFiles(i)) Then cFile.KillFile m_ListOfTempFiles(i)
+                If cFile.FileExists(m_ListOfTempFiles(i)) Then cFile.KillFile m_ListOfTempFiles(i)
             End If
         Next i
         
@@ -496,3 +486,12 @@ Public Sub DeleteTempFiles()
     End If
     
 End Sub
+
+'Some functions are just thin wrappers to pdFSO.  (This is desired behavior, as pdFSO uses some internal caches that allow for greater
+' flexibility than a module-level implementation.)
+'
+'For non-cached functions, however, we can simply wrap a pdFSO instance for consistent results.
+Private Function InitializeFSO() As Boolean
+    If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
+    InitializeFSO = True
+End Function

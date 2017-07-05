@@ -578,12 +578,10 @@ Public Function GetSystemColorFolder() As String
     tmpPathString = String$(bufferSize, 0&)
     
     'Use the GetColorDirectory function to request the location of the system color folder
-    If GetColorDirectory(0&, StrPtr(tmpPathString), bufferSize) = 0 Then
-        GetSystemColorFolder = ""
+    If (GetColorDirectory(0&, StrPtr(tmpPathString), bufferSize) = 0) Then
+        GetSystemColorFolder = vbNullString
     Else
-        Dim cUnicode As pdUnicode
-        Set cUnicode = New pdUnicode
-        GetSystemColorFolder = cUnicode.TrimNull(tmpPathString)
+        GetSystemColorFolder = Strings.TrimNull(tmpPathString)
     End If
 
 End Function
@@ -600,11 +598,9 @@ Public Function GetDefaultICCProfilePath() As String
     
     'Using the desktop DC as our reference, request the filename of the currently in-use ICM profile (which should be the system default)
     If GetICMProfile(GetDC(0), filenameLength, StrPtr(tmpPathString)) = 0 Then
-        GetDefaultICCProfilePath = ""
+        GetDefaultICCProfilePath = vbNullString
     Else
-        Dim cUnicode As pdUnicode
-        Set cUnicode = New pdUnicode
-        GetDefaultICCProfilePath = cUnicode.TrimNull(tmpPathString)
+        GetDefaultICCProfilePath = Strings.TrimNull(tmpPathString)
     End If
     
 End Function
@@ -1015,10 +1011,10 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         Dim tmpX As Double, tmpY As Double, tmpZ As Double
         
         'Create a local array and point it at the pixel data we want to operate on
-        Dim ImageData() As Byte
+        Dim imageData() As Byte
         Dim tmpSA As SAFEARRAY2D
         PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -1054,9 +1050,9 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         For y = initY To finalY
                 
             'Get the source pixel color values
-            r = ImageData(quickVal + 2, y)
-            g = ImageData(quickVal + 1, y)
-            b = ImageData(quickVal, y)
+            r = imageData(quickVal + 2, y)
+            g = imageData(quickVal + 1, y)
+            b = imageData(quickVal, y)
             
             'Branch now according to forward/reverse transforms.
             
@@ -1153,9 +1149,9 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
             End If
             
             'Assign the new colors and continue
-            ImageData(quickVal, y) = b
-            ImageData(quickVal + 1, y) = g
-            ImageData(quickVal + 2, y) = r
+            imageData(quickVal, y) = b
+            imageData(quickVal + 1, y) = g
+            imageData(quickVal + 2, y) = r
             
         Next y
             If Not suppressMessages Then
@@ -1167,8 +1163,8 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         Next x
                 
         'With our work complete, point ImageData() away from the DIB and deallocate it
-        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-        Erase ImageData
+        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        Erase imageData
         
         If g_cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
         
@@ -1353,7 +1349,7 @@ Public Function LoadICCProfileFromFile_WindowsCMS(ByVal profilePath As String) A
     'Start by loading the specified path into a byte array
     Dim tmpProfileArray() As Byte
         
-    If cFile.FileExist(profilePath) Then
+    If cFile.FileExists(profilePath) Then
         
         If Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray) Then
             LoadICCProfileFromFile_WindowsCMS = 0

@@ -25,9 +25,6 @@ Public Type winRect
     y2 As Long
 End Type
 
-Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
-
 Public Const FADF_AUTO As Long = (&H1)
 Public Const FADF_FIXEDSIZE As Long = (&H10)
 

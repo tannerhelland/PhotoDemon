@@ -302,7 +302,7 @@ Private Sub UpdateControlLayout()
     chkThumbnail.SetWidth (bWidth - chkThumbnail.GetLeft)
     
     Dim i As Long
-    For i = lblInfo.lBound To lblInfo.UBound
+    For i = lblInfo.lBound To lblInfo.ubound
         lblInfo(i).SetWidth (bWidth - (lblInfo(i).GetLeft * 2))
     Next i
                 
@@ -331,7 +331,7 @@ Public Sub UpdateAgainstCurrentTheme()
         chkThumbnail.UpdateAgainstCurrentTheme
         
         Dim i As Long
-        For i = lblInfo.lBound To lblInfo.UBound
+        For i = lblInfo.lBound To lblInfo.ubound
             lblInfo(i).UpdateAgainstCurrentTheme
         Next i
         
@@ -354,7 +354,7 @@ Public Function GetMetadataSettings() As String
     'Whenever a new metadata string is generated, we also generate a new temp filename for use with this image.
     ' This file may or may not created (it's required when setting thumbnails, for example), but by setting it at the
     ' image level, we allow any subsequent metadata operations to reuse the same file at their leisure.
-    cParams.AddParam "MetadataTempFilename", FileSystem.RequestTempFile()
+    cParams.AddParam "MetadataTempFilename", Files.RequestTempFile()
     
     GetMetadataSettings = cParams.GetParamString
 
@@ -400,7 +400,7 @@ End Sub
 ' if any, from the parent image.)
 Private Sub EvaluatePresenceOfMetadata()
     If (Not (m_ImageCopy Is Nothing)) Then
-        If m_ImageCopy.imgMetadata.HasMetadata Then
+        If m_ImageCopy.ImgMetadata.HasMetadata Then
             lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
             hplReviewMetadata.Caption = g_Language.TranslateMessage("review metadata before saving")

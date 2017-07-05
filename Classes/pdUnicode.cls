@@ -98,7 +98,7 @@ Friend Function ConvertUTF16PointerToVBString(ByVal srcPointer As Long, ByVal le
     CopyMemoryStrict StrPtr(tmpString), srcPointer, lengthInBytes
     
     If trimNullChars Then
-        ConvertUTF16PointerToVBString = Me.TrimNull(tmpString)
+        ConvertUTF16PointerToVBString = Strings.TrimNull(tmpString)
     Else
         ConvertUTF16PointerToVBString = tmpString
     End If
@@ -515,7 +515,7 @@ Friend Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Lon
     
     'Use the API to shrink the path
     If (PathCompactPathEx(StrPtr(tmpStringDst), StrPtr(tmpStringSrc), newMaxLength + 1, 0&) <> 0) Then
-        ShrinkPathW = Me.TrimNull(tmpStringDst)
+        ShrinkPathW = Strings.TrimNull(tmpStringDst)
     Else
         ShrinkPathW = tmpStringDst
     End If
@@ -527,7 +527,7 @@ End Function
 Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
     
     'If the remap type is 0, do nothing
-    If (remapType = PDRS_NONE) Then
+    If (remapType = PDSR_NONE) Then
         RemapString = srcString
     Else
     
@@ -536,25 +536,25 @@ Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STR
         
         Select Case remapType
         
-            Case PDRS_LOWERCASE
+            Case PDSR_LOWERCASE
                 apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_LOWERCASE
             
-            Case PDRS_UPPERCASE
+            Case PDSR_UPPERCASE
                 apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_UPPERCASE
                 
-            Case PDRS_HIRAGANA
+            Case PDSR_HIRAGANA
                 apiFlags = LCMAP_HIRAGANA
                 
-            Case PDRS_KATAKANA
+            Case PDSR_KATAKANA
                 apiFlags = LCMAP_KATAKANA
                 
-            Case PDRS_SIMPLE_CHINESE
+            Case PDSR_SIMPLE_CHINESE
                 apiFlags = LCMAP_SIMPLIFIED_CHINESE
                 
-            Case PDRS_TRADITIONAL_CHINESE
+            Case PDSR_TRADITIONAL_CHINESE
                 apiFlags = LCMAP_TRADITIONAL_CHINESE
                 
-            Case PDRS_TITLECASE_WIN7
+            Case PDSR_TITLECASE_WIN7
                 apiFlags = LCMAP_TITLECASE
                 
                 'If the remap type is "titlecase" and we're on Vista or earlier, do nothing
@@ -582,25 +582,8 @@ Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STR
         End If
         
         'Because we use a huge destination buffer (as a failsafe), trailing null chars are inevitable.  Trim them before returning.
-        If apiSuccess Then RemapString = Me.TrimNull(dstString) Else RemapString = srcString
+        If apiSuccess Then RemapString = Strings.TrimNull(dstString) Else RemapString = srcString
         
-    End If
-    
-End Function
-
-'When passing file and path strings to WAPI functions, we often have to pre-initialize them to some arbitrary buffer length
-' (typically MAX_PATH).  When finished, the string needs to be trimmed to remove unused null chars.
-Friend Function TrimNull(ByRef origString As String) As String
-    
-    'Start by double-checking that null chars actually exist in the string
-    Dim nullPosition As Long
-    nullPosition = InStr(origString, Chr$(0))
-    
-    'Remove null chars if present; otherwise, return a copy of the input string
-    If (nullPosition <> 0) Then
-        If (nullPosition > 1) Then TrimNull = Left$(origString, nullPosition - 1) Else TrimNull = vbNullString
-    Else
-        TrimNull = origString
     End If
     
 End Function

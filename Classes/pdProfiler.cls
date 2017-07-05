@@ -256,7 +256,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If m_UseDatabase And cFile.FileExist(GetDatabaseFilename) Then
+    If m_UseDatabase And cFile.FileExists(GetDatabaseFilename) Then
     
         'Retrieve values from file
         RetrieveDatabase

@@ -675,7 +675,7 @@ Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
     Do While srcStringStack.PopString(curFile)
     
         'See if this is a file or a folder
-        If m_File.FileExist(curFile) Then
+        If m_File.FileExists(curFile) Then
         
             'This is a file.  Add it via the file function
             If relativeFoldersInUse Then
@@ -688,7 +688,7 @@ Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
                 autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification)
             End If
         
-        ElseIf m_File.FolderExist(curFile, False) Then
+        ElseIf m_File.FolderExists(curFile, False) Then
         
             'This is a folder.  Add it via the folder function.
             If relativeFoldersInUse Then
@@ -761,7 +761,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     End If
     
     'Kill the destination file if it already exists
-    If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
+    If m_File.FileExists(dstFilename) Then m_File.KillFile dstFilename
     
     'Retrieve a writable handle
     Dim hFile As Long, createSuccess As Boolean
@@ -928,7 +928,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     Dim zLibResult As Long
     
     'Before doing anything else, make sure the file exists
-    If Not m_File.FileExist(srcFilename) Then
+    If Not m_File.FileExists(srcFilename) Then
         Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
@@ -1378,7 +1378,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
             If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
             
                 'Erase the target file, if it exists
-                If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
+                If m_File.FileExists(fullDestinationPath) Then Kill fullDestinationPath
                 
                 'Dump the node's contents to file
                 Dim fileNum As Integer
@@ -1540,7 +1540,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                             If GetNodeDataByIndex(i, False, retBytes()) Then
                             
                                 'Erase the target file, if it exists
-                                If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
+                                If m_File.FileExists(fullDestinationPath) Then Kill fullDestinationPath
                                 
                                 'Dump the node's contents to file
                                 Dim fileNum As Integer
@@ -2070,7 +2070,7 @@ End Function
 Public Function ChecksumArbitraryFile(ByRef pathToFile As String) As Long
 
     'Attempt to load the file into a byte array
-    If m_File.FileExist(pathToFile) Then
+    If m_File.FileExists(pathToFile) Then
     
         Dim fileNum As Integer
         fileNum = FreeFile

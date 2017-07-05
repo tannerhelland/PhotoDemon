@@ -191,7 +191,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             tmpExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
-            dstFilename = tmpFolder & FileSystem.IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
+            dstFilename = tmpFolder & Files.IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
         
         Else
             dstFilename = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)

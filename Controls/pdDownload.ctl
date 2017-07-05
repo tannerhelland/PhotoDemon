@@ -267,7 +267,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                         Set cFile = New pdFSO
                         
                         'Kill the destination file if it already exists
-                        If cFile.FileExist(.TargetFileWhenComplete) Then cFile.KillFile .TargetFileWhenComplete
+                        If cFile.FileExists(.TargetFileWhenComplete) Then cFile.KillFile .TargetFileWhenComplete
                         
                         'Dump the downloaded data to file
                         Dim hFile As Long
