@@ -333,9 +333,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
     
     On Error GoTo LanguagePatchingFailure
     
-    'A pdFSO object handles file and path interactions
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
+    PatchLanguageFile = False
     
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackagerLegacy object.
     Dim cPackage As pdPackagerLegacy
@@ -349,13 +347,13 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
         Dim rawOldFile() As Byte
         If cPackage.GetNodeDataByIndex(0, False, rawNewFile) Then
         
-            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
-            ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
-            ' using the checksum value embedded within the original langupdate.xml file.  (For convenience, that checksum was passed to us as
-            ' the download key.)
+            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression
+            ' file checksum matches the original checksum calculated at creation time.  Because we are very cautious,
+            ' we now apply a second checksum verification, using the checksum value embedded within the original langupdate.xml
+            ' file.  (For convenience, that checksum was passed to us as the download key.)
             newChecksum = CLng(entryKey)
             
-            If newChecksum = cPackage.ChecksumArbitraryArray(rawNewFile) Then
+            If (newChecksum = cPackage.ChecksumArbitraryArray(rawNewFile)) Then
                 
                 'Checksums match!  We now want to overwrite the old language file with the new one.
                 
@@ -367,22 +365,22 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     
                     'See if that file already exists.  Note that a modified path is required for the MASTER language file, which sits
                     ' in a dedicated subfolder.
-                    If StrComp(UCase(newFilename), "MASTER.XML", vbBinaryCompare) = 0 Then
+                    If Strings.StringsEqual(newFilename, "master.xml", True) Then
                         newFilename = g_UserPreferences.GetLanguagePath() & "MASTER\" & newFilename
                     Else
                         newFilename = g_UserPreferences.GetLanguagePath() & newFilename
                     End If
                     
-                    If cFile.FileExists(newFilename) Then
+                    If Files.FileExists(newFilename) Then
                         
                         'Make a temporary backup of the existing file, then delete it
-                        cFile.LoadFileAsByteArray newFilename, rawOldFile
-                        cFile.KillFile newFilename
+                        Files.FileLoadAsByteArray newFilename, rawOldFile
+                        Files.FileDelete newFilename
                         
                     End If
                     
                     'Write out the new file
-                    If cFile.SaveByteArrayToFile(rawNewFile, newFilename) Then
+                    If Files.FileCreateFromByteArray(rawNewFile, newFilename) Then
                     
                         'Perform a final failsafe checksum verification of the extracted file
                         If (newChecksum = cPackage.ChecksumArbitraryFile(newFilename)) Then
@@ -390,31 +388,27 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                         Else
                             'Failsafe checksum verification didn't pass.  Restore the old file.
                             Debug.Print "WARNING!  Downloaded language file was written, but final checksum failsafe failed.  Restoring old language file..."
-                            cFile.SaveByteArrayToFile rawOldFile, newFilename
-                            PatchLanguageFile = False
+                            Files.FileCreateFromByteArray rawOldFile, newFilename
                         End If
                         
                     End If
                 
                 Else
                     Debug.Print "WARNING! pdPackage refused to return filename."
-                    PatchLanguageFile = False
                 End If
                 
             Else
                 Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.ChecksumArbitraryArray(rawNewFile) & ").  Language update abandoned."
-                PatchLanguageFile = False
             End If
         
         End If
     
     Else
         Debug.Print "WARNING! Language file downloaded, but pdPackagerLegacy rejected it.  Language update abandoned."
-        PatchLanguageFile = False
     End If
     
     'Regardless of outcome, we kill the update file when we're done with it.
-    cFile.KillFile savedToThisFile
+    Files.FileDeleteIfExists savedToThisFile
     
     Exit Function
     
@@ -676,7 +670,7 @@ Public Function PatchProgramFiles() As Boolean
     shellReturn = ShellExecute(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
     
     'ShellExecute returns a value > 32 if successful (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx)
-    If shellReturn < 32 Then
+    If (shellReturn < 32) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "ShellExecute could not launch the updater!  It returned code #" & shellReturn & "."
         #End If
@@ -734,7 +728,7 @@ Public Sub CleanPreviousUpdateFiles()
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
         
-        cFile.KillFile tmpFile
+        cFile.FileDelete tmpFile
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -748,7 +742,7 @@ Public Sub CleanPreviousUpdateFiles()
         
         Do While tmpFileList.PopString(tmpFile)
             
-            cFile.KillFile tmpFile
+            cFile.FileDelete tmpFile
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -764,7 +758,7 @@ Public Sub CleanPreviousUpdateFiles()
         
         Do While tmpFileList.PopString(tmpFile)
         
-            cFile.KillFile tmpFile
+            cFile.FileDelete tmpFile
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -775,7 +769,7 @@ Public Sub CleanPreviousUpdateFiles()
     End If
     
     'Finally, delete the patch exe itself, which will have closed by now
-    cFile.KillFile g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
+    cFile.FileDelete g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
 End Sub
 
@@ -787,25 +781,24 @@ Public Function WasProgramStartedViaRestart() As Boolean
     Dim restartFile As String
     restartFile = g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(restartFile) Then
+    If Files.FileExists(restartFile) Then
         
-        cFile.KillFile restartFile
+        Files.FileDelete restartFile
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "FYI: this session was started by an update process (PD_Update_Patcher is present)"
         #End If
         
         WasProgramStartedViaRestart = True
+        
     Else
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "FYI: this session was started by the user (PD_Update_Patcher is not present)"
         #End If
-    
+        
         WasProgramStartedViaRestart = False
+        
     End If
     
 End Function

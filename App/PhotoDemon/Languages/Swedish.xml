@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2811</langversion>
+<langversion>6.8.2812</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -419,12 +419,7 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 
 <!-- BEGIN text for FileSystem.bas -->
 
-<phrase>
-<original>Please select a folder</original>
-<translation>Välj en mapp</translation>
-</phrase>
-
-<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- FileSystem.bas contains 0 phrases. -->
 
 <!-- END text for FileSystem.bas-->
 
@@ -2876,7 +2871,12 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- BEGIN text for pdFSO.cls -->
 
-<!-- pdFSO.cls contains 0 phrases. -->
+<phrase>
+<original>Please select a folder</original>
+<translation>Välj en mapp</translation>
+</phrase>
+
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdFSO.cls-->
 
@@ -15082,6 +15082,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- Strings.bas contains 0 phrases. -->
 
 <!-- END text for Strings.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- Automatic text extraction complete. -->
 

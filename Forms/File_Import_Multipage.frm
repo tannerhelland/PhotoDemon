@@ -132,22 +132,23 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     userAnswer = vbNo
 
     'Adjust the prompt to match this file's name and page count
-    Dim FileExtension As String
-    FileExtension = GetExtension(srcFilename)
-    If UCase(FileExtension) = "GIF" Then
-        lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+    Dim fileExtension As String
+    fileExtension = Files.FileGetExtension(srcFilename)
+    
+    If Strings.StringsEqual(fileExtension, "gif", True) Then
+        lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", Files.FileGetName(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each frame as a separate image"
         cmdAnswer(0).AssignTooltip "This option will load every frame in the animated GIF file as an individual image."
         cmdAnswer(1).Caption = "Load only the first frame"
         cmdAnswer(1).AssignTooltip "This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file."
-    ElseIf UCase(FileExtension) = "ICO" Then
-        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+    ElseIf Strings.StringsEqual(fileExtension, "ico", True) Then
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", Files.FileGetName(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each icon as a separate image"
         cmdAnswer(0).AssignTooltip "This option will load every icon in the ICO file as an individual image."
         cmdAnswer(1).Caption = "Load only the first icon"
         cmdAnswer(1).AssignTooltip "This option will only load a single icon from the ICO file."
     Else
-        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", Files.FileGetName(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each page as a separate image"
         cmdAnswer(0).AssignTooltip "This option will load every page in the TIFF file as an individual image."
         cmdAnswer(1).Caption = "Load only the first page"

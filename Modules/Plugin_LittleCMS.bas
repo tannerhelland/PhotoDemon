@@ -642,25 +642,12 @@ End Function
 ' and use the "load from memory" function instead.
 Public Function LCMS_LoadProfileFromFile(ByVal profilePath As String) As Long
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
+    LCMS_LoadProfileFromFile = 0
 
-    'Start by loading the specified path into a byte array
     Dim tmpProfileArray() As Byte
-        
-    If cFile.FileExists(profilePath) Then
-        
-        If (Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray)) Then
-            LCMS_LoadProfileFromFile = 0
-            Exit Function
-        End If
-        
-    Else
-        LCMS_LoadProfileFromFile = 0
-        Exit Function
+    If Files.FileExists(profilePath) Then
+        If Files.FileLoadAsByteArray(profilePath, tmpProfileArray) Then LCMS_LoadProfileFromFile = cmsOpenProfileFromMem(VarPtr(tmpProfileArray(0)), UBound(tmpProfileArray) + 1)
     End If
-    
-    LCMS_LoadProfileFromFile = cmsOpenProfileFromMem(VarPtr(tmpProfileArray(0)), UBound(tmpProfileArray) + 1)
     
 End Function
 

@@ -445,10 +445,8 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
     ClipboardPaste_InternalData = False
     
     'See if a previous stash file exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
     If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExists(m_StashFile) Then
+        If Files.FileExists(m_StashFile) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Loading internal PD clipboard data now..."
@@ -501,10 +499,6 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
     'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
     Dim tmpClipboardFile As String
     
-    'pdFSO is used to ensure Unicode subfolder compatibility
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
     If m_Clipboard.DoesClipboardHaveFormatName(clipboardFormatName) Then
         
@@ -522,7 +516,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
             
             'Dump the data out to file
             tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard." & tmpFileExtension
-            If cFile.SaveByteArrayToFile(rawClipboardData, tmpClipboardFile) Then
+            If Files.FileCreateFromByteArray(rawClipboardData, tmpClipboardFile) Then
                 
                 'We no longer need our local copy of the clipboard data
                 Erase rawClipboardData
@@ -542,7 +536,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 End If
                 
                 'Be polite and remove the temporary file
-                cFile.KillFile tmpClipboardFile
+                Files.FileDeleteIfExists tmpClipboardFile
                 
                 'If we made it all the way here, the load was (probably?) successful
                 Message "Clipboard data imported successfully "
@@ -755,7 +749,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
                 End If
                 
                 'Be polite and remove the temporary file
-                cFile.KillFile tmpClipboardFile
+                cFile.FileDelete tmpClipboardFile
                 
                 'If we made it all the way here, the load was (probably?) successful
                 Message "Clipboard data imported successfully "
@@ -818,18 +812,14 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
             Else
                 
                 Dim targetFile As String
-                targetFile = ""
-                
-                Dim cFile As pdFSO
-                Set cFile = New pdFSO
-                If cFile.FileExists(clipText) Then
+                If Files.FileExists(clipText) Then
                     targetFile = clipText
-                ElseIf cFile.FileExists(Trim$(clipText)) Then
+                ElseIf Files.FileExists(Trim$(clipText)) Then
                     targetFile = Trim$(clipText)
                 End If
                 
                 'If the text (or a trimmed version of the text) matches a local file, try to load it.
-                If Len(targetFile) <> 0 Then
+                If (Len(targetFile) <> 0) Then
                 
                     If srcIsMeantAsLayer Then
                         Layers.LoadImageAsNewLayer False, targetFile, , True
@@ -865,19 +855,19 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
     Message "Image URL found.  Attempting to download..."
                     
     Dim tmpDownloadFile As String
-    tmpDownloadFile = FormInternetImport.downloadURLToTempFile(srcURL)
+    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcURL)
     
     'pdFSO is used to ensure Unicode filename compatibility
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
     'If the download was successful, we can now use the standard image load routine to import the temporary file
-    If cFile.FileLenW(tmpDownloadFile) <> 0 Then
+    If (cFile.FileLenW(tmpDownloadFile) <> 0) Then
         
         'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
         ' and it should use these hint values instead of assuming normal image load behavior.
         Dim tmpFilename As String
-        tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
+        tmpFilename = Files.FileGetName(tmpDownloadFile, True)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
@@ -887,7 +877,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         End If
         
         'Delete the temporary file
-        cFile.KillFile tmpDownloadFile
+        Files.FileDeleteIfExists tmpDownloadFile
         
         Message "Image imported successfully "
             
@@ -895,11 +885,9 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
         ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
         ' to use this technique for predicting failure.)
-        If g_CurrentImage <= UBound(pdImages) Then
-            If Not pdImages(g_CurrentImage) Is Nothing Then
-                If pdImages(g_CurrentImage).IsActive Then
-                    ClipboardPaste_WellFormedURL = True
-                End If
+        If (g_CurrentImage <= UBound(pdImages)) Then
+            If (Not pdImages(g_CurrentImage) Is Nothing) Then
+                ClipboardPaste_WellFormedURL = pdImages(g_CurrentImage).IsActive
             End If
         End If
     
@@ -1056,9 +1044,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
                     
                     'pdFSO is used to ensure Unicode subfolder compatibility
-                    Dim cFile As pdFSO
-                    Set cFile = New pdFSO
-                    If cFile.FileExists(tmpClipboardFile) Then cFile.KillFile tmpClipboardFile
+                    Files.FileDeleteIfExists tmpClipboardFile
                     
                     'Populate the BMP file header; it's a simple 14-byte, unchanging struct that requires only a magic number,
                     ' a total filesize, and an offset that points at the pixel bits (NOT the BMP file header, or the embedded
@@ -1070,20 +1056,23 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         .OffBits = pixelOffset + 14
                     End With
                     
+                    Dim cFile As pdFSO
+                    Set cFile = New pdFSO
+                    
                     Dim hFile As Long
-                    If cFile.CreateAppendFileHandle(tmpClipboardFile, hFile) Then
+                    If cFile.FileCreateAppendHandle(tmpClipboardFile, hFile) Then
                         
                         'To avoid automatic 4-byte struct alignment, we must write out the header manually.
-                        cFile.WriteDataToFile hFile, VarPtr(bmpFileHeader.Type), 2&
-                        cFile.WriteDataToFile hFile, VarPtr(bmpFileHeader.Size), 4&
+                        cFile.FileWriteData hFile, VarPtr(bmpFileHeader.Type), 2&
+                        cFile.FileWriteData hFile, VarPtr(bmpFileHeader.Size), 4&
             
                         Dim reservedBytes As Long
-                        cFile.WriteDataToFile hFile, VarPtr(reservedBytes), 4&
-                        cFile.WriteDataToFile hFile, VarPtr(bmpFileHeader.OffBits), 4&
+                        cFile.FileWriteData hFile, VarPtr(reservedBytes), 4&
+                        cFile.FileWriteData hFile, VarPtr(bmpFileHeader.OffBits), 4&
                         
                         'Simply plop the clipboard data into place last, no changes required
-                        cFile.WriteDataToFile hFile, VarPtr(rawClipboardData(0)), UBound(rawClipboardData) + 1
-                        cFile.CloseFileHandle hFile
+                        cFile.FileWriteData hFile, VarPtr(rawClipboardData(0)), UBound(rawClipboardData) + 1
+                        cFile.FileCloseHandle hFile
                         
                     End If
                         
@@ -1102,7 +1091,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     End If
                             
                     'Once the load is complete, be polite and remove the temporary file
-                    cFile.KillFile tmpClipboardFile
+                    cFile.FileDelete tmpClipboardFile
                         
                     'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
                     ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
@@ -1274,8 +1263,6 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                 ' sending them off to the "load image" function(s)
                 Dim cFiles As pdStringStack: Set cFiles = New pdStringStack
                 
-                'Also prep an FSO.  It will handle file validation.
-                Dim cFile As pdFSO: Set cFile = New pdFSO
                 Dim lLen As Long, tmpString As String
                 
                 'Now we're going to iterate through each of the original files, and copy the C-style strings into BSTRs
@@ -1285,13 +1272,13 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
                     lLen = lstrlenW(dFiles.pFiles) * 2
                     
-                    If lLen <> 0 Then
+                    If (lLen <> 0) Then
                         tmpString = String$(lLen \ 2, 0&)
                         CopyMemory ByVal StrPtr(tmpString), ByVal dFiles.pFiles, lLen
                     
                         'Any valid files get added to the collection.  (Note that we only validate file existence; validating the
                         ' actual image data is handled by the load image function.)
-                        If cFile.FileExists(tmpString) Then cFiles.AddString tmpString
+                        If Files.FileExists(tmpString) Then cFiles.AddString tmpString
                     End If
                         
                     'Manually move the pointer to the next file, and note that we add two extra bytes because of the
@@ -1305,7 +1292,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                 If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
                 
                 'The cFiles string stack now contains all the valid filenames from the dropped list.
-                If cFiles.GetNumOfStrings > 0 Then
+                If (cFiles.GetNumOfStrings > 0) Then
                     
                     DragDrop_FileList = True
                     
@@ -1385,14 +1372,14 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
     If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
         
         'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
-        If pMedium.Data = 0 Then Exit Function
+        If (pMedium.Data = 0) Then Exit Function
         
         'pMedium.Data is an hGlobal handle that we can immediately lock and use
         Dim hGlobalPtr As Long
         hGlobalPtr = GlobalLock(pMedium.Data)
         
         'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
-        If hGlobalPtr <> 0 Then
+        If (hGlobalPtr <> 0) Then
             
             'Retrieve the number of entries (files and/or folders) in the drag
             Dim numOfFiles As Long
@@ -1409,7 +1396,6 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
             
             Dim fileDesc As FILEDESCRIPTOR
             Dim lLen As Long, fileHGlobalPtr As Long, tmpFilename As String, tmpBytes() As Byte
-            Dim cFile As pdFSO: Set cFile = New pdFSO
             Dim listOfFiles As pdStringStack: Set listOfFiles = New pdStringStack
             
             'We're now going to loop through each descriptor in turn, copying them out to temp files as we go
@@ -1433,14 +1419,14 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                     
                     'We're now going to raise a new GetData request, this time for the file's actual contents.
                     fmtEtc.lIndex = i
-                    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2&, pVartypes(0), pVars(0), varRtn) = 0 Then
+                    If (DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2&, pVartypes(0), pVars(0), varRtn) = 0) Then
                         
                         'See if our request for an hGlobal pointer was honored
-                        If fMedium.TYMED = TYMED_HGLOBAL Then
+                        If (fMedium.TYMED = TYMED_HGLOBAL) Then
                             
                             'Save the file's contents to a temporary file, and note the filename (if successful)
                             fileHGlobalPtr = GlobalLock(fMedium.Data)
-                            If cFile.SavePtrToFile(fileHGlobalPtr, GlobalSize(fMedium.Data), g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
+                            If Files.FileCreateFromPtr(fileHGlobalPtr, GlobalSize(fMedium.Data), g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
                                 listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
                             End If
                             
@@ -1448,11 +1434,11 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                             
                         'Depending on the size of the file, our request may get ignored and we'll be handed an IStream instead.
                         ' We can work with this if we have to.
-                        ElseIf fMedium.TYMED = TYMED_ISTREAM Then
+                        ElseIf (fMedium.TYMED = TYMED_ISTREAM) Then
                             
                             'Save the file's contents to a temporary file, and note the filename (if successful)
                             VBHacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
-                            If cFile.SaveByteArrayToFile(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
+                            If Files.FileCreateFromByteArray(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
                                 listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
                             End If
                         
@@ -1479,15 +1465,15 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
             If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
                 
             'The listOfFiles string stack now contains all the valid filenames from the dropped data object.
-            If listOfFiles.GetNumOfStrings > 0 Then
+            If (listOfFiles.GetNumOfStrings > 0) Then
                 
                 DragDrop_ZippedFileList = True
                 
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
-                        If cFile.FileExists(listOfFiles.GetString(i)) Then
-                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
-                            cFile.KillFile listOfFiles.GetString(i)
+                        If Files.FileExists(listOfFiles.GetString(i)) Then
+                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True
+                            Files.FileDelete listOfFiles.GetString(i)
                         End If
                     Next i
                 Else
@@ -1498,10 +1484,10 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                     ' supply a custom title for each file.
                     Dim sTitle As String
                     Do While listOfFiles.PopString(tmpFilename)
-                        If cFile.FileExists(tmpFilename) Then
-                            sTitle = cFile.GetFilename(tmpFilename, True)
+                        If Files.FileExists(tmpFilename) Then
+                            sTitle = Files.FileGetName(tmpFilename, True)
                             LoadFileAsNewImage tmpFilename, sTitle, False
-                            cFile.KillFile tmpFilename
+                            Files.FileDelete tmpFilename
                         End If
                     Loop
                     
@@ -1563,8 +1549,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     End If
         
     'Be polite and remove the temporary file
-    Dim cFile As pdFSO: Set cFile = New pdFSO
-    If cFile.FileExists(tmpDragDropFile) Then cFile.KillFile tmpDragDropFile
+    Files.FileDeleteIfExists tmpDragDropFile
     
     'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
     ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
@@ -1572,8 +1557,8 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     ' to temporarily use this technique for predicting failure.)
     '
     'TODO: rewrite PD's central image load functions to return pass/fail status.
-    If g_CurrentImage <= UBound(pdImages) Then
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+    If (g_CurrentImage <= UBound(pdImages)) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
             If pdImages(g_CurrentImage).IsActive Then
                 Message "Image imported successfully "
                 DragDrop_BitmapData = True
@@ -1624,17 +1609,14 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
         Else
             
             Dim targetFile As String
-            targetFile = ""
-            
-            Dim cFile As pdFSO: Set cFile = New pdFSO
-            If cFile.FileExists(dragText) Then
+            If Files.FileExists(dragText) Then
                 targetFile = dragText
-            ElseIf cFile.FileExists(Trim$(dragText)) Then
+            ElseIf Files.FileExists(Trim$(dragText)) Then
                 targetFile = Trim$(dragText)
             End If
             
             'If the text (or a trimmed version of the text) matches a local file, try to load it.
-            If Len(targetFile) <> 0 Then
+            If (Len(targetFile) <> 0) Then
             
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     Layers.LoadImageAsNewLayer False, targetFile, , True
@@ -1696,11 +1678,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     End If
     
     'If we already have a stash file, remove it
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
-    End If
+    If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
     
     'Grab a new temporary path name (TODO: use system-generated temp file names)
     If (Len(m_StashFile) = 0) Then m_StashFile = g_UserPreferences.GetTempPath() & "cbStash.tmpdib"
@@ -1729,9 +1707,7 @@ Private Function UnstashClipboardData() As Boolean
     'Make sure a stash file actually exists
     If (Len(m_StashFile) <> 0) Then
     
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        If cFile.FileExists(m_StashFile) Then
+        If Files.FileExists(m_StashFile) Then
         
             'Load the temp file into memory.  This is ALL this function does; actually uploading the data to the clipboard
             ' is handled externally.
@@ -1747,11 +1723,7 @@ End Function
 'If you know it's safe to destroy PD's clipboard cache, you can do so via this function.  Note that this action is not reversible,
 ' so make sure it's what you want/need to do.
 Private Sub DestroyStashedData()
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If (Len(m_StashFile) <> 0) Then
-        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
-    End If
+    If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
 End Sub
 
 Public Function IsPDDataOnClipboard() As Boolean
@@ -2206,10 +2178,6 @@ Private Sub Class_Terminate()
     Set m_Clipboard = Nothing
     
     'Perform a failsafe check against un-destroyed stash data
-    If (Len(m_StashFile) <> 0) Then
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        If cFile.FileExists(m_StashFile) Then cFile.KillFile m_StashFile
-    End If
+    If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
     
 End Sub

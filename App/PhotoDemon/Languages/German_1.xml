@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.262</langversion>
+<langversion>6.7.263</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -419,12 +419,7 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 
 <!-- BEGIN text for FileSystem.bas -->
 
-<phrase>
-<original>Please select a folder</original>
-<translation>Bitte wählen Sie einen Ordner</translation>
-</phrase>
-
-<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- FileSystem.bas contains 0 phrases. -->
 
 <!-- END text for FileSystem.bas-->
 
@@ -2871,7 +2866,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- BEGIN text for pdFSO.cls -->
 
-<!-- pdFSO.cls contains 0 phrases. -->
+<phrase>
+<original>Please select a folder</original>
+<translation>Bitte wählen Sie einen Ordner</translation>
+</phrase>
+
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdFSO.cls-->
 
@@ -15076,6 +15076,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Strings.bas contains 0 phrases. -->
 
 <!-- END text for Strings.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -268,7 +268,7 @@ Friend Sub DetermineLanguage()
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
         Else
-            If m_FSO.FileExists(curLangFile) Then
+            If Files.FileExists(curLangFile) Then
                 m_currentLanguage = GetLangIndexFromFile(curLangFile)
             Else
                 m_currentLanguage = m_defaultLanguage
@@ -433,7 +433,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             ' match, we don't need to load and validate the file this time.
             
             'Look for an existing checksum
-            chkXMLName = m_LangCacheXML.GetXMLSafeTagName(m_FSO.GetFilename(chkFile, True))
+            chkXMLName = m_LangCacheXML.GetXMLSafeTagName(Files.FileGetName(chkFile, True))
             chkCachedValue = Trim$(m_LangCacheXML.GetUniqueTag_String(chkXMLName))
             If (Len(chkCachedValue) <> 0) Then
             
@@ -509,7 +509,7 @@ Private Function GetLangFileChecksum(ByRef srcFile As String) As String
 
     'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
     Dim strHashSource As String
-    strHashSource = srcFile & "|" & CStr(m_FSO.FileLenW(srcFile)) & "|" & CStr(m_FSO.GetFileTimeAsCurrency(srcFile, PDFT_WriteTime))
+    strHashSource = srcFile & "|" & CStr(m_FSO.FileLenW(srcFile)) & "|" & CStr(m_FSO.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
     
     'A dedicated crypto class handles the actual hashing
     GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource, 64)
@@ -535,7 +535,7 @@ Friend Sub CheckAvailableLanguages()
     Set m_LangCacheXML = New pdXML
     m_LangCacheXML.SetTextCompareMode vbBinaryCompare
     
-    If m_FSO.FileExists(langCacheFilename) Then
+    If Files.FileExists(langCacheFilename) Then
         cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     End If
     

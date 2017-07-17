@@ -862,7 +862,7 @@ Private Sub cmdAddFolders_Click()
     If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
     
     Dim folderPath As String
-    folderPath = Files.BrowseForFolder(Me.hWnd, m_LastBatchFolder)
+    folderPath = Files.PathBrowseDialog(Me.hWnd, m_LastBatchFolder)
     
     If (Len(folderPath) <> 0) Then
         
@@ -1007,13 +1007,12 @@ Private Sub cmdLoadList_Click()
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
-        listPath = sFile
-        StripDirectory listPath
+        listPath = Files.FileGetPath(sFile)
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
         'Load the file using pdFSO, which is Unicode-compatible
         Dim fileContents As String
-        If m_FSO.LoadTextFileAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf) > 0) Then
+        If Files.FileLoadAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf, vbBinaryCompare) > 0) Then
             
             'The file was originally delimited by vbCrLf.  Parse it now.
             Dim fileLines() As String
@@ -1150,9 +1149,9 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         Case 3
             
             'Make sure we have write access to the output folder.  If we don't, cancel and warn the user.
-            If (Not m_FSO.FolderExists(txtOutputPath)) Then
+            If (Not Files.PathExists(txtOutputPath)) Then
                 
-                If (Not m_FSO.CreateFolder(txtOutputPath)) Then
+                If (Not Files.PathCreate(txtOutputPath)) Then
                     PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
                     txtOutputPath.SelectAll
                     Exit Sub
@@ -1319,8 +1318,7 @@ Private Function SaveCurrentBatchList() As Boolean
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
-        listPath = sFile
-        StripDirectory listPath
+        listPath = Files.FileGetPath(sFile)
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
         'Assemble the output string, which basically just contains the currently selected list of files.
@@ -1337,7 +1335,7 @@ Private Function SaveCurrentBatchList() As Boolean
         outputText = outputText & "<END OF LIST>" & vbCrLf
         
         'Write the text out to file using a pdFSO instance
-        SaveCurrentBatchList = m_FSO.SaveStringToTextFile(outputText, sFile)
+        SaveCurrentBatchList = Files.FileSaveAsText(outputText, sFile)
                 
     Else
         SaveCurrentBatchList = False
@@ -1353,7 +1351,7 @@ Private Sub cmdRemoveFolder_Click()
         
         'Retrieve the target path from the currently selected list item
         Dim srcPath As String
-        srcPath = m_FSO.GetPathOnly(lstFiles.List(lstFiles.ListIndex))
+        srcPath = m_FSO.FileGetPath(lstFiles.List(lstFiles.ListIndex))
         
         'We now want to iterate through the list, removing items as we go.  Note that the removal criteria varies depending on whether
         ' the user wants subfolders removed as well.
@@ -1373,7 +1371,7 @@ Private Sub cmdRemoveFolder_Click()
                 testPath = lstFiles.List(i)
                 removeFile = CBool(InStr(1, testPath, srcPath, vbBinaryCompare) <> 0)
             Else
-                testPath = m_FSO.GetPathOnly(lstFiles.List(i))
+                testPath = m_FSO.FileGetPath(lstFiles.List(i))
                 removeFile = CBool(StrComp(testPath, srcPath, vbBinaryCompare) = 0)
             End If
             
@@ -1430,8 +1428,7 @@ Private Sub cmdSelectMacro_Click()
     If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd) Then
         
         'As a convenience to the user, save this directory as the default macro path
-        tempPathString = sFile
-        StripDirectory tempPathString
+        tempPathString = Files.FileGetPath(sFile)
         g_UserPreferences.SetPref_String "Paths", "Macro", tempPathString
         
         'Display the selected macro location in the relevant text box
@@ -1447,9 +1444,9 @@ End Sub
 'Use "shell32.dll" to select a folder
 Private Sub cmdSelectOutputPath_Click()
     Dim tString As String
-    tString = BrowseForFolder(FormBatchWizard.hWnd)
-    If tString <> "" Then
-        txtOutputPath.Text = FixPath(tString)
+    tString = PathBrowseDialog(FormBatchWizard.hWnd)
+    If (Len(tString) <> 0) Then
+        txtOutputPath.Text = Files.PathAddBackslash(tString)
     
         'Save this new directory as the default path for future usage
         g_UserPreferences.SetPref_String "Batch Process", "Output Folder", tString
@@ -1503,12 +1500,12 @@ Private Sub Form_Load()
     'Build default paths from preference file values
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
-    If (tempPathString <> "") And (m_FSO.FolderExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    If (Len(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
     
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
-'    If (tempPathString <> "") And (cFile.FolderExists(tempPathString)) Then Drive1 = tempPathString
+'    If (tempPathString <> "") And (cFile.PathExists(tempPathString)) Then Drive1 = tempPathString
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Input Folder", "")
-'    If (tempPathString <> "") And (cFile.FolderExists(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
+'    If (tempPathString <> "") And (cFile.PathExists(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -1569,7 +1566,7 @@ Private Sub lstFiles_Click()
         Dim targetFile As String
         targetFile = lstFiles.List(lstFiles.ListIndex)
         
-        If m_FSO.FileExists(targetFile) Then
+        If Files.FileExists(targetFile) Then
             cmdRemove.Enabled = True
             UpdatePreview targetFile
         Else
@@ -1631,7 +1628,7 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
     ' a previously saved batch list from file)
     If novelAddition Then
-        If m_FSO.FileExists(srcFile) Then
+        If Files.FileExists(srcFile) Then
             lstFiles.AddItem srcFile
             UpdateBatchListCount
         End If
@@ -1701,8 +1698,8 @@ Private Sub PrepareForBatchConversion()
     
     'Prepare the folder that will receive the processed images
     Dim outputPath As String
-    outputPath = m_FSO.EnforcePathSlash(txtOutputPath)
-    If (Not m_FSO.FolderExists(outputPath)) Then m_FSO.CreateFolder outputPath, True
+    outputPath = Files.PathAddBackslash(txtOutputPath)
+    If (Not Files.PathExists(outputPath)) Then Files.PathCreate outputPath, True
     
     'Prepare the progress bar, which will keep the user updated on our progress.
     Set sysProgBar = New cProgressBarOfficial
@@ -1741,7 +1738,7 @@ Private Sub PrepareForBatchConversion()
         sysProgBar.Refresh
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If m_FSO.FileExists(tmpFilename) Then
+        If Files.FileExists(tmpFilename) Then
             
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
@@ -1787,10 +1784,8 @@ Private Sub PrepareForBatchConversion()
                 End If
                 
                 'With the macro complete, prepare the file for saving
-                tmpFilename = lstFiles.List(curBatchFile)
-                StripOffExtension tmpFilename
-                StripFilename tmpFilename
-            
+                tmpFilename = Files.FileGetName(lstFiles.List(curBatchFile), True)
+                
                 'Build a full file path using the options the user specified
                 If (cmbOutputOptions.ListIndex = 0) Then
                     If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
@@ -1866,7 +1861,7 @@ Private Sub PrepareForBatchConversion()
                 'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
                 ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
                 ' drive and directory structure.
-                tmpFilename = outputPath & IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
+                tmpFilename = outputPath & Files.IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
                                 
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
                 ' on the matching wizard panel.

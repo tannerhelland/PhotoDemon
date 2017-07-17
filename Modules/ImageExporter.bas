@@ -943,10 +943,8 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
                 tmpFile = cParamsMetadata.GetString("MetadataTempFilename")
                 
-                If Len(tmpFile) <> 0 Then
-                    Dim cFile As pdFSO
-                    Set cFile = New pdFSO
-                    If cFile.FileExists(tmpFile) Then cFile.KillFile tmpFile
+                If (Len(tmpFile) <> 0) Then
+                    Files.FileDeleteIfExists tmpFile
                     FreeImage_SaveEx fThumbnail, tmpFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
                 End If
                 
@@ -1532,11 +1530,9 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
         Set cFile = New pdFSO
         
         Dim tmpFilename As String
-        tmpFilename = cFile.GetFilename(dstFile, True)
+        tmpFilename = Files.FileGetName(dstFile, True)
+        dstFile = cFile.FileGetPath(dstFile) & tmpFilename & "." & newExtension
         
-        dstFile = cFile.GetPathOnly(dstFile) & tmpFilename & "." & newExtension
-        Debug.Print dstFile
-    
     End If
     
     'The caller can request HDR or float color-depths; calculate those now
@@ -1825,9 +1821,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' 5) When all layers are finished, write the TIFF out to file
         
         'Start by creating a blank multipage object
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        If cFile.FileExists(dstFile) Then cFile.KillFile dstFile
+        Files.FileDeleteIfExists dstFile
         
         Dim fi_MasterHandle As Long
         fi_MasterHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)

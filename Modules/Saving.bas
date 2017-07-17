@@ -169,11 +169,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         End If
         
         'Similarly, remember the file's location and selected name for future saves
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
         srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
-        srcImage.ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(dstPath, True)
-        srcImage.ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(dstPath)
+        srcImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(dstPath, True)
+        srcImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(dstPath)
         
         'Update the parent image's save state.
         If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat

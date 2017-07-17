@@ -1716,10 +1716,10 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
                 ' the language engine on the next PD Processor call.
                 m_LanguagesUpdatedSuccessfully = True
-                Debug.Print "Successfully patched " & GetFilenameWithoutExtension(savedToThisFile) & ".xml."
+                Debug.Print "Successfully patched " & Files.FileGetName(savedToThisFile, True) & ".xml."
                 
             Else
-                Debug.Print "Patching of " & GetFilename(savedToThisFile) & " was unsuccessful."
+                Debug.Print "Patching of " & Files.FileGetName(savedToThisFile) & " was unsuccessful."
             End If
         Else
             Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
@@ -3572,7 +3572,7 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Donations are so very, very welcome!
         Case 0
-            OpenURL "http://photodemon.org/donate"
+            Web.OpenURL "http://photodemon.org/donate"
             
         'Check for updates
         Case 2
@@ -3586,7 +3586,7 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Submit feedback
         Case 3
-            OpenURL "http://photodemon.org/about/contact/"
+            Web.OpenURL "http://photodemon.org/about/contact/"
         
         'Submit bug report
         Case 4
@@ -3613,25 +3613,25 @@ Private Sub MnuHelp_Click(Index As Integer)
             End If
             
             'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
-            If msgReturn = vbYes Then
+            If (msgReturn = vbYes) Then
                 'Shell a browser window with the GitHub issue report form
-                OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
+                Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             ElseIf msgReturn = vbNo Then
                 'Shell a browser window with the photodemon.org contact form
-                OpenURL "http://photodemon.org/about/contact/"
+                Web.OpenURL "http://photodemon.org/about/contact/"
             End If
             
         'PhotoDemon's homepage
         Case 6
-            OpenURL "http://www.photodemon.org"
+            Web.OpenURL "http://www.photodemon.org"
             
         'Download source code
         Case 7
-            OpenURL "https://github.com/tannerhelland/PhotoDemon"
+            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon"
         
         'Read terms and license agreement
         Case 8
-            OpenURL "http://photodemon.org/about/license/"
+            Web.OpenURL "http://photodemon.org/about/license/"
             
         'Display About page
         Case 10
@@ -3870,7 +3870,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
                 End If
                 
                 'Launch Google maps in the user's browser
-                OpenURL gMapsURL
+                Web.OpenURL gMapsURL
                 
             End If
             

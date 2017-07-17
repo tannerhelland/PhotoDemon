@@ -106,7 +106,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         m_logPath = g_UserPreferences.GetDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If (Not m_FSO.FolderExists(m_logPath)) Then
+        If (Not Files.PathExists(m_logPath)) Then
             
             Debug.Print "Log path invalid.  Debug logs not available for this session."
             
@@ -127,8 +127,8 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Dim overwroteOldLog As Boolean
         overwroteOldLog = False
         
-        If m_FSO.FileExists(m_logPath) Then
-            m_FSO.KillFile m_logPath
+        If Files.FileExists(m_logPath) Then
+            Files.FileDelete m_logPath
             overwroteOldLog = True
         End If
         
@@ -181,9 +181,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         'Build a new log file, and dump the debug string into it
         m_logDatatoFile = True
         
-        If Not m_FSO.SaveStringToTextFile(debugHeader, m_logPath) Then
-            Debug.Print "WARNING!  Debug file could not be created!"
-        End If
+        If (Not Files.FileSaveAsText(debugHeader, m_logPath)) Then Debug.Print "WARNING!  Debug file could not be created!"
         
     End If
     
@@ -251,14 +249,14 @@ Private Function GetLogID() As Long
         Dim minDate As Date, minID As Long
         
         'Grab the date of the first file.
-        minDate = Files.FileAnyDateTime(logFiles(0))
+        minDate = Files.FileGetTimeAsDate(logFiles(0), PDFT_WriteTime)
         minID = 0
         
         'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
         Dim i As Long
         For i = 1 To 9
-            If (Files.FileAnyDateTime(logFiles(i)) < minDate) Then
-                minDate = Files.FileAnyDateTime(logFiles(i))
+            If (Files.FileGetTimeAsDate(logFiles(i), PDFT_WriteTime) < minDate) Then
+                minDate = Files.FileGetTimeAsDate(logFiles(i), PDFT_WriteTime)
                 minID = i
             End If
         Next i
@@ -270,7 +268,7 @@ Private Function GetLogID() As Long
     
         'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
         For i = 0 To 9
-            If (Not m_FSO.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
+            If (Not Files.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
                 GetLogID = i
                 Exit For
             End If
@@ -419,11 +417,7 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     
     'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
-        
-        If m_logDatatoFile Then
-            m_FSO.AppendTextToFile actionString & vbCrLf, m_logPath
-        End If
-    
+        If m_logDatatoFile Then m_FSO.FileAppendText actionString & vbCrLf, m_logPath
     Else
     
         'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
@@ -431,7 +425,6 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         ' formally initialized, we'll dump that array out to file.
         backupMessages(numBackupMessages) = "(" & CStr(numBackupMessages + 1) & ") " & actionString
         numBackupMessages = numBackupMessages + 1
-        
         If (numBackupMessages > UBound(backupMessages)) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
         
     End If
@@ -470,7 +463,7 @@ Public Sub TerminateDebugger()
 
     'If logging is active, post a final message
     If m_logDatatoFile Then
-        m_FSO.AppendTextToFile "-- END SESSION REPORT --", m_logPath
+        m_FSO.FileAppendText "-- END SESSION REPORT --", m_logPath
         m_logDatatoFile = False
     End If
     

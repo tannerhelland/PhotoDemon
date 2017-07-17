@@ -333,7 +333,7 @@ End Sub
 
 Private Sub lstContributors_Click()
     If ((lstContributors.ListIndex < m_numOfContributors) And (lstContributors.ListIndex >= 0)) Then
-        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then Files.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
+        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then Web.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
     End If
 End Sub
 

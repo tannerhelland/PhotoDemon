@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.265</langversion>
+<langversion>6.7.266</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -419,12 +419,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <!-- BEGIN text for FileSystem.bas -->
 
-<phrase>
-<original>Please select a folder</original>
-<translation>Por favor, seleccione una carpeta</translation>
-</phrase>
-
-<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- FileSystem.bas contains 0 phrases. -->
 
 <!-- END text for FileSystem.bas-->
 
@@ -2872,7 +2867,12 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- BEGIN text for pdFSO.cls -->
 
-<!-- pdFSO.cls contains 0 phrases. -->
+<phrase>
+<original>Please select a folder</original>
+<translation>Por favor, seleccione una carpeta</translation>
+</phrase>
+
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdFSO.cls-->
 
@@ -15077,6 +15077,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Strings.bas contains 0 phrases. -->
 
 <!-- END text for Strings.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- Automatic text extraction complete. -->
 

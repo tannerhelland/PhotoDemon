@@ -42,7 +42,7 @@ End Enum
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.49 [Warning: Library version is 10.40]"
+Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.49"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.8.0"
@@ -55,33 +55,6 @@ Private Const EXPECTED_ZSTD_VERSION As String = "10105"
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
 Private Const CORE_PLUGIN_COUNT As Long = 9
-
-'Much of the version-checking code used in this module was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
-' Many thanks to those authors for their work on demystifying obscure API calls
-Private Type VS_FIXEDFILEINFO
-    dwSignature As Long
-    dwStrucVersionl As Integer     ' e.g. = &h0000 = 0
-    dwStrucVersionh As Integer     ' e.g. = &h0042 = .42
-    dwFileVersionMSl As Integer    ' e.g. = &h0003 = 3
-    dwFileVersionMSh As Integer    ' e.g. = &h0075 = .75
-    dwFileVersionLSl As Integer    ' e.g. = &h0000 = 0
-    dwFileVersionLSh As Integer    ' e.g. = &h0031 = .31
-    dwProductVersionMSl As Integer ' e.g. = &h0003 = 3
-    dwProductVersionMSh As Integer ' e.g. = &h0010 = .1
-    dwProductVersionLSl As Integer ' e.g. = &h0000 = 0
-    dwProductVersionLSh As Integer ' e.g. = &h0031 = .31
-    dwFileFlagsMask As Long        ' = &h3F for version "0.42"
-    dwFileFlags As Long            ' e.g. VFF_DEBUG Or VFF_PRERELEASE
-    dwFileOS As Long               ' e.g. VOS_DOS_WINDOWS16
-    dwFileType As Long             ' e.g. VFT_DRIVER
-    dwFileSubtype As Long          ' e.g. VFT2_DRV_KEYBOARD
-    dwFileDateMS As Long           ' e.g. 0
-    dwFileDateLS As Long           ' e.g. 0
-End Type
-Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
-Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
-Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that these values ARE NOT EXTERNALLY AVAILABLE, by design; external callers should use the global plugin trackers
@@ -121,9 +94,7 @@ Public Sub InitializePluginManager()
     m_PluginPath = g_UserPreferences.GetAppPath & "Plugins\"
     
     'Make sure the plugin path exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If (Not cFile.FolderExists(PluginManager.GetPluginPath)) Then cFile.CreateFolder PluginManager.GetPluginPath, True
+    If (Not Files.PathExists(PluginManager.GetPluginPath)) Then Files.PathCreate PluginManager.GetPluginPath, True
     
 End Sub
 
@@ -154,7 +125,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             #End If
         
             'Before doing anything else, see if the plugin file actually exists.
-            m_PluginExists(i) = DoesPluginFileExists(i)
+            m_PluginExists(i) = DoesPluginFileExist(i)
             
             'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
             ' we can initialize it.  (Some plugins may not require this step; that's okay.)
@@ -296,7 +267,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         
         'All other plugins pull their version info directly from file metadata
         Case Else
-            GetPluginVersion = RetrieveGenericVersionString(PluginManager.GetPluginPath & PluginManager.GetPluginFilename(pluginEnumID))
+            Dim cFSO As pdFSO
+            Set cFSO = New pdFSO
+            cFSO.FileGetVersionAsString PluginManager.GetPluginPath & PluginManager.GetPluginFilename(pluginEnumID), GetPluginVersion, True
             
     End Select
     
@@ -413,9 +386,7 @@ End Sub
 'Simplified function to detect if a given plugin is currently installed in PD's plugin folder.  This is (obviously) separate
 ' from a plugin actually being *enabled*, as that requires initialization and other steps.
 Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    IsPluginCurrentlyInstalled = cFile.FileExists(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
+    IsPluginCurrentlyInstalled = Files.FileExists(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
 'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.  These include the
@@ -684,7 +655,7 @@ End Sub
 ' 3) If it finds a missing plugin in the program folder, it will automatically move the file to the plugin folder, including any
 '     helper files (README, LICENSE, etc).
 ' 4) If the move is successful, it will return TRUE and exit.
-Private Function DoesPluginFileExists(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     'Start by getting the filename of the plugin in question
     Dim pluginFilename As String
@@ -695,8 +666,8 @@ Private Function DoesPluginFileExists(ByVal pluginEnumID As CORE_PLUGINS) As Boo
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExists(PluginManager.GetPluginPath & pluginFilename) Then
-        DoesPluginFileExists = True
+    If Files.FileExists(PluginManager.GetPluginPath & pluginFilename) Then
+        DoesPluginFileExist = True
     
     'The plugin file is missing.  Let's see if we can find it.
     Else
@@ -708,17 +679,17 @@ Private Function DoesPluginFileExists(ByVal pluginEnumID As CORE_PLUGINS) As Boo
     
         'See if the plugin file exists in the base PD folder.  This can happen if a user unknowingly extracts the PD .zip without
         ' folders preserved.
-        If cFile.FileExists(g_UserPreferences.GetProgramPath & pluginFilename) Then
+        If Files.FileExists(g_UserPreferences.GetProgramPath & pluginFilename) Then
             
             pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
-            If cFile.CopyFile(g_UserPreferences.GetProgramPath & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
+            If cFile.FileCopyW(g_UserPreferences.GetProgramPath & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
                 
                 pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
-                cFile.KillFile g_UserPreferences.GetProgramPath & pluginFilename
+                cFile.FileDelete g_UserPreferences.GetProgramPath & pluginFilename
                 
                 'Finally, move any associated files to their new home in the plugin folder
                 If GetNonEssentialPluginFiles(pluginEnumID, extraFiles) Then
@@ -726,27 +697,27 @@ Private Function DoesPluginFileExists(ByVal pluginEnumID As CORE_PLUGINS) As Boo
                     Dim tmpFilename As String
                     
                     Do While extraFiles.PopString(tmpFilename)
-                        If cFile.CopyFile(g_UserPreferences.GetProgramPath & tmpFilename, PluginManager.GetPluginPath & tmpFilename) Then
-                            cFile.KillFile g_UserPreferences.GetProgramPath & tmpFilename
+                        If cFile.FileCopyW(g_UserPreferences.GetProgramPath & tmpFilename, PluginManager.GetPluginPath & tmpFilename) Then
+                            cFile.FileDelete g_UserPreferences.GetProgramPath & tmpFilename
                         End If
                     Loop
                     
                 End If
                 
                 'Return success!
-                DoesPluginFileExists = True
+                DoesPluginFileExist = True
             
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case the program
             ' as a whole is pretty much doomed.  Exit now.
             Else
                 pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
-                DoesPluginFileExists = False
+                DoesPluginFileExist = False
             End If
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
             pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
-            DoesPluginFileExists = False
+            DoesPluginFileExist = False
         End If
     
     End If
@@ -806,31 +777,3 @@ Public Sub TerminateAllPlugins()
     End If
     
 End Sub
-
-'Given an arbitrary filename, return a string with that file's version (as retrieved from file metadata).
-Private Function RetrieveGenericVersionString(ByVal FullFileName As String) As String
-    
-    'Start by retrieving the required version buffer size (and bail if there's no version info)
-    Dim lBufferLen As Long, tmpLong As Long
-    lBufferLen = GetFileVersionInfoSize(FullFileName, tmpLong)
-    If lBufferLen < 1 Then Exit Function
-    
-    'Pull the version info into a dedicated struct
-    Dim sBuffer() As Byte
-    ReDim sBuffer(0 To lBufferLen - 1) As Byte
-    tmpLong = GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0))
-    
-    Dim lVerPointer As Long, lVerbufferLen As Long
-    tmpLong = VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen)
-    
-    Dim udtVerBuffer As VS_FIXEDFILEINFO
-    MoveMemory udtVerBuffer, lVerPointer, Len(udtVerBuffer)
-    
-    'If it proves helpful in the future, here's code for retrieving versioning of the file itself
-    'Dim fileVer As String
-    'fileVer = Trim(Format$(udtVerBuffer.dwFileVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSl))
-    
-    '...but right now, we're only concerned with product versioning
-    RetrieveGenericVersionString = Trim$(Format$(udtVerBuffer.dwProductVersionMSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionMSl)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSl))
-    
-End Function

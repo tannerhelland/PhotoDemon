@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.58</langversion>
+<langversion>1.0.59</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -418,12 +418,7 @@ If проблемот продолжи, ве молиме да го пријав
 
 <!-- BEGIN text for FileSystem.bas -->
 
-<phrase>
-<original>Please select a folder</original>
-<translation>Ве молиме изберете папка</translation>
-</phrase>
-
-<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- FileSystem.bas contains 0 phrases. -->
 
 <!-- END text for FileSystem.bas-->
 
@@ -2880,7 +2875,12 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdFSO.cls -->
 
-<!-- pdFSO.cls contains 0 phrases. -->
+<phrase>
+<original>Please select a folder</original>
+<translation>Ве молиме изберете папка</translation>
+</phrase>
+
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdFSO.cls-->
 
@@ -15087,6 +15087,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Strings.bas contains 0 phrases. -->
 
 <!-- END text for Strings.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- Automatic text extraction complete. -->
 

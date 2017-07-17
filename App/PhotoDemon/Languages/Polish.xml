@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2811</langversion>
+<langversion>6.8.2812</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -418,12 +418,7 @@ If problem nie ustępuje, zgłoś go do programistów PhotoDemon poprzez photode
 
 <!-- BEGIN text for FileSystem.bas -->
 
-<phrase>
-<original>Please select a folder</original>
-<translation>Wybierz folder</translation>
-</phrase>
-
-<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- FileSystem.bas contains 0 phrases. -->
 
 <!-- END text for FileSystem.bas-->
 
@@ -2868,7 +2863,12 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdFSO.cls -->
 
-<!-- pdFSO.cls contains 0 phrases. -->
+<phrase>
+<original>Please select a folder</original>
+<translation>Wybierz folder</translation>
+</phrase>
+
+<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdFSO.cls-->
 
@@ -15065,6 +15065,12 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 <!-- Strings.bas contains 0 phrases. -->
 
 <!-- END text for Strings.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- Automatic text extraction complete. -->
 

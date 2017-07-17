@@ -71,7 +71,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
             'The common dialog function returns a unique array. Index (0) contains the folder path (without a
             ' trailing backslash), so first things first - add a trailing backslash
             Dim imagesPath As String
-            imagesPath = FixPath(listOfFiles(0))
+            imagesPath = Files.PathAddBackslash(listOfFiles(0))
             
             'The remaining indices contain a filename within that folder.  To get the full filename, we must
             ' append the path from (0) to the start of each filename.  This will relieve the burden on
@@ -88,8 +88,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         Else
         
             'Save the new directory as the default path for future usage
-            tempPathString = listOfFiles(0)
-            StripDirectory tempPathString
+            tempPathString = Files.FileGetPath(listOfFiles(0))
             g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
             
             dstStringStack.AddString listOfFiles(0)
@@ -133,8 +132,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
         
         'Save the new directory as the default path for future usage
-        tempPathString = userImagePath
-        StripDirectory tempPathString
+        tempPathString = Files.FileGetPath(userImagePath)
         g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
@@ -185,7 +183,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             'File name incrementation requires help from an outside function.  We must pass it the folder, filename, and extension
             ' we want it to search against.
             Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
-            tmpFolder = cFile.GetPathOnly(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
+            tmpFolder = cFile.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
             If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
             tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
             tmpExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
@@ -278,7 +276,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         
         g_LastSaveFilter = cdFormatIndex
         g_UserPreferences.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
-        g_UserPreferences.SetPref_String "Paths", "Save Image", cFile.GetPathOnly(sFile)
+        g_UserPreferences.SetPref_String "Paths", "Save Image", cFile.FileGetPath(sFile)
         
         'Our work here is done!  Transfer control to the core SaveImage routine, which will handle the actual export process.
         MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)
@@ -355,8 +353,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     Dim dstFilename As String, tmpPathString As String
     
     'Determine the destination directory now
-    tmpPathString = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
-    StripDirectory tmpPathString
+    tmpPathString = Files.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
     
     'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
     ' available next.

@@ -20,7 +20,7 @@ Attribute VB_Exposed = False
 ' been released into the public domain.
 
 'Many thanks to LaVolpe for this non-TLB implementation of the new IFileDialog interface available in Vista+.
-' PhotoDemon currently uses its updated BrowseForFolder implementation, which is significantly better than
+' PhotoDemon currently uses its updated PathBrowseDialog implementation, which is significantly better than
 ' the old XP-style browse box.
 
 
@@ -112,7 +112,7 @@ Private Enum InterfaceMethodOffsets                 ' helper for me during desig
     ifFileDialog_GetOptions = 40                    ' pass 1 param
     ifFileDialog_SetDefaultFolder = 44              ' pass 1 param
     ifFileDialog_SetFolder = 48                     ' pass 1 param
-    ifFileDialog_GetFolder = 52                     ' pass 1 param
+    ifFileDialog_FileGetPath = 52                     ' pass 1 param
     ifFileDialog_GetCurrentSelection = 56           ' pass 1 param
     ifFileDialog_SetFileName = 60                   ' pass 1 param
     ifFileDialog_GetFileName = 64                   ' pass 1 param
@@ -233,7 +233,7 @@ Public Enum IShellDisplayNameFormat
 End Enum
 
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dn457282%28v=vs.85%29.aspx
-Public Enum FileOpenDialogOptions           ' Open/Save pre-Vista flags     BrowseForFolder
+Public Enum FileOpenDialogOptions           ' Open/Save pre-Vista flags     PathBrowseDialog
   FOS_OVERWRITEPROMPT = &H2&                ' OFN_OVERWRITEPROMPT
   FOS_STRICTFILETYPES = &H4&                ' OFN_EXTENSIONDIFFERENT
   FOS_NOCHANGEDIR = &H8&                    ' OFN_NOCHANGEDIR
@@ -715,8 +715,8 @@ Public Sub propAddPlace_SetFolder(Path As Variant, Optional ByVal PathType As Pr
     End Select
     m_State = (m_State And &HFFFFFF0F) Or Abs(PlaceAtTop) * &H10
 End Sub
-Public Function propAddPlace_GetFolder(Optional ByRef PlaceAtTop As Boolean, Optional ByVal PathType As PropertyPathType) As Variant
-    propAddPlace_GetFolder = m_AddPlaces
+Public Function propAddPlace_FileGetPath(Optional ByRef PlaceAtTop As Boolean, Optional ByVal PathType As PropertyPathType) As Variant
+    propAddPlace_FileGetPath = m_AddPlaces
     PlaceAtTop = CBool(m_State And &H10)
     Select Case VarType(m_AddPlaces)
         Case vbDataObject: PathType = ppType_AsIShellItemObject
@@ -836,7 +836,7 @@ Public Function DialogGetCurrentFolder() As IUnknown
     ' called during events
     If Not m_FDlg Is Nothing Then
         Dim pIShellItem As Long
-        pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_GetFolder, VarPtr(pIShellItem)
+        pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_FileGetPath, VarPtr(pIShellItem)
         If pIShellItem Then Set DialogGetCurrentFolder = pvPointerToIUnknown(pIShellItem, True)
     End If
 End Function

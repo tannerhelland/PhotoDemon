@@ -1,11 +1,15 @@
 Attribute VB_Name = "Files"
 '***************************************************************************
-'Miscellaneous Functions Related to File and Folder Interactions
+'Comprehensive wrapper for pdFSO (Unicode file and folder functions)
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 28/May/16
-'Last update: update the BrowseForFolder function to use the new IFileDialog interfaces on Vista+.  Note that this
-'             introduces several new dependencies for this module.
+'Last updated: 12/July/2017
+'Last update: large code cleanup
+'
+'The pdFSO class provides Unicode file/folder interactions for PhotoDemon.  However, sometimes you just want to do
+' something trivial, like checking whether a file exists, without instantiating a full class (especially because this
+' is unnecessarily verbose in VB).  This module wraps a pdFSO instance and allows you to directly invoke common
+' functions without worrying about the details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -15,49 +19,47 @@ Attribute VB_Name = "Files"
 Option Explicit
 
 'API calls for retrieving detailed date time for a given file
-Private Const MAX_PATH = 260
-Private Const INVALID_HANDLE_VALUE = -1
+Private Const INVALID_HANDLE_VALUE As Long = -1
+Private Const MAX_PATH As Long = 260
+Private Const STARTF_USESHOWWINDOW = &H1
+Private Const SW_NORMAL As Long = 1
+Private Const SW_HIDE As Long = 0
+Private Const SYNCHRONIZE As Long = &H100000
+Private Const WAIT_INFINITE As Long = -1
 
-Private Type WIN32_FIND_DATA
-    dwFileAttributes As Long
-    ftCreationTime As Currency
-    ftLastAccessTime As Currency
-    ftLastWriteTime As Currency
-    nFileSizeHigh As Long
-    nFileSizeLow As Long
-    dwReserved0 As Long
-    dwReserved1 As Long
-    cFileName As String * MAX_PATH
-    cAlternate As String * 14
+Private Type WIN32_STARTUP_INFO
+    cb As Long
+    lpReserved As Long
+    lpDesktop As Long
+    lpTitle As Long
+    dwX As Long
+    dwY As Long
+    dwXSize As Long
+    dwYSize As Long
+    dwXCountChars As Long
+    dwYCountChars As Long
+    dwFillAttribute As Long
+    dwFlags As Long
+    wShowWindow As Integer
+    cbReserved2 As Integer
+    lpReserved2 As Long
+    hStdInput As Long
+    hStdOutput As Long
+    hStdError As Long
 End Type
 
-Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Long
-Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileA" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
-Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
-Private Declare Function FileTimeToLocalFileTime Lib "kernel32" (ByRef lpFileTime As Currency, ByRef lpLocalFileTime As Currency) As Long
-
-' Difference between day zero for VB dates and Win32 dates (or #12-30-1899# - #01-01-1601#)
-Private Const rDayZeroBias As Double = 109205#   ' Abs(CDbl(#01-01-1601#))
-
-' 10000000 nanoseconds * 60 seconds * 60 minutes * 24 hours / 10000 comes to 86400000 (the 10000 adjusts for fixed point in Currency)
-Private Const rMillisecondPerDay As Double = 10000000# * 60# * 60# * 24# / 10000#
-
-'Min/max date values
-Private Const datMin As Date = #1/1/100#
-Private Const datMax As Date = #12/31/9999 11:59:59 PM#
-
-'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExistss Function"
-' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
-Private Const ERROR_SHARING_VIOLATION As Long = 32
-Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
+Private Type WIN32_PROCESS_INFORMATION
+    hProcess As Long
+    hThread As Long
+    dwProcessID As Long
+    dwThreadID As Long
+End Type
 
 'Used to shell an external program, then wait until it completes
-Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessID As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-
-Private Const SYNCHRONIZE = &H100000
-Private Const WAIT_INFINITE = -1&
+Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByVal lpStartupInfo As Long, ByVal lpProcessInformation As Long) As Long
+Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessID As Long) As Long
+Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 
 'PD creates a lot of temp files.  To prevent hard drive thrashing, this module tracks created temp files,
 ' and deletes them en masse when PD terminates.  (You can also delete temp files prematurely by calling the
@@ -79,27 +81,24 @@ Private m_FSO As pdFSO
 'That said, an initial extension is still required, because this function should only be used if a file name with
 ' a matching extension exists (e.g. it is perfectly fine to have the same filename with DIFFERENT extensions in the
 ' target directory).
-Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As String, ByRef desiredExtension As String) As String
+Public Function IncrementFilename(ByRef dstDirectory As String, ByRef srcFilename As String, ByRef desiredExtension As String) As String
     
     'First, check to see if a file with that name and extension appears in the destination directory.
     ' If it does, just return the filename we were passed.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If Not cFile.FileExists(dstDirectory & fName & "." & desiredExtension) Then
-        IncrementFilename = fName
+    If (Not Files.FileExists(dstDirectory & srcFilename & "." & desiredExtension)) Then
+        IncrementFilename = srcFilename
     Else
 
         'If we made it to this line of code, a file with that name and extension appears in the destination directory.
         
         'Start by figuring out if the file is already in the format: "filename (#).ext"
         Dim tmpFilename As String
-        tmpFilename = Trim$(fName)
+        tmpFilename = Trim$(srcFilename)
         
         Dim numToAppend As Long
         
         'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-        If (StrComp(Right$(tmpFilename, 1), ")", vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(Right$(tmpFilename, 1), ")", False) Then
         
             Dim i As Long
             For i = Len(tmpFilename) - 1 To 1 Step -1
@@ -108,9 +107,9 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
                 If (Not IsNumeric(Mid$(tmpFilename, i, 1))) Then
                     
                     'This character is non-numeric.  See if it's an opening parentheses.
-                    If StrComp(Mid$(tmpFilename, i, 1), "(", vbBinaryCompare) = 0 Then
+                    If Strings.StringsEqual(Mid$(tmpFilename, i, 1), "(", False) Then
                         
-                        'This filename already adheres to the pattern "Filename (###).ext".  To spare us from auto-scanning
+                        'This filename adheres to the pattern "Filename (###).ext".  To spare us from auto-scanning
                         ' numbers that are likely taken, use this number as our starting point for auto-incrementing.
                         numToAppend = CLng(Mid$(tmpFilename, i + 1, Len(tmpFilename) - i - 1))
                         tmpFilename = Left$(tmpFilename, i - 2)
@@ -133,7 +132,7 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
         End If
         
         'Loop through the folder, looking for the first "Filename (###).ext" variant that is not already taken.
-        Do While cFile.FileExists(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
+        Do While Files.FileExists(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
             numToAppend = numToAppend + 1
         Loop
             
@@ -144,315 +143,44 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
 
 End Function
 
-'Generate a "browse for folder" dialog.  Vista+ users get a fancy new interface; XP users get the shitty old interface.
-' Many thanks to vbForums user "LaVolpe", who wrote both the interfaces used here.  For implementation details and
-' links to the original, unmodified classes, please read the header comments in the referenced classes.
-Public Function BrowseForFolder(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
-    
-    If (Len(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
-    
-    Dim cSysInfo As pdSystemInfo
-    Set cSysInfo = New pdSystemInfo
-    
-    'Vista+ users get the fancy new "browse for folder" interface
-    If cSysInfo.IsOSVistaOrLater Then
-    
-        Dim cBrowseNew As cFileDialogVista
-        Set cBrowseNew = New cFileDialogVista
-        
-        With cBrowseNew
-            .propFlags = FOS__BrowseFoldersDefaults
-            If (Len(initFolder) <> 0) Then .propStartupFolder_Set initFolder, ppType_AsString
-            
-            'For reasons I don't understand, a strange magic number is used to report cancellation; see the
-            ' function documentation for additional details.
-            If (.DialogShow(srcHwnd, FDLG_BROWSEFOLDERS, dialogTitleText) <> -2147023673) Then
-                BrowseForFolder = .IShellItem_GetDisplayName(ObjPtr(.ResultsItem(1)), SIGDN_FILESYSPATH, False)
-            Else
-                BrowseForFolder = vbNullString
-            End If
-        End With
-        
-    'XP users get the crappy old browse interface.
-    Else
-        
-        Dim cBrowse As cUnicodeBrowseFolders
-        Set cBrowse = New cUnicodeBrowseFolders
-        
-        With cBrowse
-        
-            If (Len(initFolder) <> 0) Then .InitialDirectory = initFolder
-            .dialogTitle = dialogTitleText
-            .Flags = BIF_RETURNONLYFSDIRS Or BIF_NEWDIALOGSTYLE
-                
-            If .ShowBrowseForFolder(srcHwnd) Then
-                BrowseForFolder = cBrowse.SelectedFolder
-            Else
-                BrowseForFolder = vbNullString
-            End If
-            
-        End With
-        
-    End If
-    
-    'PD folder functions enforce a trailing slash, to simplify subsequent concatenations
-    If (Len(BrowseForFolder) <> 0) Then
-        Dim cFSO As pdFSO
-        Set cFSO = New pdFSO
-        BrowseForFolder = cFSO.EnforcePathSlash(BrowseForFolder)
-    End If
-    
-End Function
-
-'Open a string as a hyperlink in the user's default browser
-Public Sub OpenURL(ByVal targetURL As String)
-    Dim targetAction As String: targetAction = "Open"
-    ShellExecute FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
-End Sub
-
 'Execute another program (in PhotoDemon's case, a plugin), then wait for it to finish running.
-Public Function ShellAndWait(ByVal sPath As String, ByVal winStyle As VbAppWinStyle) As Boolean
-
-    Dim procID As Long
-    Dim procHandle As Long
-
-    'Start the program
-    On Error GoTo ShellError
-    procID = Shell(sPath, winStyle)
-    On Error GoTo 0
-
-    'Use the external program's handle to initiate a wait process
-    procHandle = OpenProcess(SYNCHRONIZE, 0, procID)
-    If procHandle <> 0 Then
-        WaitForSingleObject procHandle, WAIT_INFINITE
-        CloseHandle procHandle
-    End If
+Public Function ShellAndWait(ByVal executablePath As String, Optional ByVal commandLineArguments As String = vbNullString, Optional ByVal showAppWindow As Boolean = False) As Boolean
     
-    ShellAndWait = True
-    Exit Function
-
-ShellError:
-    ShellAndWait = False
-End Function
-
-'Make sure the right backslash of a path is existant
-Public Function FixPath(ByVal tempString As String) As String
-    If Right$(tempString, 1) <> "\" Then
-        FixPath = tempString & "\"
+    Dim startInfo As WIN32_STARTUP_INFO, procInfo As WIN32_PROCESS_INFORMATION
+    With startInfo
+        .cb = Len(startInfo)
+        .dwFlags = STARTF_USESHOWWINDOW
+        If showAppWindow Then .wShowWindow = SW_NORMAL Else .wShowWindow = SW_HIDE
+    End With
+    
+    'Null strings are problematic here; generate pointers manually to account for their possible existence
+    Dim ptrToExePath As Long, ptrToCmdArgs As Long
+    If (Len(executablePath) <> 0) Then ptrToExePath = StrPtr(executablePath) Else ptrToExePath = 0
+    If (Len(commandLineArguments) <> 0) Then ptrToCmdArgs = StrPtr(commandLineArguments) Else ptrToCmdArgs = 0
+    
+    If (CreateProcessW(ptrToExePath, ptrToCmdArgs, ByVal 0&, ByVal 0&, 1&, 0&, ByVal 0&, 0&, VarPtr(startInfo), VarPtr(procInfo)) <> 0) Then
+        
+        'Get a process handle from the returned ID
+        If (procInfo.hProcess <> 0) Then
+            ShellAndWait = (WaitForSingleObject(procInfo.hProcess, WAIT_INFINITE) <> &HFFFFFFFF)
+            CloseHandle procInfo.hProcess
+        End If
+    
     Else
-        FixPath = tempString
-    End If
-End Function
-
-'Given a full file path (path + name + extension), remove everything but the directory structure
-Public Sub StripDirectory(ByRef sString As String)
-    
-    Dim x As Long
-    
-    For x = Len(sString) To 1 Step -1
-        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            sString = Left$(sString, x)
-            Exit Sub
-        End If
-    Next x
-    
-End Sub
-
-'Given a full file path (path + name + extension), return the directory structure
-Public Function GetDirectory(ByRef sString As String) As String
-    
-    Dim x As Long
-    
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            GetDirectory = Left$(sString, x)
-            Exit Function
-        End If
-    Next x
-    
-End Function
-
-'Pull the filename ONLY (no directory) off a path
-Public Sub StripFilename(ByRef sString As String)
-    
-    Dim x As Long
-    
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            sString = Right(sString, Len(sString) - x)
-            Exit Sub
-        End If
-    Next x
-    
-End Sub
-
-'Return the filename chunk of a path
-Public Function GetFilename(ByVal sString As String) As String
-
-    Dim i As Long
-    
-    For i = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            GetFilename = Right$(sString, Len(sString) - i)
-            Exit Function
-        End If
-    Next i
-    
-End Function
-
-'Return a filename without an extension
-Public Function GetFilenameWithoutExtension(ByVal sString As String) As String
-
-    Dim tmpFilename As String
-
-    Dim i As Long
-    
-    For i = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            tmpFilename = Right$(sString, Len(sString) - i)
-            Exit For
-        End If
-    Next i
-    
-    'If we were only passed a filename (without the rest of the path), restore the original entry now
-    If Len(tmpFilename) = 0 Then tmpFilename = sString
-    
-    'Remove the extension, if any
-    StripOffExtension tmpFilename
-    
-    GetFilenameWithoutExtension = tmpFilename
-    
-End Function
-
-'Pull the filename & directory out WITHOUT any extension (but with the ".")
-Public Sub StripOffExtension(ByRef sString As String)
-
-    Dim x As Long
-
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid$(sString, x, 1) = ".") Then
-            sString = Left$(sString, x - 1)
-            Exit Sub
-        End If
-    Next x
-    
-End Sub
-
-'Function to return the extension from a filename
-Public Function GetExtension(sFile As String) As String
-    
-    Dim i As Long
-    For i = Len(sFile) To 1 Step -1
-    
-        'If we find a path before we find an extension, return a blank string
-        If (Mid(sFile, i, 1) = "\") Or (Mid(sFile, i, 1) = "/") Then
-            GetExtension = ""
-            Exit Function
-        End If
-        
-        If Mid(sFile, i, 1) = "." Then
-            GetExtension = Right$(sFile, Len(sFile) - i)
-            Exit Function
-        End If
-    Next i
-    
-    'If we reach this point, no extension was found
-    GetExtension = ""
-            
-End Function
-
-'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
-Public Function GetDomainName(ByVal Address As String) As String
-        
-    Dim strOutput As String, strTemp As String
-    Dim lngLoopCount As Long
-    Dim lngBCount As Long, lngCharCount As Long
-    
-    strOutput$ = Replace(Address, "\", "/")
-        
-    lngCharCount = Len(strOutput)
-    
-    If (InStrB(1, strOutput, "/")) Then
-        
-        Do Until ((strTemp = "/") Or (lngLoopCount = lngCharCount))
-            lngLoopCount = lngLoopCount + 1
-            strTemp = Mid$(strOutput, lngBCount + 1, 1)
-            lngBCount = lngBCount + 1
-        Loop
-        
-    End If
-        
-    strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
-    lngBCount = 0
-    strTemp = "/"
-    
-    If (InStrB(1, strOutput, "/")) Then
-        
-        Do Until strTemp <> "/"
-            strTemp = Mid$(strOutput, lngBCount + 1, 1)
-            If strTemp = "/" Then lngBCount = lngBCount + 1
-        Loop
-    
-    End If
-    
-    strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
-    strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbBinaryCompare) - 1)
-    GetDomainName = strOutput
-
-End Function
-
-'Retrieve the requested date type (creation, access, or last-modified time) of a file.
-' Thank you to http://vb.mvps.org/hardcore/html/filedatestimes.htm for this function.
-Public Function FileAnyDateTime(ByRef sPath As String, Optional ByRef datCreation As Date = datMin, Optional ByRef datAccess As Date = datMin) As Date
-    
-    ' Take the easy way if no optional arguments
-    If datCreation = datMin And datAccess = datMin Then
-        FileAnyDateTime = VBA.FileDateTime(sPath)
-        Exit Function
-    End If
-
-    Dim fnd As WIN32_FIND_DATA
-    Dim hFind As Long
-    
-    ' Get all three times in UDT
-    hFind = FindFirstFile(sPath, fnd)
-    If hFind = INVALID_HANDLE_VALUE Then Debug.Print "Requested file " & sPath & " was not found!"
-    FindClose hFind
-    
-    ' Convert them to Visual Basic format
-    datCreation = Win32ToVbTime(fnd.ftCreationTime)
-    datAccess = Win32ToVbTime(fnd.ftLastAccessTime)
-    FileAnyDateTime = Win32ToVbTime(fnd.ftLastWriteTime)
-    
-End Function
-
-'Sub function for FileAnyDateTime, above.  Once again, thank you to
-' http://vb.mvps.org/hardcore/html/filedatestimes.htm for the code.
-Private Function Win32ToVbTime(ft As Currency) As Date
-    
-    Dim ftl As Currency
-    
-    ' Call API to convert from UTC time to local time
-    If FileTimeToLocalFileTime(ft, ftl) Then
-        ' Local time is nanoseconds since 01-01-1601
-        ' In Currency that comes out as milliseconds
-        ' Divide by milliseconds per day to get days since 1601
-        ' Subtract days from 1601 to 1899 to get VB Date equivalent
-        Win32ToVbTime = CDate((ftl / rMillisecondPerDay) - rDayZeroBias)
-    Else
-        Debug.Print "FileTimeToLocalFileTime failed!"
+        Debug.Print "WARNING!  ShellAndWait failed to create target process: " & executablePath
     End If
     
 End Function
 
 'Request a temporary filename.  The filename will automatically be added to PD's internal cache, and deleted when
-' PD exits.  The caller *can* delete the file if they want, but it is not necessary.
+' PD exits.  The caller *can* delete the file if they want, but it is not necessary (as PD automatically clears all
+' cached filenames at shutdown time).
 Public Function RequestTempFile() As String
 
     If (m_NumOfTempFiles = 0) Then
         ReDim m_ListOfTempFiles(0 To INIT_TEMP_FILE_CACHE - 1) As String
     Else
-        If m_NumOfTempFiles > UBound(m_ListOfTempFiles) Then ReDim Preserve m_ListOfTempFiles(0 To m_NumOfTempFiles * 2 - 1) As String
+        If (m_NumOfTempFiles > UBound(m_ListOfTempFiles)) Then ReDim Preserve m_ListOfTempFiles(0 To m_NumOfTempFiles * 2 - 1) As String
     End If
         
     Dim cFile As pdSystemInfo
@@ -471,14 +199,9 @@ Public Sub DeleteTempFiles()
 
     If (m_NumOfTempFiles > 0) Then
     
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         Dim i As Long
         For i = 0 To m_NumOfTempFiles - 1
-            If Len(m_ListOfTempFiles(i)) <> 0 Then
-                If cFile.FileExists(m_ListOfTempFiles(i)) Then cFile.KillFile m_ListOfTempFiles(i)
-            End If
+            If (Len(m_ListOfTempFiles(i)) <> 0) Then Files.FileDeleteIfExists m_ListOfTempFiles(i)
         Next i
         
         m_NumOfTempFiles = 0
@@ -494,4 +217,80 @@ End Sub
 Private Function InitializeFSO() As Boolean
     If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
     InitializeFSO = True
+End Function
+
+Public Function FileCreateFromByteArray(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False) As Boolean
+    If InitializeFSO Then FileCreateFromByteArray = m_FSO.FileCreateFromByteArray(srcArray, pathToFile, overwriteExistingIfPresent, fileIsTempFile)
+End Function
+
+Public Function FileCreateFromPtr(ByVal ptrSrc As Long, ByVal dataLength As Long, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False) As Boolean
+    If InitializeFSO Then FileCreateFromPtr = m_FSO.FileCreateFromPtr(ptrSrc, dataLength, pathToFile, overwriteExistingIfPresent, fileIsTempFile)
+End Function
+
+Public Function FileDelete(ByRef srcFile As String) As Boolean
+    If InitializeFSO Then FileDelete = m_FSO.FileDelete(srcFile)
+End Function
+
+'Thin wrapper around FileExists() and FileDelete().  Status is not returned, by design; if you want that, you should be calling those
+' functions directly so you can deal with individual failure possibilities.
+'
+'TODO: look at adding a possible "rollback" option, where we cache the deleted file contents at module-level, then allow the user
+' to restore it via a matching RestoreLastDelete() kinda thing.  (For some things, like failed image saves, this is preferable
+' to deleting the target file, then doing nothing if the export mysteriously fails.)
+Public Sub FileDeleteIfExists(ByRef srcFile As String)
+    If InitializeFSO Then
+        If m_FSO.FileExists(srcFile) Then m_FSO.FileDelete srcFile
+    End If
+End Sub
+
+Public Function FileExists(ByRef srcFile As String) As Boolean
+    If InitializeFSO Then FileExists = m_FSO.FileExists(srcFile)
+End Function
+
+Public Function FileGetExtension(ByRef srcFile As String) As String
+    If InitializeFSO Then FileGetExtension = m_FSO.FileGetExtension(srcFile)
+End Function
+
+Public Function FileGetName(ByRef srcPath As String, Optional ByVal stripExtension As Boolean = False) As String
+    If InitializeFSO Then FileGetName = m_FSO.FileGetName(srcPath, stripExtension)
+End Function
+
+Public Function FileGetPath(ByRef srcPath As String) As String
+    If InitializeFSO Then FileGetPath = m_FSO.FileGetPath(srcPath)
+End Function
+
+Public Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Date
+    If InitializeFSO Then FileGetTimeAsDate = m_FSO.FileGetTimeAsDate(srcFile, typeOfTime)
+End Function
+
+Public Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
+    If InitializeFSO Then FileLoadAsByteArray = m_FSO.FileLoadAsByteArray(srcFile, dstArray)
+End Function
+
+Public Function FileLoadAsString(ByRef srcFile As String, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
+    If InitializeFSO Then FileLoadAsString = m_FSO.FileLoadAsString(srcFile, dstString, forceWindowsLineEndings)
+End Function
+
+Public Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = vbNullString) As PD_FILE_PATCH_RESULT
+    If InitializeFSO Then FileReplace = m_FSO.FileReplace(oldFile, newFile, customBackupFile)
+End Function
+
+Public Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As String, Optional ByVal useUTF8 As Boolean = True, Optional ByVal useUTF8_BOM As Boolean = True) As Boolean
+    If InitializeFSO Then FileSaveAsText = m_FSO.FileSaveAsText(srcString, dstFilename, useUTF8, useUTF8_BOM)
+End Function
+
+Public Function PathAddBackslash(ByRef srcPath As String) As String
+    If InitializeFSO Then PathAddBackslash = m_FSO.PathAddBackslash(srcPath)
+End Function
+
+Public Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
+    If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHwnd, initFolder, dialogTitleText)
+End Function
+
+Public Function PathCreate(ByVal fullPath As String, Optional ByVal createIntermediateFoldersAsNecessary As Boolean = False) As Boolean
+    If InitializeFSO Then PathCreate = m_FSO.PathCreate(fullPath, createIntermediateFoldersAsNecessary)
+End Function
+
+Public Function PathExists(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
+    If InitializeFSO Then PathExists = m_FSO.PathExists(fullPath, checkWriteAccessAsWell)
 End Function

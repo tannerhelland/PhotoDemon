@@ -379,16 +379,16 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
         ' the current codepage anyway.
         Else
             dstString = StrConv(srcBytes, vbUnicode)
-            'Debug.Print "FYI: pdUnicode.LoadTextFileAsString is unsure of this string's encoding.  Current user's codepage will be assumed."
+            Debug.Print "FYI: pdUnicode.ConvertUnknownBytes received a string with unclear encoding.  Current user's codepage was used for conversion."
         End If
         
     End If
     
-    'If the caller is concerned about inconsistent line-endings, we can forcibly convert everything to vbCrLf.  This harms performance (as we
-    ' need to cover both the CR-only case (OSX) and LF-only case (Linux/Unix)), but it ensures that any combination of linefeed characters
-    ' are properly normalized against vbCrLf.
+    'If the caller is concerned about inconsistent line-endings, we can forcibly convert everything to vbCrLf.
+    ' This harms performance (as we need to cover both the CR-only case (OSX) and LF-only case (Linux/Unix)),
+    ' but it ensures that any combination of linefeed characters are properly normalized against vbCrLf.
     If forceWindowsLineEndings Then
-    
+        
         'Force all existing vbCrLf instances to vbLf
         If InStr(1, dstString, vbCrLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbCrLf, vbLf, , , vbBinaryCompare)
         

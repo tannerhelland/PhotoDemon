@@ -267,14 +267,14 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                         Set cFile = New pdFSO
                         
                         'Kill the destination file if it already exists
-                        If cFile.FileExists(.TargetFileWhenComplete) Then cFile.KillFile .TargetFileWhenComplete
+                        Files.FileDeleteIfExists .TargetFileWhenComplete
                         
                         'Dump the downloaded data to file
                         Dim hFile As Long
-                        If cFile.CreateFileHandle(.TargetFileWhenComplete, hFile, True, True, OptimizeSequentialAccess) Then
+                        If cFile.FileCreateHandle(.TargetFileWhenComplete, hFile, True, True, OptimizeSequentialAccess) Then
                             
-                            cFile.WriteDataToFile hFile, VarPtr(.DataBytes(0)), UBound(.DataBytes) + 1
-                            cFile.CloseFileHandle hFile
+                            cFile.FileWriteData hFile, VarPtr(.DataBytes(0)), UBound(.DataBytes) + 1
+                            cFile.FileCloseHandle hFile
                             
                         Else
                             Debug.Print "WARNING! File was downloaded successfully, but we couldn't write it to the hard drive.  Check the path: " & .TargetFileWhenComplete

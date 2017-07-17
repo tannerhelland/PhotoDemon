@@ -386,7 +386,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     
     'In its default configuration, URLs are shelled automatically
     Else
-        If Len(m_URL) <> 0 Then Files.OpenURL m_URL
+        If (Len(m_URL) <> 0) Then Web.OpenURL m_URL
     End If
     
 End Sub

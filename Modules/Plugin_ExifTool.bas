@@ -94,7 +94,7 @@ End Type
 
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CreatePipe Lib "kernel32" (phReadPipe As Long, phWritePipe As Long, lpPipeAttributes As Any, ByVal nSize As Long) As Long
-Private Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, lpEnvironment As Any, ByVal lpCurrentDriectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
+Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByRef lpStartupInfo As STARTUPINFO, ByRef lpProcessInformation As PROCESS_INFORMATION) As Long
 Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHandle As Long, ByVal hSourceHandle As Long, ByVal hTargetProcessHandle As Long, lpTargetHandle As Long, ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwOptions As Long) As Long
 Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
@@ -351,13 +351,10 @@ Private Sub WriteMetadataDatabaseToFile()
     mdDatabasePath = m_ExifToolDataFolder & "ExifToolDatabase.xml"
         
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
-    If Len(m_DatabaseString) <> 0 Then m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
+    If (Len(m_DatabaseString) <> 0) Then m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
     
     'Write our XML string out to file
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    cFile.SaveStringToTextFile m_DatabaseString, mdDatabasePath
+    Files.FileSaveAsText m_DatabaseString, mdDatabasePath
         
     'Reset the database mode tracker, so the database doesn't accidentally get rebuilt again!
     m_DatabaseModeActive = False
@@ -378,15 +375,12 @@ Private Sub StopVerificationMode()
     m_VerificationModeActive = False
     
     'All file interactions are handled through pdFSO, PhotoDemon's Unicode-compatible file system object
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     If (Not m_technicalReportModeActive) And (Not m_ICCExtractionModeActive) Then
         
-        m_VerificationString = ""
+        m_VerificationString = vbNullString
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        If cFile.FileExists(m_tmpMetadataFilePath) Then cFile.KillFile m_tmpMetadataFilePath
+        Files.FileDeleteIfExists m_tmpMetadataFilePath
     
     Else
         
@@ -397,15 +391,14 @@ Private Sub StopVerificationMode()
             
             'Write the completed technical report out to a temp file
             Dim tmpFilename As String
-            tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(m_technicalReportSrcImage) & ".html"
-            
-            cFile.SaveStringToTextFile m_VerificationString, tmpFilename
+            tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & Files.FileGetName(m_technicalReportSrcImage, True) & ".html"
+            Files.FileSaveAsText m_VerificationString, tmpFilename
             
             'Shell the default HTML viewer for the user
-            m_VerificationString = ""
-            OpenURL tmpFilename
+            m_VerificationString = vbNullString
+            Web.OpenURL tmpFilename
             
-            m_technicalReportSrcImage = ""
+            m_technicalReportSrcImage = vbNullString
             m_technicalReportModeActive = False
             
         End If
@@ -514,8 +507,6 @@ End Function
 'Retrieve the currently installed ExifTool version.  (If ExifTool cannot be found, this will return FALSE.)
 Public Function GetExifToolVersion() As String
     
-    GetExifToolVersion = ""
-    
     If PluginManager.IsPluginCurrentlyInstalled(CCP_ExifTool) Then
         
         Dim exifPath As String
@@ -524,11 +515,18 @@ Public Function GetExifToolVersion() As String
         Dim outputString As String
         If ShellExecuteCapture(exifPath, "exiftool.exe -ver", outputString) Then
         
-            'The output string will be a simple version number, e.g. "XX.YY", and it will be terminated by a vbCrLf character.
-            ' Remove vbCrLf now.
+            'The output string will generally be a simple version number, e.g. "XX.YY", and it will be
+            ' terminated by a vbCrLf character.  Remove vbCrLf now.
             outputString = Trim$(outputString)
-            If InStr(outputString, vbCrLf) <> 0 Then outputString = Replace(outputString, vbCrLf, "")
-            GetExifToolVersion = outputString
+            If (InStr(1, outputString, vbCrLf, vbBinaryCompare) <> 0) Then outputString = Replace(outputString, vbCrLf, "")
+            
+            'Development versions of ExifTool (e.g. any version number that is not a multiple of 10) may include
+            ' a warning about the current "official" version of the library.  This warning is placed at the end
+            ' of the version number, using formatting like: "10.01 [Warning: Library version is 10.00]".
+            
+            'Look for such trailing tags and remove them if present.
+            If (InStr(1, outputString, "[", vbBinaryCompare) <> 0) Then outputString = Left$(outputString, InStr(1, outputString, "[", vbBinaryCompare) - 1)
+            GetExifToolVersion = Trim$(outputString)
             
         End If
         
@@ -662,10 +660,7 @@ End Function
 Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Boolean
     
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If Files.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -709,9 +704,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
     
     'For this to work, the target file must exist on disk.  (ExifTool requires a disk copy to extract the
     ' ICC profile out to file.)
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If cFile.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If Files.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -760,9 +753,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
 End Function
 
 Public Function DoesTagDatabaseExist() As Boolean
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    DoesTagDatabaseExist = cFile.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml")
+    DoesTagDatabaseExist = Files.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml")
 End Function
 
 Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef parentForm As Form = Nothing) As Boolean
@@ -805,9 +796,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
             End If
             
             'With the database successfully constructed, we now need to load it into memory
-            Dim cFile As pdFSO
-            Set cFile = New pdFSO
-            If Len(m_DatabaseString) = 0 Then cFile.LoadTextFileAsString m_ExifToolDataFolder & "exifToolDatabase.xml", m_DatabaseString
+            If (Len(m_DatabaseString) = 0) Then Files.FileLoadAsString m_ExifToolDataFolder & "exifToolDatabase.xml", m_DatabaseString
             
             'Metadata caching is performed on a per-image basis, so we need to reset the cache on each invocation
             ExifTool.StartNewDatabaseCache
@@ -830,12 +819,8 @@ End Function
 Public Function WriteTagDatabase() As Boolean
 
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    'If the database already exists, there's no need to recreate it
     ' (TODO: check the database version number, as new tags may be added between releases...)
-    If cFile.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
+    If Files.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
         WriteTagDatabase = True
     Else
     
@@ -877,9 +862,6 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         End If
     End If
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'See if the output file format supports metadata.  If it doesn't, exit now.
     ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
     Dim outputMetadataFormat As PD_METADATA_FORMAT
@@ -887,7 +869,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
-        If cFile.FileExists(srcMetadataFile) Then cFile.KillFile srcMetadataFile
+        Files.FileDeleteIfExists srcMetadataFile
         WriteMetadata = True
         Exit Function
     End If
@@ -1185,7 +1167,7 @@ Public Function StartExifTool() As Boolean
     m_ExifToolDataFolder = g_UserPreferences.GetDataPath() & "PluginData\"
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
-    cFSO.CreateFolder m_ExifToolDataFolder
+    cFSO.PathCreate m_ExifToolDataFolder
     
     'Next, set a local environment variable for Perl's temp folder, matching our temp folder above.  (If we do this prior
     ' to shelling ExifTool as a child process, ExifTool will automatically pick up the environment variable.)
@@ -1266,8 +1248,8 @@ Public Sub TerminateExifTool()
 
 End Sub
 
-'Capture output from the requested command-line executable and return it as a string.  At present, this is only used to check the
-' ExifTool version number, which is only done on-demand if the Plugin Manager is loaded.
+'Capture output from the requested command-line executable and return it as a string.  At present, this is only used to retrieve
+' plugin version numbers, a task performed on-demand only when the Plugin Manager dialog is loaded.
 ' ALSO NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his
 ' original version is available at the top of this module.
 Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
@@ -1275,8 +1257,6 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     Dim hPipeRead As Long, hPipeWrite As Long
     Dim hCurProcess As Long
     Dim sa As SECURITY_ATTRIBUTES
-    Dim si As STARTUPINFO
-    Dim PI As PROCESS_INFORMATION
     Dim baOutput() As Byte
     Dim sNewOutput As String
     Dim lBytesRead As Long
@@ -1304,8 +1284,9 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     'Replace the inheritable read handle with a non-inheritable one. (MSDN suggestion)
     DuplicateHandle hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, 0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE
 
-    With si
-        .cb = Len(si)
+    Dim startInfo As STARTUPINFO, procInfo As PROCESS_INFORMATION
+    With startInfo
+        .cb = Len(startInfo)
         .dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
         .hStdOutput = hPipeWrite
         
@@ -1314,10 +1295,10 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         
     End With
     
-    If CreateProcess(sApplicationPath, sCommandLineParams, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
+    If CreateProcessW(StrPtr(sApplicationPath), StrPtr(sCommandLineParams), ByVal 0&, ByVal 0&, 1&, 0&, ByVal 0&, 0&, startInfo, procInfo) Then
 
         'Close the thread handle, as we have no use for it
-        CloseHandle PI.hThread
+        CloseHandle procInfo.hThread
 
         'Also close the pipe's write handle. This is important, because ReadFile will not return until all write handles
         ' are closed or the buffer is full.
@@ -1325,16 +1306,14 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         hPipeWrite = 0
         
         Do
-            
-            If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0 Then Exit Do
-            
+            If (ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0) Then Exit Do
             sNewOutput = StrConv(baOutput, vbUnicode)
             dstString = dstString & Left$(sNewOutput, lBytesRead)
-            
         Loop
 
-        CloseHandle PI.hProcess
+        CloseHandle procInfo.hProcess
         CloseHandle hCurProcess
+        
     Else
         ShellExecuteCapture = False
         Message "Failed to start plugin service (couldn't create process: %1).", Err.LastDllError
@@ -1342,8 +1321,8 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     End If
     
     CloseHandle hPipeRead
-    If hPipeWrite Then CloseHandle hPipeWrite
-    If hCurProcess Then CloseHandle hCurProcess
+    If (hPipeWrite <> 0) Then CloseHandle hPipeWrite
+    If (hCurProcess <> 0) Then CloseHandle hCurProcess
     
     ShellExecuteCapture = True
     

@@ -66,38 +66,40 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String
-        shellPath = PluginManager.GetPluginPath & "pngquant.exe "
+        shellPath = PluginManager.GetPluginPath & "pngquant.exe"
         
+        Dim cmdParams As String
+        cmdParams = "pngquant.exe "
         'Like JPEGs, quality here is a nebulous measurement.  pngquant wants both a minimum quality (the image will not
         ' be saved if the conversion is worse than this) and a maximum quality (which determines how aggressive it is
         ' about paring down the color tree).  Quality 0 is way better than quality 0 on a JPEG; at Quality ~20 there is
         ' some noticeable dithering, but the image still looks pretty great depending on the color complexity.
         ' We allow pngquant to write a new file regardless of how low it needs to drop quality to compensate.
-        shellPath = shellPath & "--quality=0-" & CStr(qualityLevel) & " "
+        cmdParams = cmdParams & "--quality=0-" & CStr(qualityLevel) & " "
         
         'Speed controls the color space and search detail when quantizing the image+alpha data
-        shellPath = shellPath & "--speed=" & CStr(optimizeLevel) & " "
+        cmdParams = cmdParams & "--speed=" & CStr(optimizeLevel) & " "
         
         'Dithering is optional; it generally improves the output significantly, at some cost to file size
-        If (Not useDithering) Then shellPath = shellPath & "--nofs "
+        If (Not useDithering) Then cmdParams = cmdParams & "--nofs "
         
         'Force overwrite if a file with that name already exists
-        shellPath = shellPath & "-f "
+        cmdParams = cmdParams & "-f "
         
         'Request the addition of a custom "-8bpp.png" extension; without this, PNGquant will use its own extension
         ' (-fs8.png or -or8.png, depending on the use of dithering)
-        shellPath = shellPath & "--ext -8bpp.png "
+        cmdParams = cmdParams & "--ext -8bpp.png "
                 
         'Verbose output is helpful when debugging
         #If DEBUGMODE = 1 Then
-            shellPath = shellPath & "-v "
+            cmdParams = cmdParams & "-v "
         #End If
         
         'Tell pngquant to stop argument processing here
-        shellPath = shellPath & "-- "
+        cmdParams = cmdParams & "-- "
         
         'Add the filename, then go!
-        shellPath = shellPath & """" & dstFilename & """"
+        cmdParams = cmdParams & """" & dstFilename & """"
         
         Message "Using pngquant to optimize the PNG file.  This may take a moment..."
                 
@@ -106,11 +108,7 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
         DoEvents
         
         Dim shellCheck As Boolean
-        If displayConsoleWindow Then
-            shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
-        Else
-            shellCheck = ShellAndWait(shellPath, vbHide)
-        End If
+        shellCheck = ShellAndWait(shellPath, cmdParams, displayConsoleWindow)
         
         'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
         ' (from FreeImage) with the newly optimized one (from OptiPNG)
@@ -118,23 +116,20 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
             
             'If successful, PNGQuant created a new file with the name "filename-8bpp.png".  We need to rename that file
             ' to whatever name the user originally supplied - but only if the 8bpp transformation was successful!
-            Dim cFile As pdFSO
-            Set cFile = New pdFSO
-            
             Dim filenameCheck As String
-            filenameCheck = cFile.GetPathOnly(dstFilename) & cFile.GetFilename(dstFilename, True) & "-8bpp.png"
+            filenameCheck = Files.FileGetPath(dstFilename) & Files.FileGetName(dstFilename, True) & "-8bpp.png"
             
             'Make sure both FreeImage and PNGQuant were able to generate valid files, then rewrite the FreeImage one
             ' with the PNGQuant one.
-            If cFile.FileExists(filenameCheck) And cFile.FileExists(dstFilename) Then
-                cFile.ReplaceFile dstFilename, filenameCheck
+            If Files.FileExists(filenameCheck) And Files.FileExists(dstFilename) Then
+                Files.FileReplace dstFilename, filenameCheck
                 Message "pngquant optimization successful!"
             Else
             
                 'If the original filename's extension was not ".png", pngquant will just cram "-8bpp.png" onto
                 ' the existing filename+extension.  Check for this case now.
-                If cFile.FileExists(dstFilename & "-8bpp.png") And cFile.FileExists(dstFilename) Then
-                    cFile.ReplaceFile dstFilename, dstFilename & "-8bpp.png"
+                If Files.FileExists(dstFilename & "-8bpp.png") And Files.FileExists(dstFilename) Then
+                    Files.FileReplace dstFilename, dstFilename & "-8bpp.png"
                     Message "pngquant optimization successful!"
                 Else
                     Message "PNGQuant could not write file.  Default 32bpp image was saved instead."

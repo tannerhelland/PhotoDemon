@@ -308,9 +308,6 @@ Public Sub ResetMenuIcons()
         Dim iconLocation As Long
         iconLocation = 0
         
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         'Loop through the MRU list, and attempt to load thumbnail images for each entry
         Dim i As Long
         For i = 0 To numOfMRUFiles
@@ -321,7 +318,7 @@ Public Sub ResetMenuIcons()
             If (Len(tmpFilename) <> 0) Then
             
                 'If the file exists, add it to the MRU icon handler
-                If cFile.FileExists(tmpFilename) Then
+                If Files.FileExists(tmpFilename) Then
                     
                     iconLocation = iconLocation + 1
                     cMRUIcons.AddImageFromFile tmpFilename
@@ -339,10 +336,10 @@ Public Sub ResetMenuIcons()
         'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
         If g_IsVistaOrLater Then
             Dim largePadding As Single
-            largePadding = (m_RecentFileIconSize / 5)
+            largePadding = (m_RecentFileIconSize * 0.2)
             AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
             cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
-            largePadding = (m_RecentFileIconSize / 3)
+            largePadding = (m_RecentFileIconSize * 0.333)
             AddImageResourceToClsMenu "file_close", cMRUIcons, m_RecentFileIconSize, largePadding
             cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
         End If

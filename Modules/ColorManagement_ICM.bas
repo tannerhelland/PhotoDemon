@@ -1342,46 +1342,40 @@ End Function
 'Given a valid ICC profile path, convert it to an internal Windows color profile handle, validate it,
 ' and return the result.  Returns a non-zero handle if successful.
 Public Function LoadICCProfileFromFile_WindowsCMS(ByVal profilePath As String) As Long
-
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-
+    
+    LoadICCProfileFromFile_WindowsCMS = 0
+    
     'Start by loading the specified path into a byte array
     Dim tmpProfileArray() As Byte
+    If Files.FileExists(profilePath) Then
         
-    If cFile.FileExists(profilePath) Then
-        
-        If Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray) Then
-            LoadICCProfileFromFile_WindowsCMS = 0
-            Exit Function
+        If Files.FileLoadAsByteArray(profilePath, tmpProfileArray) Then
+            
+            'Next, prepare an ICC_PROFILE header to use with the color management APIs
+            Dim srcProfileHeader As ICC_PROFILE
+            srcProfileHeader.dwType = PROFILE_MEMBUFFER
+            srcProfileHeader.pProfileData = VarPtr(tmpProfileArray(0))
+            srcProfileHeader.cbDataSize = UBound(tmpProfileArray) + 1
+            
+            'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
+            LoadICCProfileFromFile_WindowsCMS = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+            
+            If (LoadICCProfileFromFile_WindowsCMS <> 0) Then
+            
+                'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
+                Dim tmpCheck As Long
+                If IsColorProfileValid(LoadICCProfileFromFile_WindowsCMS, tmpCheck) = 0 Then
+                    Debug.Print "Color profile loaded succesfully, but XML failed to validate."
+                    CloseColorProfile LoadICCProfileFromFile_WindowsCMS
+                    LoadICCProfileFromFile_WindowsCMS = 0
+                End If
+                
+            Else
+                Debug.Print "ICC profile failed to load (OpenColorProfile failed with error #" & Err.LastDllError & ")."
+            End If
+            
         End If
         
-    Else
-        LoadICCProfileFromFile_WindowsCMS = 0
-        Exit Function
-    End If
-
-    'Next, prepare an ICC_PROFILE header to use with the color management APIs
-    Dim srcProfileHeader As ICC_PROFILE
-    srcProfileHeader.dwType = PROFILE_MEMBUFFER
-    srcProfileHeader.pProfileData = VarPtr(tmpProfileArray(0))
-    srcProfileHeader.cbDataSize = UBound(tmpProfileArray) + 1
-    
-    'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
-    LoadICCProfileFromFile_WindowsCMS = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
-    
-    If (LoadICCProfileFromFile_WindowsCMS <> 0) Then
-    
-        'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
-        Dim tmpCheck As Long
-        If IsColorProfileValid(LoadICCProfileFromFile_WindowsCMS, tmpCheck) = 0 Then
-            Debug.Print "Color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile LoadICCProfileFromFile_WindowsCMS
-            LoadICCProfileFromFile_WindowsCMS = 0
-        End If
-        
-    Else
-        Debug.Print "ICC profile failed to load (OpenColorProfile failed with error #" & Err.LastDllError & ")."
     End If
 
 End Function

@@ -43,7 +43,7 @@ Option Explicit
 
 'API for determining certain system folders
 Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
-Private Declare Function SHGetFolderPath Lib "shfolder" Alias "SHGetFolderPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
+Private Declare Function SHFileGetPathPath Lib "shfolder" Alias "SHFileGetPathPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
 
 'Windows Folder Constants
 Public Enum CSIDLs
@@ -143,11 +143,7 @@ End Sub
 
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
 Friend Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
-    If getUserThemePathInstead Then
-        GetThemePath = m_UserThemePath
-    Else
-        GetThemePath = m_ThemePath
-    End If
+    If getUserThemePathInstead Then GetThemePath = m_UserThemePath Else GetThemePath = m_ThemePath
 End Function
 
 'Get the current Debug path
@@ -166,19 +162,13 @@ Friend Function GetSelectionPath() As String
 End Function
 
 Friend Sub SetSelectionPath(ByVal newSelectionPath As String)
-    StripDirectory newSelectionPath
-    newSelectionPath = Files.FixPath(newSelectionPath)
-    m_SelectionPath = newSelectionPath
+    m_SelectionPath = Files.PathAddBackslash(Files.FileGetPath(newSelectionPath))
     SetPref_String "Paths", "Selections", m_SelectionPath
 End Sub
 
 'Return the current Language directory
 Friend Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
-    If getUserLanguagePathInstead Then
-        GetLanguagePath = m_UserLanguagePath
-    Else
-        GetLanguagePath = m_LanguagePath
-    End If
+    If getUserLanguagePathInstead Then GetLanguagePath = m_UserLanguagePath Else GetLanguagePath = m_LanguagePath
 End Function
 
 'Return the current temporary directory, as specified by the user's preferences.  (Note that this is a totally different function from
@@ -190,21 +180,25 @@ End Function
 'Set the current temp directory
 Friend Sub SetTempPath(ByVal newTempPath As String)
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'If the folder exists and is writable as-is, great: save it and exit
-    If cFile.FolderExists(newTempPath, True) Or cFile.FolderExists(cFile.EnforcePathSlash(newTempPath), True) Then
-        m_TempPath = cFile.EnforcePathSlash(newTempPath)
+    Dim doesFolderExist As Boolean
+    doesFolderExist = Files.PathExists(newTempPath, True)
+    If (Not doesFolderExist) Then doesFolderExist = Files.PathExists(Files.PathAddBackslash(newTempPath), True)
+    
+    If doesFolderExist Then
+        m_TempPath = Files.PathAddBackslash(newTempPath)
         
     'If it doesn't exist, make sure the user didn't do something weird, like supply a file instead of a folder
     Else
     
-        newTempPath = cFile.EnforcePathSlash(cFile.GetPathOnly(newTempPath))
+        newTempPath = Files.PathAddBackslash(Files.FileGetPath(newTempPath))
         
         'Test the path again
-        If cFile.FolderExists(newTempPath, True) Or cFile.FolderExists(cFile.EnforcePathSlash(newTempPath), True) Then
-            m_TempPath = cFile.EnforcePathSlash(newTempPath)
+        doesFolderExist = Files.PathExists(newTempPath, True)
+        If (Not doesFolderExist) Then doesFolderExist = Files.PathExists(Files.PathAddBackslash(newTempPath), True)
+    
+        If doesFolderExist Then
+            m_TempPath = Files.PathAddBackslash(newTempPath)
             
         'If it still fails, revert to the default system temp path
         Else
@@ -240,9 +234,7 @@ End Function
 
 'Set the current macro directory
 Friend Sub SetMacroPath(ByVal newMacroPath As String)
-    StripDirectory newMacroPath
-    newMacroPath = Files.FixPath(newMacroPath)
-    m_MacroPath = newMacroPath
+    m_MacroPath = Files.PathAddBackslash(Files.FileGetPath(newMacroPath))
     SetPref_String "Paths", "Macro", m_MacroPath
 End Sub
 
@@ -259,57 +251,56 @@ End Function
 'Initialize key program directories
 Friend Sub InitializePaths()
     
+    'First things first: figure out where this .exe was launched from
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
-    'First things first: figure out where this .exe was launched from
     m_ProgramPath = cFile.AppPathW
     
     'Create an "App" path based off the m_ProgramPath - this is where essential application files (like plugins) are stored.
     ' Also, make sure the directory exists; if it doesn't, create it.
     m_AppPath = m_ProgramPath & "App\"
-    If (Not cFile.FolderExists(m_AppPath)) Then cFile.CreateFolder m_AppPath
+    If (Not Files.PathExists(m_AppPath)) Then Files.PathCreate m_AppPath
     
     m_AppPath = m_AppPath & "PhotoDemon\"
-    If (Not cFile.FolderExists(m_AppPath)) Then cFile.CreateFolder m_AppPath
+    If (Not Files.PathExists(m_AppPath)) Then Files.PathCreate m_AppPath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
     m_LanguagePath = m_AppPath & "Languages\"
-    If (Not cFile.FolderExists(m_LanguagePath)) Then cFile.CreateFolder m_LanguagePath
+    If (Not Files.PathExists(m_LanguagePath)) Then Files.PathCreate m_LanguagePath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL themes.  (User themes go in the Data folder.)
     m_ThemePath = m_AppPath & "Themes\"
-    If (Not cFile.FolderExists(m_ThemePath)) Then cFile.CreateFolder m_ThemePath
+    If (Not Files.PathExists(m_ThemePath)) Then Files.PathCreate m_ThemePath
     
     'Create a "Data" path based off the m_ProgramPath - this is where the preferences file and any other user-specific files
     ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
     m_DataPath = m_ProgramPath & "Data\"
-    If (Not cFile.FolderExists(m_DataPath)) Then cFile.CreateFolder m_DataPath
+    If (Not Files.PathExists(m_DataPath)) Then Files.PathCreate m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     m_MacroPath = m_DataPath & "Macros\"
-    If (Not cFile.FolderExists(m_MacroPath)) Then cFile.CreateFolder m_MacroPath
+    If (Not Files.PathExists(m_MacroPath)) Then Files.PathCreate m_MacroPath
             
     m_SelectionPath = m_DataPath & "Selections\"
-    If (Not cFile.FolderExists(m_SelectionPath)) Then cFile.CreateFolder m_SelectionPath
+    If (Not Files.PathExists(m_SelectionPath)) Then Files.PathCreate m_SelectionPath
     
     m_UserLanguagePath = m_DataPath & "Languages\"
-    If (Not cFile.FolderExists(m_UserLanguagePath)) Then cFile.CreateFolder m_UserLanguagePath
+    If (Not Files.PathExists(m_UserLanguagePath)) Then Files.PathCreate m_UserLanguagePath
     
     m_PresetPath = m_DataPath & "Presets\"
-    If (Not cFile.FolderExists(m_PresetPath)) Then cFile.CreateFolder m_PresetPath
+    If (Not Files.PathExists(m_PresetPath)) Then Files.PathCreate m_PresetPath
     
     m_IconPath = m_DataPath & "Icons\"
-    If (Not cFile.FolderExists(m_IconPath)) Then cFile.CreateFolder m_IconPath
+    If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
         
     m_DebugPath = m_DataPath & "Debug\"
-    If (Not cFile.FolderExists(m_DebugPath)) Then cFile.CreateFolder m_DebugPath
+    If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
     
     m_UserThemePath = m_DataPath & "Themes\"
-    If (Not cFile.FolderExists(m_UserThemePath)) Then cFile.CreateFolder m_UserThemePath
+    If (Not Files.PathExists(m_UserThemePath)) Then Files.PathCreate m_UserThemePath
     
     m_UpdatesPath = m_DataPath & "Updates\"
-    If (Not cFile.FolderExists(m_UpdatesPath)) Then cFile.CreateFolder m_UpdatesPath
+    If (Not Files.PathExists(m_UpdatesPath)) Then Files.PathCreate m_UpdatesPath
     
     'The user preferences file is also located in the \Data folder
     m_PreferencesPath = m_DataPath & PROGRAMNAME & "_settings.xml"
@@ -317,7 +308,8 @@ Friend Sub InitializePaths()
     'Last-used dialog settings are also located in the \Presets subfolder; retrieve the master file now, if it exists.
     m_MasterPresetFile = m_PresetPath & "MainPanels.xml"
     If (m_XMLPresets Is Nothing) Then Set m_XMLPresets = New pdXML
-    If cFile.FileExists(m_MasterPresetFile) Then
+    
+    If Files.FileExists(m_MasterPresetFile) Then
         If m_XMLPresets.LoadXMLFile(m_MasterPresetFile) Then
             If (Not m_XMLPresets.IsPDDataType("Presets")) Then m_XMLPresets.PrepareNewXML "Presets"
         End If
@@ -330,20 +322,17 @@ End Sub
 'Load all user settings from file
 Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'If no preferences file exists, build a default one
-    If (Not cFile.FileExists(m_PreferencesPath)) Then CreateNewPreferencesFile
+    If (Not Files.FileExists(m_PreferencesPath)) Then CreateNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
-    StartBatchPreferenceMode
+    Me.StartBatchPreferenceMode
         
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
     m_TempPath = GetPref_String("Paths", "TempFiles", "")
-    If (Not cFile.FolderExists(m_TempPath)) Then
+    If (Not Files.PathExists(m_TempPath)) Then
         m_TempPath = GetSystemTemporaryPath
         SetPref_String "Paths", "TempFiles", m_TempPath
     End If
@@ -372,20 +361,15 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
     'Terminate batch preference mode before exiting
-    If endBatchModeWhenFinished Then EndBatchPreferenceMode
+    If endBatchModeWhenFinished Then Me.EndBatchPreferenceMode
                 
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Friend Sub ResetPreferences()
-
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If cFile.FileExists(m_PreferencesPath) Then cFile.KillFile m_PreferencesPath
-    
+    Files.FileDeleteIfExists m_PreferencesPath
     CreateNewPreferencesFile
     LoadUserSettings
-    
 End Sub
 
 'Create a new preferences XML file from scratch.  When new preferences are added to the preferences dialog, they should also be
@@ -400,14 +384,9 @@ Private Sub CreateNewPreferencesFile()
     '     treating the program as if its being run for the first time is as good a plan as any.
     g_IsFirstRun = True
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'As a failsafe against data corruption, if this is determined to be a first run, we also delete some settings-related
     ' files in the Presets folder (if they exist).
-    If g_IsFirstRun Then
-        If cFile.FileExists(m_PresetPath & "Program_WindowLocations.xml") Then cFile.KillFile m_PresetPath & "Program_WindowLocations.xml"
-    End If
+    If g_IsFirstRun Then Files.FileDeleteIfExists m_PresetPath & "Program_WindowLocations.xml"
     
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
     Set m_XMLEngine = New pdXML
@@ -814,7 +793,7 @@ Private Function GetSystemTemporaryPath() As String
     If (lngLen = 0) Then Err.Raise Err.LastDllError
     
     'Return the temporary path, and ensure that it has a trailing "\"
-    GetSystemTemporaryPath = Files.FixPath(Left$(sRet, lngLen))
+    GetSystemTemporaryPath = Files.PathAddBackslash(Left$(sRet, lngLen))
 
 End Function
 
@@ -825,13 +804,13 @@ Private Function GetWindowsFolder(eFolder As CSIDLs) As String
     Dim sPath As String
     
     sPath = String$(MAX_LENGTH, " ")
-    If (SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
+    If (SHFileGetPathPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
         
         'Find the end of the string
         iR = InStr(1, sPath, vbNullChar) - 1
         
         'Return everything up to the first NULL and add a terminating slash
-        GetWindowsFolder = Files.FixPath(Left$(sPath, iR))
+        GetWindowsFolder = Files.PathAddBackslash(Left$(sPath, iR))
         
     End If
     

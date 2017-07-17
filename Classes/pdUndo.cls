@@ -912,19 +912,19 @@ Friend Sub ClearUndos()
     For i = 0 To m_UndoTotal
         
         'Check image data first...
-        If cFile.FileExists(GenerateUndoFilename(i)) Then cFile.KillFile GenerateUndoFilename(i)
+        Files.FileDeleteIfExists GenerateUndoFilename(i)
         
         '...followed by layer data
-        If cFile.FileExists(GenerateUndoFilename(i) & ".layer") Then cFile.KillFile GenerateUndoFilename(i) & ".layer"
+        Files.FileDeleteIfExists GenerateUndoFilename(i) & ".layer"
         
         '...followed by selection data
-        If cFile.FileExists(GenerateUndoFilename(i) & ".selection") Then cFile.KillFile GenerateUndoFilename(i) & ".selection"
+        Files.FileDeleteIfExists GenerateUndoFilename(i) & ".selection"
         
     Next i
     
     'Destroy the header file and preview image, if any
-    If cFile.FileExists(GenerateUndoHeaderFilename()) Then cFile.KillFile GenerateUndoHeaderFilename()
-    If cFile.FileExists(GenerateUndoHeaderFilename() & ".pdasi") Then cFile.KillFile GenerateUndoHeaderFilename() & ".pdasi"
+    Files.FileDeleteIfExists GenerateUndoHeaderFilename()
+    Files.FileDeleteIfExists GenerateUndoHeaderFilename() & ".pdasi"
     
     'Set the current and maximum Undo number to 0
     m_UndoNum = 0

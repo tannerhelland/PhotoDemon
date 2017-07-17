@@ -56,9 +56,6 @@ Private m_xmlContents As String
 'Text comparison mode.  By default, this is set to m_TextCompareMode.  Outside functions can modify this via setTextCompareMode().
 Private m_TextCompareMode As VbCompareMethod
 
-'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
-Private m_File As pdFSO
-
 Public Sub SetTextCompareMode(ByVal newCompareMode As VbCompareMethod)
     m_TextCompareMode = newCompareMode
 End Sub
@@ -506,7 +503,7 @@ End Function
 ' Returns: TRUE if file found, loaded, and validated successfully.  FALSE otherwise.
 Public Function LoadXMLFile(ByRef xmlPath As String) As Boolean
     
-    If m_File.LoadTextFileAsString(xmlPath, m_xmlContents) Then
+    If Files.FileLoadAsString(xmlPath, m_xmlContents) Then
             
         'Remove all tabs from the source file.  (These pad the XML data unnecessarily, so we erase them when loading XML, and restore
         ' them when writing XML.)
@@ -617,7 +614,7 @@ Public Function WriteXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     If (InStr(1, fileContents, "windows-1252", vbBinaryCompare) <> 0) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
     
     'Allow pdFSO to handle the file write for us
-    WriteXMLToFile = m_File.SaveStringToTextFile(fileContents, dstFile)
+    WriteXMLToFile = Files.FileSaveAsText(fileContents, dstFile)
     
     Exit Function
     
@@ -1111,7 +1108,4 @@ Private Sub Class_Initialize()
     ' so be aware of the considerations before relying on output in locales other than en-US.
     m_TextCompareMode = vbTextCompare
     
-    'Prepare a module-level pdFSO instance, which will make file operations much easier
-    Set m_File = New pdFSO
-
 End Sub

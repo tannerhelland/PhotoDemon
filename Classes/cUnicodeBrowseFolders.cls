@@ -19,8 +19,7 @@ Attribute VB_Exposed = False
 'This class was originally written by vbforums.com user LaVolpe.  To the best of my knowledge, the code has
 ' been released into the public domain.
 
-'Many thanks to LaVolpe for this comprehensive folder browsing interface, which PhotoDemon uses whenever
-' the user is allowed to select a folder.
+'Many thanks to LaVolpe for this comprehensive folder browsing interface, which PhotoDemon uses on XP installs.
 
 Option Explicit
 
@@ -63,7 +62,7 @@ Private Type BrowseInfo
    iImage As Long
 End Type
 
-Public Enum BrowseForFolderDialogFlagsEnum
+Public Enum FolderBrowseFlagsEnum
     ' full descriptions: http://msdn.microsoft.com/en-us/library/windows/desktop/bb773205%28v=vs.85%29.aspx
     BIF_RETURNONLYFSDIRS = &H1
         'Only return file system directories. If the user selects folders that are not part of the file system, the OK button is grayed.
@@ -291,10 +290,10 @@ Public Property Get FolderDisplayName() As String
 End Property
 
 ' returns/sets the flags used for the dialog
-Public Property Get Flags() As BrowseForFolderDialogFlagsEnum
+Public Property Get Flags() As FolderBrowseFlagsEnum
     Flags = obif.ulFlags
 End Property
-Public Property Let Flags(ByVal dFlags As BrowseForFolderDialogFlagsEnum)
+Public Property Let Flags(ByVal dFlags As FolderBrowseFlagsEnum)
     obif.ulFlags = dFlags
 End Property
 

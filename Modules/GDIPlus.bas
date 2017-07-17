@@ -2861,12 +2861,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End Select
 
     'With our encoder prepared, we can finally continue with the save
-    
-    'Check to see if a file already exists at this location
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(dstFilename) Then cFile.KillFile dstFilename
+    Files.FileDeleteIfExists dstFilename
     
     Message "Saving the file..."
     
@@ -2925,9 +2920,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
         
         'Check to see if a file already exists at this location
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        If cFile.FileExists(dstFilename) Then cFile.KillFile dstFilename
+        Files.FileDeleteIfExists dstFilename
         
         'Perform the encode and save
         GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
