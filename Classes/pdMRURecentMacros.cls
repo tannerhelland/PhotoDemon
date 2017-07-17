@@ -97,7 +97,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
         'Next, load all relevant menus in turn
         For i = 1 To numEntries - 1
             Load FormMain.MnuRecentMacros(i)
-            FormMain.MnuRecentMacros(i).Caption = mruManager.getSpecificMRUCaption(i)
+            FormMain.MnuRecentMacros(i).Caption = mruManager.GetSpecificMRUCaption(i)
         Next i
         
         'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
@@ -112,25 +112,21 @@ End Sub
 Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As Long, ByVal mruCaption As String)
     
     'Note that we do not need to load mnuRecDocs(0) - it is always loaded.  Only load menu items greater than this.
-    If Index > 0 Then
+    If (Index > 0) Then
         Load FormMain.MnuRecentMacros(Index)
     Else
         FormMain.MnuRecentMacros(Index).Enabled = True
     End If
     
     'Apply the caption we were passed
-    FormMain.MnuRecentMacros(Index).Caption = GetFilenameWithoutExtension(mruCaption)
+    FormMain.MnuRecentMacros(Index).Caption = Files.FileGetName(mruCaption, True)
     
 End Sub
 
 Private Sub IMRUList_AfterListLoad(ByRef mruManager As pdMRUManager)
     
     'Make sure the "Clear MRU" option is visible and enabled
-    If mruManager.MRU_ReturnCount > 0 Then
-        FormMain.mnuClearRecentMacros.Enabled = True
-    Else
-        FormMain.mnuClearRecentMacros.Enabled = False
-    End If
+    FormMain.mnuClearRecentMacros.Enabled = (mruManager.MRU_ReturnCount > 0)
     
     'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
     IconsAndCursors.ResetMenuIcons

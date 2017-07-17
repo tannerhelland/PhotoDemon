@@ -55,9 +55,7 @@ Public Function PeekLastShutdownClean() As Boolean
     safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    PeekLastShutdownClean = (Not cFile.FileExists(safeShutdownPath))
+    PeekLastShutdownClean = (Not Files.FileExists(safeShutdownPath))
 
 End Function
 
@@ -69,10 +67,7 @@ Public Function WasLastShutdownClean() As Boolean
     safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(safeShutdownPath) Then
+    If Files.FileExists(safeShutdownPath) Then
     
         WasLastShutdownClean = False
 
@@ -108,10 +103,7 @@ Public Sub NotifyCleanShutdown()
     Dim safeShutdownPath As String
     safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(safeShutdownPath) Then cFile.KillFile safeShutdownPath
+    Files.FileDeleteIfExists safeShutdownPath
 
 End Sub
 
@@ -303,19 +295,19 @@ Public Sub PurgeOldAutosaveData()
                 tmpFilename = tmpUndoEngine.GenerateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
             
                 'Check image data first...
-                If cFile.FileExists(tmpFilename) Then cFile.KillFile tmpFilename
+                Files.FileDeleteIfExists tmpFilename
             
                 '...followed by layer data
-                If cFile.FileExists(tmpFilename & ".layer") Then cFile.KillFile tmpFilename & ".layer"
+                Files.FileDeleteIfExists tmpFilename & ".layer"
             
                 '...followed by selection data
-                If cFile.FileExists(tmpFilename & ".selection") Then cFile.KillFile tmpFilename & ".selection"
+                Files.FileDeleteIfExists tmpFilename & ".selection"
             
             Next j
             
             'Finally, kill the Autosave XML file and preview image associated with this entry
-            If cFile.FileExists(m_XmlEntries(i).xmlPath) Then cFile.KillFile m_XmlEntries(i).xmlPath
-            If cFile.FileExists(m_XmlEntries(i).xmlPath & ".pdasi") Then cFile.KillFile m_XmlEntries(i).xmlPath & ".pdasi"
+            Files.FileDeleteIfExists m_XmlEntries(i).xmlPath
+            Files.FileDeleteIfExists m_XmlEntries(i).xmlPath & ".pdasi"
         
         Next i
         
@@ -385,9 +377,6 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Process each XML entry in turn.  Because of the way we are reconstructing the Undo entries, we can't load
     ' all the files in a single request (despite PD's load function supporting a stack of filenames).
     
@@ -410,7 +399,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         
         'We now have everything we need.  Load the base Undo entry as a new image.
         autosaveFile = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, 0, g_SessionID)
-        LoadFileAsNewImage autosaveFile, fullXMLList(i).friendlyName, False
+        Loading.LoadFileAsNewImage autosaveFile, fullXMLList(i).friendlyName, False
         
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
         ' a portable drive containing Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
@@ -421,8 +410,8 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             ' its original data (such as its "location on disk", which should reflect its original location - not its
             ' temporary file location!)
             pdImages(g_CurrentImage).ImgStorage.AddEntry "CurrentLocationOnDisk", ""
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(fullXMLList(i).friendlyName, True)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(fullXMLList(i).friendlyName)
+            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(fullXMLList(i).friendlyName, True)
+            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(fullXMLList(i).friendlyName)
             
             'Mark the image as unsaved
             pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
@@ -474,20 +463,20 @@ Private Sub RenameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
         
         'Check image data first...
         If cFile.FileExists(oldFilename) Then
-            If cFile.FileExists(newFilename) Then cFile.KillFile newFilename
-            cFile.CopyFile oldFilename, newFilename
+            Files.FileDeleteIfExists newFilename
+            cFile.FileCopyW oldFilename, newFilename
         End If
         
         '...followed by layer data
         If cFile.FileExists(oldFilename & ".layer") Then
-            If cFile.FileExists(newFilename & ".layer") Then cFile.KillFile newFilename & ".layer"
-            cFile.CopyFile oldFilename & ".layer", newFilename & ".layer"
+            Files.FileDeleteIfExists newFilename & ".layer"
+            cFile.FileCopyW oldFilename & ".layer", newFilename & ".layer"
         End If
         
         '...followed by selection data
         If cFile.FileExists(oldFilename & ".selection") Then
-            If cFile.FileExists(newFilename & ".selection") Then cFile.KillFile newFilename & ".selection"
-            cFile.CopyFile oldFilename & ".selection", newFilename & ".selection"
+            Files.FileDeleteIfExists newFilename & ".selection"
+            cFile.FileCopyW oldFilename & ".selection", newFilename & ".selection"
         End If
         
     Next i

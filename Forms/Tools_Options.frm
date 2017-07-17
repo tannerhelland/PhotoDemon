@@ -1277,14 +1277,13 @@ Private Sub cmdColorProfilePath_Click()
     Interface.DisableUserInput
     
     Dim sFile As String
-    sFile = ""
     
     'Get the last color profile path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Color Profile", "")
     
     'If no color profile path was found, populate it with the default system color profile path
-    If Len(tempPathString) = 0 Then tempPathString = GetSystemColorFolder()
+    If (Len(tempPathString) = 0) Then tempPathString = GetSystemColorFolder()
     
     'Prepare a common dialog filter list with extensions of known profile types
     Dim cdFilter As String
@@ -1303,8 +1302,7 @@ Private Sub cmdColorProfilePath_Click()
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
-        listPath = sFile
-        StripDirectory listPath
+        listPath = Files.FileGetPath(sFile)
         g_UserPreferences.SetPref_String "Paths", "Color Profile", listPath
         
         'Set the text box to match this color profile, and save the resulting preference out to file.
@@ -1360,8 +1358,8 @@ End Sub
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
-    tString = Files.BrowseForFolder(Me.hWnd, g_UserPreferences.GetTempPath)
-    If (Len(tString) <> 0) Then txtTempPath.Text = FixPath(tString)
+    tString = Files.PathBrowseDialog(Me.hWnd, g_UserPreferences.GetTempPath)
+    If (Len(tString) <> 0) Then txtTempPath.Text = Files.PathAddBackslash(tString)
 End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
@@ -1791,11 +1789,8 @@ End Sub
 
 'If the selected temp folder doesn't have write access, warn the user
 Private Sub TxtTempPath_Change()
-
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
     
-    If (Not cFile.FolderExists(txtTempPath.Text)) Then
+    If (Not Files.PathExists(txtTempPath.Text, True)) Then
         lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.")
     Else
         lblTempPathWarning.Caption = g_Language.TranslateMessage("This new temporary folder location will not take effect until you restart the program.")

@@ -253,10 +253,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     
     'If the user has enabled database support, and a database file exists, update our recorded times with any
     ' saved values from previous runs.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If m_UseDatabase And cFile.FileExists(GetDatabaseFilename) Then
+    If m_UseDatabase And Files.FileExists(GetDatabaseFilename) Then
     
         'Retrieve values from file
         RetrieveDatabase
@@ -270,13 +267,14 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         
         For i = 0 To m_CurrentEventIndex - 1
             
-            If m_Events(i).HistoricalStdDev = 0 Then
-                uncertaintyValue = 0
+            If (m_Events(i).HistoricalStdDev = 0#) Or (m_Events(i).NumHistoricalEntries <= 1) Then
+                uncertaintyValue = 0#
             Else
                 uncertaintyValue = Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))
             End If
             
             reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+            
         Next i
         
         'Display results by their coefficient of deviation, which is a dimensionless number defined as StdDev / Mean;
@@ -300,7 +298,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         logFile = GetReportFilename()
         
         'Write the data to file using pdFSO
-        cFile.SaveStringToTextFile reportString, logFile
+        Files.FileSaveAsText reportString, logFile
         
         'If the user wants us to use a persistent database for timing data, write out the current session's data now.
         If m_UseDatabase Then WriteUpdatedDatabase

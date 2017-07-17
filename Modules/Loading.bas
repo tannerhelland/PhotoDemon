@@ -62,7 +62,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
-        pdDebug.LogAction "Image load requested for """ & GetFilename(srcFile) & """.  Baseline memory reading:"
+        pdDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
         pdDebug.LogAction "", PDM_MEM_REPORT
     #End If
     
@@ -95,7 +95,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     Dim numOfPages As Long: numOfPages = 0
     
     'We now have one last tedious check to perform: making sure the file actually exists!
-    If (Not cFile.FileExists(srcFile)) Then
+    If (Not Files.FileExists(srcFile)) Then
         If handleUIDisabling Then Processor.MarkProgramBusyState False, True
         If (Not suspendWarnings) Then
             Message "File not found: %1", srcFile
@@ -158,7 +158,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If Not (targetImage Is Nothing) Then targetImage.SetOriginalFileFormat FIF_UNKNOWN
     
     Dim srcFileExtension As String
-    srcFileExtension = UCase$(GetExtension(srcFile))
+    srcFileExtension = UCase$(Files.FileGetExtension(srcFile))
     
     Dim internalFormatID As PD_IMAGE_FORMAT
     internalFormatID = CheckForInternalFiles(srcFileExtension)
@@ -270,7 +270,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' such data is invaluable when tracking down bugs.
         #If DEBUGMODE = 1 Then
         
-            pdDebug.LogAction "~ Summary of image """ & GetFilename(srcFile) & """ follows ~", , True
+            pdDebug.LogAction "~ Summary of image """ & Files.FileGetName(srcFile) & """ follows ~", , True
             pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
             
             Select Case decoderUsed
@@ -442,7 +442,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "New memory report after loading image """ & GetFilename(srcFile) & """:"
+            pdDebug.LogAction "New memory report after loading image """ & Files.FileGetName(srcFile) & """:"
             pdDebug.LogAction "", PDM_MEM_REPORT
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
@@ -521,10 +521,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     End If
     
     'Before attempting to load an image, make sure it exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If (Not cFile.FileExists(imagePath)) Then
+    If (Not Files.FileExists(imagePath)) Then
         If displayMessagesToUser Then PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
@@ -541,12 +538,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     freeImageReturn = PD_FAILURE_GENERIC
     
     'Start by stripping the extension from the file path
-    Dim FileExtension As String
-    FileExtension = UCase$(cFile.GetFileExtension(imagePath))
+    Dim fileExtension As String
+    fileExtension = UCase$(Files.FileGetExtension(imagePath))
     loadSuccessful = False
     
     'Depending on the file's extension, load the image using the most appropriate image decoding routine
-    Select Case FileExtension
+    Select Case fileExtension
     
         'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it!)
         Case "PDI"
@@ -591,7 +588,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             
             'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture - UNLESS the image is a WMF or EMF,
             ' which can cause LoadPicture to experience a silent fail, thus bringing down the entire program.
-            If (Not loadSuccessful) And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
+            If (Not loadSuccessful) And ((fileExtension <> "EMF") And (fileExtension <> "WMF")) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
                     
     End Select
     
@@ -695,7 +692,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             Else
                 If (Len(tmpFilename) <> 0) Then
                     numFailures = numFailures + 1
-                    brokenFiles = brokenFiles & GetFilename(tmpFilename) & vbCrLf
+                    brokenFiles = brokenFiles & Files.FileGetName(tmpFilename) & vbCrLf
                 End If
             End If
         Loop
@@ -946,9 +943,7 @@ Public Sub DuplicateCurrentImage()
     LoadFileAsNewImage tmpDuplicationFile, sTitle, False
                     
     'Be polite and remove the temporary file
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If cFile.FileExists(tmpDuplicationFile) Then cFile.KillFile tmpDuplicationFile
+    Files.FileDeleteIfExists tmpDuplicationFile
     
     Message "Image duplication complete."
         

@@ -898,11 +898,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 srcFilename = ExifTool.GetExtractedICCProfilePath()
                 
                 'Pull the ICC profile into a byte array
-                Dim cFile As pdFSO
-                Set cFile = New pdFSO
-                
                 Dim iccBytes() As Byte
-                If cFile.LoadFileAsByteArray(srcFilename, iccBytes) Then
+                If Files.FileLoadAsByteArray(srcFilename, iccBytes) Then
                     
                     'Load the ICC bytes into the target DIB
                     If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
@@ -926,7 +923,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 End If
                 
                 'Free the temp file we used
-                cFile.KillFile srcFilename
+                Files.FileDeleteIfExists srcFilename
                 
             End If
             
@@ -1518,7 +1515,7 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         If (Len(newXMLString) <> 0) Then
             
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
-            tmpXMLPath = GetDirectory(outputPath)
+            tmpXMLPath = Files.FileGetPath(outputPath)
                     
             'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
             Dim cHash As pdCrypto: Set cHash = New pdCrypto

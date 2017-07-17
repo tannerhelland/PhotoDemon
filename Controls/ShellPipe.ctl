@@ -343,18 +343,6 @@ Private Declare Function CreatePipe Lib "kernel32" _
      ByRef lpPipeAttributes As Any, _
      ByVal nSize As Long) As Long
 
-Private Declare Function CreateProcessA Lib "kernel32" _
-    (ByVal lpApplicationName As String, _
-     ByVal lpCommandLine As String, _
-     ByVal lpProcessAttributes As Long, _
-     ByVal lpThreadAttributes As Long, _
-     ByVal bInheritHandles As Long, _
-     ByVal dwCreationFlags As Long, _
-     ByVal lpEnvironment As Long, _
-     ByVal lpCurrentDirectory As Long, _
-     ByRef lpStartupInfo As STARTUPINFO, _
-     ByRef lpProcessInformation As PROCESSINFO) As Long
-
 Private Declare Function CreateProcessW Lib "kernel32" _
     (ByVal ptrToApplicationName As Long, _
      ByVal ptrToCommandLine As Long, _

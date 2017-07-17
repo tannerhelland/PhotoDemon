@@ -266,7 +266,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(pdiPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
 
@@ -1028,7 +1028,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If (Not CascadeLoadGenericImage) Then
             
             Dim srcFileExtension As String
-            srcFileExtension = UCase(GetExtension(srcFile))
+            srcFileExtension = UCase(Files.FileGetExtension(srcFile))
             
             If ((srcFileExtension <> "EMF") And (srcFileExtension <> "WMF")) Then
                 #If DEBUGMODE = 1 Then
@@ -1227,16 +1227,13 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     'Therefore, our job is to coordinate between the image's suggested name (which will be suggested at first-save), the actual
     ' location on disk (which we treat as "non-existent", even though we're loading from a temp file of some sort), and the image's
     ' save state (which we forcibly set to FALSE to ensure the user is prompted to save before closing the image).
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-            
     If (Len(suggestedFilename) = 0) Then
     
         'The calling routine didn't specify a custom image name, so we can assume this is a normal image file.
         'Prep all default attributes using the filename itself.
         targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", srcFile
-        targetImage.ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(srcFile, True)
-        targetImage.ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(srcFile)
+        targetImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(srcFile, True)
+        targetImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(srcFile)
         
         'Note the image's save state; PDI files are specially marked as having been "saved losslessly".
         If (targetImage.GetCurrentFileFormat = PDIF_PDI) Then
@@ -1535,7 +1532,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(pdiPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
 

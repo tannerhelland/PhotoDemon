@@ -105,7 +105,7 @@ Friend Function GetPosition() As Long
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         GetPosition = m_Pointer
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        If (m_FileHandle <> 0) And (Not m_FSO Is Nothing) Then GetPosition = m_FSO.GetCurrentFilePointer(m_FileHandle) - m_FilePointerOffset
+        If (m_FileHandle <> 0) And (Not m_FSO Is Nothing) Then GetPosition = m_FSO.FileGetCurrentPointer(m_FileHandle) - m_FilePointerOffset
     End If
 End Function
 
@@ -137,7 +137,7 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
             m_Pointer = newPosition
             SetPosition = True
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-            If (Not m_FSO Is Nothing) Then SetPosition = m_FSO.MoveFilePointer(m_FileHandle, newPosition, startingPosition)
+            If (Not m_FSO Is Nothing) Then SetPosition = m_FSO.FileMovePointer(m_FileHandle, newPosition, startingPosition)
         End If
         
     Else
@@ -176,7 +176,7 @@ End Sub
 ' 2) This is a memory-backed stream and the initial starting size is ridiculously huge.
 '
 'If this stream object is already open, the existing stream will be closed and a new one will be started.
-Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
     
     'If we're already open, close the current stream before starting a new one.
     If m_Open Then Me.StopStream
@@ -203,7 +203,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
     
         If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
         
-        If m_FSO.CreateFileHandle(srcFilename, m_FileHandle, True, CBool(streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
+        If m_FSO.FileCreateHandle(srcFilename, m_FileHandle, True, CBool(streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
             m_Open = True
             m_FilePointerOffset = baseFilePointerOffset
             
@@ -215,7 +215,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
             End If
             
             'Move the file pointer to the baseFilePointerOffset, if any
-            If (baseFilePointerOffset <> 0) Then m_FSO.MoveFilePointer m_FileHandle, baseFilePointerOffset, FILE_BEGIN
+            If (baseFilePointerOffset <> 0) Then m_FSO.FileMovePointer m_FileHandle, baseFilePointerOffset, FILE_BEGIN
         
         End If
         
@@ -242,7 +242,7 @@ Friend Sub StopStream()
         If (m_StreamMode = PD_SM_MemoryBacked) Then
             Erase m_MemBuffer
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-            If (Not m_FSO Is Nothing) Then m_FSO.CloseFileHandle m_FileHandle
+            If (Not m_FSO Is Nothing) Then m_FSO.FileCloseHandle m_FileHandle
             m_FileHandle = 0
         End If
         
@@ -328,7 +328,7 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
             If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
         
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-            If (Not m_FSO Is Nothing) Then m_FSO.ReadDataFromFile m_FileHandle, dstPointer, readLength
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, dstPointer, readLength
         End If
         
         ReadBytesToBarePointer = readLength
@@ -395,7 +395,7 @@ Friend Function TrimStream() As Long
             TrimStream = m_BufferSize
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then
-                m_FSO.SetFileLength m_FileHandle, m_BufferSize + m_FilePointerOffset
+                m_FSO.FileSetLength m_FileHandle, m_BufferSize + m_FilePointerOffset
             End If
         End If
     End If
@@ -458,10 +458,10 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
             If (Not m_FSO Is Nothing) Then
             
                 'Write the data out to file
-                m_FSO.WriteDataToFile m_FileHandle, dataPointer, dataLength
+                m_FSO.FileWriteData m_FileHandle, dataPointer, dataLength
                 
                 'Retrieve the new file pointer (which is opaquely managed by WAPI)
-                WriteBytesFromPointer = m_FSO.GetCurrentFilePointer(m_FileHandle)
+                WriteBytesFromPointer = m_FSO.FileGetCurrentPointer(m_FileHandle)
                 
                 'Manually increase the buffer size to match, but only if we've moved past the end of the file
                 Dim tmpSize As Long

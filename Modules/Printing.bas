@@ -109,16 +109,7 @@ Private m_temporaryPrintPath As String
 
 'Call this function at shutdown time to perform any printer-related cleanup
 Public Sub PerformPrinterCleanup()
-
-    If m_userPrintedThisSession Then
-        
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
-        If cFile.FileExists(m_temporaryPrintPath) Then cFile.KillFile m_temporaryPrintPath
-        
-    End If
-
+    If m_userPrintedThisSession Then Files.FileDeleteIfExists m_temporaryPrintPath
 End Sub
 
 'This simple function can be used to route printing through the default "Windows Photo Printer" dialog.

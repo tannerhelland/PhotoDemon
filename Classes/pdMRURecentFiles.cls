@@ -157,7 +157,7 @@ Private Property Get IMRUList_SupportsThumbnails() As Boolean
 End Property
 
 Private Function IMRUList_GetThumbnailPath(ByRef mruManager As pdMRUManager, ByVal Index As Long) As String
-    IMRUList_GetThumbnailPath = GetMRUThumbnailPath(mruManager.getSpecificMRU(Index))
+    IMRUList_GetThumbnailPath = GetMRUThumbnailPath(mruManager.GetSpecificMRU(Index))
 End Function
 
 Private Sub IMRUList_SaveThumbnailImage(ByRef filePath As String, ByRef srcImage As pdImage)
@@ -215,7 +215,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
             End If
         
             'If an MRU hash does not exist for this file, delete the file
-            If (Not fileOK) Then cFile.KillFile chkFile
+            If (Not fileOK) Then cFile.FileDelete chkFile
             
         Loop
     
@@ -257,7 +257,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
             Load FormMain.mnuRecDocs(i)
             
             'Add the caption, and if the entry is less than #10, give it an accelerator, too
-            FormMain.mnuRecDocs(i).Caption = mruManager.getSpecificMRUCaption(i)
+            FormMain.mnuRecDocs(i).Caption = mruManager.GetSpecificMRUCaption(i)
             If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
             
         Next i
@@ -326,7 +326,7 @@ Private Sub IMRUList_EraseEntryAtPosition(ByRef mruManager As pdMRUManager, ByVa
     If (Index >= 0) And (Index < m_NumOfEntries) Then
     
         'Kill the thumbnail at this position
-        cFile.KillFile GetMRUThumbnailPath(mruManager.getSpecificMRU(Index))
+        cFile.FileDelete GetMRUThumbnailPath(mruManager.GetSpecificMRU(Index))
     
     End If
     

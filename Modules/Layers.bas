@@ -279,7 +279,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If Len(customLayerName) = 0 Then
-                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(GetFilenameWithoutExtension(imagePath)), tmpDIB
+                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
             Else
                 pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
             End If
@@ -1328,8 +1328,8 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
     
     'The first layer of single-layer images use a simpler naming system
     Else
-        If Len(suggestedFilename) = 0 Then
-            GenerateInitialLayerName = Files.GetFilenameWithoutExtension(srcFile)
+        If (Len(suggestedFilename) = 0) Then
+            GenerateInitialLayerName = Files.FileGetName(srcFile, True)
         Else
             GenerateInitialLayerName = suggestedFilename
         End If

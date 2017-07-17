@@ -73,9 +73,10 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String
-        shellPath = PluginManager.GetPluginPath & "optipng.exe "
+        shellPath = PluginManager.GetPluginPath & "optipng.exe"
         
         Dim optimizeFlags As String
+        optimizeFlags = "optipng.exe "
         Select Case optimizeLevel
             
             Case 1
@@ -87,18 +88,13 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
             Case 3
                 optimizeFlags = "-o2"
             
-            Case Else
-                optimizeFlags = ""
-        
         End Select
         
-        shellPath = shellPath & optimizeFlags & " "
-        
         'Strip any metadata.  (If the user requested custom metadata embedding, we will apply it in a subsequent step.)
-        shellPath = shellPath & "-strip all "
+        optimizeFlags = optimizeFlags & " -strip all "
         
         'Add the target filename
-        shellPath = shellPath & """" & dstFilename & """"
+        optimizeFlags = optimizeFlags & " """ & dstFilename & """"
         
         Message "Using OptiPNG to optimize the PNG file.  This may take a moment..."
                 
@@ -107,8 +103,8 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
         DoEvents
         
         Dim shellCheck As Boolean
-        shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
-    
+        shellCheck = Files.ShellAndWait(shellPath, optimizeFlags, Not g_IsProgramCompiled)
+        
         'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
         ' (from FreeImage) with the newly optimized one (from OptiPNG)
         If shellCheck Then

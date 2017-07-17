@@ -55,9 +55,6 @@ Private m_ToolName As String, m_ToolDescription As String
 'PD stores presets as XML, so we need an XML parser to deal with save/load nuances
 Private m_XMLEngine As pdXML
 
-'Since we can also save/load files, we need a pdFSO instance
-Private m_File As pdFSO
-
 'Location of the preset file.  If this isn't set, this class is useless.
 Private m_PresetFilePath As String
 
@@ -74,7 +71,7 @@ Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName A
     m_ToolName = toolName
     m_ToolDescription = toolDescription
     
-    If m_File.FileExists(srcPresetFilePath) Then
+    If Files.FileExists(srcPresetFilePath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.LoadXMLFile(srcPresetFilePath)) Or Not (m_XMLEngine.ValidateLoadedXMLData("toolName")) Then
@@ -151,7 +148,7 @@ End Sub
 Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
     
     'Perform a failsafe check to make sure preset retrieval has been initialized
-    If Len(m_ActivePresetName) <> 0 Then
+    If (Len(m_ActivePresetName) <> 0) Then
     
         'Retrieve said value, and return TRUE if a non-zero length string is found
         dstObjectValue = m_XMLEngine.GetUniqueTag_String(objectName, "", , "presetEntry", "id", m_ActivePresetName)
@@ -168,7 +165,7 @@ End Function
 
 'Counterpart to beginPresetRead, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
 Public Sub EndPresetRead()
-    m_ActivePresetName = ""
+    m_ActivePresetName = vbNullString
 End Sub
 
 'Prior to writing preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
@@ -181,10 +178,10 @@ Public Sub BeginPresetWrite(ByVal presetName As String)
     
     'When writing presets, we need to make sure the parent set of preset tags exists.  If it does, no problem - we'll overwrite
     ' the existing settings.  But if it does NOT exist, we need to create it now.
-    If Not m_XMLEngine.DoesTagExist("presetEntry", "id", m_ActivePresetName) Then
+    If (Not m_XMLEngine.DoesTagExist("presetEntry", "id", m_ActivePresetName)) Then
         
         'Presets use a pretty simple set of tags
-        m_XMLEngine.WriteTagWithAttribute "presetEntry", "id", m_ActivePresetName, "", True
+        m_XMLEngine.WriteTagWithAttribute "presetEntry", "id", m_ActivePresetName, vbNullString, True
         
             'Note that we also write the preset name here; this is the exact string we are handed, spaces and all
             m_XMLEngine.WriteTag "fullPresetName", presetName
@@ -201,7 +198,7 @@ End Sub
 Public Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As String)
     
     'Perform a failsafe check to make sure preset writing has been initialized
-    If Len(m_ActivePresetName) <> 0 Then
+    If (Len(m_ActivePresetName) <> 0) Then
         
         'Store the new value inside the master XML object
         m_XMLEngine.UpdateTag objectName, objectValue, "presetEntry", "id", m_ActivePresetName
@@ -215,7 +212,7 @@ End Sub
 
 'Counterpart to beginPresetWrite, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
 Public Sub EndPresetWrite()
-    m_ActivePresetName = ""
+    m_ActivePresetName = vbNullString
 End Sub
 
 'Reset the XML engine for this session.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
@@ -232,15 +229,16 @@ Private Function ResetXMLData()
 End Function
 
 Private Sub Class_Initialize()
+    
     m_NumOfPresets = 0
     ReDim m_ListOfPresets(0) As pdPreset
     
     Set m_XMLEngine = New pdXML
-    Set m_File = New pdFSO
+    
 End Sub
 
 Private Sub DebugNote(ByVal debugMessage As String)
     #If DEBUGMODE = 1 Then
-        If Len(debugMessage) <> 0 Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
+        If (Len(debugMessage) <> 0) Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
     #End If
 End Sub

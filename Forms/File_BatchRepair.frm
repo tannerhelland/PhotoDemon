@@ -236,9 +236,9 @@ Private Sub cmdBar_OKClick()
     Set cFSO = New pdFSO
     
     Dim dstFolder As String
-    dstFolder = FixPath(txtDstFolder.Text)
+    dstFolder = Files.PathAddBackslash(txtDstFolder.Text)
     
-    If (Not cFSO.FolderExists(dstFolder, False)) Then cFSO.CreateFolder dstFolder, True
+    If (Not Files.PathExists(dstFolder, False)) Then Files.PathCreate dstFolder, True
     
     'Start by preparing the list of files to be processed
     Dim listOfFiles As pdStringStack
@@ -348,20 +348,20 @@ Private Sub cmdBar_OKClick()
             If fileWasRepaired Then
                 
                 'If the file already has the correct extension, ignore it
-                If (StrComp(newExtension, cFSO.GetFileExtension(srcFilename), vbBinaryCompare) <> 0) Then
+                If Strings.StringsNotEqual(newExtension, Files.FileGetExtension(srcFilename), False) Then
                     
-                    newFilename = dstFolder & cFSO.GetFilename(srcFilename, True) & "." & newExtension
+                    newFilename = dstFolder & Files.FileGetName(srcFilename, True) & "." & newExtension
                     
                     'The user can optionally request to overwrite files in the destination folder; if this option
                     ' is selected, check for matching filenames before writing.
                     If eraseDestinationMatches Then
-                        fileWasRepaired = Not cFSO.FileExists(newFilename)
+                        fileWasRepaired = Not Files.FileExists(newFilename)
                     End If
                     
                     'Move the file - with its new extension - to the repaired folder
                     If fileWasRepaired Then
-                        If cFSO.CopyFile(srcFilename, newFilename) Then
-                            If eraseOriginal Then cFSO.KillFile srcFilename
+                        If cFSO.FileCopyW(srcFilename, newFilename) Then
+                            If eraseOriginal Then cFSO.FileDelete srcFilename
                             fileWasRepaired = True
                         Else
                             fileWasRepaired = False
@@ -374,10 +374,8 @@ Private Sub cmdBar_OKClick()
                     
             End If
             
-            'If one or more repair steps was applied,
-            If fileWasRepaired Then
-                numFilesRepaired = numFilesRepaired + 1
-            End If
+            'If one or more repair steps was applied, increment the repair counter
+            If fileWasRepaired Then numFilesRepaired = numFilesRepaired + 1
             
             'Regardless of what happened to this file, increment the current file count
             curFileNumber = curFileNumber + 1
@@ -404,18 +402,18 @@ End Sub
 
 Private Sub cmdDstFolder_Click()
     Dim folderPath As String
-    folderPath = Files.BrowseForFolder(Me.hWnd, txtDstFolder.Text)
+    folderPath = Files.PathBrowseDialog(Me.hWnd, txtDstFolder.Text)
     If (Len(folderPath) <> 0) Then
-        txtDstFolder.Text = FixPath(folderPath)
+        txtDstFolder.Text = Files.PathAddBackslash(folderPath)
         g_UserPreferences.SetPref_String "BatchProcess", "RepairDstFolder", txtDstFolder.Text
     End If
 End Sub
 
 Private Sub cmdSrcFolder_Click()
     Dim folderPath As String
-    folderPath = Files.BrowseForFolder(Me.hWnd, txtSrcFolder.Text)
+    folderPath = Files.PathBrowseDialog(Me.hWnd, txtSrcFolder.Text)
     If (Len(folderPath) <> 0) Then
-        txtSrcFolder.Text = FixPath(folderPath)
+        txtSrcFolder.Text = Files.PathAddBackslash(folderPath)
         g_UserPreferences.SetPref_String "BatchProcess", "RepairSrcFolder", txtSrcFolder.Text
     End If
 End Sub

@@ -459,7 +459,7 @@ End Function
 
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
-    For i = picCategory.lBound To picCategory.ubound
+    For i = picCategory.lBound To picCategory.UBound
         picCategory(i).Visible = CBool(btsMasterType.ListIndex = i)
     Next i
 End Sub
@@ -607,7 +607,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
     ' is allowed open at a time.
     Dim i As Long
-    For i = picContainer.lBound To picContainer.ubound
+    For i = picContainer.lBound To picContainer.UBound
         picContainer(i).SetLeft 0
     Next i
     
@@ -715,7 +715,7 @@ Private Sub cmdUpdateLossyPreview_Click()
                 #End If
             End If
             
-            If cFile.FileExists(tmpFilename) Then cFile.KillFile tmpFilename
+            Files.FileDeleteIfExists tmpFilename
             
         End If
         
@@ -915,7 +915,7 @@ Private Sub UpdateStandardTitlebars()
     
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.ubound
+    For i = ttlStandard.lBound To ttlStandard.UBound
         ttlStandard(i).Value = CBool(i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
@@ -938,7 +938,7 @@ Private Sub UpdateStandardPanelVisibility()
     yPadding = FixDPI(8)
     
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.ubound
+    For i = ttlStandard.lBound To ttlStandard.UBound
     
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding

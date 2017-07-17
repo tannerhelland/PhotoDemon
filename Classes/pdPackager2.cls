@@ -513,7 +513,7 @@ Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
 
     'Attempt to load the file into a byte array
     Dim fileContents() As Byte
-    If m_File.LoadFileAsByteArray(pathToFile, fileContents) Then
+    If m_File.FileLoadAsByteArray(pathToFile, fileContents) Then
         
         'Make sure the file loaded successfully
         If UBound(fileContents) >= LBound(fileContents) Then
@@ -537,7 +537,7 @@ Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             If filenameIncludesRelativePath Then
                 AutoAddNodeFromFile = AddNodeDataFromString(nodeIndex, True, storeUsingThisRelativePathAndFilename, False)
             Else
-                AutoAddNodeFromFile = AddNodeDataFromString(nodeIndex, True, m_File.GetFilename(pathToFile), False)
+                AutoAddNodeFromFile = AddNodeDataFromString(nodeIndex, True, m_File.FileGetName(pathToFile), False)
             End If
             
             'Write the file contents out to the second node
@@ -705,7 +705,7 @@ Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
                 autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType)
             End If
         
-        ElseIf m_File.FolderExists(curFile, False) Then
+        ElseIf m_File.PathExists(curFile, False) Then
         
             'This is a folder.  Add it via the folder function.
             If relativeFoldersInUse Then
@@ -792,7 +792,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     'If this is a memory-backed stream, kill the destination file if it already exists (because we will be writing the entire
     ' thing from scratch).
     If (m_StreamMode = PD_SM_MemoryBacked) Then
-        If m_File.FileExists(dstFilename) Then m_File.KillFile dstFilename
+        If m_File.FileExists(dstFilename) Then m_File.FileDelete dstFilename
     
     'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
     ' and the dictionary.  Close the stream.
@@ -805,12 +805,12 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         If thisIsATempFile Then
-            createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeTempFile)
+            createSuccess = m_File.FileCreateHandle(dstFilename, hFile, True, True, OptimizeTempFile)
         Else
-            createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
+            createSuccess = m_File.FileCreateHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
         End If
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        createSuccess = m_File.CreateAppendFileHandle(dstFilename, hFile)
+        createSuccess = m_File.FileCreateAppendHandle(dstFilename, hFile)
     End If
     
     If createSuccess Then
@@ -826,7 +826,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             totalWriteSize = LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked + m_FileHeader.DirectoryChunkSizePacked
             
             Dim useMemMapMode As Boolean
-            useMemMapMode = m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize)
+            useMemMapMode = m_File.FileConvertHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize)
             
             If useMemMapMode Then
     
@@ -851,9 +851,9 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
                 'Writing out the three crucial pieces of data: the header, the data, the directory
                 With m_File
-                    .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
-                    .WriteDataToFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
-                    .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                    .FileWriteData hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+                    .FileWriteData hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
+                    .FileWriteData hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
                 End With
                 
             End If
@@ -862,17 +862,17 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
             'Write the header at the start of the file
             With m_File
-                .MoveFilePointer hFile, 0, FILE_BEGIN
-                .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+                .FileMovePointer hFile, 0, FILE_BEGIN
+                .FileWriteData hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
                 
                 'Skip to the end of the file, then write the directory
-                .MoveFilePointer hFile, LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked, FILE_BEGIN
-                .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                .FileMovePointer hFile, LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked, FILE_BEGIN
+                .FileWriteData hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             End With
         
         End If
         
-        m_File.CloseFileHandle hFile
+        m_File.FileCloseHandle hFile
         
         WritePackageToFile = True
     
@@ -933,7 +933,7 @@ End Sub
 ' 4) Access rights for the pdStream backer.  In READ-ONLY mode, you will not be able to append anything to this pdPackage file.
 '     However, memory-mapping will be used to load nodes into file, resulting in even better performance.  This is the default
 '     mode, and at present, the only supported mode.
-Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadOnly, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeRandomAccess) As Boolean
+Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadOnly, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeRandomAccess) As Boolean
 
     On Error GoTo StopPackageFileRead
     
@@ -951,7 +951,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     ' then we're gonna silently modify the optimizeAccess to start as Random Access (because we need to jump to the end of the
     ' file to grab the directory), but after the initial file handle is closed, we'll respect the caller's request inside the
     ' pdStream object (which grabs the actual nodes).
-    Dim initialOptimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE
+    Dim initialOptimizeAccess As PD_FILE_ACCESS_OPTIMIZE
     If (streamMode = PD_SM_MemoryBacked) Then
         initialOptimizeAccess = optimizeAccess
     ElseIf (streamMode = PD_SM_FileBacked) Then
@@ -959,10 +959,10 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     End If
     
     Dim hFile As Long
-    If m_File.CreateFileHandle(srcFilename, hFile, True, False, initialOptimizeAccess) Then
+    If m_File.FileCreateHandle(srcFilename, hFile, True, False, initialOptimizeAccess) Then
         
         'Attempt to load the file header.  If the file is invalid, this may potentially be gibberish, but we won't know until we try!
-        m_File.ReadDataFromFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+        m_File.FileReadData hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
         
         'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
         If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
@@ -999,15 +999,15 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             'If no compression was applied, read the bytes directly into our buffer
             If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
-                m_File.MoveFilePointer hFile, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
-                m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                m_File.FileMovePointer hFile, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
+                m_File.FileReadData hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             
             'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
             Else
                 
                 'Regardless of compression method, pull the raw bytes from file
                 ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
-                m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
+                m_File.FileReadData hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
                 
                 Dim decompressionResult As Boolean: decompressionResult = False
                 
@@ -1086,21 +1086,21 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     m_DataBuffer.StartStream PD_SM_MemoryBacked, streamAccess
                     m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
-                    m_File.ReadDataFromFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
+                    m_File.FileReadData hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
                 
                     'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
                     m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
                     m_DataBuffer.SetPosition 0
                     
                     'Close the file handle (because we don't need it anymore - everything's copied into memory!)
-                    If (hFile <> 0) Then m_File.CloseFileHandle hFile
+                    If (hFile <> 0) Then m_File.FileCloseHandle hFile
                 
                 'For a file-backed stream, simply wrap the pdStream object around the file, and set a new "zero" point inside
                 ' the stream (since we don't want to overwrite the file header, which sits at a fixed size and position).
                 ElseIf (streamMode = PD_SM_FileBacked) Then
                 
                     'Start by closing our copy of the file handle
-                    If (hFile <> 0) Then m_File.CloseFileHandle hFile
+                    If (hFile <> 0) Then m_File.FileCloseHandle hFile
                     
                     'Open the file again, but this time, use pdStream to do it.  Note that the stream object will automatically
                     ' subtract the header size from all position requests we pass to it, so we don't have to worry about special
@@ -1129,7 +1129,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
 StopPackageFileRead:
     
     InternalErrorMsg "An internal error occurred in the pdPackager.ReadPackageFromFile function."
-    If (hFile <> 0) Then m_File.CloseFileHandle hFile
+    If (hFile <> 0) Then m_File.FileCloseHandle hFile
     ReadPackageFromFile = False
     Exit Function
 
@@ -1465,7 +1465,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         Else
             
             'Make sure the destination path has a trailing backslash
-            dstPath = m_File.EnforcePathSlash(dstPath)
+            dstPath = m_File.PathAddBackslash(dstPath)
             
             Select Case thisNodeType
             
@@ -1478,7 +1478,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 
                     'The user wants us to ignore the relative path and just write the damn file - easy enough!
                     If ignoreRelativePathIfPresent Then
-                        fullDestinationPath = dstPath & m_File.GetFilename(srcFilename)
+                        fullDestinationPath = dstPath & m_File.FileGetName(srcFilename)
                     
                     'Relative path(s) must be preserved.
                     Else
@@ -1490,13 +1490,13 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                         
                         'Concatenate the two paths
                         Dim dstPathComplete As String
-                        dstPathComplete = dstPath & m_File.GetPathOnly(srcFilename)
+                        dstPathComplete = dstPath & m_File.FileGetPath(srcFilename)
                         
                         'Attempt to create the folder.  (If the folder already exists, this will return TRUE, so no harm.)
-                        If m_File.CreateFolder(dstPathComplete, True) Then
+                        If m_File.PathCreate(dstPathComplete, True) Then
                         
                             'The full target path exists.  Append the original filename to it, then proceed with the extraction
-                            fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.GetFilename(srcFilename)
+                            fullDestinationPath = m_File.PathAddBackslash(dstPathComplete) & m_File.FileGetName(srcFilename)
                         
                         'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                         ' to terminate prematurely.
@@ -1515,8 +1515,8 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         
             'Retrieve this node's contents
             If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
-                If m_File.FileExists(fullDestinationPath) Then m_File.KillFile fullDestinationPath
-                m_File.SaveByteArrayToFile retBytes, fullDestinationPath, True
+                If m_File.FileExists(fullDestinationPath) Then m_File.FileDelete fullDestinationPath
+                m_File.FileCreateFromByteArray retBytes, fullDestinationPath, True
                 AutoExtractSingleFile = True
             Else
                 AutoExtractSingleFile = False
@@ -1554,7 +1554,7 @@ End Function
 Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
     
     'Enforce a trailing slash on dstPath, as we'll potentially be appending a lot of filenames to it
-    dstPath = m_File.EnforcePathSlash(dstPath)
+    dstPath = m_File.PathAddBackslash(dstPath)
     
     'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the two valid file node type identifiers to
     ' 32 chars in advance.
@@ -1617,7 +1617,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'If the caller wants relative paths ignored, extract just the filename from the original path, and append it to the destination path.
                         If ignoreRelativePaths Then
-                            fullDestinationPath = dstPath & m_File.GetFilename(strFilename)
+                            fullDestinationPath = dstPath & m_File.FileGetName(strFilename)
                         
                         'The caller wants to make use of relative paths.
                         Else
@@ -1638,13 +1638,13 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                     
                                     'Concatenate the two paths
                                     Dim dstPathComplete As String
-                                    dstPathComplete = dstPath & m_File.GetPathOnly(strFilename)
+                                    dstPathComplete = dstPath & m_File.FileGetPath(strFilename)
                                     
                                     'Attempt to create the folder hierarchy.  (If the folder already exists, this will return TRUE, so no harm.)
-                                    If m_File.CreateFolder(dstPathComplete, True) Then
+                                    If m_File.PathCreate(dstPathComplete, True) Then
                                     
                                         'The full target path exists.  Append the original filename to it, then proceed with the extraction
-                                        fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.GetFilename(strFilename)
+                                        fullDestinationPath = m_File.PathAddBackslash(dstPathComplete) & m_File.FileGetName(strFilename)
                                         
                                     'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                                     ' to terminate prematurely.
@@ -1664,8 +1664,8 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                             If GetNodeDataByIndex(i, False, retBytes()) Then
                             
                                 'Dump the node's contents to file
-                                If m_File.FileExists(fullDestinationPath) Then m_File.KillFile fullDestinationPath
-                                m_File.SaveByteArrayToFile retBytes, fullDestinationPath
+                                If m_File.FileExists(fullDestinationPath) Then m_File.FileDelete fullDestinationPath
+                                m_File.FileCreateFromByteArray retBytes, fullDestinationPath
                                 
                             Else
                                 InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."

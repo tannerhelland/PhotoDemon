@@ -765,24 +765,21 @@ End Sub
 'Allow the user to delete the selected language file, if they so desire.
 Private Sub cmdDeleteLanguage_Click()
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Make sure a language is selected
-    If lstLanguages.ListIndex < 0 Then Exit Sub
+    If (lstLanguages.ListIndex < 0) Then Exit Sub
     
     Dim msgReturn As VbMsgBoxResult
 
     'Display different warnings for official languages (which can be restored) and user languages (which cannot)
-    If m_ListOfLanguages(GetLanguageIndexFromListIndex()).LangType = "Official" Then
+    If Strings.StringsEqual(m_ListOfLanguages(GetLanguageIndexFromListIndex()).LangType, "Official", True) Then
         
         'Make sure we have write access to this folder before attempting to delete anything
-        If cFile.FolderExists(GetDirectory(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
+        If Files.PathExists(Files.FileGetPath(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
             msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
-            If msgReturn = vbYes Then
-                cFile.KillFile m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
+            If (msgReturn = vbYes) Then
+                Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
                 lstLanguages.RemoveItem lstLanguages.ListIndex
                 cmdDeleteLanguage.Enabled = False
             End If
@@ -797,8 +794,8 @@ Private Sub cmdDeleteLanguage_Click()
     
         msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
-        If msgReturn = vbYes Then
-            cFile.KillFile m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
+        If (msgReturn = vbYes) Then
+            Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
             lstLanguages.RemoveItem lstLanguages.ListIndex
             cmdDeleteLanguage.Enabled = False
         End If
@@ -970,7 +967,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
                 m_curLanguage = m_ListOfLanguages(GetLanguageIndexFromListIndex())
-                m_curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & GetFilename(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
+                m_curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & Files.FileGetName(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
                 If Loadm_AllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
@@ -1031,9 +1028,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 
                 If m_curLanguage.LangType = "Autosave" Then
                     sFile = cFile.MakeValidWindowsFilename(m_curLanguage.LangName)
-                    sFile = cFile.GetPathOnly(m_curLanguage.FileName) & sFile & ".xml"
+                    sFile = cFile.FileGetPath(m_curLanguage.FileName) & sFile & ".xml"
                 Else
-                    sFile = cFile.GetPathOnly(m_curLanguage.FileName) & GetFilenameWithoutExtension(m_curLanguage.FileName) & ".xml"
+                    sFile = cFile.FileGetPath(m_curLanguage.FileName) & Files.FileGetName(m_curLanguage.FileName, True) & ".xml"
                 End If
                 
                 Dim cdFilter As String
@@ -1043,7 +1040,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 Dim saveDialog As pdOpenSaveDialog
                 Set saveDialog = New pdOpenSaveDialog
                 
-                If saveDialog.GetSaveFileName(sFile, , True, cdFilter, , GetDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd) Then
+                If saveDialog.GetSaveFileName(sFile, , True, cdFilter, , Files.FileGetPath(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd) Then
                 
                     'Write the current XML file out to the user's requested path
                     m_XMLEngine.WriteXMLToFile sFile, True

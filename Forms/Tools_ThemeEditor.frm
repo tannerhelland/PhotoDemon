@@ -377,18 +377,14 @@ Private Sub cmdAddResource_Click()
     Dim srcFile As String
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-    If cCommonDialog.GetOpenFileName(srcFile, , True, False, , , m_FSO.GetPathOnly(txtResourcePath.Text), "Select resource", , Me.hWnd) Then
+    If cCommonDialog.GetOpenFileName(srcFile, , True, False, , , m_FSO.FileGetPath(txtResourcePath.Text), "Select resource", , Me.hWnd) Then
         
         If (m_NumOfResources > UBound(m_Resources)) Then ReDim Preserve m_Resources(0 To m_NumOfResources * 2 - 1) As PD_Resource
         
         With m_Resources(m_NumOfResources)
-            .ResourceName = m_FSO.GetFilename(srcFile, True)
+            .ResourceName = Files.FileGetName(srcFile, True)
             .ResFileLocation = srcFile
-            
-            If Loading.QuickLoadImageToDIB(srcFile, m_PreviewDIBOriginal, False, False) Then
-                .ResType = PDRT_Image
-            End If
-            
+            If Loading.QuickLoadImageToDIB(srcFile, m_PreviewDIBOriginal, False, False) Then .ResType = PDRT_Image
         End With
         
         lstResources.AddItem m_Resources(m_NumOfResources).ResourceName
@@ -422,9 +418,7 @@ Private Sub cmdExport_Click()
         
         'Keep the existing filename, but strip the extension and replace it with "PDRC"
         ' (for... PhotoDemon Resource Collection, I guess?)
-        Dim cFSO As pdFSO
-        Set cFSO = New pdFSO
-        targetResFile = g_UserPreferences.GetThemePath & cFSO.GetFilename(txtResourcePath.Text, True) & ".pdrc"
+        targetResFile = g_UserPreferences.GetThemePath & Files.FileGetName(txtResourcePath.Text, True) & ".pdrc"
         
         'Prep a pdPackage
         Dim cPackage As pdPackager
@@ -585,10 +579,10 @@ End Sub
 Private Sub cmdResItemPath_Click()
 
     Dim srcFile As String
-    srcFile = m_FSO.GetFilename(txtResourceLocation.Text)
+    srcFile = Files.FileGetName(txtResourceLocation.Text)
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-    If cCommonDialog.GetOpenFileName(srcFile, , True, False, "All files (*.*)|*.*", , m_FSO.GetPathOnly(txtResourceLocation.Text), "Select resource item", , Me.hWnd) Then
+    If cCommonDialog.GetOpenFileName(srcFile, , True, False, "All files (*.*)|*.*", , m_FSO.FileGetPath(txtResourceLocation.Text), "Select resource item", , Me.hWnd) Then
         If (Len(srcFile) <> 0) Then
             txtResourceLocation.Text = srcFile
             SyncResourceAgainstCurrentUI
@@ -601,10 +595,10 @@ End Sub
 Private Sub cmdResourcePath_Click()
     
     Dim srcFile As String
-    srcFile = m_FSO.GetFilename(txtResourcePath.Text)
+    srcFile = Files.FileGetName(txtResourcePath.Text)
     
     Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-    If cCommonDialog.GetOpenFileName(srcFile, , False, False, "PD Resource Files (*.pdr)|*.pdr", , m_FSO.GetPathOnly(txtResourcePath.Text), "Select resource file", "pdr", Me.hWnd) Then
+    If cCommonDialog.GetOpenFileName(srcFile, , False, False, "PD Resource Files (*.pdr)|*.pdr", , m_FSO.FileGetPath(txtResourcePath.Text), "Select resource file", "pdr", Me.hWnd) Then
         If (Len(srcFile) <> 0) Then
             txtResourcePath.Text = srcFile
             g_UserPreferences.SetPref_String "Themes", "LastResourceFile", srcFile

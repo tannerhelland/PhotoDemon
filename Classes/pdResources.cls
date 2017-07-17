@@ -104,12 +104,12 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
             RaiseResourceError "Resource file found in the base PD folder.  Attempting to relocate...", True
             
             'Move the file to the proper folder
-            If cFile.CopyFile(g_UserPreferences.GetProgramPath & resourceFile, g_UserPreferences.GetThemePath & resourceFile) Then
+            If cFile.FileCopyW(g_UserPreferences.GetProgramPath & resourceFile, g_UserPreferences.GetThemePath & resourceFile) Then
                 
                 RaiseResourceError "Resource file relocated successfully.", True
                 
                 'Kill the old file instance
-                cFile.KillFile g_UserPreferences.GetProgramPath & resourceFile
+                cFile.FileDelete g_UserPreferences.GetProgramPath & resourceFile
                 
                 'Return success!
                 AttemptResourceRecovery = True
@@ -136,10 +136,7 @@ Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
         
     Set m_Resources = New pdPackager
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExists(srcPath) Then
+    If Files.FileExists(srcPath) Then
         RaiseResourceError "Loading core resource collection from file...", True
         m_ResourcesAvailable = m_Resources.ReadPackageFromFile(srcPath, PD_RES_IDENTIFIER, PD_SM_MemoryBacked)
     Else

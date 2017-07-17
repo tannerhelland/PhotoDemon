@@ -77,7 +77,7 @@ Private Function GetMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If (g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
-        GetMRUCaption = Files.GetFilename(newFile)
+        GetMRUCaption = Files.FileGetName(newFile)
     Else
         GetMRUCaption = GetShortMRU(newFile)
     End If
@@ -127,7 +127,7 @@ End Function
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    If m_FSO.FileExists(m_XMLFilename) Then
+    If Files.FileExists(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.LoadXMLFile(m_XMLFilename)) Then
@@ -170,10 +170,8 @@ Public Sub MRU_LoadFromFile()
         
     'No recent file entries were found.  Adjust the Recent Files menu to match
     Else
-        
         m_NumEntries = 0
         m_MRUList.OnListIsEmpty
-        
     End If
     
     'If one or more recent file entries were found, load them now.
@@ -338,7 +336,7 @@ Public Sub MRU_NotifyNewMaxLimit()
         m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         
         ' Delete the old MRU file now, because we need to truncate it
-        m_FSO.KillFile m_XMLFilename
+        m_FSO.FileDelete m_XMLFilename
         
     End If
     
@@ -364,7 +362,7 @@ Public Sub MRU_ClearList()
     ReDim m_FileList(0) As String
     
     'Erase any existing XML file, and reset the in-memory version
-    m_FSO.KillFile m_XMLFilename
+    m_FSO.FileDelete m_XMLFilename
     ResetXMLData
     
     'Allow the child to perform any related UI clean-up

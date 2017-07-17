@@ -528,10 +528,12 @@ Private Sub CollectAllVersionNumbers()
     
     'Remove trailing build numbers from version strings as necessary.  (Note: ExifTool is ignored, as it does not
     ' actually report a build number)
+    Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         If (i <> CCP_ExifTool) Then
-            If Len(m_PluginVersion(i)) <> 0 Then
-                StripOffExtension m_PluginVersion(i)
+            If (Len(m_PluginVersion(i)) <> 0) Then
+                dotPos = InStrRev(m_PluginVersion(i), ".", -1, vbBinaryCompare)
+                If (dotPos <> 0) Then m_PluginVersion(i) = Left$(m_PluginVersion(i), dotPos - 1)
             Else
                 m_PluginVersion(i) = g_Language.TranslateMessage("none")
             End If

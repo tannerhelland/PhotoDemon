@@ -163,9 +163,7 @@ Public Sub Twain32Scan()
                 LoadFileAsNewImage scannerCaptureFile, sTitle, False
                 
                 'Be polite and remove the temporary file acquired from the scanner
-                Dim cFile As pdFSO
-                Set cFile = New pdFSO
-                If cFile.FileExists(scannerCaptureFile) Then cFile.KillFile scannerCaptureFile
+                Files.FileDeleteIfExists scannerCaptureFile
                 
                 Message "Image acquired successfully "
                 
