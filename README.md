@@ -1,27 +1,27 @@
 # PhotoDemon 7.0 pre-alpha
 
-![PhotoDemon Screenshot] (http://photodemon.org/images/PD_70_a2.jpg)
+![Screenshot](http://photodemon.org/images/PD_70_a2.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive photo editing suite in a 12 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  It can be run from a USB stick or memory card.
+It provides a comprehensive photo editing suite in a 12 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick or portable drive.
 
-PhotoDemon is completely open-source and available under a permissive BSD license.  Kind contributors have translated the program into more than twenty languages.
+PhotoDemon is completely open-source and available under a permissive BSD license.  Wonderful contributors have translated the program into more than twenty languages.
 
-Outside contributions from coders, designers, translators, and enthusiasts are always welcome.
+New contributions from coders, designers, translators, and enthusiasts are always welcome.
 
-For information on the most recent release, please visit:
+For information on the most recent release, please visit
 http://photodemon.org
 
-If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and core plugins), updated nightly against the latest GitHub code, from:
-http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
+This repository does not contain a compiled .exe.  For a nightly build mirroring the latest source changes, you can use this permalink:
+http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip 
 
 ***
 
 ## What makes PhotoDemon unique?
 
 ### Lightweight and completely portable
-No installer is provided or required.  Aside from a temporary file folder – which you can specify from the Tools > Options menu – it leaves no trace on your hard drive.  Many people choose to run PhotoDemon from a USB stick or memory card.
+No installer is provided or required.  Aside from a temporary file folder â€“ which you can specify from the Tools > Options menu â€“ it leaves no trace on your hard drive.  Many people choose to run PhotoDemon from a USB stick or portable drive.
 
 ### Integrated macro recording and batch processing
 Complex editing actions can be recorded as macros (similar to Office software).  An integrated batch processor allows you to apply macros to entire folders or sets of images.
@@ -33,10 +33,10 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 * Extensive file format support, including all major RAW formats
 * Color-managed workflow, including full support for embedded ICC profiles
 * Non-destructive editing for select features, including resizing, rotation, and common adjustments
-* 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, rotate, shear, zoom, tiling
-* Adjustment tools: levels, curves, HDR, white balance, split-toning, sepia, full-featured histogram, green screen, Wratten filters, and many more
+* 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, straighten, shear, zoom
+* Adjustment tools: levels, curves, HDR, white balance, split-toning, green screen, Wratten filters, and many more
 * Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, lens diffraction, vignetting, film grain, and many more
-* 150+ tools are provided in the current build.
+* Some ~200 tools are provided in the current build.
 
 ### Limitations
 
