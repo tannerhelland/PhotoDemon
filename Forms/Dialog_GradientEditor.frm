@@ -441,7 +441,7 @@ Private Sub Form_Load()
     btsEdit.AddItem "automatic", 1
     btsEdit_Click 0
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         Drawing2D.QuickCreatePainter m_Painter
         
@@ -807,7 +807,7 @@ End Function
 'When a new active node is selected (or its parameters somehow changed), call this sub to synchronize all UI elements to that node's properties.
 Private Sub SyncUIToActiveNode()
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'Disable automatic UI synchronization
         m_SuspendUI = True
@@ -848,7 +848,7 @@ End Sub
 'Draw all interactive nodes
 Private Sub DrawGradientNodes()
 
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Each node is basically comprised of three parts:
         ' 1) An upward arrowhead pointing at the gradient's precise position

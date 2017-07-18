@@ -103,7 +103,7 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
         End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
-        If g_IsWin7OrLater Then SetTaskbarProgressValue pbVal, GetProgBarMax
+        If OS.IsWin7OrLater Then OS.SetTaskbarProgressValue pbVal, GetProgBarMax
         
     End If
     
@@ -145,6 +145,6 @@ Public Sub ReleaseProgressBar()
     End If
     
     'On Win 7+, also reset the taskbar progress indicator
-    If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
+    If OS.IsWin7OrLater Then OS.SetTaskbarProgressState TBP_NoProgress
     
 End Sub

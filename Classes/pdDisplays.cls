@@ -91,16 +91,11 @@ Private m_NumOfDisplays As Long
 'Display collection.  Each pdDisplay object stores info on its monitor.
 Private listOfDisplays() As pdDisplay
 
-'This class now supports Unicode display names, so we inevitably need to work with some Unicode data
-Private cUnicode As pdUnicode
-
 Private Sub Class_Initialize()
     
-    Set cUnicode = New pdUnicode
-    
-    'This class does not create a list of monitors automatically, as the caller may want to perform certain
-    ' initialization tasks prior to collecting a list of active displays.  Thus, you must manually call
-    ' .RefreshDisplays at least once prior to accessing child pdDisplay objects.
+    'This class does not create a list of displays automatically, as the caller may want to perform certain
+    ' initialization tasks prior to generating said list.  Thus, you must manually call .RefreshDisplays at
+    ' least *once* before attempting to access any child pdDisplay objects.
     m_NumOfDisplays = 0
     ResetDisplays
     
@@ -108,27 +103,27 @@ End Sub
 
 'Retrieve virtual desktop dimensions.  These are retrieved on-the-fly, to simplify dealing with changing monitor
 ' resolutions at runtime.
-Public Function GetDesktopLeft() As Long
+Friend Function GetDesktopLeft() As Long
     GetDesktopLeft = GetSystemMetrics(SM_XVIRTUALSCREEN)
 End Function
 
-Public Function GetDesktopTop() As Long
+Friend Function GetDesktopTop() As Long
     GetDesktopTop = GetSystemMetrics(SM_YVIRTUALSCREEN)
 End Function
 
-Public Function GetDesktopRight() As Long
+Friend Function GetDesktopRight() As Long
     GetDesktopRight = Me.GetDesktopLeft + Me.GetDesktopWidth
 End Function
 
-Public Function GetDesktopBottom() As Long
+Friend Function GetDesktopBottom() As Long
     GetDesktopBottom = Me.GetDesktopTop + Me.GetDesktopHeight
 End Function
 
-Public Function GetDesktopWidth() As Long
+Friend Function GetDesktopWidth() As Long
     GetDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
 End Function
 
-Public Function GetDesktopHeight() As Long
+Friend Function GetDesktopHeight() As Long
     GetDesktopHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
 End Function
 
@@ -148,6 +143,7 @@ End Sub
 Friend Sub GetVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixels As Boolean = True)
     
     With dstRect
+    
         .Left = 0
         .Top = 0
         
@@ -164,14 +160,14 @@ Friend Sub GetVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixel
 End Sub
 
 'Returns the number of active displays.  Inaccurate until .RefreshDisplays() has been called.
-Public Function GetDisplayCount() As Long
-    If m_NumOfDisplays = 0 Then RefreshDisplays
+Friend Function GetDisplayCount() As Long
+    If (m_NumOfDisplays = 0) Then Me.RefreshDisplays
     GetDisplayCount = m_NumOfDisplays
 End Function
 
 'Taskbar height is more complicated in Win 10, since the taskbar can optionally appear across multiple displays.
 ' At present, PD assumes the taskbar is present on most screens, and it uses this to control things like drop-down height.
-Public Function GetTaskbarHeight() As Long
+Friend Function GetTaskbarHeight() As Long
     Dim primaryDisplayRect As RECTL, primaryDisplayWorkingRect As RECTL
     Me.PrimaryDisplay.GetRect primaryDisplayRect
     Me.PrimaryDisplay.GetWorkingRect primaryDisplayWorkingRect
@@ -182,7 +178,7 @@ End Function
 ' need to be calculated on a per-monitor basis using the EDID data PD collects.
 '
 'For convenience, this is returned as a float where 1.0 = 96 DPI (the default Windows setting).  2.0 = 200% DPI scaling, etc.
-Public Function GetWindowsDPI() As Double
+Friend Function GetWindowsDPI() As Double
     
     'Retrieve LogPixelsX via the API; this will be 96 at 100% DPI scaling
     Dim screenDC As Long, logPixelsX As Double
@@ -191,7 +187,7 @@ Public Function GetWindowsDPI() As Double
     ReleaseDC 0, screenDC
     
     'Convert that value into a fractional DPI modified (e.g. 1.0 for 100% scaling, 2.0 for 200% scaling)
-    If logPixelsX = 0 Then
+    If (logPixelsX = 0) Then
         GetWindowsDPI = 1#
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
@@ -205,7 +201,7 @@ End Function
 'Erase our current display collection.  Not exposed publicly, as callers should rely on RefreshDisplays, instead.
 Private Sub ResetDisplays()
     
-    If m_NumOfDisplays > 0 Then
+    If (m_NumOfDisplays > 0) Then
         
         Dim i As Long
         For i = 0 To m_NumOfDisplays - 1
@@ -220,10 +216,10 @@ Private Sub ResetDisplays()
 End Sub
 
 'Refresh the current display list.  Returns the number of displays found.
-Public Function RefreshDisplays() As Long
+Friend Function RefreshDisplays() As Long
 
     'If an existing collection exists, clear it now, then cache the new value
-    If m_NumOfDisplays > 0 Then ResetDisplays
+    If (m_NumOfDisplays > 0) Then ResetDisplays
     
     'Retrieve the virtual screen area
     Dim virtualScreenRect As RECTL
@@ -240,8 +236,8 @@ Public Function RefreshDisplays() As Long
         hDisplay = MonitorFromPoint(x, y, MONITOR_DEFAULTTOPRIMARY)
         
         'If the display doesn't exist in our collection, add it now!
-        If hDisplay <> 0 Then
-            If Not DoesDisplayExistInCollection(hDisplay) Then AddNewDisplay hDisplay
+        If (hDisplay <> 0) Then
+            If (Not DoesDisplayExistInCollection(hDisplay)) Then AddNewDisplay hDisplay
         End If
         
     Next y
@@ -249,7 +245,7 @@ Public Function RefreshDisplays() As Long
     
     'If for some reason no displays were found (perhaps possible under Wine or some alternative environment), create a
     ' default display instance.
-    If m_NumOfDisplays = 0 Then
+    If (m_NumOfDisplays = 0) Then
         
         'Get a default screen rect from VB's internal methods
         Dim workingRect As RECTL
@@ -302,7 +298,7 @@ End Function
 'Given a display handle (hMonitor), see if it already exists in our display collection.
 Private Function DoesDisplayExistInCollection(ByVal hDisplay As Long) As Boolean
         
-    If m_NumOfDisplays = 0 Then
+    If (m_NumOfDisplays = 0) Then
         DoesDisplayExistInCollection = False
     Else
         
@@ -311,7 +307,7 @@ Private Function DoesDisplayExistInCollection(ByVal hDisplay As Long) As Boolean
         
         Dim i As Long
         For i = 0 To m_NumOfDisplays - 1
-            If listOfDisplays(i).GetHandle = hDisplay Then
+            If (listOfDisplays(i).GetHandle = hDisplay) Then
                 displayFound = True
                 Exit For
             End If
@@ -334,7 +330,7 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
     Dim monInfo As MONITORINFOEX
     monInfo.cbSize = LenB(monInfo)
     
-    If GetMonitorInfo(hDisplay, monInfo) <> 0 Then
+    If (GetMonitorInfo(hDisplay, monInfo) <> 0) Then
         
         With listOfDisplays(m_NumOfDisplays)
             .SetRect monInfo.rcMonitor
@@ -343,8 +339,8 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
         
         'Extract the adapter name as well
         Dim tmpName As String
-        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monInfo.szDevice(0)), CCHDEVICENAME * 2)
-        If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
+        tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monInfo.szDevice(0)), CCHDEVICENAME * 2, True)
+        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
         listOfDisplays(m_NumOfDisplays).SetAdapterName tmpName
         
         'While here, we want to add some additional information to the display entry, but it's fairly involved, so we're
@@ -353,9 +349,7 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
         
         'Increment the display counter before exiting
         m_NumOfDisplays = m_NumOfDisplays + 1
-        If m_NumOfDisplays > UBound(listOfDisplays) Then
-            ReDim Preserve listOfDisplays(0 To m_NumOfDisplays * 2 - 1) As pdDisplay
-        End If
+        If (m_NumOfDisplays > UBound(listOfDisplays)) Then ReDim Preserve listOfDisplays(0 To m_NumOfDisplays * 2 - 1) As pdDisplay
         
     Else
         #If DEBUGMODE = 1 Then
@@ -381,17 +375,17 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     
     Do While EnumDisplayDevices(0&, displayCount, monitorInfoDetailed, 0&) <> 0
     
-        'Extract the monitor's device name (again, it's really the adapter name - thanks Windows!) and stick
+        'Extract the monitor's device name (again, it's really the adapter name - thanks, Windows!) and stick
         ' it in a string, so we can compare this device's name against the one we just added.
-        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceName(0)), CCHDEVICENAME * 2)
-        If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
+        tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceName(0)), CCHDEVICENAME * 2, True)
+        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
         
-        'If the adapter name of our previous
-        If StrComp(LCase(listOfDisplays(displayIndex).GetAdapterName), LCase(tmpName), vbBinaryCompare) = 0 Then
+        'If the adapter name of our previous display matches this one, retrieve the extra information
+        If Strings.StringsEqual(listOfDisplays(displayIndex).GetAdapterName, tmpName, True) Then
             
             'This is a match!  Grab the description string while we're here.
-            tmpDescription = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
-            If Len(tmpDescription) > 0 Then tmpDescription = Trim$(tmpDescription)
+            tmpDescription = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceString(0)), 256, True)
+            If (Len(tmpDescription) > 0) Then tmpDescription = Trim$(tmpDescription)
             listOfDisplays(displayIndex).SetDescription tmpDescription
             
             'Also, if this is the primary monitor, mark it as such
@@ -412,11 +406,11 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
     Dim adapterName As String
     adapterName = listOfDisplays(displayIndex).GetAdapterName
-    If EnumDisplayDevices(StrPtr(adapterName), 0&, monitorInfoDetailed, 1&) <> 0 Then
+    If (EnumDisplayDevices(StrPtr(adapterName), 0&, monitorInfoDetailed, 1&) <> 0) Then
         
         'The monitor's friendly name should now be stored inside the .DeviceString portion of the struct.
-        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
-        If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
+        tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceString(0)), 256, True)
+        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
         listOfDisplays(displayIndex).SetFriendlyName tmpName
         
         'Normally, the .deviceID portion of the monitorInfoDetailed struct is useless, but MS changed this for Vista.
@@ -429,16 +423,16 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
         ' this, it's easier to simply restrict the functionality to Vista or later.
         
         'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
-        If (Not listOfDisplays(displayIndex).HasEDID) And g_IsVistaOrLater Then
+        If (Not listOfDisplays(displayIndex).HasEDID) And OS.IsVistaOrLater Then
         
             'Retrieve and cache the device ID
             Dim devID As String
-            devID = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceID(0)), 256)
-            If Len(devID) <> 0 Then devID = Trim$(devID)
+            devID = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceID(0)), 256, True)
+            If (Len(devID) <> 0) Then devID = Trim$(devID)
             listOfDisplays(displayIndex).SetDeviceID devID
             
             'If a device ID was successfully retrieved, use it to try and locate a matching EDID array.
-            If Len(devID) <> 0 Then
+            If (Len(devID) <> 0) Then
             
                 'If successful, the EDID contents will be saved to this byte array
                 Dim edidArray() As Byte
@@ -452,7 +446,7 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
                     tmpStringArray = Split(devID, "#")
                     
                     'Make sure we generated enough substrings to correctly generate a registry path
-                    If UBound(tmpStringArray) >= 2 Then
+                    If (UBound(tmpStringArray) >= 2) Then
                         
                         'Use the substrings to create a path to the EDID location inside the registry
                         Dim regPath As String
@@ -569,9 +563,9 @@ registryFetchError:
 End Function
 
 'Shortcut function for those who want to access the primary monitor (which may or may not be index 0 in our collection)
-Public Function PrimaryDisplay() As pdDisplay
+Friend Function PrimaryDisplay() As pdDisplay
     
-    If m_NumOfDisplays > 0 Then
+    If (m_NumOfDisplays > 0) Then
     
         Dim i As Long
         For i = 0 To m_NumOfDisplays - 1
@@ -589,14 +583,14 @@ Public Function PrimaryDisplay() As pdDisplay
 
 End Function
 
-Public Function GetDisplayByHandle(ByVal srcHMonitor As Long) As pdDisplay
+Friend Function GetDisplayByHandle(ByVal srcHMonitor As Long) As pdDisplay
     
-    If m_NumOfDisplays > 0 Then
+    If (m_NumOfDisplays > 0) Then
     
         Dim i As Long
         For i = 0 To m_NumOfDisplays - 1
                 
-            If listOfDisplays(i).GetHandle = srcHMonitor Then
+            If (listOfDisplays(i).GetHandle = srcHMonitor) Then
                 Set GetDisplayByHandle = listOfDisplays(i)
                 Exit For
             End If
@@ -609,7 +603,7 @@ Public Function GetDisplayByHandle(ByVal srcHMonitor As Long) As pdDisplay
     
 End Function
 
-Public Function Displays(ByVal displayIndex As Long) As pdDisplay
+Friend Function Displays(ByVal displayIndex As Long) As pdDisplay
     
     If (m_NumOfDisplays > 0) And (displayIndex >= 0) And (displayIndex < m_NumOfDisplays) Then
         Set Displays = listOfDisplays(displayIndex)
@@ -638,14 +632,14 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
     Dim hDisplay As Long
     hDisplay = Me.GetHMonitorFromRectL(srcRect)
     
-    If hDisplay <> 0 Then
+    If (hDisplay <> 0) Then
     
         'Find the matching display in our collection
         Dim srcDisplay As pdDisplay
         Set srcDisplay = GetDisplayByHandle(hDisplay)
         
         'Get the display's working rect
-        If Not srcDisplay Is Nothing Then
+        If (Not srcDisplay Is Nothing) Then
             srcDisplay.GetRect workingRect
         Else
             Me.GetVBDesktopRect workingRect, True

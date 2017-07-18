@@ -155,7 +155,7 @@ Private Sub Form_Load()
     End If
     
     'Disable the restart option inside the IDE
-    If (Not g_IsProgramCompiled) Then
+    If (Not OS.IsProgramCompiled) Then
         cmdUpdate(0).Caption = g_Language.TranslateMessage("(Sorry, but automatic restarts don't work inside the IDE.)")
         cmdUpdate(0).Enabled = False
     End If

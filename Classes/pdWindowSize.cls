@@ -81,7 +81,7 @@ Private m_WindowRect As winRect
 ' bypass VB's faulty handling.
 Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         EndSubclassing
         

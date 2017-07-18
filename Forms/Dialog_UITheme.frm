@@ -110,7 +110,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'PD language files currently available on this system.
-Private m_AvailableLanguages() As pdLanguageFile
+Private m_AvailableLanguages() As PDLanguageFile
 
 'While language files are loaded, we suspend click events in the language drop-down box
 Private m_SuspendUpdates As Boolean
@@ -273,7 +273,7 @@ End Sub
 'The accent color strip is owner-drawn, so we must respond to rendering events and paint the accent colors manually
 Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
-    If ((Len(btnValue) <> 0) And g_IsProgramRunning) Then
+    If ((Len(btnValue) <> 0) And MainModule.IsProgramRunning()) Then
     
         Dim tmpRectF As RECTF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&

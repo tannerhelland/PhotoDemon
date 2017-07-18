@@ -63,7 +63,6 @@ Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As L
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
 Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
@@ -201,15 +200,6 @@ Private Type COLORMATRIX
     m(0 To 4, 0 To 4) As Single
 End Type
 
-Private Type OSVERSIONINFO
-    dwOSVersionInfoSize As Long
-    dwMajorVersion As Long
-    dwMinorVersion As Long
-    dwBuildNumber As Long
-    dwPlatformId As Long
-    szCSDVersion As String * 128
-End Type
-
 Private Type MemoDIB
     hDIB As Long
     Ptr As Long
@@ -281,7 +271,6 @@ Private m_hWnd As Long
 Private m_lWidth As Long
 Private m_lHeight As Long
 Private mDIB() As MemoDIB
-Private IsWinVistaOrLater As Boolean
 Private cColl As Collection
 
 Private m_ClassicThemeWorkaround As Boolean
@@ -289,10 +278,6 @@ Private m_ClassicThemeWorkaround As Boolean
 'Tanner's addition: convert this class to use IDE-safe subclassing
 Implements ISubclass
 Private m_SubclassActive As Boolean
-
-Public Property Get IsWindowVistaOrLater() As Boolean
-    IsWindowVistaOrLater = IsWinVistaOrLater
-End Property
 
 Public Property Get CanWeTheme() As Boolean
     CanWeTheme = Not m_ClassicThemeWorkaround
@@ -364,7 +349,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
             .hbmpItem = 0
             If KeyExists(sKey) Then Call cColl.Remove(sKey)
         Else
-            If IsWinVistaOrLater Then
+            If OS.IsVistaOrLater Then
                 .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
@@ -404,7 +389,7 @@ Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
             .hbmpItem = 0
             If KeyExists(sKey) Then Call cColl.Remove(sKey)
         Else
-            If IsWinVistaOrLater Then
+            If OS.IsVistaOrLater Then
                 .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
@@ -848,14 +833,14 @@ End Function
 
 Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And g_IsProgramRunning) Then
+    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And MainModule.IsProgramRunning()) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
         
         If (UBound(mDIB) > 0) Then Me.Clear
         
-        If (Not IsWinVistaOrLater) Or bRaiseEvent Then
+        If (Not OS.IsVistaOrLater) Or bRaiseEvent Then
             If (m_hWnd <> 0) Then StopSubclassing
             m_hWnd = hWnd
             If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
@@ -874,7 +859,7 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
 End Function
 
 Private Function SetSubclassing() As Boolean
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         m_SubclassActive = VBHacks.StartSubclassing(m_hWnd, Me)
         SetSubclassing = m_SubclassActive
     Else
@@ -897,13 +882,6 @@ End Function
 Private Sub Class_Initialize()
     
     Set cColl = New Collection
-    
-    Dim tOSVI As OSVERSIONINFO
-    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
-    Call GetVersionEx(tOSVI)
-    
-    If tOSVI.dwMajorVersion < 5 Then Exit Sub
-    IsWinVistaOrLater = (tOSVI.dwMajorVersion >= 6)
     
     'Tanner's addition 20 September '12:
     ' Double-check that theming is enabled. If it isn't, fall back to subclassing (e.g. Windows XP style)
@@ -1057,7 +1035,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
 
         If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
         
-        If g_IsVistaOrLater Then
+        If OS.IsVistaOrLater Then
             If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12&
         Else
             MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&

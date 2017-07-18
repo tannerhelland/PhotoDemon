@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2812</langversion>
+<langversion>6.8.2814</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -416,11 +416,11 @@ If проблема не устранена, пожалуйста, сообщи�
 
 <!-- END text for FileMenu.bas-->
 
-<!-- BEGIN text for FileSystem.bas -->
+<!-- BEGIN text for Files.bas -->
 
-<!-- FileSystem.bas contains 0 phrases. -->
+<!-- Files.bas contains 0 phrases. -->
 
-<!-- END text for FileSystem.bas-->
+<!-- END text for Files.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1537,6 +1537,12 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 
 <!-- END text for Menus.bas-->
 
+<!-- BEGIN text for OS.bas -->
+
+<!-- OS.bas contains 0 phrases. -->
+
+<!-- END text for OS.bas-->
+
 <!-- BEGIN text for FreeImageWrapper.bas -->
 
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
@@ -2626,12 +2632,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for ViewportEngine.bas-->
 
-<!-- BEGIN text for WindowsModern.bas -->
-
-<!-- WindowsModern.bas contains 0 phrases. -->
-
-<!-- END text for WindowsModern.bas-->
-
 <!-- BEGIN text for cFileDialogVista.cls -->
 
 <!-- cFileDialogVista.cls contains 0 phrases. -->
@@ -3505,77 +3505,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdStringStack.cls-->
 
-<!-- BEGIN text for pdSystemInfo.cls -->
-
-<phrase>
-<original>General image actions</original>
-<translation>Общие действия изображения</translation>
-</phrase>
-
-<phrase>
-<original>Alpha-blending</original>
-<translation>Альфа-смешивание</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>Управление цветом</translation>
-</phrase>
-
-<phrase>
-<original>Lines</original>
-<translation>линии</translation>
-</phrase>
-
-<phrase>
-<original>Polygons</original>
-<translation>Полигоны</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Кривые</translation>
-</phrase>
-
-<phrase>
-<original>Text</original>
-<translation>Текст</translation>
-</phrase>
-
-<phrase>
-<original>Final results</original>
-<translation>Окончательные результаты</translation>
-</phrase>
-
-<phrase>
-<original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation>Отказ от ответственности: все данные аппаратное ускорение обеспечивается операционной системой. Он, в частности представляет собой GDI ускорение, которое не зависит от DirectX и OpenGL. версия операционной системы и режим рабочего стола также влияют на возможности поддержки. Для достижения наилучших результатов, пожалуйста, запустите PhotoDemon на Windows 7 или 8, на Aero с поддержкой рабочего стола.</translation>
-</phrase>
-
-<phrase>
-<original>For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</original>
-<translation>Для получения более подробной информации об аппаратном ускорении GDI, посетите http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</translation>
-</phrase>
-
-<phrase>
-<original>none</original>
-<translation>никто</translation>
-</phrase>
-
-<phrase>
-<original>accelerated</original>
-<translation>ускоренный</translation>
-</phrase>
-
-<phrase>
-<original>not accelerated</original>
-<translation>не ускоряется</translation>
-</phrase>
-
-<!-- pdSystemInfo.cls contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<!-- END text for pdSystemInfo.cls-->
-
 <!-- BEGIN text for pdTextRenderer.cls -->
 
 <!-- pdTextRenderer.cls contains 0 phrases. -->
@@ -3633,12 +3562,6 @@ Please enter a numeric value.</original>
 <!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
-
-<!-- BEGIN text for pdUnicode.cls -->
-
-<!-- pdUnicode.cls contains 0 phrases. -->
-
-<!-- END text for pdUnicode.cls-->
 
 <!-- BEGIN text for pdUniscribe.cls -->
 
@@ -3972,7 +3895,12 @@ or the File > Open and File > Import menus.</original>
 <translation>двоичный (по цвету)</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<phrase>
+<original>none</original>
+<translation>никто</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -5219,6 +5147,11 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Color balance</original>
 <translation>Цветовой баланс</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Кривые</translation>
 </phrase>
 
 <phrase>
@@ -6573,7 +6506,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 184 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14525,13 +14458,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Click here to reset all options</original>
-<translation>Нажмите здесь, чтобы сбросить все параметры</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>Отчет аппаратного ускорения</translation>
+<original>reset all program settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14615,17 +14543,15 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>This action will reset all preferences to their default values.  It cannot be undone.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation>Это действие будет сбросить все настройки к значениям по умолчанию. Это не может быть undone.
- 
- Вы уверены, что хотите продолжить?</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Reset all preferences</original>
-<translation>Сбросить все настройки</translation>
+<original>Reset PhotoDemon</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14908,11 +14834,6 @@ If вы все еще отключить обновления, не забудь
 </phrase>
 
 <phrase>
-<original>Copy the report to the system clipboard</original>
-<translation>Скопируйте отчет в системный буфер обмена</translation>
-</phrase>
-
-<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>текущее использование памяти PhotoDemon</translation>
 </phrase>
@@ -14948,6 +14869,11 @@ If вы все еще отключить обновления, не забудь
 </phrase>
 
 <phrase>
+<original>Color management</original>
+<translation>Управление цветом</translation>
+</phrase>
+
+<phrase>
 <original>Updates</original>
 <translation>Обновления</translation>
 </phrase>
@@ -14967,7 +14893,7 @@ If вы все еще отключить обновления, не забудь
 <translation>Это новое местоположение временной папки не вступят в силу только после перезапуска программы.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 40 were duplicates of existing phrases, so only 126 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15096,10 +15022,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2544</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4544 phrases. -->
-<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
-<!-- These 2544 phrases contain approximately 12349 total words. -->
+<!-- As of this build, PhotoDemon contains 4514 phrases. -->
+<!-- 1982 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

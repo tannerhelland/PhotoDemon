@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2812</langversion>
+<langversion>6.8.2814</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -416,11 +416,11 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 
 <!-- END text for FileMenu.bas-->
 
-<!-- BEGIN text for FileSystem.bas -->
+<!-- BEGIN text for Files.bas -->
 
-<!-- FileSystem.bas contains 0 phrases. -->
+<!-- Files.bas contains 0 phrases. -->
 
-<!-- END text for FileSystem.bas-->
+<!-- END text for Files.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1533,6 +1533,12 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 
 <!-- END text for Menus.bas-->
 
+<!-- BEGIN text for OS.bas -->
+
+<!-- OS.bas contains 0 phrases. -->
+
+<!-- END text for OS.bas-->
+
 <!-- BEGIN text for FreeImageWrapper.bas -->
 
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
@@ -2622,12 +2628,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for ViewportEngine.bas-->
 
-<!-- BEGIN text for WindowsModern.bas -->
-
-<!-- WindowsModern.bas contains 0 phrases. -->
-
-<!-- END text for WindowsModern.bas-->
-
 <!-- BEGIN text for cFileDialogVista.cls -->
 
 <!-- cFileDialogVista.cls contains 0 phrases. -->
@@ -3501,77 +3501,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdStringStack.cls-->
 
-<!-- BEGIN text for pdSystemInfo.cls -->
-
-<phrase>
-<original>General image actions</original>
-<translation>Genel görüntü eylemleri</translation>
-</phrase>
-
-<phrase>
-<original>Alpha-blending</original>
-<translation>Alfa-karıştırma</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>Renk yönetimi</translation>
-</phrase>
-
-<phrase>
-<original>Lines</original>
-<translation>çizgiler</translation>
-</phrase>
-
-<phrase>
-<original>Polygons</original>
-<translation>çokgenler</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>eğriler</translation>
-</phrase>
-
-<phrase>
-<original>Text</original>
-<translation>Metin</translation>
-</phrase>
-
-<phrase>
-<original>Final results</original>
-<translation>Kesin sonuçlar</translation>
-</phrase>
-
-<phrase>
-<original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation>Yasal Uyarı: Tüm donanım hızlandırma veri işletim sistemi tarafından sağlanmaktadır. Özellikle DirectX ve OpenGL bağımsızdır GDI ivme temsil eder. OS sürümü ve masaüstü modu da destek yeteneklerini etkiler. En iyi sonuç için, bir Aero-etkin masaüstünde, Windows 7 ya da 8 üzerinde PhotoDemon çalıştırın.</translation>
-</phrase>
-
-<phrase>
-<original>For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</original>
-<translation>GDI donanım hızlandırması hakkında daha fazla bilgi için, http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480 ziyaret</translation>
-</phrase>
-
-<phrase>
-<original>none</original>
-<translation>Yok</translation>
-</phrase>
-
-<phrase>
-<original>accelerated</original>
-<translation>hızlandırılmış</translation>
-</phrase>
-
-<phrase>
-<original>not accelerated</original>
-<translation>hızlandırılmış değil</translation>
-</phrase>
-
-<!-- pdSystemInfo.cls contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<!-- END text for pdSystemInfo.cls-->
-
 <!-- BEGIN text for pdTextRenderer.cls -->
 
 <!-- pdTextRenderer.cls contains 0 phrases. -->
@@ -3629,12 +3558,6 @@ Please enter a numeric value.</original>
 <!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
-
-<!-- BEGIN text for pdUnicode.cls -->
-
-<!-- pdUnicode.cls contains 0 phrases. -->
-
-<!-- END text for pdUnicode.cls-->
 
 <!-- BEGIN text for pdUniscribe.cls -->
 
@@ -3966,7 +3889,12 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <translation>ikili (renge göre)</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<phrase>
+<original>none</original>
+<translation>Yok</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -5213,6 +5141,11 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <phrase>
 <original>Color balance</original>
 <translation>Renk dengesi</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>eğriler</translation>
 </phrase>
 
 <phrase>
@@ -6566,7 +6499,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 184 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14512,13 +14445,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Click here to reset all options</original>
-<translation>Tüm seçenekleri sıfırlamak için buraya tıklayın</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>Donanım hızlandırma raporu</translation>
+<original>reset all program settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14602,16 +14530,15 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>This action will reset all preferences to their default values.  It cannot be undone.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation>Bu eylem varsayılan değerlerine tüm tercihleri sıfırlanır. Bu size devam etmek istediğinizden emin misiniz undone.
- vbCrLf olamaz?</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Reset all preferences</original>
-<translation>Tüm tercihleri sıfırla</translation>
+<original>Reset PhotoDemon</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14894,11 +14821,6 @@ If yamalı vardır.</translation>
 </phrase>
 
 <phrase>
-<original>Copy the report to the system clipboard</original>
-<translation>sistem panosuna raporu kopyalayın</translation>
-</phrase>
-
-<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>Geçerli PhotoDemon bellek kullanımı</translation>
 </phrase>
@@ -14934,6 +14856,11 @@ If yamalı vardır.</translation>
 </phrase>
 
 <phrase>
+<original>Color management</original>
+<translation>Renk yönetimi</translation>
+</phrase>
+
+<phrase>
 <original>Updates</original>
 <translation>Güncellemeler</translation>
 </phrase>
@@ -14953,7 +14880,7 @@ If yamalı vardır.</translation>
 <translation>Programı yeniden başlatana kadar bu yeni geçici klasör konumu etkili olmaz.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 40 were duplicates of existing phrases, so only 126 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15082,10 +15009,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2544</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4544 phrases. -->
-<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
-<!-- These 2544 phrases contain approximately 12349 total words. -->
+<!-- As of this build, PhotoDemon contains 4514 phrases. -->
+<!-- 1982 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

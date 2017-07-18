@@ -717,7 +717,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     
     On Error GoTo UnexpectedTTTrouble
     
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     'If a tooltip is currently active, suspend the release timer (because we're just going to "snap" the current
     ' tooltip window into place, rather than waiting for an animation).
@@ -972,7 +972,7 @@ Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
         End If
         
         'If Aero theming is not active, hiding the tooltip may cause windows beneath the current one to render incorrectly.
-        If (g_IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
+        If (OS.IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
             InvalidateRect 0&, VarPtr(m_TTRectCopy), 0&
         End If
         

@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Custom Debug helper class
 'Copyright 2014-2017 by Tanner Helland
 'Created: 17/July/14
-'Last updated: 23/June/15
-'Last update: integrated pdSystemInfo for various OS interaction bits
-'Dependencies: pdSystemInfo (for retrieving system-level debug data)
+'Last updated: 18/July/17
+'Last update: reworked system interactions against the new OS module (instead of the old pdSystemInfo class)
+'Dependencies: OS module (for retrieving system-level debug data)
 '
 'As PhotoDemon has grown more complex, debugging has become correspondingly difficult.  Debugging on my local PC is fine
 ' thanks to the IDE, but a lot of behaviors are different in the compiled .exe, and user PCs are another problem entirely.
@@ -87,9 +87,6 @@ Private numBackupMessages As Long
 ' This is very helpful for catching memory leaks.
 Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 
-'Various OS interactions are handled by pdSystemInfo
-Private cSysInfo As pdSystemInfo
-
 'File I/O is handled via pdFSO
 Private m_FSO As pdFSO
 
@@ -142,17 +139,18 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             
             debugHeader = debugHeader & "Date: " & Date & vbCrLf
             debugHeader = debugHeader & "Time: " & Time & vbCrLf
-            debugHeader = debugHeader & "Session ID: " & g_SessionID & vbCrLf
-            debugHeader = debugHeader & "Compiled: " & CStr(g_IsProgramCompiled) & vbCrLf
+            debugHeader = debugHeader & "Session ID: " & OS.UniqueSessionID() & vbCrLf
+            debugHeader = debugHeader & "Compiled: " & CStr(OS.IsProgramCompiled) & vbCrLf
             debugHeader = debugHeader & "First run: " & CStr(g_IsFirstRun) & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
             
-            debugHeader = debugHeader & "OS: " & cSysInfo.GetOSVersionAsString & vbCrLf
-            debugHeader = debugHeader & "Processor cores (logical): " & cSysInfo.GetNumLogicalCores & vbCrLf
-            debugHeader = debugHeader & "Processor features: " & cSysInfo.GetProcessorFeatures & vbCrLf
-            debugHeader = debugHeader & "System RAM: " & cSysInfo.GetTotalSystemRAM & vbCrLf
-            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & cSysInfo.GetRAMAvailableToPD & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "OS: " & OS.OSVersionAsString & vbCrLf
+            debugHeader = debugHeader & "Processor cores (logical): " & OS.LogicalCoreCount & vbCrLf
+            debugHeader = debugHeader & "Processor features: " & OS.ProcessorFeatures & vbCrLf
+            debugHeader = debugHeader & "System RAM: " & OS.RAM_SystemTotal & vbCrLf
+            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & OS.RAM_Available & vbCrLf
+            debugHeader = debugHeader & "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
             
@@ -327,16 +325,18 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         
             'The caller wants a RAM update.  Generate one now.
             Dim curMemUsage As Double, maxMemUsage As Double, deltaMem As Double
-            curMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(False)
-            maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
+            curMemUsage = OS.AppMemoryUsage(False)
+            maxMemUsage = OS.AppMemoryUsage(True)
             deltaMem = curMemUsage - m_lastMemCheck
             
             'While here, also grab GDI and user object counts
             Dim curGDIObjects As Long, curUserObjects As Long, gdiObjectPeak As Long, userObjectPeak As Long
-            curGDIObjects = cSysInfo.GetPhotoDemonResourceUsage(GdiObjects)
-            curUserObjects = cSysInfo.GetPhotoDemonResourceUsage(UserObjects)
-            gdiObjectPeak = cSysInfo.GetPhotoDemonResourceUsage(GdiObjectsPeak)
-            userObjectPeak = cSysInfo.GetPhotoDemonResourceUsage(UserObjectsPeak)
+            curGDIObjects = OS.AppResourceUsage(PDGR_GdiObjects)
+            curUserObjects = OS.AppResourceUsage(PDGR_UserObjects)
+            If OS.IsWin7OrLater Then
+                gdiObjectPeak = OS.AppResourceUsage(PDGR_GdiObjectsPeak)
+                userObjectPeak = OS.AppResourceUsage(PDGR_UserObjectsPeak)
+            End If
             
             'Format the strings into something more readable
             If (curMemUsage <> 0) Then
@@ -454,7 +454,6 @@ Private Sub Class_Initialize()
     m_NumLoggedEvents = 0
     m_lastMemCheck = 0
     
-    Set cSysInfo = New pdSystemInfo
     Set m_FSO = New pdFSO
 
 End Sub

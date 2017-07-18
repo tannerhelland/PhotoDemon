@@ -59,9 +59,6 @@ Private Const WH_KEYBOARD = 2
 'Unsigned arithmetic helpers
 Private Const SIGN_BIT As Long = &H80000000
 
-'A system info class is used to retrieve ThunderMain's hWnd, if required
-Private m_SysInfo As pdSystemInfo
-
 'Higher-performance timing functions are also handled by this class.  Note that you *must* initialize the timer engine
 ' before requesting any time values, or crashes will occurs because the frequency timer is 0.
 Private Declare Function QueryPerformanceCounter Lib "kernel32" (ByRef lpPerformanceCount As Currency) As Long
@@ -158,12 +155,6 @@ Public Sub Unalias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() A
     SafeArrayUnlock ptrSrc
     
 End Sub
-
-'Retrieve a handle to ThunderMain.  Works in the IDE as well, but the usual caveats apply.
-Public Function GetThunderMainHWnd() As Long
-    If (m_SysInfo Is Nothing) Then Set m_SysInfo = New pdSystemInfo
-    GetThunderMainHWnd = m_SysInfo.GetPhotoDemonMasterHWnd()
-End Function
 
 'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this
 ' function instead.  The unique TimerID we specify is actually a handle to the timer instance.
@@ -291,17 +282,17 @@ End Function
 
 Public Sub EnableHighResolutionTimers()
     QueryPerformanceFrequency m_TimerFrequency
-    If m_TimerFrequency = 0 Then m_TimerFrequency = 1
+    If (m_TimerFrequency = 0) Then m_TimerFrequency = 1 Else m_TimerFrequency = 1# / m_TimerFrequency
 End Sub
 
 Public Function GetTimerDifference(ByRef startTime As Currency, ByRef stopTime As Currency) As Double
-    GetTimerDifference = (stopTime - startTime) / m_TimerFrequency
+    GetTimerDifference = (stopTime - startTime) * m_TimerFrequency
 End Function
 
 Public Function GetTimerDifferenceNow(ByRef startTime As Currency) As Double
     Dim tmpTime As Currency
     QueryPerformanceCounter tmpTime
-    GetTimerDifferenceNow = (tmpTime - startTime) / m_TimerFrequency
+    GetTimerDifferenceNow = (tmpTime - startTime) * m_TimerFrequency
 End Function
 
 Public Sub GetHighResTime(ByRef dstTime As Currency)

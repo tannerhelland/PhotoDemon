@@ -123,7 +123,7 @@ Friend Function SetCaption(ByVal newCaption As String) As Boolean
         m_CaptionEn = newCaption
         
         'During run-time, apply translations as necessary
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
         
             'See if translations are necessary.
             Dim isTranslationActive As Boolean
@@ -536,7 +536,7 @@ Private Sub InitializeColorCache()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCAPTION_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "GenericPDControl", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
@@ -559,7 +559,7 @@ Friend Sub UpdateAgainstCurrentTheme()
     oldTranslatedText = m_CaptionTranslated
     
     'See if a new language has been selected
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         Dim isTranslationActive As Boolean
         If (Not g_Language Is Nothing) Then

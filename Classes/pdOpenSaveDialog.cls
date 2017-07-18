@@ -186,7 +186,7 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         
         'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small,
         ' the call to GetOpenFilename will fail, and we can't retry without re-raising the dialog from scratch.
-        If g_IsVistaOrLater Then
+        If OS.IsVistaOrLater Then
             lInitPathSize = MAX_PATH_LOAD
         Else
             lInitPathSize = MAX_PATH_LOAD_XP

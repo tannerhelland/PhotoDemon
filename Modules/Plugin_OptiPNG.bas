@@ -103,7 +103,7 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
         DoEvents
         
         Dim shellCheck As Boolean
-        shellCheck = Files.ShellAndWait(shellPath, optimizeFlags, Not g_IsProgramCompiled)
+        shellCheck = Files.ShellAndWait(shellPath, optimizeFlags, Not OS.IsProgramCompiled)
         
         'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
         ' (from FreeImage) with the newly optimized one (from OptiPNG)

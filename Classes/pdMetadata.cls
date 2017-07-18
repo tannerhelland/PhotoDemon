@@ -1238,12 +1238,9 @@ Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagSta
             
             'ExifTool will sometimes store characters of an unknown codepage as Base64 data.  Attempt a heuristic-based conversion to a
             ' raw string and store the result; this is the best we can do at present.
-            Dim cUnicode As pdUnicode
-            Set cUnicode = New pdUnicode
-            
             Dim tmpBytes() As Byte
-            cUnicode.Base64Decode tmpBytes, fullTagValue
-            cUnicode.ConvertUnknownBytesToString tmpBytes, dstMetadata.TagValue, False
+            Strings.BytesFromBase64 tmpBytes, fullTagValue
+            Strings.StringFromMysteryBytes tmpBytes, dstMetadata.TagValue, False
             
         End If
         

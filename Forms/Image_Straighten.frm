@@ -372,7 +372,7 @@ Private Sub Form_Load()
     ConvertAspectRatio srcWidth, srcHeight, pdFxPreview.GetPreviewWidth, pdFxPreview.GetPreviewHeight, dWidth, dHeight
     
     'Create a new, smaller image at those dimensions
-    If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
+    If (dWidth <= srcWidth) Or (dHeight <= srcHeight) Then
         
         smallDIB.CreateBlank dWidth, dHeight, 32, 0
         
@@ -416,9 +416,6 @@ Private Sub Form_Load()
         End Select
         
     End If
-        
-    'Remove premultiplied alpha from the small DIB copy
-    smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     pdFxPreview.SetOriginalImage smallDIB

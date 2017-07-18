@@ -120,7 +120,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Resize()
-    If (Not g_IsProgramRunning) And (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint False
+    If (Not MainModule.IsProgramRunning()) And (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint False
 End Sub
 
 Public Sub NotifyTooltipSettings(ByRef ttCaption As String, ByRef ttTitle As String, ByVal internalPadding As Single, ByVal titlePadding As Single)
@@ -154,7 +154,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         Dim bufferDC As Long
@@ -220,5 +220,5 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub

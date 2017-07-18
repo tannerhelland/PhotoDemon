@@ -886,7 +886,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDIMAGESTRIP_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDImageStrip", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
@@ -923,7 +923,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -934,7 +934,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -1039,7 +1039,7 @@ Private Sub UpdateControlLayout(Optional ByVal thumbsMustBeUpdated As Boolean = 
     bHeight = ucSupport.GetControlHeight
     
     'Detect alignment changes (if any)
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'If the control's size has changed in the dimension that determines thumb size, we need to recreate all image thumbnails
         Dim oldThumbWidth As Long, oldThumbHeight As Long
@@ -1091,7 +1091,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning And (m_NumOfThumbs > 0) Then
+    If MainModule.IsProgramRunning() And (m_NumOfThumbs > 0) Then
         
         'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
         ' of image tabs currently visible is long enough that it needs to be scrollable).

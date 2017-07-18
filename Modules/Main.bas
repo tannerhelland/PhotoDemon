@@ -44,7 +44,7 @@ Private Const SEM_FAILCRITICALERRORS = &H1
 Private Const SEM_NOGPFAULTERRORBOX = &H2
 Private Const SEM_NOOPENFILEERRORBOX = &H8000&
 
-Private hShellModule As Long
+Private m_hShellModule As Long
 
 'These can be used to ensure that the splash shows for a minimum amount of time
 Private m_LoadTime As Double, m_StartTime As Double
@@ -52,6 +52,10 @@ Private m_LoadTime As Double, m_StartTime As Double
 'This constant is the number of "discrete" loading steps involved in loading the program.  It is relevant for displaying
 'the progress bar on the initial splash screen; this value is the progress bar's maximum value.
 Private Const NUMBER_OF_LOADING_STEPS As Long = 18
+
+'After Main() has been invoked, this will be set to TRUE.  This is important in VB as any number of functions
+' get called during compilation (and inside the IDE in general), so certain need to be forcibly suspended.
+Private m_IsProgramRunning As Boolean
 
 'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
 ' correctly.  Note that this code is irrelevant within the IDE.
@@ -66,7 +70,7 @@ Public Sub Main()
     'Make sure shell32 is loaded
     Dim strShellName As String
     strShellName = "shell32.dll"
-    hShellModule = LoadLibrary(StrPtr(strShellName))
+    m_hShellModule = LoadLibrary(StrPtr(strShellName))
     
     'Make sure comctl32 is loaded.  (For details on these constants, visit http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx)
     Dim iccex As InitCommonControlsExStruct
@@ -89,7 +93,7 @@ Public Sub Main()
     
     'Because Ambient.UserMode does not report IDE behavior properly, we use our own UserMode tracker.
     ' Thank you to Kroc of camendesign.com for suggesting this workaround.
-    g_IsProgramRunning = True
+    m_IsProgramRunning = True
     
     'FormMain can now be loaded.  (We load it first, because many initialization steps silently interact with it,
     ' like loading menu icons or prepping toolboxes.)  That said, the first step of FormMain's load process is calling
@@ -165,11 +169,9 @@ Public Sub ContinueLoadingProgram()
         
     End If
         
-    'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
-    CheckLoadingEnvironment
-    
+    'Check the runtime environment.  If inside the the IDE, the splash needs to be modified slightly.
     If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
-        If g_IsProgramCompiled Then m_LoadTime = 1# Else m_LoadTime = 0.5
+        If OS.IsProgramCompiled() Then m_LoadTime = 1# Else m_LoadTime = 0.5
     Else
         m_LoadTime = 0#
     End If
@@ -185,19 +187,8 @@ Public Sub ContinueLoadingProgram()
     
     LoadMessage "Detecting Windows® version..."
     
-    'Certain features are OS-version dependent.  We must determine the OS version early in the load process to ensure that all features
-    ' are loaded correctly.
-    Dim cSysInfo As pdSystemInfo
-    Set cSysInfo = New pdSystemInfo
-    
-    g_IsVistaOrLater = cSysInfo.IsOSVistaOrLater
-    g_IsWin7OrLater = cSysInfo.IsOSWin7OrLater
-    g_IsWin8OrLater = cSysInfo.IsOSWin8OrLater
-    g_IsWin81OrLater = cSysInfo.IsOSWin81OrLater
-    g_IsWin10OrLater = cSysInfo.IsOSWin10OrLater
-    
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
-    If g_IsWin7OrLater Then PrepWin7Features
+    If OS.IsWin7OrLater Then OS.StartWin7PlusFeatures
     
     
     
@@ -219,10 +210,6 @@ Public Sub ContinueLoadingProgram()
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Initialize preferences engine"
     #End If
-    
-    'Before initializing the preference engine, generate a unique session ID for this PhotoDemo instance.  This ID will be used to
-    ' separate the temp files for this program instance from any other simultaneous instances.
-    g_SessionID = cSysInfo.GetUniqueSessionID()
     
     Set g_UserPreferences = New pdPreferences
     
@@ -723,11 +710,6 @@ Public Sub ContinueLoadingProgram()
     
 End Sub
 
-'Check for IDE or compiled EXE, and set program parameters accordingly
-Private Sub CheckLoadingEnvironment()
-    g_IsProgramCompiled = CBool(App.logMode = 1)
-End Sub
-
 'FormMain's Unload step calls this process as its final action.
 Public Sub FinalShutdown()
     
@@ -793,7 +775,7 @@ Public Sub FinalShutdown()
     #End If
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
-    If (hShellModule <> 0) Then FreeLibrary hShellModule
+    If (m_hShellModule <> 0) Then FreeLibrary m_hShellModule
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
@@ -802,7 +784,7 @@ Public Sub FinalShutdown()
         Set pdDebug = Nothing
     #End If
     
-    g_IsProgramRunning = False
+    m_IsProgramRunning = False
     
     'We have now terminated everything we can physically terminate.
     
@@ -811,3 +793,9 @@ Public Sub FinalShutdown()
     SetErrorMode SEM_NOGPFAULTERRORBOX
     
 End Sub
+
+'Returns TRUE if Main() has been invoked
+Public Function IsProgramRunning() As Boolean
+    IsProgramRunning = m_IsProgramRunning
+End Function
+

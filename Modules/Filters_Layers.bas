@@ -96,7 +96,7 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
             ' 1) We are on Windows 7, OR...
             ' 2) We are on Windows 8+ and the blur radius is > 20.  Below this radius, Windows 8 doesn't blur correctly,
             '    and we've gone long enough without a patch (years!) that I don't expect MS to fix it.
-            If g_IsWin8OrLater And (blurRadius <= 20) Then
+            If OS.IsWin8OrLater And (blurRadius <= 20) Then
                 gdiPlusIsAcceptable = False
             Else
                 gdiPlusIsAcceptable = True
@@ -345,10 +345,10 @@ End Function
 Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -398,9 +398,9 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         rCount(r) = rCount(r) + 1
         gCount(g) = gCount(g) + 1
         bCount(b) = bCount(b) + 1
@@ -529,9 +529,9 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        ImageData(quickVal + 2, y) = rFinal(ImageData(quickVal + 2, y))
-        ImageData(quickVal + 1, y) = gFinal(ImageData(quickVal + 1, y))
-        ImageData(quickVal, y) = bFinal(ImageData(quickVal, y))
+        imageData(quickVal + 2, y) = rFinal(imageData(quickVal + 2, y))
+        imageData(quickVal + 1, y) = gFinal(imageData(quickVal + 1, y))
+        imageData(quickVal, y) = bFinal(imageData(quickVal, y))
         
     Next y
         If Not suppressMessages Then
@@ -543,8 +543,8 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     If g_cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
     
@@ -557,10 +557,10 @@ End Function
 Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -608,9 +608,9 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -687,9 +687,9 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        ImageData(quickVal + 2, y) = lFinal(ImageData(quickVal + 2, y))
-        ImageData(quickVal + 1, y) = lFinal(ImageData(quickVal + 1, y))
-        ImageData(quickVal, y) = lFinal(ImageData(quickVal, y))
+        imageData(quickVal + 2, y) = lFinal(imageData(quickVal + 2, y))
+        imageData(quickVal + 1, y) = lFinal(imageData(quickVal + 1, y))
+        imageData(quickVal, y) = lFinal(imageData(quickVal, y))
         
     Next y
         If Not suppressMessages Then
@@ -701,8 +701,8 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     If g_cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
     
@@ -2640,10 +2640,10 @@ End Function
 Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -2678,18 +2678,18 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     For y = initY To finalY
             
         'Get the source pixel color values
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
         If grayVal > 255 Then grayVal = 255
         
         'Assign that gray value to each color channel
-        ImageData(quickVal, y) = grayVal
-        ImageData(quickVal + 1, y) = grayVal
-        ImageData(quickVal + 2, y) = grayVal
+        imageData(quickVal, y) = grayVal
+        imageData(quickVal + 1, y) = grayVal
+        imageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -2701,8 +2701,8 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     If g_cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
     
@@ -2716,10 +2716,10 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -2765,14 +2765,14 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Assign the look-up table values
-        ImageData(quickVal + 2, y) = scaleLookup(r)
-        ImageData(quickVal + 1, y) = scaleLookup(g)
-        ImageData(quickVal, y) = scaleLookup(b)
+        imageData(quickVal + 2, y) = scaleLookup(r)
+        imageData(quickVal + 1, y) = scaleLookup(g)
+        imageData(quickVal, y) = scaleLookup(b)
                 
     Next y
         If Not suppressMessages Then
@@ -2784,8 +2784,8 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Premultiply the source DIB, as necessary
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
@@ -2798,10 +2798,10 @@ End Function
 Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long, ByRef dibLumMax As Long)
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -2829,9 +2829,9 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -2847,7 +2847,7 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Return the max/min values we calculated
     dibLumMin = lMin
@@ -2876,10 +2876,10 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -2933,14 +2933,14 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Assign the look-up table values
-        ImageData(quickVal + 2, y) = pixelLookup(r)
-        ImageData(quickVal + 1, y) = pixelLookup(g)
-        ImageData(quickVal, y) = pixelLookup(b)
+        imageData(quickVal + 2, y) = pixelLookup(r)
+        imageData(quickVal + 1, y) = pixelLookup(g)
+        imageData(quickVal, y) = pixelLookup(b)
                 
     Next y
         If Not suppressMessages Then
@@ -2952,8 +2952,8 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Premultiply the source DIB, as necessary
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True

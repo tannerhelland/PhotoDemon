@@ -239,7 +239,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     
     reportString = reportString & "Number of events tracked: " & m_CurrentEventIndex & vbCrLf
     reportString = reportString & "Total time taken (this session): " & FormatNumber(totalTime / 1000, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf
-    reportString = reportString & "Program compiled: " & g_IsProgramCompiled & vbCrLf & vbCrLf
+    reportString = reportString & "Program compiled: " & OS.IsProgramCompiled() & vbCrLf & vbCrLf
     
     'Next, report each event individually, but sorted from longest to shortest
     reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
@@ -434,7 +434,7 @@ Private Function GetReportFilename()
     dstFilename = "pdProfileLog_" & m_ReportName
     
     'IDE and compiled .exe are tracked separately
-    If Not g_IsProgramCompiled Then dstFilename = dstFilename & "_IDE"
+    If (Not OS.IsProgramCompiled) Then dstFilename = dstFilename & "_IDE"
     
     dstFilename = dstFilename & ".log"
     
@@ -458,7 +458,7 @@ Private Function GetDatabaseFilename()
     dstFilename = "pdProfileLog_" & m_ReportName
     
     'IDE and compiled .exe are tracked separately
-    If Not g_IsProgramCompiled Then dstFilename = dstFilename & "_IDE"
+    If (Not OS.IsProgramCompiled) Then dstFilename = dstFilename & "_IDE"
     
     dstFilename = dstFilename & ".xml"
     

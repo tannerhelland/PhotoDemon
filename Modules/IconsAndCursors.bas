@@ -150,7 +150,7 @@ Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
         g_IsThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then
+        If (Not OS.IsVistaOrLater) And (Not OS.IsProgramCompiled) Then
             Debug.Print "XP + IDE detected.  Menu icons will be disabled for this session."
             Exit Sub
         End If
@@ -164,7 +164,7 @@ Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
         
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
-    If g_IsVistaOrLater Then m_RecentFileIconSize = FixDPI(64) Else m_RecentFileIconSize = FixDPI(16)
+    If OS.IsVistaOrLater Then m_RecentFileIconSize = FixDPI(64) Else m_RecentFileIconSize = FixDPI(16)
     cMRUIcons.Init FormMain.hWnd, m_RecentFileIconSize, m_RecentFileIconSize
         
 End Sub
@@ -282,7 +282,7 @@ Public Sub ResetMenuIcons()
         numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
         
         'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
-        If (Not g_IsVistaOrLater) Then
+        If (Not OS.IsVistaOrLater) Then
             AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
             AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
         End If
@@ -326,7 +326,7 @@ Public Sub ResetMenuIcons()
                 
                 'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
                 Else
-                    If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
+                    If OS.IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
                 End If
                 
             End If
@@ -334,7 +334,7 @@ Public Sub ResetMenuIcons()
         Next i
             
         'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
-        If g_IsVistaOrLater Then
+        If OS.IsVistaOrLater Then
             Dim largePadding As Single
             largePadding = (m_RecentFileIconSize * 0.2)
             AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
@@ -820,7 +820,7 @@ Public Sub SetThunderMainIcon()
     ResetAppIcons
     
     Dim tmHWnd As Long
-    tmHWnd = VBHacks.GetThunderMainHWnd()
+    tmHWnd = OS.ThunderMainHWnd()
     SendMessageA tmHWnd, WM_SETICON, ICON_SMALL, ByVal m_DefaultIconLarge
     SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconSmall
 

@@ -2676,10 +2676,7 @@ Private Sub Form_Load()
     
     'Retrieve a Unicode-friendly copy of any command line parameters
     Dim cmdLineParams As pdStringStack
-    
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    If cUnicode.CommandW(cmdLineParams, True) Then
+    If OS.CommandW(cmdLineParams, True) Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Command line might contain images.  Attempting to load..."
@@ -2728,7 +2725,7 @@ Private Sub Form_Load()
     #End If
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
-    If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
+    If (Not OS.IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
     
     'In debug mode, note that we are about to turn control over to the user
     #If DEBUGMODE = 1 Then
@@ -2853,7 +2850,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutting down clipboard manager..."
     #End If
     
-    If g_Clipboard.IsPDDataOnClipboard And g_IsProgramCompiled Then
+    If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
         #End If
@@ -2927,10 +2924,10 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing custom Windows 7, 8, 10 features..."
+        pdDebug.LogAction "Releasing custom Windows 7+ features..."
     #End If
     
-    ReleaseWin7Features
+    OS.StopWin7PlusFeatures
     
     'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
     #If DEBUGMODE = 1 Then

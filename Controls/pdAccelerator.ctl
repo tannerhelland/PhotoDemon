@@ -161,7 +161,7 @@ End Sub
 'Hooks cannot be released while actually inside the hookproc.  Call this function to safely release a hook, even from within a hookproc.
 Private Sub SafelyReleaseHook()
     
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
@@ -209,7 +209,7 @@ Private Sub UserControl_Initialize()
     ReDim m_Hotkeys(0 To INITIAL_HOTKEY_LIST_SIZE - 1) As pdHotkey
         
     'You may want to consider straight-up disabling hotkeys inside the IDE
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         Set m_ReleaseTimer = New pdTimer
         m_ReleaseTimer.Interval = 17
@@ -235,7 +235,7 @@ End Sub
 'Hook activation/deactivation must be controlled manually by the caller
 Public Function ActivateHook() As Boolean
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
@@ -449,7 +449,7 @@ Private Function AreEventsFrozen() As Boolean
     On Error GoTo EventStateCheckError
     
     If UserControl.Enabled Then
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             AreEventsFrozen = UserControl.EventsFrozen
         Else
             AreEventsFrozen = True

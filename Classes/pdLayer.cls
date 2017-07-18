@@ -320,7 +320,7 @@ End Function
 Public Sub AssignLayerID(ByVal thisLayerID As Long)
     
     'As a failsafe, warn me if this layer has already been assigned an ID.  (This should *never* happen, but I like to verify.)
-    If (Not g_IsProgramCompiled) Then
+    If (Not OS.IsProgramCompiled) Then
         If (layerID <> -1) Then Debug.Print "WARNING! This layer already has an ID!"
     End If
     

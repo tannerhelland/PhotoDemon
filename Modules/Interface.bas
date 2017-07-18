@@ -1133,7 +1133,7 @@ Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoadi
         
         'We can't guarantee that Aero is active on Win 7 and earlier, so we must jump through some extra hoops to make
         ' sure the popup window appears inside any raised Alt+Tab dialogs
-        If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHwnd, True
+        If (Not OS.IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHwnd, True
         
         'While here, cache the window's current icons.  (VB may insert its own default icons for some window types.)
         ' When the dialog is closed, we will restore these icons to avoid leaking any of PD's custom icons.
@@ -1327,7 +1327,7 @@ End Sub
 Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False, Optional ByVal suspendMainFormIconCheck As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     'Want to measure time on this function?  Use this line to isolate specific forms for further analysis.
     'Dim debugTest As Boolean
@@ -1565,7 +1565,7 @@ End Sub
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
     
     'This function may be triggered during compilation; avoid this
-    If g_IsProgramRunning Then g_Themer.RemoveWindowPainter tForm.hWnd
+    If MainModule.IsProgramRunning() Then g_Themer.RemoveWindowPainter tForm.hWnd
     
 End Sub
 
@@ -1622,7 +1622,7 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     End If
     
     'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
-    If (Not g_IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
+    If (Not OS.IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
 
 End Function
 
@@ -2181,7 +2181,7 @@ End Sub
 ' to the underlying control.  If you do, those images will obviously overwrite this warning!)
 Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB

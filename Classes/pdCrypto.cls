@@ -282,7 +282,7 @@ Private Function MatchProviderToAlgo(ByVal srcAlgorithm As PD_CRYPT_ALGOS) As PD
         
         'Certain SHA algorithms require an OS version check, because they use a specialized provider under XP
         Case PDCA_SHA_256, PDCA_SHA_384, PDCA_SHA_512
-            If g_IsVistaOrLater Then
+            If OS.IsVistaOrLater Then
                 MatchProviderToAlgo = PDCP_MS_ENH_RSA_AES
             Else
                 MatchProviderToAlgo = PDCP_MS_ENH_RSA_AES_XP

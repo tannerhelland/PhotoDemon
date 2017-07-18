@@ -74,14 +74,6 @@ Public g_FreeImageHandle As Long
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 
-'Whether or not we are running in the IDE or compiled
-Public g_IsProgramCompiled As Boolean
-
-'Per the excellent advice of Kroc (camendesign.com), a custom UserMode variable is less prone to errors than the usual
-' Ambient.UserMode value supplied to ActiveX controls.  This fixes a problem where ActiveX controls sometimes think they
-' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
-Public g_IsProgramRunning As Boolean
-
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed
 ' upon program load and unload.)
@@ -95,13 +87,6 @@ Public g_CheckerboardPattern As pdDIB
 'Copy of g_CheckerboardPattern, above, but in pd2DBrush format.  The brush is pre-built as a GDI+ texture brush,
 ' which makes it preferable for painting on 32-bpp surfaces.
 Public g_CheckerboardBrush As pd2DBrush
-
-'Is the current system running Vista, 7, 8, or later?  (Used to determine availability of certain system features)
-Public g_IsVistaOrLater As Boolean
-Public g_IsWin7OrLater As Boolean
-Public g_IsWin8OrLater As Boolean
-Public g_IsWin81OrLater As Boolean
-Public g_IsWin10OrLater As Boolean
 
 'Is theming enabled?  (Used to handle some menu icon rendering quirks)
 Public g_IsThemingEnabled As Boolean
@@ -162,10 +147,6 @@ Public g_MouseAccuracy As Double
 ' this variable can be set to TRUE, which will prevent the underlying canvas from accepting input.  Just make sure
 ' to restore this variable to FALSE when you're done, including catching any error states!
 Public g_DisableUserInput As Boolean
-
-'ID for this PD instance.  When started, each PhotoDemon instance is assigned a pseudo-random (GUID-based) session ID, which it
-' then appends to things like Undo/Redo files.  This allows for multiple side-by-side program instances without collisions.
-Public g_SessionID As String
 
 'As of v6.4, PhotoDemon supports a number of performance-related preferences.  Because performance settings (obviously)
 ' affect performance-sensitive parts of the program, these preferences are cached to global variables (rather than

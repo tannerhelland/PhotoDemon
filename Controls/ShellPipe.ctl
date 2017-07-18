@@ -445,17 +445,15 @@ Public Event Error(ByVal Number As Long, _
 Public Event ChildFinished()
 
 'Edit by Tanner:
-' I want to try and trade UTF-8 data with ExifTool, which (obviously) requires some special interop pieces.  As a failsafe against horribly
-' breaking this class, I'm going to implement my changes using this helper variable.  If everything goes smoothly, I'll look at implementing
-' this as an exposed property.
+' I trade UTF-8 data with ExifTool, which (obviously) requires some special interop pieces.  As a failsafe against horribly
+' breaking this class, I've implemented my changes using these helper variables.
 Private m_AssumeUTF8Input As Boolean
 Private m_AssumeUTF8Output As Boolean
-Private m_Unicode As pdUnicode
 
 'Edit by Tanner:
-' When reading image metadata asynchronously, the chunks of data we receive can sometimes be very large (e.g. > 1 MB).  Because of this,
-' we don't want to keep allocating unique chunks of memory - instead, it makes much more sense to reuse a single input array, and simply
-' zero the memory between reads.
+' When reading image metadata asynchronously, the chunks of data we receive can sometimes be very large (e.g. > 1 MB).
+' Because of this, we don't want to keep allocating unique chunks of memory - instead, we reuse a single input array,
+' and simply zero it out between reads.
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private m_InputBuffer() As Byte
 
@@ -725,7 +723,7 @@ Private Sub ReadData()
                     End If
                     
                     rfReturn = ReadFile(hChildOutPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
-                    Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
+                    Buffer = Strings.StringFromUTF8(m_InputBuffer, charsRead)
                     Buffer = Strings.TrimNull(Buffer)
                 
                 'Original code follows:
@@ -792,7 +790,7 @@ Private Sub ReadData()
                     End If
                     
                     rfReturn = ReadFile(hChildErrPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
-                    Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
+                    Buffer = Strings.StringFromUTF8(m_InputBuffer, charsRead)
                     Buffer = Strings.TrimNull(Buffer)
                 
                 'Original code follows:
@@ -864,7 +862,7 @@ Private Sub WriteData()
             Dim byteBuffer() As Byte
             
             If m_AssumeUTF8Output Then
-                m_Unicode.StringToUTF8Bytes Buffer, byteBuffer
+                Strings.UTF8FromString Buffer, byteBuffer
             Else
                 byteBuffer = StrConv(Buffer, vbFromUnicode)
             End If
@@ -898,7 +896,6 @@ Private Sub UserControl_Initialize()
     ' which is why I haven't passed the suggestion upstream.
     m_AssumeUTF8Input = True
     m_AssumeUTF8Output = True
-    Set m_Unicode = New pdUnicode
     ReDim m_InputBuffer(0) As Byte
     
 End Sub

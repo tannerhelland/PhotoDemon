@@ -1324,7 +1324,7 @@ Private Sub Form_Load()
     Tools.SetToolBusyState True
     
     'Generate a list of fonts
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'This tool is separated into two panels: text entry, and text settings
         btsMain.AddItem "text", 0
@@ -1349,7 +1349,7 @@ Private Sub Form_Load()
         btsCharCategory.ListIndex = 0
         
         'OpenType-specific features are a big investment, so I've postponed them to a later date
-        'If g_IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 2
+        'If OS.IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 2
         
         'Fill AA options
         cboTextRenderingHint.Clear
@@ -1384,7 +1384,7 @@ Private Sub Form_Load()
         cboCharCase.AddItem "katakana", 4
         cboCharCase.AddItem "simplified Chinese", 5
         cboCharCase.AddItem "traditional Chinese", 6
-        If g_IsWin7OrLater Then cboCharCase.AddItem "Titlecase", 7
+        If OS.IsWin7OrLater Then cboCharCase.AddItem "Titlecase", 7
         cboCharCase.ListIndex = 0
         
         'Fill wordwrap options

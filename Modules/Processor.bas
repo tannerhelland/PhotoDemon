@@ -2176,7 +2176,7 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
             
             'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
             ' dialog.  XP users get the old PD print dialog.
-            If g_IsVistaOrLater Then
+            If OS.IsVistaOrLater Then
                 Printing.PrintViaWindowsPhotoPrinter
             Else
                 If (Not FormPrint.Visible) Then Interface.ShowPDDialog vbModal, FormPrint

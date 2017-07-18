@@ -312,8 +312,6 @@ End Type
 
 Public g_PDFontProperties() As PD_FONT_PROPERTY
 
-Private m_Unicode As pdUnicode
-
 'PD paints pretty much all of its own text.  Rather than burden each individual control with maintaining their own font object,
 ' we maintain a cache of the interface font at all requested sizes.  If an object needs to draw interface text, they can query
 ' us for a matching font object.
@@ -413,7 +411,6 @@ End Function
 Public Function BuildFontCaches() As Long
     
     Set m_PDFontCache = New pdStringStack
-    Set m_Unicode = New pdUnicode
     
     'Retrieve the current system LOGFONT conversion values
     UpdateLogFontValues
@@ -539,7 +536,7 @@ Public Sub BuildFontCacheProperties()
         ReDim g_PDFontProperties(0 To m_PDFontCache.GetNumOfStrings - 1) As PD_FONT_PROPERTY
         
         'Font properties can only be gathered on Vista or later
-        If g_IsVistaOrLater Then
+        If OS.IsVistaOrLater Then
         
             'Iterate each font, gathering properties as we go
             'For i = 0 To UBound(g_PDFontProperties)

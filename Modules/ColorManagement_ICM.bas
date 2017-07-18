@@ -756,7 +756,7 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
     dstColor = srcColor
     
     'Note that this function does nothing if the display is not currently color managed
-    If (m_DisplayCMMPolicy <> DCM_NoManagement) And g_IsProgramRunning Then
+    If (m_DisplayCMMPolicy <> DCM_NoManagement) And MainModule.IsProgramRunning() Then
         
         ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, Nothing
         

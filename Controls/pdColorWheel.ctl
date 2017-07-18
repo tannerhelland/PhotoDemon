@@ -477,7 +477,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDColorWheel", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Draw the control at least once
     UpdateControlLayout
@@ -502,7 +502,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -522,7 +522,7 @@ End Sub
 Private Sub UpdateControlLayout()
     
     'Recreate all individual components, as their size is dependent on the container size
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         CreateColorWheel
         CreateSVSquare
     End If
@@ -543,7 +543,7 @@ Private Sub CreateColorWheel()
     If (m_WheelBuffer.GetDIBWidth <> wheelDiameter) Or (m_WheelBuffer.GetDIBHeight <> wheelDiameter) Then
         m_WheelBuffer.CreateBlank wheelDiameter, wheelDiameter, 32, 0&, 255
     Else
-        If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_WheelBuffer, 0, 0, wheelDiameter, wheelDiameter, 0&, 255
+        If MainModule.IsProgramRunning() Then GDI_Plus.GDIPlusFillDIBRect m_WheelBuffer, 0, 0, wheelDiameter, wheelDiameter, 0&, 255
     End If
     
     'We're now going to calculate the inner and outer radius of the wheel.  These are based off hard-coded padding constants,
@@ -558,7 +558,7 @@ Private Sub CreateColorWheel()
     ' are fully opaque.  Gray pixels will be shaded on-the-fly.
     m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
         GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
     End If
@@ -669,7 +669,7 @@ Private Sub CreateSVSquare()
     End If
     
     'To prevent IDE crashes, bail now during compilation
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     'We now need to fill the square with all possible saturation and value variants, in a pattern where...
     ' - The y-axis position determines value (1 -> 0)
@@ -752,7 +752,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     boxBorderColor = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, m_MouseInsideBox)
     colorPreviewBorder = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, False)
     
-    If g_IsProgramRunning And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
         
         'Paint the hue wheel (currently left-aligned)
         If (Not m_WheelBuffer Is Nothing) Then
@@ -955,7 +955,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         UpdateControlLayout
     End If
 End Sub

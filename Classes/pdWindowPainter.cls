@@ -97,7 +97,7 @@ End Sub
 ' load this class.
 Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'Release the existing subclasser, if any
         EndSubclassing

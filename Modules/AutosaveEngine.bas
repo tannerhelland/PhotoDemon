@@ -84,7 +84,7 @@ Public Function WasLastShutdownClean() As Boolean
         xmlEngine.WriteBlankLine
         xmlEngine.WriteTag "SessionDate", Format$(Now, "Long Date")
         xmlEngine.WriteTag "SessionTime", Format$(Now, "h:mm AMPM")
-        xmlEngine.WriteTag "SessionID", g_SessionID
+        xmlEngine.WriteTag "SessionID", OS.UniqueSessionID()
         xmlEngine.WriteBlankLine
         
         xmlEngine.WriteXMLToFile safeShutdownPath
@@ -398,7 +398,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         xmlEngine.LoadXMLFile fullXMLList(i).xmlPath
         
         'We now have everything we need.  Load the base Undo entry as a new image.
-        autosaveFile = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, 0, g_SessionID)
+        autosaveFile = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, 0, OS.UniqueSessionID())
         Loading.LoadFileAsNewImage autosaveFile, fullXMLList(i).friendlyName, False
         
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
@@ -459,7 +459,7 @@ Private Sub RenameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
     For i = 0 To autosaveData.undoStackAbsoluteMaximum
     
         oldFilename = tmpUndoEngine.GenerateUndoFilenameExternal(oldImageID, i, autosaveData.originalSessionID)
-        newFilename = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, i, g_SessionID)
+        newFilename = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, i, OS.UniqueSessionID())
         
         'Check image data first...
         If cFile.FileExists(oldFilename) Then

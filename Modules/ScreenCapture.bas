@@ -37,7 +37,7 @@ Private Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal targetHwnd As
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal cch As Long) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
 
 Private Type WindowPlacement
     wpLength As Long
@@ -201,7 +201,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     ' (NOTE: this behavior is currently disabled, as it doesn't actually help that much, and it introduces some
     '        unwanted complexities under Win 10.  Further comments are given below.)
     'Dim hLib As Long
-    'If g_IsVistaOrLater Then hLib = LoadLibraryA("dwmapi.dll")
+    'If OS.IsVistaOrLater Then hLib = LoadLibraryA("dwmapi.dll")
     
     'Start by retrieving the necessary dimensions from the target window
     Dim wpSuccess As Boolean, tmpWinPlacement As WindowPlacement
@@ -225,7 +225,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
         ' Short of applying some kind of AutoCrop to the final image (ugh), we run a lower risk of damage by simply
         ' using the old, backward-compatible GDI measurement.
         
-        'If g_IsVistaOrLater And (hLib <> 0) Then
+        'If OS.IsVistaOrLater And (hLib <> 0) Then
         '    Const DWMWA_EXTENDED_FRAME_BOUNDS As Long = 9&
         '    DwmGetWindowAttribute targetHwnd, DWMWA_EXTENDED_FRAME_BOUNDS, VarPtr(targetRect), 16&
         '    FreeLibrary hLib
@@ -244,7 +244,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     End If
     
     'Prepare the DIB at the proper size
-    If g_IsVistaOrLater Then
+    If OS.IsVistaOrLater Then
         dstDIB.CreateBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 32
     Else
         dstDIB.CreateBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 24
@@ -254,7 +254,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     Dim printFlags As Long
     printFlags = 0&
     If (Not includeChrome) Then printFlags = printFlags Or PW_CLIENTONLY
-    If g_IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
+    If OS.IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
     
     GetHwndContentsAsDIB = CBool(PrintWindow(targetHwnd, dstDIB.GetDIBDC, printFlags) <> 0)
     

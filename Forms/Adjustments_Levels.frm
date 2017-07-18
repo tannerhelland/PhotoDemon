@@ -384,10 +384,10 @@ End Sub
 Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
 
     'Create a local array and point it at the source DIB's pixel data
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -428,9 +428,9 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     For x = initX To finalX
         quickX = x * qvDepth
     For y = initY To finalY
-        b = ImageData(quickX, y)
-        g = ImageData(quickX + 1, y)
-        r = ImageData(quickX + 2, y)
+        b = imageData(quickX, y)
+        g = imageData(quickX + 1, y)
+        r = imageData(quickX + 2, y)
         
         bCount(b) = bCount(b) + 1
         gCount(g) = gCount(g) + 1
@@ -581,8 +581,8 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Return our assembled data in param-string compatible format
     GetIdealLevelParamString = BuildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
@@ -1166,11 +1166,11 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     If (Not toPreview) Then Message "Mapping new image levels..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -1301,14 +1301,14 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = newLevels(0, ImageData(quickVal + 2, y))
-        g = newLevels(1, ImageData(quickVal + 1, y))
-        b = newLevels(2, ImageData(quickVal, y))
+        r = newLevels(0, imageData(quickVal + 2, y))
+        g = newLevels(1, imageData(quickVal + 1, y))
+        b = newLevels(2, imageData(quickVal, y))
         
         'Assign new values looking the lookup table
-        ImageData(quickVal + 2, y) = newLevels(3, r)
-        ImageData(quickVal + 1, y) = newLevels(3, g)
-        ImageData(quickVal, y) = newLevels(3, b)
+        imageData(quickVal + 2, y) = newLevels(3, r)
+        imageData(quickVal + 1, y) = newLevels(3, g)
+        imageData(quickVal, y) = newLevels(3, b)
         
     Next y
         If Not toPreview Then
@@ -1320,8 +1320,8 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -1356,7 +1356,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
     
-    If cmdBar.PreviewsAllowed And g_IsProgramRunning Then
+    If cmdBar.PreviewsAllowed And MainModule.IsProgramRunning() Then
         
         cmdBar.MarkPreviewStatus False
         

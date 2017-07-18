@@ -649,7 +649,7 @@ Private Sub Class_Initialize()
         ' Segoe and Tahoma aren't available on the target machine.
         .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
         
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             m_origFontFace = g_InterfaceFont
         Else
             m_origFontFace = "Tahoma"

@@ -54,7 +54,7 @@ Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
     ' (Note that this step will fail inside the IDE; a workaround is provided.)
     m_ObjectName = srcObjectName
-    If g_IsProgramRunning And (Not g_Themer Is Nothing) Then
+    If MainModule.IsProgramRunning() And (Not g_Themer Is Nothing) Then
         InitializeColorList = g_Themer.VerifyThemeObject(srcObjectName)
     Else
         InitializeColorList = True
@@ -94,7 +94,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         Dim baseColorValue As Long
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
-        If g_IsProgramRunning And (Not g_Themer Is Nothing) Then
+        If MainModule.IsProgramRunning() And (Not g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
             If g_Themer.RetrieveColorFromCache(m_ObjectName, colorName, m_ColorList(colorIndex)) Then

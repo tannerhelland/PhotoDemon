@@ -54,10 +54,6 @@ Private m_XMLFilename As String
 'This class relies on a child class that implements that the IMRUList interface.
 Private m_MRUList As IMRUList
 
-'PD provides lots of helper classes to simplify various file and text interactions
-Private m_FSO As pdFSO
-Private m_Unicode As pdUnicode
-
 'When creating a new MRU file, or overwriting a corrupt one, use this to initialize the XML header.
 Private Sub ResetXMLData()
     m_XMLEngine.PrepareNewXML "Recent files"
@@ -66,12 +62,6 @@ Private Sub ResetXMLData()
     m_XMLEngine.WriteBlankLine
 End Sub
 
-'Truncates a path to a specified number of characters by replacing path components with ellipses.
-' (Originally written by Randy Birch @ http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm)
-Private Function GetShortMRU(ByVal sPath As String) As String
-    GetShortMRU = m_Unicode.ShrinkPathW(sPath, maxMRULength)
-End Function
-
 'Return the menu caption of the current recent file entry.  At present, menu caption length is controlled by a global preference
 Private Function GetMRUCaption(ByRef newFile As String) As String
     
@@ -79,7 +69,7 @@ Private Function GetMRUCaption(ByRef newFile As String) As String
     If (g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
         GetMRUCaption = Files.FileGetName(newFile)
     Else
-        GetMRUCaption = GetShortMRU(newFile)
+        GetMRUCaption = Files.PathCompact(newFile, maxMRULength)
     End If
     
 End Function
@@ -336,7 +326,7 @@ Public Sub MRU_NotifyNewMaxLimit()
         m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         
         ' Delete the old MRU file now, because we need to truncate it
-        m_FSO.FileDelete m_XMLFilename
+        Files.FileDeleteIfExists m_XMLFilename
         
     End If
     
@@ -362,7 +352,7 @@ Public Sub MRU_ClearList()
     ReDim m_FileList(0) As String
     
     'Erase any existing XML file, and reset the in-memory version
-    m_FSO.FileDelete m_XMLFilename
+    Files.FileDeleteIfExists m_XMLFilename
     ResetXMLData
     
     'Allow the child to perform any related UI clean-up
@@ -392,10 +382,3 @@ Public Sub InitList(specificList As IMRUList)
     
 End Sub
 
-Private Sub Class_Initialize()
-    
-    'Initialize a file interface
-    Set m_FSO = New pdFSO
-    Set m_Unicode = New pdUnicode
-    
-End Sub
