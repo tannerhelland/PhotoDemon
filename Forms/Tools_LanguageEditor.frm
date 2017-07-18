@@ -622,9 +622,6 @@ Private m_AutoTranslate As clsGoogleTranslate
 'An XML engine is used to parse and update the actual language file contents
 Private m_XMLEngine As pdXML
 
-'Unicode operation helper
-Private m_Unicode As pdUnicode
-
 'To minimize the chance of data loss, PhotoDemon backs up translation data to two alternating files.  In the event of a crash anywhere in
 ' the editing or export stages, this guarantees that we will never lose more than the last-edited phrase.
 Private m_curBackupFile As Long
@@ -1153,7 +1150,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("This page also allows you to delete unused language files.  Note that there is no Undo when deleting language files, so please be careful!")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.")
-            If Not g_IsProgramCompiled Then helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(For best results, do not use this editor in the IDE!)")
+            If Not OS.IsProgramCompiled Then helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(For best results, do not use this editor in the IDE!)")
             
         Case 2
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("add language metadata")
@@ -1191,8 +1188,6 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub Form_Load()
-    
-    Set m_Unicode = New pdUnicode
     
     'Mark the XML file as not loaded
     m_xmlLoaded = False
@@ -1525,7 +1520,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
     
     If (Len(origString) <> 0) And (Len(translatedString) <> 0) Then
     
-        If g_IsWin7OrLater Then
+        If OS.IsWin7OrLater Then
             
             Dim origStringTitlecase As Boolean
             
@@ -1556,7 +1551,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                 Next i
                 
                 'See if the first word used titlecase
-                origStringTitlecase = (StrComp(firstWord, m_Unicode.RemapString(firstWord, PDSR_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                origStringTitlecase = Strings.StringsEqual(firstWord, Strings.StringRemap(firstWord, PDSR_TITLECASE_WIN7), False)
                 
                 'If it did, apply titlecase to the first word of the translated string as well
                 If origStringTitlecase Then
@@ -1571,7 +1566,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                     Next i
                     
                     Dim tmpString As String
-                    tmpString = m_Unicode.RemapString(firstWord, PDSR_TITLECASE_WIN7)
+                    tmpString = Strings.StringRemap(firstWord, PDSR_TITLECASE_WIN7)
                     
                     If (Len(tmpString) <> 0) Then
                     
@@ -1597,11 +1592,11 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
             Else
             
                 'See if the original string used titlecase
-                origStringTitlecase = (StrComp(origString, m_Unicode.RemapString(origString, PDSR_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                origStringTitlecase = Strings.StringsEqual(origString, Strings.StringRemap(origString, PDSR_TITLECASE_WIN7), False)
                 
                 'If it did, apply titlecase to the translated string as well
                 If origStringTitlecase Then
-                    GetFixedTitlecase = m_Unicode.RemapString(translatedString, PDSR_TITLECASE_WIN7)
+                    GetFixedTitlecase = Strings.StringRemap(translatedString, PDSR_TITLECASE_WIN7)
                 Else
                     GetFixedTitlecase = translatedString
                 End If

@@ -284,7 +284,7 @@ End Enum
 'Returns: value >=0 identifying how many scripts are supported.  Also, dstFontProperty will be filled accordingly.
 Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dstFontProperty As PD_FONT_PROPERTY) As Long
     
-    If g_IsVistaOrLater Then
+    If OS.IsVistaOrLater Then
         
         Dim i As Long
         

@@ -261,11 +261,11 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     If Not toPreview Then Message "Applying new curve to image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -331,14 +331,14 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = transferMap(0, ImageData(quickVal + 2, y))
-        g = transferMap(1, ImageData(quickVal + 1, y))
-        b = transferMap(2, ImageData(quickVal, y))
+        r = transferMap(0, imageData(quickVal + 2, y))
+        g = transferMap(1, imageData(quickVal + 1, y))
+        b = transferMap(2, imageData(quickVal, y))
                 
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = transferMap(3, r)
-        ImageData(quickVal + 1, y) = transferMap(3, g)
-        ImageData(quickVal, y) = transferMap(3, b)
+        imageData(quickVal + 2, y) = transferMap(3, r)
+        imageData(quickVal + 1, y) = transferMap(3, g)
+        imageData(quickVal, y) = transferMap(3, b)
         
     Next y
         If Not toPreview Then
@@ -350,8 +350,8 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -713,7 +713,7 @@ End Function
 
 Private Sub RedrawPreviewBox()
 
-    If (Not cmdBar.PreviewsAllowed) Or (Not g_IsProgramRunning) Then Exit Sub
+    If (Not cmdBar.PreviewsAllowed) Or (Not MainModule.IsProgramRunning()) Then Exit Sub
 
     picDraw.Picture = LoadPicture("")
     

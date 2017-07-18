@@ -235,10 +235,7 @@ Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturn
             
             'Convert the char * to a VB string
             Dim errDescription As String
-            
-            Dim cUnicode As pdUnicode
-            Set cUnicode = New pdUnicode
-            errDescription = cUnicode.ConvertCharPointerToVBString(ptrChar, False, 255)
+            errDescription = Strings.StringFromCharPtr(ptrChar, False, 255)
     
             pdDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_EXTERNAL_LIB
         Else

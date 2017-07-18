@@ -97,7 +97,7 @@ Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
     strKey = Trim$(Str$(parentHwnd))
     
     'Make sure this window doesn't already exist in the collection
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Failsafe check for duplicate requests
         If (Not m_windowDict.DoesKeyExist(strKey)) Then

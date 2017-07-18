@@ -175,7 +175,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
         RelayUpdatedColorsToEditBox
     End If
     
-    If g_IsProgramRunning Then RedrawBackBuffer
+    If MainModule.IsProgramRunning() Then RedrawBackBuffer
     PropertyChanged "Enabled"
     
 End Property
@@ -285,7 +285,7 @@ Public Property Let Value(ByVal newValue As Double)
                 
         'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
         ' will momentarily solve any faulty bound/value relationships.)
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             If m_Value < m_Min Then m_Value = m_Min
             If m_Value > m_Max Then m_Value = m_Max
         End If
@@ -613,10 +613,10 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSPINNER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDSpinner", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Prep timer objects
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         Set m_UpButtonTimer = New pdTimer
         Set m_DownButtonTimer = New pdTimer
     End If
@@ -644,7 +644,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Show()
-    If ((Not (m_EditBox Is Nothing)) And g_IsProgramRunning) Then CreateEditBox
+    If ((Not (m_EditBox Is Nothing)) And MainModule.IsProgramRunning()) Then CreateEditBox
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -809,7 +809,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
-    If g_IsProgramRunning And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
     
         'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
         RelayUpdatedColorsToEditBox
@@ -995,7 +995,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not g_IsProgramRunning) Then UserControl.Refresh
+    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
 
 End Sub
 
@@ -1106,8 +1106,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-        If g_IsProgramRunning Then UpdateControlLayout
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then UpdateControlLayout
     End If
 End Sub
 

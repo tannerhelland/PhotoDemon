@@ -500,7 +500,7 @@ End Sub
 
 Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If (Len(histValue) <> 0) And g_IsProgramRunning And (targetDC <> 0) Then
+    If (Len(histValue) <> 0) And MainModule.IsProgramRunning() And (targetDC <> 0) Then
     
         Dim tmpRectF As RECTF
         If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
@@ -630,7 +630,7 @@ Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RECTF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If g_IsProgramRunning And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If MainModule.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -651,7 +651,7 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RECTF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If g_IsProgramRunning And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If MainModule.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long

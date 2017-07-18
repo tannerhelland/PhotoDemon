@@ -459,13 +459,13 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
-    If g_IsProgramRunning Then ucSupport.RequestCursor IDC_ARROW
+    If MainModule.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTATUSBAR_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDStatusBar", colorCount
-    If (Not g_IsProgramRunning) Then UpdateColorList
+    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
     
@@ -480,7 +480,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -488,7 +488,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -631,7 +631,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDSB_Background, Me.Enabled))
         
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         If (Not sbIconCoords Is Nothing) And m_LastEnabledState Then
             sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
@@ -696,7 +696,7 @@ Public Sub UpdateAgainstCurrentTheme()
         
         UpdateColorList
         
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             
             Dim buttonIconSize As Long
             buttonIconSize = FixDPI(16)

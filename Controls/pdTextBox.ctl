@@ -134,7 +134,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
         RelayUpdatedColorsToEditBox
     End If
     UserControl.Enabled = newValue
-    If g_IsProgramRunning Then RedrawBackBuffer
+    If MainModule.IsProgramRunning() Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 
@@ -251,7 +251,7 @@ End Property
 Public Property Let Text(ByRef newString As String)
     If Not (m_EditBox Is Nothing) Then
         m_EditBox.Text = newString
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             RaiseEvent Change
         Else
             PropertyChanged "Text"
@@ -481,7 +481,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDEDITBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDEditBox", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -509,7 +509,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Terminate()
@@ -545,7 +545,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
-    If g_IsProgramRunning And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
     
         'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
         RelayUpdatedColorsToEditBox
@@ -571,7 +571,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not g_IsProgramRunning) Then UserControl.Refresh
+    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -605,7 +605,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         ucSupport.UpdateAgainstThemeAndLanguage
-        If g_IsProgramRunning Then UpdateControlLayout
+        If MainModule.IsProgramRunning() Then UpdateControlLayout
     End If
 End Sub
 

@@ -18,8 +18,7 @@ Attribute VB_Exposed = False
 'Last updated: 17/July/17
 'Last update: large code cleanup
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
-'              pdUnicode (for simplifying various string format conversions, when reading/writing text files primarily)
-'              Strings module (which could probably be semi-merged with pdUnicode, for convenience)
+'              Strings module (handles lots of Unicode-related transforms)
 '
 'This class provides convenient, Unicode-friendly replacements for VB's various file and folder functions.  In some cases, the VB
 ' equivalents have been directly reproduced.  In others, the functions have been rewritten to make fail states easier to detect
@@ -204,12 +203,11 @@ Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByV
 Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
-Private Declare Function GetFileVersionInfoW Lib "Version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long
-Private Declare Function GetFileVersionInfoSizeW Lib "Version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
-Private Declare Function VerQueryValueW Lib "Version" (ByVal ptrToSrcBlock As Long, ByVal ptrToSubblockName As Long, ByRef dstBufferPtr As Long, ByRef dstBufferSize As Long) As Long
+Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 
-'Some Unicode string conversions are handled via a separate pdUnicode class
-Private m_Unicode As pdUnicode
+Private Declare Function GetFileVersionInfoW Lib "version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long
+Private Declare Function GetFileVersionInfoSizeW Lib "version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
+Private Declare Function VerQueryValueW Lib "version" (ByVal ptrToSrcBlock As Long, ByVal ptrToSubblockName As Long, ByRef dstBufferPtr As Long, ByRef dstBufferSize As Long) As Long
 
 'Our Unicode-friendly DirW function may be iterated many many times.  To prevent the reallocation of huge WIN32_FIND_DATA structs,
 ' we use a single module-level entry.
@@ -221,7 +219,7 @@ Private m_SearchHandle As Long
 Friend Function AppPathW() As String
     
     'When running from the IDE, App.Path is our only option
-    If (Not g_IsProgramCompiled) Then
+    If (Not OS.IsProgramCompiled) Then
         AppPathW = App.Path
         AppPathW = Me.PathAddBackslash(AppPathW)
     Else
@@ -403,7 +401,7 @@ Friend Function FileAppendText(ByVal srcString As String, ByRef dstFilename As S
     
     'Convert the incoming string to UTF-8
     Dim fileBytes() As Byte
-    m_Unicode.StringToUTF8Bytes srcString, fileBytes
+    Strings.UTF8FromString srcString, fileBytes
     
     'Open the file with append rights only
     Dim hFile As Long
@@ -1005,9 +1003,7 @@ Friend Function FileLoadAsString(ByRef srcFile As String, ByRef dstString As Str
     
     'Use a wrapper function to dump the file's contents into a byte array.
     Dim fileBytes() As Byte
-    If Me.FileLoadAsByteArray(srcFile, fileBytes) Then
-        FileLoadAsString = m_Unicode.ConvertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
-    End If
+    If Me.FileLoadAsByteArray(srcFile, fileBytes) Then FileLoadAsString = Strings.StringFromMysteryBytes(fileBytes, dstString, forceWindowsLineEndings)
     
     Exit Function
     
@@ -1308,7 +1304,7 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
     
     'If UTF-8 output is requested, generate it now.  (If the conversion fails, we can fall back to a non-UTF8 write.)
     Dim fileBytes() As Byte
-    If useUTF8 Then useUTF8 = m_Unicode.StringToUTF8Bytes(srcString, fileBytes)
+    If useUTF8 Then useUTF8 = Strings.UTF8FromString(srcString, fileBytes)
     
     If useUTF8 Then
         
@@ -1454,11 +1450,8 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
     
     If (Len(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
     
-    Dim cSysInfo As pdSystemInfo
-    Set cSysInfo = New pdSystemInfo
-    
     'Vista+ users get the fancy new "browse for folder" interface
-    If cSysInfo.IsOSVistaOrLater Then
+    If OS.IsVistaOrLater Then
     
         Dim cBrowseNew As cFileDialogVista
         Set cBrowseNew = New cFileDialogVista
@@ -1500,6 +1493,34 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
     
     'PD folder functions enforce a trailing slash, to simplify subsequent concatenations
     If (Len(PathBrowseDialog) <> 0) Then PathBrowseDialog = Me.PathAddBackslash(PathBrowseDialog)
+    
+End Function
+
+Friend Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Long) As String
+    
+    'Limit length to MAX_PATH
+    If (newMaxLength > MAX_PATH) Then newMaxLength = MAX_PATH
+    
+    'This API is weird because regardless of original length, the incoming string must be, per MSDN,
+    ' "A pointer to a null-terminated string of length MAX_PATH that contains the path to be altered."
+    ' So we must copy the incoming string into a MAX_PATH buffer
+    Dim tmpStringSrc As String, copyLength As Long
+    tmpStringSrc = String$(MAX_PATH, 0)
+    
+    copyLength = Len(srcString)
+    If (copyLength > MAX_PATH) Then copyLength = MAX_PATH
+    CopyMemory_Strict StrPtr(tmpStringSrc), StrPtr(srcString), copyLength * 2
+    
+    'Now, prep an output buffer of size MAX_PATH
+    Dim tmpStringDst As String
+    tmpStringDst = String$(MAX_PATH, 0)
+    
+    'Use the API to shrink the path
+    If (PathCompactPathEx(StrPtr(tmpStringDst), StrPtr(tmpStringSrc), newMaxLength + 1, 0&) <> 0) Then
+        PathCompact = Strings.TrimNull(tmpStringDst)
+    Else
+        PathCompact = tmpStringDst
+    End If
     
 End Function
 
@@ -1924,9 +1945,6 @@ Private Sub Class_Initialize()
     
     'Search functions require a pointer to a WIN32_FIND_DATA struct.  Generate a persistent pointer now.
     m_FileDataReturnPtr = VarPtr(m_FileDataReturn)
-    
-    'Also prep an internal pdUnicode instance
-    Set m_Unicode = New pdUnicode
     
 End Sub
 

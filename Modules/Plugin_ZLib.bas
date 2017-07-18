@@ -73,9 +73,7 @@ Public Function GetZLibVersion() As String
         ptrZLibVer = zlibVersion()
         
         'Convert the char * to a VB string
-        Dim cUnicode As pdUnicode
-        Set cUnicode = New pdUnicode
-        GetZLibVersion = cUnicode.ConvertCharPointerToVBString(ptrZLibVer, False, 255)
+        GetZLibVersion = Strings.StringFromCharPtr(ptrZLibVer, False, 255)
         
     Else
         GetZLibVersion = vbNullString

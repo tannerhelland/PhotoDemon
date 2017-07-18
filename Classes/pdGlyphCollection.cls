@@ -218,7 +218,7 @@ Public Sub RequestGDIFontRelease()
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal stringRemap As PD_STRING_REMAP = PDSR_NONE) As Boolean
+Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal remapType As PD_STRING_REMAP = PDSR_NONE) As Boolean
         
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
@@ -226,11 +226,7 @@ Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
     Dim glyphAdded As Boolean
     
     'If an optional string remap is specified, apply it now.
-    If (stringRemap <> PDSR_NONE) Then
-        Dim cUnicode As pdUnicode
-        Set cUnicode = New pdUnicode
-        srcString = cUnicode.RemapString(srcString, stringRemap)
-    End If
+    If (remapType <> PDSR_NONE) Then srcString = Strings.StringRemap(srcString, remapType)
     
     Dim stringChanged As Boolean, fontOrDCChanged As Boolean
     
@@ -311,7 +307,7 @@ Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
                     
                     'Before doing that, see if the buffer size is non-zero.  A zero-size buffer is valid output for whitespace
                     ' characters (e.g. spaces).
-                    If UBound(rawGlyphBytes) > 0 Then
+                    If (UBound(rawGlyphBytes) > 0) Then
                         
                         'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
                         

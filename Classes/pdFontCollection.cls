@@ -255,12 +255,8 @@ End Sub
 Public Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boolean
     
     'Extended properties are only available on Vista+
-    Dim cSysInfo As pdSystemInfo
-    Set cSysInfo = New pdSystemInfo
-    
     m_ExtendedPropertiesActive = newSetting
-    
-    If cSysInfo.IsOSVistaOrLater And m_ExtendedPropertiesActive Then
+    If OS.IsVistaOrLater And m_ExtendedPropertiesActive Then
         
         'If any fonts are already loaded, cache them now
         Dim i As Long
@@ -296,7 +292,7 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         Dim i As Long
         For i = LBound(m_FontCollection) To UBound(m_FontCollection)

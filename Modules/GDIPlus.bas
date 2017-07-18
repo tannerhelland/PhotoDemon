@@ -1204,8 +1204,8 @@ Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
-Private Declare Function lstrlenA Lib "kernel32" (ByVal ptrToString As Long) As Long
-Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToString As Long) As Long
+Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
 Private Declare Function StringFromCLSID Lib "ole32" (ByVal ptrToGuid As Long, ByRef ptrToDstString As Long) As Long
@@ -2244,10 +2244,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'Convert the GUID into a string
     Dim imgStringPointer As Long, imgFormatGuidString As String
     StringFromCLSID VarPtr(imgClsID), imgStringPointer
-    
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    imgFormatGuidString = cUnicode.ConvertCharPointerToVBString(imgStringPointer, True)
+    imgFormatGuidString = Strings.StringFromCharPtr(imgStringPointer, True)
     
     'And finally, convert the string into an FIF long
     Dim imgFormatFIF As Long
@@ -2255,11 +2252,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Metafiles require special consideration; set that flag in advance
     Dim isMetafile As Boolean
-    If (imgFormatFIF = PDIF_EMF) Or (imgFormatFIF = PDIF_WMF) Then
-        isMetafile = True
-    Else
-        isMetafile = False
-    End If
+    isMetafile = (imgFormatFIF = PDIF_EMF) Or (imgFormatFIF = PDIF_WMF)
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
     Dim profileSize As Long, imgHasIccProfile As Boolean
@@ -3473,11 +3466,11 @@ End Sub
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef classID As clsID) As Long
 
-  Dim Num      As Long
-  Dim Size     As Long
-  Dim lIdx     As Long
-  Dim ICI()    As ImageCodecInfo
-  Dim Buffer() As Byte
+    Dim Num      As Long
+    Dim Size     As Long
+    Dim lIdx     As Long
+    Dim ICI()    As ImageCodecInfo
+    Dim Buffer() As Byte
     
     GetEncoderFromMimeType = -1 ' Failure flag
     
@@ -3495,20 +3488,15 @@ Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef class
     Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * Num))
     
     '-- Loop through all the codecs
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    
     For lIdx = 1 To Num
         '-- Must convert the pointer into a usable string
-        If Strings.StringsEqual(cUnicode.ConvertCharPointerToVBString(ICI(lIdx).MimeType, True), strMimeType, True) Then
+        If Strings.StringsEqual(Strings.StringFromCharPtr(ICI(lIdx).MimeType, True), strMimeType, True) Then
             classID = ICI(lIdx).classID ' Save the Class ID
             GetEncoderFromMimeType = lIdx      ' Return the index number for success
             Exit For
         End If
     Next lIdx
-    '-- Free the memory
-    Erase ICI
-    Erase Buffer
+    
 End Function
 
 'Convenience wrapper for the CLSIDFromString API
@@ -3652,11 +3640,8 @@ End Function
 Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrChar As Long) As Long
     
     'Pull the GDI+ message into a local string
-    'Dim cUnicode As pdUnicode
-    'Set cUnicode = New pdUnicode
-    
     Dim debugString As String
-    'debugString = cUnicode.ConvertCharPointerToVBString(ptrChar, False)
+    'debugString = Strings.StringFromCharPtr(ptrChar, False)
     debugString = "Unknown GDI+ error was passed to the GDIPlus debug procedure."
     
     If (deLevel = GP_DebugEventLevelWarning) Then

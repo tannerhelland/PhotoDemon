@@ -603,7 +603,7 @@ Private Sub Form_Load()
     histogramGenerated = False
     
     'On XP, GDI+'s line function is hideously slow.  Disable filled curves by default.
-    If (Not g_IsVistaOrLater) Then chkFillCurve.Value = vbUnchecked Else chkFillCurve.Value = vbChecked
+    If (Not OS.IsVistaOrLater) Then chkFillCurve.Value = vbUnchecked Else chkFillCurve.Value = vbChecked
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -730,14 +730,14 @@ Private Sub DrawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     ReDim u(nPoints) As Double
     
     'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
-    Dim logMode As Boolean
-    logMode = CBool(chkLog)
+    Dim renderInLogMode As Boolean
+    renderInLogMode = CBool(chkLog)
     
     Dim i As Long
     For i = 1 To nPoints
         iX(i) = (i - 1) * (histWidth / 255)
         
-        If logMode Then
+        If renderInLogMode Then
             iy(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
         Else
             iy(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
@@ -906,11 +906,11 @@ Public Sub StretchHistogram()
     Message "Analyzing image histogram for maximum and minimum values..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -945,9 +945,9 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         If r < RMin Then RMin = r
         If r > RMax Then RMax = r
@@ -1002,21 +1002,21 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
                 
-        ImageData(quickVal + 2, y) = rLookup(r)
-        ImageData(quickVal + 1, y) = gLookUp(g)
-        ImageData(quickVal, y) = bLookup(b)
+        imageData(quickVal + 2, y) = rLookup(r)
+        imageData(quickVal + 1, y) = gLookUp(g)
+        imageData(quickVal, y) = bLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData

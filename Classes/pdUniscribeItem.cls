@@ -93,9 +93,9 @@ Private m_RelativeStartPos As Long, m_RelativeEndPos As Long
 
 'For each item created by ScriptItemize, ScriptLayout generates a corresponding Visual/Logical mapping order.  We don't store
 ' that order here (pdUniscribe manages it internally), but I mention this as a reminder that the order of these class instances
-' inside pdUnicode's master array may not match their on-screen order, and you need to be aware of that if mapping from visual
+' inside pdUniscribe's master array may not match their on-screen order, and you need to be aware of that if mapping from visual
 ' position to logical position (e.g. for caret or cursor behavior).  You can't simply rely on the internal order provided by
-' pdUnicode, as it may not match your intended purpose.
+' pdUniscribe, as it may not match your intended purpose.
 
 'For each item, ScriptShape generates a cache list and returns three pieces of data:
 

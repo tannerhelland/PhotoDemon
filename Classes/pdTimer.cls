@@ -46,15 +46,8 @@ Private Declare Function SetCoalescableTimer Lib "user32" (ByVal hWnd As Long, B
 'Timer handle.  Pass this value to KillTimer to release the timer.
 Private m_TimerID As Long
 
-'Copy of the original PD owner window (ThunderMain)
-Private m_OwnerHWnd As Long
-
 'Current interval.  Do not set to zero.
 Private m_Interval As Long
-
-Private Sub Class_Initialize()
-    m_OwnerHWnd = VBHacks.GetThunderMainHWnd()
-End Sub
 
 Private Sub Class_Terminate()
     If (m_TimerID <> 0) Then Me.StopTimer
@@ -81,10 +74,10 @@ Public Sub StartTimer()
     
     If (m_Interval > 0) Then
         
-        If g_IsWin8OrLater Then
-            m_TimerID = SetCoalescableTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc, 0&)
+        If OS.IsWin8OrLater Then
+            m_TimerID = SetCoalescableTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc, 0&)
         Else
-            m_TimerID = SetTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc)
+            m_TimerID = SetTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc)
         End If
         
         If (m_TimerID <> 0) Then UserControl_Support.NotifyTimerCreated
@@ -100,7 +93,7 @@ Public Sub StopTimer()
     If (m_TimerID <> 0) Then
     
         Dim timerReleaseCheck As Boolean
-        timerReleaseCheck = CBool(KillTimer(m_OwnerHWnd, ObjPtr(Me)) <> 0)
+        timerReleaseCheck = CBool(KillTimer(OS.ThunderMainHWnd, ObjPtr(Me)) <> 0)
         m_TimerID = 0
         
         If timerReleaseCheck Then

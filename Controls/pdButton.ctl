@@ -443,7 +443,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDButton", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -462,7 +462,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not g_IsProgramRunning) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -478,7 +478,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -596,7 +596,7 @@ Private Sub RedrawBackBuffer()
         btnColorFill = m_Colors.RetrieveColor(PDB_ButtonFill, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
     End If
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'First, we fill the button interior with the established fill color
         GDI_Plus.GDIPlusFillRectToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorFill, 255
@@ -633,7 +633,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not g_IsProgramRunning) Then UserControl.Refresh
+    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 

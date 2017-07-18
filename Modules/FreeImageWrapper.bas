@@ -6178,9 +6178,7 @@ End Function
 
 'Edited by Tanner: the old function was wasteful; this is simpler
 Private Function pGetStringFromPointerA(ByRef Ptr As Long) As String
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    pGetStringFromPointerA = cUnicode.ConvertCharPointerToVBString(Ptr, False)
+    pGetStringFromPointerA = Strings.StringFromCharPtr(Ptr, False)
 End Function
 
 Private Function pDeref(ByVal Ptr As Long) As Long

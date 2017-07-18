@@ -1322,9 +1322,9 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Allow the control to generate its own redraw requests
         Me.SetRedrawSuspension False
@@ -1539,16 +1539,16 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
 
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
@@ -1634,7 +1634,7 @@ End Function
 ' RELAY: the actual cursor request needs to be passed to pdCanvasView, and we need to make sure its MouseEnter event also calls this.
 Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
     
-    If ((Not g_IsProgramRunning) Or g_ProgramShuttingDown) Then Exit Sub
+    If ((Not MainModule.IsProgramRunning()) Or g_ProgramShuttingDown) Then Exit Sub
     
     'Some cursor functions operate on a POI basis
     Dim curPOI As PD_PointOfInterest

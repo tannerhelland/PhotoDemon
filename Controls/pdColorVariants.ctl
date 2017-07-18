@@ -345,7 +345,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCV_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDColorVariants", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
@@ -380,7 +380,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -423,7 +423,7 @@ Private Sub UpdateControlLayout()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Re-calculate all control subregions.  This is a little confusing (okay, a LOT confusing), but basically we want to
         ' create an evenly spaced border around the central color rect, with subdivided regions that provide some dynamic
@@ -733,7 +733,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
     
         Dim borderColor As Long
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
@@ -782,7 +782,7 @@ End Sub
 Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
     'Failsafe for compile-time errors when properties are written
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     Dim toolString As String, hexString As String, rgbString As String
     
@@ -853,7 +853,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         UpdateControlLayout
     End If
 End Sub

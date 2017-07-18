@@ -870,7 +870,7 @@ Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If (Not parentPDImage Is Nothing) Then
-        GenerateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & g_SessionID & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        GenerateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
     End If
     
 End Function
@@ -890,7 +890,7 @@ Private Function GenerateUndoHeaderFilename() As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If (Not parentPDImage Is Nothing) Then
-        GenerateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & g_SessionID & ")_" & parentPDImage.imageID & "_.pdtmp"
+        GenerateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
     End If
     
 End Function
@@ -1075,7 +1075,7 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
     ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
-    xmlEngine.WriteTag "OriginalSessionID", g_SessionID
+    xmlEngine.WriteTag "OriginalSessionID", OS.UniqueSessionID()
     
     xmlEngine.WriteBlankLine
     

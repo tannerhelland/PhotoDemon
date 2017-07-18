@@ -582,7 +582,7 @@ Private Sub Form_Load()
     'Forcibly hide the "convert to text layer" panel
     toolpanel_Text.picConvertLayer.Visible = False
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'This tool is separated into two panels: text entry, and text settings
         btsMain.AddItem "text", 0

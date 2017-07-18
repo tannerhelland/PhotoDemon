@@ -29,7 +29,7 @@ Begin VB.Form FormPreferences
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   36
+      TabIndex        =   34
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -38,7 +38,7 @@ Begin VB.Form FormPreferences
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   32
+      TabIndex        =   30
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
@@ -126,7 +126,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   810
          Left            =   180
-         TabIndex        =   44
+         TabIndex        =   42
          Top             =   4530
          Width           =   5895
          _ExtentX        =   10398
@@ -137,7 +137,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   795
          Left            =   180
-         TabIndex        =   45
+         TabIndex        =   43
          Top             =   3660
          Width           =   5895
          _ExtentX        =   10398
@@ -148,7 +148,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdColorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   46
+         TabIndex        =   44
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -158,7 +158,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdColorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   47
+         TabIndex        =   45
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -190,7 +190,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
          Left            =   180
-         TabIndex        =   43
+         TabIndex        =   41
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -201,7 +201,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   33
+         TabIndex        =   31
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -279,7 +279,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   180
-         TabIndex        =   42
+         TabIndex        =   40
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -379,7 +379,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataListPD 
          Height          =   375
          Left            =   180
-         TabIndex        =   41
+         TabIndex        =   39
          Top             =   4200
          Width           =   7935
          _ExtentX        =   13996
@@ -478,7 +478,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataBinary 
          Height          =   330
          Left            =   180
-         TabIndex        =   37
+         TabIndex        =   35
          Top             =   2400
          Width           =   7920
          _ExtentX        =   13970
@@ -489,7 +489,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
          Left            =   180
-         TabIndex        =   38
+         TabIndex        =   36
          Top             =   1680
          Width           =   7920
          _ExtentX        =   13970
@@ -499,7 +499,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
          Height          =   330
          Left            =   180
-         TabIndex        =   39
+         TabIndex        =   37
          Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
@@ -510,7 +510,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
          Left            =   180
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -665,70 +665,37 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   35
-         Top             =   6000
+         TabIndex        =   33
+         Top             =   3360
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   1058
-         Caption         =   "Click here to reset all options"
+         Caption         =   "reset all program settings"
       End
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   34
+         TabIndex        =   32
          Top             =   435
          Width           =   525
          _ExtentX        =   926
          _ExtentY        =   794
          Caption         =   "..."
       End
-      Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
-         Height          =   570
-         Left            =   7650
-         TabIndex        =   30
-         Top             =   3315
-         Width           =   570
-         _ExtentX        =   1005
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtHardware 
-         Height          =   1785
-         Left            =   240
-         TabIndex        =   24
-         Top             =   2040
-         Width           =   7335
-         _ExtentX        =   12938
-         _ExtentY        =   3942
-         FontSize        =   9
-         Multiline       =   -1  'True
-      End
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
          _ExtentY        =   556
          Text            =   "automatically generated at run-time"
       End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   1560
-         Width           =   8160
-         _ExtentX        =   14393
-         _ExtentY        =   503
-         Caption         =   "hardware acceleration report:"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
       Begin PhotoDemon.pdLabel lblMemoryUsageMax 
          Height          =   540
          Left            =   240
-         Top             =   4980
+         Top             =   2280
          Width           =   7965
          _ExtentX        =   14049
          _ExtentY        =   953
@@ -739,7 +706,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
          Height          =   540
          Left            =   240
-         Top             =   4440
+         Top             =   1800
          Width           =   7965
          _ExtentX        =   14049
          _ExtentY        =   953
@@ -751,7 +718,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   0
-         Top             =   4080
+         Top             =   1320
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -772,13 +739,13 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTempPathWarning 
-         Height          =   600
+         Height          =   480
          Left            =   240
          Top             =   900
          Visible         =   0   'False
-         Width           =   7305
-         _ExtentX        =   12885
-         _ExtentY        =   1058
+         Width           =   8025
+         _ExtentX        =   14155
+         _ExtentY        =   847
          ForeColor       =   255
          Layout          =   1
          UseCustomForeColor=   -1  'True
@@ -787,7 +754,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         Top             =   5520
+         Top             =   2880
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -821,7 +788,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   180
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   2280
          Width           =   7935
          _ExtentX        =   13996
@@ -832,7 +799,7 @@ Begin VB.Form FormPreferences
          Height          =   735
          Index           =   0
          Left            =   180
-         TabIndex        =   27
+         TabIndex        =   26
          Top             =   480
          Width           =   7935
          _ExtentX        =   13996
@@ -844,7 +811,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   180
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   2760
          Width           =   7935
          _ExtentX        =   13996
@@ -855,7 +822,7 @@ Begin VB.Form FormPreferences
          Height          =   735
          Index           =   1
          Left            =   180
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   1350
          Width           =   7935
          _ExtentX        =   13996
@@ -879,7 +846,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   180
-         TabIndex        =   31
+         TabIndex        =   29
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -915,9 +882,6 @@ Option Explicit
 'Used to see if the user physically clicked a combo box, or if VB selected it on its own
 Private userInitiatedColorSelection As Boolean
 Private userInitiatedAlphaSelection As Boolean
-
-'This dialog interacts heavily with various system-level bits.  pdSystemInfo retrieves this data for us.
-Private cSysInfo As pdSystemInfo
 
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
 
@@ -1328,22 +1292,17 @@ Private Sub cmdColorProfilePath_Click()
 
 End Sub
 
-'Copy the hardware acceleration report to the clipboard
-Private Sub cmdCopyReportClipboard_Click()
-    Clipboard.Clear
-    Clipboard.SetText txtHardware
-End Sub
-
 'RESET will regenerate the preferences file from scratch.  This can be an effective way to
 ' "reset" a copy of the program.
 Private Sub cmdReset_Click()
 
     'Before resetting, warn the user
     Dim confirmReset As VbMsgBoxResult
-    confirmReset = PDMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all preferences")
+    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset PhotoDemon")
 
     'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
-    If confirmReset = vbYes Then
+    If (confirmReset = vbYes) Then
+    
         g_UserPreferences.ResetPreferences
         LoadAllPreferences
         
@@ -1678,16 +1637,10 @@ Private Sub LoadAllPreferences()
         'Display the current temporary file path
             txtTempPath.Text = g_UserPreferences.GetTempPath
     
-        'Display what we know about this PC's hardware acceleration capabilities
-            txtHardware.Text = cSysInfo.GetDeviceCapsString()
-            
-        '...and give the "copy to clipboard" button a tooltip
-            cmdCopyReportClipboard.AssignTooltip "Copy the report to the system clipboard"
-        
         'Display what we know about PD's memory usage
-            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
-            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
-            If (Not g_IsProgramCompiled) Then
+            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(OS.AppMemoryUsage()), "###,###,###,###") & " K"
+            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(OS.AppMemoryUsage(True)), "###,###,###,###") & " K"
+            If (Not OS.IsProgramCompiled) Then
                 lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
                 lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
             End If
@@ -1727,17 +1680,10 @@ End Sub
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
     
-    Set cSysInfo = New pdSystemInfo
-        
     Dim i As Long
     
     'Populate all controls with the corresponding values from the preferences file
     LoadAllPreferences
-    
-    'Load custom command button images
-    Dim copyButtonSize As Long
-    copyButtonSize = FixDPI(28)
-    cmdCopyReportClipboard.AssignImage "pref_copyclipboard", , copyButtonSize, copyButtonSize
     
     'Prep the category button strip
     With btsvCategory

@@ -477,7 +477,7 @@ Private Sub Form_Load()
     'Numbers will also have a trailing dash, so add that width now
     m_LargestWidth = m_LargestWidth + tmpFont.GetWidthOfString(" - ")
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         If (m_Filler Is Nothing) Then Set m_Filler = New pd2DBrush
         If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
         Set m_PreviewDIB = New pdDIB

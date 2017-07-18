@@ -177,7 +177,7 @@ Public Sub ClearCanvas()
     bHeight = ucSupport.GetBackBufferHeight
         
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (g_OpenImageCount = 0) And g_IsProgramRunning And (Not g_ProgramShuttingDown) Then
+    If (g_OpenImageCount = 0) And MainModule.IsProgramRunning() And (Not g_ProgramShuttingDown) Then
         
         Dim placeholderImageSize As Long
         placeholderImageSize = 256
@@ -395,7 +395,7 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     
     'If no images are loaded, repaint ourselves automatically
-    If (g_OpenImageCount = 0) And g_IsProgramRunning Then
+    If (g_OpenImageCount = 0) And MainModule.IsProgramRunning() Then
         Me.ClearCanvas
     Else
         Debug.Print "Main viewport requested its own redraw, likely due to a buffer size change."
@@ -416,7 +416,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If (Not g_IsProgramRunning) Then UpdateColorList
+    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -487,6 +487,6 @@ Public Sub UpdateAgainstCurrentTheme()
         UpdateColorList
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         If (g_OpenImageCount = 0) Then Me.ClearCanvas
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

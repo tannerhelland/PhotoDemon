@@ -74,6 +74,23 @@ Private Const INIT_TEMP_FILE_CACHE As Long = 16
 ' one-off operations.
 Private m_FSO As pdFSO
 
+'Free all temporary files generated this session.  Note that this (obviously) only deletes temp files generated via the
+' RequestTempFile() function, below.
+Public Sub DeleteTempFiles()
+
+    If (m_NumOfTempFiles > 0) Then
+    
+        Dim i As Long
+        For i = 0 To m_NumOfTempFiles - 1
+            If (Len(m_ListOfTempFiles(i)) <> 0) Then Files.FileDeleteIfExists m_ListOfTempFiles(i)
+        Next i
+        
+        m_NumOfTempFiles = 0
+    
+    End If
+    
+End Sub
+
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the auto-incremented filename WITHOUT an extension and WITHOUT a prepended folder,
 ' by design, so that the result can be passed to a common dialog without further parsing.
@@ -143,6 +160,30 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef srcFilenam
 
 End Function
 
+'Request a temporary filename.  The filename will automatically be added to PD's internal cache, and deleted when
+' PD exits.  The caller *can* delete the file if they want, but it is not necessary (as PD automatically clears all
+' cached filenames at shutdown time).
+Public Function RequestTempFile() As String
+
+    If (m_NumOfTempFiles = 0) Then
+        ReDim m_ListOfTempFiles(0 To INIT_TEMP_FILE_CACHE - 1) As String
+    Else
+        If (m_NumOfTempFiles > UBound(m_ListOfTempFiles)) Then ReDim Preserve m_ListOfTempFiles(0 To m_NumOfTempFiles * 2 - 1) As String
+    End If
+    
+    Dim tmpFile As String
+    tmpFile = OS.UniqueTempFilename()
+    
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Note: generated a new temp file at " & tmpFile
+    #End If
+    
+    m_ListOfTempFiles(m_NumOfTempFiles) = tmpFile
+    m_NumOfTempFiles = m_NumOfTempFiles + 1
+    RequestTempFile = tmpFile
+
+End Function
+
 'Execute another program (in PhotoDemon's case, a plugin), then wait for it to finish running.
 Public Function ShellAndWait(ByVal executablePath As String, Optional ByVal commandLineArguments As String = vbNullString, Optional ByVal showAppWindow As Boolean = False) As Boolean
     
@@ -171,44 +212,6 @@ Public Function ShellAndWait(ByVal executablePath As String, Optional ByVal comm
     End If
     
 End Function
-
-'Request a temporary filename.  The filename will automatically be added to PD's internal cache, and deleted when
-' PD exits.  The caller *can* delete the file if they want, but it is not necessary (as PD automatically clears all
-' cached filenames at shutdown time).
-Public Function RequestTempFile() As String
-
-    If (m_NumOfTempFiles = 0) Then
-        ReDim m_ListOfTempFiles(0 To INIT_TEMP_FILE_CACHE - 1) As String
-    Else
-        If (m_NumOfTempFiles > UBound(m_ListOfTempFiles)) Then ReDim Preserve m_ListOfTempFiles(0 To m_NumOfTempFiles * 2 - 1) As String
-    End If
-        
-    Dim cFile As pdSystemInfo
-    Set cFile = New pdSystemInfo
-    
-    Dim tmpFile As String
-    tmpFile = cFile.GetUniqueTempFilename()
-    
-    m_ListOfTempFiles(m_NumOfTempFiles) = tmpFile
-    m_NumOfTempFiles = m_NumOfTempFiles + 1
-    RequestTempFile = tmpFile
-
-End Function
-
-Public Sub DeleteTempFiles()
-
-    If (m_NumOfTempFiles > 0) Then
-    
-        Dim i As Long
-        For i = 0 To m_NumOfTempFiles - 1
-            If (Len(m_ListOfTempFiles(i)) <> 0) Then Files.FileDeleteIfExists m_ListOfTempFiles(i)
-        Next i
-        
-        m_NumOfTempFiles = 0
-    
-    End If
-    
-End Sub
 
 'Some functions are just thin wrappers to pdFSO.  (This is desired behavior, as pdFSO uses some internal caches that allow for greater
 ' flexibility than a module-level implementation.)
@@ -285,6 +288,10 @@ End Function
 
 Public Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
     If InitializeFSO Then PathBrowseDialog = m_FSO.PathBrowseDialog(srcHwnd, initFolder, dialogTitleText)
+End Function
+
+Public Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Long) As String
+    If InitializeFSO Then PathCompact = m_FSO.PathCompact(srcString, newMaxLength)
 End Function
 
 Public Function PathCreate(ByVal fullPath As String, Optional ByVal createIntermediateFoldersAsNecessary As Boolean = False) As Boolean

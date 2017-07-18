@@ -602,15 +602,12 @@ Public Function GetClipboardText(ByRef dstString As String, Optional ClipboardFo
         Dim tmpData() As Byte
         If GetClipboardBinaryData(ClipboardFormatID, tmpData()) Then
             
-            'Use a pdUnicode object to apply format conversion
-            Dim cUnicode As pdUnicode
-            Set cUnicode = New pdUnicode
-            
+            'Apply the relevant format conversion
             If ((ClipboardFormatID = CF_UNICODETEXT) Or (ClipboardFormatID = CF_TEXT)) Then
-                dstString = cUnicode.ConvertUTF16PointerToVBString(VarPtr(tmpData(0)), UBound(tmpData) + 1)
+                dstString = Strings.StringFromUTF16_FixedLen(VarPtr(tmpData(0)), UBound(tmpData) + 1)
                 GetClipboardText = CBool(Len(dstString) <> 0)
             Else
-                GetClipboardText = cUnicode.ConvertUnknownBytesToString(tmpData, dstString)
+                GetClipboardText = Strings.StringFromMysteryBytes(tmpData, dstString)
             End If
             
         End If
@@ -638,14 +635,7 @@ Public Function GetClipboardHTML(ByRef dstString As String) As Boolean
         
         'Retrieve the data into a byte array
         Dim tmpData() As Byte
-        If GetClipboardBinaryData(htmlID, tmpData()) Then
-            
-            'Use a pdUnicode object to apply format conversion
-            Dim cUnicode As pdUnicode
-            Set cUnicode = New pdUnicode
-            GetClipboardHTML = cUnicode.ConvertUnknownBytesToString(tmpData, dstString)
-            
-        End If
+        If GetClipboardBinaryData(htmlID, tmpData()) Then GetClipboardHTML = Strings.StringFromMysteryBytes(tmpData, dstString)
         
     Else
         #If DEBUGMODE = 1 Then
@@ -900,7 +890,7 @@ Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         m_DelayedRenderingActive = True
         
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
-        If ((Not m_OwnerSubclassed) And g_IsProgramRunning And (m_OwnerHWnd <> 0)) Then
+        If ((Not m_OwnerSubclassed) And MainModule.IsProgramRunning() And (m_OwnerHWnd <> 0)) Then
             m_OwnerSubclassed = VBHacks.StartSubclassing(m_OwnerHWnd, Me)
         End If
         

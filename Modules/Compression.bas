@@ -99,23 +99,6 @@ Private Const NUM_OF_COMPRESSION_ENGINES = 9
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
-'We must perform a version check before enabling built-in Windows compression functions
-Private Type OSVERSIONINFOEX
-    dwOSVersionInfoSize As Long
-    dwMajorVersion As Long
-    dwMinorVersion As Long
-    dwBuildNumber As Long
-    dwPlatformId As Long
-    szCSDVersion As String * 128
-    wServicePackMajor  As Integer
-    wServicePackMinor  As Integer
-    wSuiteMask         As Integer
-    wProductType       As Byte
-    wReserved          As Byte
-End Type
-
-Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (ByRef lpVersionInformation As OSVERSIONINFOEX) As Long
-
 'All of these functions require Windows 8 or later!
 Private Declare Function CloseCompressor Lib "cabinet" (ByVal hCompressor As Long) As Long
 Private Declare Function CloseDecompressor Lib "cabinet" (ByVal hDecompressor As Long) As Long
@@ -154,7 +137,7 @@ Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_
         
         'All built-in compression engines are enabled if the user is running Windows 8 or later
         ElseIf (whichEngine > PD_CE_Lz4HC) Then
-            m_CompressorAvailable(whichEngine) = IsWin8OrLater()
+            m_CompressorAvailable(whichEngine) = OS.IsWin8OrLater()
         End If
         
     End If
@@ -491,17 +474,6 @@ Public Function GetCompressorName(ByVal whichEngine As PD_COMPRESSION_ENGINES) A
     Else
         GetCompressorName = vbNullString
     End If
-
-End Function
-
-'Functions below this line require Windows 8 or later.  They use the built-in Windows Compression API.
-Private Function IsWin8OrLater() As Boolean
-    
-    Dim tOSVI As OSVERSIONINFOEX
-    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
-    GetVersionEx tOSVI
-    
-    IsWin8OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 2))
 
 End Function
 

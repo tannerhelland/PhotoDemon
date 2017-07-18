@@ -206,7 +206,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         UserControl_Support.IncrementPDControlCount
         
         'Subclass the user control immediately
-        If g_IsProgramRunning Then VBHacks.StartSubclassing m_hWnd, Me
+        If MainModule.IsProgramRunning() Then VBHacks.StartSubclassing m_hWnd, Me
         
         'Synchronize initial window visiblity
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
@@ -217,21 +217,21 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         Set m_Colors = New pdThemeColors
         Dim colorCount As UCSUPPORT_COLOR_LIST: colorCount = [_Count]
         m_Colors.InitializeColorList "GenericPDControl", colorCount
-        If (Not g_IsProgramRunning) Then UpdateColorList
+        If (Not MainModule.IsProgramRunning()) Then UpdateColorList
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
         ' (Note that in older versions, we only requested erase events if noBackBufferRequired = TRUE.  That has since changed,
         '  and we now request erase events for all types of user controls.)
         Set m_WindowPainter = New pdWindowPainter
-        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd, , True
+        If MainModule.IsProgramRunning() Then m_WindowPainter.StartPainter m_hWnd, , True
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector
-        If g_IsProgramRunning Then m_FocusDetector.StartFocusTracking m_hWnd
+        If MainModule.IsProgramRunning() Then m_FocusDetector.StartFocusTracking m_hWnd
         
         'Reliable, API-based, DPI-aware move/size functionality
         Set m_MoveSize = New pdWindowSize
-        m_MoveSize.AttachToHWnd m_hWnd, g_IsProgramRunning
+        m_MoveSize.AttachToHWnd m_hWnd, MainModule.IsProgramRunning()
         CacheWindowDimensions
         
         'The vast majority of PD's custom controls are double-buffered to prevent flickering, but some controls do not require this.
@@ -254,14 +254,14 @@ End Sub
 '  an "as-required" basis.)
 Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False, Optional ByVal controlIsInteractive As Boolean = True)
     
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Then Exit Sub
     
     If (m_hWnd <> 0) Then
     
         'Initialize special subclassers, as requested
         If customMouseEvents Then
             Set m_MouseEvents = New pdInputMouse
-            If g_IsProgramRunning Then
+            If MainModule.IsProgramRunning() Then
                 m_MouseEvents.AddInputTracker m_hWnd, appCommandEvents
                 m_ControlIsNotInteractive = (Not controlIsInteractive)
                 If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW, False
@@ -270,7 +270,7 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         
         If customKeyEvents Then
             Set m_KeyEvents = New pdInputKeyboard
-            If g_IsProgramRunning Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+            If MainModule.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
         End If
         
     Else
@@ -285,7 +285,7 @@ Friend Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
     
     If (Not (m_KeyEvents Is Nothing)) And (m_hWnd <> 0) Then
         
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             
             'Iterate through all requested keys, and add them one-by-one to the tracker
             If UBound(listOfKeys) >= LBound(listOfKeys) Then
@@ -536,7 +536,7 @@ End Sub
 ' handle message marshaling.
 Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInternalToPD As Boolean = False)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'To ensure messages are routed correctly, we store all registered message IDs locally
         If (m_CustomMessages Is Nothing) Then Set m_CustomMessages = New pdDictionary
@@ -587,7 +587,7 @@ End Sub
 'Cache the current dimensions of the underlying UC.  Returns TRUE if dimensions were retrieved successfully.
 Private Function CacheWindowDimensions() As Boolean
     
-    If ((Not m_MoveSize Is Nothing) And g_IsProgramRunning) Then
+    If ((Not m_MoveSize Is Nothing) And MainModule.IsProgramRunning()) Then
         m_Width = m_MoveSize.GetWidth
         m_Height = m_MoveSize.GetHeight
         CacheWindowDimensions = True
@@ -615,7 +615,7 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     'There are a couple different ways to apply the repaint.  If the caller specifies a fill rect, we obey it, but if they don't,
     ' we want to wipe the entire buffer.  As a convenience to the caller, we also apply the backcolor inside the IDE.
     If (Not m_NoBackBufferMode) Then
-        If g_IsProgramRunning And (m_BackBuffer.GetDIBDC <> 0) Then
+        If MainModule.IsProgramRunning() And (m_BackBuffer.GetDIBDC <> 0) Then
             
             'Use GDI+ to apply the fill
             Dim cSurface As pd2DSurface, cBrush As pd2DBrush
@@ -700,7 +700,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
         
         'Inside the designer, I really don't care about painting accurate controls.  It's a waste of time, energy, and code
         ' to cover this case, so simply trace the control outline to provide a bit of orientation, then exit.
-        If (Not g_IsProgramRunning) Then
+        If (Not MainModule.IsProgramRunning()) Then
         
             Dim tmpRect As RECT
             With tmpRect
@@ -929,7 +929,7 @@ End Function
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
 Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'Cache the original English versions of this tooltip
         m_TTCaptionEn = newTooltip
@@ -1007,7 +1007,7 @@ Friend Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
     SyncBackBufferSize
     
     'Make sure the program is running, as we need to pull data from PD's central themer
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'If the caller wants the background repainted, apply it now
         If repaintBackground Then
@@ -1056,11 +1056,11 @@ Friend Function GetControlTop() As Long
 End Function
 
 Friend Function GetControlWidth() As Long
-    If g_IsProgramRunning Then GetControlWidth = m_MoveSize.GetWidth Else GetControlWidth = m_Width
+    If MainModule.IsProgramRunning() Then GetControlWidth = m_MoveSize.GetWidth Else GetControlWidth = m_Width
 End Function
 
 Friend Function GetControlHeight() As Long
-    If g_IsProgramRunning Then GetControlHeight = m_MoveSize.GetHeight Else GetControlHeight = m_Height
+    If MainModule.IsProgramRunning() Then GetControlHeight = m_MoveSize.GetHeight Else GetControlHeight = m_Height
 End Function
 
 Friend Function IsMouseInside() As Boolean
@@ -1153,7 +1153,7 @@ End Sub
 Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     'When running, rely on the painter to paint the control for us
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'In the event that a paint event is not called right away (because the control is invisible, or some
         ' other reason), free the back buffer DIB from its DC to free up a bit of resources.  If a paint
@@ -1192,7 +1192,7 @@ End Sub
 ' the Paint event (and we don't want to subclass inside the designer).
 Friend Sub RequestIDERepaint(ByVal targetDC As Long)
 
-    If (Not g_IsProgramRunning) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
+    If (Not MainModule.IsProgramRunning()) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
         If (Not m_BackBuffer Is Nothing) Then
             CacheWindowDimensions
             If m_CustomCaptionPaintingActive Then
@@ -1232,7 +1232,7 @@ End Function
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
 Friend Sub UpdateAgainstThemeAndLanguage()
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         If Me.ThemeUpdateRequired Then
         

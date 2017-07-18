@@ -587,7 +587,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As BTS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "ButtonStrip", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Set various UI trackers to default values.
     m_FocusRectActive = -1
@@ -623,7 +623,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 'Store all associated properties
@@ -899,7 +899,7 @@ Private Sub RedrawBackBuffer()
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
-    If ((m_numOfButtons > 0) And g_IsProgramRunning) Then
+    If ((m_numOfButtons > 0) And MainModule.IsProgramRunning()) Then
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
@@ -1024,7 +1024,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         
         'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             
             'See if translations are necessary.
             Dim isTranslationActive As Boolean
@@ -1052,7 +1052,7 @@ Public Sub UpdateAgainstCurrentTheme()
         End If
         
         'Update all text managed by the support class (e.g. tooltips)
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList

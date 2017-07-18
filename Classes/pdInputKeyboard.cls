@@ -304,7 +304,7 @@ End Sub
 Private Sub InstallKeyboardHook()
     
     'Check for an existing hook
-    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And g_IsProgramRunning Then
+    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And MainModule.IsProgramRunning() Then
         
         'If a hook is already active, and we're trying to unhook it safely, we don't want to reinstall our hook
         Dim tryingToUnhook As Boolean: tryingToUnhook = False

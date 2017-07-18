@@ -243,7 +243,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDBS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDBrushSelector", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -270,7 +270,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -329,7 +329,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True)
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Render the brush first
         m_Filler.SetBoundaryRect m_BrushRect
@@ -379,7 +379,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

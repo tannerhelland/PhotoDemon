@@ -134,7 +134,7 @@ Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef srcImage As pdImag
     ' thumbnails on Vista, but we are limited to 16x16 on XP.
     Dim mruThumb As pdDIB
     Set mruThumb = New pdDIB
-    If g_IsVistaOrLater Then
+    If OS.IsVistaOrLater Then
         srcImage.RequestThumbnail mruThumb, 64
     Else
         srcImage.RequestThumbnail mruThumb, 16

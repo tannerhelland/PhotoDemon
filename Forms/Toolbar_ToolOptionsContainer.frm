@@ -59,7 +59,7 @@ Attribute m_WindowSize.VB_VarHelpID = -1
 
 Private Sub Form_Load()
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         Set m_WindowSize = New pdWindowSize
         m_WindowSize.AttachToHWnd Me.hWnd, True
     End If

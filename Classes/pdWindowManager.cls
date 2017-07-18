@@ -293,8 +293,8 @@ Friend Sub ActivateWindowAPI(ByVal hWndToActivate As Long)
 End Sub
 
 Friend Function IsDWMCompositionEnabled() As Boolean
-    If g_IsVistaOrLater Then
-        If g_IsWin8OrLater Then
+    If OS.IsVistaOrLater Then
+        If OS.IsWin8OrLater Then
             IsDWMCompositionEnabled = True
         Else
             Dim tmpLong As Long
@@ -639,14 +639,14 @@ Friend Sub RegisterMainForm(ByRef parentForm As Form)
     'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
     m_MainWindowHWnd = parentForm.hWnd
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'Apply any unique styles to the parent window
         Dim newWinStyle As Long
         newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
         
         'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
-        If g_IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
+        If OS.IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
         SetWindowLong m_MainWindowHWnd, GWL_EXSTYLE, newWinStyle
         
         'Enforce minimum size handling.  (Note that this will subclass the main window, which allows us to handle
@@ -705,7 +705,7 @@ End Sub
 ' the window in question; plan accordingly!)
 Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
-    If ((srcHwnd <> 0) And g_IsProgramRunning) Then
+    If ((srcHwnd <> 0) And MainModule.IsProgramRunning()) Then
     
         With m_MinMaxEntries(m_numOfMinMaxEntries)
             .hWnd = srcHwnd

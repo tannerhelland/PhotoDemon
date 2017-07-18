@@ -348,7 +348,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLISTBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDListBoxView", colorCount
-    If (Not g_IsProgramRunning) Then UpdateColorList
+    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
     
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
@@ -367,7 +367,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -378,7 +378,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -451,7 +451,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
     
     separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
         
         'Start by retrieving basic rendering metrics from the support object
         Dim firstItemIndex As Long, lastItemIndex As Long, listIsEmpty As Boolean
@@ -588,7 +588,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         listSupport.UpdateAgainstCurrentTheme
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

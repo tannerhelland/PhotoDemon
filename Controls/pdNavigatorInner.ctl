@@ -258,7 +258,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDNAVINNER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDNavInner", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If Not MainModule.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -271,7 +271,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
@@ -319,7 +319,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning Then
+    If MainModule.IsProgramRunning() Then
     
         'If an image has been loaded, determine a centered position for the image's thumbnail
         If (g_OpenImageCount <= 0) Then
@@ -361,7 +361,7 @@ Private Sub RedrawBackBuffer()
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
             ' in image coordinate space
             Dim viewportRect As RECTF
-            pdImages(g_CurrentImage).imgViewport.GetIntersectRectImage viewportRect
+            pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage viewportRect
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the
             ' viewport dimensions to a 1-based system, relative to the original image's width and height.
@@ -441,7 +441,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         UpdateControlLayout
     End If
 End Sub

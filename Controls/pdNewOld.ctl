@@ -229,10 +229,10 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDNEWOLD_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDNewOld", colorCount
-    If (Not g_IsProgramRunning) Then UpdateColorList
+    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
     
     'Inside the IDE, use placeholder text
-    If (Not g_IsProgramRunning) Then
+    If (Not MainModule.IsProgramRunning()) Then
         m_NewCaptionTranslated = "new:"
         m_OldCaptionTranslated = "original:"
     End If
@@ -259,7 +259,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
+    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -349,7 +349,7 @@ Public Sub UpdateAgainstCurrentTheme()
         
         UpdateColorList
         
-        If g_IsProgramRunning Then
+        If MainModule.IsProgramRunning() Then
             m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
             m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
             ucSupport.UpdateAgainstThemeAndLanguage
@@ -395,7 +395,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     End If
     
     'Next, draw borders around the new and old items
-    If g_IsProgramRunning And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
             
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
