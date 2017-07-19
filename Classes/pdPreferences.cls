@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'API for determining certain system folders
-Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
-Private Declare Function SHFileGetPathPath Lib "shfolder" Alias "SHFileGetPathPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
+
+Private Declare Function SHGetFolderPath Lib "shfolder" Alias "SHGetFolderPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
 
 'Windows Folder Constants
 Public Enum CSIDLs
@@ -171,8 +171,8 @@ Friend Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boo
     If getUserLanguagePathInstead Then GetLanguagePath = m_UserLanguagePath Else GetLanguagePath = m_LanguagePath
 End Function
 
-'Return the current temporary directory, as specified by the user's preferences.  (Note that this is a totally different function from
-' this class's GetSystemTemporaryPath function, which returns the current Windows system temp path.)
+'Return the current temporary directory, as specified by the user's preferences.  (Note that this may not be the
+' current Windows system temp path, if the user has opted to change it.)
 Friend Function GetTempPath() As String
     GetTempPath = m_TempPath
 End Function
@@ -202,7 +202,7 @@ Friend Sub SetTempPath(ByVal newTempPath As String)
             
         'If it still fails, revert to the default system temp path
         Else
-            m_TempPath = GetSystemTemporaryPath()
+            m_TempPath = OS.SystemTempPath()
         End If
     
     End If
@@ -333,7 +333,7 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
     ' the system temp path.)
     m_TempPath = GetPref_String("Paths", "TempFiles", "")
     If (Not Files.PathExists(m_TempPath)) Then
-        m_TempPath = GetSystemTemporaryPath
+        m_TempPath = OS.SystemTempPath()
         SetPref_String "Paths", "TempFiles", m_TempPath
     End If
         
@@ -465,7 +465,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Paths", "", True
-        m_XMLEngine.WriteTag "TempFiles", GetSystemTemporaryPath
+        m_XMLEngine.WriteTag "TempFiles", OS.SystemTempPath()
         m_XMLEngine.WriteTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Macro", m_MacroPath
@@ -778,25 +778,6 @@ Friend Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As
     m_XMLPresets.UpdateTag dialogID, srcXMLString
 End Function
 
-'Get the current Windows-specified temp directory
-Private Function GetSystemTemporaryPath() As String
-    
-    'Create a blank string (as required by the API call)
-    Dim sRet As String
-    sRet = String$(255, 0)
-    
-    'Fill that string with the temporary path
-    Dim lngLen As Long
-    lngLen = GetSystemTempPath(255, StrPtr(sRet))
-    
-    'If something went wrong, raise an error
-    If (lngLen = 0) Then Err.Raise Err.LastDllError
-    
-    'Return the temporary path, and ensure that it has a trailing "\"
-    GetSystemTemporaryPath = Files.PathAddBackslash(Left$(sRet, lngLen))
-
-End Function
-
 'Get a special folder from Windows (as specified by the CSIDL)
 Private Function GetWindowsFolder(eFolder As CSIDLs) As String
 
@@ -804,7 +785,7 @@ Private Function GetWindowsFolder(eFolder As CSIDLs) As String
     Dim sPath As String
     
     sPath = String$(MAX_LENGTH, " ")
-    If (SHFileGetPathPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
+    If (SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
         
         'Find the end of the string
         iR = InStr(1, sPath, vbNullChar) - 1

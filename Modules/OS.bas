@@ -339,35 +339,28 @@ Private Function AppProcessID() As Long
     
             'Attempt to enumerate the first entry in the list
             uProcess.dwSize = LenB(uProcess)
-            Debug.Print uProcess.dwSize, "SIZE"
             If (ProcessFirst(hSnapShot, VarPtr(uProcess)) <> 0) Then
             
                 'The enumerator is working correctly.  Check each uProcess entry for this application's name.
                 ' (NOTE!  Inside the IDE, this only works if PhotoDemon is the only running VB6 window.
                 '  Otherwise, another VB6 window may be accidentally grabbed, leading to weird outcomes.)
                 Dim processName As String
-                'If OS.IsProgramCompiled Then
                 
-                    'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
-                    ' (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) it's easier to just go with a
-                    ' huge buffer, then manually trim the result.
-                    Dim TEMPORARY_LARGE_BUFFER As Long
-                    TEMPORARY_LARGE_BUFFER = 1024
-                    
-                    Dim tmpString As String
-                    tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
-                    
-                    If (GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER \ 2) <> 0) Then
-                        processName = Strings.TrimNull(tmpString)
-                        processName = Files.FileGetName(processName)
-                        Debug.Print "NAMENAMENAME", processName
-                    Else
-                        InternalError "AppProcessID failed to retrieve the current process name."
-                    End If
-                    
-                'Else
-                '    processName = "vb6.exe"
-                'End If
+                'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
+                ' (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) it's easier to just go with a
+                ' huge buffer, then manually trim the result.
+                Dim TEMPORARY_LARGE_BUFFER As Long
+                TEMPORARY_LARGE_BUFFER = 1024
+                
+                Dim tmpString As String
+                tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
+                
+                If (GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER \ 2) <> 0) Then
+                    processName = Strings.TrimNull(tmpString)
+                    processName = Files.FileGetName(processName)
+                Else
+                    InternalError "AppProcessID failed to retrieve the current process name."
+                End If
                 
                 Dim testProcessName As String, procFound As Boolean
                 procFound = False
@@ -829,6 +822,26 @@ Public Sub StopWin7PlusFeatures()
         If (m_taskbarObjHandle <> 0) Then CallInterface m_taskbarObjHandle, UNK_Release, 0
     End If
 End Sub
+
+'Return the current Windows-specified temp directory
+Public Function SystemTempPath() As String
+    
+    'Create a blank string (as required by the API call)
+    Dim sRet As String
+    sRet = String$(261, 0)
+    
+    'Fill that string with the temporary path
+    Dim lngLen As Long
+    lngLen = GetTempPathW(261, StrPtr(sRet))
+    
+    'If something went wrong, raise an error
+    If (lngLen <> 0) Then
+        SystemTempPath = Files.PathAddBackslash(Left$(sRet, lngLen))
+    Else
+        InternalError "OS.SystemTempPath() failed to retrieve a valid path from the API (#" & Err.LastDllError & ")"
+    End If
+    
+End Function
 
 'Get PD's master hWnd.  The value is cached after an initial call.  Based on a sample project by the ever-talented Bonnie West
 ' (http://www.vbforums.com/showthread.php?682474-VB6-ThunderMain-class).
