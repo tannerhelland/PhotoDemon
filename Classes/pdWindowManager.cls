@@ -581,8 +581,10 @@ Friend Function LoadAllWindowLocations() As Boolean
     
     'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
     Dim windowLoadSuccessful As Boolean
-    windowLoadSuccessful = m_XML.LoadXMLFile(m_WindowPresetPath)
-    If windowLoadSuccessful Then windowLoadSuccessful = m_XML.IsPDDataType("Window locations")
+    If Files.FileExists(m_WindowPresetPath) Then
+        windowLoadSuccessful = m_XML.LoadXMLFile(m_WindowPresetPath)
+        If windowLoadSuccessful Then windowLoadSuccessful = m_XML.IsPDDataType("Window locations")
+    End If
     
     If (Not windowLoadSuccessful) Then
         Debug.Print "No window location data found.  A new window location file has been created."
