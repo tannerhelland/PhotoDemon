@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2017 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 31/December/16
-'Last update: let this class handle preset saving/loading for the main window panels (instead of each panel managing
-'             a separate, standalone preset file on its own)
+'Last updated: 19/July/17
+'Last update: migrate all APIs to their proper home in the OS and Files modules.
 '
 'This class is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
 ' with persistent user settings.
@@ -40,20 +39,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'API for determining certain system folders
-
-Private Declare Function SHGetFolderPath Lib "shfolder" Alias "SHGetFolderPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
-
-'Windows Folder Constants
-Public Enum CSIDLs
-    CSIDL_MY_DOCUMENTS = &H5
-    CSIDL_MYPICTURES = &H27
-End Enum
-
-Private Const SHGFP_TYPE_CURRENT As Long = &H0 'current value for user, verify it exists
-Private Const MAX_LENGTH As Long = 260
-Private Const S_OK As Long = 0
 
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
 '  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
@@ -406,9 +391,9 @@ Private Sub CreateNewPreferencesFile()
     
     m_XMLEngine.WriteTag "BatchProcess", "", True
         m_XMLEngine.WriteTag "DriveBox", ""
-        m_XMLEngine.WriteTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-        m_XMLEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "InputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "ListFolder", OS.SpecialFolder(CSIDL_PERSONAL)
+        m_XMLEngine.WriteTag "OutputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
     m_XMLEngine.CloseTag "BatchProcess"
     m_XMLEngine.WriteBlankLine
     
@@ -466,8 +451,8 @@ Private Sub CreateNewPreferencesFile()
     
     m_XMLEngine.WriteTag "Paths", "", True
         m_XMLEngine.WriteTag "TempFiles", OS.SystemTempPath()
-        m_XMLEngine.WriteTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "SaveImage", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Macro", m_MacroPath
         m_XMLEngine.WriteTag "Selections", m_SelectionPath
     m_XMLEngine.CloseTag "Paths"
@@ -776,25 +761,6 @@ End Function
 'Set an XML parameter list for a given dialog ID (constructed by the last-used settings class).
 Friend Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
     m_XMLPresets.UpdateTag dialogID, srcXMLString
-End Function
-
-'Get a special folder from Windows (as specified by the CSIDL)
-Private Function GetWindowsFolder(eFolder As CSIDLs) As String
-
-    Dim iR As Integer
-    Dim sPath As String
-    
-    sPath = String$(MAX_LENGTH, " ")
-    If (SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
-        
-        'Find the end of the string
-        iR = InStr(1, sPath, vbNullChar) - 1
-        
-        'Return everything up to the first NULL and add a terminating slash
-        GetWindowsFolder = Files.PathAddBackslash(Left$(sPath, iR))
-        
-    End If
-    
 End Function
 
 Private Sub Class_Initialize()

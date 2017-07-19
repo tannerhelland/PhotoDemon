@@ -44,10 +44,82 @@ Private Const PROCESSOR_ARCHITECTURE_AMD64 As Long = 9        'x64 (AMD or Intel
 Private Const PROCESSOR_ARCHITECTURE_IA64 As Long = 6         'Intel Itanium Processor Family (IPF)
 Private Const PROCESSOR_ARCHITECTURE_INTEL As Long = 0
 Private Const PROCESSOR_ARCHITECTURE_UNKNOWN As Long = &HFFFF&
+Private Const SHGFP_TYPE_CURRENT As Long = &H0 'current value for user, verify it exists
 Private Const UNK_AddRef As Long = 1
 Private Const UNK_QueryInterface As Long = 0
 Private Const UNK_Release As Long = 2
 Private Const VER_NT_WORKSTATION As Long = &H1&
+
+Public Enum OS_CSIDL
+    CSIDL_ADMINTOOLS = &H30
+    CSIDL_ALTSTARTUP = &H1D
+    CSIDL_APPDATA = &H1A
+    CSIDL_BITBUCKET = &HA
+    CSIDL_CDBURN_AREA = &H3B
+    CSIDL_COMMON_ADMINTOOLS = &H2F
+    CSIDL_COMMON_ALTSTARTUP = &H1E
+    CSIDL_COMMON_APPDATA = &H23
+    CSIDL_COMMON_DESKTOPDIRECTORY = &H19
+    CSIDL_COMMON_DOCUMENTS = &H2E
+    CSIDL_COMMON_FAVORITES = &H1F
+    CSIDL_COMMON_MUSIC = &H35
+    CSIDL_COMMON_OEM_LINKS = &H3A
+    CSIDL_COMMON_PICTURES = &H36
+    CSIDL_COMMON_PROGRAMS = &H17
+    CSIDL_COMMON_STARTMENU = &H16
+    CSIDL_COMMON_STARTUP = &H18
+    CSIDL_COMMON_TEMPLATES = &H2D
+    CSIDL_COMMON_VIDEO = &H37
+    CSIDL_COMPUTERSNEARME = &H3D
+    CSIDL_CONNECTIONS = &H31
+    CSIDL_CONTROLS = &H3
+    CSIDL_COOKIES = &H21
+    CSIDL_DESKTOP = &H0
+    CSIDL_DESKTOPDIRECTORY = &H10
+    CSIDL_DRIVES = &H11
+    CSIDL_FAVORITES = &H6
+    CSIDL_FLAG_CREATE = &H8000
+    CSIDL_FLAG_DONT_VERIFY = &H4000
+    CSIDL_FLAG_MASK = &HFF00
+    CSIDL_FLAG_NO_ALIAS = &H1000
+    CSIDL_FLAG_PER_USER_INIT = &H800
+    CSIDL_FONTS = &H14
+    CSIDL_HISTORY = &H22
+    CSIDL_INTERNET = &H1
+    CSIDL_INTERNET_CACHE = &H20
+    CSIDL_LOCAL_APPDATA = &H1C
+    CSIDL_MYDOCUMENTS = &HC
+    CSIDL_MYMUSIC = &HD
+    CSIDL_MYPICTURES = &H27
+    CSIDL_MYVIDEO = &HE
+    CSIDL_NETHOOD = &H13
+    CSIDL_NETWORK = &H12
+    CSIDL_PERSONAL = &H5
+    CSIDL_PRINTERS = &H4
+    CSIDL_PRINTHOOD = &H1B
+    CSIDL_PROFILE = &H28
+    CSIDL_PROGRAM_FILES = &H26
+    CSIDL_PROGRAM_FILES_COMMON = &H2B
+    CSIDL_PROGRAM_FILES_COMMONX86 = &H2C
+    CSIDL_PROGRAM_FILESX86 = &H2A
+    CSIDL_PROGRAMS = &H2
+    CSIDL_RECENT = &H8
+    CSIDL_RESOURCES = &H38
+    CSIDL_RESOURCES_LOCALIZED = &H39
+    CSIDL_SENDTO = &H9
+    CSIDL_STARTMENU = &HB
+    CSIDL_STARTUP = &H7
+    CSIDL_SYSTEM = &H25
+    CSIDL_SYSTEMX86 = &H29
+    CSIDL_TEMPLATES = &H15
+    CSIDL_WINDOWS = &H24
+End Enum
+
+#If False Then
+    Private Const CSIDL_ADMINTOOLS = &H30, CSIDL_ALTSTARTUP = &H1D, CSIDL_APPDATA = &H1A, CSIDL_BITBUCKET = &HA, CSIDL_CDBURN_AREA = &H3B, CSIDL_COMMON_ADMINTOOLS = &H2F, CSIDL_COMMON_ALTSTARTUP = &H1E, CSIDL_COMMON_APPDATA = &H23, CSIDL_COMMON_DESKTOPDIRECTORY = &H19, CSIDL_COMMON_DOCUMENTS = &H2E, CSIDL_COMMON_FAVORITES = &H1F, CSIDL_COMMON_MUSIC = &H35, CSIDL_COMMON_OEM_LINKS = &H3A, CSIDL_COMMON_PICTURES = &H36, CSIDL_COMMON_PROGRAMS = &H17, CSIDL_COMMON_STARTMENU = &H16, CSIDL_COMMON_STARTUP = &H18, CSIDL_COMMON_TEMPLATES = &H2D, CSIDL_COMMON_VIDEO = &H37, CSIDL_COMPUTERSNEARME = &H3D, CSIDL_CONNECTIONS = &H31
+    Private Const CSIDL_CONTROLS = &H3, CSIDL_COOKIES = &H21, CSIDL_DESKTOP = &H0, CSIDL_DESKTOPDIRECTORY = &H10, CSIDL_DRIVES = &H11, CSIDL_FAVORITES = &H6, CSIDL_FLAG_CREATE = &H8000, CSIDL_FLAG_DONT_VERIFY = &H4000, CSIDL_FLAG_MASK = &HFF00, CSIDL_FLAG_NO_ALIAS = &H1000, CSIDL_FLAG_PER_USER_INIT = &H800, CSIDL_FONTS = &H14, CSIDL_HISTORY = &H22, CSIDL_INTERNET = &H1, CSIDL_INTERNET_CACHE = &H20, CSIDL_LOCAL_APPDATA = &H1C, CSIDL_MYDOCUMENTS = &HC, CSIDL_MYMUSIC = &HD, CSIDL_MYPICTURES = &H27, CSIDL_MYVIDEO = &HE, CSIDL_NETHOOD = &H13, CSIDL_NETWORK = &H12, CSIDL_PERSONAL = &H5, CSIDL_PRINTERS = &H4, CSIDL_PRINTHOOD = &H1B
+    Private Const CSIDL_PROFILE = &H28, CSIDL_PROGRAM_FILES = &H26, CSIDL_PROGRAM_FILES_COMMON = &H2B, CSIDL_PROGRAM_FILES_COMMONX86 = &H2C, CSIDL_PROGRAM_FILESX86 = &H2A, CSIDL_PROGRAMS = &H2, CSIDL_RECENT = &H8, CSIDL_RESOURCES = &H38, CSIDL_RESOURCES_LOCALIZED = &H39, CSIDL_SENDTO = &H9, CSIDL_STARTMENU = &HB, CSIDL_STARTUP = &H7, CSIDL_SYSTEM = &H25, CSIDL_SYSTEMX86 = &H29, CSIDL_TEMPLATES = &H15, CSIDL_WINDOWS = &H24
+#End If
 
 Public Enum OS_ProcessorFeature
     PF_ARM_64BIT_LOADSTORE_ATOMIC = 25 'The 64-bit load/store atomic instructions are available.
@@ -236,7 +308,6 @@ Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal 
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
 
 Private Declare Function SysAllocString Lib "oleaut32" (ByVal Ptr As Long) As Long
-
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, ByRef pClsID As OS_Guid) As Long
 Private Declare Function CoCreateGuid Lib "ole32" (ByRef pGuid As OS_Guid) As Long
 Private Declare Function CoCreateInstance Lib "ole32" (ByRef rClsID As OS_Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByRef rIID As OS_Guid, ByRef ppv As Any) As Long
@@ -248,6 +319,7 @@ Private Declare Function StringFromGUID2 Lib "ole32" (ByRef rguid As Any, ByVal 
 Private Declare Function GetProcessMemoryInfo Lib "psapi" (ByVal hProcess As Long, ByRef ppsmemCounters As OS_ProcessMemoryCounter, ByVal cb As Long) As Long
 
 Private Declare Function CommandLineToArgvW Lib "shell32" (ByVal lpCmdLine As Long, ByRef pNumArgs As Long) As Long
+Private Declare Function SHGetFolderPathW Lib "shfolder" (ByVal hWndOwner As Long, ByVal nFolder As OS_CSIDL, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
 
 Private Declare Function CallWindowProcA Lib "user32" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long 'Used to intercept and process VB-window messages (hence the -A variant)
 Private Declare Function FindWindowW Lib "user32" (Optional ByVal lpClassName As Long, Optional ByVal lpWindowName As Long) As Long
@@ -822,6 +894,20 @@ Public Sub StopWin7PlusFeatures()
         If (m_taskbarObjHandle <> 0) Then CallInterface m_taskbarObjHandle, UNK_Release, 0
     End If
 End Sub
+
+'Get a special folder from Windows (as specified by the CSIDL)
+Public Function SpecialFolder(ByVal folderType As OS_CSIDL) As String
+    
+    Dim dstPath As String
+    dstPath = String$(MAX_PATH, 0)
+    
+    If (SHGetFolderPathW(0&, folderType, 0&, SHGFP_TYPE_CURRENT, StrPtr(dstPath)) = 0) Then
+        SpecialFolder = Files.PathAddBackslash(Strings.TrimNull(dstPath))
+    Else
+        InternalError "OS.SpecialFolder failed to retrieve the folder with type: " & folderType
+    End If
+    
+End Function
 
 'Return the current Windows-specified temp directory
 Public Function SystemTempPath() As String
