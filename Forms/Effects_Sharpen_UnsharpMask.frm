@@ -129,7 +129,7 @@ Option Explicit
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
-    If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
+    If (Not toPreview) Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -209,7 +209,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         Dim progBarCheck As Long
         progBarCheck = FindBestProgBarValue()
             
-        If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
+        If (Not toPreview) Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
             
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
@@ -280,9 +280,9 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             End If
                     
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal progBarCalculation + x
                 End If
             End If

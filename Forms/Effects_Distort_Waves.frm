@@ -158,7 +158,7 @@ End Sub
 'Apply a "wave-like" effect to an image
 Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Dipping image in virtual wave pool..."
+    If (Not toPreview) Then Message "Dipping image in virtual wave pool..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -335,9 +335,9 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
         End If
                         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

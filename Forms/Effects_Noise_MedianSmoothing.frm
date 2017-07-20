@@ -134,7 +134,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     mPercent = cParams.GetLong("percent", 50&)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
-    If Not toPreview Then
+    If (Not toPreview) Then
         If mPercent = 1 Then
             Message "Applying erode (minimum rank) filter..."
         ElseIf mPercent = 100 Then

@@ -91,8 +91,8 @@ Attribute VB_Exposed = False
 'HSL Adjustment Form
 'Copyright 2012-2017 by Tanner Helland
 'Created: 05/October/12
-'Last updated: 26/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 20/July/17
+'Last update: migrate to XML params, minor performance improvements
 '
 'Fairly simple and standard HSL adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Paint.NET.
@@ -106,21 +106,33 @@ Option Explicit
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, ByVal lModifier As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Adjusting hue, saturation, and luminance values..."
+    If (Not toPreview) Then Message "Adjusting hue, saturation, and luminance values..."
+    
+    Dim hModifier As Double, sModifier As Double, lModifier As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    With cParams
+        hModifier = .GetDouble("hue", sltHue.Value)
+        sModifier = .GetDouble("saturation", sltSaturation.Value)
+        lModifier = .GetDouble("value", sltLuminance.Value)
+    End With
     
     'Convert the modifiers to be on the same scale as the HSL translation routine
-    hModifier = hModifier / 60
-    sModifier = (sModifier + 100) / 100
-    lModifier = lModifier / 100
+    hModifier = hModifier / 60#
+    sModifier = (sModifier + 100#) / 100#
+    lModifier = lModifier / 100#
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -137,58 +149,60 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, l As Double
         
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Get the hue and saturation
         tRGBToHSL r, g, b, h, s, l
         
         'Apply the modifiers
         h = h + hModifier
-        If h > 5 Then h = h - 6
-        If h < -1 Then h = h + 6
+        If (h > 5#) Then h = h - 6#
+        If (h < -1#) Then h = h + 6#
         
         s = s * sModifier
-        If s < 0 Then s = 0
-        If s > 1 Then s = 1
+        If (s < 0#) Then s = 0#
+        If (s > 1#) Then s = 1#
         
         l = l + lModifier
-        If l < 0 Then l = 0
-        If l > 1 Then l = 1
+        If (l < 0#) Then l = 0#
+        If (l > 1#) Then l = 1#
         
         'Convert back to RGB using our artificial hue value
         tHSLToRGB h, s, l, r, g, b
         
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(x, y) = b
+        imageData(x + 1, y) = g
+        imageData(x + 2, y) = r
         
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x
+    Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -196,7 +210,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Hue and saturation", , BuildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value), UNDO_LAYER
+    Process "Hue and saturation", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -229,7 +243,7 @@ Private Sub sltSaturation_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then AdjustImageHSL GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -256,7 +270,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "hue", sltHue.Value
+        .AddParam "saturation", sltSaturation.Value
+        .AddParam "value", sltLuminance.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

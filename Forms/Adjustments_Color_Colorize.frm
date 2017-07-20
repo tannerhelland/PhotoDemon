@@ -91,7 +91,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Colorize", , BuildParams(sltHue.Value, CBool(chkSaturation.Value)), UNDO_LAYER
+    Process "Colorize", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -105,19 +105,27 @@ End Sub
 
 'Colorize an image using a hue defined between 0 and 359
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Colorizing image..."
+    If (Not toPreview) Then Message "Colorizing image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim hToUse As Double, maintainSaturation As Boolean
+    hToUse = cParams.GetDouble("hue", sltHue.Value)
+    maintainSaturation = cParams.GetBool("preservesaturation", True)
     
     'Convert the incoming hue from [0, 360] to [-1, 5] range
     hToUse = hToUse / 60
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -146,9 +154,9 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Get the hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -161,22 +169,21 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
         End If
         
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -185,7 +192,7 @@ End Sub
 
 'Reset the hue bar to the center position
 Private Sub cmdBar_ResetClick()
-    sltHue.Value = 180
+    sltHue.Value = 180#
 End Sub
 
 Private Sub Form_Load()
@@ -200,7 +207,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorizeImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -218,7 +225,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "hue", sltHue.Value
+        .AddParam "preservesaturation", CBool(chkSaturation.Value)
     End With
     
     GetLocalParamString = cParams.GetParamString()

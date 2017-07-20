@@ -271,7 +271,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
         Next y
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + (finalX * curChannel) + modifyProgBarOffset
                 End If
             End If

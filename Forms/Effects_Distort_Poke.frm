@@ -181,7 +181,7 @@ End Sub
 'Correct lens distortion in an image
 Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Poking image..."
+    If (Not toPreview) Then Message "Poking image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -394,9 +394,9 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
         End If
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

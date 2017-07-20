@@ -123,7 +123,7 @@ Private Sub Form_Load()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         iWidth = selBounds.Width
         iHeight = selBounds.Height
     Else
@@ -152,7 +152,7 @@ End Sub
 ' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
 Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Simulating large image explosion..."
+    If (Not toPreview) Then Message "Simulating large image explosion..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -247,7 +247,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

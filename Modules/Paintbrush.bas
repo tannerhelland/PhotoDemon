@@ -518,7 +518,7 @@ Private Sub CreateSoftBrushReference_MyPaint()
     Next y
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
 
 End Sub
@@ -675,7 +675,7 @@ Private Sub CreateSoftBrushReference_PD()
         Next y
         Next x
         
-        'With our work complete, point ImageData() away from the DIB and deallocate it
+        'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         
         'If a temporary brush was required (because the target brush is so small), downscale it to its

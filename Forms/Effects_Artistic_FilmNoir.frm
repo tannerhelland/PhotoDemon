@@ -176,11 +176,11 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     End If
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -209,9 +209,9 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Starting by convert the pixel to its grayscale equivalent
         grayVal = (213 * r + 715 * g + 72 * b) / 1000
@@ -240,22 +240,21 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         If grayByte > 255 Then grayByte = 255
         
         'Assign that gray value to each color channel
-        ImageData(quickVal, y) = grayByte
-        ImageData(quickVal + 1, y) = grayByte
-        ImageData(quickVal + 2, y) = grayByte
+        imageData(quickVal, y) = grayByte
+        imageData(quickVal + 1, y) = grayByte
+        imageData(quickVal + 2, y) = grayByte
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

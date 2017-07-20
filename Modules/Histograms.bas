@@ -35,11 +35,11 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     ReDim channelMaxPosition(0 To 3) As Byte
     
     'Create a local array and point it at the pixel data we want to scan
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, , , , True
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -82,9 +82,9 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     For y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we use a simpler average value.
         l = lumLookup(r + g + b)
@@ -105,8 +105,7 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     Next x
     
     'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Run a quick loop through the completed array to find maximum values
     For x = 0 To 3
@@ -159,7 +158,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
     Dim hLookupX() As Double
     ReDim hLookupX(0 To 255) As Double
     For j = 0 To 255
-        hLookupX(j) = (CSng(j + 1) / 257) * CSng(imgWidth)
+        hLookupX(j) = (CSng(j + 1) / 257#) * CSng(imgWidth)
     Next j
     
     Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush

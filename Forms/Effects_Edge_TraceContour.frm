@@ -110,7 +110,7 @@ End Sub
 'Input: radius of the contour (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boolean, ByVal useSmoothing As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Tracing image contour..."
+    If (Not toPreview) Then Message "Tracing image contour..."
             
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

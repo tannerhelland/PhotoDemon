@@ -112,16 +112,19 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Private iWidth As Long, iHeight As Long
-
 'Given a monochrome image, convert it to grayscale
 'Input: radius of the search area (min 1, no real max - but there are diminishing returns above 50)
-Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Converting monochrome image to grayscale..."
-        
+    If (Not toPreview) Then Message "Converting monochrome image to grayscale..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim mRadius As Long
+    mRadius = cParams.GetLong("radius", sltRadius.Value)
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -149,8 +152,8 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        mRadius = (mRadius / iWidth) * curDIBValues.Width
-        If mRadius = 0 Then mRadius = 1
+        mRadius = mRadius * curDIBValues.previewModifier
+        If (mRadius < 1) Then mRadius = 1
     End If
     
     'Just to be safe, make sure the radius isn't larger than the image itself
@@ -377,9 +380,9 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         
     Next y
         atBottom = Not atBottom
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -399,7 +402,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Monochrome to grayscale", , BuildParams(sltRadius.Value), UNDO_LAYER
+    Process "Monochrome to grayscale", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -411,10 +414,6 @@ Private Sub Form_Load()
     'Disable previews while we initialize the dialog
     cmdBar.MarkPreviewStatus False
     
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(g_CurrentImage).Width
-    iHeight = pdImages(g_CurrentImage).Height
-
     'Provide a small explanation about how this process works
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")
     
@@ -430,7 +429,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ConvertMonoToColor sltRadius.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ConvertMonoToColor GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -446,11 +445,7 @@ Private Function GetLocalParamString() As String
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    
-    With cParams
-    
-    End With
-    
+    cParams.AddParam "radius", sltRadius.Value
     GetLocalParamString = cParams.GetParamString()
     
 End Function

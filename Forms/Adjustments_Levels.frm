@@ -263,8 +263,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright 2006-2017 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 04/January/17
-'Last update: remove the need for external icons, and instead dynamically render sliders at run-time
+'Last updated: 19/July/17
+'Last update: rewrite against XML param strings
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -359,15 +359,8 @@ Private Sub cmdAutoLevels_Click()
     Dim pString As String
     pString = GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
     
-    'Level value parsing is easily handled via PD's standard param string parser class
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString pString
-    
-    Dim i As Long
-    For i = 0 To 19
-        m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
-    Next i
+    'Level value parsing will be handled via PD's standard param string parser class
+    FillLevelsFromParamString pString, m_LevelValues
 
     'Update the text boxes to match the new values
     UpdateTextBoxes
@@ -425,19 +418,30 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Next x
     
     'Build an image histogram
+    Dim numOfPixels As Long
+    
     For x = initX To finalX
         quickX = x * qvDepth
     For y = initY To finalY
-        b = imageData(quickX, y)
-        g = imageData(quickX + 1, y)
-        r = imageData(quickX + 2, y)
+    
+        'Ignore transparent pixels, as they don't provide meaningful RGB data
+        If (imageData(quickX + 3, y) <> 0) Then
+            
+            b = imageData(quickX, y)
+            g = imageData(quickX + 1, y)
+            r = imageData(quickX + 2, y)
+            
+            bCount(b) = bCount(b) + 1
+            gCount(g) = gCount(g) + 1
+            rCount(r) = rCount(r) + 1
+            
+            l = (213 * r + 715 * g + 72 * b) \ 1000
+            lCount(l) = lCount(l) + 1
+            
+            numOfPixels = numOfPixels + 1
+            
+        End If
         
-        bCount(b) = bCount(b) + 1
-        gCount(g) = gCount(g) + 1
-        rCount(r) = rCount(r) + 1
-        
-        l = (213 * r + 715 * g + 72 * b) \ 1000
-        lCount(l) = lCount(l) + 1
     Next y
     Next x
     
@@ -446,9 +450,6 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     Dim foundYet As Boolean
     foundYet = False
-    
-    Dim numOfPixels As Long
-    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
     wbThreshold = numOfPixels * percentIgnore
@@ -579,14 +580,41 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     bMax = bMax + ((255 - bMax) \ 2)
     lMax = lMax + ((255 - lMax) \ 2)
     
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
-    'Return our assembled data in param-string compatible format
-    GetIdealLevelParamString = BuildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
-
+    'Convert the calculated values to a valid paramstring equivalent
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "redinputmin", RMin
+        .AddParam "redinputmid", 0.5
+        .AddParam "redinputmax", RMax
+        .AddParam "redoutputmin", 0
+        .AddParam "redoutputmax", 255
+        
+        .AddParam "greeninputmin", gMin
+        .AddParam "greeninputmid", 0.5
+        .AddParam "greeninputmax", gMax
+        .AddParam "greenoutputmin", 0
+        .AddParam "greenoutputmax", 255
+        
+        .AddParam "blueinputmin", bMin
+        .AddParam "blueinputmid", 0.5
+        .AddParam "blueinputmax", bMax
+        .AddParam "blueoutputmin", 0
+        .AddParam "blueoutputmax", 255
+        
+        .AddParam "rgbinputmin", lMin
+        .AddParam "rgbinputmid", 0.5
+        .AddParam "rgbinputmax", lMax
+        .AddParam "rgboutputmin", 0
+        .AddParam "rgboutputmax", 255
+    End With
+    
+    GetIdealLevelParamString = cParams.GetParamString()
+    
 End Function
 
 'Because the Levels dialog only uses one set of UI controls for all channels, we must manually write out preset data for each channel.
@@ -639,18 +667,11 @@ Private Sub cmdBar_ReadCustomPresetData()
     tmpString = cmdBar.RetrievePresetData("MultichannelLevelData")
     
     'Valid preset data was found
-    If Len(tmpString) <> 0 Then
+    If (Len(tmpString) <> 0) Then
     
         'Level value parsing will be handled via PD's standard param string parser class
-        Dim cParams As pdParamString
-        Set cParams = New pdParamString
-        cParams.SetParamString tmpString
+        FillLevelsFromParamString tmpString, m_LevelValues
         
-        Dim i As Long
-        For i = 0 To 19
-            m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
-        Next i
-    
         'Update the text boxes to match the new values
         UpdateTextBoxes
         
@@ -1214,19 +1235,11 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next x
     
     'Parse out individual level values into a master levels array
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString listOfLevels
-    
     Dim levelValues(0 To 3, 0 To 4) As Double
-    
-    Dim i As Long
-    For i = 0 To 19
-        levelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
-    Next i
+    FillLevelsFromParamString listOfLevels, levelValues
     
     'Convert the midtone ratio into a byte (so we can access a look-up table with it)
-    Dim bRatio(0 To 3) As Byte
+    Dim i As Long, bRatio(0 To 3) As Byte
     For i = 0 To 3
         bRatio(i) = CByte(levelValues(i, 1) * 255)
     Next i
@@ -1240,11 +1253,8 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
             tmpGamma = CDbl(x) / 255
             tmpGamma = tmpGamma ^ (1 / gValues(bRatio(i)))
             tmpGamma = tmpGamma * 255
-            If tmpGamma > 255 Then
-                tmpGamma = 255
-            ElseIf tmpGamma < 0 Then
-                tmpGamma = 0
-            End If
+            If (tmpGamma > 255) Then tmpGamma = 255
+            If (tmpGamma < 0) Then tmpGamma = 0
             gLevels(i, x) = tmpGamma
         Next x
     Next i
@@ -1301,27 +1311,26 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = newLevels(0, imageData(quickVal + 2, y))
-        g = newLevels(1, imageData(quickVal + 1, y))
         b = newLevels(2, imageData(quickVal, y))
+        g = newLevels(1, imageData(quickVal + 1, y))
+        r = newLevels(0, imageData(quickVal + 2, y))
         
         'Assign new values looking the lookup table
-        imageData(quickVal + 2, y) = newLevels(3, r)
-        imageData(quickVal + 1, y) = newLevels(3, g)
         imageData(quickVal, y) = newLevels(3, b)
+        imageData(quickVal + 1, y) = newLevels(3, g)
+        imageData(quickVal + 2, y) = newLevels(3, r)
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -1547,18 +1556,70 @@ End Sub
 
 'Convert all channel level values into a single list, built according to PD's internal string parameter format.
 Private Function GetLevelsParamString() As String
-
-    Dim tmpString As String
-    tmpString = ""
     
-    Dim i As Long, j As Long
+    'Remember that the layout of our master tracking array is [channel R/G/B/L, level adjustment].
+    ' Level adjustment values are, in order: input min, input mid, input max, output min, output max.
+    ' Private m_LevelValues(0 To 3, 0 To 4) As Double
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    Dim i As Long, colorName As String
     For i = 0 To 3
-    For j = 0 To 4
-        tmpString = tmpString & m_LevelValues(i, j)
-        If (i < 3) Or (j < 4) Then tmpString = tmpString & "|"
-    Next j
+    
+        'Determine a name for this type of level adjustment
+        If (i = 0) Then
+            colorName = "red"
+        ElseIf (i = 1) Then
+            colorName = "green"
+        ElseIf (i = 2) Then
+            colorName = "blue"
+        ElseIf (i = 3) Then
+            colorName = "rgb"
+        End If
+        
+        With cParams
+            .AddParam colorName & "inputmin", m_LevelValues(i, 0)
+            .AddParam colorName & "inputmid", m_LevelValues(i, 1)
+            .AddParam colorName & "inputmax", m_LevelValues(i, 2)
+            .AddParam colorName & "outputmin", m_LevelValues(i, 3)
+            .AddParam colorName & "outputmax", m_LevelValues(i, 4)
+        End With
+        
     Next i
     
-    GetLevelsParamString = tmpString
+    GetLevelsParamString = cParams.GetParamString()
     
 End Function
+
+'Given an XML param string, fill the m_LevelValues() array with the stored param string values
+Private Sub FillLevelsFromParamString(ByVal paramString As String, ByRef dstLevels() As Double)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString paramString
+    
+    Dim i As Long, colorName As String
+    For i = 0 To 3
+    
+        'Determine a name for this type of level adjustment
+        If (i = 0) Then
+            colorName = "red"
+        ElseIf (i = 1) Then
+            colorName = "green"
+        ElseIf (i = 2) Then
+            colorName = "blue"
+        ElseIf (i = 3) Then
+            colorName = "rgb"
+        End If
+        
+        With cParams
+            dstLevels(i, 0) = .GetDouble(colorName & "inputmin", 0#)
+            dstLevels(i, 1) = .GetDouble(colorName & "inputmid", 0.5)
+            dstLevels(i, 2) = .GetDouble(colorName & "inputmax", 255#)
+            dstLevels(i, 3) = .GetDouble(colorName & "outputmin", 0#)
+            dstLevels(i, 4) = .GetDouble(colorName & "outputmax", 255#)
+        End With
+        
+    Next i
+    
+End Sub

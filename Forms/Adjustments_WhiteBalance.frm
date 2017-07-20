@@ -90,7 +90,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "White balance", , BuildParams(sltStrength), UNDO_LAYER
+    Process "White balance", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -99,22 +99,6 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltStrength.Value = 0.05
-End Sub
-
-'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
-Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
-    If Not toPreview Then Message "Adjusting image white balance..."
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
-    
-    WhiteBalanceDIB percentIgnore, workingDIB, toPreview
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
-    
 End Sub
 
 Private Sub Form_Load()
@@ -133,7 +117,7 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then AutoWhiteBalance sltStrength, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Filters_Adjustments.AutoWhiteBalance GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -145,10 +129,7 @@ Private Function GetLocalParamString() As String
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    
-    With cParams
-    
-    End With
+    cParams.AddParam "threshold", sltStrength.Value
     
     GetLocalParamString = cParams.GetParamString()
     

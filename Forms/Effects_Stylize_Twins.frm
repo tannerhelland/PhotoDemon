@@ -79,7 +79,7 @@ Option Explicit
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
 Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
    
-    If Not toPreview Then Message "Generating image twin..."
+    If (Not toPreview) Then Message "Generating image twin..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -163,9 +163,9 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
         If qvDepth = 4 Then dstImageData(quickVal + 3, y) = hLookup(a + a2)
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

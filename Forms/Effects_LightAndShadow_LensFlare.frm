@@ -549,7 +549,7 @@ End Sub
 'Apply a lens flare filter to an image
 Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal flareRadius As Double = 100, Optional ByVal primaryIntensity As Double = 1#, Optional ByVal secondaryIntensity As Double = 1#, Optional ByVal tertiaryIntensity As Double = 1#, Optional ByVal hueOffset As Double = 0#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying lens flare..."
+    If (Not toPreview) Then Message "Applying lens flare..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -687,13 +687,13 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
     

@@ -438,7 +438,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
             ' (TODO: pass the paint rect, if any, and use that to constrain the processed area - this should yield a performance boost)
-            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.mainSelection.GetMaskDIB, ptrToPaintbrushRectF
+            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.MainSelection.GetMaskDIB, ptrToPaintbrushRectF
             
         End If
     End If
@@ -1668,7 +1668,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Dim srcMask As pdDIB
         If srcImage.IsSelectionActive Then
             nonStandardBlendingActive = True
-            Set srcMask = srcImage.mainSelection.GetMaskDIB_ViewportCopy()
+            Set srcMask = srcImage.MainSelection.GetMaskDIB_ViewportCopy()
         End If
         
         'Just like the base layer, we now need to perform a composite operation similar to StretchBlt, where we calculate a
@@ -1856,10 +1856,10 @@ End Sub
 Private Sub FastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Create a local array and point it at the target layer's DIB
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, targetDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables
     Dim x As Long, y As Long, finalX As Long, finalY As Long
@@ -1946,15 +1946,15 @@ Private Sub FastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
     For y = 0 To finalY
             
         'Apply the changes in one fell swoop
-        ImageData(quickVal, y) = eccLUT(ImageData(quickVal, y))
-        ImageData(quickVal + 1, y) = eccLUT(ImageData(quickVal + 1, y))
-        ImageData(quickVal + 2, y) = eccLUT(ImageData(quickVal + 2, y))
+        imageData(quickVal, y) = eccLUT(imageData(quickVal, y))
+        imageData(quickVal + 1, y) = eccLUT(imageData(quickVal + 1, y))
+        imageData(quickVal + 2, y) = eccLUT(imageData(quickVal + 2, y))
         
     Next y
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
 End Sub
 
@@ -1964,10 +1964,10 @@ End Sub
 Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Create a local array and point it at the target layer's DIB
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, targetDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables
     Dim x As Long, y As Long, finalX As Long, finalY As Long
@@ -2060,9 +2060,9 @@ Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
     For y = 0 To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         If vibranceAdjustment <> 0 Then
         
@@ -2089,15 +2089,15 @@ Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         End If
             
         'Apply the new values
-        ImageData(quickVal + 2, y) = rLUT(r)
-        ImageData(quickVal + 1, y) = gLUT(g)
-        ImageData(quickVal, y) = bLUT(b)
+        imageData(quickVal + 2, y) = rLUT(r)
+        imageData(quickVal + 1, y) = gLUT(g)
+        imageData(quickVal, y) = bLUT(b)
         
     Next y
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
 End Sub
 

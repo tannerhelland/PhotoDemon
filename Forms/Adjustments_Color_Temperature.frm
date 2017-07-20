@@ -244,11 +244,11 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     If (Not toPreview) Then Message "Applying new temperature to image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -306,9 +306,9 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     For y = initY To finalY
     
         'Get the source pixel color values
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
         originalLuminance = Colors.GetLuminance(r, g, b) / 255
@@ -333,22 +333,21 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         End If
         
         'Assign the new values to each color channel
-        ImageData(quickVal, y) = b
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal + 2, y) = r
+        imageData(quickVal, y) = b
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal + 2, y) = r
         
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

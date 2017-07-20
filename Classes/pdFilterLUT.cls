@@ -507,10 +507,10 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     End If
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -527,45 +527,43 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
     Dim r As Long, g As Long, b As Long
     
+    'Move through the array one pixel at a time
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
+    
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Assign the look-up table values
-        ImageData(quickVal + 2, y) = rLUT(r)
-        ImageData(quickVal + 1, y) = gLUT(g)
-        ImageData(quickVal, y) = bLUT(b)
+        imageData(x, y) = bLUT(b)
+        imageData(x + 1, y) = gLUT(g)
+        imageData(x + 2, y) = rLUT(r)
         
-    Next y
+    Next x
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
@@ -589,10 +587,10 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     End If
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -627,9 +625,9 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     For y = initY To finalY
         
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -637,22 +635,21 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
         grayByte = gLUT(grayVal)
         
         'Assign the look-up table values
-        ImageData(quickVal + 2, y) = grayByte
-        ImageData(quickVal + 1, y) = grayByte
-        ImageData(quickVal, y) = grayByte
+        imageData(quickVal + 2, y) = grayByte
+        imageData(quickVal + 1, y) = grayByte
+        imageData(quickVal, y) = grayByte
         
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
@@ -678,10 +675,10 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     End If
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -716,27 +713,26 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     For y = initY To finalY
         
         'Get the source pixel color values
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Assign the look-up table values
-        ImageData(quickVal, y) = cLut(b)
-        ImageData(quickVal + 1, y) = cLut(g)
-        ImageData(quickVal + 2, y) = cLut(r)
+        imageData(quickVal, y) = cLut(b)
+        imageData(quickVal + 1, y) = cLut(g)
+        imageData(quickVal + 2, y) = cLut(r)
         
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True

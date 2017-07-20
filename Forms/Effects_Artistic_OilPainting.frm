@@ -112,7 +112,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     mLevels = cParams.GetDouble("levels", 50#)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
-    If Not toPreview Then Message "Repainting image with oils..."
+    If (Not toPreview) Then Message "Repainting image with oils..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -161,7 +161,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalX
         progBarCheck = FindBestProgBarValue()
     End If
@@ -452,9 +452,9 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         
     Next y
         atBottom = Not atBottom
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

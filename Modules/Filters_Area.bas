@@ -41,7 +41,7 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
     cParams.SetParamString fullParamString
         
     'Note that the only purpose of the FilterType string is to display this message
-    If Not toPreview Then Message "Applying %1 filter...", cParams.GetString(1)
+    If (Not toPreview) Then Message "Applying %1 filter...", cParams.GetString(1)
     
     'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
     ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
@@ -248,7 +248,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -272,10 +272,10 @@ Public Sub FilterGridBlur()
     Message "Generating grids..."
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -315,9 +315,9 @@ Public Sub FilterGridBlur()
         b = 0
         quickVal = x * qvDepth
         For y = initY To finalY
-            r = r + ImageData(quickVal + 2, y)
-            g = g + ImageData(quickVal + 1, y)
-            b = b + ImageData(quickVal, y)
+            r = r + imageData(quickVal + 2, y)
+            g = g + imageData(quickVal + 1, y)
+            b = b + imageData(quickVal, y)
         Next y
         rax(x) = r
         gax(x) = g
@@ -331,9 +331,9 @@ Public Sub FilterGridBlur()
         b = 0
         For x = initX To finalX
             quickVal = x * qvDepth
-            r = r + ImageData(quickVal + 2, y)
-            g = g + ImageData(quickVal + 1, y)
-            b = b + ImageData(quickVal, y)
+            r = r + imageData(quickVal + 2, y)
+            g = g + imageData(quickVal + 1, y)
+            b = b + imageData(quickVal, y)
         Next x
         ray(y) = r
         gay(y) = g
@@ -358,20 +358,19 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -478,10 +477,10 @@ End Sub
 Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -562,16 +561,16 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         quickX = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickX + 2, y)
-        g = ImageData(quickX + 1, y)
-        b = ImageData(quickX, y)
+        r = imageData(quickX + 2, y)
+        g = imageData(quickX + 1, y)
+        b = imageData(quickX, y)
         
         rFloat(x, y) = r / 255
         gFloat(x, y) = g / 255
         bFloat(x, y) = b / 255
         
         If hasAlpha Then
-            a = ImageData(quickX + 3, y)
+            a = imageData(quickX + 3, y)
             aFloat(x, y) = a / 255
         End If
 
@@ -631,7 +630,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -693,7 +692,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + iHeight + modifyProgBarOffset
                 End If
             End If
@@ -718,15 +717,15 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             If g > 255 Then g = 255
             If b > 255 Then b = 255
             
-            ImageData(quickX, y) = b
-            ImageData(quickX + 1, y) = g
-            ImageData(quickX + 2, y) = r
+            imageData(quickX, y) = b
+            imageData(quickX + 1, y) = g
+            imageData(quickX + 2, y) = r
             
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
                 If a > 255 Then a = 255
-                ImageData(quickX + 3, y) = a
+                imageData(quickX + 3, y) = a
             End If
         
         Next y
@@ -734,9 +733,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
     End If
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     If g_cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
 
@@ -749,10 +747,10 @@ End Function
 Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal blurSymmetric As Boolean = True, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -837,16 +835,16 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         quickX = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickX + 2, y)
-        g = ImageData(quickX + 1, y)
-        b = ImageData(quickX, y)
+        r = imageData(quickX + 2, y)
+        g = imageData(quickX + 1, y)
+        b = imageData(quickX, y)
         
         rFloat(x, y) = r / 255
         gFloat(x, y) = g / 255
         bFloat(x, y) = b / 255
         
         If hasAlpha Then
-            a = ImageData(quickX + 3, y)
+            a = imageData(quickX + 3, y)
             aFloat(x, y) = a / 255
         End If
 
@@ -911,7 +909,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -934,15 +932,15 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             If g > 255 Then g = 255
             If b > 255 Then b = 255
             
-            ImageData(quickX, y) = b
-            ImageData(quickX + 1, y) = g
-            ImageData(quickX + 2, y) = r
+            imageData(quickX, y) = b
+            imageData(quickX + 1, y) = g
+            imageData(quickX + 2, y) = r
             
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
                 If a > 255 Then a = 255
-                ImageData(quickX + 3, y) = a
+                imageData(quickX + 3, y) = a
             End If
         
         Next y
@@ -950,9 +948,8 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         
     End If
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     If g_cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
 

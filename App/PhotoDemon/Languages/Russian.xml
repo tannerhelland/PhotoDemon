@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2814</langversion>
+<langversion>6.8.2815</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -452,6 +452,16 @@ If проблема не устранена, пожалуйста, сообщи�
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
+<original>Adjusting image white balance</original>
+<translation>Настройка баланса белого изображения</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image contrast</original>
+<translation>Регулировка контрастности изображения</translation>
+</phrase>
+
+<phrase>
 <original>Inverting the image</original>
 <translation>Инверсия изображения</translation>
 </phrase>
@@ -516,7 +526,7 @@ If проблема не устранена, пожалуйста, сообщи�
 <translation>Усиление теней и бликов</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -579,11 +589,6 @@ If проблема не устранена, пожалуйста, сообщи�
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Регулировка контрастности изображения</translation>
-</phrase>
-
-<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>Подсчет количества уникальных цветов в этом изображении</translation>
 </phrase>
@@ -617,7 +622,7 @@ You может использовать MenuTest () к югу в Filters_Miscell
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -6839,16 +6844,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
-<original>minimum</original>
-<translation>минимальный</translation>
-</phrase>
-
-<phrase>
-<original>maximum</original>
-<translation>максимальная</translation>
-</phrase>
-
-<phrase>
 <original>style</original>
 <translation>стиль</translation>
 </phrase>
@@ -6883,7 +6878,17 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Одноканальный цвет</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>minimum</original>
+<translation>минимальный</translation>
+</phrase>
+
+<phrase>
+<original>maximum</original>
+<translation>максимальная</translation>
+</phrase>
+
+<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -7401,7 +7406,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Создание карты HDRI для изображения</translation>
 </phrase>
 
-<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7921,12 +7926,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 
 <!-- BEGIN text for Adjustments_WhiteBalance.frm (FormWhiteBalance) -->
 
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>Настройка баланса белого изображения</translation>
-</phrase>
-
-<!-- Adjustments_WhiteBalance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
@@ -15024,8 +15024,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1982 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
 <!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

@@ -1013,7 +1013,7 @@ Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double
             'Update the progress bar every (progBarCheck) lines
             If (Not suppressMessages) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If
@@ -1127,7 +1127,7 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
             'Update the progress bar every (progBarCheck) lines
             If (Not suppressMessages) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If
@@ -1242,7 +1242,7 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
             'Update the progress bar every (progBarCheck) lines
             If (Not suppressMessages) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If

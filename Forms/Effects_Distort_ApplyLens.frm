@@ -179,7 +179,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     
     refractiveIndex = 1 / refractiveIndex
 
-    If Not toPreview Then Message "Projecting image through simulated lens..."
+    If (Not toPreview) Then Message "Projecting image through simulated lens..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -401,9 +401,9 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
         End If
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

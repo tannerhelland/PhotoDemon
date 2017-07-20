@@ -104,8 +104,8 @@ Attribute VB_Exposed = False
 'Split Toning Dialog
 'Copyright 2014-2017 by Audioglider and Tanner Helland
 'Created: 07/May/14
-'Last updated: 09/May/14
-'Last update: tweak the split toning algorithm to perfection (I hope?)
+'Last updated: 20/July/17
+'Last update: migrate to XML params
 '
 'Split toning (a digital relative of traditional Duotone printing) allows the user to apply two unique tones to an
 ' image: one for the highlights, and one for the shadows.  A balance slider controls the midpoint between highlights
@@ -143,35 +143,48 @@ Option Explicit
 '     highlights, while < 0 will favor shadows.
 '  - Strength parameter, [0, 100].  At 100, current pixel values will be overwritten by their split-toned counterparts.  At 50, the original
 '     and split-toned RGB values will be blended at a 50/50 ratio.  0 = no change.
-Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, ByVal Strength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SplitTone(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Split-toning image..."
+    If (Not toPreview) Then Message "Split-toning image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim highlightColor As Long, shadowColor As Long, balance As Double, strength As Double
+    
+    With cParams
+        highlightColor = .GetLong("highlightcolor", vbWhite)
+        shadowColor = .GetLong("shadowcolor", vbBlack)
+        balance = .GetDouble("balance", 0#)
+        strength = .GetDouble("strength", 100#)
+    End With
     
     'From the incoming colors, determine corresponding hue and saturation values
     Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
     Dim ignoreLuminance As Double
-    fRGBtoHSL Colors.ExtractRed(highlightColor) / 255, Colors.ExtractGreen(highlightColor) / 255, Colors.ExtractBlue(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
-    fRGBtoHSL Colors.ExtractRed(shadowColor) / 255, Colors.ExtractGreen(shadowColor) / 255, Colors.ExtractBlue(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
+    fRGBtoHSL Colors.ExtractRed(highlightColor) / 255#, Colors.ExtractGreen(highlightColor) / 255#, Colors.ExtractBlue(highlightColor) / 255#, highlightHue, highlightSaturation, ignoreLuminance
+    fRGBtoHSL Colors.ExtractRed(shadowColor) / 255#, Colors.ExtractGreen(shadowColor) / 255#, Colors.ExtractBlue(shadowColor) / 255#, shadowHue, shadowSaturation, ignoreLuminance
     
     'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone).
     Dim balGradient As Double, invBalGradient As Double
-    invBalGradient = PDMath.ConvertRange(-100, 100, 0, 1, Balance)
-    balGradient = 1 - invBalGradient
+    invBalGradient = PDMath.ConvertRange(-100#, 100#, 0#, 1#, balance)
+    balGradient = 1# - invBalGradient
     
     'Prevent divide-by-zero errors, below
-    If invBalGradient <= 0 Then invBalGradient = 0.0000001
-    If balGradient <= 0 Then balGradient = 0.0000001
+    If (invBalGradient <= 0.0000001) Then invBalGradient = 0.0000001
+    If (balGradient <= 0.0000001) Then balGradient = 0.0000001
     
     'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
-    Strength = PDMath.ConvertRange(0, 100, 0, 1, Strength)
+    strength = PDMath.ConvertRange(0#, 100#, 0#, 1#, strength)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -203,13 +216,13 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate HSL-compatible luminance
         v = GetLuminance(r, g, b)
-        vFloat = v / 255
+        vFloat = v / 255#
         
         'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)
         fHSLtoRGB highlightHue, highlightSaturation, vFloat, rHighlight, gHighlight, bHighlight
@@ -228,10 +241,10 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         'New strategy!  We don't want to color midtones, and midtones are defined according to the Balance parameter.
         ' So in a nutshell: if a pixel's luminance falls above the Balance param, fade it between gray and the highlight.
         ' If a pixel's luminance is below the Balance param, fade it between the shadow and gray.
-        If vFloat > balGradient Then
+        If (vFloat > balGradient) Then
         
             'Gradient between balGradient and 1.
-            thisGradient = 1 - ((vFloat - balGradient) / invBalGradient)
+            thisGradient = 1# - ((vFloat - balGradient) / invBalGradient)
             
             newR = BlendColors(rHighlight, v, thisGradient)
             newG = BlendColors(gHighlight, v, thisGradient)
@@ -240,7 +253,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         Else
         
             'Gradient between 0 and balGradient.
-            thisGradient = 1 - (Abs(balGradient - vFloat) / balGradient)
+            thisGradient = 1# - (Abs(balGradient - vFloat) / balGradient)
             
             newR = BlendColors(rShadow, v, thisGradient)
             newG = BlendColors(gShadow, v, thisGradient)
@@ -249,22 +262,21 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         End If
                 
         'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
-        ImageData(quickVal + 2, y) = BlendColors(r, newR, Strength)
-        ImageData(quickVal + 1, y) = BlendColors(g, newG, Strength)
-        ImageData(quickVal, y) = BlendColors(b, newB, Strength)
+        imageData(quickVal, y) = BlendColors(b, newB, strength)
+        imageData(quickVal + 1, y) = BlendColors(g, newG, strength)
+        imageData(quickVal + 2, y) = BlendColors(r, newR, strength)
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -272,7 +284,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Split toning", , BuildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value), UNDO_LAYER
+    Process "Split toning", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -310,7 +322,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.SplitTone GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -338,7 +350,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "highlightcolor", cpHighlight.Color
+        .AddParam "shadowcolor", cpShadow.Color
+        .AddParam "balance", sltBalance.Value
+        .AddParam "strength", sltStrength.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

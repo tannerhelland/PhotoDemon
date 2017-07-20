@@ -92,7 +92,7 @@ Option Explicit
 'Apply the Kuwahara filter to an image.
 Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying Kuwahara smoothing..."
+    If (Not toPreview) Then Message "Applying Kuwahara smoothing..."
     
     'Indicies for each of the 4 quadrants
     Dim meansR(0 To 3) As Double
@@ -104,11 +104,11 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     Dim pixels(0 To 3) As RGBQUAD
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -181,21 +181,21 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
                 End If
                 
                 'Get the source pixel color values for each direction
-                pixels(0).Red = ImageData(xdx(0) * qvDepth + 2, ydy(0))
-                pixels(0).Green = ImageData(xdx(0) * qvDepth + 1, ydy(0))
-                pixels(0).Blue = ImageData(xdx(0) * qvDepth, ydy(0))
+                pixels(0).Red = imageData(xdx(0) * qvDepth + 2, ydy(0))
+                pixels(0).Green = imageData(xdx(0) * qvDepth + 1, ydy(0))
+                pixels(0).Blue = imageData(xdx(0) * qvDepth, ydy(0))
                 
-                pixels(1).Red = ImageData(xdx(1) * qvDepth + 2, ydy(0))
-                pixels(1).Green = ImageData(xdx(1) * qvDepth + 1, ydy(0))
-                pixels(1).Blue = ImageData(xdx(1) * qvDepth, ydy(0))
+                pixels(1).Red = imageData(xdx(1) * qvDepth + 2, ydy(0))
+                pixels(1).Green = imageData(xdx(1) * qvDepth + 1, ydy(0))
+                pixels(1).Blue = imageData(xdx(1) * qvDepth, ydy(0))
                 
-                pixels(2).Red = ImageData(xdx(0) * qvDepth + 2, ydy(1))
-                pixels(2).Green = ImageData(xdx(0) * qvDepth + 1, ydy(1))
-                pixels(2).Blue = ImageData(xdx(0) * qvDepth, ydy(1))
+                pixels(2).Red = imageData(xdx(0) * qvDepth + 2, ydy(1))
+                pixels(2).Green = imageData(xdx(0) * qvDepth + 1, ydy(1))
+                pixels(2).Blue = imageData(xdx(0) * qvDepth, ydy(1))
                 
-                pixels(3).Red = ImageData(xdx(1) * qvDepth + 2, ydy(1))
-                pixels(3).Green = ImageData(xdx(1) * qvDepth + 1, ydy(1))
-                pixels(3).Blue = ImageData(xdx(1) * qvDepth, ydy(1))
+                pixels(3).Red = imageData(xdx(1) * qvDepth + 2, ydy(1))
+                pixels(3).Green = imageData(xdx(1) * qvDepth + 1, ydy(1))
+                pixels(3).Blue = imageData(xdx(1) * qvDepth, ydy(1))
                 
                 For i = 0 To 3
                     meansR(i) = meansR(i) + CDbl(pixels(i).Red)
@@ -234,21 +234,21 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
                 End If
                 
                 'Get the source pixel color values for each quadrant
-                pixels(0).Red = ImageData(xdx(0) * qvDepth + 2, ydy(0))
-                pixels(0).Green = ImageData(xdx(0) * qvDepth + 1, ydy(0))
-                pixels(0).Blue = ImageData(xdx(0) * qvDepth, ydy(0))
+                pixels(0).Red = imageData(xdx(0) * qvDepth + 2, ydy(0))
+                pixels(0).Green = imageData(xdx(0) * qvDepth + 1, ydy(0))
+                pixels(0).Blue = imageData(xdx(0) * qvDepth, ydy(0))
                 
-                pixels(1).Red = ImageData(xdx(1) * qvDepth + 2, ydy(0))
-                pixels(1).Green = ImageData(xdx(1) * qvDepth + 1, ydy(0))
-                pixels(1).Blue = ImageData(xdx(1) * qvDepth, ydy(0))
+                pixels(1).Red = imageData(xdx(1) * qvDepth + 2, ydy(0))
+                pixels(1).Green = imageData(xdx(1) * qvDepth + 1, ydy(0))
+                pixels(1).Blue = imageData(xdx(1) * qvDepth, ydy(0))
                 
-                pixels(2).Red = ImageData(xdx(0) * qvDepth + 2, ydy(1))
-                pixels(2).Green = ImageData(xdx(0) * qvDepth + 1, ydy(1))
-                pixels(2).Blue = ImageData(xdx(0) * qvDepth, ydy(1))
+                pixels(2).Red = imageData(xdx(0) * qvDepth + 2, ydy(1))
+                pixels(2).Green = imageData(xdx(0) * qvDepth + 1, ydy(1))
+                pixels(2).Blue = imageData(xdx(0) * qvDepth, ydy(1))
                 
-                pixels(3).Red = ImageData(xdx(1) * qvDepth + 2, ydy(1))
-                pixels(3).Green = ImageData(xdx(1) * qvDepth + 1, ydy(1))
-                pixels(3).Blue = ImageData(xdx(1) * qvDepth, ydy(1))
+                pixels(3).Red = imageData(xdx(1) * qvDepth + 2, ydy(1))
+                pixels(3).Green = imageData(xdx(1) * qvDepth + 1, ydy(1))
+                pixels(3).Blue = imageData(xdx(1) * qvDepth, ydy(1))
                 
                 For i = 0 To 3
                     stdDevsR(i) = stdDevsR(i) + (meansR(i) - CDbl(pixels(i).Red)) * (meansR(i) - CDbl(pixels(i).Red))
@@ -272,22 +272,21 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
         Next i
         
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = CLng(meansR(lowestIndex))
-        ImageData(quickVal + 1, y) = CLng(meansG(lowestIndex))
-        ImageData(quickVal, y) = CLng(meansB(lowestIndex))
+        imageData(quickVal + 2, y) = CLng(meansR(lowestIndex))
+        imageData(quickVal + 1, y) = CLng(meansG(lowestIndex))
+        imageData(quickVal, y) = CLng(meansB(lowestIndex))
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

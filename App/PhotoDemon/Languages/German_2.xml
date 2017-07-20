@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2814</langversion>
+<langversion>6.8.2874</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -453,6 +453,16 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
+<original>Adjusting image white balance</original>
+<translation>Weißabgleich des Bildes wird angepasst</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image contrast</original>
+<translation>Bildkontrast wird angepasst</translation>
+</phrase>
+
+<phrase>
 <original>Inverting the image</original>
 <translation>Bild wird invertiert</translation>
 </phrase>
@@ -517,7 +527,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 <translation>Schatten und Glanzlichter werden verbessert</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -580,11 +590,6 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Bildkontrast wird angepasst</translation>
-</phrase>
-
-<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>Die Anzahl eindeutiger Farben in diesem Bild wird gezählt</translation>
 </phrase>
@@ -618,7 +623,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <translation>PhotoDemon Pro Tipp</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -863,7 +868,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
 <translation>Die PDI-Datei '%1' enthält komprimierte Daten, aber das zLib-Plugin fehlt oder ist deaktiviert.
 
-Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hilfe > Auf Updates prüfen". Wenn Sie aufgefordert werden, erlauben Sie PhotoDemon den Download aller empfohlenen Plugins.</translation>
+Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hilfe > Nach Updates suchen". Wenn Sie aufgefordert werden, erlauben Sie PhotoDemon den Download aller empfohlenen Plugins.</translation>
 </phrase>
 
 <phrase>
@@ -1513,7 +1518,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 (Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
 <translation>Leider wird diese Makrodatei nicht mehr durch die aktuelle Version von PhotoDemon unterstützt.
 
-In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgenommene Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufnehmen müssen.
+In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgenommene Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufnehmen müssen.
 
 (Hinweis: Beliebige alte Makrodateien werden immer noch in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
 </phrase>
@@ -1956,12 +1961,12 @@ Beschreibung: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Horizontale Scherung</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Vertikale Scherung</translation>
 </phrase>
 
 <phrase>
@@ -2101,7 +2106,7 @@ Beschreibung: %2
 
 <phrase>
 <original>character remapping</original>
-<translation>Zeichen-Neuzuordnung</translation>
+<translation>Zeichen-Neuabbildung</translation>
 </phrase>
 
 <phrase>
@@ -2558,12 +2563,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation>Updatesuche aufgeschoben (eine Suche ist kürzlich durchgeführt worden)</translation>
+<translation>Update-Suche aufgeschoben (eine Prüfung ist vor Kurzem durchgeführt worden)</translation>
 </phrase>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Software-Updater wird initialisiert (diese Funktion kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
+<translation>Software-Updater wird initialisiert (dieses Feature kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
 </phrase>
 
 <phrase>
@@ -2626,7 +2631,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Viewport-Rendering angehalten wegen eines unerwarteten Fehlers (#%1)</translation>
+<translation>Viewport-Rendering angehalten aufgrund eines unerwarteten Fehlers (#%1)</translation>
 </phrase>
 
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
@@ -4642,12 +4647,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Load all recent images</original>
-<translation>Alle zuletzt geöffneten Bilder laden</translation>
+<translation>Alle kürzlich geöffneten Bilder laden</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent image list</original>
-<translation>Liste zuletzt benutzter Bilder leeren</translation>
+<translation>Liste kürzlich geöffneter Bilder löschen</translation>
 </phrase>
 
 <phrase>
@@ -5832,7 +5837,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation>Jüngste Makroliste löschen</translation>
+<translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
 <phrase>
@@ -5957,7 +5962,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Check for &updates</original>
-<translation>Auf &Updates prüfen</translation>
+<translation>Nach &Updates suchen</translation>
 </phrase>
 
 <phrase>
@@ -6310,7 +6315,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Checking for software updates</original>
-<translation>Auf Software-Updates wird geprüft</translation>
+<translation>Nach Software-Updates wird gesucht</translation>
 </phrase>
 
 <phrase>
@@ -6840,16 +6845,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>minimum</original>
-<translation>Minimum</translation>
-</phrase>
-
-<phrase>
-<original>maximum</original>
-<translation>Maximum</translation>
-</phrase>
-
-<phrase>
 <original>style</original>
 <translation>Stil</translation>
 </phrase>
@@ -6884,7 +6879,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Einzelner Farbkanal</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>minimum</original>
+<translation>Minimum</translation>
+</phrase>
+
+<phrase>
+<original>maximum</original>
+<translation>Maximum</translation>
+</phrase>
+
+<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -7402,7 +7407,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>HDR-Map für Bild wird generiert</translation>
 </phrase>
 
-<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7851,7 +7856,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Applying final false-positive checks</original>
-<translation>Fianle false-positive Prüfungen werden angewendet</translation>
+<translation>Finale false-positive Prüfungen werden angewendet</translation>
 </phrase>
 
 <phrase>
@@ -7922,12 +7927,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <!-- BEGIN text for Adjustments_WhiteBalance.frm (FormWhiteBalance) -->
 
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>Weißabgleich des Bildes wird angepasst</translation>
-</phrase>
-
-<!-- Adjustments_WhiteBalance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
@@ -8252,7 +8252,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Kompilieren Sie bitte PhotoDemon, bevor Sie es verwenden. Viele Funktionen, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, insbesondere wenn Sie das Programm mit dem Button "IDE-Stopp" schließen.</translation>
+<translation>Kompilieren Sie bitte PhotoDemon, bevor Sie es verwenden. Viele Features, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, insbesondere wenn Sie das Programm mit dem Button "IDE-Stopp" schließen.</translation>
 </phrase>
 
 <phrase>
@@ -8621,7 +8621,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation>Erfahren Sie mehr über die neuen Funktionen in %1</translation>
+<translation>Erfahren Sie mehr über die neuen Features in %1</translation>
 </phrase>
 
 <phrase>
@@ -10613,12 +10613,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>vertical offset</original>
-<translation>Vertikaler Offset</translation>
+<translation>Vertikales Offset</translation>
 </phrase>
 
 <phrase>
 <original>horizontal offset</original>
-<translation>Horizontaler Offset</translation>
+<translation>Horizontales Offset</translation>
 </phrase>
 
 <phrase>
@@ -11735,7 +11735,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Auf fehlende Plugins beim Programmstart prüfen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plugins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -13700,7 +13700,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>remap</original>
-<translation>Neu zuordnen</translation>
+<translation>Neu abbilden</translation>
 </phrase>
 
 <phrase>
@@ -14263,22 +14263,22 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Kürzlich verwendete Datei-Shortcuts</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Titelleistentext des Hauptfensters</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent file entries</original>
-<translation>Max. Anzahl der Dateieinträge bei "Zuletzt geöffnet"</translation>
+<translation>Max. Anzahl der Dateieinträge in "Zuletzt geöffnet"</translation>
 </phrase>
 
 <phrase>
 <original>recent files list</original>
-<translation>Liste zuletzt geöffneter Dateien</translation>
+<translation>Liste kürzlich geöffneter Dateien</translation>
 </phrase>
 
 <phrase>
@@ -14458,7 +14458,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Alle Programmeinstellungen zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -14493,7 +14493,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>automatically check for updates</original>
-<translation>Automatisch auf Updates prüfen</translation>
+<translation>Automatisch nach Updates suchen</translation>
 </phrase>
 
 <phrase>
@@ -14503,7 +14503,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation>Updates aus diesen Bereichen erlauben</translation>
+<translation>Updates aus diesen Tracks erlauben</translation>
 </phrase>
 
 <phrase>
@@ -14545,12 +14545,14 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Alle Einstellungen werden auf deren defaultwerte zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.
+ 
+Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>PhotoDemon zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -14575,22 +14577,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Highlight checks</original>
-<translation>Prüfung des Glanzlichts</translation>
+<translation>Glanzlicht-Prüfungen</translation>
 </phrase>
 
 <phrase>
 <original>Midtone checks</original>
-<translation>Prüfung des Mitteltons</translation>
+<translation>Mittelton-Prüfungen</translation>
 </phrase>
 
 <phrase>
 <original>Shadow checks</original>
-<translation>Prüfung des Schattens</translation>
+<translation>Schatten-Prüfungen</translation>
 </phrase>
 
 <phrase>
 <original>Custom (click boxes to customize)</original>
-<translation>Benutzerdefiniert (zum Anpassen in Farbfeld klicken)</translation>
+<translation>Benutzerdefiniert (zum Anpassen Farbfelder anklicken)</translation>
 </phrase>
 
 <phrase>
@@ -14630,7 +14632,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>feature disabled due to missing plugin</original>
-<translation>Funktion deaktiviert, weil Plugin fehlt</translation>
+<translation>Feature deaktiviert aufgrund fehlendem Plugin</translation>
 </phrase>
 
 <phrase>
@@ -14640,7 +14642,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also falsch angezeigt werden, können Sie probieren, die Funktion zur automatischen Rotation zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also falsch angezeigt werden, können Sie probieren, das Feature zur autom. Rotation zu deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -14785,7 +14787,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Anwendung, es kann nur auf Updates geprüft werden, wenn das Programm ausgeführt wird. Standardmäßig wird PhotoDemon bei jedem Programmstart auf Updates prüfen, falls gewünscht, können Sie aber diese Frequenz reduzieren.</translation>
+<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Standardmäßig wird PhotoDemon bei jedem Programmstart nach Updates suchen, falls gewünscht, können Sie aber diese Frequenz reduzieren.</translation>
 </phrase>
 
 <phrase>
@@ -14815,7 +14817,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon verwendet einige Plugins von Drittanbietern. Gelegentlich beheben die Autoren dieser Plugins Fehler oder fügen neue Funktionen hinzu. Anstatt auf das nächste Release von PhotoDemon zu warten, können Sie Plugin-Updates, sobald diese verfügbar sind, erhalten.</translation>
+<translation>PhotoDemon verwendet einige Plugins von Drittanbietern. Gelegentlich beheben die Autoren dieser Plugins Fehler oder fügen neue Features hinzu. Anstatt auf das nächste Release von PhotoDemon zu warten, können Sie Plugin-Updates, sobald diese verfügbar sind, erhalten.</translation>
 </phrase>
 
 <phrase>
@@ -14829,7 +14831,7 @@ Are you sure you want to continue?</original>
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
 <translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
-Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um auf neue Versionen zu prüfen.</translation>
+Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>
@@ -15023,8 +15025,8 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1982 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
 <!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

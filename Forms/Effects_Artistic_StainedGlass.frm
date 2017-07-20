@@ -170,7 +170,7 @@ Private cRandom As pdRandomize
 '  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
 Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeQuality As Long, ByVal edgeThreshold As Double, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Carving image from stained glass..."
+    If (Not toPreview) Then Message "Carving image from stained glass..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -191,7 +191,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     qvDepth = curDIBValues.BytesPerPixel
     
     'Because this is a two-pass filter, we have to manually change the progress bar maximum to 2 * width
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalX * 2
     
     'If this is a preview, reduce cell size to better portray how the final image will look
@@ -218,7 +218,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     'Create several look-up tables, specifically:
     ' One table for each color channel (RGBA)
     ' One table for number of pixels in each Voronoi cell
-    Dim rLookup() As Long, gLookUp() As Long, bLookup() As Long, aLookup() As Long
+    Dim rLookup() As Long, gLookup() As Long, bLookup() As Long, aLookup() As Long
     Dim numPixels() As Long
     
     'Finally, we will also make two image-sized look-up tables that store the nearest Voronoi point index for
@@ -236,7 +236,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     ' using an Integer lookup table instead of Longs, but as VB6 doesn't provide an easy way to change array types
     ' post-declaration, we are stuck using the worst-case scenario of Longs.
     ReDim rLookup(0 To numVoronoiPoints) As Long
-    ReDim gLookUp(0 To numVoronoiPoints) As Long
+    ReDim gLookup(0 To numVoronoiPoints) As Long
     ReDim bLookup(0 To numVoronoiPoints) As Long
     ReDim aLookup(0 To numVoronoiPoints) As Long
     ReDim numPixels(0 To numVoronoiPoints) As Long
@@ -277,7 +277,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
-            gLookUp(nearestPoint) = gLookUp(nearestPoint) + g
+            gLookup(nearestPoint) = gLookup(nearestPoint) + g
             bLookup(nearestPoint) = bLookup(nearestPoint) + b
             If qvDepth = 4 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
             
@@ -289,7 +289,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -319,7 +319,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
             quickVal = thisPoint.x * qvDepth
             rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
-            gLookUp(x) = dstImageData(quickVal + 1, thisPoint.y)
+            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
             bLookup(x) = dstImageData(quickVal, thisPoint.y)
             If qvDepth = 4 Then aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
         
@@ -331,7 +331,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             
             If numPixelsCache > 0 Then
                 rLookup(x) = rLookup(x) \ numPixelsCache
-                gLookUp(x) = gLookUp(x) \ numPixelsCache
+                gLookup(x) = gLookup(x) \ numPixelsCache
                 bLookup(x) = bLookup(x) \ numPixelsCache
                 If qvDepth = 4 Then aLookup(x) = aLookup(x) \ numPixelsCache
             End If
@@ -359,7 +359,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         
         'Retrieve the RGB values from the relevant Voronoi cell bin
         r = rLookup(nearestPoint)
-        g = gLookUp(nearestPoint)
+        g = gLookup(nearestPoint)
         b = bLookup(nearestPoint)
         If qvDepth = 4 Then a = aLookup(nearestPoint)
         
@@ -453,7 +453,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal finalX + x
             End If
         End If

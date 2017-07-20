@@ -1156,15 +1156,14 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         Next y
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If
         Next x
                 
-        'With our work complete, point ImageData() away from the DIB and deallocate it
+        'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-        Erase imageData
         
         If g_cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
         

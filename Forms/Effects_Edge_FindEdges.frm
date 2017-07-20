@@ -218,7 +218,7 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     '     based off the ApplyConvolutionFilter function, so mirror any changes there.)
             
     'Note that the only purpose of the FilterType string is to display this message
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "1", "2", GetNameOfEdgeDetector(edgeDetectionType)
+    If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "1", "2", GetNameOfEdgeDetector(edgeDetectionType)
     
     'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
     ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
@@ -241,7 +241,7 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     
     'When two passes are required, the vertical direction is always applied first.  Thus we know we need to apply the
     ' horizontal direction next.  Generate a new param string for the horizontal direction.
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "2", "2", GetNameOfEdgeDetector(edgeDetectionType)
+    If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "2", "2", GetNameOfEdgeDetector(edgeDetectionType)
     
     tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
     tmpParamString = tmpParamString & Trim$(Str$(Not blackBackground)) & "|"
@@ -504,7 +504,7 @@ End Function
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
 Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Tracing image edges with virtual paintbrush..."
+    If (Not toPreview) Then Message "Tracing image edges with virtual paintbrush..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

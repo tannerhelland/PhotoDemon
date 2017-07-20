@@ -180,7 +180,7 @@ End Sub
 'Apply a basic rotation to the image or selected area
 Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Rotating area..."
+    If (Not toPreview) Then Message "Rotating area..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

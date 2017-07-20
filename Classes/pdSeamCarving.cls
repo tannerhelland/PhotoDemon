@@ -955,7 +955,7 @@ Public Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal i
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                 End If
                 
             Next i
@@ -1014,7 +1014,7 @@ Public Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal hDiff + i
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                 End If
                 
             Next i

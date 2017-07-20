@@ -212,14 +212,14 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Dim previewHighlight As Boolean
     previewHighlight = cParams.GetBool("preview-highlight", True)
     
-    If Not toPreview Then Message "Searching image for potential red-eye locations..."
+    If (Not toPreview) Then Message "Searching image for potential red-eye locations..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -236,7 +236,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax 3
         SetProgBarVal 0
     End If
@@ -283,9 +283,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         quickX = x * qvDepth
     
         'Get the source pixel color values
-        b = ImageData(quickX, y)
-        g = ImageData(quickX + 1, y)
-        r = ImageData(quickX + 2, y)
+        b = imageData(quickX, y)
+        g = imageData(quickX + 1, y)
+        r = imageData(quickX + 2, y)
         
         'Strip red bytes into a separate tracking array
         redMap(x, y) = r
@@ -322,9 +322,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         End If
         
     Next x
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
             End If
         End If
     Next y
@@ -401,9 +401,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         End If
         
     Next x
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
             End If
         End If
     Next y
@@ -412,7 +412,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     ' into contiguous regions.  Each region will be assessed in turn, and we'll try to remove as many false-positives
     ' as we can.
     
-    If Not toPreview Then
+    If (Not toPreview) Then
         Message "Refining list of eye candidates..."
         SetProgBarVal 1
     End If
@@ -459,14 +459,14 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         End If
         
     Next x
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
             End If
         End If
     Next y
     
-    If Not toPreview Then
+    If (Not toPreview) Then
         Message "Applying final false-positive checks..."
         SetProgBarVal 2
     End If
@@ -532,9 +532,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         
                         'Generating a running sum the original RGB values of each pixel in the region
                         quickX = x * qvDepth
-                        bSum = bSum + ImageData(quickX, y)
-                        gSum = gSum + ImageData(quickX + 1, y)
-                        rSum = rSum + ImageData(quickX + 2, y)
+                        bSum = bSum + imageData(quickX, y)
+                        gSum = gSum + imageData(quickX + 1, y)
+                        rSum = rSum + imageData(quickX + 2, y)
                         
                     Else
                         numNotInRegion = numNotInRegion + 1
@@ -577,9 +577,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         
                         'If this pixel is highly similar to its neighboring region, add it to a running tally
                         quickX = x * qvDepth
-                        b = ImageData(quickX, y)
-                        g = ImageData(quickX + 1, y)
-                        r = ImageData(quickX + 2, y)
+                        b = imageData(quickX, y)
+                        g = imageData(quickX + 1, y)
+                        r = imageData(quickX + 2, y)
                         rgbSum = b + g + r
                         If rgbSum = 0 Then rgbSum = 1
                         
@@ -630,7 +630,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         ' by dynamically "growing" the highlight regions by any neighboring red-eye pixels; the end result is a list of
         ' regions that cover both highlight and red-eye pixels.
         
-        If Not toPreview Then
+        If (Not toPreview) Then
             SetProgBarMax 3 + numValidRegions
             SetProgBarVal 3
         End If
@@ -651,7 +651,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         For i = 0 To numOfRegions - 1
             If regionStack(i).RegionValid Then
                 
-                If Not toPreview Then
+                If (Not toPreview) Then
                     numRegionsProcessed = numRegionsProcessed + 1
                     Message "Applying final red-eye corrections (%1 of %2)...", numRegionsProcessed, numValidRegions
                     SetProgBarVal 3 + numRegionsProcessed
@@ -716,9 +716,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         If (regionIDs(x, y) = regID) Then
                         
                             quickX = x * qvDepth
-                            b = ImageData(quickX, y)
-                            g = ImageData(quickX + 1, y)
-                            r = ImageData(quickX + 2, y)
+                            b = imageData(quickX, y)
+                            g = imageData(quickX + 1, y)
+                            r = imageData(quickX + 2, y)
                             
                             'Calculate running luminance for the ENTIRE region (including the eye highlight)
                             aveL = aveL + Colors.GetHQLuminance(r, g, b)
@@ -765,9 +765,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         If (regionIDs(x, y) = regID) Then
                             
                             quickX = x * qvDepth
-                            b = ImageData(quickX, y)
-                            g = ImageData(quickX + 1, y)
-                            r = ImageData(quickX + 2, y)
+                            b = imageData(quickX, y)
+                            g = imageData(quickX + 1, y)
+                            r = imageData(quickX + 2, y)
                             
                             r = cRedEye.FixRedEyeColor(r, -correctionFactor, -0.1, aveL)
                             g = cRedEye.FixRedEyeColor(g, correctionFactor / 3, -0.1, aveL)
@@ -794,9 +794,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             For k = innerInitX To innerFinalX
                                 If k <> j Then
                                     If regionIDs(k, j) <> regID Then
-                                        bSum = bSum + ImageData(k * qvDepth, j)
-                                        gSum = gSum + ImageData(k * qvDepth + 1, j)
-                                        rSum = rSum + ImageData(k * qvDepth + 2, j)
+                                        bSum = bSum + imageData(k * qvDepth, j)
+                                        gSum = gSum + imageData(k * qvDepth + 1, j)
+                                        rSum = rSum + imageData(k * qvDepth + 2, j)
                                         numSimilar = numSimilar + 1
                                     End If
                                 End If
@@ -810,9 +810,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                                 b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             End If
                             
-                            ImageData(quickX, y) = b
-                            ImageData(quickX + 1, y) = g
-                            ImageData(quickX + 2, y) = r
+                            imageData(quickX, y) = b
+                            imageData(quickX + 1, y) = g
+                            imageData(quickX + 2, y) = r
                             
                         End If
                         
@@ -827,9 +827,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         If (regionIDs(x, y) <> regID) Then
                             
                             quickX = x * qvDepth
-                            b = ImageData(quickX, y)
-                            g = ImageData(quickX + 1, y)
-                            r = ImageData(quickX + 2, y)
+                            b = imageData(quickX, y)
+                            g = imageData(quickX + 1, y)
+                            r = imageData(quickX + 2, y)
                             
                             'We now want to alias this result against neighboring pixels, to try and reduce any harsh
                             ' edges between this pixel and the result.
@@ -852,9 +852,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             For k = innerInitX To innerFinalX
                                 If k <> j Then
                                     If regionIDs(k, j) = regID Then
-                                        bSum = bSum + ImageData(k * qvDepth, j)
-                                        gSum = gSum + ImageData(k * qvDepth + 1, j)
-                                        rSum = rSum + ImageData(k * qvDepth + 2, j)
+                                        bSum = bSum + imageData(k * qvDepth, j)
+                                        gSum = gSum + imageData(k * qvDepth + 1, j)
+                                        rSum = rSum + imageData(k * qvDepth + 2, j)
                                         numSimilar = numSimilar + 1
                                     End If
                                 End If
@@ -867,9 +867,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                                 g = Colors.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
                                 b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             
-                                ImageData(quickX, y) = b
-                                ImageData(quickX + 1, y) = g
-                                ImageData(quickX + 2, y) = r
+                                imageData(quickX, y) = b
+                                imageData(quickX + 1, y) = g
+                                imageData(quickX + 2, y) = r
                             End If
                             
                         End If
@@ -905,18 +905,18 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         For y = initY To finalY
         For x = initX To finalX
             quickX = x * qvDepth
-            b = ImageData(quickX, y)
-            g = ImageData(quickX + 1, y)
-            r = ImageData(quickX + 2, y)
+            b = imageData(quickX, y)
+            g = imageData(quickX + 1, y)
+            r = imageData(quickX + 2, y)
             
             If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
-                ImageData(quickX, y) = 0
-                ImageData(quickX + 1, y) = 0
-                ImageData(quickX + 2, y) = 255
+                imageData(quickX, y) = 0
+                imageData(quickX + 1, y) = 0
+                imageData(quickX + 2, y) = 255
             ElseIf redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
-                ImageData(quickX, y) = 0
-                ImageData(quickX + 1, y) = 255
-                ImageData(quickX + 2, y) = 0
+                imageData(quickX, y) = 0
+                imageData(quickX + 1, y) = 255
+                imageData(quickX + 2, y) = 0
             End If
             
         Next x
@@ -927,9 +927,8 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     'Release the red-eye engine.  (This is extremely important, as the red-eye class unsafely aliases multiple local arrays.)
     cRedEye.ReleaseRedEyeEngine redEyeData, regionIDs
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

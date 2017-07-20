@@ -128,7 +128,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     vRadius = cParams.GetDouble("radius-y", hRadius)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
-    If Not toPreview Then Message "Applying modern art techniques..."
+    If (Not toPreview) Then Message "Applying modern art techniques..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -182,7 +182,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalX
         progBarCheck = FindBestProgBarValue()
     End If
@@ -326,9 +326,9 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
             If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x
                 End If
             End If

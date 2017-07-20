@@ -78,9 +78,9 @@ Public Sub MenuWater()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
                  
     'Loop through each pixel in the image, converting values as we go
@@ -104,7 +104,7 @@ Public Sub MenuWater()
         If qvDepth = 4 Then a = GetInterpolatedVal(srcX, srcY, srcImageData, 3, qvDepth)
             
         'Now, modify the colors to give a bluish-green tint to the image
-        grayVal = gLookUp(r + g + b)
+        grayVal = gLookup(r + g + b)
         
         r = gray - g - b
         g = gray - r - b
@@ -126,7 +126,7 @@ Public Sub MenuWater()
             
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -149,10 +149,10 @@ Public Sub MenuAtmospheric()
     Message "Creating artificial atmosphere..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -180,28 +180,27 @@ Public Sub MenuAtmospheric()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         newR = (g + b) \ 2
         newG = (r + b) \ 2
         newB = (r + g) \ 2
         
-        ImageData(quickVal + 2, y) = newR
-        ImageData(quickVal + 1, y) = newG
-        ImageData(quickVal, y) = newB
+        imageData(quickVal + 2, y) = newR
+        imageData(quickVal + 1, y) = newG
+        imageData(quickVal, y) = newB
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -214,10 +213,10 @@ Public Sub MenuFrozen()
     Message "Dropping image temperature..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -244,9 +243,9 @@ Public Sub MenuFrozen()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         r = Abs((r - g - b) * 1.5)
         g = Abs((g - b - r) * 1.5)
@@ -260,20 +259,19 @@ Public Sub MenuFrozen()
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -286,10 +284,10 @@ Public Sub MenuLava()
     Message "Exploding imaginary volcano..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -313,9 +311,9 @@ Public Sub MenuLava()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -323,30 +321,29 @@ Public Sub MenuLava()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
-        grayVal = gLookUp(r + g + b)
+        grayVal = gLookup(r + g + b)
         
         r = grayVal
         g = Abs(b - 128)
         b = Abs(b - 128)
         
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
