@@ -123,7 +123,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     If (Not toPreview) Then Message "Lighting image on fire..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, dstPic
     
@@ -144,7 +144,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'Next, we're going to do two things: blurring the flame upward, while also applying some decay
     ' to the flame.
     PrepSafeArray tmpSA, edgeDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -188,9 +188,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     For y = initY To finalY
     
         'Get the source pixel color values
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate a distance value using our precalculated look-up values.  Basically, this is the max distance
         ' a flame can travel, and it's directly tied to the pixel's luminance (brighter pixels travel further).
@@ -208,16 +208,16 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         
             For innerY = y To fTargetMin Step -1
                 
-                inB = ImageData(quickVal, innerY)
-                inG = ImageData(quickVal + 1, innerY)
-                inR = ImageData(quickVal + 2, innerY)
+                inB = imageData(quickVal, innerY)
+                inG = imageData(quickVal + 1, innerY)
+                inR = imageData(quickVal + 2, innerY)
                 
                 'Blend this pixel's value with the value at this pixel, using the distance traveled as our blend metric
                 fadeVal = (innerY - fTargetMin) / fDistance
                 
-                ImageData(quickVal, innerY) = BlendColors(inB, b, fadeVal)
-                ImageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
-                ImageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
+                imageData(quickVal, innerY) = BlendColors(inB, b, fadeVal)
+                imageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
+                imageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
                 
             Next innerY
         
@@ -226,7 +226,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal finalX + x
             End If
         End If
@@ -238,9 +238,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     For y = initY To finalY
     
         'Get the source pixel color values
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -252,22 +252,21 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         b = grayVal \ fxIntensity
         
         'Assign the new "fire" value to each color channel
-        ImageData(quickVal, y) = b
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal + 2, y) = r
+        imageData(quickVal, y) = b
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal + 2, y) = r
         
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal finalX * 2 + x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Apply premultiplication prior to compositing
     edgeDIB.SetAlphaPremultiplication True

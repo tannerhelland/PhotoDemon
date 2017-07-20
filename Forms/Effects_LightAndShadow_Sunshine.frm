@@ -175,7 +175,7 @@ Option Explicit
 'Apply a "sunshine" or "starburst" effect to an image
 Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, ByVal lColorShift As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Generating rays of happiness..."
+    If (Not toPreview) Then Message "Generating rays of happiness..."
     
     Dim i As Long
     Dim m_Radius As Double
@@ -346,9 +346,9 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         dstImageData(quickVal, y) = newB
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

@@ -247,6 +247,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Select menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_SelectMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
+    'Adjustment menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_AdjustmentsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
     'Tool menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_ToolsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
@@ -256,244 +259,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     Select Case processID
         
-        'ADJUSTMENT FUNCTIONS
-        ' Any action that is used to fix or correct problems with an image, including basic color space transformations (e.g. grayscale/sepia)
-        
-        'Auto correct functions
-        Case "Auto correct color"
-            FormWhiteBalance.AutoWhiteBalance
-            Unload FormWhiteBalance
-        
-        Case "Auto correct contrast"
-            Filters_Miscellaneous.AutoContrastCorrect
-        
-        Case "Auto correct lighting"
-            FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
-            Unload FormLevels
-            
-        Case "Auto correct shadows and highlights"
-            Filters_Color_Effects.fxAutoCorrectShadowsAndHighlights
-        
-        'Auto enhance functions
-        Case "Auto enhance color"
-            Filters_Color_Effects.fxAutoEnhanceColors
-        
-        Case "Auto enhance contrast"
-            Filters_Color_Effects.fxAutoEnhanceContrast
-        
-        Case "Auto enhance lighting"
-            Filters_Color_Effects.fxAutoEnhanceLighting
-            
-        Case "Auto enhance shadows and highlights"
-            Filters_Color_Effects.fxAutoEnhanceShadowsAndHighlights
-        
-        'Luminance adjustment functions
-        Case "Brightness and contrast"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormBrightnessContrast
-            Else
-                FormBrightnessContrast.BrightnessContrast cXMLParams.GetParamString
-            End If
-        
-        Case "Curves"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormCurves
-            Else
-                FormCurves.ApplyCurveToImage cParams.GetParamString
-            End If
-            
-        Case "Gamma"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormGamma
-            Else
-                FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-        
-        Case "Levels"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormLevels
-            Else
-                FormLevels.MapImageLevels cParams.GetParamString
-            End If
-            
-        Case "Shadow and highlight"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormShadowHighlight
-            Else
-                FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetLong(6), cParams.GetDouble(7)
-            End If
-            
-        Case "White balance"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormWhiteBalance
-            Else
-                FormWhiteBalance.AutoWhiteBalance cParams.GetDouble(1)
-            End If
-        
-        'Color adjustments
-        Case "Color balance"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormColorBalance
-            Else
-                FormColorBalance.ApplyColorBalance cXMLParams.GetParamString()
-            End If
-            
-        Case "Hue and saturation"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormHSL
-            Else
-                FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Replace color"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormReplaceColor
-            Else
-                FormReplaceColor.ReplaceSelectedColor cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3), cParams.GetDouble(4)
-            End If
-            
-        Case "Temperature"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormColorTemp
-            Else
-                FormColorTemp.ApplyTemperatureToImage cXMLParams.GetParamString
-            End If
-            
-        Case "Tint"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormTint
-            Else
-                FormTint.adjustTint cParams.GetLong(1)
-            End If
-            
-        Case "Vibrance"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormVibrance
-            Else
-                FormVibrance.Vibrance cParams.GetDouble(1)
-            End If
-        
-        'Miscellaneous adjustments
-        Case "Colorize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormColorize
-            Else
-                FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
-            End If
-        
-        'Grayscale conversions
-        Case "Black and white"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormGrayscale
-            Else
-                FormGrayscale.MasterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2), cParams.GetLong(3, 256), cParams.GetLong(4, 0)
-            End If
-        
-        'Invert operations
-        Case "Film negative"
-            MenuNegative
-        
-        Case "Invert hue"
-            MenuInvertHue
-            
-        Case "Invert RGB"
-            MenuInvert
-        
-        'Monochrome conversion
-        ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
-        Case "Color to monochrome"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMonochrome
-            Else
-                FormMonochrome.MasterBlackWhiteConversion cXMLParams.GetParamString
-            End If
-            
-        Case "Monochrome to grayscale"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMonoToColor
-            Else
-                FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
-            End If
-            
-        Case "Sepia"
-            MenuSepia
-            
-        'Channel operations
-        Case "Channel mixer"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormChannelMixer
-            Else
-                FormChannelMixer.ApplyChannelMixer cXMLParams.GetParamString()
-            End If
-            
-        Case "Rechannel"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRechannel
-            Else
-                FormRechannel.RechannelImage cXMLParams.GetParamString
-            End If
-            
-        Case "Shift colors (left)"
-            MenuCShift 1
-            
-        Case "Shift colors (right)"
-            MenuCShift 0
-                    
-        Case "Maximum channel"
-            FilterMaxMinChannel True
-        
-        Case "Minimum channel"
-            FilterMaxMinChannel False
-            
-        'Histogram functions
-        Case "Display histogram"
-            ShowPDDialog vbModal, FormHistogram
-        
-        Case "Stretch histogram"
-            FormHistogram.StretchHistogram
-            
-        Case "Equalize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormEqualize
-            Else
-                FormEqualize.EqualizeHistogram cXMLParams.GetParamString
-            End If
-        
-        'Photography sub-menu functions
-        Case "Exposure"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormExposure
-            Else
-                FormExposure.Exposure cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-        
-        Case "HDR"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormHDR
-            Else
-                FormHDR.ApplyImitationHDR cParams.GetDouble(1), cParams.GetDouble(2)
-            End If
-            
-        Case "Photo filter"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPhotoFilters
-            Else
-                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
-            End If
-        
-        Case "Red-eye removal"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRedEye
-            Else
-                FormRedEye.ApplyRedEyeCorrection cXMLParams.GetParamString
-            End If
-        
-        Case "Split toning"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSplitTone
-            Else
-                FormSplitTone.SplitTone cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
-            End If
         
         'EFFECT FUNCTIONS
         'Sometimes fun, sometimes practical, no real unifying factor to these.
@@ -2310,6 +2075,202 @@ Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDial
         
     End If
         
+End Function
+
+'Helper wrapper for ADJUSTMENTS MENU operations.
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+    
+    'Temp placeholder for compiling purposes only
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
+    
+    
+    'Auto correct functions
+    If Strings.StringsEqual(processID, "Auto correct color", True) Then
+        Filters_Adjustments.AutoWhiteBalance
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Auto correct contrast", True) Then
+        Filters_Adjustments.AutoContrastCorrect
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Auto correct lighting", True) Then
+        FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
+        Unload FormLevels
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Auto correct shadows and highlights", True) Then
+        Filters_Adjustments.fxAutoCorrectShadowsAndHighlights
+        Process_AdjustmentsMenu = True
+    
+    'Auto enhance functions
+    ElseIf Strings.StringsEqual(processID, "Auto enhance color", True) Then
+        Filters_Adjustments.fxAutoEnhanceColors
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Auto enhance contrast", True) Then
+        Filters_Adjustments.fxAutoEnhanceContrast
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Auto enhance lighting", True) Then
+        Filters_Adjustments.fxAutoEnhanceLighting
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Auto enhance shadows and highlights", True) Then
+        Filters_Adjustments.fxAutoEnhanceShadowsAndHighlights
+        Process_AdjustmentsMenu = True
+    
+    'Luminance adjustment functions
+    ElseIf Strings.StringsEqual(processID, "Brightness and contrast", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormBrightnessContrast Else FormBrightnessContrast.BrightnessContrast processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Curves", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormCurves Else FormCurves.ApplyCurveToImage processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Gamma", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormGamma Else FormGamma.GammaCorrect processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Levels", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormLevels Else FormLevels.MapImageLevels processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Shadow and highlight", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormShadowHighlight Else FormShadowHighlight.ApplyShadowHighlight processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "White balance", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormWhiteBalance Else Filters_Adjustments.AutoWhiteBalance processParameters
+        Process_AdjustmentsMenu = True
+    
+    'Color adjustments
+    ElseIf Strings.StringsEqual(processID, "Color balance", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorBalance Else FormColorBalance.ApplyColorBalance processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Hue and saturation", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormHSL Else FormHSL.AdjustImageHSL processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Replace color", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormReplaceColor Else FormReplaceColor.ReplaceSelectedColor processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Temperature", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorTemp Else FormColorTemp.ApplyTemperatureToImage processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Tint", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormTint Else FormTint.AdjustTint processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Vibrance", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormVibrance Else FormVibrance.Vibrance processParameters
+        Process_AdjustmentsMenu = True
+        
+    'Miscellaneous adjustments
+    ElseIf Strings.StringsEqual(processID, "Colorize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorize Else FormColorize.ColorizeImage processParameters
+        Process_AdjustmentsMenu = True
+    
+    'Grayscale conversions
+    ElseIf Strings.StringsEqual(processID, "Black and white", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormGrayscale Else FormGrayscale.MasterGrayscaleFunction processParameters
+        Process_AdjustmentsMenu = True
+    
+    'Invert operations
+    ElseIf Strings.StringsEqual(processID, "Film negative", True) Then
+        MenuNegative
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Invert hue", True) Then
+        MenuInvertHue
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Invert RGB", True) Then
+        MenuInvert
+        Process_AdjustmentsMenu = True
+    
+    'Monochrome conversion
+    ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
+    ElseIf Strings.StringsEqual(processID, "Color to monochrome", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMonochrome Else FormMonochrome.MasterBlackWhiteConversion processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Monochrome to grayscale", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMonoToColor Else FormMonoToColor.ConvertMonoToColor processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Sepia", True) Then
+        MenuSepia
+        Process_AdjustmentsMenu = True
+        
+    'Channel operations
+    ElseIf Strings.StringsEqual(processID, "Channel mixer", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormChannelMixer Else FormChannelMixer.ApplyChannelMixer processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rechannel", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRechannel Else FormRechannel.RechannelImage processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Shift colors (left)", True) Then
+        MenuCShift 1
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Shift colors (right)", True) Then
+        MenuCShift 0
+        Process_AdjustmentsMenu = True
+                
+    ElseIf Strings.StringsEqual(processID, "Maximum channel", True) Then
+        FilterMaxMinChannel True
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Minimum channel", True) Then
+        FilterMaxMinChannel False
+        Process_AdjustmentsMenu = True
+        
+    'Histogram functions
+    ElseIf Strings.StringsEqual(processID, "Display histogram", True) Then
+        ShowPDDialog vbModal, FormHistogram
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Stretch histogram", True) Then
+        FormHistogram.StretchHistogram
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Equalize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormEqualize Else FormEqualize.EqualizeHistogram processParameters
+        Process_AdjustmentsMenu = True
+    
+    'Photography sub-menu functions
+    ElseIf Strings.StringsEqual(processID, "Exposure", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormExposure Else FormExposure.Exposure processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "HDR", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormHDR Else FormHDR.ApplyImitationHDR processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Photo filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPhotoFilters Else FormPhotoFilters.ApplyPhotoFilter processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Red-eye removal", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRedEye Else FormRedEye.ApplyRedEyeCorrection processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Split toning", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSplitTone Else FormSplitTone.SplitTone processParameters
+        Process_AdjustmentsMenu = True
+            
+    End If
+    
 End Function
 
 'Helper wrapper for IMAGE MENU operations.

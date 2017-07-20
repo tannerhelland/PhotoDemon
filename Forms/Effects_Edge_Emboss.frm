@@ -159,7 +159,7 @@ End Sub
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
 Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, ByVal eColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Embossing image..."
+    If (Not toPreview) Then Message "Embossing image..."
     
     'Don't allow distance to be 0
     If eDistance = 0 Then eDistance = 0.01
@@ -282,9 +282,9 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         dstImageData(quickVal, y) = b
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

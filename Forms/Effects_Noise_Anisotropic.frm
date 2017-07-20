@@ -236,7 +236,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long, progBarOffset As Long
     
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalX * adIterations
         progBarCheck = FindBestProgBarValue()
         progBarOffset = 0
@@ -252,7 +252,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Because this filter uses iterations, we may be performing the filter a bunch of times in immediate succession
     For i = 1 To adIterations
         
-        If Not toPreview Then Message "Calculating energy gradients (pass %1 of %2)...", i, adIterations
+        If (Not toPreview) Then Message "Calculating energy gradients (pass %1 of %2)...", i, adIterations
         
         'Loop through each pixel in the image, converting values as we go
         For x = initX To finalX
@@ -454,9 +454,9 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             If qvDepth = 4 Then dstImageData(quickX + 3, y) = aNew
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
                 End If
             End If
@@ -464,7 +464,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         
         'On each iteration, we must copy over the new bits to the source image
         If i < adIterations Then BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
-        If Not toPreview Then progBarOffset = finalX * i
+        If (Not toPreview) Then progBarOffset = finalX * i
         
     Next i
     

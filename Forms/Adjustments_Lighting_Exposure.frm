@@ -122,8 +122,8 @@ Attribute VB_Exposed = False
 'Exposure Dialog
 'Copyright 2013-2017 by Audioglider and Tanner Helland
 'Created: 13/July/13
-'Last updated: 05/November/15
-'Last update: add the other (non-exposure, but whatevs) controls provided by Photoshop's exposure dialog
+'Last updated: 20/July/17
+'Last update: migrate to XML params, minor optimizations
 '
 'Many thanks to talented contributer Audioglider for creating this tool.
 '
@@ -154,16 +154,25 @@ Option Explicit
 ' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
 '                 increase (+values) or decrease (-values) in luminance.  Thus an EV of -1 will cut the amount of light in
 '                 half, while an EV of +1 will double the amount of light.
-Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double, ByVal gammaAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Adjusting image exposure..."
+    If (Not toPreview) Then Message "Adjusting image exposure..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim exposureAdjust As Double, offsetAdjust As Double, gammaAdjust As Double
+    exposureAdjust = cParams.GetDouble("exposure", 0#)
+    offsetAdjust = cParams.GetDouble("offset", 0#)
+    gammaAdjust = cParams.GetDouble("gamma", 1#)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -180,45 +189,47 @@ Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     Dim r As Long, g As Long, b As Long
     
     'Exposure can be easily applied using a look-up table
-    Dim gLookUp(0 To 255) As Byte
+    Dim gLookup(0 To 255) As Byte
     Dim tmpVal As Double
     
     For x = 0 To 255
-        gLookUp(x) = GetCorrectedValue(x, 255, exposureAdjust, offsetAdjust, gammaAdjust)
+        gLookup(x) = GetCorrectedValue(x, 255, exposureAdjust, offsetAdjust, gammaAdjust)
     Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
+    For y = initY To finalY
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Apply a new value based on the lookup table
-        ImageData(quickVal + 2, y) = gLookUp(r)
-        ImageData(quickVal + 1, y) = gLookUp(g)
-        ImageData(quickVal, y) = gLookUp(b)
+        imageData(x, y) = gLookup(b)
+        imageData(x + 1, y) = gLookup(g)
+        imageData(x + 2, y) = gLookup(r)
         
-    Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x
+    Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -239,22 +250,22 @@ Private Function GetCorrectedValue(ByVal inputVal As Single, ByVal inputMax As S
     tmpCalculation = tmpCalculation + newOffset
     
     'Apply gamma
-    If newGamma = 0 Then newGamma = 0.01
-    If tmpCalculation > 0 Then tmpCalculation = tmpCalculation ^ (1 / newGamma)
+    If (newGamma < 0.01) Then newGamma = 0.01
+    If (tmpCalculation > 0#) Then tmpCalculation = tmpCalculation ^ (1 / newGamma)
     
     'Return to the original [0, inputMax] scale
     tmpCalculation = tmpCalculation * inputMax
     
     'Apply clipping
-    If tmpCalculation < 0 Then tmpCalculation = 0
-    If tmpCalculation > inputMax Then tmpCalculation = inputMax
+    If (tmpCalculation < 0#) Then tmpCalculation = 0#
+    If (tmpCalculation > inputMax) Then tmpCalculation = inputMax
     
     GetCorrectedValue = tmpCalculation
     
 End Function
 
 Private Sub cmdBar_OKClick()
-    Process "Exposure", , BuildParams(sltExposure, sltOffset, sltGamma), UNDO_LAYER
+    Process "Exposure", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -277,6 +288,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
+'TODO: rewrite this sub against pd2D
 Private Sub UpdatePreview()
     
     If cmdBar.PreviewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
@@ -335,7 +347,7 @@ Private Sub UpdatePreview()
         picChart.Refresh
     
         'Finally, apply the exposure correction to the preview image
-        Exposure sltExposure, sltOffset, sltGamma, True, pdFxPreview
+        Me.Exposure GetLocalParamString(), True, pdFxPreview
         
     End If
     
@@ -365,7 +377,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "exposure", sltExposure
+        .AddParam "offset", sltOffset
+        .AddParam "gamma", sltGamma
     End With
     
     GetLocalParamString = cParams.GetParamString()

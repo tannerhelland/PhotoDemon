@@ -83,7 +83,7 @@ End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
-    BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
+    BlendColors = ((1# - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead

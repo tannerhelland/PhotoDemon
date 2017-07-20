@@ -69,8 +69,8 @@ Attribute VB_Exposed = False
 'Tint Dialog
 'Copyright 2014-2017 by Tanner Helland
 'Created: 03/July/14
-'Last updated: 03/July/14
-'Last update: initial build
+'Last updated: 20/July/17
+'Last update: migrate to XML params
 '
 'Tint is a simple adjustment along the magenta/green axis of the image.  While of limited use in a
 ' separate dialog like this, PhotoDemon sticks to convention by providing it as a "quick-fix" non-destructive
@@ -90,16 +90,23 @@ Option Explicit
 
 'Change the tint of an image
 ' INPUT: tint adjustment, [-100, 100], 0 = no change
-Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Re-tinting image..."
+    If (Not toPreview) Then Message "Re-tinting image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim tintAdjustment As Long
+    tintAdjustment = cParams.GetDouble("tint", 0#)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -123,13 +130,13 @@ Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As 
     Dim h As Double, s As Double, v As Double, origV As Double
     
     'Build a look-up table of tint values.  (Tint only affects the green channel)
-    Dim gLookUp() As Long
-    ReDim gLookUp(0 To 255) As Long
+    Dim gLookup() As Long
+    ReDim gLookup(0 To 255) As Long
     For x = 0 To 255
         g = x + (tintAdjustment \ 2)
         If g > 255 Then g = 255
         If g < 0 Then g = 0
-        gLookUp(x) = g
+        gLookup(x) = g
     Next x
     
     'Loop through each pixel in the image, converting values as we go
@@ -138,36 +145,35 @@ Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As 
     For y = initY To finalY
         
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate luminance
-        origV = GetLuminance(r, g, b) / 255
+        origV = GetLuminance(r, g, b) / 255#
         
         'Convert the re-tinted colors to HSL
-        tRGBToHSL r, gLookUp(g), b, h, s, v
+        tRGBToHSL r, gLookup(g), b, h, s, v
         
         'Convert back to RGB
         tHSLToRGB h, s, origV, r, g, b
         
         'Assign new values
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal, y) = b
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal + 2, y) = r
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -175,7 +181,7 @@ Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Tint", , BuildParams(sltTint), UNDO_LAYER
+    Process "Tint", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -203,7 +209,7 @@ Private Sub sltTint_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then adjustTint sltTint, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.AdjustTint GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
@@ -212,7 +218,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "tint", sltTint.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

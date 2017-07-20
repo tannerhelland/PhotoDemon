@@ -313,11 +313,11 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -351,9 +351,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
@@ -367,9 +367,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             End If
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
-            ImageData(quickVal, y) = newGray
-            ImageData(quickVal + 1, y) = newGray
-            ImageData(quickVal + 2, y) = newGray
+            imageData(quickVal, y) = newGray
+            imageData(quickVal + 1, y) = newGray
+            imageData(quickVal + 2, y) = newGray
             
         Else
         
@@ -406,14 +406,14 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
                 Colors.fRGBtoHSL CDbl(newR) * ONE_DIV_255, CDbl(newG) * ONE_DIV_255, CDbl(newB) * ONE_DIV_255, h, s, l
                 Colors.fHSLtoRGB h, s, originalLuminance, rFloat, gFloat, bFloat
                 
-                ImageData(quickVal, y) = bFloat * 255
-                ImageData(quickVal + 1, y) = gFloat * 255
-                ImageData(quickVal + 2, y) = rFloat * 255
+                imageData(quickVal, y) = bFloat * 255
+                imageData(quickVal + 1, y) = gFloat * 255
+                imageData(quickVal + 2, y) = rFloat * 255
                 
             Else
-                ImageData(quickVal, y) = newB
-                ImageData(quickVal + 1, y) = newG
-                ImageData(quickVal + 2, y) = newR
+                imageData(quickVal, y) = newB
+                imageData(quickVal + 1, y) = newG
+                imageData(quickVal + 2, y) = newR
             End If
             
             
@@ -422,15 +422,14 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

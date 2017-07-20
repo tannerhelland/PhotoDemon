@@ -137,7 +137,7 @@ End Sub
 'Apply a relief filter, which gives the image a pseudo-3D appearance
 Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Carving image relief..."
+    If (Not toPreview) Then Message "Carving image relief..."
     
     'Don't allow distance to be 0
     If eDistance = 0 Then eDistance = 0.01
@@ -259,9 +259,9 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         dstImageData(quickVal, y) = b
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

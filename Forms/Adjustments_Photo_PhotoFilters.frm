@@ -145,7 +145,7 @@ Private Sub cmdBar_AddCustomPresetData()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Photo filter", , BuildParams(m_Filters(lstFilters.ListIndex).RGBColor, sltDensity.Value, True), UNDO_LAYER
+    Process "Photo filter", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
@@ -350,7 +350,7 @@ Private Sub UpdatePreview()
         If (sltDensity.GradientColorRight <> m_Filters(lstFilters.ListIndex).RGBColor) Then sltDensity.GradientColorRight = m_Filters(lstFilters.ListIndex).RGBColor
         
         'Render the preview
-        If cmdBar.PreviewsAllowed Then ApplyPhotoFilter m_Filters(lstFilters.ListIndex).RGBColor, sltDensity.Value, True, True, pdFxPreview
+        If cmdBar.PreviewsAllowed Then Me.ApplyPhotoFilter GetLocalParamString(), True, pdFxPreview
     
     End If
     
@@ -358,16 +358,28 @@ End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
-Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Double, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyPhotoFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying photo filter..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim filterColor As Long, filterDensity As Double, preserveLuminance As Boolean
+    
+    With cParams
+        filterColor = .GetLong("color")
+        filterDensity = .GetDouble("density", 0#)
+        preserveLuminance = .GetBool("preserveluminance", True)
+    End With
+    
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -406,12 +418,12 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (GetLuminance(r, g, b) / 255)
+        originalLuminance = (GetLuminance(r, g, b) / 255#)
         
         'Blend the original and new RGB values using the specified strength
         r = BlendColors(r, tmpR, filterDensity)
@@ -426,22 +438,21 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         End If
         
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal, y) = b
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal + 2, y) = r
         
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -459,7 +470,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "color", m_Filters(lstFilters.ListIndex).RGBColor
+        .AddParam "density", sltDensity.Value
+        .AddParam "preserveluminance", True
     End With
     
     GetLocalParamString = cParams.GetParamString()

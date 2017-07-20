@@ -103,7 +103,7 @@ Dim iWidth As Long, iHeight As Long
 ' Inputs: Amount of noise, monochromatic or not, preview settings
 Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
-    If Not toPreview Then Message "Generating film grain texture..."
+    If (Not toPreview) Then Message "Generating film grain texture..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -144,7 +144,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalY * 2 + finalX * 2
         progBarCheck = FindBestProgBarValue()
     End If
@@ -173,9 +173,9 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
         dstImageData(quickVal, y) = nColor
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -226,7 +226,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
         PrepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
             
-        If Not toPreview Then Message "Applying film grain to image..."
+        If (Not toPreview) Then Message "Applying film grain to image..."
         
         Dim r As Long, g As Long, b As Long
         
@@ -260,9 +260,9 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
             dstImageData(quickVal, y) = b
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal finalX + x + finalY + finalY
                 End If
             End If
@@ -306,7 +306,7 @@ Private Sub Form_Load()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         iWidth = selBounds.Width
         iHeight = selBounds.Height
     Else

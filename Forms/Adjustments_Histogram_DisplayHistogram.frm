@@ -967,7 +967,7 @@ Public Sub StretchHistogram()
     bDif = bMax - bMin
     
     'Lookup tables make the stretching go faster
-    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     For x = 0 To 255
         If rDif <> 0 Then
@@ -982,9 +982,9 @@ Public Sub StretchHistogram()
             g = 255 * ((x - gMin) / gDif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
-            gLookUp(x) = g
+            gLookup(x) = g
         Else
-            gLookUp(x) = x
+            gLookup(x) = x
         End If
         If bDif <> 0 Then
             b = 255 * ((x - bMin) / bDif)
@@ -1007,16 +1007,15 @@ Public Sub StretchHistogram()
         b = imageData(quickVal, y)
                 
         imageData(quickVal + 2, y) = rLookup(r)
-        imageData(quickVal + 1, y) = gLookUp(g)
+        imageData(quickVal + 1, y) = gLookup(g)
         imageData(quickVal, y) = bLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData

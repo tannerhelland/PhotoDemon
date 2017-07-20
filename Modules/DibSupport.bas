@@ -184,10 +184,10 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim ImageData() As Byte
+        Dim imageData() As Byte
         Dim tmpSA As SAFEARRAY2D
         PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -215,9 +215,9 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         For y = initY To finalY
                 
             'Get the source pixel color values
-            b = ImageData(quickVal, y)
-            g = ImageData(quickVal + 1, y)
-            r = ImageData(quickVal + 2, y)
+            b = imageData(quickVal, y)
+            g = imageData(quickVal + 1, y)
+            r = imageData(quickVal + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -238,8 +238,8 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         Next y
         Next x
         
-        'With our work complete, point ImageData() away from the DIB and deallocate it
-        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        'Safely deallocate imageData()
+        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
         
         'If normalization was requested, and the data isn't already normalized, normalize it now
         If toNormalize And ((minVal > 0) Or (maxVal < 255)) Then
@@ -322,7 +322,7 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
         Next y
         Next x
         
-        'With our work complete, point ImageData() away from the DIB and deallocate it
+        'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
                 
         CreateDIBFromGrayscaleMap = True
@@ -344,10 +344,10 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim ImageData() As Byte
+        Dim imageData() As Byte
         Dim tmpSA As SAFEARRAY2D
         PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -393,13 +393,13 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         For x = initX To finalX Step qvDepth
                 
             'Get the source pixel color values
-            b = ImageData(x, y)
-            g = ImageData(x + 1, y)
-            r = ImageData(x + 2, y)
+            b = imageData(x, y)
+            g = imageData(x + 1, y)
+            r = imageData(x + 2, y)
             
             'Remove premultiplication, as necessary
             If alphaIsPremultiplied Then
-                a = ImageData(x + 3, y)
+                a = imageData(x + 3, y)
                 If (a <> 255) Then
                     tmpAlphaModifier = removePremult(a)
                     r = (r * tmpAlphaModifier)
@@ -424,21 +424,21 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             End If
             
             If ignoreMagicMagenta Then
-                ImageData(x, y) = grayVal
-                ImageData(x + 1, y) = grayVal
-                ImageData(x + 2, y) = grayVal
+                imageData(x, y) = grayVal
+                imageData(x + 1, y) = grayVal
+                imageData(x + 2, y) = grayVal
             Else
                 If (r <> 253) Or (g <> 0) Or (b <> 253) Then
-                    ImageData(x, y) = grayVal
-                    ImageData(x + 1, y) = grayVal
-                    ImageData(x + 2, y) = grayVal
+                    imageData(x, y) = grayVal
+                    imageData(x + 1, y) = grayVal
+                    imageData(x + 2, y) = grayVal
                 End If
             End If
             
         Next x
         Next y
         
-        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
         MakeDIBGrayscale = True
         
     Else

@@ -590,9 +590,9 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
         dstImageData(quickVal + 3, y) = newA
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -835,9 +835,9 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
         End If
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

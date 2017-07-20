@@ -127,10 +127,10 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local histogram equalizing requires a second copy of the source image
     Dim srcDIB As pdDIB
@@ -163,7 +163,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         
         'Global and local modes use different progress calculations
         If ehMode = 0 Then
@@ -218,16 +218,16 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Global histogram
     If ehMode = 0 Then
         
-        If Not toPreview Then Message "Analyzing image histogram..."
+        If (Not toPreview) Then Message "Analyzing image histogram..."
         
         'Start by generating the initial histogram(s)
         For y = initY To finalY
         For x = initXStride To finalXStride Step qvDepth
             
             'Get the source pixel color values
-            b = ImageData(x, y)
-            g = ImageData(x + 1, y)
-            r = ImageData(x + 2, y)
+            b = imageData(x, y)
+            g = imageData(x + 1, y)
+            r = imageData(x + 2, y)
             
             'Store those values in the correct histogram
             'RGB
@@ -243,7 +243,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             End If
             
         Next x
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (y And progBarCheck) = 0 Then SetProgBarVal y
             End If
         Next y
@@ -289,42 +289,42 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         End If
         
         'Apply the new histogram to the image
-        If Not toPreview Then Message "Equalizing image..."
+        If (Not toPreview) Then Message "Equalizing image..."
         
         For y = initY To finalY
         For x = initXStride To finalXStride Step qvDepth
         
             'Get the source RGB values
-            b = ImageData(x, y)
-            g = ImageData(x + 1, y)
-            r = ImageData(x + 2, y)
+            b = imageData(x, y)
+            g = imageData(x + 1, y)
+            r = imageData(x + 2, y)
             
             'Apply new values
             If ehTarget = 0 Then
-                ImageData(x, y) = bData(b)
-                ImageData(x + 1, y) = gData(g)
-                ImageData(x + 2, y) = rData(r)
+                imageData(x, y) = bData(b)
+                imageData(x + 1, y) = gData(g)
+                imageData(x + 2, y) = rData(r)
             Else
                 If ehTarget = 1 Then
                     Colors.tRGBToHSL r, g, b, h, s, v
                     Colors.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
-                    ImageData(x, y) = b
-                    ImageData(x + 1, y) = g
-                    ImageData(x + 2, y) = r
+                    imageData(x, y) = b
+                    imageData(x + 1, y) = g
+                    imageData(x + 2, y) = r
                 Else
                     Colors.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
                     Colors.fHSVtoRGB h, s, floatLookup(lData(Int(v * 255))), rFloat, gFloat, bFloat
-                    ImageData(x, y) = Int(bFloat * 255)
-                    ImageData(x + 1, y) = Int(gFloat * 255)
-                    ImageData(x + 2, y) = Int(rFloat * 255)
+                    imageData(x, y) = Int(bFloat * 255)
+                    imageData(x + 1, y) = Int(gFloat * 255)
+                    imageData(x + 2, y) = Int(rFloat * 255)
                 End If
                 
             End If
             
         Next x
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (y And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal y + finalY
                 End If
             End If
@@ -333,7 +333,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Local histogram
     Else
         
-        If Not toPreview Then Message "Equalizing image..."
+        If (Not toPreview) Then Message "Equalizing image..."
         
         'Prep the pixel iterator
         Dim cPixelIterator As pdPixelIterator
@@ -368,9 +368,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     ' with processing the local histogram.
                     
                     'Start by retrieving the color at this pixel location.
-                    b = ImageData(x, y)
-                    g = ImageData(x + 1, y)
-                    r = ImageData(x + 2, y)
+                    b = imageData(x, y)
+                    g = imageData(x + 1, y)
+                    r = imageData(x + 2, y)
                     
                     'Partially equalize each histogram
                     scaleFactor = 255 / numOfPixels
@@ -411,9 +411,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                         r = (r + rData(r)) \ 2
                         
                         'Apply the equalized value to the image
-                        ImageData(x, y) = b
-                        ImageData(x + 1, y) = g
-                        ImageData(x + 2, y) = r
+                        imageData(x, y) = b
+                        imageData(x + 1, y) = g
+                        imageData(x + 2, y) = r
                         
                     'Luminance
                     Else
@@ -437,14 +437,14 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                         
                         If ehTarget = 1 Then
                             Colors.tHSLToRGB h, s, v, r, g, b
-                            ImageData(x, y) = b
-                            ImageData(x + 1, y) = g
-                            ImageData(x + 2, y) = r
+                            imageData(x, y) = b
+                            imageData(x + 1, y) = g
+                            imageData(x + 2, y) = r
                         Else
                             Colors.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
-                            ImageData(x, y) = Int(bFloat * 255)
-                            ImageData(x + 1, y) = Int(gFloat * 255)
-                            ImageData(x + 2, y) = Int(rFloat * 255)
+                            imageData(x, y) = Int(bFloat * 255)
+                            imageData(x + 1, y) = Int(gFloat * 255)
+                            imageData(x + 2, y) = Int(rFloat * 255)
                         End If
                         
                     End If
@@ -463,9 +463,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 If x < finalXStride Then numOfPixels = cPixelIterator.MoveXRight
                 
                 'Update the progress bar every (progBarCheck) lines
-                If Not toPreview Then
+                If (Not toPreview) Then
                     If (x And progBarCheck) = 0 Then
-                        If UserPressedESC() Then Exit For
+                        If Interface.UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -485,9 +485,8 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     
     End If
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

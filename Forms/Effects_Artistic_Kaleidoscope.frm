@@ -224,7 +224,7 @@ Option Explicit
 'Apply a "kaleidoscope" effect to an image
 Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Peering at image through imaginary kaleidoscope..."
+    If (Not toPreview) Then Message "Peering at image through imaginary kaleidoscope..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -331,9 +331,9 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
         fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If

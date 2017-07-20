@@ -198,7 +198,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     newBottom = y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
     
@@ -1223,7 +1223,7 @@ Public Sub TrimImage()
     
     newBottom = y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
     

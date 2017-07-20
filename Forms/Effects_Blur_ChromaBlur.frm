@@ -192,7 +192,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
         Dim progBarCheck As Long
         progBarCheck = FindBestProgBarValue()
             
-        If Not toPreview Then Message "Merging luminance and chroma into final image..."
+        If (Not toPreview) Then Message "Merging luminance and chroma into final image..."
         
         'More color variables - in this case, sums for each color component
         Dim r As Long, g As Long, b As Long
@@ -230,9 +230,9 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             If (qvDepth = 4) Then dstImageData(quickVal + 3, y) = srcImageData(quickVal + 3, y)
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + calcProgBarOffset
                 End If
             End If

@@ -1,4 +1,4 @@
-Attribute VB_Name = "Filters_Color_Effects"
+Attribute VB_Name = "Filters_Adjustments"
 '***************************************************************************
 'Filter (Color Effects) Interface
 'Copyright 2000-2017 by Tanner Helland
@@ -15,16 +15,52 @@ Attribute VB_Name = "Filters_Color_Effects"
 
 Option Explicit
 
+'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
+Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+
+    If (Not toPreview) Then Message "Adjusting image white balance..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    PrepImageData dstSA, toPreview, dstPic
+    
+    Filters_Layers.WhiteBalanceDIB cParams.GetDouble("threshold", 0.05), workingDIB, toPreview
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    FinalizeImageData toPreview, dstPic
+    
+End Sub
+
+'Correct image contrast by stretching the luminance histogram across the full spectrum
+Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+
+    If (Not toPreview) Then Message "Adjusting image contrast..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    PrepImageData dstSA, toPreview, dstPic
+    
+    Filters_Layers.ContrastCorrectDIB percentIgnore, workingDIB, toPreview
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    FinalizeImageData toPreview, dstPic
+    
+End Sub
+
 'Invert an image
 Public Sub MenuInvert()
         
     Message "Inverting the image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -47,19 +83,18 @@ Public Sub MenuInvert()
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
-        ImageData(quickVal, y) = 255 Xor ImageData(quickVal, y)
-        ImageData(quickVal + 1, y) = 255 Xor ImageData(quickVal + 1, y)
-        ImageData(quickVal + 2, y) = 255 Xor ImageData(quickVal + 2, y)
+        imageData(quickVal, y) = 255 Xor imageData(quickVal, y)
+        imageData(quickVal + 1, y) = 255 Xor imageData(quickVal + 1, y)
+        imageData(quickVal + 2, y) = 255 Xor imageData(quickVal + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -76,10 +111,10 @@ Public Sub MenuCShift(ByVal sType As Byte)
     End If
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -106,27 +141,26 @@ Public Sub MenuCShift(ByVal sType As Byte)
         quickVal = x * qvDepth
     For y = initY To finalY
         If sType = 0 Then
-            r = ImageData(quickVal, y)
-            g = ImageData(quickVal + 2, y)
-            b = ImageData(quickVal + 1, y)
+            r = imageData(quickVal, y)
+            g = imageData(quickVal + 2, y)
+            b = imageData(quickVal + 1, y)
         Else
-            r = ImageData(quickVal + 1, y)
-            g = ImageData(quickVal, y)
-            b = ImageData(quickVal + 2, y)
+            r = imageData(quickVal + 1, y)
+            g = imageData(quickVal, y)
+            b = imageData(quickVal + 2, y)
         End If
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -139,10 +173,10 @@ Public Sub MenuNegative()
     Message "Calculating film negative values..."
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -171,9 +205,9 @@ Public Sub MenuNegative()
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Use those to calculate hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -182,20 +216,19 @@ Public Sub MenuNegative()
         tHSLToRGB h, s, 1 - l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -208,10 +241,10 @@ Public Sub MenuInvertHue()
     Message "Inverting image hue..."
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -240,9 +273,9 @@ Public Sub MenuInvertHue()
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Use those to calculate hue, saturation, and luminance
         tRGBToHSL r, g, b, h, s, l
@@ -254,20 +287,19 @@ Public Sub MenuInvertHue()
         tHSLToRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -282,10 +314,10 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     Message "Performing compound inversion..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -313,9 +345,9 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         If r = 0 Then r = 1
         If g = 0 Then g = 1
@@ -329,20 +361,19 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         If newG > 255 Then newG = 255
         If newB > 255 Then newB = 255
         
-        ImageData(quickVal + 2, y) = newR
-        ImageData(quickVal + 1, y) = newG
-        ImageData(quickVal, y) = newB
+        imageData(quickVal + 2, y) = newR
+        imageData(quickVal + 1, y) = newG
+        imageData(quickVal, y) = newB
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -359,10 +390,10 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     End If
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -389,9 +420,9 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         If useMax Then
             maxVal = Max3Int(r, g, b)
@@ -405,20 +436,19 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
             If b > minVal Then b = 0
         End If
         
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -432,10 +462,10 @@ Public Sub fxAutoEnhanceColors()
     Message "Enhancing colors..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -462,9 +492,9 @@ Public Sub fxAutoEnhanceColors()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
         'Calculate an accurate grayscale equivalent
         gray = (213 * r + 715 * g + 72 * b) \ 1000
@@ -481,20 +511,19 @@ Public Sub fxAutoEnhanceColors()
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -508,10 +537,10 @@ Public Sub fxAutoEnhanceContrast()
     Message "Enhancing contrast..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -554,24 +583,23 @@ Public Sub fxAutoEnhanceContrast()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
-        ImageData(quickVal + 2, y) = contrastLookup(r)
-        ImageData(quickVal + 1, y) = contrastLookup(g)
-        ImageData(quickVal, y) = contrastLookup(b)
+        imageData(quickVal + 2, y) = contrastLookup(r)
+        imageData(quickVal + 1, y) = contrastLookup(g)
+        imageData(quickVal, y) = contrastLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -585,10 +613,10 @@ Public Sub fxAutoEnhanceLighting()
     Message "Enhancing lighting..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -642,24 +670,23 @@ Public Sub fxAutoEnhanceLighting()
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
         
-        ImageData(quickVal + 2, y) = contrastLookup(r)
-        ImageData(quickVal + 1, y) = contrastLookup(g)
-        ImageData(quickVal, y) = contrastLookup(b)
+        imageData(quickVal + 2, y) = contrastLookup(r)
+        imageData(quickVal + 1, y) = contrastLookup(g)
+        imageData(quickVal, y) = contrastLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData
@@ -704,10 +731,10 @@ End Sub
 Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, ByRef newQuad As RGBQUAD)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -729,25 +756,24 @@ Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, By
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        b = ImageData(quickVal, y)
-        g = ImageData(quickVal + 1, y)
-        r = ImageData(quickVal + 2, y)
-        a = ImageData(quickVal + 3, y)
+        b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
+        a = imageData(quickVal + 3, y)
         
         If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.alpha) Then
         
-            ImageData(quickVal + 3, y) = newQuad.alpha
-            ImageData(quickVal + 2, y) = newQuad.Red
-            ImageData(quickVal + 1, y) = newQuad.Green
-            ImageData(quickVal, y) = newQuad.Blue
+            imageData(quickVal + 3, y) = newQuad.alpha
+            imageData(quickVal + 2, y) = newQuad.Red
+            imageData(quickVal + 1, y) = newQuad.Green
+            imageData(quickVal, y) = newQuad.Blue
             
         End If
         
     Next y
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
 End Sub

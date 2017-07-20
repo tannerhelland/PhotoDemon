@@ -64,8 +64,8 @@ Attribute VB_Exposed = False
 'Vibrance Adjustment Tool
 'Copyright 2013-2017 by Audioglider
 'Created: 26/June/13
-'Last updated: 24/August/13
-'Last update: added command bar
+'Last updated: 20/July/17
+'Last update: migrate to XML params
 '
 'Many thanks to talented contributer Audioglider for creating this tool.
 '
@@ -81,19 +81,26 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Adjusting color vibrance..."
+    If (Not toPreview) Then Message "Adjusting color vibrance..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim vibranceAdjustment As Double
+    vibranceAdjustment = cParams.GetDouble("vibrance", 0#)
     
     'Reverse the vibrance input; this way, positive values make the image more vibrant.  Negative values make it less vibrant.
     vibranceAdjustment = -0.01 * vibranceAdjustment
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -110,6 +117,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'Color and related variables
@@ -123,14 +131,16 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     Next x
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
+    For y = initY To finalY
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        b = imageData(x, y)
+        r = imageData(x + 2, y)
+        g = imageData(x + 1, y)
         
         'Calculate the gray value using the look-up table
         avgVal = grayLookUp(r + g + b)
@@ -139,40 +149,33 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
         'Get adjusted average
         amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
         
-        If r <> maxVal Then
-            r = r + (maxVal - r) * amtVal
-        End If
-        If g <> maxVal Then
-            g = g + (maxVal - g) * amtVal
-        End If
-        If b <> maxVal Then
-            b = b + (maxVal - b) * amtVal
-        End If
+        If (r <> maxVal) Then r = r + (maxVal - r) * amtVal
+        If (g <> maxVal) Then g = g + (maxVal - g) * amtVal
+        If (b <> maxVal) Then b = b + (maxVal - b) * amtVal
         
         'Clamp values to [0,255] range
-        If r < 0 Then r = 0
-        If r > 255 Then r = 255
-        If g < 0 Then g = 0
-        If g > 255 Then g = 255
-        If b < 0 Then b = 0
-        If b > 255 Then b = 255
+        If (r < 0) Then r = 0
+        If (r > 255) Then r = 255
+        If (g < 0) Then g = 0
+        If (g > 255) Then g = 255
+        If (b < 0) Then b = 0
+        If (b > 255) Then b = 255
         
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(x, y) = b
+        imageData(x + 1, y) = g
+        imageData(x + 2, y) = r
         
-    Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x
+    Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -180,7 +183,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vibrance", , BuildParams(sltVibrance), UNDO_LAYER
+    Process "Vibrance", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -204,7 +207,7 @@ Private Sub sltVibrance_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then Vibrance sltVibrance, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Vibrance GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -218,7 +221,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "vibrance", sltVibrance.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

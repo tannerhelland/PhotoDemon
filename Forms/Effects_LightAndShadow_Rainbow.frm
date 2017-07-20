@@ -115,7 +115,7 @@ Option Explicit
 'Apply a rainbow overlay to an image
 Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, ByVal saturationBoost As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Sprinkling image with shimmering rainbows..."
+    If (Not toPreview) Then Message "Sprinkling image with shimmering rainbows..."
     
     'Convert the hue modifier to the [0, 6] range
     hueOffset = hueOffset / 360
@@ -127,11 +127,11 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     saturationBoost = saturationBoost / 100
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -199,9 +199,9 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
                 
         'Convert the RGB values the HSV space
         fRGBtoHSV r / 255, g / 255, b / 255, h, s, l
@@ -229,22 +229,21 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
         b = BlendColors(b, bFloat * 255, rainbowStrength)
         
         'Assign the new RGB values back into the array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        imageData(quickVal + 2, y) = r
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal, y) = b
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

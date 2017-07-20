@@ -141,7 +141,7 @@ End Sub
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
 Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying pan and zoom (Ken Burns) effect..."
+    If (Not toPreview) Then Message "Applying pan and zoom (Ken Burns) effect..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -336,9 +336,9 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
         End If
                 
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -378,7 +378,7 @@ Private Sub Form_Load()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         iWidth = selBounds.Width
         iHeight = selBounds.Height
     Else

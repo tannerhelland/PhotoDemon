@@ -198,8 +198,8 @@ Attribute VB_Exposed = False
 'Shadow / Midtone / Highlight Adjustment Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 17/February/13
-'Last updated: 31/March/15
-'Last update: total overhaul of the shadow/highlight adjustment strategy
+'Last updated: 20/July/17
+'Last update: migrate to XML parameters
 '
 'This tool provides detailed control over the shadow and/or highlight regions of an image.  A combination of
 ' heuristics and user-editable parameters allow for brightening and/or darkening any luminance range in the
@@ -222,7 +222,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shadow and highlight", , BuildParams(sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius), UNDO_LAYER
+    Process "Shadow and highlight", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -241,9 +241,26 @@ Private Sub Form_Activate()
 End Sub
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
-Public Sub ApplyShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneContrast As Double, ByVal highlightAmount As Double, Optional ByVal shadowWidth As Long = 50, Optional ByVal shadowRadius As Double = 0, Optional ByVal highlightWidth As Long = 50, Optional ByVal highlightRadius As Double = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyShadowHighlight(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Adjusting shadows, midtones, and highlights..."
+    If (Not toPreview) Then Message "Adjusting shadows, midtones, and highlights..."
+    
+    Dim shadowAmount As Double, midtoneContrast As Double, highlightAmount As Double
+    Dim shadowWidth As Long, shadowRadius As Double, highlightWidth As Long, highlightRadius As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    With cParams
+        shadowAmount = .GetDouble("shadowamount", sltShadowAmount)
+        midtoneContrast = .GetDouble("midtonecontrast", sltMidtoneContrast)
+        highlightAmount = .GetDouble("highlightamount", sltHighlightAmount)
+        shadowWidth = .GetLong("shadowwidth", 50)
+        shadowRadius = .GetDouble("shadowradius", 5#)
+        highlightWidth = .GetLong("highlightwidth", 50)
+        highlightRadius = .GetDouble("highlightradius", 5#)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -277,7 +294,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyShadowHighlight GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -319,7 +336,13 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "shadowamount", sltShadowAmount
+        .AddParam "midtonecontrast", sltMidtoneContrast
+        .AddParam "highlightamount", sltHighlightAmount
+        .AddParam "shadowwidth", sltShadowWidth
+        .AddParam "shadowradius", sltShadowRadius
+        .AddParam "highlightwidth", sltHighlightWidth
+        .AddParam "highlightradius", sltHighlightRadius
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -120,7 +120,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     mThreshold = cParams.GetLong("threshold", 0&)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
-    If Not toPreview Then Message "Applying mean shift filter..."
+    If (Not toPreview) Then Message "Applying mean shift filter..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -167,7 +167,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalX
         progBarCheck = FindBestProgBarValue()
     End If
@@ -293,9 +293,9 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
             If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x
                 End If
             End If

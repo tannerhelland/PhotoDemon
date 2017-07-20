@@ -170,7 +170,7 @@ Private m_rotateDIB As pdDIB, m_mbDIB As pdDIB, m_mbDIBTemp As pdDIB, m_threshol
 '        4) Strength (opacity) of the generated spokes, which is actually just gamma correction applied to the star mask
 Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, ByVal csSoftening As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying cross-screen filter..."
+    If (Not toPreview) Then Message "Applying cross-screen filter..."
         
     'Progress reports are manually calculated on this function, as it involves a rather complicated series of steps,
     ' whose count is variable based on the number of spokes being processed.
@@ -228,8 +228,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     cLut.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
     
     'Progress is reported artificially, because it's too complex to handle using normal means
-    If Not toPreview Then
-        If UserPressedESC() Then GoTo PrematureCrossScreenExit
+    If (Not toPreview) Then
+        If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal 1
     End If
     
@@ -245,8 +245,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     m_mbDIB.CreateFromExistingDIB m_thresholdDIB
     getMotionBlurredDIB m_thresholdDIB, m_mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
     
-    If Not toPreview Then
-        If UserPressedESC() Then GoTo PrematureCrossScreenExit
+    If (Not toPreview) Then
+        If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal 1
     End If
     
@@ -267,8 +267,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 m_mbDIBTemp.CreateFromExistingDIB m_thresholdDIB
                 getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
                 
-                If Not toPreview Then
-                    If UserPressedESC() Then GoTo PrematureCrossScreenExit
+                If (Not toPreview) Then
+                    If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + i * 2
                 End If
                 
@@ -276,8 +276,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
                 cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
                 
-                If Not toPreview Then
-                    If UserPressedESC() Then GoTo PrematureCrossScreenExit
+                If (Not toPreview) Then
+                    If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 3 + (i * 2)
                 End If
                 
@@ -303,8 +303,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 m_mbDIBTemp.CreateFromExistingDIB m_thresholdDIB
                 getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
                 
-                If Not toPreview Then
-                    If UserPressedESC() Then GoTo PrematureCrossScreenExit
+                If (Not toPreview) Then
+                    If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + (i * 2) - 1
                 End If
                 
@@ -312,8 +312,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
                 cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
                 
-                If Not toPreview Then
-                    If UserPressedESC() Then GoTo PrematureCrossScreenExit
+                If (Not toPreview) Then
+                    If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + (i * 2)
                 End If
                 
@@ -330,7 +330,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' are no longer needed.
     If alphaIsRelevant Then m_mbDIB.SetAlphaPremultiplication False
     m_thresholdDIB.EraseDIB
-    If Not toPreview Then Set m_mbDIBTemp = Nothing
+    If (Not toPreview) Then Set m_mbDIBTemp = Nothing
     
     'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
@@ -355,8 +355,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         
     End If
     
-    If Not toPreview Then
-        If UserPressedESC() Then GoTo PrematureCrossScreenExit
+    If (Not toPreview) Then
+        If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 3
     End If
     
@@ -371,8 +371,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     cComposite.QuickMergeTwoDibsOfEqualSize m_thresholdDIB, m_mbDIB, BL_HARDLIGHT, 100
     
     'm_thresholdDIB now contains the final, fully processed light effect.
-    If Not toPreview Then
-        If UserPressedESC() Then GoTo PrematureCrossScreenExit
+    If (Not toPreview) Then
+        If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 2
     End If
     
@@ -387,14 +387,14 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         workingDIB.SetAlphaPremultiplication True
     End If
     
-    If Not toPreview Then
-        If UserPressedESC() Then GoTo PrematureCrossScreenExit
+    If (Not toPreview) Then
+        If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 1
     End If
     
     'If we're not in preview mode, clear all temporary DIBs prior to exiting
-    If Not toPreview Then Set m_mbDIB = Nothing
-    If Not toPreview Then Set m_thresholdDIB = Nothing
+    If (Not toPreview) Then Set m_mbDIB = Nothing
+    If (Not toPreview) Then Set m_thresholdDIB = Nothing
     
 PrematureCrossScreenExit:
     

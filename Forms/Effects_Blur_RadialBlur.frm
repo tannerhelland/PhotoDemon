@@ -112,7 +112,7 @@ Option Explicit
 'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
 Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying radial blur..."
+    If (Not toPreview) Then Message "Applying radial blur..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

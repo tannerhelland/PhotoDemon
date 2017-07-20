@@ -150,7 +150,7 @@ End Sub
 ' 2) Polar inversion
 Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boolean, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Performing polar coordinate conversion..."
+    If (Not toPreview) Then Message "Performing polar coordinate conversion..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

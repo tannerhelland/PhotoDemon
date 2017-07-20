@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.207</langversion>
+<langversion>6.6.208</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -453,6 +453,16 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
+<original>Adjusting image white balance</original>
+<translation>Imbangan putih imej Melaraskan</translation>
+</phrase>
+
+<phrase>
+<original>Adjusting image contrast</original>
+<translation>Menyesuaikan Perbedaan Gambar</translation>
+</phrase>
+
+<phrase>
 <original>Inverting the image</original>
 <translation>membalikkan gambar</translation>
 </phrase>
@@ -517,7 +527,7 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -580,11 +590,6 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Menyesuaikan Perbedaan Gambar</translation>
-</phrase>
-
-<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>Mengira bilangan warna yang unik dalam Gambar ini</translation>
 </phrase>
@@ -618,7 +623,7 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 <translation>PhotoDemon yang ujung</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -6836,16 +6841,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>minimum</original>
-<translation>minimum</translation>
-</phrase>
-
-<phrase>
-<original>maximum</original>
-<translation>maksimum</translation>
-</phrase>
-
-<phrase>
 <original>style</original>
 <translation>gaya</translation>
 </phrase>
@@ -6880,7 +6875,17 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Saluran warna tunggal</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>minimum</original>
+<translation>minimum</translation>
+</phrase>
+
+<phrase>
+<original>maximum</original>
+<translation>maksimum</translation>
+</phrase>
+
+<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -7398,7 +7403,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Menjana peta untuk imej HDR</translation>
 </phrase>
 
-<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7918,12 +7923,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <!-- BEGIN text for Adjustments_WhiteBalance.frm (FormWhiteBalance) -->
 
-<phrase>
-<original>Adjusting image white balance</original>
-<translation>Imbangan putih imej Melaraskan</translation>
-</phrase>
-
-<!-- Adjustments_WhiteBalance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
@@ -15019,8 +15019,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1982 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
 <!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

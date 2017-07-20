@@ -2027,7 +2027,7 @@ Public Function CropNullPaddedLayer() As Boolean
         
         newRight = x
         
-        'With our work complete, point ImageData() away from the DIB and deallocate it
+        'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
         'If we made it all the way here, our search for null borders completed successfully.

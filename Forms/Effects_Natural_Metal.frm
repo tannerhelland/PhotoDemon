@@ -124,7 +124,7 @@ Option Explicit
 'Apply a metallic "shimmer" to an image
 Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal shadowColor As Long = 0, Optional ByVal highlightColor As Long = vbWhite, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Pouring smoldering metal onto image..."
+    If (Not toPreview) Then Message "Pouring smoldering metal onto image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -191,19 +191,19 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     Next i
     
     'Convert our point array into color curves
-    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
+    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
     
     Dim cLut As pdFilterLUT
     Set cLut = New pdFilterLUT
     cLut.FillLUT_Curve rLookup, rCurve
-    cLut.FillLUT_Curve gLookUp, gCurve
+    cLut.FillLUT_Curve gLookup, gCurve
     cLut.FillLUT_Curve bLookup, bCurve
         
     'We are now ready to apply the final curve to the image!
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(dstSA), 4
+    Dim imageData() As Byte
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -231,20 +231,19 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
         
         grayVal = grayMap(x, y)
         
-        ImageData(quickVal, y) = bLookup(grayVal)
-        ImageData(quickVal + 1, y) = gLookUp(grayVal)
-        ImageData(quickVal + 2, y) = rLookup(grayVal)
+        imageData(quickVal, y) = bLookup(grayVal)
+        imageData(quickVal + 1, y) = gLookup(grayVal)
+        imageData(quickVal + 2, y) = rLookup(grayVal)
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If UserPressedESC() Then Exit For
+            If Interface.UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     FinalizeImageData toPreview, dstPic

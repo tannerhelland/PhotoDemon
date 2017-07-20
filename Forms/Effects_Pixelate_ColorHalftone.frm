@@ -147,7 +147,7 @@ Option Explicit
 'Apply a CMYK halftone filter to the current image.
 Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Double, ByVal magentaAngle As Double, ByVal yellowAngle As Double, ByVal dotDensity As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Printing image to digital halftone surface..."
+    If (Not toPreview) Then Message "Printing image to digital halftone surface..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

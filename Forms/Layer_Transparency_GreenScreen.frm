@@ -333,16 +333,15 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
         
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y
             End If
         End If
         
     Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

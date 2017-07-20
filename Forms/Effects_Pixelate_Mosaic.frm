@@ -124,7 +124,7 @@ End Sub
 ' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
 Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVal blockAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying mosaic..."
+    If (Not toPreview) Then Message "Applying mosaic..."
         
     'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
@@ -196,7 +196,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax xLoop
         progBarCheck = FindBestProgBarValue()
     End If
@@ -284,9 +284,9 @@ NextPixelatePixel3:
         numOfPixels = 0
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -333,7 +333,7 @@ Private Sub Form_Load()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         sltWidth.Max = selBounds.Width
         sltHeight.Max = selBounds.Height
     Else

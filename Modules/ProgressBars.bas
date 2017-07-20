@@ -117,11 +117,13 @@ Public Function FindBestProgBarValue() As Long
     Dim progBarRange As Double
     progBarRange = CDbl(GetProgBarMax())
     
-    'Divide that value by 20.  20 is an arbitrary selection; the value can be set to any value X, where X is the number
-    ' of times we want the progress bar to update during a given filter or effect.
-    progBarRange = progBarRange / 20
+    'Divide that value by some arbitrary number; the number is how many times we want the progress bar to update during
+    ' the current process.  (e.g. a value of "10" means "try to update the progress bar ~10 times")  Larger numbers
+    ' mean more visual updates, at some minor cost to performance.
+    progBarRange = progBarRange / 18
     
-    'Find the nearest power of two to that value, rounded down
+    'Find the nearest power of two to that value, rounded down.  (We do this so that we can simply && the result on inner
+    ' pixel processing loops, which is much faster than a modulo operation.)
     Dim nearestP2 As Long
     nearestP2 = Log(progBarRange) / Log(2#)
     FindBestProgBarValue = (2 ^ nearestP2) - 1

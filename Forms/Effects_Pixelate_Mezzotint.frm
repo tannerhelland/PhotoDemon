@@ -124,7 +124,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     Debug.Print mType, mRandom, mSmoothness, mStipplingLevel
     
-    If Not toPreview Then Message "Mezzotinting image..."
+    If (Not toPreview) Then Message "Mezzotinting image..."
     
     'The way we calculate mezzotinting varies depending on whether points or strokes are being used.
     
@@ -147,13 +147,13 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     Dim grayMap() As Byte
     DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
     
-    If Not toPreview Then SetProgBarVal 1
+    If (Not toPreview) Then SetProgBarVal 1
     
     'Randomness roughly corresponds to the strength of the "divots" used in the mezzotinting plate.  PD provides a graymap
     ' version of this, to which we simply supply the mRandom parameter (normalized from [0, 100] to [0, 255]).
     Filters_ByteArray.AddNoiseByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mRandom * 2.55
     
-    If Not toPreview Then SetProgBarVal 2
+    If (Not toPreview) Then SetProgBarVal 2
     
     'Coarseness controls the amount of blurring applied
     If mSmoothness > 0 Then
@@ -168,12 +168,12 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
             Filters_ByteArray.VerticalBlur_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mSmoothness, mSmoothness
         End If
         
-        If Not toPreview Then SetProgBarVal 3
+        If (Not toPreview) Then SetProgBarVal 3
         
         'After blurring, we want to white-balance the graymap, so that everything isn't just a muddy gray.
         Filters_ByteArray.ContrastCorrect_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 10
         
-        If Not toPreview Then SetProgBarVal 4
+        If (Not toPreview) Then SetProgBarVal 4
     
     End If
     
@@ -193,13 +193,13 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
             
     End Select
         
-    If Not toPreview Then SetProgBarVal 5
+    If (Not toPreview) Then SetProgBarVal 5
     
     'Our overlay is now complete.  We now need to convert it back into a DIB.
     Dim overlayDIB As pdDIB
     DIBs.CreateDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
     
-    If Not toPreview Then SetProgBarVal 6
+    If (Not toPreview) Then SetProgBarVal 6
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
@@ -210,7 +210,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
         overlayDIB.SetAlphaPremultiplication True
     End If
     
-    If Not toPreview Then SetProgBarVal 7
+    If (Not toPreview) Then SetProgBarVal 7
     
     'Finally, composite the new overlay DIB over working DIB.
     Dim cCompositor As pdCompositor
@@ -223,7 +223,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
         cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
     End If
     
-    If Not toPreview Then SetProgBarVal 8
+    If (Not toPreview) Then SetProgBarVal 8
     
     'Erase our temporary image copy
     Set overlayDIB = Nothing

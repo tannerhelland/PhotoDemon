@@ -83,14 +83,14 @@ Option Explicit
 ' Inputs: solarize threshold [0,255], optional previewing information
 Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Solarizing image..."
+    If (Not toPreview) Then Message "Solarizing image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -121,22 +121,21 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
     For y = initY To finalY
     
         'Perform the solarize in a single line, thanks to our pre-built look-up table
-        ImageData(quickVal + 2, y) = sLookup(ImageData(quickVal + 2, y))
-        ImageData(quickVal + 1, y) = sLookup(ImageData(quickVal + 1, y))
-        ImageData(quickVal, y) = sLookup(ImageData(quickVal, y))
+        imageData(quickVal + 2, y) = sLookup(imageData(quickVal + 2, y))
+        imageData(quickVal + 1, y) = sLookup(imageData(quickVal + 1, y))
+        imageData(quickVal, y) = sLookup(imageData(quickVal, y))
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

@@ -309,9 +309,9 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         dstImageData(xQuick + 3, y) = newA * sampRatio
                 
     Next x
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y
             End If
         End If

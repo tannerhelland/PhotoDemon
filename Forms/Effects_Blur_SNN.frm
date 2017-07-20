@@ -166,7 +166,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long, progBarOffset As Long
     
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax finalY
         progBarCheck = FindBestProgBarValue()
         progBarOffset = 0
@@ -184,7 +184,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Dim snnDist1 As Long, snnDist2 As Long
     Dim numOfPixels As Long
     
-    If Not toPreview Then Message "Generating symmetric pixel pairs..."
+    If (Not toPreview) Then Message "Generating symmetric pixel pairs..."
         
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
@@ -332,9 +332,9 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         If qvDepth = 4 Then dstImageData(xOffset + 3, y) = aNew
         
     Next x
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal progBarOffset + y
             End If
         End If

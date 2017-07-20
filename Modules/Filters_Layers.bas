@@ -319,7 +319,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
             'Update the progress bar every (progBarCheck) lines
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If
@@ -536,15 +536,14 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     If g_cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
     
@@ -694,15 +693,14 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     If g_cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
     
@@ -799,7 +797,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -1030,7 +1028,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1132,7 +1130,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1215,7 +1213,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1589,7 +1587,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Next x
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -1676,7 +1674,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Next x
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal (y + finalY) + modifyProgBarOffset
             End If
         End If
@@ -1916,7 +1914,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2149,7 +2147,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2300,7 +2298,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         'Halt for external events, like ESC-to-cancel and progress bar updates
         If (Not suppressMessages) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2459,7 +2457,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         'Halt for external events, like ESC-to-cancel and progress bar updates
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -2573,7 +2571,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2694,15 +2692,14 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     If g_cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
     
@@ -2777,18 +2774,17 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
+    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication True
     
     If g_cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
     
@@ -2846,7 +2842,7 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     Next y
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Return the max/min values we calculated
@@ -2945,18 +2941,17 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    Erase imageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
+    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication True
     
     If g_cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
     
@@ -3152,7 +3147,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal modifyProgBarOffset + x
             End If
         End If
@@ -3258,7 +3253,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         Next y
             If (Not suppressMessages) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal modifyProgBarOffset + finalX + x
                 End If
             End If

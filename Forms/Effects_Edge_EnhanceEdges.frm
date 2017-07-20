@@ -197,7 +197,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         numPassesRequired = 3
     End If
     
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "1", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
+    If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "1", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
     
     'Use PD's central image handler to populate the public workingDIB object.
     Dim dstSA As SAFEARRAY2D
@@ -233,7 +233,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         
         'When two passes are required, the vertical direction is always applied first.  Thus we know we need to apply the
         ' horizontal direction next.  Generate a new param string for the horizontal direction.
-        If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "2", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
+        If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "2", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
         
         tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
         tmpParamString = tmpParamString & "False" & "|"
@@ -506,7 +506,7 @@ End Function
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
 Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Tracing image edges with virtual paintbrush..."
+    If (Not toPreview) Then Message "Tracing image edges with virtual paintbrush..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D

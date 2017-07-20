@@ -200,20 +200,20 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     cParams.SetParamString parameterList
     
     Dim dstColorSpace As Long, dstChannel As Long
-    dstColorSpace = cParams.GetLong("colorspace", 0&)
-    dstChannel = cParams.GetLong("channel", 0&)
+    dstColorSpace = cParams.GetLong("colorspace", 0)
+    dstChannel = cParams.GetLong("channel", 0)
     
     'Based on the color space and channel the user has selected, display a user-friendly description of this filter
     Dim cName As String
     cName = GetNameFromColorSpaceAndChannel(dstColorSpace, dstChannel)
         
-    If Not toPreview Then Message "Isolating the %1 channel...", cName
+    If (Not toPreview) Then Message "Isolating the %1 channel...", cName
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -248,16 +248,16 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel red
                     Case 0
-                        ImageData(quickVal, y) = 0
-                        ImageData(quickVal + 1, y) = 0
+                        imageData(quickVal, y) = 0
+                        imageData(quickVal + 1, y) = 0
                     'Rechannel green
                     Case 1
-                        ImageData(quickVal, y) = 0
-                        ImageData(quickVal + 2, y) = 0
+                        imageData(quickVal, y) = 0
+                        imageData(quickVal + 2, y) = 0
                     'Rechannel blue
                     Case 2
-                        ImageData(quickVal + 1, y) = 0
-                        ImageData(quickVal + 2, y) = 0
+                        imageData(quickVal + 1, y) = 0
+                        imageData(quickVal + 2, y) = 0
                         
                 End Select
                 
@@ -268,25 +268,25 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel cyan
                     Case 0
-                        ImageData(quickVal, y) = 255
-                        ImageData(quickVal + 1, y) = 255
+                        imageData(quickVal, y) = 255
+                        imageData(quickVal + 1, y) = 255
                     'Rechannel magenta
                     Case 1
-                        ImageData(quickVal, y) = 255
-                        ImageData(quickVal + 2, y) = 255
+                        imageData(quickVal, y) = 255
+                        imageData(quickVal + 2, y) = 255
                     'Rechannel yellow
                     Case 2
-                        ImageData(quickVal + 1, y) = 255
-                        ImageData(quickVal + 2, y) = 255
+                        imageData(quickVal + 1, y) = 255
+                        imageData(quickVal + 2, y) = 255
                         
                 End Select
             
             'Rechannel CMYK
             Case Else
             
-                cK = 255 - ImageData(quickVal + 2, y)
-                mK = 255 - ImageData(quickVal + 1, y)
-                yK = 255 - ImageData(quickVal, y)
+                cK = 255 - imageData(quickVal + 2, y)
+                mK = 255 - imageData(quickVal + 1, y)
+                yK = 255 - imageData(quickVal, y)
                 
                 cK = cK / 255
                 mK = mK / 255
@@ -300,44 +300,43 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 'cyan
                 If dstChannel = 0 Then
                     cK = ((cK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255 - cK
-                    ImageData(quickVal + 1, y) = 255
-                    ImageData(quickVal, y) = 255
+                    imageData(quickVal + 2, y) = 255 - cK
+                    imageData(quickVal + 1, y) = 255
+                    imageData(quickVal, y) = 255
                 
                 'magenta
                 ElseIf dstChannel = 1 Then
                     mK = ((mK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255
-                    ImageData(quickVal + 1, y) = 255 - mK
-                    ImageData(quickVal, y) = 255
+                    imageData(quickVal + 2, y) = 255
+                    imageData(quickVal + 1, y) = 255 - mK
+                    imageData(quickVal, y) = 255
                 
                 'yellow
                 ElseIf dstChannel = 2 Then
                     yK = ((yK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255
-                    ImageData(quickVal + 1, y) = 255
-                    ImageData(quickVal, y) = 255 - yK
+                    imageData(quickVal + 2, y) = 255
+                    imageData(quickVal + 1, y) = 255
+                    imageData(quickVal, y) = 255 - yK
                 
                 'key
                 Else
-                    ImageData(quickVal + 2, y) = invBK * 255
-                    ImageData(quickVal + 1, y) = invBK * 255
-                    ImageData(quickVal, y) = invBK * 255
+                    imageData(quickVal + 2, y) = invBK * 255
+                    imageData(quickVal + 1, y) = invBK * 255
+                    imageData(quickVal, y) = invBK * 255
                 End If
                 
         End Select
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
         
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

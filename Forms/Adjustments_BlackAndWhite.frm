@@ -242,11 +242,11 @@ End Sub
 Private Function CalculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -274,9 +274,9 @@ Private Function CalculateOptimalThreshold() As Long
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
                 
         pLuminance = GetLuminance(r, g, b)
         
@@ -289,9 +289,9 @@ Private Function CalculateOptimalThreshold() As Long
     Next y
     Next x
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    
     workingDIB.EraseDIB
     Set workingDIB = Nothing
             
@@ -334,7 +334,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
@@ -347,7 +347,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         PrepImageData tmpSA, toPreview, dstPic
     End If
     
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, i As Long, j As Long
@@ -399,28 +399,28 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = imageData(quickVal + 2, y)
+                g = imageData(quickVal + 1, y)
+                b = imageData(quickVal, y)
                 
                 'Convert those to a luminance value
                 l = GetLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    imageData(quickVal + 2, y) = highR
+                    imageData(quickVal + 1, y) = highG
+                    imageData(quickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    imageData(quickVal + 2, y) = lowR
+                    imageData(quickVal + 1, y) = lowG
+                    imageData(quickVal, y) = lowB
                 End If
                 
             Next y
-                If Not toPreview Then
+                If (Not toPreview) Then
                     If (x And progBarCheck) = 0 Then
-                        If UserPressedESC() Then Exit For
+                        If Interface.UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -470,28 +470,28 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = imageData(quickVal + 2, y)
+                g = imageData(quickVal + 1, y)
+                b = imageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    imageData(quickVal + 2, y) = highR
+                    imageData(quickVal + 1, y) = highG
+                    imageData(quickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    imageData(quickVal + 2, y) = lowR
+                    imageData(quickVal + 1, y) = lowG
+                    imageData(quickVal, y) = lowB
                 End If
                 
             Next y
-                If Not toPreview Then
+                If (Not toPreview) Then
                     If (x And progBarCheck) = 0 Then
-                        If UserPressedESC() Then Exit For
+                        If Interface.UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -592,28 +592,28 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = imageData(quickVal + 2, y)
+                g = imageData(quickVal + 1, y)
+                b = imageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    imageData(quickVal + 2, y) = highR
+                    imageData(quickVal + 1, y) = highG
+                    imageData(quickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    imageData(quickVal + 2, y) = lowR
+                    imageData(quickVal + 1, y) = lowG
+                    imageData(quickVal, y) = lowB
                 End If
                 
             Next y
-                If Not toPreview Then
+                If (Not toPreview) Then
                     If (x And progBarCheck) = 0 Then
-                        If UserPressedESC() Then Exit For
+                        If Interface.UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -685,9 +685,9 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             xQuick = x * qvDepth
             
             'Get the source pixel color values
-            b = ImageData(xQuick, y)
-            g = ImageData(xQuick + 1, y)
-            r = ImageData(xQuick + 2, y)
+            b = imageData(xQuick, y)
+            g = imageData(xQuick + 1, y)
+            r = imageData(xQuick + 2, y)
             
             'Convert those to a luminance value and add the value of the error at this location
             l = GetLuminance(r, g, b)
@@ -696,14 +696,14 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             'Check our modified luminance value against the threshold, and set new values accordingly
             If newL >= cThreshold Then
                 errorVal = newL - 255
-                ImageData(xQuick, y) = highB
-                ImageData(xQuick + 1, y) = highG
-                ImageData(xQuick + 2, y) = highR
+                imageData(xQuick, y) = highB
+                imageData(xQuick + 1, y) = highG
+                imageData(xQuick + 2, y) = highR
             Else
                 errorVal = newL
-                ImageData(xQuick, y) = lowB
-                ImageData(xQuick + 1, y) = lowG
-                ImageData(xQuick + 2, y) = lowR
+                imageData(xQuick, y) = lowB
+                imageData(xQuick + 1, y) = lowG
+                imageData(xQuick + 2, y) = lowR
             End If
             
             'If there is an error, spread it
@@ -740,9 +740,9 @@ NextDitheredPixel:     Next j
             End If
                 
         Next x
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (y And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal y
                 End If
             End If
@@ -750,9 +750,8 @@ NextDitheredPixel:     Next j
     
     End If
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied

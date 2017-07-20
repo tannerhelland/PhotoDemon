@@ -59,6 +59,10 @@ Private Const WM_KEYFIRST As Long = &H100
 Private Const WM_KEYLAST As Long = &H108
 Private Const PM_REMOVE As Long = &H1
 
+'We use a lot of PeekMessage() calls to look for user canceling of long-running actions.  To keep the function small,
+' we simply reuse a module-level variable on each call.
+Private m_tmpMsg As winMsg
+
 Public g_cancelCurrentAction As Boolean
 
 'Some UI elements are always enabled or disabled as a group.  For example, the PDUI_Save group will simultaneously en/disable the
@@ -2033,54 +2037,35 @@ Public Sub ReleaseResources()
     Set currentDialogReference = Nothing
 End Sub
 
-'Wait for (n) milliseconds, while still providing some interactivity via DoEvents.  Thank you to vbforums user "anhn" for the
-' original version of this function, available here: http://www.vbforums.com/showthread.php?546633-VB6-Sleep-Function.
-' Please note that his original code has been modified for use in PhotoDemon.
-Public Sub PauseProgram(ByRef secsDelay As Double)
-   
-   Dim TimeOut   As Double
-   Dim PrevTimer As Double
-   
-   PrevTimer = Timer
-   TimeOut = PrevTimer + secsDelay
-   Do While PrevTimer < TimeOut
-      Sleep 2 '-- Timer is only updated every 1/128 sec
-      DoEvents
-      If Timer < PrevTimer Then TimeOut = TimeOut - 86400 '-- pass midnight
-      PrevTimer = Timer
-   Loop
-   
-End Sub
-
 'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
 ' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
 Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
     
     g_cancelCurrentAction = False
     
-    Dim tmpMsg As winMsg
-    
-    'GetInputState returns a non-0 value if key or mouse events are pending.  By Microsoft's own admission, it is much faster
-    ' than PeekMessage, so to keep things fast we check it before manually inspecting individual messages
-    ' (see http://support.microsoft.com/kb/35605 for more details)
-    If GetInputState() Then
+    'GetInputState returns a non-0 value if key or mouse events are pending.  By Microsoft's own admission,
+    ' it is much faster than PeekMessage, so to keep things quick we check it before manually inspecting
+    ' individual messages (see http://support.microsoft.com/kb/35605 for more details)
+    If (GetInputState() <> 0) Then
     
         'Use the WM_KEYFIRST/LAST constants to explicitly request only keypress messages.  If the user has pressed multiple
         ' keys besides just ESC, this function may not operate as intended.  (Per the MSDN documentation: "...the first queued
         ' message that matches the specified filter is retrieved.")  We could technically parse all keypress messages and look
         ' for just ESC, but this would slow the function without providing any clear benefit.
-        PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
+        If (PeekMessage(m_tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE) <> 0) Then
         
-        'ESC keypress found!
-        If (tmpMsg.wParam = vbKeyEscape) Then
-            
-            'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
-            If displayConfirmationPrompt Then
-                Dim msgReturn As VbMsgBoxResult
-                msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", Processor.GetLastProcessorID)
-                g_cancelCurrentAction = (msgReturn = vbYes)
-            Else
-                g_cancelCurrentAction = True
+            'Look for an ESC keypress
+            If (m_tmpMsg.wParam = vbKeyEscape) Then
+                
+                'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
+                If displayConfirmationPrompt Then
+                    Dim msgReturn As VbMsgBoxResult
+                    msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", Processor.GetLastProcessorID)
+                    g_cancelCurrentAction = (msgReturn = vbYes)
+                Else
+                    g_cancelCurrentAction = True
+                End If
+                
             End If
             
         End If

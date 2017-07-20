@@ -141,12 +141,10 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright 2000-2017 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 23/April/13
-'Last update: replaced all scroll bars and text boxes with my new combo text/scroll control.  Floating-point entry is
-'              now much easier to deal with.  Also, added divide-by-zero checks to the main function, just in case.
+'Last updated: 19/July/17
+'Last update: convert to XML params, minor optimizations
 '
-'Updated version of the gamma handler; fully optimized, it uses a look-up
-' table and can correct any color channel.
+'Gamma correction isn't exactly rocket science, but it's an important part of any good editing tool.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -176,7 +174,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gamma", , BuildParams(sltGamma(0), sltGamma(1), sltGamma(2)), UNDO_LAYER
+    Process "Gamma", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 'When randomizing, do not check the "unison" box
@@ -189,23 +187,34 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltGamma(0).Value = 1
-    sltGamma(1).Value = 1
-    sltGamma(2).Value = 1
+    sltGamma(0).Value = 1#
+    sltGamma(1).Value = 1#
+    sltGamma(2).Value = 1#
 End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
-Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bGamma As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
      
-    If Not toPreview Then Message "Adjusting gamma values..."
+    If (Not toPreview) Then Message "Adjusting gamma values..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim rGamma As Double, gGamma As Double, bGamma As Double
+    With cParams
+        rGamma = .GetDouble("redgamma", sltGamma(0).Value)
+        gGamma = .GetDouble("greengamma", sltGamma(1).Value)
+        bGamma = .GetDouble("bluegamma", sltGamma(2).Value)
+    End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -222,67 +231,81 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
     
     'Make certain that the gamma adjustment values we were passed are not zero
-    If rGamma = 0 Then rGamma = 0.01
-    If gGamma = 0 Then gGamma = 0.01
-    If bGamma = 0 Then bGamma = 0.01
+    If (rGamma = 0#) Then rGamma = 0.01
+    If (gGamma = 0#) Then gGamma = 0.01
+    If (bGamma = 0#) Then bGamma = 0.01
     
-    'Gamma can be easily applied using a look-up table
-    Dim gLookUp(0 To 2, 0 To 255) As Byte
-    Dim tmpVal As Double
+    'Divisions are expensive, so invert gamma values in advance
+    rGamma = 1 / rGamma
+    gGamma = 1 / gGamma
+    bGamma = 1 / bGamma
     
-    For y = 0 To 2
+    'Gamma can be easily applied using look-up tables
+    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+    ReDim rLookup(0 To 255) As Byte: ReDim gLookup(0 To 255) As Byte: ReDim bLookup(0 To 255) As Byte
+    
+    Dim rTmp As Double, gTmp As Double, bTmp As Double
     For x = 0 To 255
-        tmpVal = x / 255
-        Select Case y
-            Case 0
-                tmpVal = tmpVal ^ (1 / rGamma)
-            Case 1
-                tmpVal = tmpVal ^ (1 / gGamma)
-            Case 2
-                tmpVal = tmpVal ^ (1 / bGamma)
-        End Select
-        tmpVal = tmpVal * 255
         
-        If tmpVal > 255 Then tmpVal = 255
-        If tmpVal < 0 Then tmpVal = 0
+        rTmp = x / 255
+        gTmp = rTmp
+        bTmp = rTmp
         
-        gLookUp(y, x) = tmpVal
+        rTmp = rTmp ^ rGamma
+        bTmp = bTmp ^ bGamma
+        gTmp = gTmp ^ gGamma
+        
+        rTmp = rTmp * 255
+        gTmp = gTmp * 255
+        bTmp = bTmp * 255
+        
+        If (rTmp < 0#) Then rTmp = 0#
+        If (rTmp > 255#) Then rTmp = 255#
+        rLookup(x) = rTmp
+        
+        If (gTmp < 0#) Then gTmp = 0#
+        If (gTmp > 255#) Then gTmp = 255#
+        gLookup(x) = gTmp
+        
+        If (bTmp < 0#) Then bTmp = 0#
+        If (bTmp > 255#) Then bTmp = 255#
+        bLookup(x) = bTmp
+        
     Next x
-    Next y
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
-        'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
-                
-        'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = gLookUp(0, r)
-        ImageData(quickVal + 1, y) = gLookUp(1, g)
-        ImageData(quickVal, y) = gLookUp(2, b)
+    For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
+        
+        imageData(x, y) = bLookup(b)
+        imageData(x + 1, y) = gLookup(g)
+        imageData(x + 2, y) = rLookup(r)
+        
+    Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -302,6 +325,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the preview effect and the gamma chart
+' TODO: rewrite this against pd2D
 Private Sub UpdatePreview()
 
     If cmdBar.PreviewsAllowed Then
@@ -364,7 +388,7 @@ Private Sub UpdatePreview()
         picChart.Refresh
     
         'Once the chart is done, redraw the gamma preview as well
-        GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, pdFxPreview
+        GammaCorrect GetLocalParamString, True, pdFxPreview
         
     End If
     
@@ -407,7 +431,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "redgamma", sltGamma(0).Value
+        .AddParam "greengamma", sltGamma(1).Value
+        .AddParam "bluegamma", sltGamma(2).Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

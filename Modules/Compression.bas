@@ -5,9 +5,10 @@ Attribute VB_Name = "Compression"
 'Created: 02/December/16
 'Last updated: 12/December/16
 'Last update: add support for Windows Compression API, available on Win 8+
-'Dependencies: standalone plugin modules for whatever compression engines you want to use (e.g. the
+'Dependencies: - standalone plugin modules for whatever compression engines you want to use (e.g. the
 '              Plugin_ZLib module for zlib compression).  This module simply wraps those dedicated functions,
 '              and it performs no library initialization or termination of its own.
+'              - OS module (for detecting Windows version, necessary for the MS compression engines)
 '
 'As of v7.0, PhotoDemon performs a *lot* of custom compression work.  There are a lot of different needs in
 ' image processing - for example, when the user saves a large, multi-layer image, it's okay to take plenty of time
@@ -20,11 +21,11 @@ Attribute VB_Name = "Compression"
 ' zLib is still one of the slowest available compressors.  (Not surprising, really, given its emphasis on
 ' portability over all else.)
 '
-'The past few years have seen a huge flurry of work on compression algorithms, so it was a great time to expand
-' PD's coverage of basic compression libraries.  Zstd came first (http://facebook.github.io/zstd/).  It is
-' basically a modernized, superior-in-every-way replacement for zLib.  At its fastest speed setting, it is
-' significantly faster than zLib (~4-5x) with only marginally worse compression ratios, while at comparable
-' speed settings, it compresses better than zLib across every workload.  Can't argue with that!
+'The past few years have seen a flurry of work on compression algorithms, making it a great time to expand
+' PD's compression library coverage.  Zstd came first (http://facebook.github.io/zstd/).  It is basically a
+' modernized, superior-in-every-way replacement for zLib.  At its fastest speed setting, it is significantly
+' faster than zLib (~4-5x) with only marginally worse compression ratios, while at comparable speed settings,
+' it compresses better than zLib across every workload.  Can't argue with that!
 '
 'Also supported is the lz4 library (http://lz4.github.io/lz4/), developed by the same mad genius as zstd.
 ' lz4 emphasis real-time compression and decompression speeds, and while its compression ratios are worse
@@ -39,18 +40,18 @@ Attribute VB_Name = "Compression"
 '
 'I've also included support for the various built-in Windows compression algorithms.  These are only available
 ' on Win 8 or later, making them poor choices for portability, but if you're only targeting new PCs, they will
-' give you access to compression without any external dependencies.  (Note that - like most things MS -
-' none of the algorithms outperform the available 3rd-party solutions, so adjust your expectations accordingly.)
+' give you compression access without any external dependencies.  (Note that - like most things MS - none of
+' the algorithms outperform the 3rd-party solutions, so adjust your expectations accordingly.)
 '
 'Anyway, the purpose of this module is to simplify code across PD by using standardized compression functions.
 ' Simply specify the compressor you desire, and this module will silently plug in the right compression or
 ' decompression code.  (Note that - at present - you *must* request the correct decompressor at decompression
 ' time, meaning you can't just hand a compressed stream to this module and expect it to magically
-' reverse-engineer which engine to use.  That's your job.)
+' reverse-engineer which decompression engine to use.  That's *your* job.)
 '
 'All wrapper code in this function is written from scratch by me.  It is not based on any preexisting work.
-' This module is, as usual, licensed under the same BSD license governing PD as a whole, so feel free to use it
-' in any application, commercial or otherwise.  Bug reports are always welcome.
+' This module is, as usual, licensed under the same BSD license governing PD as a whole, so feel free to use
+' it in any application, commercial or otherwise.  Bug reports are always welcome.
 '
 'Licenses for wrapped libraries include:
 ' zLib: BSD-style license (http://zlib.net/zlib_license.html)

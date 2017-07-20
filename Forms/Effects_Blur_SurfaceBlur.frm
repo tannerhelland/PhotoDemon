@@ -127,7 +127,7 @@ Option Explicit
 '   - Blur quality (0, 1, 2 for iterative box blur, IIR blur, or true Gaussian, respectively)
 Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal sbQuality As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Analyzing image in preparation for surface blur..."
+    If (Not toPreview) Then Message "Analyzing image in preparation for surface blur..."
             
     'More color variables - in this case, sums for each color component
     Dim r As Long, g As Long, b As Long
@@ -218,7 +218,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         Dim progBarCheck As Long
         progBarCheck = FindBestProgBarValue()
             
-        If Not toPreview Then Message "Applying surface blur..."
+        If (Not toPreview) Then Message "Applying surface blur..."
             
         Dim blendVal As Double
         
@@ -267,9 +267,9 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
             End If
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal x + progBarCalculation
                 End If
             End If

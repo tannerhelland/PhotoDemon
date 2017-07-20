@@ -208,7 +208,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                 labTransform.ApplyTransformToArbitraryMemory workingDIB.GetDIBScanline(y), workingDIB.GetDIBScanline(y), scanWidthBytes, scanWidthBytes, 1, scanWidthPixels, False
                 If (Not toPreview) Then
                     If (y And progBarCheck) = 0 Then
-                        If UserPressedESC() Then Exit For
+                        If Interface.UserPressedESC() Then Exit For
                         ProgressBars.SetProgBarVal y
                     End If
                 End If
@@ -311,7 +311,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         Next x
             If (Not toPreview) Then
                 If (y And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
+                    If Interface.UserPressedESC() Then Exit For
                     SetProgBarVal y
                 End If
             End If

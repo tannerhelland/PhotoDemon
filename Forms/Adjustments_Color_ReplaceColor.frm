@@ -117,7 +117,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Replace color", , BuildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
+    Process "Replace color", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -127,8 +127,8 @@ End Sub
 Private Sub cmdBar_ResetClick()
     colorOld.Color = RGB(0, 0, 255)
     colorNew.Color = RGB(0, 192, 0)
-    sltErase.Value = 15
-    sltBlend.Value = 15
+    sltErase.Value = 15#
+    sltBlend.Value = 15#
 End Sub
 
 Private Sub colorNew_ColorChanged()
@@ -153,12 +153,26 @@ Private Sub pdFxPreview_ColorSelected()
 End Sub
 
 'Replace one color in an image with another color, with full blending and feathering support
-Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Replacing color..."
     
+    Dim oldColor As Long, newColor As Long
+    Dim eraseThreshold As Double, blendThreshold As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    With cParams
+        oldColor = .GetLong("oldcolor", vbWhite)
+        newColor = .GetLong("newcolor", vbBlack)
+        eraseThreshold = .GetDouble("erasethreshold", 15#)
+        blendThreshold = .GetDouble("blendthreshold", 30#)
+    End With
+    
     'Call prepImageData, which will prepare a temporary copy of the image
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, dstPic
     
@@ -167,7 +181,7 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     
     'Create a local array and point it at the pixel data we want to operate on
     PrepSafeArray tmpSA, workingDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -258,12 +272,12 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     
         'Start by pre-calculating all L*a*b* values for this row
         If g_LCMSEnabled Then
-            labTransform.ApplyTransformToScanline VarPtr(ImageData(0, y)), VarPtr(labValues(0)), finalX + 1
+            labTransform.ApplyTransformToScanline VarPtr(imageData(0, y)), VarPtr(labValues(0)), finalX + 1
         Else
             For x = xStart To xStop Step pxWidth
-                b = ImageData(x, y)
-                g = ImageData(x + 1, y)
-                r = ImageData(x + 2, y)
+                b = imageData(x, y)
+                g = imageData(x + 1, y)
+                r = imageData(x + 2, y)
                 RGBtoLAB r, g, b, labL, labA, labB
                 labValues(x) = labL
                 labValues(x + 1) = labA
@@ -275,9 +289,9 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
         For x = xStart To xStop Step pxWidth
         
             'Get the source pixel color values
-            b = ImageData(x, y)
-            g = ImageData(x + 1, y)
-            r = ImageData(x + 2, y)
+            b = imageData(x, y)
+            g = imageData(x + 1, y)
+            r = imageData(x + 2, y)
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
@@ -289,9 +303,9 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
             
             'If the distance is below the erasure threshold, replace it completely
             If (cDistance < eraseThreshold) Then
-                ImageData(x, y) = newB
-                ImageData(x + 1, y) = newG
-                ImageData(x + 2, y) = newR
+                imageData(x, y) = newB
+                imageData(x + 1, y) = newG
+                imageData(x + 2, y) = newR
                 
             'If the color is between the replace and blend threshold, feather it against the new color and
             ' color-correct it to remove any "color fringing" from the replaced color.
@@ -317,9 +331,9 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
                 If (b < 0) Then b = 0
                 
                 'Assign the new color and alpha values
-                ImageData(x, y) = BlendColors(b, newB, cDistance)
-                ImageData(x + 1, y) = BlendColors(g, newG, cDistance)
-                ImageData(x + 2, y) = BlendColors(r, newR, cDistance)
+                imageData(x, y) = BlendColors(b, newB, cDistance)
+                imageData(x + 1, y) = BlendColors(g, newG, cDistance)
+                imageData(x + 2, y) = BlendColors(r, newR, cDistance)
                 
             End If
             
@@ -327,16 +341,15 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
         
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y
             End If
         End If
         
     Next y
     
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -353,7 +366,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ReplaceSelectedColor GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -367,7 +380,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "oldcolor", colorOld.Color
+        .AddParam "newcolor", colorNew.Color
+        .AddParam "erasethreshold", sltErase.Value
+        .AddParam "blendthreshold", sltBlend.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
