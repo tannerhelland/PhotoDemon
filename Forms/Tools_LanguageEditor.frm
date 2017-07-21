@@ -909,11 +909,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             
             'Display the "please wait" panel
             For i = 0 To picContainer.Count - 1
-                If i = 1 Then
-                    picContainer(i).Visible = True
-                Else
-                    picContainer(i).Visible = False
-                End If
+                picContainer(i).Visible = (i = 1)
             Next i
             
             'Force a refresh of the visible container picture boxes
@@ -937,7 +933,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                                 
-                If Loadm_AllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
+                If LoadAllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
                     
                     'Populate the current language's metadata container with some default values
                     With m_curLanguage
@@ -967,7 +963,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 m_curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & Files.FileGetName(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
-                If Loadm_AllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
+                If LoadAllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
                     
                     'No further action is necessary!
                     
@@ -1025,9 +1021,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 
                 If m_curLanguage.LangType = "Autosave" Then
                     sFile = cFile.MakeValidWindowsFilename(m_curLanguage.LangName)
-                    sFile = cFile.FileGetPath(m_curLanguage.FileName) & sFile & ".xml"
+                    sFile = Files.FileGetPath(m_curLanguage.FileName) & sFile & ".xml"
                 Else
-                    sFile = cFile.FileGetPath(m_curLanguage.FileName) & Files.FileGetName(m_curLanguage.FileName, True) & ".xml"
+                    sFile = Files.FileGetPath(m_curLanguage.FileName) & Files.FileGetName(m_curLanguage.FileName, True) & ".xml"
                 End If
                 
                 Dim cdFilter As String
@@ -1061,7 +1057,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         m_WizardPage = m_WizardPage + 1
     Else
         m_WizardPage = m_WizardPage - 1
-        If m_WizardPage = 1 Then m_WizardPage = 0
+        If (m_WizardPage = 1) Then m_WizardPage = 0
     End If
     
         
@@ -1084,7 +1080,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             With m_curLanguage
             
                 'Language ID is the most complex, because we must parse the two halves into individual text boxes
-                If InStr(1, .langID, "-") > 0 Then
+                If (InStr(1, .langID, "-") > 0) Then
                     txtLangID(0) = Left$(.langID, InStr(1, .langID, "-") - 1)
                     txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-") + 1, Len(.langID) - InStr(1, .langID, "-"))
                 Else
@@ -1104,7 +1100,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         Case 3
         
             'If an XML file was successfully loaded, add its contents to the list box
-            If Not m_xmlLoaded Then
+            If (Not m_xmlLoaded) Then
             
                 m_xmlLoaded = True
                 
@@ -1118,21 +1114,21 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     'Hide all inactive panels (and show the active one)
     For i = 0 To picContainer.Count - 1
-        If i = m_WizardPage Then picContainer(i).Visible = True Else picContainer(i).Visible = False
+        picContainer(i).Visible = (i = m_WizardPage)
     Next i
     
     'If we are at the beginning, disable the previous button
-    If m_WizardPage = 0 Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
+    cmdPrevious.Enabled = (m_WizardPage <> 0)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
-    If m_WizardPage = picContainer.Count - 1 Then
+    If (m_WizardPage = picContainer.Count - 1) Then
         cmdNext.Caption = g_Language.TranslateMessage("&Save and Exit")
     Else
         cmdNext.Caption = g_Language.TranslateMessage("&Next")
     End If
     
     'Finally, change the top title caption and left-hand help text to match the current step
-    If m_WizardPage < 1 Then
+    If (m_WizardPage < 1) Then
         lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
     Else
         lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage)
@@ -1221,7 +1217,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Given a source language file, find all phrase tags, and load them into a specialized phrase array
-Private Function Loadm_AllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
+Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
 
     Set m_XMLEngine = New pdXML
     
@@ -1267,18 +1263,18 @@ Private Function Loadm_AllPhrasesFromFile(ByVal srcLangFile As String) As Boolea
                     
                 Next i
                 
-                Loadm_AllPhrasesFromFile = True
+                LoadAllPhrasesFromFile = True
             
             Else
-                Loadm_AllPhrasesFromFile = False
+                LoadAllPhrasesFromFile = False
             End If
         
         Else
-            Loadm_AllPhrasesFromFile = False
+            LoadAllPhrasesFromFile = False
         End If
     
     Else
-        Loadm_AllPhrasesFromFile = False
+        LoadAllPhrasesFromFile = False
     End If
 
 End Function

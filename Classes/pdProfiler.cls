@@ -443,7 +443,7 @@ Private Function GetReportFilename()
     Set cFile = New pdFSO
     
     dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
-    If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
+    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
@@ -467,7 +467,7 @@ Private Function GetDatabaseFilename()
     Set cFile = New pdFSO
     
     dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
-    If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
+    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.62</langversion>
+<langversion>1.0.63</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1305,8 +1305,8 @@ To овозможи поддршка за ПИО компресирани фај
 </phrase>
 
 <phrase>
-<original>File not found: %1</original>
-<translation>Датотеката не е пронајдена: %1</translation>
+<original>Warning - file not found: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1321,6 +1321,23 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 <phrase>
 <original>File not found</original>
 <translation>Документот не е пронајден</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1415,7 +1432,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>дуплирање сликата заврши.</translation>
 </phrase>
 
-<!-- Loading.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2293,7 +2310,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Thumbnail Зачувувањето не успеа (неодреден GDI грешка).</translation>
 </phrase>
 
-<!-- Saving.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15022,10 +15039,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12296 total words. -->
 
 </pdData>

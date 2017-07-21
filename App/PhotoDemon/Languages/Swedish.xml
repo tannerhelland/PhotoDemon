@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2815</langversion>
+<langversion>6.8.2816</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1306,8 +1306,8 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 </phrase>
 
 <phrase>
-<original>File not found: %1</original>
-<translation>Filen hittades inte: %1</translation>
+<original>Warning - file not found: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1322,6 +1322,23 @@ If här bilden ursprungligen placerad på flyttbara media (DVD, USB-enhet, etc.)
 <phrase>
 <original>File not found</original>
 <translation>Filen hittades inte</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1413,7 +1430,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Bilddubbel komplett.</translation>
 </phrase>
 
-<!-- Loading.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2289,7 +2306,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 <translation>Miniatyr spara misslyckades (ospecificerat GDI fel).</translation>
 </phrase>
 
-<!-- Saving.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15017,10 +15034,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12296 total words. -->
 
 </pdData>

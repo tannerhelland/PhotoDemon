@@ -89,7 +89,7 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExists(resourceFilename) Then
+    If Files.FileExists(resourceFilename) Then
         AttemptResourceRecovery = True
     
     'The file is missing.  Let's see if we can find it.
@@ -99,7 +99,7 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
-        If cFile.FileExists(g_UserPreferences.GetProgramPath & resourceFile) Then
+        If Files.FileExists(g_UserPreferences.GetProgramPath & resourceFile) Then
             
             RaiseResourceError "Resource file found in the base PD folder.  Attempting to relocate...", True
             
@@ -109,7 +109,7 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
                 RaiseResourceError "Resource file relocated successfully.", True
                 
                 'Kill the old file instance
-                cFile.FileDelete g_UserPreferences.GetProgramPath & resourceFile
+                Files.FileDeleteIfExists g_UserPreferences.GetProgramPath & resourceFile
                 
                 'Return success!
                 AttemptResourceRecovery = True

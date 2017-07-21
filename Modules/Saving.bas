@@ -143,6 +143,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         metadataParameters = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
     End If
     
+    'Before proceeding with the save, check for some file-level errors that may cause problems.
+    
+    'If the file already exists, ensure we have write+delete access
+    If (Not Files.FileTestAccess_Write(dstPath)) Then
+        Message "Warning - file locked: %1", dstPath
+        PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File locked", dstPath
+        PhotoDemon_SaveImage = False
+        Exit Function
+    End If
+    
     'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
     ' the "EndSaveProcess" function to release the UI lock.
     BeginSaveProcess

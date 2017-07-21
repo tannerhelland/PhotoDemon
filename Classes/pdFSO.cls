@@ -1358,6 +1358,63 @@ Friend Function FileSetLength(ByVal hFile As Long, ByVal newLength As Long) As B
     End If
 End Function
 
+'Test a file for READ access.  This is helpful before attempting to open a file, to see if some other process has
+' locked the file.
+'
+'RETURNS: TRUE if file is readable; FALSE otherwise.  Optionally, dstLastDLLError will be filled with the last
+' DLL error, if any.
+Friend Function FileTestAccess_Read(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
+    
+    FileTestAccess_Read = False
+    
+    'First, ensure the file exists
+    If Me.FileExists(srcFile) Then
+        
+        'Try to create a read-only access handle
+        Dim hFile As Long
+        hFile = CreateFileW(StrPtr(srcFile), GENERIC_READ, FILE_SHARE_READ, 0&, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0&)
+        
+        If (hFile <> 0) And (hFile <> INVALID_HANDLE_VALUE) Then
+            CloseHandle hFile
+            FileTestAccess_Read = True
+        Else
+            dstLastDLLError = Err.LastDllError
+        End If
+        
+    End If
+    
+End Function
+
+'Test a file for WRITE access.  This is helpful before attempting to save a file, to see if some other process has
+' locked the file.
+'
+'RETURNS: TRUE if file is writable; FALSE otherwise.  Optionally, dstLastDLLError will be filled with the last
+' DLL error, if any.
+Friend Function FileTestAccess_Write(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
+    
+    FileTestAccess_Write = False
+    
+    'First, see if the file exists; if it doesn't, assume we're okay to write it
+    If Me.FileExists(srcFile) Then
+        
+        'Try to create a read/write access handle
+        Dim hFile As Long
+        hFile = CreateFileW(StrPtr(srcFile), GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ Or FILE_SHARE_WRITE Or FILE_SHARE_DELETE, 0&, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0&)
+        
+        If (hFile <> 0) And (hFile <> INVALID_HANDLE_VALUE) Then
+            CloseHandle hFile
+            FileTestAccess_Write = True
+        Else
+            dstLastDLLError = Err.LastDllError
+        End If
+        
+    Else
+        FileTestAccess_Write = True
+    End If
+    
+    
+End Function
+
 'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
 ' (The write will be performed synchronously, FYI.)
 ' Returns: TRUE if successful; FALSE otherwise.

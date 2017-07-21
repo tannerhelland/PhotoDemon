@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2815</langversion>
+<langversion>6.8.2816</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1306,8 +1306,8 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 </phrase>
 
 <phrase>
-<original>File not found: %1</original>
-<translation>Fail tidak dijumpai: %1</translation>
+<original>Warning - file not found: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1322,6 +1322,23 @@ If imej ini pada asalnya terletak di media boleh alih (DVD, pemacu USB, dan lain
 <phrase>
 <original>File not found</original>
 <translation>Fail tidak dijumpai</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1416,7 +1433,7 @@ Please mengesahkan bahawa imej ini (s) wujud, dan bahawa mereka menggunakan form
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- Loading.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2294,7 +2311,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>Thumbnail menyelamatkan gagal (ralat GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- Saving.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15023,10 +15040,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12296 total words. -->
 
 </pdData>

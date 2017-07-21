@@ -85,11 +85,11 @@ Begin VB.Form dialog_ExportJPEG
       End
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
-         Left            =   120
+         Left            =   240
          TabIndex        =   6
          Top             =   600
-         Width           =   2730
-         _ExtentX        =   4815
+         Width           =   2610
+         _ExtentX        =   4604
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdSlider sltQuality 

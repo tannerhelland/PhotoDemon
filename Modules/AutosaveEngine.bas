@@ -282,9 +282,6 @@ Public Sub PurgeOldAutosaveData()
         Dim tmpFilename As String
         Dim i As Long, j As Long
         
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
         ' files they may reference
         For i = 0 To m_numOfXMLFound - 1
@@ -462,19 +459,19 @@ Private Sub RenameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
         newFilename = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, i, OS.UniqueSessionID())
         
         'Check image data first...
-        If cFile.FileExists(oldFilename) Then
+        If Files.FileExists(oldFilename) Then
             Files.FileDeleteIfExists newFilename
             cFile.FileCopyW oldFilename, newFilename
         End If
         
         '...followed by layer data
-        If cFile.FileExists(oldFilename & ".layer") Then
+        If Files.FileExists(oldFilename & ".layer") Then
             Files.FileDeleteIfExists newFilename & ".layer"
             cFile.FileCopyW oldFilename & ".layer", newFilename & ".layer"
         End If
         
         '...followed by selection data
-        If cFile.FileExists(oldFilename & ".selection") Then
+        If Files.FileExists(oldFilename & ".selection") Then
             Files.FileDeleteIfExists newFilename & ".selection"
             cFile.FileCopyW oldFilename & ".selection", newFilename & ".selection"
         End If

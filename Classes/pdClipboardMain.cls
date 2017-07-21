@@ -341,10 +341,6 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
     
-    'Also, note that all file interactions occur through pdFSO, so we can support Unicode filenames/paths.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Attempt to open the clipboard
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
         
@@ -700,10 +696,6 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
     'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
     Dim tmpClipboardFile As String
     
-    'pdFSO is used to ensure Unicode subfolder compatibility
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
     'Metafiles show up in a few different formats.  We want to use EMFs, if possible.
     If m_Clipboard.DoesClipboardHaveFormatID(CF_ENHMETAFILE) Then
@@ -749,7 +741,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
                 End If
                 
                 'Be polite and remove the temporary file
-                cFile.FileDelete tmpClipboardFile
+                Files.FileDeleteIfExists tmpClipboardFile
                 
                 'If we made it all the way here, the load was (probably?) successful
                 Message "Clipboard data imported successfully "
@@ -857,12 +849,8 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
     Dim tmpDownloadFile As String
     tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcURL)
     
-    'pdFSO is used to ensure Unicode filename compatibility
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'If the download was successful, we can now use the standard image load routine to import the temporary file
-    If (cFile.FileLenW(tmpDownloadFile) <> 0) Then
+    If (Files.FileLenW(tmpDownloadFile) <> 0) Then
         
         'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
         ' and it should use these hint values instead of assuming normal image load behavior.
@@ -1161,9 +1149,6 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     
     Dim dragWasSuccessful As Boolean
     dragWasSuccessful = False
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
     
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then

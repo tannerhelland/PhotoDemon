@@ -1526,12 +1526,9 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
             End Select
         End If
         
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         Dim tmpFilename As String
         tmpFilename = Files.FileGetName(dstFile, True)
-        dstFile = cFile.FileGetPath(dstFile) & tmpFilename & "." & newExtension
+        dstFile = Files.FileGetPath(dstFile) & tmpFilename & "." & newExtension
         
     End If
     
