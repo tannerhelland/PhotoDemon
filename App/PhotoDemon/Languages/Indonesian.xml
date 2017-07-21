@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.208</langversion>
+<langversion>6.6.209</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -1306,7 +1306,7 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 </phrase>
 
 <phrase>
-<original>File not found: %1</original>
+<original>Warning - file not found: %1</original>
 <translation></translation>
 </phrase>
 
@@ -1322,6 +1322,23 @@ Jika gambar ini awalnya terletak di removable media (DVD, USB drive, dll), silah
 <phrase>
 <original>File not found</original>
 <translation>Berkas Tidak Di Temukan</translation>
+</phrase>
+
+<phrase>
+<original>Warning - file locked: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the file '%1' is currently locked by another program on this PC.
+
+Please close this file in any other running programs, then try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File locked</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1409,7 +1426,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Duplikasi Gambar Berhasil.</translation>
 </phrase>
 
-<!-- Loading.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2285,7 +2302,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Thumbnail Gagal Menyimpan (Kesalahan GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- Saving.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15017,10 +15034,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1979 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12296 total words. -->
 
 </pdData>

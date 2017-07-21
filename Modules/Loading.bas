@@ -81,10 +81,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' state quite a few times throughout the function.
     Dim loadSuccessful As Boolean: loadSuccessful = False
     
-    'This function is 100% Unicode-compatible, thanks to pdFSO.  It must be used for all file-level interactions.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Some behavior varies based on the image decoding engine used.  PD uses a fairly complex cascading system for image decoders;
     ' if one fails, we continue trying alternates until either the load succeeds, or all known decoders have been exhausted.
     Dim decoderUsed As PD_IMAGE_DECODER_ENGINE: decoderUsed = PDIDE_FAILEDTOLOAD
@@ -94,12 +90,22 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     Dim imageHasMultiplePages As Boolean: imageHasMultiplePages = False
     Dim numOfPages As Long: numOfPages = 0
     
-    'We now have one last tedious check to perform: making sure the file actually exists!
+    'We now have a few tedious checks to perform: like making sure the file actually exists!
     If (Not Files.FileExists(srcFile)) Then
         If handleUIDisabling Then Processor.MarkProgramBusyState False, True
         If (Not suspendWarnings) Then
-            Message "File not found: %1", srcFile
+            Message "Warning - file not found: %1", srcFile
             PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", srcFile
+        End If
+        LoadFileAsNewImage = False
+        Exit Function
+    End If
+    
+    If (Not Files.FileTestAccess_Read(srcFile)) Then
+        If handleUIDisabling Then Processor.MarkProgramBusyState False, True
+        If (Not suspendWarnings) Then
+            Message "Warning - file locked: %1", srcFile
+            PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File locked", srcFile
         End If
         LoadFileAsNewImage = False
         Exit Function
@@ -264,7 +270,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If
         
         'Any remaining attributes of interest should be stored in the target image now
-        targetImage.ImgStorage.AddEntry "OriginalFileSize", cFile.FileLenW(srcFile)
+        targetImage.ImgStorage.AddEntry "OriginalFileSize", Files.FileLenW(srcFile)
         
         'We've now completed the bulk of the image load process.  In nightly builds, dump a bunch of image-related data out to file;
         ' such data is invaluable when tracking down bugs.

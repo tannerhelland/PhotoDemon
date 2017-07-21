@@ -52,9 +52,6 @@ End Type
 Private m_Entries() As MRUEntry
 Private m_NumOfEntries As Long
 
-'Unicode file interactions are made easier by using a pdFSO instance
-Private cFile As pdFSO
-
 'If a hash currently exists for a given file, return it so we can avoid hashing it again
 Private Function DoesMRUHashExist(ByVal filePath As String) As String
 
@@ -67,7 +64,7 @@ Private Function DoesMRUHashExist(ByVal filePath As String) As String
         For i = 0 To m_NumOfEntries - 1
         
             'If this file path matches one we've already calculated, return that instead of calculating it again
-            If StrComp(m_Entries(i).actualFilePath, filePath, vbTextCompare) = 0 Then
+            If Strings.StringsEqual(m_Entries(i).actualFilePath, filePath, True) Then
                 DoesMRUHashExist = m_Entries(i).hashedFilename
                 Exit Function
             End If
@@ -145,13 +142,6 @@ Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef srcImage As pdImag
     
 End Sub
 
-Private Sub Class_Initialize()
-
-    'Initialize our pdFSO instance
-    Set cFile = New pdFSO
-
-End Sub
-
 Private Property Get IMRUList_SupportsThumbnails() As Boolean
     IMRUList_SupportsThumbnails = True
 End Property
@@ -186,7 +176,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
     'Use a pdFSO instance to enumerate PNG files for us.
     Dim pngList As pdStringStack
     
-    If cFile.RetrieveAllFiles(g_UserPreferences.GetIconPath, pngList, False, False, "pdtmp") Then
+    If Files.RetrieveAllFiles(g_UserPreferences.GetIconPath, pngList, False, False, "pdtmp") Then
     
         Dim chkFile As String, fileOK As Boolean
         Dim i As Long
@@ -204,7 +194,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
                 For i = 0 To numEntries - 1
                     
                     'If this hash matches one on file, mark it as OK.
-                    If (StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbBinaryCompare) = 0) Then
+                    If Strings.StringsEqual(chkFile, mruManager.GetMRUThumbnailPath(i), False) Then
                         fileOK = True
                         Exit For
                     End If
@@ -215,7 +205,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
             End If
         
             'If an MRU hash does not exist for this file, delete the file
-            If (Not fileOK) Then cFile.FileDelete chkFile
+            If (Not fileOK) Then Files.FileDeleteIfExists chkFile
             
         Loop
     
@@ -227,7 +217,7 @@ End Sub
 Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newFilePath As String, ByVal mruCaption As String)
     
     'If the Open Recent submenu is currently empty, start by enabling all relevant menu objects
-    If Not FormMain.mnuRecDocs(0).Enabled Then
+    If (Not FormMain.mnuRecDocs(0).Enabled) Then
         FormMain.mnuRecDocs(0).Enabled = True
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuLoadAllMRU.Visible = True
@@ -243,7 +233,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
     numEntries = mruManager.MRU_ReturnCount()
     
     'If there are more entries on the list besides this first one, update all corresponding menus now
-    If numEntries > 1 Then
+    If (numEntries > 1) Then
     
         'Start by unloading any/all existing menus
         Dim i As Long
@@ -258,7 +248,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
             
             'Add the caption, and if the entry is less than #10, give it an accelerator, too
             FormMain.mnuRecDocs(i).Caption = mruManager.GetSpecificMRUCaption(i)
-            If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
+            If (i < 10) Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
             
         Next i
         
@@ -282,7 +272,7 @@ End Sub
 Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As Long, ByVal mruCaption As String)
     
     'Note that we do not need to load mnuRecDocs(0) - it is always loaded.  We only ever load menu items greater than this.
-    If Index > 0 Then
+    If (Index > 0) Then
         Load FormMain.mnuRecDocs(Index)
     Else
         FormMain.mnuRecDocs(Index).Enabled = True
@@ -291,7 +281,7 @@ Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As
     FormMain.mnuRecDocs(Index).Caption = mruCaption
     
     'For the first 10 menu entries, display a corresponding shortcut
-    If Index < 10 Then FormMain.mnuRecDocs(Index).Caption = FormMain.mnuRecDocs(Index).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & Index
+    If (Index < 10) Then FormMain.mnuRecDocs(Index).Caption = FormMain.mnuRecDocs(Index).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & Index
     
 End Sub
 
@@ -326,7 +316,7 @@ Private Sub IMRUList_EraseEntryAtPosition(ByRef mruManager As pdMRUManager, ByVa
     If (Index >= 0) And (Index < m_NumOfEntries) Then
     
         'Kill the thumbnail at this position
-        cFile.FileDelete GetMRUThumbnailPath(mruManager.GetSpecificMRU(Index))
+        Files.FileDeleteIfExists GetMRUThumbnailPath(mruManager.GetSpecificMRU(Index))
     
     End If
     

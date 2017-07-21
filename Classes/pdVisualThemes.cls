@@ -835,9 +835,6 @@ Friend Sub BuildThemePackage()
     Dim tmpPackage As pdPackager
     Set tmpPackage = New pdPackager
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Prep a new package
     Dim dstFilename As String
     dstFilename = g_UserPreferences.GetThemePath(False) & "Core_Themes.pdrc"
@@ -845,11 +842,11 @@ Friend Sub BuildThemePackage()
     
     'Add each file in turn
     Dim listOfFiles As pdStringStack
-    cFile.RetrieveAllFiles g_UserPreferences.GetThemePath(False), listOfFiles, False, False, "xml"
+    Files.RetrieveAllFiles g_UserPreferences.GetThemePath(False), listOfFiles, False, False, "xml"
     
     Dim tmpFilename As String
     Do While listOfFiles.PopString(tmpFilename)
-        AddThemeFileToPackage tmpPackage, cFile, tmpFilename
+        AddThemeFileToPackage tmpPackage, tmpFilename
     Loop
     
     'With all files added, finalize the package
@@ -858,7 +855,7 @@ Friend Sub BuildThemePackage()
 End Sub
 
 'Helper for BuildThemePackage(), above.  Not intended or designed for any other use.
-Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef cFile As pdFSO, ByRef srcFilename As String)
+Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef srcFilename As String)
     
     'Pull the source file into a string
     Dim tmpString As String

@@ -50,7 +50,7 @@ Begin VB.UserControl pdMetadataExport
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
-      Caption         =   "review metadata before saving"
+      Caption         =   "review metadata before saving..."
       RaiseClickEvent =   -1  'True
    End
    Begin PhotoDemon.pdCheckBox chkMetadata 

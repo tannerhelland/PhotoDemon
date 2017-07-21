@@ -1449,11 +1449,11 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
     GetDIBits Me.GetDIBDC, m_dibHandle, 0, m_dibHeight, iData(0, 0), bmpInfoHeader, 0&
     
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If cFile.FileExists(dstFilename) Then cFile.FileDelete dstFilename
+    Files.FileDeleteIfExists dstFilename
     
     'Writing the file is easy; just dump the two headers and image data into it!
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
     Dim hFile As Long
     If cFile.FileCreateHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
@@ -1631,13 +1631,13 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
-    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
         tmpAlpha = 1 - (x / 255)
         rLookup(x) = Int(newR * tmpAlpha)
-        gLookUp(x) = Int(newG * tmpAlpha)
+        gLookup(x) = Int(newG * tmpAlpha)
         bLookup(x) = Int(newB * tmpAlpha)
     Next x
     
@@ -1666,7 +1666,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
                 'Use that alpha value to blend the current colors with the newly requested color
                 If m_IsAlphaPremultiplied Then
                     dibPixels(x) = dibPixels(x) + bLookup(checkAlpha)
-                    dibPixels(x + 1) = dibPixels(x + 1) + gLookUp(checkAlpha)
+                    dibPixels(x + 1) = dibPixels(x + 1) + gLookup(checkAlpha)
                     dibPixels(x + 2) = dibPixels(x + 2) + rLookup(checkAlpha)
                 Else
                 

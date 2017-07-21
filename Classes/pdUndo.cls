@@ -904,9 +904,6 @@ Friend Sub ClearUndos()
     'If Undo data has already been cleared, exit
     If (m_UndoTotal = 0) Then Exit Sub
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     'Destroy every potential Undo file
     Dim i As Long
     For i = 0 To m_UndoTotal

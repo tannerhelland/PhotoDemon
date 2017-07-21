@@ -712,9 +712,6 @@ Public Sub CleanPreviousUpdateFiles()
     Dim tmpFileList As pdStringStack
     Set tmpFileList = New pdStringStack
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     Dim tmpFile As String
         
     'First, we hard-code a few XML files that may exist due to old PD update methods
@@ -723,12 +720,12 @@ Public Sub CleanPreviousUpdateFiles()
     tmpFileList.AddString g_UserPreferences.GetUpdatePath & "updates.xml"
     
     'Next, we auto-add any .tmp files in the update folder, which should cover all other potential use-cases
-    cFile.RetrieveAllFiles g_UserPreferences.GetUpdatePath, tmpFileList, False, False, "TMP|tmp"
+    Files.RetrieveAllFiles g_UserPreferences.GetUpdatePath, tmpFileList, False, False, "TMP|tmp"
     
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
         
-        cFile.FileDelete tmpFile
+        Files.FileDeleteIfExists tmpFile
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -738,11 +735,11 @@ Public Sub CleanPreviousUpdateFiles()
         
     'Do the same thing for temp files in the base PD folder
     Set tmpFileList = Nothing
-    If cFile.RetrieveAllFiles(g_UserPreferences.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
+    If Files.RetrieveAllFiles(g_UserPreferences.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
             
-            cFile.FileDelete tmpFile
+            Files.FileDeleteIfExists tmpFile
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -754,11 +751,11 @@ Public Sub CleanPreviousUpdateFiles()
         
     '...And just to be safe, do the same thing for temp files in the plugin folder
     Set tmpFileList = Nothing
-    If cFile.RetrieveAllFiles(PluginManager.GetPluginPath, tmpFileList, False, False, "TMP|tmp") Then
+    If Files.RetrieveAllFiles(PluginManager.GetPluginPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
         
-            cFile.FileDelete tmpFile
+            Files.FileDeleteIfExists tmpFile
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Found and deleting update file: " & tmpFile
@@ -769,7 +766,7 @@ Public Sub CleanPreviousUpdateFiles()
     End If
     
     'Finally, delete the patch exe itself, which will have closed by now
-    cFile.FileDelete g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
+    Files.FileDeleteIfExists g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
 End Sub
 

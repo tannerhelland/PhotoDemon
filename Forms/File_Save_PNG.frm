@@ -691,17 +691,14 @@ Private Sub cmdUpdateLossyPreview_Click()
         If FreeImage_Save(FIF_PNG, m_FIHandle, tmpFilename, FISO_PNG_Z_BEST_SPEED) Then
             
             'Retrieve the size of the base PNG file
-            Dim cFile As pdFSO
-            Set cFile = New pdFSO
-            
             Dim oldFileSize As Long
-            oldFileSize = cFile.FileLenW(tmpFilename)
+            oldFileSize = Files.FileLenW(tmpFilename)
             
             'Next, request optimization from pngquant
             If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, CBool(chkOptimizeDither.Value), False) Then
                 
                 Dim newFileSize As Long
-                newFileSize = cFile.FileLenW(tmpFilename)
+                newFileSize = Files.FileLenW(tmpFilename)
                 
                 'If successful, pngquant will overwrite the original file with its optimized copy.  Retrieve it now.
                 If Loading.QuickLoadImageToDIB(tmpFilename, workingDIB, False) Then

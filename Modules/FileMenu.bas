@@ -17,8 +17,18 @@ Option Explicit
 
 'This subroutine loads an image - note that the interesting stuff actually happens in PhotoDemon_OpenImageDialog, below
 Public Sub MenuOpen()
+
     Dim listOfFiles As pdStringStack
-    If PhotoDemon_OpenImageDialog(listOfFiles, GetModalOwner().hWnd) Then Loading.LoadMultipleImageFiles listOfFiles
+    If PhotoDemon_OpenImageDialog(listOfFiles, GetModalOwner().hWnd) Then
+        
+        If (listOfFiles.GetNumOfStrings > 1) Then
+            Loading.LoadMultipleImageFiles listOfFiles
+        Else
+            Loading.LoadFileAsNewImage listOfFiles.GetString(0)
+        End If
+        
+    End If
+    
 End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
@@ -177,13 +187,10 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
         
         If safeSaveModeActive Then
         
-            Dim cFile As pdFSO
-            Set cFile = New pdFSO
-            
             'File name incrementation requires help from an outside function.  We must pass it the folder, filename, and extension
             ' we want it to search against.
             Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
-            tmpFolder = cFile.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
+            tmpFolder = Files.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
             If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
             tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
             tmpExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
@@ -271,12 +278,9 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         srcImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         
         'Store all global-preference attributes
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         g_LastSaveFilter = cdFormatIndex
         g_UserPreferences.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
-        g_UserPreferences.SetPref_String "Paths", "Save Image", cFile.FileGetPath(sFile)
+        g_UserPreferences.SetPref_String "Paths", "Save Image", Files.FileGetPath(sFile)
         
         'Our work here is done!  Transfer control to the core SaveImage routine, which will handle the actual export process.
         MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)

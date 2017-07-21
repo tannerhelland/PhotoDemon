@@ -266,6 +266,10 @@ Public Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOf
     If InitializeFSO Then FileGetTimeAsDate = m_FSO.FileGetTimeAsDate(srcFile, typeOfTime)
 End Function
 
+Public Function FileLenW(ByRef srcPath As String) As Long
+    If InitializeFSO Then FileLenW = m_FSO.FileLenW(srcPath)
+End Function
+
 Public Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
     If InitializeFSO Then FileLoadAsByteArray = m_FSO.FileLoadAsByteArray(srcFile, dstArray)
 End Function
@@ -280,6 +284,14 @@ End Function
 
 Public Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As String, Optional ByVal useUTF8 As Boolean = True, Optional ByVal useUTF8_BOM As Boolean = True) As Boolean
     If InitializeFSO Then FileSaveAsText = m_FSO.FileSaveAsText(srcString, dstFilename, useUTF8, useUTF8_BOM)
+End Function
+
+Public Function FileTestAccess_Read(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
+    If InitializeFSO Then FileTestAccess_Read = m_FSO.FileTestAccess_Read(srcFile, dstLastDLLError)
+End Function
+
+Public Function FileTestAccess_Write(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
+    If InitializeFSO Then FileTestAccess_Write = m_FSO.FileTestAccess_Write(srcFile, dstLastDLLError)
 End Function
 
 Public Function PathAddBackslash(ByRef srcPath As String) As String
@@ -300,4 +312,8 @@ End Function
 
 Public Function PathExists(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
     If InitializeFSO Then PathExists = m_FSO.PathExists(fullPath, checkWriteAccessAsWell)
+End Function
+
+Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
+    If InitializeFSO Then RetrieveAllFiles = m_FSO.RetrieveAllFiles(srcFolder, dstFiles, recurseSubfolders, returnRelativeStrings, onlyAllowTheseExtensions, doNotAllowTheseExtensions)
 End Function
