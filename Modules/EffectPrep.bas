@@ -779,16 +779,17 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
             pdImages(g_CurrentImage).GetActiveLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
-            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then workingDIBBackup.SetAlphaPremultiplication True
-            BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
-            
             'Un-pad any null pixels we may have added as part of the selection interaction
-            pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
+            If (Not workingDIBBackup Is Nothing) Then
+                If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then workingDIBBackup.SetAlphaPremultiplication True
+                BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
+                pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
+            End If
         
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
             
-            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
+            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.SetInitialAlphaPremultiplicationState True
@@ -819,7 +820,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
-            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
+            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 workingDIBBackup.SetAlphaPremultiplication True
             Else
                 workingDIBBackup.SetInitialAlphaPremultiplicationState True
@@ -834,7 +835,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             ' a proper result.)
             Dim weCanHandleCM As Boolean: weCanHandleCM = False
             
-            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
+            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 weCanHandleCM = True
                 ColorManagement.ApplyDisplayColorManagement workingDIB
                 workingDIB.SetAlphaPremultiplication True
