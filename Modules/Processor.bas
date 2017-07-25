@@ -2430,7 +2430,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     'Remove layers from an image
     ElseIf Strings.StringsEqual(processID, "Delete layer", True) Then
-        Layers.DeleteLayer processParameters
+        Layers.DeleteLayer_XML processParameters
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Delete hidden layers", True) Then

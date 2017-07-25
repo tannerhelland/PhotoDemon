@@ -803,12 +803,9 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateContourDIB = 0 Else CreateContourDIB = 1
     
@@ -1920,12 +1917,9 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreatePolarCoordDIB = 0 Else CreatePolarCoordDIB = 1
 
@@ -2153,12 +2147,9 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateXSwappedPolarCoordDIB = 0 Else CreateXSwappedPolarCoordDIB = 1
 
@@ -2305,12 +2296,9 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         
     Next x
         
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateHorizontalBlurDIB = 0 Else CreateHorizontalBlurDIB = 1
     
@@ -2464,12 +2452,9 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         
     Next y
         
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
     
@@ -2577,12 +2562,9 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateRotatedDIB = 0 Else CreateRotatedDIB = 1
 
