@@ -112,6 +112,10 @@ Private Sub UpdatePreview()
         Dim tmpSA As SAFEARRAY2D
         PrepImageData tmpSA, True, pdFxPreview
         workingDIB.ConvertTo24bpp colorPicker.Color
+        
+        'PD now requires 32-bpp images in all intermediary copies, so convert *back* to 32-bpp now
+        workingDIB.ConvertTo32bpp
+        
         FinalizeImageData True, pdFxPreview
     End If
 End Sub

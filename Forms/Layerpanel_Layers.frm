@@ -250,26 +250,14 @@ Private Sub CheckButtonEnablement()
         cmdLayerAction(LYR_BTN_ADD).Enabled = True
         
         'Merge down is only allowed for layer indexes > 0
-        If pdImages(g_CurrentImage).GetActiveLayerIndex = 0 Then
-            cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = False
-        Else
-            cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = True
-        End If
+        cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex > 0)
         
         'Merge up is only allowed for layer indexes < NUM_OF_LAYERS
-        If pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1 Then
-            cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = True
-        Else
-            cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = False
-        End If
+        cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1)
         
         'Delete layer is only allowed if there are multiple layers present
-        If pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
-            cmdLayerAction(LYR_BTN_DELETE).Enabled = True
-        Else
-            cmdLayerAction(LYR_BTN_DELETE).Enabled = False
-        End If
-    
+        cmdLayerAction(LYR_BTN_DELETE).Enabled = (pdImages(g_CurrentImage).GetNumOfLayers > 1)
+        
     'If no images are loaded, disable all layer action buttons
     Else
     
