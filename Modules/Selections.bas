@@ -1237,9 +1237,10 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     'Reflect all current selection tool settings to the active selection object
     Dim curShape As PD_SelectionShape
     curShape = Selections.GetSelectionShapeFromCurrentTool()
+    
     With pdImages(g_CurrentImage).MainSelection
         .SetSelectionShape curShape
-        If (curShape <> ss_Wand) Then .SetSelectionProperty sp_Area, toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex
+        If (curShape <> ss_Wand) Then .SetSelectionProperty sp_Area, toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex Else .SetSelectionProperty sp_Area, sa_Interior
         .SetSelectionProperty sp_Smoothing, toolpanel_Selections.cboSelSmoothing.ListIndex
         .SetSelectionProperty sp_FeatheringRadius, toolpanel_Selections.sltSelectionFeathering.Value
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_BorderWidth, toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Value
@@ -1446,14 +1447,6 @@ End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
     
-    'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
-    ' does *not* match the current selection tool, remove it before proceeding.
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        If (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> Selections.GetSelectionShapeFromCurrentTool()) Then
-            Process "Remove selection", , , UNDO_SELECTION
-        End If
-    End If
-    
     'Because the wand tool is extremely simple, handle it specially
     If (g_CurrentTool = SELECT_WAND) Then
     
@@ -1643,7 +1636,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Dim selBounds As RECTF
                 selBounds = pdImages(g_CurrentImage).MainSelection.GetCornersLockedRect
                 
-                eraseThisSelection = ((clickEventAlsoFiring) And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1))
+                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then

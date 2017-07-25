@@ -267,6 +267,7 @@ Friend Function GetMaskDIB() As pdDIB
 End Function
 
 Friend Function GetMaskDIB_ViewportCopy() As pdDIB
+    If (Not m_IsMaskReady) Then CreateSelectionMask
     Set GetMaskDIB_ViewportCopy = m_ViewportReference
 End Function
 
@@ -1691,6 +1692,14 @@ Friend Sub LockIn()
         If (m_CornersLocked.Width < 1) Then m_CornersLocked.Width = 1
         If (m_CornersLocked.Height < 1) Then m_CornersLocked.Height = 1
         
+        'If this selection has properties that are not applied during UI interactions (like feathering,
+        ' which requires expensive gaussian blur operations), we need to apply them now.
+        If (Me.GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
+            If (Me.GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then
+                m_IsMaskReady = False
+            End If
+        End If
+        
     End If
         
 End Sub
@@ -2424,7 +2433,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
     'Start by requesting the current canvas intersection rect from the source image
     Dim viewportIntersectRectCanvas As RECTF
-    srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
+    srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
     'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
     ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we use
@@ -2467,7 +2476,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If m_ViewportRefReady Then
             
             Dim curImgRectF As RECTF
-            srcImage.imgViewport.GetIntersectRectImage curImgRectF
+            srcImage.ImgViewport.GetIntersectRectImage curImgRectF
             
             If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
                 m_LastImageRectF = curImgRectF
@@ -2700,7 +2709,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
         Dim viewportIntersectRectCanvas As RECTF
-        srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
+        srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
         loopStartX = Int(m_ViewportRefRectF.Left)
@@ -3206,11 +3215,16 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
         
         'If we're going to embed a mask, we also need to store some mask-specific data
         If maskWillBeEmbedded Then
+            
+            'Make sure the mask is ready before continuing!
+            If (Not m_IsMaskReady) Then CreateSelectionMask
+            
             .AddParam "SelMaskDepth", m_SelMask.GetDIBColorDepth
             .AddParam "SelMaskWidth", m_SelMask.GetDIBWidth
             .AddParam "SelMaskHeight", m_SelMask.GetDIBHeight
             .AddParam "SelMaskStride", m_SelMask.GetDIBStride
             .AddParam "SelMaskAlphaPremultiplied", m_SelMask.GetAlphaPremultiplication
+            
         End If
         
     End With
