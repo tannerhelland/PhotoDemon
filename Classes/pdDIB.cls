@@ -291,7 +291,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Blue = tmpData(quickX, y)
                 .Green = tmpData(quickX + 1, y)
                 .Red = tmpData(quickX + 2, y)
-                If m_dibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
+                If m_dibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -544,14 +544,21 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         Else
             
             'If our current size does not match, create a newly sized DIB in advance.
-            If (Me.GetDIBWidth <> newWidth) Or (Me.GetDIBHeight <> newHeight) Or (Me.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then Me.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth
+            If (Me.GetDIBWidth <> newWidth) Or (Me.GetDIBHeight <> newHeight) Or (Me.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
+                Me.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth
+            Else
+                Me.ResetDIB 0
+            End If
             
             Dim resizeMode As GP_InterpolationMode
             If useHQStretching Then resizeMode = GP_IM_HighQualityBicubic Else resizeMode = GP_IM_NearestNeighbor
             GDI_Plus.GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeMode
                 
-            'Reset alpha premultiplication to match
-            m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
+            'Note that GDI+ *always* paints images with pre-multiplied alpha.  If our source image did *not* have premultiplied alpha,
+            ' this will result in a mismatch.  (TODO: make a firm decision on whether we handle that here, or if performance
+            ' demands dictate that we leave the image premultiplied, and let the caller sort things out.)
+            'If m_IsAlphaPremultiplied Then...
+            
             CreateFromExistingDIB = True
             
         End If
