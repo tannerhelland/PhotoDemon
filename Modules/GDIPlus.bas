@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2017 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 26/June/16
-'Last update: add more integer-specific rendering functions
+'Last updated: 25/July/17
+'Last update: fix alpha premultiplication tracking after certain resize operations
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
 ' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
@@ -1343,7 +1343,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         GdipSetPixelOffsetMode hGdipGraphics, GP_POM_HighSpeed
         
         'Perform the resize
-        If GdipDrawImageRectRectI(hGdipGraphics, hGdipBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle) <> 0 Then
+        If (GdipDrawImageRectRectI(hGdipGraphics, hGdipBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle) <> 0) Then
             GDIPlusResizeDIB = False
         End If
         
@@ -1359,7 +1359,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     GdipDisposeImage hGdipBitmap
     
     'GDI+ draw functions always result in a premultiplied image
-    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
     'Free the destination DIB from its DC, as it may not be required again for some time
     dstDIB.FreeFromDC
@@ -3732,7 +3732,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Drawing2D.ExtractRed(vbRGB)
     dstQuad.Green = Drawing2D.ExtractGreen(vbRGB)
     dstQuad.Blue = Drawing2D.ExtractBlue(vbRGB)
-    dstQuad.alpha = alphaValue
+    dstQuad.Alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -3747,7 +3747,7 @@ Public Function FillLongWithRGBA(ByVal srcR As Long, ByVal srcG As Long, ByVal s
     dstQuad.Red = srcR
     dstQuad.Green = srcG
     dstQuad.Blue = srcB
-    dstQuad.alpha = srcA
+    dstQuad.Alpha = srcA
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -3760,7 +3760,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
-    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
@@ -3769,12 +3769,12 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
     
-    If (srcQuad.alpha = 255) Then
+    If (srcQuad.Alpha = 255) Then
         GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     Else
     
         Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.alpha) / 255
+        tmpSingle = CSng(srcQuad.Alpha) / 255
         
         If (tmpSingle <> 0) Then
             Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
