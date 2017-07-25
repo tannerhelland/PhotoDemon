@@ -3,8 +3,8 @@ Attribute VB_Name = "EffectPrep"
 'Fast API Graphics Routines Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 05/June/14
-'Last update: add support for individual filters and adjustments to override alpha premultiplication handling
+'Last updated: 25/July/17
+'Last update: greatly optimize effects when an active selection is present
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -310,28 +310,30 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
     End If
             
-    'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
+    'If this effect is just a preview, we will need to calculate a new width and height relative to the size
+    ' of the target preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
     Dim newWidth As Long, newHeight As Long
     
-    'If this is not a preview, simply copy the current DIB without modification
+    'Handle the (much-easier) "not a preview" case first - basically, copy the current DIB without modification
     If (Not isPreview) Then
         
         'Prepare our temporary DIB
         If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
         
-        'Check for an active selection; if one is present, use that instead of the full DIB.  Note that no special processing is
-        ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
-        ' boundaries or feathering.  All that work is handled *after* the processing is complete.
+        'Check for an active selection; if one is present, use that instead of the layer DIB.
+        ' (Note that no special processing is applied to the selected area - a full rectangle is passed to the
+        ' source function, with no accounting for non-rectangular boundaries or feathering.  Those features are
+        ' handled *after* the effect has already been processed.)
         If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
-            'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
-            ' regardless of the layer's actual area.
+            'Before proceeding further, null-pad the layer in question.  This allows selections to work, even if
+            ' they extend beyond the layer's borders.
             tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
             tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
-            'Now we can proceed to crop out the relevant parts of the layer from the selection boundary.
+            'Crop out the relevant portion of the layer from the selection boundary.
             workingDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
             BitBlt workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveLayer.layerDIB.GetAlphaPremultiplication
@@ -340,9 +342,9 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             workingDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB()
         End If
         
-    'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the active layer that matches
-    ' the requested dimensions of the preview area (which are not assumed to be universal), while accounting for the
-    ' selection area!  Aaahhh!
+    'This is an effect preview, meaning we have to prepare a custom image for operation.  Basically, we need to prepare
+    ' a copy of the active layer that matches the requested dimensions of the preview area (which vary from effect to
+    ' effect), while also accounting for the boundaries defined by the current selection, if any.
     Else
         
         'Before doing anything else, see if we can simply re-use our previous preview image
@@ -612,38 +614,34 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Dim selBounds As RECTF
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
         
-        'Before continuing further, create a copy of the selection mask at the relevant image size; note that "relevant size"
-        ' is obviously calculated differently for previews.
+        'Before continuing further, create a copy of the selection mask at the relevant image size.
+        ' (Note that "relevant size" differs between effect previews, which tend to be much smaller, and the final
+        '  application of the effect to the current layer.)
         Dim selMaskCopy As pdDIB
         Set selMaskCopy = New pdDIB
-        selMaskCopy.CreateBlank selBounds.Width, selBounds.Height
-        BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         
         'If this is a preview, resize the selection mask to match the preview size
         If isPreview Then
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateFromExistingDIB selMaskCopy
+            
+            'TODO: cache the selection mask copy at module-level, and reuse it during previews (as it may be expensive
+            ' to recalculate on large images)
+            selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
             
             'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
             If previewTarget.ViewportFitFullImage Then
-                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                GDI_Plus.GDIPlus_StretchBlt selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , , , , , True
             
-            'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
+            'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
             ' selection processing DIB.
             Else
-                
-                Dim hOffset As Long, vOffset As Long
-                hOffset = previewTarget.offsetX
-                vOffset = previewTarget.offsetY
-                
-                selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + hOffset, selBounds.Top + vOffset, vbSrcCopy
-                
+                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
             End If
             
-            tmpDIB.EraseDIB
-            Set tmpDIB = Nothing
+        'If this is *not* a preview, simply crop out the portion of the selection mask matching the current preview area.
+        ' (TODO: this copy really isn't necessary; just point the array at the actual selection mask, instead!)
+        Else
+            selMaskCopy.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
+            BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         End If
         
         'We now have a DIB that represents the selection mask at the same offset and size as the workingDIB.  This allows
@@ -652,20 +650,30 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'A few rare functions actually change the color depth of the image.  Check for that now, and make sure the workingDIB
         ' and workingDIBBackup DIBs are the same bit-depth.
         If (workingDIB.GetDIBColorDepth <> workingDIBBackup.GetDIBColorDepth) Then
-            If workingDIB.GetDIBColorDepth = 24 Then
+            If (workingDIB.GetDIBColorDepth = 24) Then
+                
+                'NOTE: I believe PD has fully transitioned to 32-bpp images, but just in case, let's report any discrepancies here.
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  24-bpp image has been forcefully generated by effect.  Revisit!"
+                #End If
+                
                 workingDIBBackup.ConvertTo24bpp
+                workingDIBBackup.ConvertTo32bpp
+                
             Else
                 workingDIBBackup.ConvertTo32bpp
             End If
         End If
         
-        'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
-        ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
-        ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
-        pdImages(g_CurrentImage).GetActiveLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        'If the current working DIB (or its backup copy, which stores a result of how the region looked before we
+        ' applied the effect) is *not* premultiplied, premultiply it now.  This allows us to blend the results of
+        ' the new effect onto the destination image much more quickly.
+        If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
+        If (Not workingDIBBackup.GetAlphaPremultiplication) Then workingDIBBackup.SetAlphaPremultiplication True
         
         'Next, point three arrays at three images: the original image, the newly modified image, and the selection mask copy
-        ' we just created.
+        ' we just created.  (We need a copy of the original image, because selection feathering requires us to blend pixels
+        ' between the original copy, and the new effect-processed copy.)
         PrepSafeArray wlSA, workingDIB
         CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
         
@@ -682,52 +690,80 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'TODO: figure out why the selection mask is always being copied at 24-bpp
         Dim selMaskDepth As Long
         
-        Dim dstquickVal As Long, srcQuickX As Long
-        dstquickVal = pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth \ 8
+        Dim dstPxWidth As Long, dstQuickX As Long, selQuickX As Long, effectX As Long
+        dstPxWidth = workingDIBBackup.GetDIBColorDepth \ 8
             
         Dim workingDIBCD As Long
         workingDIBCD = workingDIB.GetDIBColorDepth \ 8
         
-        For x = 0 To workingDIB.GetDIBWidth - 1
-            srcQuickX = x * 3
+        Const ONE_DIV_255 As Double = 1# / 255#
+        
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim oldR As Long, oldG As Long, oldB As Long, oldA As Long
+        Dim newR_F As Double, newG_F As Double, newB_F As Double, newA_F As Double
+        
         For y = 0 To workingDIB.GetDIBHeight - 1
+        For x = 0 To workingDIB.GetDIBWidth - 1
+            
+            selQuickX = x * 4
+            dstQuickX = x * dstPxWidth
+            effectX = x * workingDIBCD
             
             'Retrieve the selection mask value at this position.  Its value determines how this pixel is handled.
-            thisAlpha = selImageData(srcQuickX, y)
+            thisAlpha = selImageData(selQuickX + 3, y)
             
-            Select Case thisAlpha
-                    
-                'This pixel is not part of the selection, so completely ignore it
-                Case 0
+            'Transparent mask pixels are completely ignored (e.g. they are not part of the selected area)
+            If (thisAlpha <> 0) Then
                 
-                'This pixel completely replaces the destination one, so simply copy it over
-                Case 255
-                    For i = 0 To dstquickVal - 1
-                        dstImageData(x * dstquickVal + i, y) = wlImageData(x * workingDIBCD + i, y)
-                    Next i
-                        
-                    'This pixel is antialiased or feathered, so it needs to be blended with the destination at the level specified
-                    ' by the selection mask.
-                    Case Else
-                        blendAlpha = thisAlpha / 255
-                        For i = 0 To dstquickVal - 1
-                            dstImageData(x * dstquickVal + i, y) = BlendColors(dstImageData(x * dstquickVal + i, y), wlImageData(x * workingDIBCD + i, y), blendAlpha)
-                        Next i
-                    
-                End Select
+                newB = wlImageData(effectX, y)
+                newG = wlImageData(effectX + 1, y)
+                newR = wlImageData(effectX + 2, y)
+                newA = wlImageData(effectX + 3, y)
                 
-            Next y
-            Next x
+                'Fully selected pixels are replaced wholesale by the effect results.
+                If (thisAlpha = 255) Then
+                    dstImageData(dstQuickX, y) = newB
+                    dstImageData(dstQuickX + 1, y) = newG
+                    dstImageData(dstQuickX + 2, y) = newR
+                    dstImageData(dstQuickX + 3, y) = newA
+                    
+                'Partially selected pixels are calculated as a weighted average of the old and new pixels.
+                ' (Note that this is *not* an alpha-blend operation!  It is a weighted average between the old and
+                '  new pixel results, which produces a totally different output.)
+                Else
+                
+                    blendAlpha = thisAlpha * ONE_DIV_255
+                    
+                    'Retrieve the old (original, unmodified) RGB values
+                    oldB = dstImageData(dstQuickX, y)
+                    oldG = dstImageData(dstQuickX + 1, y)
+                    oldR = dstImageData(dstQuickX + 2, y)
+                    oldA = dstImageData(dstQuickX + 3, y)
+                    
+                    'Calculate a weighted blend of the old and new pixel values.  Because they are premultiplied, we do not
+                    ' need to deal with the effect this has on alpha values.
+                    newB = (blendAlpha * newB) + oldB * (1# - blendAlpha)
+                    newG = (blendAlpha * newG) + oldG * (1# - blendAlpha)
+                    newR = (blendAlpha * newR) + oldR * (1# - blendAlpha)
+                    newA = (blendAlpha * newA) + oldA * (1# - blendAlpha)
+                    
+                    dstImageData(dstQuickX, y) = newB
+                    dstImageData(dstQuickX + 1, y) = newG
+                    dstImageData(dstQuickX + 2, y) = newR
+                    dstImageData(dstQuickX + 3, y) = newA
+                
+                End If
+                    
+            End If
             
-            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-            CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
-            CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-            CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
+        Next x
+        Next y
+        
+        'Safely deallocate all image arrays
+        CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
             
-            Erase wlImageData
-            Erase dstImageData
-            Erase selImageData
-    
     End If
         
     'Processing past this point is contingent on whether or not the current action is a preview.
@@ -737,8 +773,13 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'If a selection is active, copy the processed area into its proper place.
         If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
-        
-            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
+            
+            'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
+            ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
+            ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
+            pdImages(g_CurrentImage).GetActiveLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            
+            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then workingDIBBackup.SetAlphaPremultiplication True
             BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
             
             'Un-pad any null pixels we may have added as part of the selection interaction
@@ -747,7 +788,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
             
-            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
                 workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.SetInitialAlphaPremultiplicationState True
@@ -772,13 +813,13 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         Message "Finished."
     
-    'If this is a preview, we need to repaint a preview box
+    'If this *is* a preview, we need to repaint a preview box
     Else
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
-            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
                 workingDIBBackup.SetAlphaPremultiplication True
             Else
                 workingDIBBackup.SetInitialAlphaPremultiplicationState True
@@ -793,7 +834,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             ' a proper result.)
             Dim weCanHandleCM As Boolean: weCanHandleCM = False
             
-            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
                 weCanHandleCM = True
                 ColorManagement.ApplyDisplayColorManagement workingDIB
                 workingDIB.SetAlphaPremultiplication True
