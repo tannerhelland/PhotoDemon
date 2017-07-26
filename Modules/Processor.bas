@@ -208,8 +208,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' actions will be performed.
     '
     'For ease of reference, the various processIDs are divided into categories of similar functions.  These categories
-    ' match the organization of PhotoDemon's menus.  Please note that such organization (in this function, anyway) is
-    ' simply to improve readability; there are no functional implications.
+    ' match the organization of PhotoDemon's menus.  Please note that such organization is simply to improve
+    ' readability; there are no functional implications.
     '
     '******************************************************************************************************************
     
@@ -217,15 +217,18 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     Dim processFound As Boolean, returnDetails As String
     processFound = Process_FileMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
+    'The File menu contains some abnormal operations (e.g. "exit program") which require us to deal with their return
+    ' codes immediately.
     If processFound Then
         
-        'The "exit program" menu item requires us to exit immediately; check the returnDetails string for this case
+        'The "exit program" menu item requires us to close PhotoDemon immediately; check the returnDetails string for this case
         If Strings.StringsEqual(returnDetails, PD_PROCESS_EXIT_NOW, True) Then
         
             Unload FormMain
             
-            'If the user does not cancel the exit, we must forcibly exit this sub now.  (Otherwise, later operations will attempt
-            ' to access things like FormMain, which are in the midst of unloading!)
+            'If the user allows the exit to proceed (e.g. they don't hit "cancel"), we must forcibly exit this sub immediately.
+            ' (Otherwise, later operations in this function will attempt to access things like FormMain, which are in the midst
+            ' of unloading!)
             If g_ProgramShuttingDown Then
                 m_NestedProcessingCount = m_NestedProcessingCount - 1
                 Exit Sub
@@ -266,11 +269,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
         'Artistic
         Case "Colored pencil"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPencil
-            Else
-                FormPencil.fxColoredPencil cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPencil Else FormPencil.fxColoredPencil processParameters
             
         Case "Comic book"
             If raiseDialog Then
@@ -287,11 +286,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Film noir"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFilmNoir
-            Else
-                FormFilmNoir.fxFilmNoir cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormFilmNoir Else FormFilmNoir.fxFilmNoir processParameters
             
         Case "Glass tiles"
             If raiseDialog Then
@@ -308,18 +303,10 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
             
         Case "Modern art"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormModernArt
-            Else
-                FormModernArt.ApplyModernArt cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormModernArt Else FormModernArt.ApplyModernArt processParameters
             
         Case "Oil painting"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormOilPainting
-            Else
-                FormOilPainting.ApplyOilPaintingEffect cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormOilPainting Else FormOilPainting.ApplyOilPaintingEffect processParameters
             
         Case "Posterize"
             If raiseDialog Then
@@ -349,11 +336,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
         'Standard blur filters
         Case "Box blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormBoxBlur
-            Else
-                FormBoxBlur.BoxBlurFilter cXMLParams.GetParamString()
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormBoxBlur Else FormBoxBlur.BoxBlurFilter processParameters
             
         Case "Gaussian blur"
             If raiseDialog Then
@@ -385,11 +368,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Zoom blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormZoomBlur
-            Else
-                FormZoomBlur.ApplyZoomBlur cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormZoomBlur Else FormZoomBlur.ApplyZoomBlur processParameters
             
         'Miscellaneous blurs
         Case "Kuwahara filter"
@@ -400,20 +379,12 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
             
         Case "Symmetric nearest-neighbor"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSNN
-            Else
-                FormSNN.ApplySymmetricNearestNeighbor cXMLParams.GetParamString
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
+            
         'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
         Case "Chroma blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormChromaBlur
-            Else
-                FormChromaBlur.ChromaBlurFilter cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormChromaBlur Else FormChromaBlur.ChromaBlurFilter processParameters
+            
         Case "Grid blur"
             FilterGridBlur
             
@@ -421,12 +392,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Distort filters
                     
         Case "Correct lens distortion"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormLensCorrect
-            Else
-                FormLensCorrect.CorrectLensDistortion cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormLensCorrect Else FormLensCorrect.CorrectLensDistortion processParameters
+            
         Case "Donut"
             If raiseDialog Then
                 ShowPDDialog vbModal, FormDonut
@@ -456,11 +423,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Perspective"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPerspective
-            Else
-                FormPerspective.PerspectiveImage cParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPerspective Else FormPerspective.PerspectiveImage processParameters
             
         Case "Pinch and whirl"
             If raiseDialog Then
@@ -556,11 +519,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
             
         Case "Range filter"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRangeFilter
-            Else
-                FormRangeFilter.ApplyRangeFilter cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
             
         Case "Trace contour"
             If raiseDialog Then
@@ -578,12 +537,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Lights and shadows
         
         Case "Black light"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormBlackLight
-            Else
-                FormBlackLight.fxBlackLight cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
+            
         Case "Cross-screen"
             If raiseDialog Then
                 ShowPDDialog vbModal, FormCrossScreen
@@ -613,19 +568,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
             
         Case "Dilate (maximum rank)"
-            If raiseDialog Then
-                FormMedian.showMedianDialog 100
-            Else
-                FormMedian.ApplyMedianFilter cXMLParams.GetParamString
-            End If
+            If raiseDialog Then FormMedian.showMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
             
         Case "Erode (minimum rank)"
-            If raiseDialog Then
-                FormMedian.showMedianDialog 1
-            Else
-                FormMedian.ApplyMedianFilter cXMLParams.GetParamString
-            End If
-        
+            If raiseDialog Then FormMedian.showMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
+            
         'Natural
         
         Case "Atmosphere"
@@ -679,32 +626,16 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Anisotropic diffusion"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormAnisotropic
-            Else
-                FormAnisotropic.ApplyAnisotropicDiffusion cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormAnisotropic Else FormAnisotropic.ApplyAnisotropicDiffusion processParameters
+            
         Case "Bilateral smoothing"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormBilateral
-            Else
-                FormBilateral.BilateralWrapper cXMLParams.GetParamString()
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralWrapper processParameters
             
         Case "Mean shift"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMeanShift
-            Else
-                FormMeanShift.ApplyMeanShiftFilter cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormMeanShift Else FormMeanShift.ApplyMeanShiftFilter processParameters
             
         Case "Median"
-            If raiseDialog Then
-                FormMedian.showMedianDialog 50
-            Else
-                FormMedian.ApplyMedianFilter cXMLParams.GetParamString
-            End If
+            If raiseDialog Then FormMedian.showMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
             
         
         'Pixelate
@@ -775,26 +706,14 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Outline"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormOutlineEffect
-            Else
-                FormOutlineEffect.ApplyOutlineEffect cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormOutlineEffect Else FormOutlineEffect.ApplyOutlineEffect processParameters
+            
         Case "Palettize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPalettize
-            Else
-                FormPalettize.ApplyPalettizeEffect processParameters
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPalettize Else FormPalettize.ApplyPalettizeEffect processParameters
             
         Case "Portrait glow"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPortraitGlow
-            Else
-                FormPortraitGlow.ApplyPortraitGlow cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormPortraitGlow Else FormPortraitGlow.ApplyPortraitGlow processParameters
+            
         Case "Solarize"
             If raiseDialog Then
                 ShowPDDialog vbModal, FormSolarize
@@ -810,11 +729,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
             
         Case "Vignetting"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormVignette
-            Else
-                FormVignette.ApplyVignette cXMLParams.GetParamString()
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormVignette Else FormVignette.ApplyVignette processParameters
             
         
         'Custom filters

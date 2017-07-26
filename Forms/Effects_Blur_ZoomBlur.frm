@@ -317,11 +317,10 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         End If
     Next y
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     srcDIB.UnwrapArrayFromDIB srcImageData
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic, True

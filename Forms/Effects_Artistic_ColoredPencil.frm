@@ -117,9 +117,22 @@ Private m_blurDIB As pdDIB
 '    1 - luminous
 '    2 - pastel
 '    3 - graphite
-Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Double, ByVal pencilStyle As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Sketching image with pencils..."
+    
+    'Parse parameters out of the incoming param string
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim penRadius As Long, colorIntensity As Double, pencilStyle As Long
+    
+    With cParams
+        penRadius = .GetLong("radius", sltRadius.Value)
+        colorIntensity = .GetDouble("intensity", sltIntensity.Value)
+        pencilStyle = .GetLong("style", cboStyle.ListIndex)
+    End With
     
     'Reverse the intensity input; this way, positive values make the image more vibrant.  Negative values make it less vibrant.
     ' Note that the adjustment also varies by pencil style; typically it's used as a vibrance adjustment, but in some modes,
@@ -292,45 +305,35 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             'Calculate the gray value using different methods for each pencil style
             If (pencilStyle = 0) Or (pencilStyle = 1) Then
             
-            
-                    avgVal = grayLookUp(r + g + b)
-                    maxVal = Max3Int(r, g, b)
-                    
-                    'Calculate a vibrance-adjusted average, using the gray as our base
-                    amtVal = ((Abs(maxVal - avgVal) / 127) * colorIntensity)
-                    
-                    If (r <> maxVal) Then
-                        r = r + (maxVal - r) * amtVal
-                        If (r < 0) Then
-                            r = 0
-                        ElseIf (r > 255) Then
-                            r = 255
-                        End If
-                    End If
-                    
-                    If (g <> maxVal) Then
-                        g = g + (maxVal - g) * amtVal
-                        If (g < 0) Then
-                            g = 0
-                        ElseIf (g > 255) Then
-                            g = 255
-                        End If
-                    End If
-                    
-                    If (b <> maxVal) Then
-                        b = b + (maxVal - b) * amtVal
-                        If (b < 0) Then
-                            b = 0
-                        ElseIf (b > 255) Then
-                            b = 255
-                        End If
-                    End If
+                avgVal = grayLookUp(r + g + b)
+                maxVal = Max3Int(r, g, b)
+                
+                'Calculate a vibrance-adjusted average, using the gray as our base
+                amtVal = ((Abs(maxVal - avgVal) / 127) * colorIntensity)
+                
+                If (r <> maxVal) Then
+                    r = r + (maxVal - r) * amtVal
+                    If (r < 0) Then r = 0
+                    If (r > 255) Then r = 255
+                End If
+                
+                If (g <> maxVal) Then
+                    g = g + (maxVal - g) * amtVal
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                End If
+                
+                If (b <> maxVal) Then
+                    b = b + (maxVal - b) * amtVal
+                    If (b < 0) Then b = 0
+                    If (b > 255) Then b = 255
+                End If
                     
             ElseIf (pencilStyle = 2) Then
             
-                    r = gammaTable(r)
-                    g = gammaTable(g)
-                    b = gammaTable(b)
+                r = gammaTable(r)
+                g = gammaTable(g)
+                b = gammaTable(b)
             
             'At present, the only other possibility is pencilStyle = 3
             Else
@@ -367,7 +370,7 @@ Private Sub cboStyle_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Colored pencil", , BuildParams(sltRadius, sltIntensity, cboStyle.ListIndex), UNDO_LAYER
+    Process "Colored pencil", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -409,7 +412,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxColoredPencil sltRadius, sltIntensity, cboStyle.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxColoredPencil GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -423,7 +426,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
+        .AddParam "intensity", sltIntensity.Value
+        .AddParam "style", cboStyle.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()
