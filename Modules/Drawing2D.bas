@@ -396,7 +396,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   alpha As Byte
+   Alpha As Byte
 End Type
 
 Public Type POINTFLOAT

@@ -25,6 +25,8 @@ Option Explicit
 ' 3) Array for max channel values (dimensioned [0,3])
 ' 4) Array for max log channel values
 ' 5) Array of where the maximum channel values occur (histogram index)
+'
+'TODO: add an option for ignoring transparent pixels; this would improve output on images with variable opacity
 Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Double, ByRef channelMax() As Double, ByRef channelMaxLog() As Double, ByRef channelMaxPosition() As Byte)
     
     'Redimension the various arrays

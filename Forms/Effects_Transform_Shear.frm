@@ -302,12 +302,9 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

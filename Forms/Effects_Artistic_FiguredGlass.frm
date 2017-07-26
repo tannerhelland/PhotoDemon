@@ -343,12 +343,9 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic

@@ -1261,7 +1261,7 @@ Public Type FIRGBA16
    Red As Integer
    Green As Integer
    Blue As Integer
-   alpha As Integer
+   Alpha As Integer
 End Type
 
 Public Type FIRGBF
@@ -1274,7 +1274,7 @@ Public Type FIRGBAF
    Red As Double
    Green As Double
    Blue As Double
-   alpha As Double
+   Alpha As Double
 End Type
 
 Public Type FICOMPLEX
@@ -2584,7 +2584,7 @@ Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, ByRef B
 End Function
 
 Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
-                                               ByRef alpha As Byte, _
+                                               ByRef Alpha As Byte, _
                                                ByRef Red As Byte, _
                                                ByRef Green As Byte, _
                                                ByRef Blue As Byte) As Boolean
@@ -2596,7 +2596,7 @@ Dim bkcolor As RGBQUAD
                                               
    FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(Bitmap, bkcolor) = 1)
    With bkcolor
-      alpha = .alpha
+      Alpha = .Alpha
       Red = .Red
       Green = .Green
       Blue = .Blue
@@ -2624,7 +2624,7 @@ Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
 End Function
 
 Public Function FreeImage_SetBackgroundColorEx(ByVal Bitmap As Long, _
-                                               ByVal alpha As Byte, _
+                                               ByVal Alpha As Byte, _
                                                ByVal Red As Byte, _
                                                ByVal Green As Byte, _
                                                ByVal Blue As Byte) As Boolean
@@ -2636,7 +2636,7 @@ Dim tColor As RGBQUAD
    ' color component.
                                              
    With tColor
-      .alpha = alpha
+      .Alpha = Alpha
       .Red = Red
       .Green = Green
       .Blue = Blue
@@ -4398,7 +4398,7 @@ Public Function FreeImage_PaintTransparent(ByVal hDC As Long, _
                                   Optional ByVal ySrc As Long = 0, _
                                   Optional ByVal WidthSrc As Long, _
                                   Optional ByVal HeightSrc As Long, _
-                                  Optional ByVal alpha As Byte = 255) As Long
+                                  Optional ByVal Alpha As Byte = 255) As Long
                                   
 Dim lpPalette As Long
 Dim bIsTransparent As Boolean
@@ -4480,7 +4480,7 @@ Dim bIsTransparent As Boolean
          Call CopyMemory(alPalMod(0), ByVal lpPalette, lPaletteSize)
          abTT = FreeImage_GetTransparencyTableEx(Bitmap)
          
-         If ((alpha = 255) And _
+         If ((Alpha = 255) And _
              (HeightDst >= HeightSrc) And (WidthDst >= WidthSrc)) Then
             
             ' create a mask palette and a modified version of the
@@ -4563,7 +4563,7 @@ Dim bIsTransparent As Boolean
             
             With tBF
                .BlendOp = AC_SRC_OVER
-               .SourceConstantAlpha = alpha
+               .SourceConstantAlpha = Alpha
                If (FreeImage_GetBPP(Bitmap) = 32) Then
                   .AlphaFormat = AC_SRC_ALPHA
                End If

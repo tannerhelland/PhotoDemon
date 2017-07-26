@@ -279,12 +279,9 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
         
     Next curChannel
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     If g_cancelCurrentAction Then CreateColorHalftoneDIB = 0 Else CreateColorHalftoneDIB = 1
 

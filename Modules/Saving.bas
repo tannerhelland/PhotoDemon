@@ -696,7 +696,7 @@ Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     Next y
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcArray1), 0&, 4
     CopyMemory ByVal VarPtrArray(srcArray2), 0&, 4
     
