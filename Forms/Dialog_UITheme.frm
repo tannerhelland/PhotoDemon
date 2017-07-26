@@ -236,6 +236,10 @@ Private Sub cboLanguage_Click()
     
     m_LangIndex = cboLanguage.ListIndex
     
+    g_Language.UndoTranslations Me
+    g_Language.ActivateNewLanguage m_LangIndex
+    g_Language.ApplyLanguage False, False
+    
     If (Not m_SuspendUpdates) Then
         If (Len(m_AvailableLanguages(m_LangIndex).Author) <> 0) Then
             lblLangAuthor.Caption = g_Language.TranslateMessage("Translation by %1", m_AvailableLanguages(m_LangIndex).Author)
@@ -244,9 +248,6 @@ Private Sub cboLanguage_Click()
         End If
     End If
     
-    g_Language.UndoTranslations Me
-    g_Language.ActivateNewLanguage m_LangIndex
-    g_Language.ApplyLanguage False, False
     Interface.ApplyThemeAndTranslations Me
     LiveUpdateUITheme
     
