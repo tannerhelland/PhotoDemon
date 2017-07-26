@@ -272,19 +272,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormPencil Else FormPencil.fxColoredPencil processParameters
             
         Case "Comic book"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormComicBook
-            Else
-                FormComicBook.fxComicBook cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, 0)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormComicBook Else FormComicBook.fxComicBook processParameters
             
         Case "Figured glass"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFiguredGlass
-            Else
-                FormFiguredGlass.FiguredGlassFX cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormFiguredGlass Else FormFiguredGlass.FiguredGlassFX processParameters
+            
         Case "Film noir"
             If raiseDialog Then ShowPDDialog vbModal, FormFilmNoir Else FormFilmNoir.fxFilmNoir processParameters
             

@@ -109,7 +109,20 @@ Option Explicit
 'Inputs:
 ' 1) strength of the inking
 ' 2) color smudging, which controls the radius of the median effect applied to the base image
-Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVal colorStrength As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    'Parse out individual parameters
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim inkOpacity As Long, colorSmudge As Long, colorStrength As Long
+    
+    With cParams
+        inkOpacity = .GetLong("ink", sltInk.Value)
+        colorSmudge = .GetLong("size", sltColor.Value)
+        colorStrength = .GetLong("smoothing", btsStrength.ListIndex)
+    End With
     
     If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
     
@@ -203,7 +216,7 @@ Private Sub btsStrength_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Comic book", , BuildParams(sltInk, sltColor, btsStrength.ListIndex), UNDO_LAYER
+    Process "Comic book", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -234,7 +247,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.fxComicBook GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -256,7 +269,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "ink", sltInk.Value
+        .AddParam "size", sltColor.Value
+        .AddParam "smoothing", btsStrength.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()
