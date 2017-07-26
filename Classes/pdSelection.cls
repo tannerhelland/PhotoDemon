@@ -1793,7 +1793,7 @@ Private Sub CreateSelectionMask()
         
     'Border selections are automatically disabled if the border size exceeds the smallest dimension (width or height)
     ' of the image
-    Dim minDimension As Long
+    Dim minDimension As Single
     If (m_CornersLocked.Width < m_CornersLocked.Height) Then minDimension = m_CornersLocked.Width Else minDimension = m_CornersLocked.Height
             
     'When rendering rectangle and ellipse selections in BORDERED mode, we calculate some values in advance.  Basically, these shapes
@@ -1808,7 +1808,7 @@ Private Sub CreateSelectionMask()
     If (GetSelectionProperty_Long(sp_Area) = sa_Border) And ((m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle)) Then
         rectModifier = GetSelectionProperty_Long(sp_BorderWidth)
         If (rectModifier < 1) Then rectModifier = 1
-        If (rectModifier > (minDimension \ 2)) Then ignoreBorderValue = True
+        If (rectModifier > (minDimension * 0.5)) Then ignoreBorderValue = True
     End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).

@@ -1446,7 +1446,16 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-    
+        
+    'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
+    ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        If (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> Selections.GetSelectionShapeFromCurrentTool()) Then
+            pdImages(g_CurrentImage).SetSelectionActive False
+            pdImages(g_CurrentImage).MainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool()
+        End If
+    End If
+        
     'Because the wand tool is extremely simple, handle it specially
     If (g_CurrentTool = SELECT_WAND) Then
     
