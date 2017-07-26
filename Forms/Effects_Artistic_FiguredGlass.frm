@@ -107,8 +107,8 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 23/September/14
-'Last update: add supersampling support
+'Last updated: 26/July/17
+'Last update: performance optimizations (10+% time reduction), convert to XML params
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
@@ -139,9 +139,22 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "figured glass" effect to an image
-Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Projecting image through simulated glass..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim fxScale As Double, fxTurbulence As Double, edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        fxScale = .GetDouble("scale", sltScale.Value)
+        fxTurbulence = .GetDouble("turbulence", sltTurbulence.Value)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -188,11 +201,14 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     
     'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
     ' values, but at some point it distorts the image beyond recognition.
-    If curDIBValues.Width > curDIBValues.Height Then
+    If (curDIBValues.Width > curDIBValues.Height) Then
         fxScale = (fxScale / 100) * curDIBValues.Height
     Else
         fxScale = (fxScale / 100) * curDIBValues.Width
     End If
+    
+    Dim invScale As Double
+    If (fxScale <> 0#) Then invScale = 1# / fxScale Else invScale = 1#
     
     '***************************************
     ' /* BEGIN SUPERSAMPLING PREPARATION */
@@ -253,6 +269,8 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Finally, an integer displacement will be used to move pixel values around
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
+    Dim multAvg As Double
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -275,13 +293,13 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
             
             'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
             ' user's turbulence value.
-            If fxScale > 0 Then
-                pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(j / fxScale, k / fxScale) * fxTurbulence
+            If (fxScale > 0#) Then
+                pNoiseCache = PI_DOUBLE * fxTurbulence * cPerlin.Noise2D(j * invScale, k * invScale)
                 perlinCacheSin = Sin(pNoiseCache) * fxScale
                 perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
             Else
-                perlinCacheSin = 0
-                perlinCacheCos = 0
+                perlinCacheSin = 0#
+                perlinCacheCos = 0#
             End If
             
             'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
@@ -304,7 +322,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -315,24 +333,21 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
         
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        multAvg = 1 / numSamplesUsed
+        newR = newR * multAvg
+        newG = newG * multAvg
+        newB = newB * multAvg
+        newA = newA * multAvg
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -353,7 +368,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , BuildParams(sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Figured glass", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -413,9 +428,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then
-        FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
-    End If
+    If cmdBar.PreviewsAllowed Then Me.FiguredGlassFX GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -429,7 +442,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "scale", sltScale.Value
+        .AddParam "turbulence", sltTurbulence.Value
+        .AddParam "quality", sltQuality.Value
+        .AddParam "edges", cboEdges.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()
