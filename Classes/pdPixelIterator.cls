@@ -123,10 +123,16 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     'Cache shape and assumed bounds.  (In the future, these bounds may change according to automated trim functions,
     ' but for now, they are hard-coded per the user's request.)
     m_WindowShape = windowShape
+    
+    If (xRadius < 1) Then xRadius = 1
+    If (yRadius < 1) Then yRadius = 1
     m_XBLeft = xRadius
     m_XBRight = xRadius
     m_YBTop = yRadius
     m_YBBottom = yRadius
+    
+    'At certain sizes, some window shapes are unreliable.  Force these to use the failsafe rectangular engine.
+    If (m_WindowShape = PDPRS_Circle) And ((xRadius <= 1) Or (yRadius <= 1)) Then m_WindowShape = PDPRS_Rectangle
     
     'Apply some failsafe dimension testing to the incoming bounds
     If (m_XBRight > (m_FinalX - m_InitX)) Then
@@ -177,10 +183,16 @@ Friend Function InitializeIterator_ByteArray(ByRef srcByteArray() As Byte, ByVal
     'Cache shape and assumed bounds.  (In the future, these bounds may change according to automated trim functions,
     ' but for now, they are hard-coded per the user's request.)
     m_WindowShape = windowShape
+    
+    If (xRadius < 1) Then xRadius = 1
+    If (yRadius < 1) Then yRadius = 1
     m_XBLeft = xRadius
     m_XBRight = xRadius
     m_YBTop = yRadius
     m_YBBottom = yRadius
+    
+    'At certain sizes, some window shapes are unreliable.  Force these to use the failsafe rectangular engine.
+    If (m_WindowShape = PDPRS_Circle) And ((xRadius <= 1) Or (yRadius <= 1)) Then m_WindowShape = PDPRS_Rectangle
     
     'Apply some failsafe dimension testing to the incoming bounds
     If (m_XBRight > (m_FinalX - m_InitX)) Then
