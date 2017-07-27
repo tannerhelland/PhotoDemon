@@ -65,7 +65,7 @@ Begin VB.Form FormGaussianBlur
       Width           =   5835
       _ExtentX        =   10292
       _ExtentY        =   1905
-      Caption         =   "quality"
+      Caption         =   "mode"
    End
 End
 Attribute VB_Name = "FormGaussianBlur"
@@ -77,8 +77,8 @@ Attribute VB_Exposed = False
 'Gaussian Blur Tool
 'Copyright 2010-2017 by Tanner Helland
 'Created: 01/July/10
-'Last updated: 25/September/14
-'Last update: switch quality option buttons to button strip
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
 ' that utilizes a separable convolution kernel AND allows for sub-pixel radii (at "best" quality, anyway).
@@ -108,10 +108,25 @@ Option Explicit
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If (Not toPreview) Then Message "Applying gaussian blur..."
-        
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim gRadius As Double, gaussQuality As Long
+    
+    With cParams
+        gRadius = .GetDouble("radius", sltRadius.Value)
+        gaussQuality = .GetLong("quality", 1)
+    End With
+    
+    'Previous versions of this filter supported an extremely slow (but exact) gaussian blur routine; we now substitute
+    ' IIR filtering for that approach, as the output is nearly identical but many times faster.
+    If (gaussQuality > 1) Then gaussQuality = 1
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic, , , True
@@ -125,7 +140,7 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0 Then gRadius = 0.01
+        If gRadius = 0# Then gRadius = 0.01
     End If
         
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
@@ -139,16 +154,11 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
             CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
         
         'IIR Gaussian estimation
-        Case 1
+        Case Else
             Filters_Area.GaussianBlur_IIRImplementation workingDIB, gRadius, 3, toPreview
             
-        'True Gaussian
-        Case 2
-            CreateGaussianBlurDIB gRadius, srcDIB, workingDIB, toPreview
-        
     End Select
     
-    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
@@ -162,7 +172,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , BuildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
+    Process "Gaussian blur", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -174,9 +184,8 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the quality selector
-    btsQuality.AddItem "good", 0
-    btsQuality.AddItem "better", 1
-    btsQuality.AddItem "best", 2
+    btsQuality.AddItem "fast", 0
+    btsQuality.AddItem "precise", 1
     btsQuality.ListIndex = 0
     
     'Apply translations and visual themes
@@ -191,7 +200,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then GaussianBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -209,7 +218,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
+        .AddParam "quality", btsQuality.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -796,7 +796,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
     
     'Make sure sigma and steps are valid
-    If (sigma <= 0) Then sigma = 0.01
+    If (sigma <= 0#) Then sigma = 0.01
     If (numSteps <= 0) Then numSteps = 1
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
@@ -812,14 +812,14 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     End If
     
     'Calculate IIR values
-    lambda = (q * q) / (2 * numSteps)
-    dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
+    lambda = (q * q) / (2# * numSteps)
+    dnu = (1# + 2# * lambda - Sqr(1# + 4 * lambda)) / (2# * lambda)
     nu = dnu
-    boundaryScale = (1 / (1 - dnu))
+    boundaryScale = (1# / (1# - dnu))
     If blurSymmetric Then
-        postScale = Sqr((dnu / lambda) ^ (2 * numSteps)) * 255
+        postScale = Sqr((dnu / lambda) ^ (2# * numSteps)) * 255#
     Else
-        postScale = Sqr((dnu / lambda) ^ numSteps) * 255
+        postScale = Sqr((dnu / lambda) ^ numSteps) * 255#
     End If
     
     'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
@@ -830,22 +830,24 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     If hasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
     
-    'Copy the contents of the current image into the float arrays
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    'Copy the contents of the current image into float arrays
     For x = initX To finalX
         quickX = x * qvDepth
     For y = initY To finalY
         
-        r = imageData(quickX + 2, y)
-        g = imageData(quickX + 1, y)
         b = imageData(quickX, y)
+        g = imageData(quickX + 1, y)
+        r = imageData(quickX + 2, y)
         
-        rFloat(x, y) = r / 255
-        gFloat(x, y) = g / 255
-        bFloat(x, y) = b / 255
+        rFloat(x, y) = r * ONE_DIV_255
+        gFloat(x, y) = g * ONE_DIV_255
+        bFloat(x, y) = b * ONE_DIV_255
         
         If hasAlpha Then
             a = imageData(quickX + 3, y)
-            aFloat(x, y) = a / 255
+            aFloat(x, y) = a * ONE_DIV_255
         End If
 
     Next y
@@ -919,19 +921,19 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'Apply final post-scaling
     If Not g_cancelCurrentAction Then
         
-        For x = initX To finalX
-            quickX = x * qvDepth
         For y = initY To finalY
-        
+        For x = initX To finalX
+            
             r = rFloat(x, y) * postScale
             g = gFloat(x, y) * postScale
             b = bFloat(x, y) * postScale
             
             'Perform failsafe clipping
-            If r > 255 Then r = 255
-            If g > 255 Then g = 255
-            If b > 255 Then b = 255
+            If (r > 255) Then r = 255
+            If (g > 255) Then g = 255
+            If (b > 255) Then b = 255
             
+            quickX = x * qvDepth
             imageData(quickX, y) = b
             imageData(quickX + 1, y) = g
             imageData(quickX + 2, y) = r
@@ -939,12 +941,12 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
-                If a > 255 Then a = 255
+                If (a > 255) Then a = 255
                 imageData(quickX + 3, y) = a
             End If
         
-        Next y
         Next x
+        Next y
         
     End If
     

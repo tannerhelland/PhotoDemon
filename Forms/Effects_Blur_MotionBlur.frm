@@ -61,6 +61,7 @@ Begin VB.Form FormMotionBlur
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "angle"
+      Min             =   -359.9
       Max             =   359.9
       SigDigits       =   1
    End
@@ -98,8 +99,8 @@ Attribute VB_Exposed = False
 'Motion Blur Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 26/August/13
-'Last updated: 02/October/15
-'Last update: rewrite against new all-in-one rotate/edge-extend function
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a motion blur tool that supports variable angle
 ' and strength, while still capable of operating in real-time.  This function is mostly just a wrapper to PD's
@@ -117,9 +118,22 @@ Option Explicit
 
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
-Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal blurAlgorithm As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying motion blur..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim bAngle As Double, bDistance As Long, blurSymmetrically As Boolean, blurAlgorithm As Long
+    
+    With cParams
+        bAngle = .GetDouble("angle", sltAngle.Value)
+        bDistance = .GetLong("distance", sltDistance.Value)
+        blurSymmetrically = .GetBool("symmetrical", False)
+        blurAlgorithm = .GetLong("style", btsStyle.ListIndex)
+    End With
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
@@ -195,7 +209,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , BuildParams(sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex), UNDO_LAYER
+    Process "Motion blur", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -224,7 +238,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MotionBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -246,7 +260,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "distance", sltDistance.Value
+        .AddParam "symmetrical", CBool(chkSymmetry.Value)
+        .AddParam "style", btsStyle.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()
