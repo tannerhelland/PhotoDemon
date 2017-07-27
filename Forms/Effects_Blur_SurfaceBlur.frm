@@ -78,7 +78,7 @@ Begin VB.Form FormSurfaceBlur
       Width           =   5910
       _ExtentX        =   10425
       _ExtentY        =   1058
-      Caption         =   "quality"
+      Caption         =   "mode"
    End
    Begin PhotoDemon.pdButtonStrip btsArea 
       Height          =   1080
@@ -100,8 +100,8 @@ Attribute VB_Exposed = False
 'Surface Blur Tool (formerly "Smart Blur")
 'Copyright 2013-2017 by Tanner Helland
 'Created: 17/January/13
-'Last updated: 24/August/13
-'Last update: add command bar
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'To my knowledge, this tool is the first of its kind in VB6 - an intelligent blur tool that selectively blurs
 ' edges differently from smooth areas of an image.  The user can specify the threshold to use, as well as whether
@@ -125,10 +125,23 @@ Option Explicit
 '   - Threshold (controls edge/surface distinction)
 '   - Smooth Edges (for traditional surface blur (false) vs PD's edge-only softening (true))
 '   - Blur quality (0, 1, 2 for iterative box blur, IIR blur, or true Gaussian, respectively)
-Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal sbQuality As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Analyzing image in preparation for surface blur..."
-            
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim gRadius As Double, gThreshold As Long, smoothEdges As Boolean, sbQuality As Long
+    
+    With cParams
+        gRadius = .GetDouble("radius", sltRadius.Value)
+        gThreshold = .GetLong("threshold", sltThreshold.Value)
+        smoothEdges = .GetBool("type", False)
+        sbQuality = .GetLong("quality", btsQuality.ListIndex)
+    End With
+    
     'More color variables - in this case, sums for each color component
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -154,7 +167,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0 Then gRadius = 0.01
+        If (gRadius = 0#) Then gRadius = 0.01
     End If
     
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
@@ -175,14 +188,9 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
             gaussBlurSuccess = CreateApproximateGaussianBlurDIB(gRadius, workingDIB, gaussDIB, 3, toPreview, progBarCalculation + finalX)
         
         'IIR Gaussian estimation
-        Case 1
+        Case Else
             progBarCalculation = finalY + finalX
             gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
-        
-        'True Gaussian
-        Case Else
-            progBarCalculation = finalY * 2
-            gaussBlurSuccess = CreateGaussianBlurDIB(gRadius, workingDIB, gaussDIB, toPreview, progBarCalculation + finalX)
         
     End Select
     
@@ -277,16 +285,10 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
             
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-        Erase GaussImageData
-        
-        gaussDIB.EraseDIB
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
         
     End If
     
@@ -304,7 +306,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Surface blur", , BuildParams(sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex), UNDO_LAYER
+    Process "Surface blur", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -313,11 +315,6 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltThreshold.Value = 50
-End Sub
-
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -330,13 +327,15 @@ Private Sub Form_Load()
     btsArea.AddItem "edges", 1
     btsArea.ListIndex = 0
     
-    btsQuality.AddItem "good", 0
-    btsQuality.AddItem "better", 1
-    btsQuality.AddItem "best", 2
+    btsQuality.AddItem "fast", 0
+    btsQuality.AddItem "precise", 1
     btsQuality.ListIndex = 0
     
     'Apply visual themes
     ApplyThemeAndTranslations Me
+    
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -358,7 +357,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SurfaceBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -372,7 +371,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
+        .AddParam "threshold", sltThreshold.Value
+        .AddParam "type", CBool(btsArea.ListIndex = 1)
+        .AddParam "quality", btsQuality.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

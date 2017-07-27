@@ -1253,8 +1253,8 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     ' http://www.w3.org/TR/SVG11/filters.html#feGaussianBlurElement
     If (numIterations = 3) Then
         Dim stdDev As Double
-        stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2 * Log(1# / 255#)))
-        comparableRadius = Int(stdDev * 2.37997232) / 2 - 1
+        stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2# * Log(1# / 255#)))
+        comparableRadius = Int(stdDev * 2.37997232 * 0.5)
     Else
     
         'For larger iterations, it's not worth the trouble to perform a fine estimation, as the repeat iterations will
@@ -1266,6 +1266,41 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     'Box blurs require a radius of at least 1, so force it to that
     If (comparableRadius < 1) Then comparableRadius = 1
     
+    'We now want to populate an array of radii, each of which will be used at one of the iterations.  We do this
+    ' so that we can more accurately imitate the original gaussian blur with a series of box blurs.
+    Dim radiiTable() As Long
+    ReDim radiiTable(0 To numIterations - 1) As Long
+    
+    Dim netRadii As Long, thisRadii As Long
+    
+    Dim i As Long
+    For i = 0 To numIterations - 1
+        
+        'For all (n-1) iterations, use the comparable radius calculated above
+        If (i < numIterations - 1) Then
+            thisRadii = comparableRadius
+        
+        'For the final iteration, use the remainder (e.g. the difference between how many radii we've calculated,
+        ' and how many radii remain to be calculated)
+        Else
+            
+            thisRadii = equivalentGaussianRadius - netRadii
+            
+            'If the remainder is <= 0, simply remove the final iteration of the blur to compensate
+            If (thisRadii < 1) Then
+                thisRadii = 1
+                numIterations = numIterations - 1
+                If (numIterations < 1) Then numIterations = 1
+            End If
+            
+        End If
+        
+        radiiTable(i) = thisRadii
+        
+        netRadii = netRadii + thisRadii
+        
+    Next i
+    
     'Create an extra intermediate DIB.  This is needed to cache the results of the horizontal blur, before we apply the vertical pass to it.
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
@@ -1273,11 +1308,10 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     dstDIB.CreateFromExistingDIB gaussDIB
     
     'Iterate a box blur, switching between the gauss and destination DIBs as we go
-    Dim i As Long
     For i = 1 To numIterations
     
-        If CreateHorizontalBlurDIB(comparableRadius, comparableRadius, dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i - 1)) + (gaussDIB.GetDIBHeight * (i - 1))) > 0 Then
-            If CreateVerticalBlurDIB(comparableRadius, comparableRadius, gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * (i - 1))) = 0 Then
+        If CreateHorizontalBlurDIB(radiiTable(i - 1), radiiTable(i - 1), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i - 1)) + (gaussDIB.GetDIBHeight * (i - 1))) > 0 Then
+            If CreateVerticalBlurDIB(radiiTable(i - 1), radiiTable(i - 1), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * (i - 1))) = 0 Then
                 Exit For
             End If
         Else
@@ -1747,9 +1781,9 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) * 0.5
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) * 0.5
     midY = midY + initY
     
     'Rotation values
@@ -1768,10 +1802,10 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     tHeight = finalY - initY
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
               
-    sRadius = sRadius * (polarRadius / 100)
+    sRadius = sRadius * (polarRadius / 100#)
     sRadius2 = sRadius * sRadius
-        
-    polarRadius = 1 / (polarRadius / 100)
+    
+    polarRadius = 1# / (polarRadius / 100#)
         
     Dim iAspect As Double
     iAspect = tHeight / tWidth
@@ -2227,6 +2261,8 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     ReDim bTotals(initY To finalY) As Long
     ReDim aTotals(initY To finalY) As Long
     
+    Dim avgSample As Double
+    
     'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
     ' pixels left of that!)
     For x = initX To initX + rRadius - 1
@@ -2279,11 +2315,12 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
             
         'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
         xStride = x * 4
+        avgSample = 1# / numOfPixels
         For y = initY To finalY
-            dstImageData(xStride, y) = bTotals(y) \ numOfPixels
-            dstImageData(xStride + 1, y) = gTotals(y) \ numOfPixels
-            dstImageData(xStride + 2, y) = rTotals(y) \ numOfPixels
-            dstImageData(xStride + 3, y) = aTotals(y) \ numOfPixels
+            dstImageData(xStride, y) = bTotals(y) * avgSample
+            dstImageData(xStride + 1, y) = gTotals(y) * avgSample
+            dstImageData(xStride + 2, y) = rTotals(y) * avgSample
+            dstImageData(xStride + 3, y) = aTotals(y) * avgSample
         Next y
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
@@ -2389,7 +2426,9 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     Next x
         numOfPixels = numOfPixels + 1
     Next y
-                
+    
+    Dim avgSample As Double
+    
     'Loop through each row in the image, tallying blur values as we go
     For y = initY To finalY
                 
@@ -2428,17 +2467,19 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             numOfPixels = numOfPixels + 1
             
         End If
-            
+        
+        avgSample = 1# / numOfPixels
+        
         'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
         For x = initX To finalX
             
             xStride = x * 4
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(xStride, y) = bTotals(x) \ numOfPixels
-            dstImageData(xStride + 1, y) = gTotals(x) \ numOfPixels
-            dstImageData(xStride + 2, y) = rTotals(x) \ numOfPixels
-            dstImageData(xStride + 3, y) = aTotals(x) \ numOfPixels
+            dstImageData(xStride, y) = bTotals(x) * avgSample
+            dstImageData(xStride + 1, y) = gTotals(x) * avgSample
+            dstImageData(xStride + 2, y) = rTotals(x) * avgSample
+            dstImageData(xStride + 3, y) = aTotals(x) * avgSample
     
         Next x
         

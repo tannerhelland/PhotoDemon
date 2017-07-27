@@ -90,9 +90,8 @@ Attribute VB_Exposed = False
 'Box Blur Tool
 'Copyright 2000-2017 by Tanner Helland
 'Created: some time 2000
-'Last updated: 17/September/13
-'Last update: replace on the old accumulation technique with separable horizontal and vertical blurs.  Hot damn,
-'              this thing is fast!
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This is a heavily optimized box blur.  Separable horizontal and vertical blurs are used, instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)

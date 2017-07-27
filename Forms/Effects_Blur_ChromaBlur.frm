@@ -31,7 +31,7 @@ Begin VB.Form FormChromaBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1720
-      Caption         =   "quality"
+      Caption         =   "mode"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -151,17 +151,11 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             blurSuccess = CreateApproximateGaussianBlurDIB(gRadius, srcDIB, gaussDIB, 3, toPreview, calcProgBarMax)
         
         '5 iteration box blur
-        Case 1
+        Case Else
             calcProgBarMax = finalX * 6 + finalY * 5
             calcProgBarOffset = finalX * 5 + finalY * 5
             blurSuccess = CreateApproximateGaussianBlurDIB(gRadius, srcDIB, gaussDIB, 5, toPreview, calcProgBarMax)
         
-        'True Gaussian
-        Case 2
-            calcProgBarMax = finalX + finalY * 2
-            calcProgBarOffset = finalY * 2
-            blurSuccess = CreateGaussianBlurDIB(gRadius, srcDIB, gaussDIB, toPreview, calcProgBarMax)
-            
     End Select
     
     'If the previous blur step was successful (e.g. the user did NOT cancel it), continue with the chroma blur.
@@ -240,16 +234,10 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-        Erase GaussImageData
-        
-        gaussDIB.EraseDIB
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
         
     End If
     
@@ -279,9 +267,8 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully loaded
     cmdBar.MarkPreviewStatus False
     
-    btsQuality.AddItem "good", 0
-    btsQuality.AddItem "better", 1
-    btsQuality.AddItem "best", 2
+    btsQuality.AddItem "fast", 0
+    btsQuality.AddItem "precise", 1
     btsQuality.ListIndex = 0
         
     'Apply translations and visual themes

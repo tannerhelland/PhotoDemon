@@ -335,14 +335,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

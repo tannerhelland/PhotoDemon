@@ -88,11 +88,8 @@ Attribute VB_Exposed = False
 'Radial Blur Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 26/August/13
-'Last updated: 15/September/13
-'Last update: adjust radius calculation method to produce correct ANGLE values - because of the polar-conversion
-'              shortcut we use, angle is actually a ratio of the horizontal width of the image, where 360 degrees
-'              is equivalent to the full width.  Now the output is identical to GIMP, Paint.NET, etc. (actually,
-'              our output quality is better :) with no noticeable speed drop.
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable angles,
 ' and capable of operating in real-time.  This function is mostly just a wrapper to PD's horizontal blur and
@@ -110,10 +107,22 @@ Option Explicit
 
 'Apply radial blur to an image
 'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
-Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying radial blur..."
+        
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
     
+    Dim bRadius As Double, blurSymmetrically As Boolean, useBilinear As Boolean
+    
+    With cParams
+        bRadius = .GetDouble("radius", sltRadius.Value)
+        blurSymmetrically = .GetBool("symmetry", False)
+        useBilinear = .GetBool("bilinear", True)
+    End With
+
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic, , , True
@@ -126,8 +135,8 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
     
     'By dividing blur radius by 360 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
     Dim actualBlurSize As Long
-    actualBlurSize = (bRadius / 360) * curDIBValues.Width
-    If actualBlurSize < 1 Then actualBlurSize = 1
+    actualBlurSize = (bRadius / 360#) * curDIBValues.Width
+    If (actualBlurSize < 1) Then actualBlurSize = 1
     
     Dim finalX As Long, finalY As Long
     finalX = workingDIB.GetDIBWidth
@@ -201,7 +210,6 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         
     End If
     
-    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
@@ -218,7 +226,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , BuildParams(sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
+    Process "Radial blur", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -251,7 +259,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RadialBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -265,7 +273,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
+        .AddParam "symmetry", CBool(chkSymmetry.Value)
+        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
     End With
     
     GetLocalParamString = cParams.GetParamString()
