@@ -153,10 +153,10 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
         origV = GetLuminance(r, g, b) / 255#
         
         'Convert the re-tinted colors to HSL
-        tRGBToHSL r, gLookup(g), b, h, s, v
+        Colors.ImpreciseRGBtoHSL r, gLookup(g), b, h, s, v
         
         'Convert back to RGB
-        tHSLToRGB h, s, origV, r, g, b
+        Colors.ImpreciseHSLtoRGB h, s, origV, r, g, b
         
         'Assign new values
         imageData(quickVal, y) = b

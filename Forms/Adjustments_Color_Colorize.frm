@@ -159,13 +159,13 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
         b = imageData(quickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
         
         'Convert back to RGB using our artificial hue value
         If maintainSaturation Then
-            tHSLToRGB hToUse, s, l, r, g, b
+            Colors.ImpreciseHSLtoRGB hToUse, s, l, r, g, b
         Else
-            tHSLToRGB hToUse, 0.5, l, r, g, b
+            Colors.ImpreciseHSLtoRGB hToUse, 0.5, l, r, g, b
         End If
         
         'Assign the new values to each color channel

@@ -433,8 +433,8 @@ Public Sub ApplyPhotoFilter(ByVal effectParams As String, Optional ByVal toPrevi
         'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
         ' value with the original
         If preserveLuminance Then
-            tRGBToHSL r, g, b, h, s, l
-            tHSLToRGB h, s, originalLuminance, r, g, b
+            ImpreciseRGBtoHSL r, g, b, h, s, l
+            ImpreciseHSLtoRGB h, s, originalLuminance, r, g, b
         End If
         
         'Assign the new values to each color channel

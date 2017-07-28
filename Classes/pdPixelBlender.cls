@@ -4155,19 +4155,19 @@ Private Sub FastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single
         tmpSwap = b
         b = g
         g = tmpSwap
-        k = -1
+        k = -1#
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        k = -(2 / 6) - k
+        k = -0.333333333333333 - k
     End If
     
     chroma = r - fMin(g, b)
-    h = k + (g - b) / (6 * chroma + 0.0000001)
-    If (h < 0) Then h = -h
+    h = k + (g - b) / (6# * chroma + 0.0000001)
+    If (h < 0#) Then h = -h
     s = chroma / (r + 0.00000001)
     v = r
     
@@ -4181,18 +4181,18 @@ Private Sub FastRGBtoHOnly(ByVal r As Single, ByVal g As Single, ByVal b As Sing
         tmpSwap = b
         b = g
         g = tmpSwap
-        k = -1
+        k = -1#
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        k = -(2 / 6) - k
+        k = -0.333333333333333 - k
     End If
     
-    h = k + (g - b) / (6 * (r - fMin(g, b)) + 0.0000001)
-    If (h < 0) Then h = -h
+    h = k + (g - b) / (6# * (r - fMin(g, b)) + 0.0000001)
+    If (h < 0#) Then h = -h
     
 End Sub
 
@@ -4204,14 +4204,14 @@ Private Sub FastRGBtoSOnly(ByVal r As Single, ByVal g As Single, ByVal b As Sing
         tmpSwap = b
         b = g
         g = tmpSwap
-        k = -1
+        k = -1#
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        k = -(2 / 6) - k
+        k = -0.333333333333333 - k
     End If
     
     s = (r - fMin(g, b)) / (r + 0.00000001)
@@ -4234,15 +4234,15 @@ Private Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, B
         var_H = h * 6#
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If (var_H >= 6#) Then var_H = 0
+        If (var_H >= 6#) Then var_H = 0#
         
         Dim var_I As Long
         var_I = Int(var_H)
         
         Dim var_1 As Single, var_2 As Single, var_3 As Single
-        var_1 = v * (1 - s)
-        var_2 = v * (1 - s * (var_H - var_I))
-        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+        var_1 = v * (1# - s)
+        var_2 = v * (1# - s * (var_H - var_I))
+        var_3 = v * (1# - s * (1# - (var_H - var_I)))
         
         If (var_I = 0) Then
             r = v

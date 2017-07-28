@@ -403,8 +403,8 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             ' value with the original
             If preserveLuminance Then
                 
-                Colors.fRGBtoHSL CDbl(newR) * ONE_DIV_255, CDbl(newG) * ONE_DIV_255, CDbl(newB) * ONE_DIV_255, h, s, l
-                Colors.fHSLtoRGB h, s, originalLuminance, rFloat, gFloat, bFloat
+                Colors.PreciseRGBtoHSL CDbl(newR) * ONE_DIV_255, CDbl(newG) * ONE_DIV_255, CDbl(newB) * ONE_DIV_255, h, s, l
+                Colors.PreciseHSLtoRGB h, s, originalLuminance, rFloat, gFloat, bFloat
                 
                 imageData(quickVal, y) = bFloat * 255
                 imageData(quickVal + 1, y) = gFloat * 255

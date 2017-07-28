@@ -163,8 +163,8 @@ Public Sub SplitTone(ByVal effectParams As String, Optional ByVal toPreview As B
     'From the incoming colors, determine corresponding hue and saturation values
     Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
     Dim ignoreLuminance As Double
-    fRGBtoHSL Colors.ExtractRed(highlightColor) / 255#, Colors.ExtractGreen(highlightColor) / 255#, Colors.ExtractBlue(highlightColor) / 255#, highlightHue, highlightSaturation, ignoreLuminance
-    fRGBtoHSL Colors.ExtractRed(shadowColor) / 255#, Colors.ExtractGreen(shadowColor) / 255#, Colors.ExtractBlue(shadowColor) / 255#, shadowHue, shadowSaturation, ignoreLuminance
+    PreciseRGBtoHSL Colors.ExtractRed(highlightColor) / 255#, Colors.ExtractGreen(highlightColor) / 255#, Colors.ExtractBlue(highlightColor) / 255#, highlightHue, highlightSaturation, ignoreLuminance
+    PreciseRGBtoHSL Colors.ExtractRed(shadowColor) / 255#, Colors.ExtractGreen(shadowColor) / 255#, Colors.ExtractBlue(shadowColor) / 255#, shadowHue, shadowSaturation, ignoreLuminance
     
     'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone).
@@ -225,8 +225,8 @@ Public Sub SplitTone(ByVal effectParams As String, Optional ByVal toPreview As B
         vFloat = v / 255#
         
         'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)
-        fHSLtoRGB highlightHue, highlightSaturation, vFloat, rHighlight, gHighlight, bHighlight
-        fHSLtoRGB shadowHue, shadowSaturation, vFloat, rShadow, gShadow, bShadow
+        PreciseHSLtoRGB highlightHue, highlightSaturation, vFloat, rHighlight, gHighlight, bHighlight
+        PreciseHSLtoRGB shadowHue, shadowSaturation, vFloat, rShadow, gShadow, bShadow
         
         'Highlight and shadow values are returned in the range [0, 1]; convert them to [0, 255] before continuing
         rHighlight = rHighlight * 255

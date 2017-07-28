@@ -300,14 +300,14 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             r = imageData(x + 2, y)
             
             'Apply new values
-            If ehTarget = 0 Then
+            If (ehTarget = 0) Then
                 imageData(x, y) = bData(b)
                 imageData(x + 1, y) = gData(g)
                 imageData(x + 2, y) = rData(r)
             Else
-                If ehTarget = 1 Then
-                    Colors.tRGBToHSL r, g, b, h, s, v
-                    Colors.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
+                If (ehTarget = 1) Then
+                    Colors.ImpreciseRGBtoHSL r, g, b, h, s, v
+                    Colors.ImpreciseHSLtoRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
                     imageData(x, y) = b
                     imageData(x + 1, y) = g
                     imageData(x + 2, y) = r
@@ -373,42 +373,42 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     r = imageData(x + 2, y)
                     
                     'Partially equalize each histogram
-                    scaleFactor = 255 / numOfPixels
+                    scaleFactor = 255# / numOfPixels
                     
                     'RGB
                     If ehTarget = 0 Then
                     
                         rData(0) = CDbl(rValues(0)) * scaleFactor
-                        If r > 0 Then
+                        If (r > 0) Then
                             For i = 1 To r
                                 rData(i) = rData(i - 1) + (scaleFactor * CDbl(rValues(i)))
                             Next i
                         End If
                         
                         gData(0) = CDbl(gValues(0)) * scaleFactor
-                        If g > 0 Then
+                        If (g > 0) Then
                             For i = 1 To g
                                 gData(i) = gData(i - 1) + (scaleFactor * CDbl(gValues(i)))
                             Next i
                         End If
                         
                         bData(0) = CDbl(bValues(0)) * scaleFactor
-                        If b > 0 Then
+                        If (b > 0) Then
                             For i = 1 To b
                                 bData(i) = bData(i - 1) + (scaleFactor * CDbl(bValues(i)))
                             Next i
                         End If
                         
                         'Clamp all lookup table values
-                        If rData(r) > 255 Then rData(r) = 255
-                        If gData(g) > 255 Then gData(g) = 255
-                        If bData(b) > 255 Then bData(b) = 255
+                        If (rData(r) > 255) Then rData(r) = 255
+                        If (gData(g) > 255) Then gData(g) = 255
+                        If (bData(b) > 255) Then bData(b) = 255
                         
                         'Adaptive histogram equalization can often lead to enormously different values.
                         ' To try and mediate this, we average the new value with the original value.
-                        b = (b + bData(b)) \ 2
-                        g = (g + gData(g)) \ 2
-                        r = (r + rData(r)) \ 2
+                        b = (b + bData(b)) * 0.5
+                        g = (g + gData(g)) * 0.5
+                        r = (r + rData(r)) * 0.5
                         
                         'Apply the equalized value to the image
                         imageData(x, y) = b
@@ -418,42 +418,42 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     'Luminance
                     Else
                         
-                        If ehTarget = 1 Then
-                            Colors.tRGBToHSL r, g, b, h, s, v
+                        If (ehTarget = 1) Then
+                            Colors.ImpreciseRGBtoHSL r, g, b, h, s, v
                         Else
                             Colors.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
                         End If
                         
                         lData(0) = CDbl(lValues(0)) * scaleFactor
                         vLong = Int(v * 255)
-                        If vLong > 0 Then
+                        If (vLong > 0) Then
                             For i = 1 To vLong
                                 lData(i) = CDbl(lData(i - 1)) + (scaleFactor * CDbl(lValues(i)))
                             Next i
                         End If
                         
-                        If lData(vLong) > 255 Then lData(vLong) = 255
-                        v = (v + floatLookup(lData(vLong))) / 2
+                        If (lData(vLong) > 255) Then lData(vLong) = 255
+                        v = (v + floatLookup(lData(vLong))) * 0.5
                         
-                        If ehTarget = 1 Then
-                            Colors.tHSLToRGB h, s, v, r, g, b
+                        If (ehTarget = 1) Then
+                            Colors.ImpreciseHSLtoRGB h, s, v, r, g, b
                             imageData(x, y) = b
                             imageData(x + 1, y) = g
                             imageData(x + 2, y) = r
                         Else
                             Colors.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
-                            imageData(x, y) = Int(bFloat * 255)
-                            imageData(x + 1, y) = Int(gFloat * 255)
-                            imageData(x + 2, y) = Int(rFloat * 255)
+                            imageData(x, y) = Int(bFloat * 255#)
+                            imageData(x + 1, y) = Int(gFloat * 255#)
+                            imageData(x + 2, y) = Int(rFloat * 255#)
                         End If
                         
                     End If
                     
                     'Move the iterator in the correct direction
                     If directionDown Then
-                        If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                        If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                     Else
-                        If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                        If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
                     End If
                     
                 Next y
