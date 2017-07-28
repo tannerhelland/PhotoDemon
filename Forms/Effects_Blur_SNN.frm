@@ -78,15 +78,15 @@ Attribute VB_Exposed = False
 'Symmetric Nearest-Neighbor dialog
 'Copyright 2015-2017 by Tanner Helland
 'Created: 15/December/15
-'Last updated: 15/December/15
-'Last update: initial build
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Reference paper by Shahcheraghi, See, and Halin, which served as the basis for this implementation:
 ' http://www.academia.edu/9883426/Image_Abstraction_Using_Anisotropic_Diffusion_Symmetric_Nearest_Neighbor_Filter
 '
 'I consider the symmetric nearest-neighbor algorithm to fall into the same class of filters as Kuwahara filtering.
 ' The algorithm is simple: pixels in some radius [r] around each pixel are compared to their symmetric neighbors
-' (e.g. the pixel with same radius [r], but rotated 180 degrees around the source pixel), and the pixel closest in
+' (e.g. the pixel with same radius [r], but rotated 90 degrees around the source pixel), and the pixel closest in
 ' color to the source pixel is added to a running total.  After all symmetric pairs have been analyzed, the center
 ' pixel is replaced with the average of the selected pixels.  (Or in PD's case, the center pixel is blended with the
 ' new value at some user-specified strength.)
@@ -104,13 +104,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply anisotropic diffusion to an image
-'Input: directionality (0 = NESW only, 1 = NE/NW/SE/SW only, 2 - all eight cardinal and ordinal directions)
-'       option (0 or 1; a nebulous value proposed by Perona and Malik, where 0 emphasizes high-contrast edges in its
-'                       calculations, while 1 emphasizes wide similarly-colored regions over smaller ones)
-'       flow ([1, 100] - controls the corresponding kappa value; higher numbers = greater propensity for color flow)
-'       strength ([0, 100] - 0 = no change, 100 = fully replace target pixel with anisotropic result,
-'                            1-99 = partially blend original and anisotropic result)
+'Apply a standard SNN filter to an image.  At present, the only supported parameters are "radius" and "strength".
 Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
@@ -124,12 +118,12 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     'During previews, the radius shrinks proportional to the viewport difference
     If toPreview Then
         snnRadius = snnRadius * curDIBValues.previewModifier
-        If snnRadius < 1 Then snnRadius = 1
+        If (snnRadius < 1) Then snnRadius = 1
     End If
     
     Dim snnStrength As Double
     snnStrength = cParams.GetDouble("strength", 100#)
-    snnStrength = snnStrength / 100
+    snnStrength = snnStrength / 100#
     
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
@@ -183,6 +177,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Dim xInnerSym As Long, yInnerSym As Long
     Dim snnDist1 As Long, snnDist2 As Long
     Dim numOfPixels As Long
+    Dim pxDivisor As Double
     
     If (Not toPreview) Then Message "Generating symmetric pixel pairs..."
         
@@ -196,7 +191,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         bDst = dstImageData(xOffset, y)
         gDst = dstImageData(xOffset + 1, y)
         rDst = dstImageData(xOffset + 2, y)
-        If qvDepth = 4 Then aDst = dstImageData(xOffset + 3, y)
+        aDst = dstImageData(xOffset + 3, y)
         
         'Reset all comparison values
         rSum = 0
@@ -208,20 +203,20 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         'Calculate inner loop bounds
         xInnerStart = x - snnRadius
         xInnerFinal = x + snnRadius
-        If xInnerStart < 0 Then
+        If (xInnerStart < 0) Then
             xInnerFinal = xInnerFinal + xInnerStart
             xInnerStart = 0
-        ElseIf xInnerFinal > finalX Then
+        ElseIf (xInnerFinal > finalX) Then
             xInnerStart = xInnerStart + (xInnerFinal - finalX)
             xInnerFinal = finalX
         End If
         
         yInnerStart = y - snnRadius
         yInnerFinal = y + snnRadius
-        If yInnerStart < 0 Then
+        If (yInnerStart < 0) Then
             yInnerFinal = yInnerFinal + yInnerStart
             yInnerStart = 0
-        ElseIf yInnerFinal > finalY Then
+        ElseIf (yInnerFinal > finalY) Then
             yInnerStart = yInnerStart + (yInnerFinal - finalY)
             yInnerFinal = finalY
         End If
@@ -237,20 +232,20 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
             bSrc1 = srcImageData(xInner, y)
             gSrc1 = srcImageData(xInner + 1, y)
             rSrc1 = srcImageData(xInner + 2, y)
-            If qvDepth = 4 Then aSrc1 = srcImageData(xInner + 3, y)
+            aSrc1 = srcImageData(xInner + 3, y)
             
             xInnerSym = xOffset + (xOffset - xInner)
             bSrc2 = srcImageData(xInnerSym, y)
             gSrc2 = srcImageData(xInnerSym + 1, y)
             rSrc2 = srcImageData(xInnerSym + 2, y)
-            If qvDepth = 4 Then aSrc2 = srcImageData(xInnerSym + 3, y)
+            aSrc2 = srcImageData(xInnerSym + 3, y)
             
             'Calculate "similarity" between each pixel and the source pixel
             snnDist1 = Abs(rDst - rSrc1) + Abs(gDst - gSrc1) + Abs(bDst - bSrc1) + Abs(aDst - aSrc1)
             snnDist2 = Abs(rDst - rSrc2) + Abs(gDst - gSrc2) + Abs(bDst - bSrc2) + Abs(aDst - aSrc2)
             
             'Store the closest pixel of the pair
-            If snnDist1 < snnDist2 Then
+            If (snnDist1 < snnDist2) Then
                 rSum = rSum + rSrc1
                 gSum = gSum + gSrc1
                 bSum = bSum + bSrc1
@@ -282,19 +277,19 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
             bSrc1 = srcImageData(xOffsetInner1, yInner)
             gSrc1 = srcImageData(xOffsetInner1 + 1, yInner)
             rSrc1 = srcImageData(xOffsetInner1 + 2, yInner)
-            If qvDepth = 4 Then aSrc1 = srcImageData(xOffsetInner1 + 3, yInner)
+            aSrc1 = srcImageData(xOffsetInner1 + 3, yInner)
             
             bSrc2 = srcImageData(xOffsetInner2, yInnerSym)
             gSrc2 = srcImageData(xOffsetInner2 + 1, yInnerSym)
             rSrc2 = srcImageData(xOffsetInner2 + 2, yInnerSym)
-            If qvDepth = 4 Then aSrc2 = srcImageData(xOffsetInner2 + 3, yInnerSym)
+            aSrc2 = srcImageData(xOffsetInner2 + 3, yInnerSym)
             
             'Calculate "similarity" between each pixel and the source pixel
             snnDist1 = Abs(rDst - rSrc1) + Abs(gDst - gSrc1) + Abs(bDst - bSrc1) + Abs(aDst - aSrc1)
             snnDist2 = Abs(rDst - rSrc2) + Abs(gDst - gSrc2) + Abs(bDst - bSrc2) + Abs(aDst - aSrc2)
             
             'Store the closest pixel of the pair
-            If snnDist1 < snnDist2 Then
+            If (snnDist1 < snnDist2) Then
                 rSum = rSum + rSrc1
                 gSum = gSum + gSrc1
                 bSum = bSum + bSrc1
@@ -312,13 +307,14 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         Next yInner
         
         'We have now calculated full SNN sums for each color channel.  Take the average of each channel.
-        rNew = rSum \ numOfPixels
-        gNew = gSum \ numOfPixels
-        bNew = bSum \ numOfPixels
-        aNew = aSum \ numOfPixels
+        pxDivisor = 1# / numOfPixels
+        rNew = rSum * pxDivisor
+        gNew = gSum * pxDivisor
+        bNew = bSum * pxDivisor
+        aNew = aSum * pxDivisor
         
         'Blend pixels accordingly
-        If snnStrength < 1 Then
+        If (snnStrength < 1#) Then
             rNew = BlendLongs(rDst, rNew, snnStrength)
             gNew = BlendLongs(gDst, gNew, snnStrength)
             bNew = BlendLongs(bDst, bNew, snnStrength)
@@ -329,7 +325,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         dstImageData(xOffset, y) = bNew
         dstImageData(xOffset + 1, y) = gNew
         dstImageData(xOffset + 2, y) = rNew
-        If qvDepth = 4 Then dstImageData(xOffset + 3, y) = aNew
+        dstImageData(xOffset + 3, y) = aNew
         
     Next x
         If (Not toPreview) Then

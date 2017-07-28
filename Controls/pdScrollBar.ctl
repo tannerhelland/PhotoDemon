@@ -898,7 +898,7 @@ Private Sub MoveValueUp(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value + m_LargeChange
     Else
-        Value = m_Value + (1 / (10 ^ m_SignificantDigits))
+        Value = m_Value + (1# / (10# ^ m_SignificantDigits))
     End If
 End Sub
 
@@ -907,7 +907,7 @@ Private Sub MoveValueDown(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value - m_LargeChange
     Else
-        Value = m_Value - (1 / (10 ^ m_SignificantDigits))
+        Value = m_Value - (1# / (10# ^ m_SignificantDigits))
     End If
 End Sub
 

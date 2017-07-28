@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'Squish Distortion (formerly Fixed Perspective)
 'Copyright 2013-2017 by Tanner Helland
 'Created: 04/April/13
-'Last updated: 27/September/14
-'Last update: integrate supersampling engine
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply forced perspective to an image.  The code is similar (in theory) to the
 ' shearing algorithm used in FormShear.  Reverse-mapping and supersampling are supported, for those who need
@@ -126,9 +126,23 @@ End Sub
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
-Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SquishImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Squeezing image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim xRatio As Double, yRatio As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        xRatio = .GetDouble("xratio", 0#)
+        yRatio = .GetDouble("yratio", 0#)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -209,21 +223,21 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
     
     'Midpoints of the image in the x and y direction
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) / 2#
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) / 2#
     midY = midY + initY
     
     'Convert xRatio and yRatio to [0, 1] range
-    xRatio = xRatio / 100
-    yRatio = yRatio / 100
+    xRatio = xRatio / 100#
+    yRatio = yRatio / 100#
     
     'Store region width and height as floating-point
     Dim iWidth As Double, iHeight As Double
@@ -241,8 +255,9 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
         Else
             leftX(y) = (y / finalY) * midX * -xRatio
         End If
-        lineWidth(y) = iWidth - (leftX(y) * 2)
-        If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
+        lineWidth(y) = iWidth - (leftX(y) * 2#)
+        If lineWidth(y) = 0# Then lineWidth(y) = 0.000000001
+        lineWidth(y) = 1# / lineWidth(y)
     Next y
     
     'Do the same for vertical line size and offset
@@ -256,12 +271,15 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
         Else
             topY(x) = (x / finalX) * midY * -yRatio
         End If
-        lineHeight(x) = iHeight - (topY(x) * 2)
-        If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
+        lineHeight(x) = iHeight - (topY(x) * 2#)
+        If lineHeight(x) = 0# Then lineHeight(x) = 0.000000001
+        lineHeight(x) = 1# / lineHeight(x)
     Next x
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
+    
+    Dim avgSamples As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -284,8 +302,8 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
             nY = y + ssY(sampleIndex)
             
             'Reverse-map the coordinates back onto the original image (to allow for resampling)
-            srcX = ((nX - leftX(nY)) / lineWidth(nY)) * iWidth
-            srcY = ((nY - topY(nX)) / lineHeight(nX)) * iHeight
+            srcX = ((nX - leftX(nY)) * lineWidth(nY)) * iWidth
+            srcY = ((nY - topY(nX)) * lineHeight(nX)) * iHeight
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -294,14 +312,14 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -312,24 +330,21 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -350,7 +365,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Squish", , BuildParams(sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Squish", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -396,7 +411,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SquishImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -410,7 +425,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "xratio", sltRatioX.Value
+        .AddParam "yratio", sltRatioY.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.267</langversion>
+<langversion>6.7.268</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -2497,7 +2497,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Clicca sul primo punto per completare la selezione del poligono</translation>
 </phrase>
 
-<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -5622,6 +5622,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>Harmonic mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mean shift</original>
 <translation></translation>
 </phrase>
@@ -6518,7 +6523,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 184 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8977,11 +8982,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>Posterize (dithered)</original>
-<translation>Posterizza (retinato)</translation>
-</phrase>
-
-<phrase>
 <original>Posterizing image</original>
 <translation>Posterizzazione dell'immagine</translation>
 </phrase>
@@ -8996,7 +8996,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Posterizzazione dell'immagine (con retinatura avanzata)</translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -9126,21 +9126,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>good</original>
-<translation>buono</translation>
+<original>precise</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>better</original>
-<translation>meglio</translation>
-</phrase>
-
-<phrase>
-<original>best</original>
-<translation>migliore</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -9151,7 +9141,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura Gaussiana</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9251,7 +9241,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>bordi</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
@@ -10274,7 +10264,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della maschera di contrasto (passo %1 di %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -11699,11 +11689,21 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
+<original>good</original>
+<translation>buono</translation>
+</phrase>
+
+<phrase>
+<original>better</original>
+<translation>meglio</translation>
+</phrase>
+
+<phrase>
 <original>best (most ink)</original>
 <translation>migliore (più inchiostro)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
@@ -15025,12 +15025,28 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Web.bas-->
 
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4517 phrases. -->
-<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4519 phrases. -->
+<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12302 total words. -->
 
 </pdData>

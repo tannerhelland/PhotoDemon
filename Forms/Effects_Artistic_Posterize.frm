@@ -114,9 +114,8 @@ Attribute VB_Exposed = False
 'Posterizing Effect Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 24/August/13
-'Last update: completely removed the old posterize code in favor of the per-channel approach (which was taken from
-'              the old Reduce Image Colors/Indexed Color dialog)
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Advanced posterizing interface; it has been optimized for speed and ease-of-implementation.  It offers many more
 ' options than a traditional posterize dialog, which should make it more useful for achieving a desired look.
@@ -137,13 +136,7 @@ Private Sub chkSmartColors_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    
-    If CBool(chkDither) Then
-        Process "Posterize (dithered)", , BuildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
-    Else
-        Process "Posterize", , BuildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
-    End If
-    
+    Process "Posterize", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -171,14 +164,23 @@ Private Sub sltBits_Change()
 End Sub
 
 Private Sub UpdatePreview()
+    If cmdBar.PreviewsAllowed Then Me.fxPosterize GetLocalParamString(), True, pdFxPreview
+End Sub
+
+Public Sub fxPosterize(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
     
-    If cmdBar.PreviewsAllowed Then
-        If CBool(chkDither) Then
-            ReduceImageColors_BitRGB_ErrorDif sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, pdFxPreview
+    'Dithering currently uses an old-school codebase, and thus requires a separate function
+    With cParams
+        If .GetBool("dither", False) Then
+            ReduceImageColors_BitRGB_ErrorDif .GetLong("red"), .GetLong("green"), .GetLong("blue"), .GetBool("matchcolors", True), toPreview, dstPic
         Else
-            ReduceImageColors_BitRGB sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, pdFxPreview
+            ReduceImageColors_BitRGB .GetLong("red"), .GetLong("green"), .GetLong("blue"), .GetBool("matchcolors", True), toPreview, dstPic
         End If
-    End If
+    End With
     
 End Sub
 
@@ -280,14 +282,14 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         If cb < 0 Then cb = 0
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
-        If smartColors = False Then
+        If (Not smartColors) Then
             imageData(quickVal + 2, y) = cR
             imageData(quickVal + 1, y) = cG
             imageData(quickVal, y) = cb
         End If
         
     Next y
-        If toPreview = False Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
@@ -308,13 +310,13 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         For r = 0 To rValue
         For g = 0 To gValue
         For b = 0 To bValue
-            If countLookup(r, g, b) <> 0 Then
+            If (countLookup(r, g, b) <> 0) Then
                 rLookup(r, g, b) = Int(Int(rLookup(r, g, b)) / Int(countLookup(r, g, b)))
                 gLookup(r, g, b) = Int(Int(gLookup(r, g, b)) / Int(countLookup(r, g, b)))
                 bLookup(r, g, b) = Int(Int(bLookup(r, g, b)) / Int(countLookup(r, g, b)))
-                If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
-                If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
-                If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
+                If (rLookup(r, g, b) > 255) Then rLookup(r, g, b) = 255
+                If (gLookup(r, g, b) > 255) Then gLookup(r, g, b) = 255
+                If (bLookup(r, g, b) > 255) Then bLookup(r, g, b) = 255
             End If
         Next b
         Next g
@@ -325,17 +327,17 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
             quickVal = x * qvDepth
         For y = initY To finalY
         
-            r = imageData(quickVal + 2, y)
-            g = imageData(quickVal + 1, y)
             b = imageData(quickVal, y)
+            g = imageData(quickVal + 1, y)
+            r = imageData(quickVal + 2, y)
             
             cR = rQuick(r)
             cG = gQuick(g)
             cb = bQuick(b)
             
-            imageData(quickVal + 2, y) = rLookup(cR, cG, cb)
-            imageData(quickVal + 1, y) = gLookup(cR, cG, cb)
             imageData(quickVal, y) = bLookup(cR, cG, cb)
+            imageData(quickVal + 1, y) = gLookup(cR, cG, cb)
+            imageData(quickVal + 2, y) = rLookup(cR, cG, cb)
             
         Next y
         Next x
@@ -610,7 +612,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "red", sltRed.Value
+        .AddParam "green", sltGreen.Value
+        .AddParam "blue", sltBlue.Value
+        .AddParam "matchcolors", CBool(chkSmartColors.Value)
+        .AddParam "dither", CBool(chkDither.Value)
     End With
     
     GetLocalParamString = cParams.GetParamString()

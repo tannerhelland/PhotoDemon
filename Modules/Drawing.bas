@@ -209,18 +209,18 @@ End Sub
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
 Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 
-    If (Not srcImage.imgViewport Is Nothing) Then
+    If (Not srcImage.ImgViewport Is Nothing) Then
     
         'Get the current zoom value from the source image, then invert it.  (We're only going to use that value in division.)
         Dim zoomVal As Double
-        zoomVal = 1 / g_Zoom.GetZoomValue(srcImage.GetZoom)
+        zoomVal = 1# / g_Zoom.GetZoomValue(srcImage.GetZoom)
         
         'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
         Dim translatedImageRect As RECTF
-        srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+        srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Subtract the top/left offset,
         ' then divide by zoom - that's all there is to it!
@@ -246,7 +246,7 @@ End Function
 'Given an (x,y) pair on the current image, convert the value to coordinates on the current viewport canvas.
 Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
 
-    If Not (srcImage.imgViewport Is Nothing) Then
+    If Not (srcImage.ImgViewport Is Nothing) Then
     
         'Get the current zoom value from the source image
         Dim zoomVal As Double
@@ -257,7 +257,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
         Dim translatedImageRect As RECTF
-        srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+        srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
         ' then multiply by zoom - that's all there is to it!
@@ -269,7 +269,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         
             'Get a copy of the current viewport intersection rect, which determines bounds of this function
             Dim vIntersectRect As RECTF
-            srcImage.imgViewport.GetIntersectRectCanvas vIntersectRect
+            srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
             
             If (canvasX < vIntersectRect.Left) Then canvasX = vIntersectRect.Left
             If (canvasY < vIntersectRect.Top) Then canvasY = vIntersectRect.Top
@@ -285,7 +285,7 @@ End Sub
 'Given a RectF containing image-space coordinates, produce a new RectF with coordinates translated to the specified viewport canvas.
 Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcRectF As RECTF, ByRef dstRectF As RECTF, Optional ByVal forceInBounds As Boolean = False)
 
-    If (Not srcImage.imgViewport Is Nothing) Then
+    If (Not srcImage.ImgViewport Is Nothing) Then
     
         'Get the current zoom value from the source image
         Dim zoomVal As Double
@@ -296,7 +296,7 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
         Dim translatedImageRect As RECTF
-        srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+        srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
         ' then multiply by zoom - that's all there is to it!
@@ -312,7 +312,7 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
         
             'Get a copy of the current viewport intersection rect, which determines bounds of this function
             Dim vIntersectRect As RECTF
-            srcImage.imgViewport.GetIntersectRectCanvas vIntersectRect
+            srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
             
             If (dstRectF.Left < vIntersectRect.Left) Then dstRectF.Left = vIntersectRect.Left
             If (dstRectF.Top < vIntersectRect.Top) Then dstRectF.Top = vIntersectRect.Top
@@ -388,7 +388,7 @@ End Function
 'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
 Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
 
-    If srcImage.imgViewport Is Nothing Then Exit Sub
+    If srcImage.ImgViewport Is Nothing Then Exit Sub
     
     'Get the current zoom value from the source image
     Dim zoomVal As Double
@@ -399,12 +399,12 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
     ' so we can ignore their value(s) here.
     Dim translatedImageRect As RECTF
-    srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+    srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
     
     'If the caller wants the coordinates bound-checked, we also need to grab a copy of the viewport
     ' intersection rect, which controls boundaries
     Dim vIntersectRect As RECTF
-    If forceInBounds Then srcImage.imgViewport.GetIntersectRectCanvas vIntersectRect
+    If forceInBounds Then srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
     
     Dim canvasX As Double, canvasY As Double
     
@@ -475,7 +475,7 @@ Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, By
     ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
     ' so we can ignore their value(s) here.
     Dim translatedImageRect As RECTF
-    srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+    srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
     
     'Apply scaling for zoom
     dstTransform.ApplyScaling zoomVal, zoomVal

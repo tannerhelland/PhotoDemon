@@ -1429,7 +1429,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Dim curVal As Double
     
     For i = -gRadius To gRadius
-        curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
+        curVal = (1# / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
         
         'Ignore values less than 3 sigma
         If curVal < stdDev3 Then
@@ -2032,10 +2032,10 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     tHeight = finalY - initY
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
               
-    sRadius = sRadius * (polarRadius / 100)
+    sRadius = sRadius * (polarRadius / 100#)
     sRadius2 = sRadius * sRadius
         
-    polarRadius = 1 / (polarRadius / 100)
+    polarRadius = 1# / (polarRadius / 100#)
         
     Dim iAspect As Double
     iAspect = tHeight / tWidth
@@ -2555,7 +2555,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     midY = midY + initY
     
     'Convert the rotation angle to radians
-    rotateAngle = rotateAngle * (PI / 180)
+    rotateAngle = rotateAngle * (PI / 180#)
     
     'Find the cos and sin of this angle and store the values
     Dim cosTheta As Double, sinTheta As Double
@@ -2936,7 +2936,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     For x = 0 To 255
     
         tmpVal = x / 255
-        tmpVal = tmpVal ^ (1 / newGamma)
+        tmpVal = tmpVal ^ (1# / newGamma)
         tmpVal = tmpVal * 255
         
         If tmpVal > 255 Then tmpVal = 255

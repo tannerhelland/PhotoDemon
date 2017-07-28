@@ -264,7 +264,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
         
         'EFFECT FUNCTIONS
-        'Sometimes fun, sometimes practical, no real unifying factor to these.
         
         
         'Artistic
@@ -281,18 +280,10 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormFilmNoir Else FormFilmNoir.fxFilmNoir processParameters
             
         Case "Glass tiles"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormGlassTiles
-            Else
-                FormGlassTiles.GlassTiles cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormGlassTiles Else FormGlassTiles.GlassTiles processParameters
+            
         Case "Kaleidoscope"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormKaleidoscope
-            Else
-                FormKaleidoscope.KaleidoscopeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetBool(5), cParams.GetDouble(6), cParams.GetDouble(7)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormKaleidoscope Else FormKaleidoscope.KaleidoscopeImage processParameters
             
         Case "Modern art"
             If raiseDialog Then ShowPDDialog vbModal, FormModernArt Else FormModernArt.ApplyModernArt processParameters
@@ -301,28 +292,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormOilPainting Else FormOilPainting.ApplyOilPaintingEffect processParameters
             
         Case "Posterize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPosterize
-            Else
-                FormPosterize.ReduceImageColors_BitRGB cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
-            End If
-            
-        Case "Posterize (dithered)"
-            FormPosterize.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
+            If raiseDialog Then ShowPDDialog vbModal, FormPosterize Else FormPosterize.fxPosterize processParameters
                     
         Case "Relief"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRelief
-            Else
-                FormRelief.ApplyReliefEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormRelief Else FormRelief.ApplyReliefEffect processParameters
             
         Case "Stained glass"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormStainedGlass
-            Else
-                FormStainedGlass.fxStainedGlass cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetLong(6)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormStainedGlass Else FormStainedGlass.fxStainedGlass processParameters
             
         'Blur
         
@@ -331,44 +307,24 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormBoxBlur Else FormBoxBlur.BoxBlurFilter processParameters
             
         Case "Gaussian blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormGaussianBlur
-            Else
-                FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormGaussianBlur Else FormGaussianBlur.GaussianBlurFilter processParameters
             
         Case "Surface blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSurfaceBlur
-            Else
-                FormSurfaceBlur.SurfaceBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3), cParams.GetLong(4, 1)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.SurfaceBlurFilter processParameters
             
         'Motion (directional) blurs
         Case "Motion blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMotionBlur
-            Else
-                FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetLong(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormMotionBlur Else FormMotionBlur.MotionBlurFilter processParameters
             
         Case "Radial blur"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRadialBlur
-            Else
-                FormRadialBlur.RadialBlurFilter cParams.GetDouble(1), cParams.GetBool(2), cParams.GetBool(3)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormRadialBlur Else FormRadialBlur.RadialBlurFilter processParameters
+            
         Case "Zoom blur"
             If raiseDialog Then ShowPDDialog vbModal, FormZoomBlur Else FormZoomBlur.ApplyZoomBlur processParameters
             
         'Miscellaneous blurs
         Case "Kuwahara filter"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormKuwahara
-            Else
-                FormKuwahara.Kuwahara cParams.GetLong(1)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.Kuwahara processParameters
             
         Case "Symmetric nearest-neighbor"
             If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
@@ -386,108 +342,37 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Correct lens distortion"
             If raiseDialog Then ShowPDDialog vbModal, FormLensCorrect Else FormLensCorrect.CorrectLensDistortion processParameters
             
-        Case "Donut"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormDonut
-            Else
-                FormDonut.ApplyDonutDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
-            End If
-        
         Case "Apply lens distortion"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormLens
-            Else
-                FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormLens Else FormLens.ApplyLensDistortion processParameters
+            
+        Case "Donut"
+            If raiseDialog Then ShowPDDialog vbModal, FormDonut Else FormDonut.ApplyDonutDistortion processParameters
             
         Case "Miscellaneous distort"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMiscDistorts
-            Else
-                FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-            
-        Case "Pan and zoom"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPanAndZoom
-            Else
-                FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
-            End If
-        
-        Case "Perspective"
-            If raiseDialog Then ShowPDDialog vbModal, FormPerspective Else FormPerspective.PerspectiveImage processParameters
+            If raiseDialog Then ShowPDDialog vbModal, FormMiscDistorts Else FormMiscDistorts.ApplyMiscDistort processParameters
             
         Case "Pinch and whirl"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPinch
-            Else
-                FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetDouble(6), cParams.GetDouble(7)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPinch Else FormPinch.PinchImage processParameters
             
         Case "Poke"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPoke
-            Else
-                FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPoke Else FormPoke.ApplyPokeDistort processParameters
             
         Case "Polar conversion"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormPolar
-            Else
-                FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormPolar Else FormPolar.ConvertToPolar processParameters
             
         Case "Ripple"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRipple
-            Else
-                FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormRipple Else FormRipple.RippleImage processParameters
             
-        Case "Rotate"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRotateDistort
-            Else
-                FormRotateDistort.RotateFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
-            
-        Case "Shear"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormShear
-            Else
-                FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-            
-        Case "Spherize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSpherize
-            Else
-                FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetLong(6)
-            End If
-        
         Case "Squish"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSquish
-            Else
-                FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormSquish Else FormSquish.SquishImage processParameters
             
         Case "Swirl"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSwirl
-            Else
-                FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormSwirl Else FormSwirl.SwirlImage processParameters
             
         Case "Waves"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormWaves
-            Else
-                FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormWaves Else FormWaves.WaveImage processParameters
             
-        
+            
         'Edge filters
         Case "Emboss"
             If raiseDialog Then
@@ -622,6 +507,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             
         Case "Bilateral smoothing"
             If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralWrapper processParameters
+        
+        Case "Harmonic mean"
+            If raiseDialog Then ShowPDDialog vbModal, FormHarmonicMean Else FormHarmonicMean.ApplyHarmonicMean processParameters
             
         Case "Mean shift"
             If raiseDialog Then ShowPDDialog vbModal, FormMeanShift Else FormMeanShift.ApplyMeanShiftFilter processParameters
@@ -723,8 +611,24 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Vignetting"
             If raiseDialog Then ShowPDDialog vbModal, FormVignette Else FormVignette.ApplyVignette processParameters
             
+        'Transform
         
-        'Custom filters
+        Case "Pan and zoom"
+            If raiseDialog Then ShowPDDialog vbModal, FormPanAndZoom Else FormPanAndZoom.PanAndZoomFilter processParameters
+            
+        Case "Perspective"
+            If raiseDialog Then ShowPDDialog vbModal, FormPerspective Else FormPerspective.PerspectiveImage processParameters
+            
+        Case "Rotate"
+            If raiseDialog Then ShowPDDialog vbModal, FormRotateDistort Else FormRotateDistort.RotateFilter processParameters
+            
+        Case "Shear"
+            If raiseDialog Then ShowPDDialog vbModal, FormShear Else FormShear.ShearImage processParameters
+            
+        Case "Spherize"
+            If raiseDialog Then ShowPDDialog vbModal, FormSpherize Else FormSpherize.SpherizeImage processParameters
+            
+        'Custom
         
         Case "Custom filter"
             If raiseDialog Then

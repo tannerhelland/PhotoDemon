@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2875</langversion>
+<langversion>6.8.2916</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -405,7 +405,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Unglücklicherweise verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Reduzieren Sie bitte die angeforderte Größe und versuchen es erneut.</translation>
+<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Reduzieren Sie bitte die angeforderte Größe und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -1307,7 +1307,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Warnung - Datei nicht gefunden: %1</translation>
 </phrase>
 
 <phrase>
@@ -1326,19 +1326,21 @@ Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk e
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Warnung - Datei gesperrt: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Leider ist die Datei '%1' derzeit durch ein anderes Programm auf diesem PC gesperrt.
+
+Schließen Sie bitte diese Datei in allen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Datei gesperrt</translation>
 </phrase>
 
 <phrase>
@@ -2083,12 +2085,12 @@ Beschreibung: %2
 
 <phrase>
 <original>outline</original>
-<translation>Umriss</translation>
+<translation>Kontur</translation>
 </phrase>
 
 <phrase>
 <original>outline style</original>
-<translation>Umriss-Stil</translation>
+<translation>Konturstil</translation>
 </phrase>
 
 <phrase>
@@ -2508,7 +2510,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Klicken Sie auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
-<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -3246,7 +3248,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation>XMP (PRISM for images)</translation>
+<translation>XMP (PRISM for Images)</translation>
 </phrase>
 
 <phrase>
@@ -3741,7 +3743,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Revert</original>
-<translation>Zurückkehren</translation>
+<translation>Umkehren</translation>
 </phrase>
 
 <phrase>
@@ -5633,6 +5635,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>Harmonic mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mean shift</original>
 <translation>Mittelwertverschiebung</translation>
 </phrase>
@@ -5694,7 +5701,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Outline</original>
-<translation>Umriss</translation>
+<translation>Kontur</translation>
 </phrase>
 
 <phrase>
@@ -6529,7 +6536,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 184 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8290,17 +8297,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Outline settings</original>
-<translation>Umrisseinstellungen</translation>
+<translation>Kontureinstellungen</translation>
 </phrase>
 
 <phrase>
 <original>outline color and opacity</original>
-<translation>Umrissfarbe und Opazität</translation>
+<translation>Konturfarbe und Opazität</translation>
 </phrase>
 
 <phrase>
 <original>outline width</original>
-<translation>Umrissbreite</translation>
+<translation>Konturbreite</translation>
 </phrase>
 
 <phrase>
@@ -8988,11 +8995,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Posterize (dithered)</original>
-<translation>Posterisieren (mit Dithering)</translation>
-</phrase>
-
-<phrase>
 <original>Posterizing image</original>
 <translation>Bild wird posterisiert</translation>
 </phrase>
@@ -9004,10 +9006,10 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Posterizing image (with advanced dithering)</original>
-<translation>Bild wird psoterisiert (mit erweitertem Dithering)</translation>
+<translation>Bild wird posterisiert (mit erweitertem Dithering)</translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -9137,21 +9139,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>good</original>
-<translation>Gut</translation>
+<original>precise</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>better</original>
-<translation>Besser</translation>
-</phrase>
-
-<phrase>
-<original>best</original>
-<translation>Am besten</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -9162,7 +9154,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Gaußscher Weichzeichner wird angewendet</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9262,7 +9254,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Kanten</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
@@ -10022,7 +10014,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>spatial power (currently hidden)</original>
-<translation>Räumliche Kraft (derzeitig ausgeblendet)</translation>
+<translation>Räumliche Kraft (derzeit ausgeblendet)</translation>
 </phrase>
 
 <phrase>
@@ -10285,7 +10277,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Unscharfe Maske wird angewendet (Schritt %1 von %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -10319,7 +10311,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating image outline</original>
-<translation>Bildumriss wird generiert</translation>
+<translation>Bildkontur wird generiert</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10516,12 +10508,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>forward (outline defines destination area)</original>
-<translation>Vor (Umriss definiert Zielbereich)</translation>
+<translation>Vor (Kontur definiert Zielbereich)</translation>
 </phrase>
 
 <phrase>
 <original>reverse (outline defines source area)</original>
-<translation>Umgekehrt (Umriss definiert Quellbereich)</translation>
+<translation>Umgekehrt (Kontur definiert Quellbereich)</translation>
 </phrase>
 
 <phrase>
@@ -11554,7 +11546,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation>Derzeitig verfügbare Programme (gelistet nach Fenstertitel)</translation>
+<translation>Derzeit verfügbare Programme (gelistet nach Fenstertitel)</translation>
 </phrase>
 
 <phrase>
@@ -11594,7 +11586,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation>Dieses Programm ist derzeitig minimiert. Für beste Resultate stellen Sie seine Normalgröße wieder her.</translation>
+<translation>Dieses Programm ist derzeit minimiert. Für beste Resultate stellen Sie seine Normalgröße wieder her.</translation>
 </phrase>
 
 <phrase>
@@ -11710,11 +11702,21 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
+<original>good</original>
+<translation>Gut</translation>
+</phrase>
+
+<phrase>
+<original>better</original>
+<translation>Besser</translation>
+</phrase>
+
+<phrase>
 <original>best (most ink)</original>
 <translation>Am besten (viel Tinte)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
@@ -12989,7 +12991,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Delete the currently selected layer.</original>
-<translation>Den derzeitig ausgewählten Layer löschen.</translation>
+<translation>Den derzeit ausgewählten Layer löschen.</translation>
 </phrase>
 
 <phrase>
@@ -13120,7 +13122,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>n-d</original>
-<translation>Nicht-destruktiv (N-D)</translation>
+<translation>Nicht-destruktiv (n-d)</translation>
 </phrase>
 
 <phrase>
@@ -13130,7 +13132,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>paint</original>
-<translation>Paint/Malen</translation>
+<translation>Paint</translation>
 </phrase>
 
 <phrase>
@@ -13140,32 +13142,32 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Dateitools: Bilddateien erstellen, laden und speichern</translation>
+<translation>Dateitools: Erstellen, laden und speichern Sie Bilddateien.</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Rückgängig machen/Wiederherstellen-Tools: Kehrt an einem Bild oder Layer vorgenommene destruktive Änderungen um</translation>
+<translation>Rückgängig-machen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder Layer vorgenommene destruktive Änderungen um.</translation>
 </phrase>
 
 <phrase>
 <original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation>Nicht-destruktive Tools: Verschieben, Drehen oder Anwenden bestimmter Fotoanpassungen ohne permanente Modifizierung eines Bildes</translation>
+<translation>Nicht-destruktive (n-d) Tools: Verschieben, drehen oder wenden Sie bestimmte Fotoanpassungen an - ohne permanente Modifizierung eines Bildes.</translation>
 </phrase>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation>Auswahltools: Teile eines Bilder oder Layers zur weiteren Bearbeitung isolieren</translation>
+<translation>Auswahltools: Isolieren Sie Teile eines Bildes oder Layers zur weiteren Bearbeitung.</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation>Texttools: Textlayer erstellen und bearbeiten</translation>
+<translation>Texttools: Erstellen und bearbeiten Sie Textlayer.</translation>
 </phrase>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation>Painttools: Eine Maus, ein Touchpad oder Stifttablett verwenden, um Pinselstriche auf ein Bild oder einen Layer anzuwenden.</translation>
+<translation>Paint-Tools: Verwenden Sie eine Maus, ein Touchpad oder Stifttablett, um Pinselstriche auf ein Bild oder einen Layer anzuwenden.</translation>
 </phrase>
 
 <phrase>
@@ -13747,7 +13749,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>outline text</original>
-<translation>Text umreißen</translation>
+<translation>Text konturieren</translation>
 </phrase>
 
 <phrase>
@@ -13883,7 +13885,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>language files currently available</original>
-<translation>Sprachdateien derzeitig verfügbar</translation>
+<translation>Sprachdateien derzeit verfügbar</translation>
 </phrase>
 
 <phrase>
@@ -14584,7 +14586,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeitig geladene Bild an. Verwenden Sie diese Voreinstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
+<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeit geladene Bild an. Verwenden Sie diese Voreinstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14754,7 +14756,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Das Ausschalten der Anzeige des Farbmanagements kann für einen kleinen Performnace-Schub sorgen. Wenn Ihre Anzeige derzeitig nicht für das Farbmanagement konfiguriert ist, verwenden Sie diese Einstellung.</translation>
+<translation>Das Ausschalten der Anzeige des Farbmanagements kann für einen kleinen Performnace-Schub sorgen. Wenn Ihre Anzeige derzeit nicht für das Farbmanagement konfiguriert ist, verwenden Sie diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -14769,7 +14771,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Spezifizieren Sie bitte Sie ein Farbprofil für jeden derzeitig angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern der Display-Adapter des angegebenen Monitors genannt wird.</translation>
+<translation>Spezifizieren Sie bitte Sie ein Farbprofil für jeden derzeit angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern der Display-Adapter des angegebenen Monitors genannt wird.</translation>
 </phrase>
 
 <phrase>
@@ -15038,12 +15040,28 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Web.bas-->
 
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4517 phrases. -->
-<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4519 phrases. -->
+<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12302 total words. -->
 
 </pdData>

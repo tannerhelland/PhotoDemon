@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'Image Shear Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 03/April/13
-'Last updated: 27/September/14
-'Last update: add supersampling support
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.
 ' Supersampling and reverse-mapped interpolation are available for a high-quality transformation.
@@ -126,9 +126,23 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Shear an image in one or two directions
-Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Shearing image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim xAngle As Double, yAngle As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        xAngle = .GetDouble("xangle", sltAngleX.Value)
+        yAngle = .GetDouble("yangle", sltAngleY.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -209,14 +223,14 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
     
     'Convert both input angles to radians
-    xAngle = -xAngle * (PI / 180)
-    yAngle = yAngle * (PI / 180)
+    xAngle = -xAngle * (PI / 180#)
+    yAngle = yAngle * (PI / 180#)
         
     'Calculate sin values in advance (they do not change throughout the image)
     Dim sinX As Double, sinY As Double
@@ -225,6 +239,8 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
         
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
+    
+    Dim avgSamples As Double
               
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -246,8 +262,8 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
             j = x + ssX(sampleIndex)
             k = y + ssY(sampleIndex)
             
-            srcX = j + ((finalY - k) * sinX) * 2
-            srcY = k + (j * sinY) * 2
+            srcX = j + ((finalY - k) * sinX) * 2#
+            srcY = k + (j * sinY) * 2#
                 
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -256,14 +272,14 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -274,24 +290,21 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -313,7 +326,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shear", , BuildParams(sltAngleX, sltAngleY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Shear", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -325,17 +338,6 @@ Private Sub cmdBar_ResetClick()
     sltQuality = 2
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully ready
@@ -344,6 +346,13 @@ Private Sub Form_Load()
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+        
+    'Create the preview
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -361,7 +370,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ShearImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -379,7 +388,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "xangle", sltAngleX.Value
+        .AddParam "yangle", sltAngleY.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

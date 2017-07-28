@@ -249,7 +249,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -315,7 +315,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
@@ -338,7 +338,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        multAvg = 1 / numSamplesUsed
+        multAvg = 1# / numSamplesUsed
         newR = newR * multAvg
         newG = newG * multAvg
         newB = newB * multAvg

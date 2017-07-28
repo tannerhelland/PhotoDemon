@@ -175,8 +175,8 @@ Attribute VB_Exposed = False
 'Image "Pinch and Whirl" Distortion
 'Copyright 2000-2017 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 26/September/14
-'Last update: add supersampling support
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to "pinch" an image.  Negative pinch values result in a "bulging" effect.  A "whirl"
 ' component has also been added, as that seems to be standard for this tool in other software.  Supersampling and
@@ -198,9 +198,27 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "pinch and whirl" effect to an image
-Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub PinchImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Pinching and whirling image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim pinchAmount As Double, whirlAngle As Double, effectRadius As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    Dim centerX As Double, centerY As Double
+    
+    With cParams
+        pinchAmount = .GetDouble("amount", sltAmount.Value)
+        whirlAngle = .GetDouble("angle", sltAngle.Value)
+        effectRadius = .GetDouble("radius", sltRadius.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -281,7 +299,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -303,7 +321,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     Dim whirlCalc As Double, whirlSin As Double, whirlCos As Double
     
     'Convert the whirl angle to radians
-    whirlAngle = whirlAngle * (PI / 180)
+    whirlAngle = whirlAngle * (PI / 180#)
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -311,15 +329,18 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
         
-    pinchAmount = pinchAmount * -1
+    pinchAmount = pinchAmount * -1#
         
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
-    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
-              
-    sRadius = sRadius * (effectRadius / 100)
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2#
+    
+    Dim invRadius As Double, avgSamples As Double
+    invRadius = 1# / sRadius
+    
+    sRadius = sRadius * (effectRadius / 100#)
     sRadius2 = sRadius * sRadius
               
     'Loop through each pixel in the image, converting values as we go
@@ -356,18 +377,18 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
             Else
             
                 'Calculate distance as a ratio of the effect radius
-                sDistance = Sqr(sDistance) / sRadius
+                sDistance = Sqr(sDistance) * invRadius
                 
                 'Calculate theta
                 theta = Sin(PI_HALF * sDistance)
-                If theta <> 0 Then theta = theta ^ pinchAmount
+                If (theta <> 0#) Then theta = theta ^ pinchAmount
                                                     
                 'Modify the source coordinates based on the calculated theta value
                 nX = nX * theta
                 nY = nY * theta
                 
                 'Now, apply the whirl effect (if any)
-                whirlCalc = 1 - sDistance
+                whirlCalc = 1# - sDistance
                 whirlCalc = whirlCalc * whirlCalc * whirlAngle
                 
                 whirlSin = Sin(whirlCalc)
@@ -386,14 +407,14 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -404,24 +425,21 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -442,7 +460,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pinch and whirl", , BuildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Pinch and whirl", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -495,7 +513,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then PinchImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -528,7 +546,13 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "amount", sltAmount.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

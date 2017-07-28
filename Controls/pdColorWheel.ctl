@@ -697,8 +697,8 @@ Private Sub CreateSVSquare()
     ReDim xPresets(0 To loopWidth) As Double
     
     Dim xMultiplier As Double, yMultiplier As Double
-    If (loopWidth <> 0#) Then xMultiplier = 1 / loopWidth Else xMultiplier = 1#
-    If (loopHeight <> 0#) Then yMultiplier = 1 / loopHeight Else yMultiplier = 1#
+    If (loopWidth <> 0#) Then xMultiplier = 1# / loopWidth Else xMultiplier = 1#
+    If (loopHeight <> 0#) Then yMultiplier = 1# / loopHeight Else yMultiplier = 1#
     
     For x = 0 To loopWidth Step xPxWidth
         xPresets(x) = (loopWidth - x) * xMultiplier

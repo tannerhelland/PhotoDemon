@@ -131,8 +131,8 @@ Attribute VB_Exposed = False
 'Image "Waves" Distortion
 'Copyright 2000-2017 by Tanner Helland
 'Created: 07/January/13
-'Last updated: 27/September/14
-'Last update: add supersampling support
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply a "waves" distortion to an image.  Supersampling and reverse-mapping
 ' (with interpolation) are available for a high-quality result.
@@ -156,10 +156,26 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "wave-like" effect to an image
-Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub WaveImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Dipping image in virtual wave pool..."
         
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim xWavelength As Double, xAmplitude As Double, yWavelength As Double, yAmplitude As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        xWavelength = .GetDouble("xwavelength", sltWavelengthX.Value)
+        yWavelength = .GetDouble("ywavelength", sltWavelengthY.Value)
+        xAmplitude = .GetDouble("xamplitude", sltAmplitudeX.Value)
+        yAmplitude = .GetDouble("yamplitude", sltAmplitudeY.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -239,14 +255,14 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
     
     'This wave transformation requires specialized variables
-    xWavelength = 51 - xWavelength
-    yWavelength = 51 - yWavelength
+    xWavelength = 51# - xWavelength
+    yWavelength = 51# - yWavelength
     
     'During a preview, modify the wavelength and amplitude values to make the preview representative of the final image
     If toPreview Then
@@ -255,6 +271,12 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
         xAmplitude = xAmplitude * curDIBValues.previewModifier
         yAmplitude = yAmplitude * curDIBValues.previewModifier
     End If
+    
+    Dim xInvWavelength As Double, yInvWavelength As Double
+    xInvWavelength = 1# / xWavelength
+    yInvWavelength = 1# / yWavelength
+    
+    Dim avgSamples As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -283,8 +305,8 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
         For sampleIndex = 0 To numSamples
             
             'Offset the pixel amount by the supersampling lookup table and wavelength
-            nX = (j + ssX(sampleIndex)) / xWavelength
-            nY = (k + ssY(sampleIndex)) / yWavelength
+            nX = (j + ssX(sampleIndex)) * xInvWavelength
+            nY = (k + ssY(sampleIndex)) * yInvWavelength
             
             'Further extend pixel coordinates by sin() * amplitude
             srcX = x + Sin(nX) * xAmplitude
@@ -297,14 +319,14 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -315,24 +337,21 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                         
     Next y
         If (Not toPreview) Then
@@ -354,7 +373,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Waves", , BuildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Waves", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -364,11 +383,6 @@ End Sub
 Private Sub cmdBar_ResetClick()
     cboEdges.ListIndex = EDGE_REFLECT
     sltQuality.Value = 2
-End Sub
-
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -382,6 +396,8 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -411,7 +427,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then WaveImage sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then WaveImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -425,7 +441,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "xwavelength", sltWavelengthX.Value
+        .AddParam "ywavelength", sltWavelengthY.Value
+        .AddParam "xamplitude", sltAmplitudeX.Value
+        .AddParam "yamplitude", sltAmplitudeY.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

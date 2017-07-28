@@ -162,8 +162,8 @@ Attribute VB_Exposed = False
 'Image "Swirl" Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 27/September/14
-'Last update: add supersampling support, and allow the user to set an arbitrary center point for the transform.
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to "swirl" an image at an arbitrary angle in 1/10 degree increments.  Supersampling and
 ' source interpolation (via reverse-mapping) is available for a high-quality transform.
@@ -184,10 +184,26 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "swirl" effect to an image
-Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SwirlImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim swirlAngle As Double, swirlRadius As Double, centerX As Double, centerY As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        swirlAngle = .GetDouble("angle", sltAngle.Value)
+        swirlRadius = .GetDouble("radius", sltRadius.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
+    
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
-    swirlAngle = -(swirlAngle / 10)
+    swirlAngle = -(swirlAngle / 10#)
 
     If (Not toPreview) Then Message "Swirling image round and round..."
     
@@ -270,7 +286,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -293,14 +309,16 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
+    
+    Dim avgSamples As Double
         
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
-    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2#
               
-    sRadius = sRadius * (swirlRadius / 100)
+    sRadius = sRadius * (swirlRadius / 100#)
     sRadius2 = sRadius * sRadius
               
     'Loop through each pixel in the image, converting values as we go
@@ -353,14 +371,14 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -371,24 +389,21 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -410,7 +425,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Swirl", , BuildParams(sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Swirl", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -421,11 +436,6 @@ Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
     cboEdges.ListIndex = EDGE_CLAMP
     sltQuality.Value = 2
-End Sub
-
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -439,6 +449,10 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -467,7 +481,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SwirlImage sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SwirlImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -489,7 +503,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

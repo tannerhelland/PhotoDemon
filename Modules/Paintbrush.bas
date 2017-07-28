@@ -564,7 +564,7 @@ Private Sub CreateSoftBrushReference_PD()
         'Calculate brush flow (which controls the opacity of individual dabs)
         Dim normMult As Single, flowMult As Single
         flowMult = (m_BrushFlow / 100)
-        normMult = (1 / 255) * flowMult
+        normMult = (1# / 255) * flowMult
         
         Dim x As Long, y As Long, tmpMult As Single
         For x = 0 To 255
@@ -633,7 +633,7 @@ Private Sub CreateSoftBrushReference_PD()
         Dim radiusDifference As Single
         radiusDifference = (brushRadiusSquare - innerRadiusSquare)
         If (radiusDifference < 0.00001) Then radiusDifference = 0.00001
-        radiusDifference = (1 / radiusDifference)
+        radiusDifference = (1# / radiusDifference)
         
         Dim cx As Single, cy As Single
         Dim pxDistance As Single, pxOpacity As Single

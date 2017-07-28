@@ -251,7 +251,7 @@ Private Function GetCorrectedValue(ByVal inputVal As Single, ByVal inputMax As S
     
     'Apply gamma
     If (newGamma < 0.01) Then newGamma = 0.01
-    If (tmpCalculation > 0#) Then tmpCalculation = tmpCalculation ^ (1 / newGamma)
+    If (tmpCalculation > 0#) Then tmpCalculation = tmpCalculation ^ (1# / newGamma)
     
     'Return to the original [0, inputMax] scale
     tmpCalculation = tmpCalculation * inputMax

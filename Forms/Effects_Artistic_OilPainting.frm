@@ -80,8 +80,8 @@ Attribute VB_Exposed = False
 'Oil Painting Effect Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 09/August/13
-'Last updated: 09/August/13
-'Last update: initial build
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Oil painting image effect, heavily optimized.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)

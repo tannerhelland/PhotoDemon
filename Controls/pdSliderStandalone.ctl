@@ -1213,11 +1213,11 @@ Private Sub GetSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
                 
                 'Calculate exponential max/min values
                 Dim minE As Single, maxE As Single
-                minE = m_Min ^ (1 / m_ScaleExponentialValue)
-                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                minE = m_Min ^ (1# / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1# / m_ScaleExponentialValue)
                 
                 'Apply the same integer-only rule
-                If (m_SignificantDigits = 0) Then sliderX = ((Int(m_Value + 0.5) ^ (1 / m_ScaleExponentialValue)) - minE) Else sliderX = ((m_Value ^ (1 / m_ScaleExponentialValue)) - minE)
+                If (m_SignificantDigits = 0) Then sliderX = ((Int(m_Value + 0.5) ^ (1# / m_ScaleExponentialValue)) - minE) Else sliderX = ((m_Value ^ (1# / m_ScaleExponentialValue)) - minE)
                 
                 sliderX = GetTrackLeft + (sliderX / (maxE - minE)) * (GetTrackRight - GetTrackLeft)
             
@@ -1280,10 +1280,10 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
                 If (m_ScaleExponentialValue = 0#) Then m_ScaleExponentialValue = 2#
                 
                 Dim minE As Single, maxE As Single
-                minE = m_Min ^ (1 / m_ScaleExponentialValue)
-                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                minE = m_Min ^ (1# / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1# / m_ScaleExponentialValue)
                 
-                customX = GetTrackLeft + (((customValue ^ (1 / m_ScaleExponentialValue)) - minE) / (maxE - minE)) * (GetTrackRight - GetTrackLeft)
+                customX = GetTrackLeft + (((customValue ^ (1# / m_ScaleExponentialValue)) - minE) / (maxE - minE)) * (GetTrackRight - GetTrackLeft)
                 
             Case ScaleLogarithmic
                 Dim minL As Single, maxL As Single
@@ -1321,8 +1321,8 @@ Private Function GetCustomPositionValue(ByVal srcX As Single) As Single
                 
             Case ScaleExponential
                 Dim minE As Single, maxE As Single
-                minE = m_Min ^ (1 / m_ScaleExponentialValue)
-                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                minE = m_Min ^ (1# / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1# / m_ScaleExponentialValue)
                 
                 GetCustomPositionValue = (minE + ((maxE - minE) / (GetTrackRight - GetTrackLeft)) * (srcX - GetTrackLeft)) ^ m_ScaleExponentialValue
                 
@@ -1343,7 +1343,7 @@ End Function
 ' it can be as high as 1.0, or as low as 0.01.  In a pdSlider control, this value is used by the spinner control to determine up/down
 ' value changes when the arrows are clicked.
 Private Function GetIncrementAmount() As Double
-    GetIncrementAmount = 1 / (10 ^ m_SignificantDigits)
+    GetIncrementAmount = 1# / (10# ^ m_SignificantDigits)
 End Function
 
 'Return the min/max position of the track behind the slider.  This is used for a lot of things: rendering the track, calculating the

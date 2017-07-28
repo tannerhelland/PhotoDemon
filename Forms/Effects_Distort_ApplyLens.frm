@@ -152,9 +152,8 @@ Attribute VB_Exposed = False
 'Lens Correction and Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 25/September/14
-'Last update: added adaptive subpixel supersampling support.  This was my test filter for the rest of PD, so it received
-'              extensive profiling - hopefully that means performance is excellent!
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply a lens distortion to an image.  Subpixel supersampling is now supported for extremely
 ' high-quality results.
@@ -175,9 +174,24 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a new lens distortion to an image
-Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    refractiveIndex = 1 / refractiveIndex
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim refractiveIndex As Double, lensRadius As Double, centerX As Double, centerY As Double
+    Dim superSamplingAmount As Long
+    
+    With cParams
+        refractiveIndex = .GetDouble("strength", sltIndex.Value)
+        lensRadius = .GetDouble("radius", sltRadius.Value)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
+    
+    refractiveIndex = 1# / refractiveIndex
 
     If (Not toPreview) Then Message "Projecting image through simulated lens..."
     
@@ -260,7 +274,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -294,13 +308,15 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     Dim sRadiusW As Double, sRadiusH As Double
     Dim sRadiusW2 As Double, sRadiusH2 As Double
     
-    sRadiusW = tWidth * (lensRadius / 100)
-    sRadiusW2 = sRadiusW * sRadiusW
-    sRadiusH = tHeight * (lensRadius / 100)
+    sRadiusW = tWidth * (lensRadius / 100#)
+    sRadiusW2 = 1# / (sRadiusW * sRadiusW)
+    sRadiusH = tHeight * (lensRadius / 100#)
     sRadiusH2 = sRadiusH * sRadiusH
     
     Dim sRadiusMult As Double
     sRadiusMult = sRadiusW * sRadiusH
+    
+    Dim avgSamples As Double
               
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -329,7 +345,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             nY2 = k * k
             
             'If the values are going to be out-of-bounds, simply maintain the current x and y values
-            If nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)) Then
+            If (nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) * sRadiusW2))) Then
                 srcX = x
                 srcY = y
             
@@ -337,7 +353,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             Else
             
                 'Calculate theta
-                theta = Sqr((1 - (nX2 / sRadiusW2) - (nY2 / sRadiusH2)) * sRadiusMult)
+                theta = Sqr((1 - (nX2 * sRadiusW2) - (nY2 / sRadiusH2)) * sRadiusMult)
                 theta2 = theta * theta
                 
                 'Calculate the angle for x
@@ -363,14 +379,14 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -381,24 +397,21 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -420,7 +433,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Apply lens distortion", , BuildParams(sltIndex, sltRadius, sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Apply lens distortion", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -459,7 +472,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, sltQuality, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyLensDistortion GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -492,7 +505,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "strength", sltIndex.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

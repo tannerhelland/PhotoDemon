@@ -510,12 +510,12 @@ End Sub
 
 'When the control value is moved UP via button, this function is called
 Private Sub MoveValueUp()
-    Value = m_Value - (1 / (10 ^ m_SigDigits))
+    Value = m_Value - (1# / (10# ^ m_SigDigits))
 End Sub
 
 'When the control value is moved DOWN via button, this function is called
 Private Sub MoveValueDown()
-    Value = m_Value + (1 / (10 ^ m_SigDigits))
+    Value = m_Value + (1# / (10# ^ m_SigDigits))
 End Sub
 
 Private Sub m_EditBox_Change()

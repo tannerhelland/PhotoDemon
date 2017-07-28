@@ -258,7 +258,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
             tmpSamples = numSamples
         End If
         
-        sampRatio = (1 / numSamples)
+        sampRatio = (1# / numSamples)
         
         'We now want to sample (numSamples) pixels lying along this theta, but at different distances from the center.
         For i = 1 To tmpSamples
@@ -302,7 +302,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
             
         Next i
         
-        sampRatio = 1 / tmpSamples
+        sampRatio = 1# / tmpSamples
         dstImageData(xQuick, y) = newB * sampRatio
         dstImageData(xQuick + 1, y) = newG * sampRatio
         dstImageData(xQuick + 2, y) = newR * sampRatio

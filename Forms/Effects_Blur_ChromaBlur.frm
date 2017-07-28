@@ -77,8 +77,8 @@ Attribute VB_Exposed = False
 'Chroma (Color) Blur Tool
 'Copyright 2014-2017 by Tanner Helland
 'Created: 11/January/14
-'Last updated: 11/January/14
-'Last update: initial build
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Chroma blur is a useful tool for improving noise in low-quality digital photos (especially image taken with a phone).
 ' It blurs color data only - not luminance - thus leaving image edges intact while smoothing out regions of mixed
@@ -204,7 +204,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             r = srcImageData(quickVal + 2, y)
             
             'Determine original HSL values
-            tRGBToHSL r, g, b, h, s, origLuminance
+            ImpreciseRGBtoHSL r, g, b, h, s, origLuminance
             
             'Now, retrieve the gaussian pixels
             b = GaussImageData(quickVal, y)
@@ -212,10 +212,10 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             r = GaussImageData(quickVal + 2, y)
             
             'Determine HSL for the blurred data
-            tRGBToHSL r, g, b, h, s, l
+            ImpreciseRGBtoHSL r, g, b, h, s, l
             
             'Use the final hue and saturation values but the ORIGINAL luminance value to create a new RGB coordinate
-            tHSLToRGB h, s, origLuminance, r, g, b
+            ImpreciseHSLtoRGB h, s, origLuminance, r, g, b
             
             'Apply the new RGB colors to the image
             dstImageData(quickVal, y) = b

@@ -183,7 +183,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Lambda is effectively the "strength" of the final calculation.  Its maximal value should not be larger than
     ' the number of pixels processed (1/4 for either 4-way filter, or 1/8 for the full 8-way filter).
     Dim lambda As Double
-    If adCardinal And adOrdinal Then lambda = 1 / 8 Else lambda = 1 / 4
+    If adCardinal And adOrdinal Then lambda = 1# / 8# Else lambda = 1# / 4#
     lambda = lambda * adStrength
     
     'Conduction values are constant, given a difference on the range [-255, 255], but they are calculated differently
@@ -196,9 +196,9 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         tmpFloat = (CDbl(i) / adKappa)
         
         If adOption = 0 Then
-            conduction(i) = -1 * (tmpFloat * tmpFloat)
+            conduction(i) = -1# * (tmpFloat * tmpFloat)
         Else
-            conduction(i) = 1 / (1 + tmpFloat * tmpFloat)
+            conduction(i) = 1# / (1# + tmpFloat * tmpFloat)
         End If
     Next i
     

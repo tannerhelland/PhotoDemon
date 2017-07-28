@@ -520,7 +520,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
     Dim sigma As Double
-    sigma = Sqr(-(radius * radius) / (2 * Log(1# / 255#)))
+    sigma = Sqr(-(radius * radius) / (2# * Log(1# / 255#)))
     
     'Another possible sigma formula, per this link (http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur):
     'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
@@ -542,11 +542,11 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     End If
     
     'Calculate IIR values
-    lambda = (q * q) / (2 * numSteps)
-    dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
+    lambda = (q * q) / (2# * numSteps)
+    dnu = (1# + 0.02 * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
     nu = dnu
-    boundaryScale = (1 / (1 - dnu))
-    postScale = ((dnu / lambda) ^ (2 * numSteps)) * 255
+    boundaryScale = (1# / (1# - dnu))
+    postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
     
     'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
     Dim rFloat() As Single, gFloat() As Single, bFloat() As Single, aFloat() As Single
@@ -555,6 +555,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     ReDim bFloat(initX To finalX, initY To finalY) As Single
     
     If hasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
+    
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'Copy the contents of the current image into the float arrays
     For x = initX To finalX
@@ -565,13 +567,13 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         g = imageData(quickX + 1, y)
         b = imageData(quickX, y)
         
-        rFloat(x, y) = r / 255
-        gFloat(x, y) = g / 255
-        bFloat(x, y) = b / 255
+        rFloat(x, y) = r * ONE_DIV_255
+        gFloat(x, y) = g * ONE_DIV_255
+        bFloat(x, y) = b * ONE_DIV_255
         
         If hasAlpha Then
             a = imageData(quickX + 3, y)
-            aFloat(x, y) = a / 255
+            aFloat(x, y) = a * ONE_DIV_255
         End If
 
     Next y
@@ -713,9 +715,9 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             b = bFloat(x, y) * postScale
             
             'Perform failsafe clipping
-            If r > 255 Then r = 255
-            If g > 255 Then g = 255
-            If b > 255 Then b = 255
+            If (r > 255) Then r = 255
+            If (g > 255) Then g = 255
+            If (b > 255) Then b = 255
             
             imageData(quickX, y) = b
             imageData(quickX + 1, y) = g
@@ -724,7 +726,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
-                If a > 255 Then a = 255
+                If (a > 255) Then a = 255
                 imageData(quickX + 3, y) = a
             End If
         

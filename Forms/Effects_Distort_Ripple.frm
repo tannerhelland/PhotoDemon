@@ -218,8 +218,8 @@ Attribute VB_Exposed = False
 'Image "Ripple" Distortion
 'Copyright 2000-2017 by Tanner Helland
 'Created: 06/January/13
-'Last updated: 10/January/14
-'Last update: added user-editable center point for the ripple
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply a "water ripple" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -251,9 +251,27 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "water ripple" effect to an image
-Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub RippleImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Simulating ripples across image surface..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim rippleWavelength As Double, rippleAmplitude As Double, ripplePhase As Double, rippleRadius As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long, centerX As Double, centerY As Double
+    
+    With cParams
+        rippleWavelength = .GetDouble("wavelength", sltWavelength.Value)
+        rippleAmplitude = .GetDouble("amplitude", sltAmplitude.Value)
+        ripplePhase = .GetDouble("phase", sltPhase.Value)
+        rippleRadius = .GetDouble("radius", sltRadius.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -334,7 +352,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -361,18 +379,21 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
         
-    rippleAmplitude = rippleAmplitude / 100
-    ripplePhase = ripplePhase * (PI / 180)
+    rippleAmplitude = rippleAmplitude / 100#
+    ripplePhase = ripplePhase * (PI / 180#)
     
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
-    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2#
               
-    sRadius = sRadius * (rippleRadius / 100)
+    sRadius = sRadius * (rippleRadius / 100#)
     sRadius2 = sRadius * sRadius
-                            
+    
+    Dim invRadius As Double, avgSamples As Double
+    invRadius = 1# / sRadius
+     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -401,7 +422,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             sDistance = (nX * nX) + (nY * nY)
                     
             'Calculate remapped x and y values
-            If sDistance > sRadius2 Then
+            If (sDistance > sRadius2) Then
                 srcX = x
                 srcY = y
             Else
@@ -412,10 +433,10 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
                 theta = rippleAmplitude * Sin((sDistance / rippleWavelength) * PI_DOUBLE - ripplePhase)
                 
                 'Normalize theta
-                theta = theta * ((sRadius - sDistance) / sRadius)
+                theta = theta * ((sRadius - sDistance) * invRadius)
                 
                 'Factor the wavelength back in
-                If (sDistance <> 0) Then theta = theta * (rippleWavelength / sDistance)
+                If (sDistance <> 0#) Then theta = theta * (rippleWavelength / sDistance)
                 
                 srcX = x + (nX * theta)
                 srcY = y + (nY * theta)
@@ -429,14 +450,14 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -447,24 +468,21 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -486,7 +504,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Ripple", , BuildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Ripple", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -545,7 +563,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RippleImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -578,7 +596,14 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "wavelength", sltWavelength.Value
+        .AddParam "amplitude", sltAmplitude.Value
+        .AddParam "phase", sltPhase.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

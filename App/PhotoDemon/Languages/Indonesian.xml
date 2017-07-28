@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.209</langversion>
+<langversion>6.6.210</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2499,7 +2499,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
-<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -5629,6 +5629,11 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
+<original>Harmonic mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mean shift</original>
 <translation></translation>
 </phrase>
@@ -6525,7 +6530,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 184 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8984,11 +8989,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>Posterize (dithered)</original>
-<translation>Posterize (Mengagak)</translation>
-</phrase>
-
-<phrase>
 <original>Posterizing image</original>
 <translation>Gambar Posterizing</translation>
 </phrase>
@@ -9003,7 +9003,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Gambar Posterizing (dengan penggetaran lanjutan)</translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -9133,21 +9133,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>good</original>
-<translation>baik</translation>
+<original>precise</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>better</original>
-<translation>lebih baik</translation>
-</phrase>
-
-<phrase>
-<original>best</original>
-<translation>terbaik</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -9158,7 +9148,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon kabur gaussian</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9258,7 +9248,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>tepi</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
@@ -10281,7 +10271,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon topeng unsharp (Langkah %1 daripada %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -11706,11 +11696,21 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>good</original>
+<translation>baik</translation>
+</phrase>
+
+<phrase>
+<original>better</original>
+<translation>lebih baik</translation>
+</phrase>
+
+<phrase>
 <original>best (most ink)</original>
 <translation>terbaik (paling dakwat)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
@@ -15032,12 +15032,28 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Web.bas-->
 
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4517 phrases. -->
-<!-- 1982 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4519 phrases. -->
+<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12302 total words. -->
 
 </pdData>

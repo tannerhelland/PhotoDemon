@@ -151,15 +151,15 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
     If (finalX - initX) > (finalY - initY) Then largestDimension = (finalX - initX) Else largestDimension = (finalY - initY)
     
     Dim hdrRadius As Long
-    hdrRadius = ((fxQuality / 100) * largestDimension) * 0.2
+    hdrRadius = ((fxQuality / 100#) * largestDimension) * 0.2
     
     'Strength is used as an analog for multiple parameters.  Here, we use it to calculate a saturation modifier,
     ' which is applied linearly to the final RGB values, as a way to further pop colors.
     Dim satBoost As Double
-    satBoost = 1# + (blendStrength / 100) * 0.3
+    satBoost = 1# + (blendStrength / 100#) * 0.3
     
     'Strength is presented to the user on a [1, 100] scale, but we actually boost this to a literal value of [1, 200]
-    blendStrength = (blendStrength * 2) / 100
+    blendStrength = (blendStrength * 2#) / 100#
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     'If toPreview Then hdrRadius = hdrRadius * curDIBValues.previewModifier
@@ -200,8 +200,8 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
             
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
-        scaleFactor = blendStrength + 1
-        invScaleFactor = 1 - scaleFactor
+        scaleFactor = blendStrength + 1#
+        invScaleFactor = 1# - scaleFactor
     
         Dim blendVal As Double
         
@@ -250,23 +250,25 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
             newB = ((1# - blendVal) * newB) + (blendVal * b)
             
             'Finally, apply a saturation boost proportional to the final calculated strength
-            tRGBToHSL newR, newG, newB, h, s, l
+            Colors.ImpreciseRGBtoHSL newR, newG, newB, h, s, l
             s = s * satBoost
             If (s > 1#) Then s = 1#
-            tHSLToRGB h, s, l, newR, newG, newB
+            Colors.ImpreciseHSLtoRGB h, s, l, newR, newG, newB
             
             dstImageData(quickVal, y) = newB
             dstImageData(quickVal + 1, y) = newG
             dstImageData(quickVal + 2, y) = newR
             
-            If (qvDepth = 4) Then
-                a2 = srcImageData(quickVal + 3, y)
-                a = dstImageData(quickVal + 3, y)
-                newA = (scaleFactor * a) + (invScaleFactor * a2)
-                If (newA > 255) Then newA = 255
-                If (newA < 0) Then newA = 0
-                dstImageData(quickVal + 3, y) = ((1# - blendVal) * newA) + (blendVal * a)
-            End If
+            'I'm not sure how to handle alpha in an HDR setting.  Technically, we probably shouldn't
+            ' touch it at all - but I've left this code here in case it proves helpful in the future.
+'            If (qvDepth = 4) Then
+'                a2 = srcImageData(quickVal + 3, y)
+'                a = dstImageData(quickVal + 3, y)
+'                newA = (scaleFactor * a) + (invScaleFactor * a2)
+'                If (newA > 255) Then newA = 255
+'                If (newA < 0) Then newA = 0
+'                dstImageData(quickVal + 3, y) = ((1# - blendVal) * newA) + (blendVal * a)
+'            End If
                                     
         Next y
             If (Not toPreview) Then
@@ -280,7 +282,6 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         
-        srcDIB.EraseDIB
         Set srcDIB = Nothing
         
     End If

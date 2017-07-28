@@ -135,10 +135,10 @@ Public Function GetZoomOffsetFactor(ByVal zoomIndex As Long) As Double
         Dim curZoomValue As Double
         curZoomValue = GetZoomValue(zoomIndex)
         
-        If curZoomValue >= 1 Then
+        If curZoomValue >= 1# Then
             GetZoomOffsetFactor = curZoomValue
         Else
-            GetZoomOffsetFactor = 1 / curZoomValue
+            GetZoomOffsetFactor = 1# / curZoomValue
         End If
     
     End If
@@ -237,19 +237,19 @@ Public Sub InitializeViewportEngine()
         zoomOffsetFactors(11) = 1
         
     zoomStrings(12) = "75%"
-        zoomValues(12) = 3 / 4
-        zoomOffsetFactors(12) = 4 / 3
+        zoomValues(12) = 3# / 4#
+        zoomOffsetFactors(12) = 4# / 3#
         
     zoomStrings(13) = "67%"
-        zoomValues(13) = 2 / 3
-        zoomOffsetFactors(13) = 3 / 2
+        zoomValues(13) = 2# / 3#
+        zoomOffsetFactors(13) = 3# / 2#
         
     zoomStrings(14) = "50%"
         zoomValues(14) = 0.5
-        zoomOffsetFactors(14) = 2
+        zoomOffsetFactors(14) = 2#
         
     zoomStrings(15) = "33%"
-        zoomValues(15) = 1 / 3
+        zoomValues(15) = 1# / 3#
         zoomOffsetFactors(15) = 3
         
     zoomStrings(16) = "25%"
@@ -262,19 +262,19 @@ Public Sub InitializeViewportEngine()
         
     zoomStrings(18) = "16%"
         zoomValues(18) = 0.16
-        zoomOffsetFactors(18) = 100 / 16
+        zoomOffsetFactors(18) = 100# / 16#
         
     zoomStrings(19) = "12%"
         zoomValues(19) = 0.12
-        zoomOffsetFactors(19) = 100 / 12
+        zoomOffsetFactors(19) = 100# / 12#
         
     zoomStrings(20) = "8%"
         zoomValues(20) = 0.08
-        zoomOffsetFactors(20) = 100 / 8
+        zoomOffsetFactors(20) = 100# / 8#
         
     zoomStrings(21) = "6%"
         zoomValues(21) = 0.06
-        zoomOffsetFactors(21) = 100 / 6
+        zoomOffsetFactors(21) = 100# / 6#
         
     zoomStrings(22) = "4%"
         zoomValues(22) = 0.04
@@ -282,7 +282,7 @@ Public Sub InitializeViewportEngine()
         
     zoomStrings(23) = "3%"
         zoomValues(23) = 0.03
-        zoomOffsetFactors(23) = 100 / 0.03
+        zoomOffsetFactors(23) = 100# / 0.03
         
     zoomStrings(24) = "2%"
         zoomValues(24) = 0.02

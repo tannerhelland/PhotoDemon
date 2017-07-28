@@ -986,10 +986,10 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
             ' non-destructive resizing active, because this is when we apply that calculation.
             With srcRect
-                .Left = (intRectSrc.Left - CDbl(srcLayer.GetLayerOffsetX)) * (1 / srcLayer.GetLayerCanvasXModifier)
-                .Width = intRectSrc.Width * (1 / srcLayer.GetLayerCanvasXModifier)
-                .Top = (intRectSrc.Top - CDbl(srcLayer.GetLayerOffsetY)) * (1 / srcLayer.GetLayerCanvasYModifier)
-                .Height = intRectSrc.Height * (1 / srcLayer.GetLayerCanvasYModifier)
+                .Left = (intRectSrc.Left - CDbl(srcLayer.GetLayerOffsetX)) * (1# / srcLayer.GetLayerCanvasXModifier)
+                .Width = intRectSrc.Width * (1# / srcLayer.GetLayerCanvasXModifier)
+                .Top = (intRectSrc.Top - CDbl(srcLayer.GetLayerOffsetY)) * (1# / srcLayer.GetLayerCanvasYModifier)
+                .Height = intRectSrc.Height * (1# / srcLayer.GetLayerCanvasYModifier)
             End With
             
             'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
@@ -1446,10 +1446,10 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
             ' non-destructive resizing active, because this is when we apply that calculation.
             With srcRect
-                .Left = (intRectSrc.Left - CDbl(srcLayer.GetLayerOffsetX)) * (1 / srcLayer.GetLayerCanvasXModifier)
-                .Width = intRectSrc.Width * (1 / srcLayer.GetLayerCanvasXModifier)
-                .Top = (intRectSrc.Top - CDbl(srcLayer.GetLayerOffsetY)) * (1 / srcLayer.GetLayerCanvasYModifier)
-                .Height = intRectSrc.Height * (1 / srcLayer.GetLayerCanvasYModifier)
+                .Left = (intRectSrc.Left - CDbl(srcLayer.GetLayerOffsetX)) * (1# / srcLayer.GetLayerCanvasXModifier)
+                .Width = intRectSrc.Width * (1# / srcLayer.GetLayerCanvasXModifier)
+                .Top = (intRectSrc.Top - CDbl(srcLayer.GetLayerOffsetY)) * (1# / srcLayer.GetLayerCanvasYModifier)
+                .Height = intRectSrc.Height * (1# / srcLayer.GetLayerCanvasYModifier)
             End With
             
             'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need

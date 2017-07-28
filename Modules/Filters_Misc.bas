@@ -553,7 +553,7 @@ Public Sub MenuAntique()
     Dim tmpVal As Double
     For x = 0 To 255
         tmpVal = x / 255
-        tmpVal = tmpVal ^ (1 / 1.6)
+        tmpVal = tmpVal ^ (1# / 1.6)
         tmpVal = tmpVal * 255
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
