@@ -32,7 +32,7 @@ Begin VB.Form FormPolar
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1931
-      Caption         =   "render emphasis"
+      Caption         =   "mode"
    End
    Begin PhotoDemon.pdCheckBox chkSwapXY 
       Height          =   330
@@ -93,7 +93,7 @@ Begin VB.Form FormPolar
       Height          =   735
       Left            =   6000
       TabIndex        =   4
-      Top             =   810
+      Top             =   720
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
@@ -109,9 +109,8 @@ Attribute VB_Exposed = False
 'Image Polar Coordinate Conversion Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 23/August/13
-'Last update: added command bar, converted the polar coordinate routine itself to operate on any two DIBs
-'             (thus making this dialog just a thin wrapper to that function)
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to convert an image between rectangular and polar coordinates.  An optional polar
 ' inversion technique is also supplied (as this is used by Paint.NET).
@@ -148,10 +147,25 @@ End Sub
 ' 0) Convert rectangular to polar
 ' 1) Convert polar to rectangular
 ' 2) Polar inversion
-Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boolean, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ConvertToPolar(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Performing polar coordinate conversion..."
         
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim conversionMethod As Long, swapXAndY As Boolean, polarRadius As Double
+    Dim edgeHandling As Long, useBilinear As Boolean
+    
+    With cParams
+        conversionMethod = .GetLong("method", cboConvert.ListIndex)
+        swapXAndY = .GetBool("swapxy", False)
+        polarRadius = .GetDouble("radius", sltRadius.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        useBilinear = .GetBool("bilinear", True)
+    End With
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic
@@ -170,7 +184,6 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boo
     End If
     
     srcDIB.EraseDIB
-    Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     FinalizeImageData toPreview, dstPic
@@ -179,7 +192,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , BuildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
+    Process "Polar conversion", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -197,8 +210,8 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully initialized
     cmdBar.MarkPreviewStatus False
     
-    btsRender.AddItem "speed", 0
-    btsRender.AddItem "quality", 1
+    btsRender.AddItem "fast", 0
+    btsRender.AddItem "precise", 1
     btsRender.ListIndex = 1
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
@@ -228,7 +241,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ConvertToPolar GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -242,7 +255,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "method", cboConvert.ListIndex
+        .AddParam "swapxy", CBool(chkSwapXY.Value)
+        .AddParam "radius", sltRadius.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
     End With
     
     GetLocalParamString = cParams.GetParamString()

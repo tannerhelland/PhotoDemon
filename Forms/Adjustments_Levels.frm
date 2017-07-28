@@ -1231,7 +1231,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
         gValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
     Next x
     For x = 0 To 255
-        gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
+        gValues(x) = 1# / ((gValues(x) + 1# / ROOT10) ^ 2)
     Next x
     
     'Parse out individual level values into a master levels array
@@ -1250,8 +1250,8 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     For i = 0 To 3
         For x = 0 To 255
-            tmpGamma = CDbl(x) / 255
-            tmpGamma = tmpGamma ^ (1 / gValues(bRatio(i)))
+            tmpGamma = CDbl(x) / 255#
+            tmpGamma = tmpGamma ^ (1# / gValues(bRatio(i)))
             tmpGamma = tmpGamma * 255
             If (tmpGamma > 255) Then tmpGamma = 255
             If (tmpGamma < 0) Then tmpGamma = 0

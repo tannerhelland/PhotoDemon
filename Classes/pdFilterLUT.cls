@@ -194,8 +194,8 @@ Public Sub FillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustmen
     For i = 0 To 255
         
         'Calculate gamma
-        tmpGammaCalc = i / 255
-        tmpGammaCalc = tmpGammaCalc ^ (1 / gammaAdjustment)
+        tmpGammaCalc = i / 255#
+        tmpGammaCalc = tmpGammaCalc ^ (1# / gammaAdjustment)
         tmpGammaCalc = tmpGammaCalc * 255
         
         newValue = Int(tmpGammaCalc)

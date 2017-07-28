@@ -88,8 +88,8 @@ Attribute VB_Exposed = False
 'Miscellaneous Distort Tools
 'Copyright 2013-2017 by Tanner Helland
 'Created: 07/June/13
-'Last updated: 07/June/13
-'Last update: initial build
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Some one-off distorts (e.g. no tunable parameters) are useful under very specific circumstances.  However, it is
 ' impractical to give every such tool its own menu entry, so all non-tunable distorts are being placed here from
@@ -109,7 +109,20 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Correct lens distortion in an image
-Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyMiscDistort(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim distortName As String, distortStyle As Long, edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        distortName = .GetString("name", lstDistorts.List(lstDistorts.ListIndex))
+        distortStyle = .GetLong("type", lstDistorts.ListIndex)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
     
     If (Not toPreview) Then Message "Applying %1 distortion...", distortName
     
@@ -192,7 +205,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -240,6 +253,8 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
         ssY(sampleIndex) = ssY(sampleIndex) / tHeight
     Next sampleIndex
     
+    Dim avgSamples As Double
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -280,7 +295,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
                     
             'Inside-out
             ElseIf (distortStyle = 2) Then
-                If radius > 0 Then radius = 1 - radius Else radius = -1 - radius
+                If (radius > 0#) Then radius = 1# - radius Else radius = -1# - radius
                 nX = radius * Cos(theta)
                 nY = radius * Sin(theta)
                 
@@ -298,26 +313,26 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
                 
             'Rounding
             ElseIf (distortStyle = 5) Then
-                If (nX < 0) Then nX = -1 * nX * nX Else nX = nX * nX
-                If (nY < 0) Then nY = -1 * nY * nY Else nY = nY * nY
+                If (nX < 0#) Then nX = -1# * nX * nX Else nX = nX * nX
+                If (nY < 0#) Then nY = -1# * nY * nY Else nY = nY * nY
             
             'Twist edges
             ElseIf (distortStyle = 6) Then
-                radius = Sin(PI * radius / 2)
+                radius = Sin(PI * radius * 0.5)
                 nX = radius * Cos(theta)
                 nY = radius * Sin(theta)
             
             'Wormhole
             ElseIf (distortStyle = 7) Then
-                If (radius = 0) Then radius = 0 Else radius = Sin(1 / radius)
+                If (radius = 0#) Then radius = 0# Else radius = Sin(1# / radius)
                 nX = radius * Cos(theta)
                 nY = radius * Sin(theta)
                 
             End If
             
             'Convert the recalculated coordinates back to the Cartesian plane
-            srcX = (tWidth * (nX + 1)) / 2
-            srcY = (tHeight * (nY + 1)) / 2
+            srcX = (tWidth * (nX + 1#)) * 0.5
+            srcY = (tHeight * (nY + 1#)) * 0.5
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -326,14 +341,14 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -344,24 +359,21 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
         
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -382,7 +394,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , BuildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Miscellaneous distort", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -434,7 +446,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMiscDistort GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -452,7 +464,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "name", lstDistorts.List(lstDistorts.ListIndex)
+        .AddParam "type", lstDistorts.ListIndex
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

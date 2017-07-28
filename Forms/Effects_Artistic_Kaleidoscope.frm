@@ -201,8 +201,8 @@ Attribute VB_Exposed = False
 'Image "Kaleiodoscope" Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 25/September/14
-'Last update: interface improvements
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply a simulated kaleidoscope distort to the image.  A number of variables can be
 ' set as part of the transformation; simply playing with the sliders should give a good indication of how they
@@ -222,9 +222,26 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a "kaleidoscope" effect to an image
-Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Peering at image through imaginary kaleidoscope..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim numMirrors As Long, primaryAngle As Double, secondaryAngle As Double, effectRadius As Double
+    Dim useBilinear As Boolean, centerX As Double, centerY As Double
+    
+    With cParams
+        numMirrors = .GetLong("mirrors", sltMirrors.Value)
+        primaryAngle = .GetDouble("angle", sltAngle.Value)
+        secondaryAngle = .GetDouble("secondaryangle", sltAngle2.Value)
+        effectRadius = .GetDouble("radius", sltRadius.Value)
+        useBilinear = .GetBool("quality", True)
+        centerX = .GetDouble("x", 0.5)
+        centerY = .GetDouble("y", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -269,8 +286,8 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
     'Kaleidoscoping requires some specialized variables
     
     'Convert the input angles to radians
-    primaryAngle = primaryAngle * (PI / 180)
-    secondaryAngle = secondaryAngle * (PI / 180)
+    primaryAngle = primaryAngle * (PI / 180#)
+    secondaryAngle = secondaryAngle * (PI / 180#)
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -292,9 +309,9 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
-    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) * 0.5
               
-    sRadius = sRadius * (effectRadius / 100)
+    sRadius = sRadius * (effectRadius / 100#)
                   
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -313,11 +330,9 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
         theta = convertTriangle((theta / PI) * numMirrors * 0.5)
                 
         'Calculate remapped x and y values
-        If (sRadius > 0) Then
-            
+        If (sRadius > 0#) Then
             tRadius = sRadius / Cos(theta)
             sDistance = tRadius * convertTriangle(sDistance / tRadius)
-
         Else
             tRadius = sDistance
         End If
@@ -360,7 +375,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Kaleidoscope", , BuildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Kaleidoscope", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -413,16 +428,14 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then KaleidoscopeImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1
 Private Function convertTriangle(ByVal trInput As Double) As Double
-
     Dim tmpCalc As Double
     tmpCalc = Modulo(trInput, 1)
-    convertTriangle = IIf(tmpCalc < 0.5, tmpCalc, 1 - tmpCalc)
-    
+    If (tmpCalc < 0.5) Then convertTriangle = tmpCalc Else convertTriangle = 1# - tmpCalc
 End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -455,7 +468,13 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "mirrors", sltMirrors.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "secondaryangle", sltAngle2.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "quality", CBool(btsQuality.ListIndex = 0)
+        .AddParam "x", sltXCenter.Value
+        .AddParam "y", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

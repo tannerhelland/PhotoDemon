@@ -128,8 +128,8 @@ Attribute VB_Exposed = False
 'Image "Spherize" Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 27/September/14
-'Last update: add supersampling support, rework interface a bit
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to map an image around a sphere, with optional rotation and bidirectional offsets.
 ' Supersampling and reverse-mapped interpolation are available to improve mapping quality.
@@ -161,11 +161,27 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "swirl" effect to an image
-Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, ByVal yOffset As Double, ByVal useRays As Boolean, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SpherizeImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim sphereAngle As Double, xOffset As Double, yOffset As Double
+    Dim useRays As Boolean, edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        sphereAngle = .GetDouble("angle", sltAngle.Value)
+        xOffset = .GetDouble("xoffset", 0#)
+        yOffset = .GetDouble("yoffset", 0#)
+        useRays = .GetBool("rays", False)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
+    
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     ' Also, convert it to radians.
-    sphereAngle = sphereAngle * (PI / 180)
+    sphereAngle = sphereAngle * (PI / 180#)
 
     If (Not toPreview) Then Message "Wrapping image around sphere..."
     
@@ -223,7 +239,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
     ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
-    Dim numSamples As Long
+    Dim numSamples As Long, avgSamples As Double
     Dim ssX() As Single, ssY() As Single
     Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
@@ -248,7 +264,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -281,11 +297,11 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     End If
         
     Dim halfDimDiff As Double
-    halfDimDiff = Abs(tWidth - tHeight) / 2
+    halfDimDiff = Abs(tWidth - tHeight) / 2#
     
     'Convert offsets to usable amounts
-    xOffset = (xOffset / 100) * tWidth
-    yOffset = (yOffset / 100) * tHeight
+    xOffset = (xOffset / 100#) * tWidth
+    yOffset = (yOffset / 100#) * tHeight
     
     'A slow part of this algorithm is translating all (x, y) coordinates to the range [-1, 1].  We can perform this
     ' step in advance by constructing a look-up table for all possible x values and all possible y values.  This
@@ -296,17 +312,17 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     
     For x = initX To finalX
         If minDimVertical Then
-            xLookup(x) = (2 * (x - halfDimDiff)) / minDimension - 1
+            xLookup(x) = (2# * (x - halfDimDiff)) / minDimension - 1#
         Else
-            xLookup(x) = (2 * x) / minDimension - 1
+            xLookup(x) = (2# * x) / minDimension - 1#
         End If
     Next x
     
     For y = initY To finalY
         If minDimVertical Then
-            yLookup(y) = (2 * y) / minDimension - 1
+            yLookup(y) = (2# * y) / minDimension - 1#
         Else
-            yLookup(y) = (2 * (y - halfDimDiff)) / minDimension - 1
+            yLookup(y) = (2# * (y - halfDimDiff)) / minDimension - 1#
         End If
     Next y
     
@@ -318,10 +334,10 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     
     'We can also calculate a few constants in advance
     Dim twoDivByPI As Double
-    twoDivByPI = 2 / PI
+    twoDivByPI = 2# / PI
     
     Dim halfMinDimension As Double
-    halfMinDimension = minDimension / 2
+    halfMinDimension = minDimension / 2#
             
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -357,16 +373,16 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             theta = theta - sphereAngle
                     
             'Convert them back to the Cartesian plane
-            nX = radius * Cos(theta) + 1
+            nX = radius * Cos(theta) + 1#
             srcX = halfMinDimension * nX + xOffset
-            nY = radius * Sin(theta) + 1
+            nY = radius * Sin(theta) + 1#
             srcY = halfMinDimension * nY + yOffset
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             If useRays Then
                 fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             Else
-                If radius <= 1 Then
+                If (radius <= 1) Then
                     fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
                 Else
                     r = 0
@@ -380,14 +396,14 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -398,24 +414,21 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -437,7 +450,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Spherize", , BuildParams(sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Spherize", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -447,17 +460,6 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltQuality = 2
     cboEdges.ListIndex = EDGE_WRAP
-End Sub
-
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -474,6 +476,13 @@ Private Sub Form_Load()
     btsExterior.AddItem "rays of light", 1
     btsExterior.ListIndex = 0
     
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+        
+    'Create the preview
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -486,7 +495,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SpherizeImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltOffsetX_Change()
@@ -512,7 +521,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "xoffset", sltOffsetX.Value
+        .AddParam "yoffset", sltOffsetY.Value
+        .AddParam "rays", CBool(btsExterior.ListIndex = 1)
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

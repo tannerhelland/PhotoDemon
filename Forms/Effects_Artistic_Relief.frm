@@ -93,9 +93,8 @@ Attribute VB_Exposed = False
 'Relief Artistic Effect Dialog
 'Copyright 2003-2017 by Tanner Helland
 'Created: sometime 2003
-'Last updated: 30/June/14
-'Last update: complete overhaul: angle, thickness, and depth parameters added, entire algorithm rewritten, interface
-'              redesigned to match features.
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This dialog applied a relief-style filter to an image.  Some kind of relief filter has existed in PD for a long time,
 ' but the 6.4 release saw some much-needed improvements in the form of selectable angle, depth, and thickness.
@@ -111,7 +110,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Relief", , BuildParams(sltDistance.Value, sltAngle.Value, sltDepth.Value), UNDO_LAYER
+    Process "Relief", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -135,12 +134,24 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Apply a relief filter, which gives the image a pseudo-3D appearance
-Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyReliefEffect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Carving image relief..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim eDistance As Double, eAngle As Double, eDepth As Double
+    
+    With cParams
+        eDistance = .GetDouble("distance", sltDistance.Value)
+        eAngle = .GetDouble("angle", sltAngle.Value)
+        eDepth = .GetDouble("depth", sltDepth.Value)
+    End With
+    
     'Don't allow distance to be 0
-    If eDistance = 0 Then eDistance = 0.01
+    If eDistance = 0# Then eDistance = 0.01
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -211,10 +222,10 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     For y = initY To finalY
     
         'Retrieve source RGB values
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
         b = srcImageData(quickVal, y)
-    
+        g = srcImageData(quickVal + 1, y)
+        r = srcImageData(quickVal + 2, y)
+        
         'Move x according to the user's distance parameter
         nX = x + eDistance
     
@@ -227,7 +238,7 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         fSupport.GetColorsFromSource tR, tG, tB, tA, srcX, srcY, srcImageData
         
         'Calculate a single grayscale relief value
-        reliefOffset = ((r - tR) + (g - tG) + (b - tB)) / 3
+        reliefOffset = ((r - tR) + (g - tG) + (b - tB)) * 0.333333333333333
         reliefOffset = reliefOffset * eDepth
         
         'Apply the relief to each channel
@@ -236,27 +247,16 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         b = b + reliefOffset
                 
         'Clamp RGB values
-        If r > 255 Then
-            r = 255
-        ElseIf r < 0 Then
-            r = 0
-        End If
+        If (r > 255) Then r = 255
+        If (r < 0) Then r = 0
+        If (g > 255) Then g = 255
+        If (g < 0) Then g = 0
+        If (b > 255) Then b = 255
+        If (b < 0) Then b = 0
         
-        If g > 255 Then
-            g = 255
-        ElseIf g < 0 Then
-            g = 0
-        End If
-        
-        If b > 255 Then
-            b = 255
-        ElseIf b < 0 Then
-            b = 0
-        End If
-
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
         dstImageData(quickVal, y) = b
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal + 2, y) = r
         
     Next y
         If (Not toPreview) Then
@@ -278,7 +278,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyReliefEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyReliefEffect GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -304,7 +304,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "distance", sltDistance.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "depth", sltDepth.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

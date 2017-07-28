@@ -103,8 +103,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2017 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 26/September/14
-'Last update: add supersampling support
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.

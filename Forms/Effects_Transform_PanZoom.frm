@@ -118,8 +118,8 @@ Attribute VB_Exposed = False
 'Pan and Zoom Effect Interface
 'Copyright 2013-2017 by Tanner Helland
 'Created: 28/May/13
-'Last updated: 25/September/14
-'Last update: integrate new adaptive supersampling engine
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Dialog for handling a Ken Burns transform (http://en.wikipedia.org/wiki/Ken_burns_effect).
 '
@@ -130,18 +130,29 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image width in order to establish the right ratio.
-Private iWidth As Long, iHeight As Long
-
 Private Sub cboEdges_Click()
     UpdatePreview
 End Sub
 
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
-Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying pan and zoom (Ken Burns) effect..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim hPan As Double, vPan As Double, newZoom As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    
+    With cParams
+        hPan = .GetDouble("horizontal", sltHorizontal.Value)
+        vPan = .GetDouble("vertical", sltVertical.Value)
+        newZoom = .GetDouble("zoom", sltZoom.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -163,8 +174,8 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
         
     'If this is a preview, adjust incoming parameters so they are representative of the final image
     If toPreview Then
-        hPan = (hPan / iWidth) * curDIBValues.Width
-        vPan = (vPan / iHeight) * curDIBValues.Height
+        hPan = hPan * curDIBValues.previewModifier
+        vPan = vPan * curDIBValues.previewModifier
     End If
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -199,6 +210,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     Dim newR As Long, newG As Long, newB As Long, newA As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim tmpSum As Long, tmpSumFirst As Long
+    Dim avgSamples As Double
     
     'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
     ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
@@ -228,7 +240,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -243,14 +255,14 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     midY = midY + initY
     
     'Invert the vertical pan parameters, as that seems to be more intuitive to non-programmers
-    vPan = -1 * vPan
+    vPan = -1# * vPan
     
     'Zoom is passed in as a value from -10 to 10.  0 implies no change.  We need to convert this
     ' value to something that can actually be used to modify zoom.
-    If newZoom >= 0 Then
-        newZoom = 1 / (newZoom + 1)
+    If (newZoom >= 0#) Then
+        newZoom = 1# / (newZoom + 1#)
     Else
-        newZoom = -1 * (newZoom - 1)
+        newZoom = -1# * (newZoom - 1#)
     End If
     
     'X and Y values, remapped around a center point of (0, 0)
@@ -298,14 +310,14 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -316,25 +328,22 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
         
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
         
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
-                
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
@@ -350,12 +359,11 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
-        
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , BuildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Pan and zoom", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -373,6 +381,7 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
+    Dim iWidth As Long, iHeight As Long
     If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
@@ -405,7 +414,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then PanAndZoomFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltQuality_Change()
@@ -435,7 +444,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "horizontal", sltHorizontal.Value
+        .AddParam "vertical", sltVertical.Value
+        .AddParam "zoom", sltZoom.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

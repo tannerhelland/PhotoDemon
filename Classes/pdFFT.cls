@@ -179,7 +179,7 @@ Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef 
         If forwardTransform Then
             Dim invN As Single
             For i = 0 To n - 1
-                invN = 1 / n
+                invN = 1# / n
                 srcReal(i) = srcReal(i) * invN
                 srcImag(i) = srcImag(i) * invN
             Next i
@@ -285,7 +285,7 @@ Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single,
         If forwardTransform Then
             Dim invN As Single
             For i = 0 To n - 1
-                invN = 1 / n
+                invN = 1# / n
                 srcReal(i) = srcReal(i) * invN
                 srcImag(i) = srcImag(i) * invN
             Next i

@@ -229,8 +229,8 @@ Attribute VB_Exposed = False
 'Image "Donut" Distortion
 'Copyright 2014-2017 by Tanner Helland
 'Created: 01/April/15
-'Last updated: 01/April/15
-'Last update: initial build
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This tool is similar to polar distortion, but with a modified mapping method.  Supersampling and
 ' interpolation via reverse-mapping can be activated for a very high-quality transformation.
@@ -256,9 +256,28 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "donut" distortion effect to an image
-Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread As Double, ByVal interiorRadius As Double, ByVal donutHeight As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyDonutDistortion(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Deep-frying image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim initialAngle As Double, donutSpread As Double, interiorRadius As Double, donutHeight As Double
+    Dim edgeHandling As Long, superSamplingAmount As Long
+    Dim centerX As Double, centerY As Double
+    
+    With cParams
+        initialAngle = .GetDouble("angle", sltAngle.Value)
+        donutSpread = .GetDouble("spread", sltSpread.Value)
+        interiorRadius = .GetDouble("radius", sltRadius.Value)
+        donutHeight = .GetDouble("height", sltHeight.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -339,7 +358,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -358,8 +377,8 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     Dim theta As Double, radius As Double
     
     'Convert the initial angle and spread to radians
-    initialAngle = initialAngle * (PI / 180)
-    donutSpread = donutSpread * (PI / 180)
+    initialAngle = initialAngle * (PI / 180#)
+    donutSpread = donutSpread * (PI / 180#)
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -372,20 +391,24 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
     
-    If tWidth < tHeight Then minDimension = tWidth Else minDimension = tHeight
+    If (tWidth < tHeight) Then minDimension = tWidth Else minDimension = tHeight
     
-    interiorRadius = (interiorRadius / 100) * minDimension
-    donutHeight = (donutHeight / 100) * minDimension
+    interiorRadius = (interiorRadius / 100#) * minDimension
+    donutHeight = (donutHeight / 100#) * minDimension
     
     'Precalculate spread and height, taking care to cover the 0 case
     Dim spreadCalc As Double, heightCalc As Double
     spreadCalc = finalX / (donutSpread + 0.000001)
     
-    If donutHeight = 0 Then
+    If donutHeight = 0# Then
         heightCalc = (donutHeight + 0.000001)
     Else
         heightCalc = donutHeight
     End If
+    
+    heightCalc = 1# / heightCalc
+    
+    Dim avgSamples As Double
               
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -418,7 +441,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
             
             'Calculate radius, and use it to calculate a source Y position
             radius = Sqr((nX * nX) + (nY * nY))
-            srcY = finalY * (1 - (radius - interiorRadius) / heightCalc)
+            srcY = finalY * (1# - (radius - interiorRadius) * heightCalc)
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -427,14 +450,14 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -445,24 +468,21 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
                 
     Next y
         If (Not toPreview) Then
@@ -483,7 +503,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Donut", , BuildParams(sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Donut", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -544,7 +564,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyDonutDistortion sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyDonutDistortion GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -581,7 +601,14 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "spread", sltSpread.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "height", sltHeight.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter
+        .AddParam "centery", sltYCenter
     End With
     
     GetLocalParamString = cParams.GetParamString()

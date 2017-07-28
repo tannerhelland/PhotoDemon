@@ -300,8 +300,9 @@ Public Sub InitializeMenus()
         AddMenuItem "Add RGB noise...", "effects_rgbnoise", 7, 6, 1
         AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 7, 6, 3
         AddMenuItem "Bilateral filter...", "effects_bilateral", 7, 6, 4
-        AddMenuItem "Mean shift...", "effects_meanshift", 7, 6, 5
-        AddMenuItem "Median...", "effects_median", 7, 6, 6
+        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 7, 6, 5
+        AddMenuItem "Mean shift...", "effects_meanshift", 7, 6, 6
+        AddMenuItem "Median...", "effects_median", 7, 6, 7
     AddMenuItem "Pixelate", "effects_pixelate", 7, 7
         AddMenuItem "Color halftone...", "effects_colorhalftone", 7, 7, 0
         AddMenuItem "Crystallize...", "effects_crystallize", 7, 7, 1

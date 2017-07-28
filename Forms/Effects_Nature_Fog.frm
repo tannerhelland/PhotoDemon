@@ -218,7 +218,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     ' as the POW operator is so hideously slow.
     For i = 1 To fxQuality
         p2Lookup(i) = 2 ^ (i - 1)
-        p2InvLookup(i) = 1 / (2 ^ (i - 1))
+        p2InvLookup(i) = 1# / (2 ^ (i - 1))
     Next i
     
     'The results of our fog generation will be stored to this array, in [0, 255] format to make the blending step

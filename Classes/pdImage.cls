@@ -1335,7 +1335,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
     selDIBCD = MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
     
-    Const BYTE_TO_FLOAT As Single = 1 / 255
+    Const BYTE_TO_FLOAT As Single = 1# / 255#
     
     For x = leftBound To rightBound
         dstQuickX = x * dstDIBCD

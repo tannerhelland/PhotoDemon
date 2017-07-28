@@ -128,8 +128,8 @@ Attribute VB_Exposed = False
 'Stained Glass Effect Interface
 'Copyright 2014-2017 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 23/June/15
-'Last update: move randomize responsibilities over to pdRandomize
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 'Dependencies: pdRandomize
 '
 'PhotoDemon's stained glass effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
@@ -168,9 +168,25 @@ Private cRandom As pdRandomize
 '  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
 '  shadeQuality = how detailed to shade each cell (1 = flat, 5 = detailed non-linear depth rendering)
 '  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
-Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeQuality As Long, ByVal edgeThreshold As Double, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Carving image from stained glass..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim cellSize As Long, shadeQuality As Long, colorSamplingMethod As Long, distanceMethod As Long
+    Dim fxTurbulence As Double, edgeThreshold As Double
+    
+    With cParams
+        cellSize = .GetLong("size", sltSize.Value)
+        fxTurbulence = .GetDouble("turbulence", sltTurbulence.Value)
+        colorSamplingMethod = .GetLong("color", cboColorSampling.ListIndex)
+        shadeQuality = .GetLong("shading", sltShadeQuality.Value)
+        edgeThreshold = .GetDouble("edges", sltEdge.Value)
+        distanceMethod = .GetLong("distance", cboDistance.ListIndex)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -460,7 +476,6 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Next x
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
 '    For x = 0 To numVoronoiPoints
@@ -483,22 +498,11 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Stained glass", , BuildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex), UNDO_LAYER
+    Process "Stained glass", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Request a preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -523,6 +527,13 @@ Private Sub Form_Load()
     Set cRandom = New pdRandomize
     cRandom.setSeed_AutomaticAndRandom
         
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    
+    'Request a preview
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -531,7 +542,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxStainedGlass GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -561,7 +572,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "size", sltSize.Value
+        .AddParam "turbulence", sltTurbulence.Value
+        .AddParam "color", cboColorSampling.ListIndex
+        .AddParam "shading", sltShadeQuality.Value
+        .AddParam "edges", sltEdge.Value
+        .AddParam "distance", cboDistance.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

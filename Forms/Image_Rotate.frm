@@ -172,7 +172,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
     If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
     
     Dim tmpDIB As pdDIB
@@ -371,10 +371,6 @@ Private Sub csBackground_ColorChanged()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
@@ -479,6 +475,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

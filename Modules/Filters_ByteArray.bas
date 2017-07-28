@@ -83,21 +83,23 @@ Public Function GaussianBlur_IIR_ByteArray(ByRef srcArray() As Byte, ByVal array
     End If
     
     'Calculate IIR values
-    lambda = (q * q) / (2 * numSteps)
-    dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
+    lambda = (q * q) / (2# * numSteps)
+    dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
     nu = dnu
-    boundaryScale = (1 / (1 - dnu))
-    postScale = ((dnu / lambda) ^ (2 * numSteps)) * 255
+    boundaryScale = (1# / (1# - dnu))
+    postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
     
     'Intermediate float arrays are required for an IIR transform.
     Dim gFloat() As Single
     ReDim gFloat(initX To finalX, initY To finalY) As Single
     
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Copy the contents of the incoming byte array into the float array
     For x = initX To finalX
     For y = initY To finalY
         g = srcArray(x, y)
-        gFloat(x, y) = g / 255
+        gFloat(x, y) = g * ONE_DIV_255
     Next y
     Next x
     
@@ -157,7 +159,7 @@ Public Function GaussianBlur_IIR_ByteArray(ByRef srcArray() As Byte, ByVal array
     
         'Apply post-scaling and perform failsafe clipping.  (Shouldn't technically be necessary, but better safe than sorry.)
         g = gFloat(x, y) * postScale
-        If g > 255 Then g = 255
+        If (g > 255) Then g = 255
         
         'Store the final value back into the source array
         srcArray(x, y) = g

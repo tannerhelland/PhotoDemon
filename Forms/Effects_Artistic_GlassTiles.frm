@@ -122,8 +122,8 @@ Attribute VB_Exposed = False
 'Glass Tiles Filter Dialog
 'Copyright 2014 by Audioglider
 'Created: 23/May/14
-'Last updated: 23/May/14
-'Last update: Initial build
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 '"Glass tiles" is an image distortion filter that divides an image into clear glass blocks.  The curvature
 ' parameter generates a convex surface for positive values and a concave surface for negative values, while
@@ -145,9 +145,23 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a glass tile filter to an image
-Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByVal lAngle As Double, ByVal superSamplingAmount As Long, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Generating glass tiles..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim lSquareSize As Long, lCurvature As Double, lAngle As Double, superSamplingAmount As Long, edgeHandling As Long
+    
+    With cParams
+        lSquareSize = .GetLong("size", sltSize.Value)
+        lCurvature = .GetDouble("curvature", sltCurvature.Value)
+        lAngle = .GetDouble("angle", sltAngle.Value)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -182,7 +196,7 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
     Dim m_Scale As Double, m_Curvature As Double
     m_Scale = PI / lSquareSize
     
-    If lCurvature = 0 Then lCurvature = 0.1
+    If lCurvature = 0# Then lCurvature = 0.1
     m_Curvature = lCurvature * lCurvature / 10# * (Abs(lCurvature) / lCurvature)
     
     'Due to the way this filter works, supersampling yields much better results (as the edges of the glass will take
@@ -194,7 +208,10 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
     ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 18)
     Dim AA_Samples As Long
     AA_Samples = (superSamplingAmount * 2 - 1) * 2
-    If AA_Samples = 0 Then AA_Samples = 1
+    If (AA_Samples = 0) Then AA_Samples = 1
+    
+    Dim invAASamples As Double
+    invAASamples = 1# / AA_Samples
     
     Dim m_aaPTX() As Single, m_aaPTY() As Single
     ReDim m_aaPTX(0 To AA_Samples - 1) As Single, m_aaPTY(0 To AA_Samples - 1) As Single
@@ -293,25 +310,20 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next mm
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ AA_Samples
-        newG = newG \ AA_Samples
-        newB = newB \ AA_Samples
+        newR = newR * invAASamples
+        newG = newG * invAASamples
+        newB = newB * invAASamples
+        newA = newA * invAASamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ AA_Samples
-            If newA > 255 Then newA = 255
-            dstImageData(quickVal + 3, y) = newA
-        End If
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
         
     Next y
         If (Not toPreview) Then
@@ -336,7 +348,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Glass tiles", , BuildParams(sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex)), UNDO_LAYER
+    Process "Glass tiles", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -388,7 +400,7 @@ Private Sub sltSize_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then GlassTiles sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.GlassTiles GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -402,7 +414,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "size", sltSize.Value
+        .AddParam "curvature", sltCurvature.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "quality", sltQuality.Value
+        .AddParam "edges", cboEdges.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -1199,12 +1199,16 @@ Begin VB.Form FormMain
             Index           =   4
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Mean shift..."
+            Caption         =   "Harmonic mean..."
             Index           =   5
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Median..."
+            Caption         =   "Mean shift..."
             Index           =   6
+         End
+         Begin VB.Menu MnuNoise 
+            Caption         =   "Median..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3971,12 +3975,16 @@ Private Sub MnuNoise_Click(Index As Integer)
         Case 4
             Process "Bilateral smoothing", True
         
-        'Mean shift
+        'Harmonic mean
         Case 5
+            Process "Harmonic mean", True
+            
+        'Mean shift
+        Case 6
             Process "Mean shift", True
         
         'Median
-        Case 6
+        Case 7
             Process "Median", True
             
     End Select

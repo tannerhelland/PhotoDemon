@@ -291,12 +291,12 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     Dim minDimension As Double
     
     If (vMode = 0) Or (vMode = 1) Then
-        sRadiusW = tWidth * (maxRadius / 100)
-        sRadiusH = tHeight * (maxRadius / 100)
+        sRadiusW = tWidth * (maxRadius / 100#)
+        sRadiusH = tHeight * (maxRadius / 100#)
     Else
         If (tWidth < tHeight) Then minDimension = tWidth Else minDimension = tHeight
         sRadiusW = minDimension * (maxRadius / 100) * vAspectRatio
-        sRadiusH = minDimension * (maxRadius / 100) * (1 / vAspectRatio)
+        sRadiusH = minDimension * (maxRadius / 100) * (1# / vAspectRatio)
     End If
     
     sRadiusW2 = sRadiusW * sRadiusW

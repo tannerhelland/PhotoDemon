@@ -1976,7 +1976,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     'Prep any other post-processing adjustments
     Dim gammaCorrection As Double
-    gammaCorrection = 1 / newGamma
+    gammaCorrection = 1# / newGamma
     
     'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
     ' Depending on the user's settings, some of these may go unused.
@@ -2226,7 +2226,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     'Prep any other post-processing adjustments
     Dim gammaCorrection As Double
-    gammaCorrection = 1 / newGamma
+    gammaCorrection = 1# / newGamma
     
     'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
     ' Depending on the user's settings, some of these may go unused.

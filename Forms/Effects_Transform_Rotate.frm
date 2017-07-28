@@ -32,7 +32,7 @@ Begin VB.Form FormRotateDistort
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1720
-      Caption         =   "render emphasis"
+      Caption         =   "mode"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -155,8 +155,8 @@ Attribute VB_Exposed = False
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
 'Copyright 2013-2017 by Tanner Helland
 'Created: 22/August/13
-'Last updated: 10/January/14
-'Last update: new feature allows the user to select a custom center point for the rotation
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Dialog for handling rotation via PhotoDemon's distort filter engine.  This is kept separate from full-image rotation,
 ' because I needed a rotate that could be applied to selections.  Also, full-image rotation allows you to resize the
@@ -178,9 +178,24 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a basic rotation to the image or selected area
-Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub RotateFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Rotating area..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim rotateAngle As Double, centerX As Double, centerY As Double
+    Dim edgeHandling As Long, useBilinear As Boolean
+    
+    With cParams
+        rotateAngle = .GetDouble("angle", sltAngle.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        useBilinear = .GetBool("bilinear", False)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -195,17 +210,15 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
     'Use the external function to create a rotated DIB
     CreateRotatedDIB rotateAngle, edgeHandling, useBilinear, srcDIB, workingDIB, centerX, centerY, toPreview
     
-    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
-        
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rotate", , BuildParams(sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Rotate", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -218,17 +231,13 @@ Private Sub cmdBar_ResetClick()
     cboEdges.ListIndex = EDGE_WRAP
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
 
     'Suspend previews while we initialize all the controls
     cmdBar.MarkPreviewStatus False
     
-    btsRender.AddItem "speed", 0
-    btsRender.AddItem "quality", 1
+    btsRender.AddItem "fast", 0
+    btsRender.AddItem "precise", 1
     btsRender.ListIndex = 1
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
@@ -241,6 +250,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -250,7 +260,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RotateFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
@@ -287,7 +297,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

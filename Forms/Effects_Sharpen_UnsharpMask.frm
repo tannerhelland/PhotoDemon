@@ -91,7 +91,7 @@ Begin VB.Form FormUnsharpMask
       Width           =   5910
       _ExtentX        =   10425
       _ExtentY        =   1905
-      Caption         =   "quality"
+      Caption         =   "mode"
    End
 End
 Attribute VB_Name = "FormUnsharpMask"
@@ -103,8 +103,8 @@ Attribute VB_Exposed = False
 'Unsharp Masking Tool
 'Copyright 2001-2017 by Tanner Helland
 'Created: 03/March/01
-'Last updated: 19/January/15
-'Last update: major performance optimizations, in the form of selectable quality.
+'Last updated: 27/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius Unsharp Mask filter
 ' that utilizes all three traditional controls (radius, amount, and threshold) and is based on a
@@ -127,7 +127,7 @@ Option Explicit
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If (Not toPreview) Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
@@ -155,7 +155,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         umRadius = umRadius * curDIBValues.previewModifier
-        If umRadius = 0 Then umRadius = 0.1
+        If (umRadius = 0#) Then umRadius = 0.1
     End If
     
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
@@ -168,6 +168,10 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     Dim progBarCalculation As Long
     progBarCalculation = 0
     
+    'Previous versions of this filter supported an extremely slow (but exact) gaussian blur routine; we now substitute
+    ' IIR filtering for that approach, as the output is nearly identical but many times faster.
+    If (gaussQuality > 1) Then gaussQuality = 1
+    
     Select Case gaussQuality
     
         '3 iteration box blur
@@ -176,14 +180,9 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalX)
         
         'IIR Gaussian estimation
-        Case 1
+        Case Else
             progBarCalculation = finalY + finalX
             gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalX)
-        
-        'True Gaussian
-        Case Else
-            progBarCalculation = finalY * 2
-            gaussBlurSuccess = CreateGaussianBlurDIB(umRadius, workingDIB, srcDIB, toPreview, progBarCalculation + finalX)
         
     End Select
     
@@ -213,8 +212,8 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
-        scaleFactor = umAmount + 1
-        invScaleFactor = 1 - scaleFactor
+        scaleFactor = umAmount + 1#
+        invScaleFactor = 1# - scaleFactor
     
         Dim blendVal As Double
         
@@ -247,16 +246,16 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             If tLumDelta > umThreshold Then
                             
                 newR = (scaleFactor * r) + (invScaleFactor * r2)
-                If newR > 255 Then newR = 255
-                If newR < 0 Then newR = 0
+                If (newR > 255) Then newR = 255
+                If (newR < 0) Then newR = 0
                     
                 newG = (scaleFactor * g) + (invScaleFactor * g2)
-                If newG > 255 Then newG = 255
-                If newG < 0 Then newG = 0
+                If (newG > 255) Then newG = 255
+                If (newG < 0) Then newG = 0
                     
                 newB = (scaleFactor * b) + (invScaleFactor * b2)
-                If newB > 255 Then newB = 255
-                If newB < 0 Then newB = 0
+                If (newB > 255) Then newB = 255
+                If (newB < 0) Then newB = 0
                 
                 blendVal = tLumDelta / 255
                 
@@ -289,13 +288,9 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         Next x
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
-        srcDIB.EraseDIB
-        Set srcDIB = Nothing
-        
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
+        
+        Set srcDIB = Nothing
         
     End If
     
@@ -316,24 +311,20 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
     
     'Suspend previews until the dialog is fully loaded
     cmdBar.MarkPreviewStatus False
     
     'Populate the quality selector
-    btsQuality.AddItem "good", 0
-    btsQuality.AddItem "better", 1
-    btsQuality.AddItem "best", 2
+    btsQuality.AddItem "fast", 0
+    btsQuality.AddItem "precise", 1
     btsQuality.ListIndex = 0
     
     'Apply visual themes to the form
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

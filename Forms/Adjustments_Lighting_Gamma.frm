@@ -243,9 +243,9 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     If (bGamma = 0#) Then bGamma = 0.01
     
     'Divisions are expensive, so invert gamma values in advance
-    rGamma = 1 / rGamma
-    gGamma = 1 / gGamma
-    bGamma = 1 / bGamma
+    rGamma = 1# / rGamma
+    gGamma = 1# / gGamma
+    bGamma = 1# / bGamma
     
     'Gamma can be easily applied using look-up tables
     Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
@@ -373,7 +373,7 @@ Private Sub UpdatePreview()
             'Draw the next channel (with antialiasing!)
             For x = 0 To xWidth
                 tmpVal = x / xWidth
-                tmpVal = tmpVal ^ (1 / gamVal)
+                tmpVal = tmpVal ^ (1# / gamVal)
                 tmpVal = yHeight - (tmpVal * yHeight)
                 curY = tmpVal
                 curX = x

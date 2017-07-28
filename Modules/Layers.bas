@@ -1100,7 +1100,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         
             'Calculate PD's global mouse accuracy value, per the current image's zoom
             Dim mouseAccuracy As Double
-            mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
+            mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
             
             'Inflate the rect we were passed
             InflateRect layerRect, mouseAccuracy, mouseAccuracy

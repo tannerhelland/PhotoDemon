@@ -66,8 +66,8 @@ Attribute VB_Exposed = False
 'Kuwahara Blur Dialog
 'Copyright 2014 by Audioglider
 'Created: 22/June/14
-'Last updated: 22/June/14
-'Last update: Initial build
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 'TODO: adopt Median filter optimization, where instead of rebuilding each quadrant from scratch for each pixel,
 '       we simply add and remove a single horizontal line to each (or a single vertical line when moving to a new
 '       row).  Similar to the Median filter, I expect this to provide an exponential performance improvement
@@ -90,7 +90,14 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply the Kuwahara filter to an image.
-Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub Kuwahara(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim filterSize As Long
+    filterSize = cParams.GetLong("radius", sltRadius.Value)
     
     If (Not toPreview) Then Message "Applying Kuwahara smoothing..."
     
@@ -294,7 +301,7 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Kuwahara filter", , BuildParams(sltRadius.Value), UNDO_LAYER
+    Process "Kuwahara filter", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -317,7 +324,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then Kuwahara sltRadius.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Kuwahara GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -331,7 +338,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

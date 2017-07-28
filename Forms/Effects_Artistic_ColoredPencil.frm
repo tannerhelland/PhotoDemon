@@ -88,8 +88,8 @@ Attribute VB_Exposed = False
 'Pencil Sketch Image Effect
 'Copyright 2001-2017 by Tanner Helland
 'Created: sometime 2001
-'Last updated: 23/July/14
-'Last update: overhauled algorithm, gave tool its own dialog
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'PhotoDemon has provided a pencil sketch tool for a long time, but despite going through many incarnations, it always
 ' used low-quality, "quick and dirty" approximations.
@@ -273,7 +273,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
             
             For x = 0 To 255
                 tmpVal = x / 255
-                tmpVal = tmpVal ^ (1 / colorIntensity)
+                tmpVal = tmpVal ^ (1# / colorIntensity)
                 tmpVal = tmpVal * 255
                 
                 If (tmpVal > 255) Then

@@ -981,10 +981,10 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         If treatEndpointsAsForwardValues Then
             
             'Invert gamma if it was specified
-            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
+            If (srcGamma <> 0) Then srcGamma = 1# / srcGamma
             
             For x = 0 To 255
-                tmpCalc = x / 255
+                tmpCalc = x / 255#
                 
                 If srcGamma = 0 Then
                     
@@ -1004,7 +1004,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         Else
         
             'Do nothing for reverse transforms, except to invert gamma as appropriate.
-            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
+            If (srcGamma <> 0) Then srcGamma = 1# / srcGamma
             
         End If
         
@@ -1088,19 +1088,19 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
                 
                     'If the user didn't specify gamma, use a default sRGB transform.
                     If (fR > 0.0031308) Then
-                        fR = 1.055 * (fR ^ (1 / 2.4)) - 0.055
+                        fR = 1.055 * (fR ^ (1# / 2.4)) - 0.055
                     Else
                         fR = 12.92 * fR
                     End If
                     
                     If (fG > 0.0031308) Then
-                        fG = 1.055 * (fG ^ (1 / 2.4)) - 0.055
+                        fG = 1.055 * (fG ^ (1# / 2.4)) - 0.055
                     Else
                         fG = 12.92 * fG
                     End If
                     
                     If (fB > 0.0031308) Then
-                        fB = 1.055 * (fB ^ (1 / 2.4)) - 0.055
+                        fB = 1.055 * (fB ^ (1# / 2.4)) - 0.055
                     Else
                         fB = 12.92 * fB
                     End If

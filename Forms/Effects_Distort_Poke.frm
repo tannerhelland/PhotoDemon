@@ -150,8 +150,8 @@ Attribute VB_Exposed = False
 'Poke Distort Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 26/September/14
-'Last update: add supersampling support
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'I'm not sold on the "poke" moniker for this tool, but I couldn't come up with a better visualization for how
 ' the tool works.  When I use it, I envision an imaginary finger poking through the screen.  :)
@@ -179,9 +179,24 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyPokeDistort(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Poking image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim pokeStrength As Double, edgeHandling As Long, superSamplingAmount As Long
+    Dim centerX As Double, centerY As Double
+    
+    With cParams
+        pokeStrength = .GetDouble("strength", sltStrength.Value)
+        edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        superSamplingAmount = .GetLong("quality", sltQuality.Value)
+        centerX = .GetDouble("centerx", 0.5)
+        centerY = .GetDouble("centery", 0.5)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -262,7 +277,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     
     'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
     ' by setting the verification checker to some impossible value.
-    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
@@ -311,7 +326,9 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     Next sampleIndex
     
     'To avoid divide-by-zero errors, fix the input value to a non-zero value as necessary
-    If pokeStrength = 0 Then pokeStrength = 0.00000001
+    If pokeStrength = 0# Then pokeStrength = 0.00000001
+    
+    Dim avgSamples As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -356,14 +373,14 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
             ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
             '  small enough to make it preferable over a true variance calculation.)
-            If sampleIndex = superSampleVerify Then
+            If (sampleIndex = superSampleVerify) Then
                 
                 'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
                 tmpSum = (r + g + b + a) * superSampleVerify
                 tmpSumFirst = newR + newG + newB + newA
                 
                 'If variance is below 1.5 per channel per pixel, abort further supersampling
-                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
             
             End If
             
@@ -374,25 +391,22 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
         
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
         dstImageData(quickVal, y) = newB
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 3, y) = newA
         
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
-            newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
-        End If
-                
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
@@ -413,7 +427,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Poke", , BuildParams(sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Poke", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -458,7 +472,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyPokeDistort sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyPokeDistort GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -491,7 +505,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "strength", sltStrength.Value
+        .AddParam "edges", cboEdges.ListIndex
+        .AddParam "quality", sltQuality.Value
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

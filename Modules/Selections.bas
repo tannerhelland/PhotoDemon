@@ -498,7 +498,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(srcImage.GetZoom))
+    mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(srcImage.GetZoom))
         
     'Find the smallest distance for this mouse position
     Dim minDistance As Double

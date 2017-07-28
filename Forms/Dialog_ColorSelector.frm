@@ -756,7 +756,7 @@ Private Sub sldHSV_RenderTrackImage(Index As Integer, dstDIB As pdDIB, ByVal lef
     
     Dim gradientValue As Double, gradientMax As Double
     gradientMax = (rightBoundary - leftBoundary)
-    If (gradientMax <> 0#) Then gradientMax = 1 / gradientMax Else gradientMax = 1#
+    If (gradientMax <> 0#) Then gradientMax = 1# / gradientMax Else gradientMax = 1#
     
     Dim targetColor As Long, targetHeight As Long, targetDC As Long
     targetDC = dstDIB.GetDIBDC
