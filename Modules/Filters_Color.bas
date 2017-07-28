@@ -193,39 +193,41 @@ Public Sub MenuNegative()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Double, s As Double, l As Double
+    Dim h As Double, s As Double, v As Double
     
     'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
         'Get red, green, and blue values from the array
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Use those to calculate hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        Colors.ImpreciseRGBtoHSL r, g, b, h, s, v
         
         'Convert those HSL values back to RGB, but substitute inverted luminance
-        tHSLToRGB h, s, 1 - l, r, g, b
+        Colors.ImpreciseHSLtoRGB h, s, 1# - v, r, g, b
         
         'Assign the new RGB values back into the array
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(x, y) = b
+        imageData(x + 1, y) = g
+        imageData(x + 2, y) = r
         
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
     Next x
+        If (y And progBarCheck) = 0 Then
+            If Interface.UserPressedESC() Then Exit For
+            SetProgBarVal y
+        End If
+    Next y
         
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
@@ -261,6 +263,7 @@ Public Sub MenuInvertHue()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
@@ -268,36 +271,38 @@ Public Sub MenuInvertHue()
     Dim h As Double, s As Double, l As Double
     
     'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
         'Get red, green, and blue values from the array
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
-        'Use those to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, s, l
+        'Use a fast but somewhat imprecise conversion to HSL.  (Note that this returns hue on the
+        ' weird range [-1, 5], which allows for performance optimizations but is not intuitive.)
+        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
         
         'Invert hue
-        h = 6 - (h + 1) - 1
+        h = 6# - (h + 1#) - 1#
         
         'Convert the newly calculated HSL values back to RGB
-        tHSLToRGB h, s, l, r, g, b
+        Colors.ImpreciseHSLtoRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
         imageData(quickVal, y) = b
+        imageData(quickVal + 1, y) = g
+        imageData(quickVal + 2, y) = r
         
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
     Next x
-        
+        If (y And progBarCheck) = 0 Then
+            If Interface.UserPressedESC() Then Exit For
+            SetProgBarVal y
+        End If
+    Next y
+    
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     

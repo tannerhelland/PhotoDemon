@@ -298,10 +298,10 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     
     For x = 0 To 255
         
-        dl = 1.075 - 1 / (x / 16 + 1)
+        dl = 1.075 - 1# / (x / 16# + 1#)
         
-        dm = (x - 127) / 127
-        dm = 0.667 * (1 - dm * dm)
+        dm = (x - 127#) / 127#
+        dm = 0.667 * (1# - dm * dm)
         
         shadowsAdd(x) = dl
         shadowsSub(255 - x) = dl
@@ -359,7 +359,8 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     Next x
     
     Dim origLuminance As Double
-        
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -371,7 +372,7 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
         r = imageData(quickVal + 2, y)
         
         'Get the original luminance
-        origLuminance = Colors.GetLuminance(r, g, b) / 255
+        origLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
         
         r = rLookup(r)
         g = gLookup(g)
@@ -383,10 +384,10 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
         If preserveLuminance Then
         
             'Convert the new values to HSL
-            tRGBToHSL r, g, b, h, s, l
+            Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
             
             'Now, convert back, using the original luminance
-            tHSLToRGB h, s, origLuminance, r, g, b
+            Colors.ImpreciseHSLtoRGB h, s, origLuminance, r, g, b
             
         End If
         

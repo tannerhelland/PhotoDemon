@@ -281,11 +281,11 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         'Build a look-up table of new temperature values.  (Temperature adjustments only affect the red and blue channels)
         For x = 0 To 255
             b = x - basicTempAdjustment
-            If b > 255 Then b = 255
-            If b < 0 Then b = 0
+            If (b > 255) Then b = 255
+            If (b < 0) Then b = 0
             r = x + basicTempAdjustment
-            If r > 255 Then r = 255
-            If r < 0 Then r = 0
+            If (r > 255) Then r = 255
+            If (r < 0) Then r = 0
             bLookup(x) = b
             rLookup(x) = r
         Next x
@@ -296,10 +296,12 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         GetRGBfromTemperature tmpR, tmpG, tmpB, newTemperature
                 
         'tempStrength needs to be on the range [0, 1], but it's presented to the user as [0, 100]
-        tempStrength = tempStrength / 100
+        tempStrength = tempStrength / 100#
         
     End If
-            
+    
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -311,11 +313,11 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         r = imageData(quickVal + 2, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = Colors.GetLuminance(r, g, b) / 255
+        originalLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
         
         If (temperatureMethod = PDTA_Basic) Then
-            tRGBToHSL rLookup(r), g, bLookup(b), h, s, l
-            tHSLToRGB h, s, originalLuminance, r, g, b
+            Colors.ImpreciseRGBtoHSL rLookup(r), g, bLookup(b), h, s, l
+            Colors.ImpreciseHSLtoRGB h, s, originalLuminance, r, g, b
         Else
             
             'Blend the original and new RGB values using the specified strength
@@ -326,8 +328,8 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
             'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
             ' value with the original
             If preserveLuminance Then
-                tRGBToHSL r, g, b, h, s, l
-                tHSLToRGB h, s, originalLuminance, r, g, b
+                Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
+                Colors.ImpreciseHSLtoRGB h, s, originalLuminance, r, g, b
             End If
         
         End If

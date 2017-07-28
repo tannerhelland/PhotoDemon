@@ -92,7 +92,7 @@ Public Function GetLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) 
     Dim Max As Long, Min As Long
     Max = Max3Int(r, g, b)
     Min = Min3Int(r, g, b)
-    GetLuminance = (Max + Min) \ 2
+    GetLuminance = (Max + Min) * 0.5
 End Function
 
 'This function will return a well-calculated luminance value of an RGB triplet.  Note that the value will be in
@@ -101,141 +101,161 @@ Public Function GetHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long
     GetHQLuminance = (213 * r + 715 * g + 72 * b) \ 1000
 End Function
 
-'HSL <-> RGB conversion routines
-Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
+'HSL <-> RGB conversion routines.  H is returned on the (weird) range  [-1, 5], but this allows for
+' some optimizations that are otherwise difficult.  Please do not use this function if quality is
+' paramount; for that, you'd be better off using PreciseRGBtoHSL, below.
+Public Sub ImpreciseRGBtoHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
-    Dim Max As Double, Min As Double
-    Dim delta As Double
+    Dim inMax As Double, inMin As Double, inDelta As Double
     Dim rR As Double, rG As Double, rB As Double
     
-    rR = r / 255
-    rG = g / 255
-    rB = b / 255
+    Const ONE_DIV_255 As Double = 1# / 255#
+    rR = r * ONE_DIV_255
+    rG = g * ONE_DIV_255
+    rB = b * ONE_DIV_255
 
     'Note: HSL are calculated in the following ranges:
-    ' Hue: [-1,5]
-    ' Saturation: [0,1] (Note that if saturation = 0, hue is technically undefined)
-    ' Lightness: [0,1]
-    Max = Max3Float(rR, rG, rB)
-    Min = Min3Float(rR, rG, rB)
-        
+    ' Hue: [-1, 5]
+    ' Saturation: [0, 1] (If saturation = 0.0, hue is technically undefined)
+    ' Lightness: [0, 1]
+    
+    'In-line max/min calculations for performance reasons
+    'inMax = Max3Float(rR, rG, rB)
+    'inMin = Min3Float(rR, rG, rB)
+    If (rR > rG) Then
+       If (rR > rB) Then inMax = rR Else inMax = rB
+    Else
+       If (rB > rG) Then inMax = rB Else inMax = rG
+    End If
+    If (rR < rG) Then
+       If (rR < rB) Then inMin = rR Else inMin = rB
+    Else
+       If (rB < rG) Then inMin = rB Else inMin = rG
+    End If
+    
     'Calculate luminance
-    l = (Max + Min) / 2
+    l = (inMax + inMin) * 0.5
         
-    'If the maximum and minimum are identical, this image is gray, meaning it has no saturation and an undefined hue.
-    If Max = Min Then
-        s = 0
-        h = 0
+    'If the maximum and minimum are identical, this image is gray, meaning it has no saturation
+    ' (and thus an undefined hue).
+    If (inMax = inMin) Then
+        s = 0#
+        h = 0#
     Else
         
-        delta = Max - Min
+        inDelta = inMax - inMin
         
         'Calculate saturation
-        If l <= 0.5 Then
-            s = delta / (Max + Min)
+        If (l <= 0.5) Then
+            s = inDelta / (inMax + inMin)
         Else
-            s = delta / (2 - Max - Min)
+            s = inDelta / (2# - inMax - inMin)
         End If
         
-        'Calculate hue
-        
-        If rR = Max Then
-            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
-        ElseIf rG = Max Then
-            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
-        ElseIf rB = Max Then
-            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
+        'Calculate hue.  This code uses a three-quadrant system which is not especially precise.
+        ' (A Cos() system that maps to a true circle would be better.)  However, there are some
+        ' tasks where we only need quick HSL estimations, and this method yields a large
+        ' performance boost over a "perfect" solution.
+        If (rR = inMax) Then
+            h = (rG - rB) / inDelta
+        ElseIf (rG = inMax) Then
+            h = 2# + (rB - rR) / inDelta
+        Else
+            h = 4# + (rR - rG) / inDelta
         End If
         
-        'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
-        'h = h * 60
-        'If h < 0 Then h = h + 360
+        'If you need hue in the [0,360] range instead of [-1, 5] you can add this code to your function:
+        'h = h * 60.0
+        'If (h < 0.0) Then h = h + 360.0
 
     End If
 
-    'Tanner's final note: if byte values are preferred to floating-point, this code will return hue on [0,240],
-    ' saturation on [0,255], and luminance on [0,255]
-    'H = Int(H * 40 + 40)
-    'S = Int(S * 255)
-    'L = Int(L * 255)
+    'Similarly, if byte values are preferred to floating-point, this code will modify hue to return
+    ' on the range [0, 240], saturation on [0, 255], and luminance on [0, 255]
+    'H = Int(H * 40.0 + 40.0)
+    'S = Int(S * 255.0)
+    'L = Int(L * 255.0)
     
 End Sub
 
-'Convert HSL values to RGB values
-Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long, b As Long)
+'Convert HSL values to RGB values.  *Input ranges are non-standard* - see the comments in
+' ImpreciseRGBtoHSL(), above, for details.  This function is preferable when quality is not of
+' paramount importance.  Estimations are used to calculate hue, which means color returns will
+' be imprecise compared to other methods.
+Public Sub ImpreciseHSLtoRGB(h As Double, s As Double, l As Double, r As Long, g As Long, b As Long)
 
     Dim rR As Double, rG As Double, rB As Double
-    Dim Min As Double, Max As Double
+    Dim inMin As Double, inMax As Double
     
     'Failsafe hue check
-    If h > 5 Then h = h - 6
+    If (h > 5#) Then h = h - 6#
     
     'Unsaturated pixels do not technically have hue - they only have luminance
-    If s = 0 Then
+    If (s = 0#) Then
         rR = l: rG = l: rB = l
     Else
-        If l <= 0.5 Then
-            Min = l * (1 - s)
+        If (l <= 0.5) Then
+            inMin = l * (1# - s)
         Else
-            Min = l - s * (1 - l)
+            inMin = l - s * (1# - l)
         End If
       
-        Max = 2 * l - Min
+        inMax = 2# * l - inMin
       
-        If (h < 1) Then
+        If (h < 1#) Then
             
-            rR = Max
+            rR = inMax
             
-            If (h < 0) Then
-                rG = Min
-                rB = rG - h * (Max - Min)
+            If (h < 0#) Then
+                rG = inMin
+                rB = rG - h * (inMax - inMin)
             Else
-                rB = Min
-                rG = h * (Max - Min) + rB
+                rB = inMin
+                rG = rB + h * (inMax - inMin)
             End If
         
-        ElseIf (h < 3) Then
+        ElseIf (h < 3#) Then
             
-            rG = Max
+            rG = inMax
          
-            If (h < 2) Then
-                rB = Min
-                rR = rB - (h - 2) * (Max - Min)
+            If (h < 2#) Then
+                rB = inMin
+                rR = rB - (h - 2#) * (inMax - inMin)
             Else
-                rR = Min
-                rB = (h - 2) * (Max - Min) + rR
+                rR = inMin
+                rB = rR + (h - 2#) * (inMax - inMin)
             End If
         
         Else
         
-            rB = Max
+            rB = inMax
             
-            If (h < 4) Then
-                rR = Min
-                rG = rR - (h - 4) * (Max - Min)
+            If (h < 4#) Then
+                rR = inMin
+                rG = rR - (h - 4#) * (inMax - inMin)
             Else
-                rG = Min
-                rR = (h - 4) * (Max - Min) + rG
+                rG = inMin
+                rR = rG + (h - 4#) * (inMax - inMin)
             End If
          
         End If
             
-   End If
-   
-   r = rR * 255
-   g = rG * 255
-   b = rB * 255
-   
-   'Failsafe added 29 August '12
-   'This should never return RGB values > 255, but it doesn't hurt to make sure.
-   If r > 255 Then r = 255
-   If g > 255 Then g = 255
-   If b > 255 Then b = 255
+    End If
+    
+    r = rR * 255#
+    g = rG * 255#
+    b = rB * 255#
+    
+    'Failsafe added 29 August '12
+    'This should never return RGB values > 255, but it doesn't hurt to make sure.
+    If (r > 255) Then r = 255
+    If (g > 255) Then g = 255
+    If (b > 255) Then b = 255
    
 End Sub
 
 'Floating-point conversion between RGB [0, 1] and HSL [0, 1]
-Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef l As Double)
+Public Sub PreciseRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef l As Double)
 
     Dim minVal As Double, maxVal As Double, delta As Double
     minVal = Min3Float(r, g, b)
@@ -260,12 +280,13 @@ Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, By
             s = delta / (2# - maxVal - minVal)
         End If
         
-        Dim deltaR As Double, deltaG As Double, deltaB As Double, halfDelta As Double
+        Dim deltaR As Double, deltaG As Double, deltaB As Double, halfDelta As Double, invDelta As Double
         halfDelta = delta * 0.5
+        invDelta = 1# / delta
 
-        deltaR = (((maxVal - r) * ONE_DIV_SIX) + halfDelta) / delta
-        deltaG = (((maxVal - g) * ONE_DIV_SIX) + halfDelta) / delta
-        deltaB = (((maxVal - b) * ONE_DIV_SIX) + halfDelta) / delta
+        deltaR = ((maxVal - r) * ONE_DIV_SIX + halfDelta) * invDelta
+        deltaG = ((maxVal - g) * ONE_DIV_SIX + halfDelta) * invDelta
+        deltaB = ((maxVal - b) * ONE_DIV_SIX + halfDelta) * invDelta
         
         If (r >= maxVal) Then
             h = deltaB - deltaG
@@ -284,7 +305,7 @@ Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, By
 End Sub
 
 'Floating-point conversion between HSL [0, 1] and RGB [0, 1]
-Public Sub fHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
+Public Sub PreciseHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
 
     'Check the achromatic case
     If (s = 0#) Then
@@ -296,9 +317,11 @@ Public Sub fHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, By
     'Check the chromatic case
     Else
         
-        'As a failsafe, lock hue to [0, 1]
-        If (h < 0#) Then h = h + 1#
-        If (h > 1#) Then h = h - 1#
+        'As a failsafe, lock hue to [0, 1].
+        ' NOTE!  In PhotoDemon, these values are always round-tripped from the matching PreciseRGBtoHSL function,
+        ' which performs the failsafe check there.  As such, we don't need it here.
+        'If (h < 0#) Then h = h + 1#
+        'If (h > 1#) Then h = h - 1#
         
         Dim var_1 As Double, var_2 As Double
         
@@ -347,9 +370,9 @@ End Function
 Public Sub RGBtoHSV(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef h As Double, ByRef s As Double, ByRef v As Double)
 
     Dim fR As Double, fG As Double, fB As Double
-    fR = r / 255
-    fG = g / 255
-    fB = b / 255
+    fR = r / 255#
+    fG = g / 255#
+    fB = b / 255#
 
     Dim var_Min As Double, var_Max As Double, del_Max As Double
     var_Min = Min3Float(fR, fG, fB)
@@ -360,30 +383,32 @@ Public Sub RGBtoHSV(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef h A
     v = var_Max
 
     'If the max and min are the same, this is a gray pixel
-    If del_Max = 0 Then
-        h = 0
-        s = 0
+    If del_Max = 0# Then
+        h = 0#
+        s = 0#
         
     'If max and min vary, we can calculate a hue component
     Else
     
         s = del_Max / var_Max
         
+        Const ONE_DIV_SIX As Double = 1# / 6#
+        
         Dim del_R As Double, del_G As Double, del_B As Double
-        del_R = (((var_Max - fR) / 6) + (del_Max / 2)) / del_Max
-        del_G = (((var_Max - fG) / 6) + (del_Max / 2)) / del_Max
-        del_B = (((var_Max - fB) / 6) + (del_Max / 2)) / del_Max
+        del_R = (((var_Max - fR) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
+        del_G = (((var_Max - fG) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
+        del_B = (((var_Max - fB) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
 
         If fR = var_Max Then
             h = del_B - del_G
         ElseIf fG = var_Max Then
-            h = (1 / 3) + del_R - del_B
+            h = 0.333333333333333 + del_R - del_B
         Else
-            h = (2 / 3) + del_G - del_R
+            h = 0.666666666666667 + del_G - del_R
         End If
 
-        If h < 0 Then h = h + 1
-        If h > 1 Then h = h - 1
+        If (h < 0#) Then h = h + 1#
+        If (h > 1#) Then h = h - 1#
 
     End If
 
@@ -394,26 +419,26 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
 
     'If saturation is 0, RGB are calculated identically
     If s = 0 Then
-        r = v * 255
-        g = v * 255
-        b = v * 255
+        r = v * 255#
+        g = v * 255#
+        b = v * 255#
     
     'If saturation is not 0, we have to calculate RGB independently
     Else
        
         Dim var_H As Double
-        var_H = h * 6
+        var_H = h * 6#
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If (var_H >= 6) Then var_H = 0
+        If (var_H >= 6#) Then var_H = 0#
         
         Dim var_I As Long
         var_I = Int(var_H)
         
         Dim var_1 As Double, var_2 As Double, var_3 As Double
-        var_1 = v * (1 - s)
-        var_2 = v * (1 - s * (var_H - var_I))
-        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+        var_1 = v * (1# - s)
+        var_2 = v * (1# - s * (var_H - var_I))
+        var_3 = v * (1# - s * (1# - (var_H - var_I)))
 
         Dim var_R As Double, var_G As Double, var_B As Double
 
@@ -449,9 +474,9 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
                 
         End If
 
-        r = var_R * 255
-        g = var_G * 255
-        b = var_B * 255
+        r = var_R * 255#
+        g = var_G * 255#
+        b = var_B * 255#
                 
     End If
 
@@ -467,18 +492,18 @@ Public Sub fRGBtoHSV(ByVal r As Double, ByVal g As Double, ByVal b As Double, By
         tmpSwap = b
         b = g
         g = tmpSwap
-        k = -1
+        k = -1#
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        k = -(2 / 6) - k
+        k = -0.333333333333333 - k
     End If
     
     chroma = r - fMin(g, b)
-    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
+    h = Abs(k + (g - b) / (6# * chroma + 0.0000001))
     s = chroma / (r + 0.00000001)
     v = r
     
@@ -488,28 +513,27 @@ End Sub
 Public Sub fHSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
 
     'If saturation is 0, RGB are calculated identically
-    If (s = 0) Then
+    If (s = 0#) Then
         r = v
         g = v
         b = v
-        Exit Sub
-    
+        
     'If saturation is not 0, we have to calculate RGB independently
     Else
        
         Dim var_H As Double
-        var_H = h * 6
+        var_H = h * 6#
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If (var_H >= 6) Then var_H = 0
+        If (var_H >= 6#) Then var_H = 0#
         
         Dim var_I As Long
         var_I = Int(var_H)
         
         Dim var_1 As Double, var_2 As Double, var_3 As Double
-        var_1 = v * (1 - s)
-        var_2 = v * (1 - s * (var_H - var_I))
-        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+        var_1 = v * (1# - s)
+        var_2 = v * (1# - s * (var_H - var_I))
+        var_3 = v * (1# - s * (1# - (var_H - var_I)))
         
         Select Case var_I
         
@@ -562,24 +586,24 @@ Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef x A
 
     'Normalize RGB to [0, 1]
     Dim rFloat As Double, gFloat As Double, bFloat As Double
-    rFloat = r / 255
-    gFloat = g / 255
-    bFloat = b / 255
+    rFloat = r / 255#
+    gFloat = g / 255#
+    bFloat = b / 255#
     
     'Convert RGB values to the sRGB color space
-    If rFloat > 0.04045 Then
+    If (rFloat > 0.04045) Then
         rFloat = ((rFloat + 0.055) / (1.055)) ^ 2.2
     Else
         rFloat = rFloat / 12.92
     End If
     
-    If gFloat > 0.04045 Then
+    If (gFloat > 0.04045) Then
         gFloat = ((gFloat + 0.055) / (1.055)) ^ 2.2
     Else
         gFloat = gFloat / 12.92
     End If
     
-    If bFloat > 0.04045 Then
+    If (bFloat > 0.04045) Then
         bFloat = ((bFloat + 0.055) / (1.055)) ^ 2.2
     Else
         bFloat = bFloat / 12.92
@@ -596,55 +620,47 @@ End Sub
 Public Sub XYZtoRGB(ByRef x As Double, ByRef y As Double, ByRef z As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long)
 
     Dim vX As Double, vY As Double, vZ As Double
-    vX = x / 100
-    vY = y / 100
-    vZ = z / 100
+    vX = x * 0.01
+    vY = y * 0.01
+    vZ = z * 0.01
 
     Dim vR As Double, vG As Double, vB As Double
     vR = vX * 3.2406 + vY * -1.5372 + vZ * -0.4986
     vG = vX * -0.9689 + vY * 1.8758 + vZ * 0.0415
     vB = vX * 0.0557 + vY * -0.204 + vZ * 1.057
     
+    Const ONE_DIV_2p4 As Double = 1# / 2.4
+    
     If (vR > 0.0031308) Then
-        vR = 1.055 * (vR ^ (1 / 2.4)) - 0.055
+        vR = 1.055 * (vR ^ ONE_DIV_2p4) - 0.055
     Else
         vR = 12.92 * vR
     End If
     
     If (vG > 0.0031308) Then
-        vG = 1.055 * (vG ^ (1 / 2.4)) - 0.055
+        vG = 1.055 * (vG ^ ONE_DIV_2p4) - 0.055
     Else
         vG = 12.92 * vG
     End If
     
     If (vB > 0.0031308) Then
-        vB = 1.055 * (vB ^ (1 / 2.4)) - 0.055
+        vB = 1.055 * (vB ^ ONE_DIV_2p4) - 0.055
     Else
         vB = 12.92 * vB
     End If
     
-    r = vR * 255
-    g = vG * 255
-    b = vB * 255
+    r = vR * 255#
+    g = vG * 255#
+    b = vB * 255#
     
-    'Clamp to [0,255] to prevent output errors
-    If r > 255 Then
-        r = 255
-    ElseIf r < 0 Then
-        r = 0
-    End If
-    
-    If g > 255 Then
-        g = 255
-    ElseIf g < 0 Then
-        g = 0
-    End If
-    
-    If b > 255 Then
-        b = 255
-    ElseIf b < 0 Then
-        b = 0
-    End If
+    'Clamp to [0,255] to prevent output errors.  (XYZ input values are extremely hard to validate,
+    ' especially in a performance-friendly way, so it's easier to just catch failures here.)
+    If (r > 255) Then r = 255
+    If (r < 0) Then r = 0
+    If (g > 255) Then g = 255
+    If (g < 0) Then g = 0
+    If (b > 255) Then b = 255
+    If (b < 0) Then b = 0
     
 End Sub
 
@@ -652,22 +668,22 @@ End Sub
 ' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=07#text7, with minor changes by me (not re-applying D65 values until after
 '  fXYZ has been calculated)
 Public Sub XYZtoLab(ByVal x As Double, ByVal y As Double, ByVal z As Double, ByRef l As Double, ByRef a As Double, ByRef b As Double)
-    l = 116 * fXYZ(y) - 16
-    a = 500 * (fXYZ(x / 0.9505) - fXYZ(y))
-    b = 200 * (fXYZ(y) - fXYZ(z / 1.089))
+    l = 116# * fXYZ(y) - 16#
+    a = 500# * (fXYZ(x / 0.9505) - fXYZ(y))
+    b = 200# * (fXYZ(y) - fXYZ(z / 1.089))
 End Sub
 
 Private Function fXYZ(ByVal t As Double) As Double
-    If t > 0.008856 Then
-        fXYZ = t ^ (1 / 3)
+    If (t > 0.008856) Then
+        fXYZ = t ^ 0.333333333333333
     Else
-        fXYZ = (7.787 * t) + (16 / 116)
+        fXYZ = (7.787 * t) + 0.137931034482759  '(16.0 / 116.0)
     End If
 End Function
 
 'Return the minimum of two floating-point values
 Private Function fMin(x As Double, y As Double) As Double
-    If x > y Then fMin = y Else fMin = x
+    If (x > y) Then fMin = y Else fMin = x
 End Function
 
 'Given a hex color representation, return a matching RGB Long.
@@ -717,7 +733,7 @@ End Function
 
 'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
 Private Function GetHexFromByte(ByVal srcByte As Byte) As String
-    If srcByte < 16 Then
+    If (srcByte < 16) Then
         GetHexFromByte = "0" & LCase(Hex$(srcByte))
     Else
         GetHexFromByte = LCase(Hex$(srcByte))

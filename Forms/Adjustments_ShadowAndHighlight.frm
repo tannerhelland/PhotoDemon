@@ -236,10 +236,6 @@ Private Sub cmdBar_ResetClick()
     sltHighlightRadius.Value = 25
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
 Public Sub ApplyShadowHighlight(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
@@ -286,6 +282,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

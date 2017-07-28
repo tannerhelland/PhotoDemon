@@ -122,10 +122,10 @@ Public Sub MenuHeatMap()
         sVal = 0.8
         
         'Use RGB to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, s, l
+        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
-        tHSLToRGB hVal, sVal, lVal, r, g, b
+        Colors.ImpreciseHSLtoRGB hVal, sVal, lVal, r, g, b
         
         imageData(quickVal + 2, y) = r
         imageData(quickVal + 1, y) = g

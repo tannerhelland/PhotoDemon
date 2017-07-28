@@ -169,7 +169,7 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
         r = imageData(x + 2, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
         
         'Apply the modifiers
         h = h + hModifier
@@ -185,7 +185,7 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
         If (l > 1#) Then l = 1#
         
         'Convert back to RGB using our artificial hue value
-        tHSLToRGB h, s, l, r, g, b
+        Colors.ImpreciseHSLtoRGB h, s, l, r, g, b
         
         'Assign the new values to each color channel
         imageData(x, y) = b
@@ -256,10 +256,10 @@ Private Sub RedrawSaturationSlider()
     'Update the Saturation background dynamically, to match the hue background!
     Dim r As Long, g As Long, b As Long
     
-    tHSLToRGB (sltHue.Value + 180) / 60, 0, 0.5, r, g, b
+    ImpreciseHSLtoRGB (sltHue.Value + 180) / 60, 0, 0.5, r, g, b
     sltSaturation.GradientColorLeft = RGB(r, g, b)
     
-    tHSLToRGB (sltHue.Value + 180) / 60, 1, 0.5, r, g, b
+    ImpreciseHSLtoRGB (sltHue.Value + 180) / 60, 1, 0.5, r, g, b
     sltSaturation.GradientColorRight = RGB(r, g, b)
 
 End Sub
