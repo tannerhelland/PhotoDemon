@@ -1119,28 +1119,24 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Lens flare..."
+            Caption         =   "Rainbow..."
             Index           =   2
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Rainbow..."
+            Caption         =   "Sunshine..."
             Index           =   3
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Sunshine..."
+            Caption         =   "-"
             Index           =   4
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "-"
+            Caption         =   "Dilate..."
             Index           =   5
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Dilate..."
-            Index           =   6
-         End
-         Begin VB.Menu MnuLightShadow 
             Caption         =   "Erode..."
-            Index           =   7
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2333,27 +2329,23 @@ Private Sub MnuLightShadow_Click(Index As Integer)
         Case 1
             Process "Cross-screen", True
         
-        'Lens flare
-        Case 2
-            Process "Lens flare", True
-        
         'Rainbow
-        Case 3
+        Case 2
             Process "Rainbow", True
             
         'Sunshine
-        Case 4
+        Case 3
             Process "Sunshine", True
         
         '<separator>
-        Case 5
+        Case 4
         
         'Dilate (maximum rank)
-        Case 6
+        Case 5
             Process "Dilate (maximum rank)", True
         
         'Erode (minimum rank)
-        Case 7
+        Case 6
             Process "Erode (minimum rank)", True
         
     
