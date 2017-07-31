@@ -166,17 +166,21 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = newValue
-    
-    'The separate API-created edit box must be manually de/activated
-    If Not (m_EditBox Is Nothing) Then
-        m_EditBox.Enabled = newValue
-        m_EditBox.Text = GetFormattedStringValue(m_Value)
-        RelayUpdatedColorsToEditBox
+    If (UserControl.Enabled <> newValue) Then
+        
+        UserControl.Enabled = newValue
+        
+        'The separate API-created edit box must be manually de/activated
+        If (Not m_EditBox Is Nothing) Then
+            m_EditBox.Enabled = newValue
+            m_EditBox.Text = GetFormattedStringValue(m_Value)
+            RelayUpdatedColorsToEditBox
+        End If
+        
+        If MainModule.IsProgramRunning() Then RedrawBackBuffer
+        PropertyChanged "Enabled"
+        
     End If
-    
-    If MainModule.IsProgramRunning() Then RedrawBackBuffer
-    PropertyChanged "Enabled"
     
 End Property
 
