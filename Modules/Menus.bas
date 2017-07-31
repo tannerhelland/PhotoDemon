@@ -282,11 +282,10 @@ Public Sub InitializeMenus()
     AddMenuItem "Light and shadow", "effects_lightandshadow", 7, 4
         AddMenuItem "Black light...", "effects_blacklight", 7, 4, 0
         AddMenuItem "Cross-screen...", "effects_crossscreen", 7, 4, 1
-        AddMenuItem "Lens flare...", "effects_lensflare", 7, 4, 2
-        AddMenuItem "Rainbow...", "effects_rainbow", 7, 4, 3
-        AddMenuItem "Sunshine...", "effects_sunshine", 7, 4, 4
-        AddMenuItem "Dilate...", "effects_dilate", 7, 4, 6
-        AddMenuItem "Erode...", "effects_erode", 7, 4, 7
+        AddMenuItem "Rainbow...", "effects_rainbow", 7, 4, 2
+        AddMenuItem "Sunshine...", "effects_sunshine", 7, 4, 3
+        AddMenuItem "Dilate...", "effects_dilate", 7, 4, 5
+        AddMenuItem "Erode...", "effects_erode", 7, 4, 6
     AddMenuItem "Natural", 7, 5
         AddMenuItem "Atmosphere", "effects_atmosphere", 7, 5, 0
         AddMenuItem "Fog...", "effects_fog", 7, 5, 1
