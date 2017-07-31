@@ -105,9 +105,8 @@ Attribute VB_Exposed = False
 'Emboss/Engrave Effect Dialog
 'Copyright 2003-2017 by Tanner Helland
 'Created: 3/6/03
-'Last updated: 12/June/14
-'Last update: complete overhaul: angle, thickness, and depth parameters added, entire algorithm rewritten, interface
-'              redesigned to match features.
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This dialog processes a variety of emboss/engrave-style filters.  It's been in PD for a long time, but the 6.4 release
 ' saw some much-needed improvements in the form of selectable angle, depth, and thickness.  Interpolation is used to
@@ -123,7 +122,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Emboss", , BuildParams(sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color), UNDO_LAYER
+    Process "Emboss", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -157,12 +156,25 @@ End Sub
 
 'Emboss an image
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, ByVal eColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyEmbossEffect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Embossing image..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim eDistance As Double, eAngle As Double, eDepth As Double, eColor As Long
+    
+    With cParams
+        eDistance = .GetDouble("distance", sltDistance.Value)
+        eAngle = .GetDouble("angle", sltAngle.Value)
+        eDepth = .GetDouble("depth", sltDepth.Value)
+        eColor = .GetLong("color", colorPicker.Color)
+    End With
+    
     'Don't allow distance to be 0
-    If eDistance = 0 Then eDistance = 0.01
+    If eDistance = 0# Then eDistance = 0.01
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -191,7 +203,7 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValRight As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -218,7 +230,7 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     bBase = Colors.ExtractBlue(eColor)
     
     'Convert the rotation angle to radians
-    eAngle = eAngle * (PI / 180)
+    eAngle = eAngle * (PI / 180#)
     
     'Find the cos and sin of this angle and store the values
     Dim cosTheta As Double, sinTheta As Double
@@ -234,14 +246,13 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
     For y = initY To finalY
     
         'Retrieve source RGB values
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
         b = srcImageData(quickVal, y)
-    
+        g = srcImageData(quickVal + 1, y)
+        r = srcImageData(quickVal + 2, y)
+        
         'Move x according to the user's distance parameter
         nX = x + eDistance
     
@@ -259,27 +270,27 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         b = (b - tB) * eDepth + bBase
                 
         'Clamp RGB values
-        If r > 255 Then
+        If (r > 255) Then
             r = 255
-        ElseIf r < 0 Then
+        ElseIf (r < 0) Then
             r = 0
         End If
         
-        If g > 255 Then
+        If (g > 255) Then
             g = 255
-        ElseIf g < 0 Then
+        ElseIf (g < 0) Then
             g = 0
         End If
         
-        If b > 255 Then
+        If (b > 255) Then
             b = 255
-        ElseIf b < 0 Then
+        ElseIf (b < 0) Then
             b = 0
         End If
 
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
         dstImageData(quickVal, y) = b
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal + 2, y) = r
         
     Next y
         If (Not toPreview) Then
@@ -301,7 +312,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyEmbossEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyEmbossEffect GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -327,7 +338,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "distance", sltDistance.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "depth", sltDepth.Value
+        .AddParam "color", colorPicker.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()

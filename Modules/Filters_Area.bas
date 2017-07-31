@@ -26,22 +26,23 @@ Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 
 'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
-' Note that as of June '13, ApplyConvolutionFilter uses a full param string for supplying convolution details.  The relevant
-' ParamString format is as follows:
-'    Name: String (can't be blank, but can be a single space)
-'    Invert: Boolean
-'    Divisor: Double
-'    Offset: Long
-'    25 Double values, which correspond to entries in a 5x5 convolution matrix, in left-to-right, top-to-bottom order.
-Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+' Note that as of July '17, ApplyConvolutionFilter uses an XML param string for supplying convolution details.
+' The relevant ParamString entries are as follows:
+'    <name>: String
+'    <invert>: Boolean
+'    <weight>: Double
+'    <bias>: Long
+'    <matrix>: a pipe-delimited string containing 25 floating-point values (e.g. 0.0|1.0|0.0|-50.0....).  These values
+'              represent the entries in a 5x5 convolution matrix, in left-to-right, top-to-bottom order.
+Public Sub ApplyConvolutionFilter_XML(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Prepare a param parser
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString fullParamString
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
         
     'Note that the only purpose of the FilterType string is to display this message
-    If (Not toPreview) Then Message "Applying %1 filter...", cParams.GetString(1)
+    If (Not toPreview) Then Message "Applying %1 filter...", cParams.GetString("name")
     
     'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
     ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
@@ -54,13 +55,10 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    
     'Use the central ConvolveDIB function to apply the convolution
-    ConvolveDIB fullParamString, srcDIB, workingDIB, toPreview
-    
+    ConvolveDIB_XML effectParams, srcDIB, workingDIB, toPreview
     
     'Free our temporary DIB
-    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
@@ -68,14 +66,15 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
         
 End Sub
 
-'Apply any convolution filter to a pdDIB object.  This is primarily used by the ApplyConvolutionFilter function, above, but can also be linked
-' internally to apply multiple convolutions in succession, or to create standalone convolved images that can then be blended together.
-Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+'Apply any convolution filter to a pdDIB object.  This is primarily used by the ApplyConvolutionFilter() function, above,
+' but it can also be used to apply multiple convolutions in succession, or to create standalone convolved images that can
+' then be used for further image analysis.
+Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
-    'Prepare a param parser; this is necessary for parsing out the individual convolution parameters from the param string
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString fullParamString
+    'Parameters are passed via XML; this parser will retrieve individual values for us
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
     
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
@@ -123,31 +122,33 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         
     'We can now parse out the relevant filter values from the param string
     Dim invertResult As Boolean
-    invertResult = cParams.GetBool(2)
+    invertResult = cParams.GetBool("invert", False)
     
-    Dim FilterWeightA As Double, FilterBiasA As Double
-    FilterWeightA = cParams.GetDouble(3)
-    FilterBiasA = cParams.GetDouble(4)
+    Dim filterWeightA As Double, filterBiasA As Double
+    filterWeightA = cParams.GetDouble("weight", 1#)
+    filterBiasA = cParams.GetDouble("bias", 0#)
+    
+    'The actual filter values are stored inside a single pipe-delimited string
+    Dim filterMatrix() As String
+    filterMatrix = Split(cParams.GetString("matrix"), "|", , vbBinaryCompare)
     
     Dim iFM(-2 To 2, -2 To 2) As Double
     For x = -2 To 2
     For y = -2 To 2
-        iFM(x, y) = cParams.GetDouble((x + 2) + (y + 2) * 5 + 5)
+        iFM(x, y) = TextSupport.CDblCustom(filterMatrix((x + 2) + (y + 2) * 5))
     Next y
     Next x
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim r As Double, g As Double, b As Double
     
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
-    Dim FilterWeightTemp As Double
+    Dim filterWeightTemp As Double
     
     'Temporary calculation variables
-    Dim CalcX As Long, CalcY As Long
-    
-    'quickValInner is like quickVal below, but for sub-loops
-    Dim QuickValInner As Long
+    Dim calcX As Long, calcY As Long, convValue As Double
+    Dim xOffset As Long
         
     'Apply the filter
     For x = initX To finalX
@@ -155,34 +156,34 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
-        r = 0
-        g = 0
-        b = 0
-        FilterWeightTemp = FilterWeightA
+        r = 0#
+        g = 0#
+        b = 0#
+        filterWeightTemp = filterWeightA
         
         'Run a sub-loop around the current pixel
         For x2 = x - 2 To x + 2
-            QuickValInner = x2 * qvDepth
+            xOffset = x2 * qvDepth
         For y2 = y - 2 To y + 2
         
-            CalcX = x2 - x
-            CalcY = y2 - y
+            calcX = x2 - x
+            calcY = y2 - y
             
             'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming,
             ' but because VB does not provide a "continue next" type mechanism, GoTo's are all we've got.)
-            If iFM(CalcX, CalcY) <> 0 Then
+            convValue = iFM(calcX, calcY)
+            If (convValue <> 0#) Then
             
-                'If this pixel lies outside the image perimeter, ignore it and adjust g_FilterWeight accordingly
+                'If this pixel lies outside the image perimeter, ignore it and adjust the filter's weight value accordingly
                 If (x2 < checkXMin) Or (y2 < checkYMin) Or (x2 > checkXMax) Or (y2 > checkYMax) Then
-                    
-                    FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
+                    filterWeightTemp = filterWeightTemp - iFM(calcX, calcY)
                 
                 Else
                 
                     'Adjust red, green, and blue according to the values in the filter matrix (FM)
-                    r = r + (srcImageData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
-                    g = g + (srcImageData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
-                    b = b + (srcImageData(QuickValInner, y2) * iFM(CalcX, CalcY))
+                    b = b + (srcImageData(xOffset, y2) * convValue)
+                    g = g + (srcImageData(xOffset + 1, y2) * convValue)
+                    r = r + (srcImageData(xOffset + 2, y2) * convValue)
                     
                 End If
                 
@@ -192,58 +193,57 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         Next x2
         
         'If a weight has been set, apply it now
-        If (FilterWeightTemp <> 1) Then
+        If (filterWeightTemp <> 1#) Then
         
             'Catch potential divide-by-zero errors
-            If (FilterWeightTemp <> 0) Then
-                r = r / FilterWeightTemp
-                g = g / FilterWeightTemp
-                b = b / FilterWeightTemp
+            If (filterWeightTemp <> 0#) Then
+                filterWeightTemp = 1# / filterWeightTemp
+                r = r * filterWeightTemp
+                g = g * filterWeightTemp
+                b = b * filterWeightTemp
             Else
-                r = 0
-                g = 0
-                b = 0
+                r = 0#
+                g = 0#
+                b = 0#
             End If
             
         End If
         
         'If a bias has been specified, apply it now
-        If FilterBiasA <> 0 Then
-            r = r + FilterBiasA
-            g = g + FilterBiasA
-            b = b + FilterBiasA
-        End If
+        r = r + filterBiasA
+        g = g + filterBiasA
+        b = b + filterBiasA
         
         'Make sure all values are between 0 and 255
-        If r < 0 Then
-            r = 0
-        ElseIf r > 255 Then
-            r = 255
+        If (r < 0#) Then
+            r = 0#
+        ElseIf (r > 255#) Then
+            r = 255#
         End If
         
-        If g < 0 Then
-            g = 0
-        ElseIf g > 255 Then
-            g = 255
+        If (g < 0#) Then
+            g = 0#
+        ElseIf (g > 255#) Then
+            g = 255#
         End If
         
-        If b < 0 Then
-            b = 0
-        ElseIf b > 255 Then
-            b = 255
+        If (b < 0#) Then
+            b = 0#
+        ElseIf (b > 255#) Then
+            b = 255#
         End If
         
         'If inversion is specified, apply it now
         If invertResult Then
-            r = 255 - r
-            g = 255 - g
-            b = 255 - b
+            r = 255# - r
+            g = 255# - g
+            b = 255# - b
         End If
         
         'Copy the calculated value into the destination array
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
-        dstImageData(quickVal, y) = b
+        dstImageData(quickVal, y) = Int(b)
+        dstImageData(quickVal + 1, y) = Int(g)
+        dstImageData(quickVal + 2, y) = Int(r)
         
     Next y
         If Not suppressMessages Then
@@ -254,15 +254,12 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         End If
     Next x
     
-    'With our work complete, point ImageData() and srcImageData() away from their respective DIBs and deallocate them
+    'Safely deallocate all intermediary array
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
         
     'Return success/failure
-    If g_cancelCurrentAction Then ConvolveDIB = 0 Else ConvolveDIB = 1
+    If g_cancelCurrentAction Then ConvolveDIB_XML = 0 Else ConvolveDIB_XML = 1
 
 End Function
 
@@ -385,7 +382,7 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
     
     'Old PD versions used a Boolean value for quality.  As such, if the user enabled interpolation, and saved it as part of a preset,
     ' this function may get passed a "-1" for userQuality.  In that case, activate an identical method in the new supersampler.
-    If userQuality < 1 Then userQuality = 2
+    If (userQuality < 1) Then userQuality = 2
     
     'Quality is typically presented to the user on a 1-5 scale.  1 = lowest quality/highest speed, 5 = highest quality/lowest speed.
     Select Case userQuality
@@ -431,7 +428,7 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
             
             'For quality levels 4 and 5, we add a second set of sampling points, closer to the origin, and offset from the originals
             ' by 45 degrees
-            If userQuality > 3 Then
+            If (userQuality > 3) Then
             
                 ssOffsetsX(5) = 0.0789123
                 ssOffsetsY(5) = 0.237219
@@ -448,7 +445,7 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
                 'For the final quality level, add a set of 4 more points, calculated by rotating (0, 0.67) around the
                 ' origin in 45 degree increments.  The benefits of this are minimal for all but the most extreme
                 ' zoom-out situations.
-                If userQuality > 4 Then
+                If (userQuality > 4) Then
                 
                     ssOffsetsX(9) = 0.473762
                     ssOffsetsY(9) = 0.473762

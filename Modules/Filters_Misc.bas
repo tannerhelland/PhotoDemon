@@ -15,41 +15,6 @@ Attribute VB_Name = "Filters_Miscellaneous"
 
 Option Explicit
 
-'Convert the image's color depth to a new value.  (Currently, only 24bpp and 32bpp is allowed.)
-Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal newBackColor As Long = vbWhite)
-
-    Message "Converting image mode..."
-    
-    'TODO: handle this with layers.  I'm not sure how best to do this, just yet - I may move all transparency
-    '      concepts to the Layer menu.
-    
-    If (newColorDepth = 24) Then
-    
-        'Ask the current DIB to convert itself to 24bpp mode
-        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo24bpp newBackColor
-        
-        'Because PD now uses an "always 32bpp" approach to layers, convert the image back to 32bpp mode.
-        ' (All its alpha values will be 255.)
-        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
-        pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
-        
-    Else
-    
-        'Ask the current DIB to convert itself to 32bpp mode
-        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
-    
-    End If
-    
-    'Notify the parent of the target layer of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
-    
-    Message "Finished."
-    
-    'Redraw the main window
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-
-End Sub
-
 'Render an image using faux thermography; basically, map luminance values as if they were heat, and use a modified hue spectrum for representation.
 ' (I have manually tweaked the values at certain ranges to better approximate actual thermography.)
 Public Sub MenuHeatMap()
@@ -442,77 +407,6 @@ Public Sub MenuSynthesize()
 
 End Sub
 
-'Another random filter discovered by trial-and-error.  "Alien" effect.
-Public Sub MenuAlien()
-
-    Message "Abducting image and probing it for weaknesses..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim newR As Long, newG As Long, newB As Long
-        
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        newR = b + g - r
-        newG = r + b - g
-        newB = r + g - b
-        
-        If newR > 255 Then newR = 255
-        If newR < 0 Then newR = 0
-        If newG > 255 Then newG = 255
-        If newG < 0 Then newG = 0
-        If newB > 255 Then newB = 255
-        If newB < 0 Then newB = 0
-        
-        imageData(quickVal + 2, y) = newR
-        imageData(quickVal + 1, y) = newG
-        imageData(quickVal, y) = newB
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
-  
-End Sub
-
 'Very improved version of "sepia".  This is more involved than a typical "change to brown" effect - the white balance and
 ' shading is also adjusted to give the image a more "antique" look.
 Public Sub MenuAntique()
@@ -692,32 +586,6 @@ Public Sub MenuSepia()
     
 End Sub
 
-'Makes the picture appear like it has been shaken
-Public Sub MenuVibrate()
-
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("vibrate") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & "0|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "1|0|0|0|-1|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|0|1|0|0|"
-    tmpString = tmpString & "0|1|0|-1|0|"
-    tmpString = tmpString & "-1|0|0|0|1"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString
-
-End Sub
-
 'Another filter found by trial-and-error.  "Dream" effect.
 Public Sub MenuDream()
 
@@ -782,80 +650,6 @@ Public Sub MenuDream()
         imageData(quickVal + 2, y) = r
         imageData(quickVal + 1, y) = g
         imageData(quickVal, y) = b
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
-
-End Sub
-
-'A bright-green filter I've aptly named "radioactive".
-Public Sub MenuRadioactive()
-
-    Message "Injecting image with non-ionizing radiation..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim newR As Long, newG As Long, newB As Long
-        
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        If r = 0 Then r = 1
-        If g = 0 Then g = 1
-        If b = 0 Then b = 1
-        
-        newR = (g * b) \ r
-        newG = (r * b) \ g
-        newB = (r * g) \ b
-        
-        If newR > 255 Then newR = 255
-        If newG > 255 Then newG = 255
-        If newB > 255 Then newB = 255
-        
-        newG = 255 - newG
-        
-        imageData(quickVal + 2, y) = newR
-        imageData(quickVal + 1, y) = newG
-        imageData(quickVal, y) = newB
         
     Next y
         If (x And progBarCheck) = 0 Then

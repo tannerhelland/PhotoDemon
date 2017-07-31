@@ -447,10 +447,8 @@ Attribute VB_Exposed = False
 'Custom Filter Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 21/August/13
-'Last update: rebuilt the entire form due to the new command bar.  Custom load/save buttons and functions are now gone, as the
-'             command bar will automatically this for us (including last-used values).  Also replaced all generic text boxes
-'             with text up/downs for improved value nudging and validation.
+'Last updated: 31/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This dialog allows the user to create custom convolution filters.  The actual processing of the convolution filter happens in
 ' a separate "ApplyConvolutionFilter" function; this dialog simply serves as a user-facing interface to that.
@@ -468,7 +466,7 @@ Private Sub chkNormalize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Custom filter", , GetFilterParamString, UNDO_LAYER
+    Process "Custom filter", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -506,25 +504,25 @@ Private Sub UpdatePreview()
             
             Dim i As Long
             For i = 0 To 24
-                filterSum = filterSum + CDblCustom(tudF(i))
+                filterSum = filterSum + TextSupport.CDblCustom(tudF(i))
             Next i
             
             'Generate automatic divisor and offset values based on the total.
-            If filterSum = 0 Then
-                tudDivisor = 1
-                tudOffset = 127
-            ElseIf filterSum > 0 Then
-                tudDivisor = filterSum
-                tudOffset = 0
+            If (filterSum = 0) Then
+                tudDivisor.Value = 1
+                tudOffset.Value = 127
+            ElseIf (filterSum > 0) Then
+                tudDivisor.Value = filterSum
+                tudOffset.Value = 0
             Else
-                tudDivisor = Abs(filterSum)
-                tudOffset = 255
+                tudDivisor.Value = Abs(filterSum)
+                tudOffset.Value = 255
             End If
         
         End If
             
         'Apply the preview
-        ApplyConvolutionFilter GetFilterParamString, True, pdFxPreview
+        Filters_Area.ApplyConvolutionFilter_XML GetLocalParamString(), True, pdFxPreview
     
         'Reenable previews
         cmdBar.MarkPreviewStatus True
@@ -545,38 +543,37 @@ Private Sub tudOffset_Change()
     UpdatePreview
 End Sub
 
-'Stick all the current filter values into a parameter string, which can then be passed to the ApplyConvolutionFilter function
-Private Function GetFilterParamString() As String
-    
-    Dim tmpString As String
-    
-    'Start with a filter name; for this particular dialog, we supply a generic "custom filter" title
-    tmpString = g_Language.TranslateMessage("custom") & "|"
-    
-    'Next comes an invert parameter, which also isn't used on this dialog
-    tmpString = tmpString & "0|"
-    
-    'Next is the divisor and offset
-    If tudDivisor.Value = 0 Then
-        tmpString = tmpString & "1"
-    Else
-        tmpString = tmpString & Trim$(Str(tudDivisor.Value))
-    End If
-    tmpString = tmpString & "|" & Trim$(Str(tudOffset.Value)) & "|"
-    
-    'Finally, add the text box values
-    Dim i As Long
-    For i = 0 To 24
-        tmpString = tmpString & Trim$(Str(tudF(i).Value))
-        If i < 24 Then tmpString = tmpString & "|"
-    Next i
-    
-    'Return our completed string!
-    GetFilterParamString = tmpString
-    
-End Function
-
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+'Stick all the current filter values into a parameter string, which can then be passed to the ApplyConvolutionFilter function
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+        .AddParam "name", g_Language.TranslateMessage("custom")
+        .AddParam "invert", False
+        If (tudDivisor.Value = 0#) Then .AddParam "weight", 1# Else .AddParam "weight", tudDivisor.Value
+        .AddParam "bias", tudOffset.Value
+        
+        'And finally, the convolution array itself.  This is just a pipe-delimited string with a 5x5 array
+        ' of weights.
+        Dim tmpString As String, i As Long
+        For i = 0 To 24
+            tmpString = tmpString & Trim$(Str(tudF(i).Value))
+            If (i < 24) Then tmpString = tmpString & "|"
+        Next i
+        
+        .AddParam "matrix", tmpString
+        
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function
+

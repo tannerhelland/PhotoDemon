@@ -732,14 +732,14 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
+    Dim quickVal As Long, quickValRight As Long, quickValLeft As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then
             SetProgBarMax finalX
         Else
             SetProgBarMax modifyProgBarMax
@@ -753,23 +753,23 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-        QuickValLeft = (x - 1) * qvDepth
+        quickValRight = (x + 1) * qvDepth
+        quickValLeft = (x - 1) * qvDepth
     For y = initY To finalY
         For z = 0 To 2
     
             tMin = 255
-            tmpColor = srcImageData(QuickValRight + z, y)
+            tmpColor = srcImageData(quickValRight + z, y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y - 1)
+            tmpColor = srcImageData(quickValRight + z, y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y + 1)
+            tmpColor = srcImageData(quickValRight + z, y + 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y)
+            tmpColor = srcImageData(quickValLeft + z, y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y - 1)
+            tmpColor = srcImageData(quickValLeft + z, y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y + 1)
+            tmpColor = srcImageData(quickValLeft + z, y + 1)
             If tmpColor < tMin Then tMin = tmpColor
             tmpColor = srcImageData(quickVal + z, y)
             If tmpColor < tMin Then tMin = tmpColor
@@ -788,8 +788,8 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
             End If
             
             'The edges of the image will always be missed, so manually check for and correct that
-            If x = initX Then dstImageData(QuickValLeft + z, y) = dstImageData(quickVal + z, y)
-            If x = finalX Then dstImageData(QuickValRight + z, y) = dstImageData(quickVal + z, y)
+            If x = initX Then dstImageData(quickValLeft + z, y) = dstImageData(quickVal + z, y)
+            If x = finalX Then dstImageData(quickValRight + z, y) = dstImageData(quickVal + z, y)
             If y = initY Then dstImageData(quickVal + z, y - 1) = dstImageData(quickVal + z, y)
             If y = finalY Then dstImageData(quickVal + z, y + 1) = dstImageData(quickVal + z, y)
         

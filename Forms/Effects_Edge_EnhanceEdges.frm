@@ -111,8 +111,8 @@ Attribute VB_Exposed = False
 'Edge Enhancement Interface
 'Copyright 2002-2017 by Tanner Helland
 'Created: sometimes 2002
-'Last updated: 21/April/17
-'Last update: performance improvements
+'Last updated: 29/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'This edge enhancement function allows the user to selectively emphasize image edges using any available edge
 ' detection technique.  PD's compositor is then used to composite the results back onto the base image at some
@@ -138,10 +138,10 @@ Private Sub chkDirection_Click(Index As Integer)
     ignoreStateChanges = True
 
     Dim otherIndex As Long
-    If Index = 0 Then otherIndex = 1 Else otherIndex = 0
+    If (Index = 0) Then otherIndex = 1 Else otherIndex = 0
 
-    If Not chkDirection(Index) Then
-        If Not chkDirection(otherIndex) Then chkDirection(otherIndex).Value = vbChecked
+    If (Not chkDirection(Index)) Then
+        If (Not chkDirection(otherIndex)) Then chkDirection(otherIndex).Value = vbChecked
     End If
     
     ignoreStateChanges = False
@@ -152,7 +152,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Enhance edges", , BuildParams(lstEdgeOptions.ListIndex, GetDirectionality(), sltStrength.Value), UNDO_LAYER
+    Process "Enhance edges", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -161,8 +161,21 @@ End Sub
 
 'Apply any supported edge detection filter to an image.  Directionality can be specified, but note that only some
 ' algorithms support the parameter.
-Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, ByVal enhanceStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim edgeDetectionType As PD_EDGE_DETECTION, edgeDirectionality As PD_EDGE_DETECTION_DIRECTION
+    Dim enhanceStrength As Double
+    
+    With cParams
+        edgeDetectionType = .GetLong("method", lstEdgeOptions.ListIndex)
+        edgeDirectionality = .GetLong("direction", PD_EDGE_DIR_ALL)
+        enhanceStrength = .GetDouble("strength", sltStrength.Value)
+    End With
+    
     'Applying an edge detection filter generally happens via these steps:
     
     '1) Set up any parameters we know in advance, like generating a String name for the supplied filter, and converting
@@ -171,19 +184,22 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     '3) Supply the full ParamString, including convo matrix, to PD's central ApplyConvolutionFilter function
     '4) If necessary, repeat steps 2 and 3 to retrieve multiple directionality images
     
-    Dim tmpParamString As String, convolutionMatrixString As String
+    'Because some of these parameters are handled separately, we now need to build a special parameter string
+    ' for just the convolver.
+    Dim cParamsOut As pdParamXML
+    Set cParamsOut = New pdParamXML
     
-    '1a) Generate a name for the requested filter
-    tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
-    
-    '1b) Add in the invert (black background) parameter
-    tmpParamString = tmpParamString & "False" & "|"
-    
-    '2a) Retrieve the relevant convolution matrix for this filter
-    convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
-    
-    '2b) Merge the retrieved convolution matrix string with our name and invert params
-    tmpParamString = tmpParamString & convolutionMatrixString
+    With cParamsOut
+        .AddParam "name", GetNameOfEdgeDetector(edgeDetectionType)
+        .AddParam "invert", False
+        
+        'We now need to calculate per-algorithm values using a separate helper function
+        Dim fWeight As Double, fBias As Double, fMatrix As String
+        GetParamStringForEdgeDetector edgeDetectionType, edgeDirectionality, fWeight, fBias, fMatrix
+        .AddParam "weight", fWeight
+        .AddParam "bias", fBias
+        .AddParam "matrix", fMatrix
+    End With
     
     'Next, we need to obtain a DIB of the processed edge detection results for the image.  This requires two or
     ' three passes, contingent on the detection type.  In order to update the progress bar correctly, calculate the number
@@ -211,11 +227,9 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     '3a) If the function is single-pass compatible (e.g. it does not require us to traverse the image multiple times, then
     '     blend the edge detection results), supply the compiled param string to PD's central convolution function and exit
     If (edgeDetectionType = PD_EDGE_ARTISTIC_CONTOUR) Then
-        CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
-    
+        Filters_Layers.CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
     Else
-        ConvolveDIB tmpParamString, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
-    
+        Filters_Area.ConvolveDIB_XML cParamsOut.GetParamString(), workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
     End If
     
     'A pdCompositor class is required to selectively blend the edge detection results back onto the main image
@@ -224,7 +238,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     
     '3b) If the requested edge function is not single-pass compatible, run a second pass in the opposite direction,
     '     the blend the results back onto edgeDIB.
-    If Not IsEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
+    If (Not IsEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality)) Then
     
         'Create a second DIB copy.  This will receive the edge-detection copy of the image.
         Dim tmpEdgeDIB As pdDIB
@@ -235,13 +249,19 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         ' horizontal direction next.  Generate a new param string for the horizontal direction.
         If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "2", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
         
-        tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
-        tmpParamString = tmpParamString & "False" & "|"
-        convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
-        tmpParamString = tmpParamString & convolutionMatrixString
-                
+        cParamsOut.Reset
+        
+        With cParamsOut
+            .AddParam "name", GetNameOfEdgeDetector(edgeDetectionType)
+            .AddParam "invert", False
+            GetParamStringForEdgeDetector edgeDetectionType, PD_EDGE_DIR_HORIZONTAL, fWeight, fBias, fMatrix
+            .AddParam "weight", fWeight
+            .AddParam "bias", fBias
+            .AddParam "matrix", fMatrix
+        End With
+        
         'Use the central ConvolveDIB function to apply the new convolution to workingDIB
-        ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, workingDIB.GetDIBWidth
+        Filters_Area.ConvolveDIB_XML cParamsOut.GetParamString(), workingDIB, tmpEdgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, workingDIB.GetDIBWidth
         
         'The compositor requires premultiplied alpha, so convert both top and bottom layers now
         edgeDIB.SetAlphaPremultiplication True
@@ -358,10 +378,9 @@ Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
 End Function
 
 'Given an internal edge detection type (and optionally, a direction), calculate a matching convolution matrix and return it
-Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
+Private Sub GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, ByRef fWeight As Double, ByRef fBias As Double, ByRef fMatrix As String)
 
     Dim convoString As String
-    convoString = ""
     
     'Convolution matrix strings are assembled in two or three steps:
     ' 1) Add divisor and offset values
@@ -373,8 +392,8 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
         Case PD_EDGE_HILITE
             
             'Divisor/offset
-            convoString = convoString & "1|0|"
-    
+            fWeight = 1#: fBias = 0#
+            
             'Actual convo matrix
             convoString = convoString & "0|0|0|0|0|"
             convoString = convoString & "0|-4|-2|-1|0|"
@@ -388,7 +407,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
             
                 'Divisor/offset
-                convoString = convoString & "0.25|0|"
+                fWeight = 0.25: fBias = 0#
                 
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|0|0|0|0|"
@@ -399,7 +418,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             ElseIf edgeDirectionality = PD_EDGE_DIR_VERTICAL Then
             
                 'Divisor/offset
-                convoString = convoString & "0.25|0|"
+                fWeight = 0.25: fBias = 0#
                 
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|0|-1|0|0|"
@@ -410,7 +429,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             Else
             
                 'Divisor/offset
-                convoString = convoString & "0.5|0|"
+                fWeight = 0.5: fBias = 0#
                 
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|0|-1|0|0|"
@@ -424,7 +443,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
         Case PD_EDGE_PHOTODEMON
         
             'Divisor/offset
-            convoString = convoString & "1|0|"
+            fWeight = 1#: fBias = 0#
             
             'Actual convo matrix
             convoString = convoString & "0|-1|0|0|0|"
@@ -437,7 +456,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
         Case PD_EDGE_PREWITT
         
             'Divisor/offset
-            convoString = convoString & "1|0|"
+            fWeight = 1#: fBias = 0#
             
             'Actual convo matrix varies according to direction
             If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
@@ -458,7 +477,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
         Case PD_EDGE_ROBERTS
         
             'Divisor/offset
-            convoString = convoString & "0.5|0|"
+            fWeight = 0.5: fBias = 0#
             
             'Actual convo matrix varies according to direction
             If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
@@ -479,7 +498,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
         Case PD_EDGE_SOBEL
             
             'Divisor/offset
-            convoString = convoString & "1|0|"
+            fWeight = 1#: fBias = 0#
             
             'Actual convo matrix varies according to direction
             If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
@@ -498,34 +517,8 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     
     End Select
     
-    GetParamStringForEdgeDetector = convoString
+    fMatrix = convoString
 
-End Function
-
-'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original
-' implementation is available from the "Help -> About PhotoDemon" menu option.
-Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
-    If (Not toPreview) Then Message "Tracing image edges with virtual paintbrush..."
-        
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-    
-    CreateContourDIB blackBackground, srcDIB, workingDIB, toPreview
-    
-    srcDIB.EraseDIB
-    Set srcDIB = Nothing
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
-    
 End Sub
 
 Private Sub Form_Load()
@@ -629,11 +622,7 @@ End Function
 
 'Update the live preview of the selected edge detection options
 Private Sub UpdatePreview()
-    
-    If cmdBar.PreviewsAllowed Then
-        ApplyEdgeEnhancement lstEdgeOptions.ListIndex, GetDirectionality(), sltStrength.Value, True, pdFxPreview
-    End If
-    
+    If cmdBar.PreviewsAllowed Then ApplyEdgeEnhancement GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -651,7 +640,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "method", lstEdgeOptions.ListIndex
+        .AddParam "direction", GetDirectionality()
+        .AddParam "strength", sltStrength.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
