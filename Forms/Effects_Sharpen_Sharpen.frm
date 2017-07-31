@@ -66,15 +66,15 @@ Attribute VB_Exposed = False
 'Sharpen Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
-'Last updated: 22/August/13
-'Last update: rewrote the ApplyConvolutionFilter call against the new paramString implementation
+'Last updated: 28/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Basic sharpening tool.  A 3x3 convolution kernel is used to apply the sharpening, so the results will
-' be inferior to Unsharp Masking - but the tool is much simpler, and for light sharpening, the results are
-' often acceptable.
+' be inferior to Unsharp Masking - but the tool is much simpler, and for minor sharpening, the results
+' are often acceptable.
 '
-'The bulk of the work happens in the ApplyConvolutionFilter routine that handles all of PhotoDemon's generic convolution
-' work.  All this dialog does is set up the kernel, then pass it on to ApplyConvolutionFilter.
+'The bulk of the work happens in the ApplyConvolutionFilter routine that handles all of PhotoDemon's
+' generic convolution tasks.  All this dialog does is set up the kernel, then pass it to that function.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -85,35 +85,47 @@ Option Explicit
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplySharpenFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim sStrength As Double
+    sStrength = cParams.GetDouble("strength", 0#)
     
     'Sharpening uses a basic 3x3 convolution filter, which we generate dynamically based on the requested strength
-    Dim tmpString As String
+    Dim cParamsOut As pdParamXML
+    Set cParamsOut = New pdParamXML
     
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("sharpen") & "|"
+    With cParamsOut
     
-    'Next comes an invert parameter (not used for sharpening)
-    tmpString = tmpString & "0|"
+        .AddParam "name", g_Language.TranslateMessage("sharpen")
+        .AddParam "invert", False
+        .AddParam "weight", 1#
+        .AddParam "bias", 0#
+        
+        'And finally, the convolution array itself.  This is just a pipe-delimited string with a 5x5 array
+        ' of weights.
+        Dim tmpString As String
+        tmpString = tmpString & "0|0|0|0|0|"
+        tmpString = tmpString & "0|0|" & Trim$(Str(-sStrength)) & "|0|0|"
+        tmpString = tmpString & "0|" & Trim$(Str(-sStrength)) & "|" & Trim$(Str(sStrength * 4# + 1#)) & "|" & Trim$(Str(-sStrength)) & "|0|"
+        tmpString = tmpString & "0|0|" & Trim$(Str(-sStrength)) & "|0|0|"
+        tmpString = tmpString & "0|0|0|0|0"
     
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|0|" & Str(-sStrength) & "|0|0|"
-    tmpString = tmpString & "0|" & Str(-sStrength) & "|" & Str(sStrength * 4 + 1) & "|" & Str(-sStrength) & "|0|"
-    tmpString = tmpString & "0|0|" & Str(-sStrength) & "|0|0|"
-    tmpString = tmpString & "0|0|0|0|0"
+        .AddParam "matrix", tmpString
+        
+    End With
     
     'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-                
+    Filters_Area.ApplyConvolutionFilter_XML cParamsOut.GetParamString(), toPreview, dstPic
+    
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sharpen", , BuildParams(sltStrength), UNDO_LAYER
+    Process "Sharpen", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -132,7 +144,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplySharpenFilter sltStrength.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplySharpenFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltStrength_Change()
@@ -150,7 +162,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "strength", sltStrength.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

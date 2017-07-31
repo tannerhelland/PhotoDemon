@@ -375,25 +375,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             
         'Edge filters
         Case "Emboss"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormEmbossEngrave
-            Else
-                FormEmbossEngrave.ApplyEmbossEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormEmbossEngrave Else FormEmbossEngrave.ApplyEmbossEffect processParameters
             
         Case "Enhance edges"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormEdgeEnhance
-            Else
-                FormEdgeEnhance.ApplyEdgeEnhancement cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormEdgeEnhance Else FormEdgeEnhance.ApplyEdgeEnhancement processParameters
             
         Case "Find edges"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFindEdges
-            Else
-                FormFindEdges.ApplyEdgeDetection cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormFindEdges Else FormFindEdges.ApplyEdgeDetection processParameters
             
         Case "Range filter"
             If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
@@ -405,10 +393,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                 FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
             
-        'Historically, "artistic contour" was provided as a standalone option.  It's now integrated into the base
-        ' "find edges" function but its dedicated instruction has been left here for backwards compatibility reasons.
-        Case "Artistic contour"
-            FormFindEdges.FilterSmoothContour cParams.GetBool(1)
             
         
         'Lights and shadows
@@ -559,11 +543,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Sharpen
         
         Case "Sharpen"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSharpen
-            Else
-                FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters
             
         Case "Unsharp mask"
             If raiseDialog Then
@@ -631,23 +611,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Custom
         
         Case "Custom filter"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormCustomFilter
-            Else
-                ApplyConvolutionFilter cParams.GetParamString
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
+            
         
         'Experimental
         
-        Case "Alien"
-            MenuAlien
-                    
         Case "Dream"
             MenuDream
-            
-        Case "Radioactive"
-            MenuRadioactive
             
         Case "Synthesize"
             MenuSynthesize
@@ -655,8 +625,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Thermograph (heat map)"
             MenuHeatMap
         
-        Case "Vibrate"
-            MenuVibrate
             
         
         'PAINT OPERATIONS

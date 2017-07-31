@@ -126,10 +126,32 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Public Sub RemoveLayerTransparency(ByVal processParameters As String)
+    
+    Message "Removing transparency..."
+    
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Filters_Miscellaneous.ConvertImageColorDepth 24, cParams.GetLong("backcolor", vbWhite)
+    
+    'TODO: rework this to apply the background color in-place, rather than performing an unnecessary
+    ' copy to 24-bpp, then *another* copy back to 32-bpp.
+    
+    'Ask the current DIB to convert itself to 24bpp mode
+    pdImages(g_CurrentImage).GetActiveDIB.ConvertTo24bpp cParams.GetLong("backcolor", RGB(255, 255, 255))
+    
+    'Because PD now uses an "always 32bpp" approach to layers, we need to immediately convert the
+    ' image back to 32bpp mode.  (All its alpha values will be 255, however.)
+    pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
+    pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
+    
+    'Notify the parent of the target layer of the change
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+    
+    Message "Finished."
+    
+    'Redraw the main window
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
 End Sub
 
 Private Function GetLocalParamString() As String
