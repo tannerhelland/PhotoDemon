@@ -575,7 +575,7 @@ End Function
 'Given one LUT, apply it to each pixel in the image, using the pixel's calculated GRAY VALUE as the LUT lookup parameter.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
@@ -604,49 +604,33 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = FindBestProgBarValue()
-    End If
-    
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
     Dim r As Long, g As Long, b As Long, grayVal As Long, grayByte As Byte
         
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
+    
     For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
-        If grayVal > 255 Then grayVal = 255
+        grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+        If (grayVal > 255) Then grayVal = 255
         grayByte = gLUT(grayVal)
         
         'Assign the look-up table values
-        imageData(quickVal + 2, y) = grayByte
-        imageData(quickVal + 1, y) = grayByte
-        imageData(quickVal, y) = grayByte
+        imageData(x, y) = grayByte
+        imageData(x + 1, y) = grayByte
+        imageData(x + 2, y) = grayByte
         
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
     Next x
+    Next y
     
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
