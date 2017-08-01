@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 14/March/15
-'Last update: finish work on an IIR Gaussian Blur implementation
+'Last updated: 31/July/17
+'Last update: migrate the convolution filter functions to XML param strings
 '
 'Holder module for generalized area filters, including most of the project's convolution filters.
 '
@@ -18,12 +18,6 @@ Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 
 Option Explicit
-
-'These constants are related to saving/loading custom filters to/from a file
-Public Const CUSTOM_FILTER_ID As String * 4 = "DScf"
-Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
-Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
-Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 
 'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
 ' Note that as of July '17, ApplyConvolutionFilter uses an XML param string for supplying convolution details.

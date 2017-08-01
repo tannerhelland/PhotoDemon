@@ -86,8 +86,8 @@ Attribute VB_Exposed = False
 'Trace Contour (Outline) Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 15/Feb/13
-'Last updated: 10/January/14
-'Last update: greatly improve performance by switching to approximate gaussian blur function
+'Last updated: 30/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Contour tracing is performed by "stacking" a series of filters together:
 ' 1) Gaussian blur to smooth out fine details
@@ -108,10 +108,22 @@ End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the contour (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boolean, ByVal useSmoothing As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub TraceContour(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Tracing image contour..."
             
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim cRadius As Long, useBlackBackground As Boolean, useSmoothing As Boolean
+    
+    With cParams
+        cRadius = .GetLong("thickness", sltThickness.Value)
+        useBlackBackground = .GetBool("blackbackground", True)
+        useSmoothing = .GetBool("smoothing", True)
+    End With
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic
@@ -125,7 +137,7 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         cRadius = cRadius * curDIBValues.previewModifier
-        If cRadius = 0 Then cRadius = 1
+        If (cRadius = 0) Then cRadius = 1
     End If
     
     Dim finalX As Long, finalY As Long
@@ -164,7 +176,6 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
         End If
     End If
     
-    srcDIB.EraseDIB
     Set srcDIB = Nothing
         
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
@@ -173,7 +184,7 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Trace contour", , BuildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)), UNDO_LAYER
+    Process "Trace contour", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -200,7 +211,7 @@ Private Sub sltThickness_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.TraceContour GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -214,7 +225,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "thickness", sltThickness.Value
+        .AddParam "blackbackground", CBool(chkBlackBackground.Value)
+        .AddParam "smoothing", CBool(chkSmoothing.Value)
     End With
     
     GetLocalParamString = cParams.GetParamString()

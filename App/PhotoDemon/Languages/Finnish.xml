@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2817</langversion>
+<langversion>6.8.2819</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -539,11 +539,6 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Converting image mode</original>
-<translation>Muuntaminen kuva tila</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>Performing lämpökuvausmittaus analyysi</translation>
 </phrase>
@@ -559,11 +554,6 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 </phrase>
 
 <phrase>
-<original>Abducting image and probing it for weaknesses</original>
-<translation>Sieppaavat kuva ja hyvää se heikkouksia</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Nopeuttaminen 88 mph, jotta antiikki-Ify tämä kuva</translation>
 </phrase>
@@ -574,18 +564,8 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 </phrase>
 
 <phrase>
-<original>vibrate</original>
-<translation>värähdellä</translation>
-</phrase>
-
-<phrase>
 <original>Putting image to sleep, then measuring its REM cycles</original>
 <translation>Operaattorin kuva nukkumaan, sitten mittaamalla sen REM sykliä</translation>
-</phrase>
-
-<phrase>
-<original>Injecting image with non-ionizing radiation</original>
-<translation>Pistämällä kuvan ionisoimatonta säteilyä</translation>
 </phrase>
 
 <phrase>
@@ -604,8 +584,8 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 </phrase>
 
 <phrase>
-<original>Count Image Colors</original>
-<translation>Count Image Colors</translation>
+<original>Count image colors</original>
+<translation>Count kuvan värien</translation>
 </phrase>
 
 <phrase>
@@ -622,7 +602,7 @@ You voivat käyttää MenuTest () osa on Filters_Miscellaneous moduuli testata o
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -5536,11 +5516,6 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Lens flare</original>
-<translation>Linssiheijastus</translation>
-</phrase>
-
-<phrase>
 <original>Rainbow</original>
 <translation>Sateenkaari</translation>
 </phrase>
@@ -6408,11 +6383,6 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Count kuvan värien</translation>
-</phrase>
-
-<phrase>
 <original>This image does not contain any GPS metadata.</original>
 <translation>Tämä kuva ei sisällä GPS metadataa.</translation>
 </phrase>
@@ -6527,7 +6497,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9650,11 +9620,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>Tracing image edges with virtual paintbrush</original>
-<translation>Jäljitys kuva reunojen kanssa virtuaalinen sivellin</translation>
-</phrase>
-
-<phrase>
 <original>Artistic contour</original>
 <translation>taiteellinen ääriviivat</translation>
 </phrase>
@@ -9689,7 +9654,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -9705,7 +9670,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>muita vaihtoehtoja</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 28 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Tracing image edges with virtual paintbrush</original>
+<translation>Jäljitys kuva reunojen kanssa virtuaalinen sivellin</translation>
+</phrase>
+
+<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
@@ -9788,47 +9758,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
-<!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Huomautus: Voit myös asettaa asentoon napsauttamalla esikatseluikkunassa.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>asema (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary intensity</original>
-<translation>toissijainen intensiteetti</translation>
-</phrase>
-
-<phrase>
-<original>tertiary intensity</original>
-<translation>tertiäärinen intensiteetti</translation>
-</phrase>
-
-<phrase>
-<original>synchronize intensity</original>
-<translation>synkronoida intensiteetti</translation>
-</phrase>
-
-<phrase>
-<original>Applying lens flare</original>
-<translation>Hakeminen heijastumia</translation>
-</phrase>
-
-<phrase>
-<original>no</original>
-<translation>ei</translation>
-</phrase>
-
-<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_LightAndShadow_LensFlare.frm-->
-
 <!-- BEGIN text for Effects_LightAndShadow_Rainbow.frm (FormRainbow) -->
 
 <phrase>
@@ -9848,6 +9777,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>määrä säteitä</translation>
 </phrase>
@@ -9858,11 +9792,16 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>Generating rays of happiness</original>
-<translation>Luodaan säteet onnea</translation>
+<original>ray variance</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Generating light beams</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -11182,6 +11121,11 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 </phrase>
 
 <phrase>
+<original>no</original>
+<translation>ei</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>venyttely sopivaksi</translation>
 </phrase>
@@ -11301,7 +11245,7 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 <translation>käsitellään ennen peruuttamista. Viime käsitelty kuva oli " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12960,7 +12904,12 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Removing transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -13474,6 +13423,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>asema (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>koko (w, h)</translation>
 </phrase>
@@ -13653,7 +13607,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Tämä vaihtoehto tarkastuksia, jotka kriteerit taikasauvaa käyttää sen määrittämiseksi, onko pikseli olisi lisättävä nykyiseen valintaan.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15049,10 +15003,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4519 phrases. -->
-<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12264 total words. -->
 
 </pdData>

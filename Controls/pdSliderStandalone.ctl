@@ -933,8 +933,8 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         If (m_SliderStyle = GradientThreePoint) Then
             renderNotchValue = GradientMiddleValue
         
-        'All other slider styles use the same heuristic for automatic notch positioning.  If 0 is available, use it.
-        ' Otherwise, use the control's minimum value.
+        'All other slider styles use the same heuristic for automatic notch positioning.  Assume 0 is the default value;
+        ' if 0 is *not* the control's minimum value, render a notch there.
         Else
             
             If (0 > m_Min) And (0 <= m_Max) Then

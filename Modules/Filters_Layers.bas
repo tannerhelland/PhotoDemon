@@ -365,8 +365,8 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then
             SetProgBarMax finalX
         Else
             SetProgBarMax modifyProgBarMax
@@ -384,7 +384,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     RMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
-    percentIgnore = percentIgnore / 100
+    percentIgnore = percentIgnore * 0.01
     
     'Prepare histogram arrays
     Dim rCount(0 To 255) As Long, gCount(0 To 255) As Long, bCount(0 To 255) As Long
@@ -395,17 +395,20 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next x
     
     'Build the image histogram
-    For x = initX To finalX
-        quickVal = x * qvDepth
+    Dim startX As Long, stopX As Long
+    startX = initX * qvDepth
+    stopX = finalX * qvDepth
+    
     For y = initY To finalY
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+    For x = startX To stopX Step qvDepth
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         rCount(r) = rCount(r) + 1
         gCount(g) = gCount(g) + 1
         bCount(b) = bCount(b) + 1
-    Next y
     Next x
+    Next y
     
      'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
     ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
@@ -426,7 +429,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Find minimum values of red, green, and blue
     Do
-        If rCount(r) + rTally < wbThreshold Then
+        If (rCount(r) + rTally < wbThreshold) Then
             r = r + 1
             rTally = rTally + rCount(r)
         Else
@@ -438,7 +441,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     foundYet = False
         
     Do
-        If gCount(g) + gTally < wbThreshold Then
+        If (gCount(g) + gTally < wbThreshold) Then
             g = g + 1
             gTally = gTally + gCount(g)
         Else
@@ -450,7 +453,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
+        If (bCount(b) + bTally < wbThreshold) Then
             b = b + 1
             bTally = bTally + bCount(b)
         Else
@@ -466,7 +469,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     rTally = 0: gTally = 0: bTally = 0
     
     Do
-        If rCount(r) + rTally < wbThreshold Then
+        If (rCount(r) + rTally < wbThreshold) Then
             r = r - 1
             rTally = rTally + rCount(r)
         Else
@@ -478,7 +481,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     foundYet = False
         
     Do
-        If gCount(g) + gTally < wbThreshold Then
+        If (gCount(g) + gTally < wbThreshold) Then
             g = g - 1
             gTally = gTally + gCount(g)
         Else
@@ -490,7 +493,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
+        If (bCount(b) + bTally < wbThreshold) Then
             b = b - 1
             bTally = bTally + bCount(b)
         Else
@@ -509,15 +512,15 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If rDif <> 0 Then r = 255 * ((x - RMin) / rDif) Else r = x
-        If gDif <> 0 Then g = 255 * ((x - gMin) / gDif) Else g = x
-        If bDif <> 0 Then b = 255 * ((x - bMin) / bDif) Else b = x
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
+        If (rDif <> 0) Then r = 255# * ((x - RMin) / rDif) Else r = x
+        If (gDif <> 0) Then g = 255# * ((x - gMin) / gDif) Else g = x
+        If (bDif <> 0) Then b = 255# * ((x - bMin) / bDif) Else b = x
+        If (r > 255) Then r = 255
+        If (r < 0) Then r = 0
+        If (g > 255) Then g = 255
+        If (g < 0) Then g = 0
+        If (b > 255) Then b = 255
+        If (b < 0) Then b = 0
         rFinal(x) = r
         gFinal(x) = g
         bFinal(x) = b
@@ -529,9 +532,9 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(quickVal + 2, y) = rFinal(imageData(quickVal + 2, y))
-        imageData(quickVal + 1, y) = gFinal(imageData(quickVal + 1, y))
         imageData(quickVal, y) = bFinal(imageData(quickVal, y))
+        imageData(quickVal + 1, y) = gFinal(imageData(quickVal + 1, y))
+        imageData(quickVal + 2, y) = rFinal(imageData(quickVal + 2, y))
         
     Next y
         If Not suppressMessages Then
@@ -607,12 +610,12 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        grayVal = (213 * r + 715 * g + 72 * b) * 0.001
         If grayVal > 255 Then grayVal = 255
         
         'Increment the histogram at this position
@@ -686,9 +689,9 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(quickVal + 2, y) = lFinal(imageData(quickVal + 2, y))
-        imageData(quickVal + 1, y) = lFinal(imageData(quickVal + 1, y))
         imageData(quickVal, y) = lFinal(imageData(quickVal, y))
+        imageData(quickVal + 1, y) = lFinal(imageData(quickVal + 1, y))
+        imageData(quickVal + 2, y) = lFinal(imageData(quickVal + 2, y))
         
     Next y
         If Not suppressMessages Then
@@ -732,7 +735,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, quickValRight As Long, quickValLeft As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -753,23 +756,23 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
-        quickValRight = (x + 1) * qvDepth
-        quickValLeft = (x - 1) * qvDepth
+        QuickValRight = (x + 1) * qvDepth
+        QuickValLeft = (x - 1) * qvDepth
     For y = initY To finalY
         For z = 0 To 2
     
             tMin = 255
-            tmpColor = srcImageData(quickValRight + z, y)
+            tmpColor = srcImageData(QuickValRight + z, y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickValRight + z, y - 1)
+            tmpColor = srcImageData(QuickValRight + z, y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickValRight + z, y + 1)
+            tmpColor = srcImageData(QuickValRight + z, y + 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickValLeft + z, y)
+            tmpColor = srcImageData(QuickValLeft + z, y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickValLeft + z, y - 1)
+            tmpColor = srcImageData(QuickValLeft + z, y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickValLeft + z, y + 1)
+            tmpColor = srcImageData(QuickValLeft + z, y + 1)
             If tmpColor < tMin Then tMin = tmpColor
             tmpColor = srcImageData(quickVal + z, y)
             If tmpColor < tMin Then tMin = tmpColor
@@ -788,8 +791,8 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
             End If
             
             'The edges of the image will always be missed, so manually check for and correct that
-            If x = initX Then dstImageData(quickValLeft + z, y) = dstImageData(quickVal + z, y)
-            If x = finalX Then dstImageData(quickValRight + z, y) = dstImageData(quickVal + z, y)
+            If x = initX Then dstImageData(QuickValLeft + z, y) = dstImageData(quickVal + z, y)
+            If x = finalX Then dstImageData(QuickValRight + z, y) = dstImageData(quickVal + z, y)
             If y = initY Then dstImageData(quickVal + z, y - 1) = dstImageData(quickVal + z, y)
             If y = finalY Then dstImageData(quickVal + z, y + 1) = dstImageData(quickVal + z, y)
         

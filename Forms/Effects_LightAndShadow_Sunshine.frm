@@ -208,7 +208,7 @@ Begin VB.Form FormSunshine
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1244
-      Caption         =   "hdr"
+      Caption         =   "HDR"
       Max             =   500
       SigDigits       =   1
       Value           =   100
@@ -225,8 +225,8 @@ Attribute VB_Exposed = False
 'Sunshine Effect Form
 'Copyright 2017-2017 by Tanner Helland
 'Created: 31/July/17
-'Created: 31/July/17
-'Last update: new implementation
+'Created: 01/August/17
+'Last update: finish work on new implementation
 '
 'Overlay a "light-burst" effect on a given image.  The overlay is generated as a standalone 32-bpp layer,
 ' and once complete, it is auto-blended onto the base layer.  If you want the effect as a standalone image,
