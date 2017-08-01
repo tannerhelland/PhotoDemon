@@ -64,20 +64,20 @@ Private iX As Long, iy As Long, iZ As Long
 Private m_WH_Float As Double
 
 'Helper functions for generating a new (predictable) seed from various inputs
-Public Sub setSeed_Int(ByVal newSeed As Long)
+Public Sub SetSeed_Int(ByVal newSeed As Long)
     m_Seed_Float = newSeed
     m_Seed_Int = newSeed
-    applySeed
+    ApplySeed
 End Sub
 
-Public Sub setSeed_Float(ByVal newSeed As Double)
+Public Sub SetSeed_Float(ByVal newSeed As Double)
     m_Seed_Float = newSeed
-    m_Seed_Int = getSafeIntFromDouble(m_Seed_Float)
-    applySeed
+    m_Seed_Int = GetSafeIntFromDouble(m_Seed_Float)
+    ApplySeed
 End Sub
 
 'Hash a given string into a pseudo-random seed, using the well-known djb2 hash function
-Public Sub setSeed_String(ByRef seedString As String)
+Public Sub SetSeed_String(ByRef seedString As String)
 
     'Basic djb2 string hash based on http://www.cse.yorku.ca/~oz/hash.html
     ' Thanks to Bob77 for a quick-and-dirty VB implementation (http://stackoverflow.com/questions/22384451/vb6-how-to-get-c-like-integer-overflow/22389687#22389687)
@@ -96,31 +96,31 @@ Public Sub setSeed_String(ByRef seedString As String)
 
     m_Seed_Int = C2L.ValueLo
     m_Seed_Float = m_Seed_Int
-    applySeed
+    ApplySeed
 
 End Sub
 
-Public Sub setSeed_AutomaticAndRandom()
+Public Sub SetSeed_AutomaticAndRandom()
     m_Seed_Float = Timer * Now
-    m_Seed_Int = getSafeIntFromDouble(m_Seed_Float)
-    applySeed
+    m_Seed_Int = GetSafeIntFromDouble(m_Seed_Float)
+    ApplySeed
 End Sub
 
 'PD uses Doubles for maximum randomness, but some random number generation schemes use Integer inputs.  To safely generate a random
 ' Int from a given Double value (which has a much larger range!), we use a custom Mod function (necessary because VB's built-in
 ' Mod only works on Longs).
-Private Function getSafeIntFromDouble(ByVal srcDouble As Double) As Long
+Private Function GetSafeIntFromDouble(ByVal srcDouble As Double) As Long
     Const LONG_MAX_AS_DOUBLE As Double = LONG_MAX
-    getSafeIntFromDouble = srcDouble - (Int(srcDouble / LONG_MAX_AS_DOUBLE) * LONG_MAX_AS_DOUBLE)
+    GetSafeIntFromDouble = srcDouble - (Int(srcDouble / LONG_MAX_AS_DOUBLE) * LONG_MAX_AS_DOUBLE)
 End Function
 
 'Return the current seed.  Note that this class always stores the seed as a Double, regardless of how it was originally supplied.
-Public Function getSeed() As Double
-    getSeed = m_Seed_Float
+Public Function GetSeed() As Double
+    GetSeed = m_Seed_Float
 End Function
 
 'Use the current seed to actually seed all supported PRNG engines.
-Private Sub applySeed()
+Private Sub ApplySeed()
     
     'First, seed VB's internal generator
     Rnd -1
@@ -130,27 +130,27 @@ Private Sub applySeed()
     
     'Wichmann-Hill initialization is pretty easy; we just have to ensure we start with a positive, non-zero value...
     m_Seed_WH_Int = m_Seed_Int
-    If m_Seed_WH_Int < 0 Then m_Seed_WH_Int = m_Seed_WH_Int And &H7FFFFFFF
+    If (m_Seed_WH_Int < 0) Then m_Seed_WH_Int = m_Seed_WH_Int And &H7FFFFFFF
     
     '...then we generate an initial set of offsets for the algorithm.
     iX = (m_Seed_WH_Int Mod 30269)
     iy = (m_Seed_WH_Int Mod 30307)
     iZ = (m_Seed_WH_Int Mod 30323)
-    If iX = 0 Then iX = 171
-    If iy = 0 Then iy = 172
-    If iZ = 0 Then iZ = 170
+    If (iX = 0) Then iX = 171
+    If (iy = 0) Then iy = 172
+    If (iZ = 0) Then iZ = 170
     
 End Sub
 
 'Set bounds for the integer Rnd functions
-Public Sub setRndIntegerBounds(ByVal lowBound As Long, ByVal highBound As Long)
+Public Sub SetRndIntegerBounds(ByVal lowBound As Long, ByVal highBound As Long)
     m_LowBound = lowBound
     m_HighBound = highBound
 End Sub
 
 Private Sub Class_Initialize()
     
-    setSeed_Int 0
+    SetSeed_Int 0
     
     'Set default integer bounds.  Note that we trim the high bound a bit to avoid overflow errors.
     m_LowBound = 0
@@ -159,33 +159,37 @@ Private Sub Class_Initialize()
 End Sub
 
 'Return a random integer using VB's internal randomize engine.  If supplied earlier, bounds are used.
-Public Function getRandomInt_VB() As Long
-    getRandomInt_VB = Int((m_HighBound - m_LowBound + 1) * Rnd + m_LowBound)
+Public Function GetRandomInt_VB() As Long
+    GetRandomInt_VB = Int((m_HighBound - m_LowBound + 1) * Rnd + m_LowBound)
 End Function
 
 'Return a random float using VB's internal randomize engine.  Bounds are ignored.  This is kind of a stupid function, as it would
 ' be faster to just use Rnd yourself, but it's included here for completeness.
-Public Function getRandomFloat_VB() As Double
-    getRandomFloat_VB = Rnd
+Public Function GetRandomFloat_VB() As Double
+    GetRandomFloat_VB = Rnd
 End Function
 
 'Return a random integer using the Wichmann-Hill PRNG.  If supplied earlier, bounds are used.
-Public Function getRandomInt_WH() As Long
-    getRandomInt_WH = Int((m_HighBound - m_LowBound + 1) * getRandomFloat_WH + m_LowBound)
+Public Function GetRandomInt_WH() As Long
+    GetRandomInt_WH = Int((m_HighBound - m_LowBound + 1) * GetRandomFloat_WH + m_LowBound)
 End Function
 
 'Return a random float using the Wichmann-Hill PRNG.  Pretty fast, good distribution too.
-Public Function getRandomFloat_WH() As Double
+Public Function GetRandomFloat_WH() As Double
     
     'Generate new offsets, using the previous offsets as our inputs
-    iX = (171 * iX) Mod 30269
-    iy = (172 * iy) Mod 30307
-    iZ = (170 * iZ) Mod 30323
+    iX = (171& * iX) Mod 30269&
+    iy = (172& * iy) Mod 30307&
+    iZ = (170& * iZ) Mod 30323&
     
-    'Generate a random float value...
-    m_WH_Float = CDbl(iX) / 30269# + CDbl(iy) / 30307# + CDbl(iZ) / 30323#
+    'Generate a random float value.  (Note that we use multiplication rather than division, for performance reasons.)
+    Const RND_X_DIVISOR As Double = 1# / 30269#
+    Const RND_Y_DIVISOR As Double = 1# / 30307#
+    Const RND_Z_DIVISOR As Double = 1# / 30323#
+    
+    m_WH_Float = CDbl(iX) * RND_X_DIVISOR + CDbl(iy) * RND_Y_DIVISOR + CDbl(iZ) * RND_Z_DIVISOR
     
     '...then return the floating-point portion
-    getRandomFloat_WH = m_WH_Float - Int(m_WH_Float)
+    GetRandomFloat_WH = m_WH_Float - Int(m_WH_Float)
     
 End Function
