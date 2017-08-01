@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2817</langversion>
+<langversion>6.8.2819</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -540,11 +540,6 @@ If problém přetrvává, oznamte to pro vývojáře PhotoDemon přes photodemon
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Converting image mode</original>
-<translation>Převod režim obrazu</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>Živé Termografická analýza</translation>
 </phrase>
@@ -560,11 +555,6 @@ If problém přetrvává, oznamte to pro vývojáře PhotoDemon přes photodemon
 </phrase>
 
 <phrase>
-<original>Abducting image and probing it for weaknesses</original>
-<translation>Unesl obraz a sondování jej slabin</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Urychlení na 88 mph za účelem starožitném overují tento obrázek</translation>
 </phrase>
@@ -575,18 +565,8 @@ If problém přetrvává, oznamte to pro vývojáře PhotoDemon přes photodemon
 </phrase>
 
 <phrase>
-<original>vibrate</original>
-<translation>vibrovat</translation>
-</phrase>
-
-<phrase>
 <original>Putting image to sleep, then measuring its REM cycles</original>
 <translation>Uvedení snímku spát, a následným měřením jeho REM cykly</translation>
-</phrase>
-
-<phrase>
-<original>Injecting image with non-ionizing radiation</original>
-<translation>Vstřikování obraz s neionizujícím zářením</translation>
 </phrase>
 
 <phrase>
@@ -605,8 +585,8 @@ If problém přetrvává, oznamte to pro vývojáře PhotoDemon přes photodemon
 </phrase>
 
 <phrase>
-<original>Count Image Colors</original>
-<translation>Count barvy obrázku</translation>
+<original>Count image colors</original>
+<translation>Count barvy obrazu</translation>
 </phrase>
 
 <phrase>
@@ -623,7 +603,7 @@ You lze použít MenuTest (sub) v Filters_Miscellaneous modulu otestovat své vl
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -5530,11 +5510,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>Lens flare</original>
-<translation>objektivu světlici</translation>
-</phrase>
-
-<phrase>
 <original>Rainbow</original>
 <translation>Duha</translation>
 </phrase>
@@ -6399,11 +6374,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Count barvy obrazu</translation>
-</phrase>
-
-<phrase>
 <original>This image does not contain any GPS metadata.</original>
 <translation>Tento obrázek neobsahuje metadata GPS.</translation>
 </phrase>
@@ -6518,7 +6488,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9641,11 +9611,6 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>Tracing image edges with virtual paintbrush</original>
-<translation>Trasování obraz hrany s virtuálním štětcem</translation>
-</phrase>
-
-<phrase>
 <original>Artistic contour</original>
 <translation>umělecké obrys</translation>
 </phrase>
@@ -9680,7 +9645,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -9696,7 +9661,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 <translation>další možnosti</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 28 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Tracing image edges with virtual paintbrush</original>
+<translation>Trasování obraz hrany s virtuálním štětcem</translation>
+</phrase>
+
+<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
@@ -9779,47 +9749,6 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
-<!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Poznámka: můžete také nastavit pozici kliknutím na okno náhledu.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>polohy (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary intensity</original>
-<translation>sekundární intenzita</translation>
-</phrase>
-
-<phrase>
-<original>tertiary intensity</original>
-<translation>terciární intenzita</translation>
-</phrase>
-
-<phrase>
-<original>synchronize intensity</original>
-<translation>synchronizovat intenzitu</translation>
-</phrase>
-
-<phrase>
-<original>Applying lens flare</original>
-<translation>Uplatnění objektivu světlici</translation>
-</phrase>
-
-<phrase>
-<original>no</original>
-<translation>Ne</translation>
-</phrase>
-
-<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_LightAndShadow_LensFlare.frm-->
-
 <!-- BEGIN text for Effects_LightAndShadow_Rainbow.frm (FormRainbow) -->
 
 <phrase>
@@ -9839,6 +9768,11 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>Počet paprsků</translation>
 </phrase>
@@ -9849,11 +9783,16 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>Generating rays of happiness</original>
-<translation>Generování paprsky štěstí</translation>
+<original>ray variance</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Generating light beams</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -11172,6 +11111,11 @@ Would se vám líbí uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
+<original>no</original>
+<translation>Ne</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>protahování, aby se vešly</translation>
 </phrase>
@@ -11291,7 +11235,7 @@ Would se vám líbí uložit seznam dávky před ukončením?</translation>
 <translation>zpracovány před zrušením účtu. Poslední zpracovaný obraz byl " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12950,7 +12894,12 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Removing transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -13464,6 +13413,11 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>polohy (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>velikost (w, h)</translation>
 </phrase>
@@ -13643,7 +13597,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <translation>Tato volba řídí, jaká kritéria kouzelná hůlka používá k určení, zda pixel by měly být přidány do aktuálního výběru.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15034,10 +14988,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4519 phrases. -->
-<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12264 total words. -->
 
 </pdData>

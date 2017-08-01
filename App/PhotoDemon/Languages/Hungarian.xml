@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2817</langversion>
+<langversion>6.8.2819</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -539,11 +539,6 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Converting image mode</original>
-<translation>Konvertálása képmódba</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>Teljesítő termográfiai vizsgálata</translation>
 </phrase>
@@ -559,11 +554,6 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>Abducting image and probing it for weaknesses</original>
-<translation>Elrabolják kép és tapintási azt hiányosságok</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Gyorsuló 88 mph érdekében antik Ify ezt kép</translation>
 </phrase>
@@ -574,18 +564,8 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>vibrate</original>
-<translation>Rezeg</translation>
-</phrase>
-
-<phrase>
 <original>Putting image to sleep, then measuring its REM cycles</original>
 <translation>Elhelyezés kép aludni, majd megmérjük a REM ciklus</translation>
-</phrase>
-
-<phrase>
-<original>Injecting image with non-ionizing radiation</original>
-<translation>Intravénás kép nem ionizáló sugárzás</translation>
 </phrase>
 
 <phrase>
@@ -604,7 +584,7 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>Count Image Colors</original>
+<original>Count image colors</original>
 <translation>Gróf kép színei</translation>
 </phrase>
 
@@ -622,7 +602,7 @@ You használhatja MenuTest () al a Filters_Miscellaneous modul, hogy tesztelje a
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -5528,11 +5508,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Lens flare</original>
-<translation>lens flare</translation>
-</phrase>
-
-<phrase>
 <original>Rainbow</original>
 <translation>Szivárvány</translation>
 </phrase>
@@ -6397,11 +6372,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Gróf kép színei</translation>
-</phrase>
-
-<phrase>
 <original>This image does not contain any GPS metadata.</original>
 <translation>Ez a kép nem tartalmaz GPS-metaadatok.</translation>
 </phrase>
@@ -6516,7 +6486,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9639,11 +9609,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
-<original>Tracing image edges with virtual paintbrush</original>
-<translation>Fedőképességet élek virtuális ecset</translation>
-</phrase>
-
-<phrase>
 <original>Artistic contour</original>
 <translation>művészi kontúr</translation>
 </phrase>
@@ -9678,7 +9643,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -9694,7 +9659,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>más lehetőségek</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 28 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Tracing image edges with virtual paintbrush</original>
+<translation>Fedőképességet élek virtuális ecset</translation>
+</phrase>
+
+<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
@@ -9777,47 +9747,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
-<!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Megjegyzés: akkor is meg egy pozíciót kattintva az előnézeti ablakban.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>helyzet (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary intensity</original>
-<translation>másodlagos intenzitás</translation>
-</phrase>
-
-<phrase>
-<original>tertiary intensity</original>
-<translation>tercier intenzitás</translation>
-</phrase>
-
-<phrase>
-<original>synchronize intensity</original>
-<translation>szinkronizálni intenzitás</translation>
-</phrase>
-
-<phrase>
-<original>Applying lens flare</original>
-<translation>Alkalmazása lencse fellobbanás</translation>
-</phrase>
-
-<phrase>
-<original>no</original>
-<translation>nem</translation>
-</phrase>
-
-<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_LightAndShadow_LensFlare.frm-->
-
 <!-- BEGIN text for Effects_LightAndShadow_Rainbow.frm (FormRainbow) -->
 
 <phrase>
@@ -9837,6 +9766,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>sugarak számát</translation>
 </phrase>
@@ -9847,11 +9781,16 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
-<original>Generating rays of happiness</original>
-<translation>Generálása sugarai boldogság</translation>
+<original>ray variance</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Generating light beams</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -11170,6 +11109,11 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 </phrase>
 
 <phrase>
+<original>no</original>
+<translation>nem</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>stretching, hogy illeszkedjen</translation>
 </phrase>
@@ -11289,7 +11233,7 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 <translation>feldolgozott törlés előtt. Az utolsó feldolgozott kép volt: " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12948,7 +12892,12 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Removing transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -13462,6 +13411,11 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>helyzet (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>méret (W, H)</translation>
 </phrase>
@@ -13641,7 +13595,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Ez a beállítás milyen kritériumok varázspálca használja annak meghatározására, hogy egy pixel hozzá kell adni az aktuális választás.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15032,10 +14986,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4519 phrases. -->
-<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12264 total words. -->
 
 </pdData>

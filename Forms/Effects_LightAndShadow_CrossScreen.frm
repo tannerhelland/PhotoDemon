@@ -133,8 +133,8 @@ Attribute VB_Exposed = False
 'Cross-Screen (Star) Tool
 'Copyright 2014-2017 by Tanner Helland
 'Created: 20/January/15
-'Last updated: 26/January/15
-'Last update: minor performance and quality tweaks
+'Last updated: 30/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'Cross-screen filters are physical filters placed over the lens of a camera:
 ' http://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
@@ -168,10 +168,26 @@ Private m_rotateDIB As pdDIB, m_mbDIB As pdDIB, m_mbDIBTemp As pdDIB, m_threshol
 '        2) angle of the generated star patterns
 '        3) Distance of the star spokes
 '        4) Strength (opacity) of the generated spokes, which is actually just gamma correction applied to the star mask
-Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, ByVal csSoftening As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying cross-screen filter..."
         
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim csSpokes As Long, csSoftening As Long
+    Dim csThreshold As Double, csAngle As Double, csDistance As Double, csStrength As Double
+    
+    With cParams
+        csSpokes = .GetLong("spokes", sltSpokes.Value)
+        csThreshold = .GetDouble("threshold", sltThreshold.Value)
+        csAngle = .GetDouble("angle", sltAngle.Value)
+        csDistance = .GetDouble("distance", sltDistance.Value)
+        csStrength = .GetDouble("strength", sltStrength.Value)
+        csSoftening = .GetLong("softness", sltSoftness.Value)
+    End With
+    
     'Progress reports are manually calculated on this function, as it involves a rather complicated series of steps,
     ' whose count is variable based on the number of spokes being processed.
     '
@@ -192,8 +208,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         minDimension = workingDIB.GetDIBHeight
     End If
     
-    csDistance = (csDistance / 100) * (minDimension * 0.5)
-    If csDistance = 0 Then csDistance = 1
+    csDistance = (csDistance / 100#) * (minDimension * 0.5)
+    If csDistance < 1# Then csDistance = 1#
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
@@ -225,7 +241,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     Dim tmpLUT() As Byte
     cLut.FillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
-    cLut.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
+    cLut.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If (Not toPreview) Then
@@ -243,7 +259,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'Both paths share an identical base step, however, when we create the initial spoke and place it inside m_mbDIB.
     ' m_mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
     m_mbDIB.CreateFromExistingDIB m_thresholdDIB
-    getMotionBlurredDIB m_thresholdDIB, m_mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
+    GetMotionBlurredDIB m_thresholdDIB, m_mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
     
     If (Not toPreview) Then
         If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
@@ -254,10 +270,10 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     If (csSpokes Mod 2) = 0 Then
         
         'For each subsequent pair of spokes, we will render it to its own layer, then merge it down onto the m_mbDIB layer.
-        If csSpokes > 2 Then
+        If (csSpokes > 2) Then
         
             numSpokeIterations = (csSpokes \ 2)
-            spokeIntervalDegrees = 180 / numSpokeIterations
+            spokeIntervalDegrees = 180# / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
             ' the "master" m_mbDIB layer.
@@ -265,7 +281,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 m_mbDIBTemp.CreateFromExistingDIB m_thresholdDIB
-                getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
+                GetMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
                 
                 If (Not toPreview) Then
                     If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
@@ -290,10 +306,10 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
         'For each subsequent spoke, we will render it to its own layer, then merge it down onto the m_mbDIB layer.
         ' (Note that we do not have the luxury of knocking out two spokes at once, as each spoke requires a unique angle.)
-        If csSpokes > 1 Then
+        If (csSpokes > 1) Then
         
             numSpokeIterations = csSpokes
-            spokeIntervalDegrees = 360 / numSpokeIterations
+            spokeIntervalDegrees = 360# / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
             ' the "master" m_mbDIB layer.
@@ -301,7 +317,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 m_mbDIBTemp.CreateFromExistingDIB m_thresholdDIB
-                getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
+                GetMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
                 
                 If (Not toPreview) Then
                     If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
@@ -339,9 +355,9 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
     Dim gammaLUT() As Byte, finalLUT() As Byte
-    cLut.FillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
+    cLut.FillLUT_Gamma gammaLUT, 0.5 + (csStrength * 0.01)
     cLut.MergeLUTs tmpLUT, gammaLUT, finalLUT
-    cLut.ApplyLUTsToDIB_Gray m_mbDIB, finalLUT, True
+    cLut.ApplyLUTsToDIB_Gray m_mbDIB, finalLUT
     
     'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
     ' quite sharp due to the remapping).
@@ -406,7 +422,7 @@ End Sub
 'Used to motion-blur the intermediate images required by the cross-screen filter.  During testing, I've looked at using
 ' both a box blur and an IIR blur to generate this; the IIR produces much more natural results, and it can blur in-place,
 ' which is a double win for us.
-Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True)
+Private Sub GetMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True)
 
     Dim finalX As Long, finalY As Long
     finalX = srcDIB.GetDIBWidth
@@ -434,7 +450,7 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Cross-screen", , BuildParams(sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness), UNDO_LAYER
+    Process "Cross-screen", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -459,10 +475,10 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
         
     'Release all temporary DIBs
-    If Not m_rotateDIB Is Nothing Then Set m_rotateDIB = Nothing
-    If Not m_mbDIB Is Nothing Then Set m_mbDIB = Nothing
-    If Not m_mbDIBTemp Is Nothing Then Set m_mbDIBTemp = Nothing
-    If Not m_thresholdDIB Is Nothing Then Set m_thresholdDIB = Nothing
+    If (Not m_rotateDIB Is Nothing) Then Set m_rotateDIB = Nothing
+    If (Not m_mbDIB Is Nothing) Then Set m_mbDIB = Nothing
+    If (Not m_mbDIBTemp Is Nothing) Then Set m_mbDIBTemp = Nothing
+    If (Not m_thresholdDIB Is Nothing) Then Set m_thresholdDIB = Nothing
     
     'Release any subclasses visual theming and translation code
     ReleaseFormTheming Me
@@ -471,11 +487,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then CrossScreenFilter sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness, True, pdFxPreview
-End Sub
-
-Private Sub pdSlider1_Change()
-    UpdatePreview
+    If cmdBar.PreviewsAllowed Then Me.CrossScreenFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -513,7 +525,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "spokes", sltSpokes.Value
+        .AddParam "threshold", sltThreshold.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "distance", sltDistance.Value
+        .AddParam "strength", sltStrength.Value
+        .AddParam "softness", sltSoftness.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

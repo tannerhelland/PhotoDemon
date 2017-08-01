@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.268</langversion>
+<langversion>6.7.270</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -540,11 +540,6 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Converting image mode</original>
-<translation>Bildmodus umwandeln</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>Thermografische Analyse durchführen</translation>
 </phrase>
@@ -560,11 +555,6 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 </phrase>
 
 <phrase>
-<original>Abducting image and probing it for weaknesses</original>
-<translation>Bild entführen und auf seine Schwächen testen</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Beschleunigung auf 88 Meilen pro Stunde, um das Bild sehr alt aussehen zu lassen ;)</translation>
 </phrase>
@@ -575,18 +565,8 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 </phrase>
 
 <phrase>
-<original>vibrate</original>
-<translation>Vibrieren</translation>
-</phrase>
-
-<phrase>
 <original>Putting image to sleep, then measuring its REM cycles</original>
 <translation>Bild schlafen legen, dann REM-Zyklen messen</translation>
-</phrase>
-
-<phrase>
-<original>Injecting image with non-ionizing radiation</original>
-<translation>Nicht-ionisierende Strahlung in das Bild einspritzen</translation>
 </phrase>
 
 <phrase>
@@ -605,8 +585,8 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 </phrase>
 
 <phrase>
-<original>Count Image Colors</original>
-<translation>Anzahl der Farben im Bild zählen</translation>
+<original>Count image colors</original>
+<translation>Bildfarben zählen</translation>
 </phrase>
 
 <phrase>
@@ -623,7 +603,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 <translation>PhotoDemon Professional Tipp</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -5533,11 +5513,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Lens flare</original>
-<translation>Blendenflecken</translation>
-</phrase>
-
-<phrase>
 <original>Rainbow</original>
 <translation>Regenbogen</translation>
 </phrase>
@@ -6405,11 +6380,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Bildfarben zählen</translation>
-</phrase>
-
-<phrase>
 <original>This image does not contain any GPS metadata.</original>
 <translation>Dieses Bild enthält keine GPS-Daten.</translation>
 </phrase>
@@ -6524,7 +6494,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9647,11 +9617,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Tracing image edges with virtual paintbrush</original>
-<translation>Bildränder mit virtuellem Pinsel nachzeichnen</translation>
-</phrase>
-
-<phrase>
 <original>Artistic contour</original>
 <translation>Künstlerische Kontur</translation>
 </phrase>
@@ -9686,7 +9651,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -9702,7 +9667,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>andere Einstellungen</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 28 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Tracing image edges with virtual paintbrush</original>
+<translation>Bildränder mit virtuellem Pinsel nachzeichnen</translation>
+</phrase>
+
+<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
@@ -9785,47 +9755,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
-<!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Hinweis: Die Position können Sie auch mit einem Klick auf das Vorschaufenster setzen.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>Position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary intensity</original>
-<translation>zweitrangige Intensität</translation>
-</phrase>
-
-<phrase>
-<original>tertiary intensity</original>
-<translation>drittrangige Intensität</translation>
-</phrase>
-
-<phrase>
-<original>synchronize intensity</original>
-<translation>Intensität synchronisieren</translation>
-</phrase>
-
-<phrase>
-<original>Applying lens flare</original>
-<translation>Blendenflecke erzeugen</translation>
-</phrase>
-
-<phrase>
-<original>no</original>
-<translation>nein</translation>
-</phrase>
-
-<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_LightAndShadow_LensFlare.frm-->
-
 <!-- BEGIN text for Effects_LightAndShadow_Rainbow.frm (FormRainbow) -->
 
 <phrase>
@@ -9845,6 +9774,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>Anzahl der Strahlen</translation>
 </phrase>
@@ -9855,11 +9789,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Generating rays of happiness</original>
-<translation>Strahlen des Glücks herstellen</translation>
+<original>ray variance</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Generating light beams</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -11177,6 +11116,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>no</original>
+<translation>nein</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>passend strecken bzw. stauchen</translation>
 </phrase>
@@ -11296,7 +11240,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>verarbeitet werden vor dem Abbruch. Das zuletzt bearbeitete Bild war Nummer %1.</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12955,7 +12899,12 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Removing transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -13469,6 +13418,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>Position (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>Größe (b, h)</translation>
 </phrase>
@@ -13648,7 +13602,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Hiermit legen Sie fest, nach welchen Regeln der Zauberstab Bildpunkte in die Auswahl aufnimmt.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15044,10 +14998,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4519 phrases. -->
-<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12264 total words. -->
 
 </pdData>

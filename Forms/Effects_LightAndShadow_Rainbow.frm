@@ -100,8 +100,8 @@ Attribute VB_Exposed = False
 'Rainbow Effect dialog
 'Copyright 2003-2017 by Tanner Helland
 'Created: sometime 2003
-'Last updated: 11/June/14
-'Last update: moved the function to its own dialog
+'Last updated: 01/August/17
+'Last update: performance improvements, migrate to XML params
 '
 'Fun Rainbow effect for an image.  Options should be self-explanatory.
 '
@@ -113,18 +113,31 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a rainbow overlay to an image
-Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, ByVal saturationBoost As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Sprinkling image with shimmering rainbows..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim hueOffset As Double, rainbowAngle As Double, rainbowStrength As Double, saturationBoost As Double
+    
+    With cParams
+        hueOffset = .GetDouble("offset", sltOffset.Value)
+        rainbowAngle = .GetDouble("angle", sltAngle.Value)
+        rainbowStrength = .GetDouble("strength", sltStrength.Value)
+        saturationBoost = .GetDouble("saturation", sltSaturation.Value)
+    End With
+    
     'Convert the hue modifier to the [0, 6] range
-    hueOffset = hueOffset / 360
+    hueOffset = hueOffset / 360#
     
     'Convert strength from [0, 100] to [0, 1]
-    rainbowStrength = rainbowStrength / 100
+    rainbowStrength = rainbowStrength / 100#
     
     'Convert saturation boosting from [0, 100] to [0, 1]
-    saturationBoost = saturationBoost / 100
+    saturationBoost = saturationBoost / 100#
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
@@ -142,7 +155,7 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim xOffset As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -158,7 +171,7 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     midY = midY + initY
     
     'Convert the rotation angle to radians
-    rainbowAngle = rainbowAngle * (PI / 180)
+    rainbowAngle = rainbowAngle * (PI / 180#)
     
     'Find the cos and sin of this angle and store the values
     Dim cosTheta As Double, sinTheta As Double
@@ -191,47 +204,51 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     Dim rFloat As Double, gFloat As Double, bFloat As Double
     Dim h As Double, s As Double, l As Double
     Dim hVal As Double, xDistance As Double
-    xDistance = finalX - initX
+    
+    If ((finalX - initX) <> 0) Then xDistance = 1# / (finalX - initX) Else xDistance = 1#
+    
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xOffset = x * qvDepth
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-                
+        b = imageData(xOffset, y)
+        g = imageData(xOffset + 1, y)
+        r = imageData(xOffset + 2, y)
+        
         'Convert the RGB values the HSV space
-        fRGBtoHSV r / 255, g / 255, b / 255, h, s, l
+        Colors.fRGBtoHSV r * ONE_DIV_255, g * ONE_DIV_255, b * ONE_DIV_255, h, s, l
         
         'Solve for the original (x) position of this pixel in the image, accounting for rotation
         srcX = xCos(x) - ySin(y)
         
         'Based on the x-coordinate of a pixel, apply a predetermined hue gradient (stretching between -1 and 5)
-        hVal = srcX / xDistance
+        hVal = srcX * xDistance
         
         'Apply the hue offset
         hVal = hVal + hueOffset
-        If hVal > 1 Then hVal = hVal - 1
+        If (hVal > 1#) Then hVal = hVal - 1#
         
         'Apply saturation boosting, if any
-        If saturationBoost > 0 Then s = 1 * saturationBoost + (s * (1 - saturationBoost))
+        s = s + (s * saturationBoost)
+        If (s > 1#) Then s = 1#
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue (and possibly
         ' saturation) value(s)
-        fHSVtoRGB hVal, s, l, rFloat, gFloat, bFloat
+        Colors.fHSVtoRGB hVal, s, l, rFloat, gFloat, bFloat
         
         'Blend the original and new RGB values according to the requested strength
-        r = BlendColors(r, rFloat * 255, rainbowStrength)
-        g = BlendColors(g, gFloat * 255, rainbowStrength)
-        b = BlendColors(b, bFloat * 255, rainbowStrength)
+        r = BlendColors(r, rFloat * 255#, rainbowStrength)
+        g = BlendColors(g, gFloat * 255#, rainbowStrength)
+        b = BlendColors(b, bFloat * 255#, rainbowStrength)
         
         'Assign the new RGB values back into the array
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(xOffset, y) = b
+        imageData(xOffset + 1, y) = g
+        imageData(xOffset + 2, y) = r
         
     Next y
         If (Not toPreview) Then
@@ -251,7 +268,7 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rainbow", , BuildParams(sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value), UNDO_LAYER
+    Process "Rainbow", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -274,7 +291,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyRainbowEffect GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -304,7 +321,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "offset", sltOffset.Value
+        .AddParam "angle", sltAngle.Value
+        .AddParam "strength", sltStrength.Value
+        .AddParam "saturation", sltSaturation.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

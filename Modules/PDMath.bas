@@ -296,19 +296,19 @@ End Function
 ' IMPORTANT NOTE: only works for (x) values on the range [-1, 1]; as such, it should only be used with normalized values.
 ' Because many PD functions do not normalize prior to calling Atn(), I've commented this out for now to reduce confusion.
 'Public Function Atn_Fast(ByVal x As Double) As Double
-'    Atn_Fast = PI_14 * x - x * (Abs(x) - 1) * (0.2447 + 0.0663 * Abs(x))
+'    Atn_Fast = PI_14 * x - x * (Abs(x) - 1.0) * (0.2447 + 0.0663 * Abs(x))
 'End Function
 
 'Return the arctangent of two values (rise / run); unlike VB's integrated Atn() function, this return is quadrant-specific.
 ' (It also circumvents potential DBZ errors when horizontal.)
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
-    If (y = 0) And (x = 0) Then
+    If (y = 0#) And (x = 0#) Then
         Atan2 = 0#
         Exit Function
     End If
  
-    If (y > 0) Then
+    If (y > 0#) Then
         If (x >= y) Then
             Atan2 = Atn(y / x)
         ElseIf (x <= -y) Then
@@ -334,7 +334,7 @@ End Function
 Public Function Atan2_Faster(ByVal y As Double, ByVal x As Double) As Double
     
     If (x = 0#) Then
-       If (y > 0) Then
+       If (y > 0#) Then
            Atan2_Faster = PI_HALF
        ElseIf (y = 0#) Then
            Atan2_Faster = 0#
@@ -377,7 +377,7 @@ Public Function Atan2_Fastest(ByVal y As Double, ByVal x As Double) As Double
         Atan2_Fastest = PI_34 - PI_14 * (x + absY) / (absY - x)
     End If
     
-    If (y < 0) Then Atan2_Fastest = -Atan2_Fastest
+    If (y < 0#) Then Atan2_Fastest = -Atan2_Fastest
     
 End Function
 

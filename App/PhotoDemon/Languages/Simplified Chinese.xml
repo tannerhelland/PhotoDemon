@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2780</langversion>
+<langversion>6.8.2782</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -539,11 +539,6 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Converting image mode</original>
-<translation>转换图像模式</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>进行热成像分析</translation>
 </phrase>
@@ -559,11 +554,6 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Abducting image and probing it for weaknesses</original>
-<translation>绑架图像和探测它的弱点</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>加快88mph为了使这一形象仿古</translation>
 </phrase>
@@ -574,18 +564,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>vibrate</original>
-<translation>振动</translation>
-</phrase>
-
-<phrase>
 <original>Putting image to sleep, then measuring its REM cycles</original>
 <translation>让图像的睡眠然后测量其REM周期</translation>
-</phrase>
-
-<phrase>
-<original>Injecting image with non-ionizing radiation</original>
-<translation>非电离辐射注入图像</translation>
 </phrase>
 
 <phrase>
@@ -604,7 +584,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Count Image Colors</original>
+<original>Count image colors</original>
 <translation>图像的颜色数</translation>
 </phrase>
 
@@ -622,7 +602,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>PhotoDemon PRO 提示</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -5533,11 +5513,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Lens flare</original>
-<translation>镜头光晕</translation>
-</phrase>
-
-<phrase>
 <original>Rainbow</original>
 <translation>彩虹</translation>
 </phrase>
@@ -6403,11 +6378,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>图像的颜色数</translation>
-</phrase>
-
-<phrase>
 <original>This image does not contain any GPS metadata.</original>
 <translation>此图像不包含任何GPS元数据。</translation>
 </phrase>
@@ -6522,7 +6492,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 185 were duplicates of existing phrases, so only 377 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9646,11 +9616,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Tracing image edges with virtual paintbrush</original>
-<translation>跟踪图像与虚拟的画笔边缘</translation>
-</phrase>
-
-<phrase>
 <original>Artistic contour</original>
 <translation>外形美观</translation>
 </phrase>
@@ -9685,7 +9650,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>索贝尔</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -9701,7 +9666,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>其他选项</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 28 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Tracing image edges with virtual paintbrush</original>
+<translation>跟踪图像与虚拟的画笔边缘</translation>
+</phrase>
+
+<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
@@ -9784,47 +9754,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
-<!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>注意：您还可以设置一个位置，通过单击预览窗口。</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>位置(x,y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary intensity</original>
-<translation>二级强度</translation>
-</phrase>
-
-<phrase>
-<original>tertiary intensity</original>
-<translation>三级强度</translation>
-</phrase>
-
-<phrase>
-<original>synchronize intensity</original>
-<translation>同步强度</translation>
-</phrase>
-
-<phrase>
-<original>Applying lens flare</original>
-<translation>应用镜头眩光</translation>
-</phrase>
-
-<phrase>
-<original>no</original>
-<translation>否</translation>
-</phrase>
-
-<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_LightAndShadow_LensFlare.frm-->
-
 <!-- BEGIN text for Effects_LightAndShadow_Rainbow.frm (FormRainbow) -->
 
 <phrase>
@@ -9844,6 +9773,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>射线数</translation>
 </phrase>
@@ -9854,11 +9788,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Generating rays of happiness</original>
-<translation>幸福的光芒</translation>
+<original>ray variance</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Generating light beams</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -11176,6 +11115,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>no</original>
+<translation>否</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>拉伸以适应</translation>
 </phrase>
@@ -11295,7 +11239,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12953,7 +12897,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Removing transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -13467,6 +13416,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>位置(x,y)</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>大小(w,h)</translation>
 </phrase>
@@ -13646,7 +13600,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15039,10 +14993,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4519 phrases. -->
-<!-- 1982 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12264 total words. -->
 
 </pdData>

@@ -387,12 +387,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
             
         Case "Trace contour"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormContour
-            Else
-                FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
-            End If
-            
+            If raiseDialog Then ShowPDDialog vbModal, FormContour Else FormContour.TraceContour processParameters
             
         
         'Lights and shadows
@@ -401,32 +396,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
             
         Case "Cross-screen"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormCrossScreen
-            Else
-                FormCrossScreen.CrossScreenFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetLong(6)
-            End If
-        
-        Case "Lens flare"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormLensFlare
-            Else
-                FormLensFlare.LensFlare cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetDouble(6), cParams.GetDouble(7)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormCrossScreen Else FormCrossScreen.CrossScreenFilter processParameters
             
         Case "Rainbow"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormRainbow
-            Else
-                FormRainbow.ApplyRainbowEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormRainbow Else FormRainbow.ApplyRainbowEffect processParameters
             
         Case "Sunshine"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSunshine
-            Else
-                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormSunshine Else FormSunshine.fxSunshine processParameters
             
         Case "Dilate (maximum rank)"
             If raiseDialog Then FormMedian.showMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
