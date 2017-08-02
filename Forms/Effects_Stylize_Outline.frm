@@ -96,8 +96,8 @@ Attribute VB_Exposed = False
 'Image Outline Effect Dialog
 'Copyright 2017-2017 by Tanner Helland
 'Created: 05/January/17
-'Last updated: 11/May/17
-'Last update: migrate tool to new pdEdgeDetector functionality that detects *all* types of polygons
+'Last updated: 01/August/17
+'Last update: fix potential OOB error on "alpha" edge mode
 '
 'I actually built this algorithm for internal purposes, because it's helpful to render outlines around various
 ' resource PNGs to ensure they stand out against variable background colors.  Since the effect works well, I
@@ -134,7 +134,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
         edgeThreshold = edgeThreshold * 2.55
         If (edgeThreshold = 255) Then edgeThreshold = 254
     Else
-        edgeThreshold = edgeThreshold / 100
+        edgeThreshold = edgeThreshold * 0.01
         If (edgeThreshold >= 1#) Then edgeThreshold = 0.999
     End If
     
@@ -182,7 +182,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
         
         For y = initY To finalY
         For x = initX To finalX
-            If (srcImageData(x * 4 + 3, y) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 1
+            If (srcImageData(x * 4 + 3, y) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
         Next x
         Next y
     
@@ -195,8 +195,8 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
         targetB = Colors.ExtractBlue(edgeColor)
         
         Dim r As Long, g As Long, b As Long
-        Dim rgbDistance As Long, rgbMaxDistance As Long
-        rgbMaxDistance = 255 * 3
+        Dim rgbDistance As Long, rgbMaxDistance As Double
+        rgbMaxDistance = 1# / (255# * 3#)
         
         Dim quickX As Long
         For y = initY To finalY
@@ -208,7 +208,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
             
             'Perform a very "quick and dirty" color comparison
             rgbDistance = Abs(r - targetR) + Abs(g - targetG) + Abs(b - targetB)
-            If ((rgbDistance / rgbMaxDistance) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
+            If ((rgbDistance * rgbMaxDistance) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
             
         Next x
         Next y
@@ -217,7 +217,6 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     
     'We no longer need direct access to pixel bits
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
     
     If (Not toPreview) Then SetProgBarVal 1
     
