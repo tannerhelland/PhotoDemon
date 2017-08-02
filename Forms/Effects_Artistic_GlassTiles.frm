@@ -67,10 +67,12 @@ Begin VB.Form FormGlassTiles
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "size"
-      Min             =   2
-      Max             =   200
-      Value           =   40
-      DefaultValue    =   40
+      Min             =   1
+      Max             =   100
+      SigDigits       =   1
+      Value           =   20
+      NotchPosition   =   2
+      NotchValueCustom=   20
    End
    Begin PhotoDemon.pdSlider sltCurvature 
       Height          =   705
@@ -120,22 +122,22 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Glass Tiles Filter Dialog
-'Copyright 2014 by Audioglider
+'Copyright 2014-2017 by dotPDN LLC, Rick Brewster, Tom Jackson, Audioglider, and Tanner Helland (see details below)
 'Created: 23/May/14
-'Last updated: 26/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 01/August/17
+'Last update: migrate to PD's internal filter support engine, including internal supersampling techniques
 '
 '"Glass tiles" is an image distortion filter that divides an image into clear glass blocks.  The curvature
-' parameter generates a convex surface for positive values and a concave surface for negative values, while
-' size and angle control exactly what you'd expect.
+' parameter generates a convex surface for positive values and a concave surface for negative values.
 '
-'Unlike other PD filters, this one supports supersampling for much better results along the curved edges of
-' the glass blocks (where many source pixels become condensed into a single pixel in the destination image).
-' Because of this unique feature, this filter supports a sliding quality scale instead of the usual binary
-' choice of fast vs quality.  Regardless of the input quality, interpolation is always used for the source
-' pixels; without it the results are simply subpar.
+'Thank you to Audioglider for first contributing this tool to PhotoDemon.
 '
-'Many thanks to pro developer Audioglider for contributing this great tool to PhotoDemon.
+'This tool is a heavily modified adaptation of code first adopted from the open-source Pinta project.  Pinta,
+' in turn, is derived from Paint.NET code from when Paint.NET was MIT-licensed.  (Long story.)
+'
+'As such, the original implementation of this code is Copyright (C) dotPDN LLC, Rick Brewster, Tom Jackson,
+' and contributors.  You can download the original Pinta version of this function from this link (good as of
+' August 2017): https://github.com/PintaProject/Pinta/blob/master/Pinta.Effects/Effects/TileEffect.cs
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -153,15 +155,18 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim lSquareSize As Long, lCurvature As Double, lAngle As Double, superSamplingAmount As Long, edgeHandling As Long
+    Dim tileSize As Long, superSamplingAmount As Long, edgeHandling As Long
+    Dim tileCurvature As Double, tileAngle As Double
     
     With cParams
-        lSquareSize = .GetLong("size", sltSize.Value)
-        lCurvature = .GetDouble("curvature", sltCurvature.Value)
-        lAngle = .GetDouble("angle", sltAngle.Value)
+        tileSize = .GetLong("size", sltSize.Value)
+        tileCurvature = .GetDouble("curvature", sltCurvature.Value)
+        tileAngle = .GetDouble("angle", sltAngle.Value)
         superSamplingAmount = .GetLong("quality", sltQuality.Value)
         edgeHandling = .GetLong("edges", cboEdges.ListIndex)
     End With
+    
+    If (Not toPreview) Then Message "Generating glass tiles..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -181,56 +186,15 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
-    'During previews, we have to modify square size so that it reflects how the final image will look
-    If toPreview Then
-        lSquareSize = lSquareSize * curDIBValues.previewModifier
-        If lSquareSize < 1 Then lSquareSize = 1
+    'Tile size is simply a ratio of the current smallest dimension in the image
+    If (curDIBValues.Width < curDIBValues.Height) Then
+        tileSize = Int(CDbl(tileSize * curDIBValues.Width) * 0.005)
+    Else
+        tileSize = Int(CDbl(tileSize * curDIBValues.Height) * 0.005)
     End If
     
-    'Convert angles to radians
-    Dim m_Sin As Double, m_Cos As Double
-    m_Sin = Sin(lAngle * (PI / 180))
-    m_Cos = Cos(lAngle * (PI / 180))
-    
-    'Calculate scale and curvature values
-    Dim m_Scale As Double, m_Curvature As Double
-    m_Scale = PI / lSquareSize
-    
-    If lCurvature = 0# Then lCurvature = 0.1
-    m_Curvature = lCurvature * lCurvature / 10# * (Abs(lCurvature) / lCurvature)
-    
-    'Due to the way this filter works, supersampling yields much better results (as the edges of the glass will take
-    ' the values of many pixels, and condense them down to a single pixel).  Because supersampling is extremely
-    ' energy-intensive, this is one of the few tools that uses a sliding value for quality, as opposed to a binary
-    ' TRUE/FALSE for antialiasing.  (For all but the lowest quality setting, this tool will use antialiasing by default.)
-    
-    'Use the passed super-sampling constant (reported to the user as "quality") to come up with a number of actual
-    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 18)
-    Dim AA_Samples As Long
-    AA_Samples = (superSamplingAmount * 2 - 1) * 2
-    If (AA_Samples = 0) Then AA_Samples = 1
-    
-    Dim invAASamples As Double
-    invAASamples = 1# / AA_Samples
-    
-    Dim m_aaPTX() As Single, m_aaPTY() As Single
-    ReDim m_aaPTX(0 To AA_Samples - 1) As Single, m_aaPTY(0 To AA_Samples - 1) As Single
-    Dim j As Double, k As Double
-    
-    'Precalculate all supersampling coordinate offsets
-    Dim i As Long
-    For i = 0 To AA_Samples - 1
-        
-        j = (i * 4) / CDbl(AA_Samples)
-        k = i / CDbl(AA_Samples)
-        
-        j = j - CLng(j)
-        
-        m_aaPTX(i) = m_Cos * j + m_Sin * k
-        m_aaPTY(i) = m_Cos * k - m_Sin * j
-        
-    Next i
-            
+    If (tileSize < 1) Then tileSize = 1
+                    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -246,65 +210,140 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, True, curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = FindBestProgBarValue()
     
-    'Color variables
-    Dim r As Long, g As Long, b As Long, a As Long
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
     Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If (superSampleVerify <= 0) Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
+    'Convert angles to radians
+    Dim cachedSin As Double, cachedCos As Double
+    cachedSin = Sin(tileAngle * (PI / 180#))
+    cachedCos = Cos(tileAngle * (PI / 180#))
+    
+    'Calculate scale and curvature values
+    Dim tileScaleAdjustment As Double, tmpCurvature As Double
+    tileScaleAdjustment = PI / tileSize
+    
+    If (tileCurvature = 0#) Then tileCurvature = 0.1
+    tmpCurvature = tileCurvature * (tileCurvature * 0.1) * (Abs(tileCurvature) / tileCurvature)
     
     'Filter algorithm variables
-    Dim hW As Double, hH As Double
-    Dim mm As Long
-    Dim xSample As Double, ySample As Double
+    Dim srcX As Double, srcY As Double
     Dim u As Double, v As Double, s As Double, t As Double
     
-    'Calculate half width/height in advance
-    hW = finalX / 2
-    hH = finalY / 2
+    'Calculate the center of the image
+    Dim midX As Double, midY As Double
+    midX = CDbl(finalX - initX) * 0.5
+    midX = midX + initX
+    midY = CDbl(finalY - initY) * 0.5
+    midY = midY + initY
+    
+    Dim avgSamples As Double
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        'For rotation to work correctly, x/y offsets must be calculated relative to the center of the image
-        j = x - hW
-        k = y - hH
-        
+        'Reset all supersampling values
         newR = 0
         newG = 0
         newB = 0
         newA = 0
+        numSamplesUsed = 0
+        
+        'Remap the coordinates around a center point of (0, 0)
+        j = x - midX
+        k = y - midY
         
         'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
         ' more samples, and much better representation in the final output.
-        For mm = 0 To AA_Samples - 1
+        For sampleIndex = 0 To numSamples
         
             'Offset the pixel amount by the supersampling lookup table
-            u = j + m_aaPTX(mm)
-            v = k - m_aaPTY(mm)
+            u = j + ssX(sampleIndex)
+            v = k - ssY(sampleIndex)
             
             'Use magical math to calculate a glass tile effect
-            s = (m_Cos * u) + (m_Sin * v)
-            t = (-m_Sin * u) + (m_Cos * v)
+            s = (cachedCos * u) + (cachedSin * v)
+            t = (-cachedSin * u) + (cachedCos * v)
             
-            s = s + m_Curvature * Tan(s * m_Scale)
-            t = t + m_Curvature * Tan(t * m_Scale)
+            s = s + tmpCurvature * Tan(s * tileScaleAdjustment)
+            t = t + tmpCurvature * Tan(t * tileScaleAdjustment)
             
-            u = (m_Cos * s) - (m_Sin * t)
-            v = (m_Sin * s) + (m_Cos * t)
+            u = (cachedCos * s) - (cachedSin * t)
+            v = (cachedSin * s) + (cachedCos * t)
             
             'Map the calculated sample locations relative to the top-left corner of the image
-            xSample = hW + u
-            ySample = hH + v
+            srcX = midX + u
+            srcY = midY + v
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, xSample, ySample, srcImageData
+            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If (sampleIndex = superSampleVerify) Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If (Abs(tmpSum - tmpSumFirst) < ssVerificationLimit) Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
             
             'Add the retrieved values to our running averages
             newR = newR + r
@@ -312,13 +351,14 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
             newB = newB + b
             newA = newA + a
             
-        Next mm
+        Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR * invAASamples
-        newG = newG * invAASamples
-        newB = newB * invAASamples
-        newA = newA * invAASamples
+        avgSamples = 1# / numSamplesUsed
+        newR = newR * avgSamples
+        newG = newG * avgSamples
+        newB = newB * avgSamples
+        newA = newA * avgSamples
         
         dstImageData(quickVal, y) = newB
         dstImageData(quickVal + 1, y) = newG
@@ -326,15 +366,15 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
         dstImageData(quickVal + 3, y) = newA
         
     Next y
-        If (Not toPreview) Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'Safely deallocate all image arrays
+    'Safely deallocate all pixel arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
