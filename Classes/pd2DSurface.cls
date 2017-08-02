@@ -702,6 +702,48 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
     
 End Function
 
+'Attach this surface to an existing pdDIB object.  This is generally preferable to wrapping a generic DC,
+' because things like alpha channel behavior are guaranteed to be handled correctly.
+'
+'Note that this class may recreate the target DIB under certain circumstances (e.g. after a resize is requested),
+' so just because a DIB was previously attached to this surface doesn't mean it is attached now.  Keep an eye
+' out for this if you get unexpected results, and you are calling functions like in-place resizes.
+Public Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
+    
+    If (m_SurfaceHandle <> 0) Then ReleaseSurface
+    
+    If (Not srcDIB Is Nothing) Then
+    
+        'Call the backend-specific surface creation function
+        Select Case m_SurfaceBackend
+                    
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                
+                Set m_SurfaceDIB = srcDIB
+                m_SurfaceType = P2_ST_Bitmap
+                
+                m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_Antialias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                WrapSurfaceAroundPDDIB = (m_SurfaceHandle <> 0)
+                
+                'Apply any other stored settings to the newly created surface
+                If WrapSurfaceAroundPDDIB Then
+                    RelayPropertyChangeToBackend P2_SurfaceBlendUsingSRGBGamma
+                    RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
+                    RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
+                    RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                End If
+                
+        End Select
+            
+        'When debug mode is active, all object creations are reported back to the master Drawing2D module
+        If (WrapSurfaceAroundPDDIB And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
+        
+    Else
+        InternalError "target DIB is null", "pd2DSurface.WrapSurfaceAroundPDDIB doesn't work on non-existent DIBs."
+    End If
+    
+End Function
+
 'Save the current surface to file.  To reduce the chance of unpredictable behavior (including security concerns), please pass
 ' fully qualified paths, not relative ones.
 '
@@ -1065,7 +1107,7 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                             Case P2_RQ_Fast
                                 GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_NearestNeighbor
                             Case P2_RQ_Bilinear
-                                GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_HighQualityBilinear
+                                GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_Bilinear
                             Case P2_RQ_Bicubic
                                 GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_HighQualityBicubic
                         End Select
