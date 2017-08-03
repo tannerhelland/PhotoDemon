@@ -131,16 +131,10 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
     Dim dstSA As SAFEARRAY2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-        
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0# Then gRadius = 0.01
+        If (gRadius <= 0.1) Then gRadius = 0.1
     End If
         
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
@@ -151,15 +145,17 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
     
         '3 iteration box blur
         Case 0
+            Dim srcDIB As pdDIB
+            Set srcDIB = New pdDIB
+            srcDIB.CreateFromExistingDIB workingDIB
             CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
+            Set srcDIB = Nothing
         
         'IIR Gaussian estimation
         Case Else
             Filters_Area.GaussianBlur_IIRImplementation workingDIB, gRadius, 3, toPreview
             
     End Select
-    
-    Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     EffectPrep.FinalizeImageData toPreview, dstPic, True
