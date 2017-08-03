@@ -149,7 +149,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
@@ -203,7 +203,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         
         'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
-        PrepImageData dstSA, toPreview, dstPic
+        EffectPrep.PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
@@ -224,7 +224,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
             
         If (Not toPreview) Then Message "Applying surface blur..."
             
@@ -293,7 +293,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

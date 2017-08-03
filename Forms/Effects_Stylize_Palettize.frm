@@ -391,7 +391,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     alphaCutoff = cParams.GetLong("alphacutoff", 64)
     
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, pdFxPreview
+    EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
     
     If (Not toPreview) Then
         SetProgBarMax 3

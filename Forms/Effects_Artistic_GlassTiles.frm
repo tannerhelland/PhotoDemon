@@ -130,10 +130,11 @@ Attribute VB_Exposed = False
 '"Glass tiles" is an image distortion filter that divides an image into clear glass blocks.  The curvature
 ' parameter generates a convex surface for positive values and a concave surface for negative values.
 '
-'Thank you to Audioglider for first contributing this tool to PhotoDemon.
-'
-'This tool is a heavily modified adaptation of code first adopted from the open-source Pinta project.  Pinta,
-' in turn, is derived from Paint.NET code from when Paint.NET was MIT-licensed.  (Long story.)
+'Thank you to Audioglider for first contributing this tool to PhotoDemon.  His contribution was a VB
+' translation of code first adopted from the open-source Pinta project.  Pinta, in turn, is derived from
+' Paint.NET code from when Paint.NET was MIT-licensed.  (Long story.)  The current version of this algorithm
+' is quite far removed from the original, but the basic trig underlying the transform is very much credited
+' to the original Paint.NET team.
 '
 'As such, the original implementation of this code is Copyright (C) dotPDN LLC, Rick Brewster, Tom Jackson,
 ' and contributors.  You can download the original Pinta version of this function from this link (good as of
@@ -171,7 +172,7 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -215,7 +216,7 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
     ' /* BEGIN SUPERSAMPLING PREPARATION */
@@ -379,7 +380,7 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

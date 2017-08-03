@@ -1,7 +1,7 @@
 Attribute VB_Name = "MainModule"
 '***************************************************************************
 'PhotoDemon Startup Module
-'Copyright 2014-2017 by Tanner Helland and Audioglider
+'Copyright 2014-2017 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 31/January/17
 'Last update: continued work on improving program startup time

@@ -133,29 +133,30 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Smoothing Form
-'Copyright 2014 by Audioglider
+'Copyright 2014-2017 by Tanner Helland, first build Copyright 2014 by Audioglider
 'Created: 19/June/14
-'Last updated: 23/July/14
-'Last update: add a quasi-separable implementation that's about 20x faster than the naive one, at a minimal cost
-'              to quality (in the Y-dimension; X-dimension quality should be roughly identical to the naive result).
+'Last updated: 02/August/17
+'Last update: migrate to XML params, minor performance improvements
 '
-'This filter performs selective gaussian smoothing of continuous areas of same color (domains), which removes noise
-' and contrast artifacts while perserving sharp edges.
+'Bilateral filtering performs selective gaussian smoothing of continuous areas of same color (domains),
+' which removes noise and contrast artifacts while preserving sharp edges.
 '
-'The two major parameters "spatial factor" and "color factor" define the primary results of the filter. By modifying
-' these parameters, users can achieve anything from light noise reduction with little change to the overall image,
-' to a silky smooth cartoon-like effect across wide swaths of the image.
+'The two major parameters "spatial factor" and "color factor" define the primary results of the filter.
+' By modifying these, users can achieve anything from light noise reduction with little change to the
+' underlying image, to a silky smooth cartoon-like effect.
 '
-'More details on the algorithm can be found at:
+'More details on bilateral filtering can be found at:
 ' http://www.cs.duke.edu/~tomasi/papers/tomasi/tomasiIccv98.pdf
 '
-'In July '14, a quasi-separable variant of the function was added.  I call it "quasi-separable" because we use some
-' modifications to compensate for bilateral smoothing not actually being mathematically separable.  (The spatial
-' domain parameter is, but the color one is not.)  This provides a huge performance boost at a slight quality
-' trade-off, so I've left the original implementation available via toggle.
+'In July '14, I (Tanner) added a quasi-separable variant of the function .  I call it "quasi-separable"
+' because it uses some estimations to compensate for bilateral filters not actually being mathematically
+' separable.  (The spatial domain parameter is, but the color one is not.)  This provides a large
+' performance boost at a slight quality trade-off, so I've left the original implementation available via toggle.
 '
-'For details on the separable approach, see:
+'For details on the quasi-separable approach, see:
 ' http://homepage.tudelft.nl/e3q6n/publications/2005/ICME2005_TPLV.pdf
+'
+'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -245,7 +246,7 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     
     'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
     ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
-    spatialFactor = spatialFactor / 10
+    spatialFactor = spatialFactor / 10#
     If (spatialFactor < 1#) Then spatialFactor = 1#
     
     'Spatial power is currently hidden from the user.  As such, default it to value 2.
@@ -256,7 +257,7 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
@@ -292,7 +293,7 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
         
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long
@@ -402,13 +403,13 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
 'Approximately the same function as BilateralSmoothing, above, but using a separable implementation to hugely boost performance.
 ' There is a quality trade-off, as the spatial parameter is separable but the color one is not, but we use some tricks to
-' mitigate this.  All told, the separable function roughly adheres to the expected PxQ / (P+Q) performance boost, and my own
+' mitigate this.  All told, the separable function roughly adheres to the expected P*Q / (P+Q) performance boost, and my own
 ' testing shows a 10 megapixel photo at radius 25 to take just 5% of the time that a naive convolution does
 ' (naive: 302 seconds, separable: 14 seconds).
 Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
@@ -433,7 +434,7 @@ Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional By
     
     'PrepImageData generates a working copy of the current filter target
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust kernel size to match
     If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
@@ -445,7 +446,7 @@ Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional By
     CreateBilateralDIB workingDIB, kernelRadius, spatialFactor, spatialPower, colorFactor, colorPower, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

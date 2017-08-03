@@ -260,12 +260,12 @@ Public Sub ApplyShadowHighlight(ByVal effectParams As String, Optional ByVal toP
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     AdjustDIBShadowHighlight shadowAmount, midtoneContrast, highlightAmount, shadowWidth, shadowRadius * curDIBValues.previewModifier, highlightWidth, highlightRadius * curDIBValues.previewModifier, workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

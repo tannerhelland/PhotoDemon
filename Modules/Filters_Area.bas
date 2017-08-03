@@ -41,7 +41,7 @@ Public Sub ApplyConvolutionFilter_XML(ByVal effectParams As String, Optional ByV
     'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
     ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
@@ -56,7 +56,7 @@ Public Sub ApplyConvolutionFilter_XML(ByVal effectParams As String, Optional ByV
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -111,7 +111,7 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
         
     'We can now parse out the relevant filter values from the param string
@@ -265,7 +265,7 @@ Public Sub FilterGridBlur()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -290,7 +290,7 @@ Public Sub FilterGridBlur()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -364,7 +364,7 @@ Public Sub FilterGridBlur()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -499,7 +499,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.GetDIBWidth + srcDIB.GetDIBHeight
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
@@ -771,7 +771,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.GetDIBWidth
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long

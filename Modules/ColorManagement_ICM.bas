@@ -765,7 +765,7 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
             
             Dim tmpRGBASrc As RGBQUAD, tmpRGBADst As RGBQUAD
             With tmpRGBASrc
-                .alpha = 255
+                .Alpha = 255
                 .Red = Colors.ExtractRed(srcColor)
                 .Green = Colors.ExtractGreen(srcColor)
                 .Blue = Colors.ExtractBlue(srcColor)
@@ -1037,7 +1037,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
             Else
                 SetProgBarMax modifyProgBarMax
             End If
-            progBarCheck = FindBestProgBarValue()
+            progBarCheck = ProgressBars.FindBestProgBarValue()
         End If
         
         'Color values

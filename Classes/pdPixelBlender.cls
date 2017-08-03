@@ -28,8 +28,6 @@ Attribute VB_Exposed = False
 'Because this class is a WIP, not all blend modes have their own dedicated, specially optimized function.  For these,
 ' use the generic function, which is slowly being chopped up into smaller parts.
 '
-'Many thanks to expert contributor Audioglider for his help implementing PhotoDemon's many supported blend modes.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -352,7 +350,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
             bottomAInt = bottomPixels(x + 3)
             
             'If the target pixel is transparent, ignore it
-            If (bottomAInt <> 0) Then
+            If (bottomAInt <> 0#) Then
                 
                 'The destination pixel is *not* transparent, meaning we must process it
                 topA = intToFloat(topAInt)
@@ -450,7 +448,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                     bottomAInt = bottomPixels(x + 3)
                     
                     'If the target pixel is transparent, ignore it
-                    If (bottomAInt <> 0) Then
+                    If (bottomAInt <> 0#) Then
                         
                         'The destination pixel is *not* transparent, meaning we must process it
                         topA = intToFloat(topAInt)
@@ -483,7 +481,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             
             'Locked alpha is a little weird, because we're copying out the alpha values of the *bottom* layer.  Because the rect
             ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
-            If (ptrToTopLayerAlternateRectF <> 0) Then
+            If (ptrToTopLayerAlternateRectF <> 0#) Then
                 Dim tmpRectF As RECTF, tmpRectFSrc As RECTF
                 CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
                 With tmpRectF
@@ -537,7 +535,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 topAInt = topPixels(x + 3)
                 
                 'Ignore transparent pixels completely; they go untouched.
-                If (topAInt <> 0) Then
+                If (topAInt <> 0#) Then
                     
                     'Retrieve bottom layer alpha
                     bottomAInt = bottomPixels(bottomX + 3)
@@ -602,7 +600,7 @@ Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         
         'Locked alpha is a little weird, because we're copying in the alpha values of the *bottom* layer.  Because the rect
         ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
-        If (ptrToTopLayerAlternateRectF <> 0) Then
+        If (ptrToTopLayerAlternateRectF <> 0#) Then
             Dim tmpRectF As RECTF, tmpRectFSrc As RECTF
             CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
             With tmpRectF
@@ -684,7 +682,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -769,7 +767,7 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -816,7 +814,7 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -841,39 +839,39 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
-                If (topR <> 0) Then
-                    newR = 1 - (1 - bottomR) / topR
-                    If (newR < 0) Then newR = 0
+                If (topR <> 0#) Then
+                    newR = 1# - (1# - bottomR) / topR
+                    If (newR < 0#) Then newR = 0#
                 Else
-                    newR = 0
+                    newR = 0#
                 End If
                 
-                If (topG <> 0) Then
-                    newG = 1 - (1 - bottomG) / topG
-                    If (newG < 0) Then newG = 0
+                If (topG <> 0#) Then
+                    newG = 1# - (1# - bottomG) / topG
+                    If (newG < 0#) Then newG = 0#
                 Else
-                    newG = 0
+                    newG = 0#
                 End If
                     
-                If (topB <> 0) Then
-                    newB = 1 - (1 - bottomB) / topB
-                    If (newB < 0) Then newB = 0
+                If (topB <> 0#) Then
+                    newB = 1# - (1# - bottomB) / topB
+                    If (newB < 0#) Then newB = 0#
                 Else
-                    newB = 0
+                    newB = 0#
                 End If
                 
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -881,7 +879,7 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -917,7 +915,7 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -964,7 +962,7 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -989,39 +987,39 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
-                If (topR <> 1) Then
-                    newR = bottomR / (1 - topR)
-                    If (newR > 1) Then newR = 1
+                If (topR <> 1#) Then
+                    newR = bottomR / (1# - topR)
+                    If (newR > 1#) Then newR = 1#
                 Else
-                    newR = 1
+                    newR = 1#
                 End If
                 
-                If (topG <> 1) Then
-                    newG = bottomG / (1 - topG)
-                    If (newG > 1) Then newG = 1
+                If (topG <> 1#) Then
+                    newG = bottomG / (1# - topG)
+                    If (newG > 1#) Then newG = 1#
                 Else
-                    newG = 1
+                    newG = 1#
                 End If
                 
-                If (topB <> 1) Then
-                    newB = bottomB / (1 - topB)
-                    If (newB > 1) Then newB = 1
+                If (topB <> 1#) Then
+                    newB = bottomB / (1# - topB)
+                    If (newB > 1#) Then newB = 1#
                 Else
-                    newB = 1
+                    newB = 1#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1029,7 +1027,7 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1065,7 +1063,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1112,7 +1110,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1137,11 +1135,11 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -1152,7 +1150,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1160,7 +1158,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1196,7 +1194,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1243,7 +1241,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1268,25 +1266,25 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 '"Difference" blend mode is very simple
                 newR = (bottomR - topR)
-                If (newR < 0) Then newR = -newR
+                If (newR < 0#) Then newR = -newR
                 newG = (bottomG - topG)
-                If (newG < 0) Then newG = -newG
+                If (newG < 0#) Then newG = -newG
                 newB = (bottomB - topB)
-                If (newB < 0) Then newB = -newB
+                If (newB < 0#) Then newB = -newB
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1294,7 +1292,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1330,7 +1328,7 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1377,7 +1375,7 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1402,37 +1400,37 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
-                If (topR <> 0) Then
+                If (topR <> 0#) Then
                     newR = bottomR / topR
-                    If (newR > 1) Then newR = 1
+                    If (newR > 1#) Then newR = 1#
                 Else
-                    newR = 1
+                    newR = 1#
                 End If
-                If (topG <> 0) Then
+                If (topG <> 0#) Then
                     newG = bottomG / topG
-                    If (newG > 1) Then newG = 1
+                    If (newG > 1#) Then newG = 1#
                 Else
-                    newG = 1
+                    newG = 1#
                 End If
-                If (topB <> 0) Then
+                If (topB <> 0#) Then
                     newB = bottomB / topB
-                    If (newB > 1) Then newB = 1
+                    If (newB > 1#) Then newB = 1#
                 Else
-                    newB = 1
+                    newB = 1#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1440,7 +1438,7 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1476,7 +1474,7 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1522,13 +1520,13 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
         
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
             
             'If the bottom pixel is already transparent, we can ignore it
-            If (bottomAInt <> 0) Then
+            If (bottomAInt <> 0#) Then
                 
                 'Convert the top-layer alpha to its floating-point equivalent
                 topA = intToFloat(255 - (topAInt * alphaModifier))
@@ -1539,7 +1537,7 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                 
                 'Un-premultiply the bottom-layer RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -1581,7 +1579,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1628,7 +1626,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1653,11 +1651,11 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -1668,7 +1666,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1676,7 +1674,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1712,7 +1710,7 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1759,7 +1757,7 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1784,11 +1782,11 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -1796,25 +1794,25 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
                 newR = bottomR - topR + 0.5
                 newG = bottomG - topG + 0.5
                 newB = bottomB - topB + 0.5
-                If (newR > 1) Then
-                    newR = 1
-                ElseIf (newR < 0) Then
-                    newR = 0
+                If (newR > 1#) Then
+                    newR = 1#
+                ElseIf (newR < 0#) Then
+                    newR = 0#
                 End If
-                If (newG > 1) Then
-                    newG = 1
-                ElseIf (newG < 0) Then
-                    newG = 0
+                If (newG > 1#) Then
+                    newG = 1#
+                ElseIf (newG < 0#) Then
+                    newG = 0#
                 End If
-                If (newB > 1) Then
-                    newB = 1
-                ElseIf (newB < 0) Then
-                    newB = 0
+                If (newB > 1#) Then
+                    newB = 1#
+                ElseIf (newB < 0#) Then
+                    newB = 0#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1822,7 +1820,7 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -1858,7 +1856,7 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1905,7 +1903,7 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -1930,11 +1928,11 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -1942,25 +1940,25 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 newR = bottomR + topR - 0.5
                 newG = bottomG + topG - 0.5
                 newB = bottomB + topB - 0.5
-                If (newR > 1) Then
-                    newR = 1
-                ElseIf (newR < 0) Then
-                    newR = 0
+                If (newR > 1#) Then
+                    newR = 1#
+                ElseIf (newR < 0#) Then
+                    newR = 0#
                 End If
-                If (newG > 1) Then
-                    newG = 1
-                ElseIf (newG < 0) Then
-                    newG = 0
+                If (newG > 1#) Then
+                    newG = 1#
+                ElseIf (newG < 0#) Then
+                    newG = 0#
                 End If
-                If (newB > 1) Then
-                    newB = 1
-                ElseIf (newB < 0) Then
-                    newB = 0
+                If (newB > 1#) Then
+                    newB = 1#
+                ElseIf (newB < 0#) Then
+                    newB = 0#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1968,7 +1966,7 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2004,7 +2002,7 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2051,7 +2049,7 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2076,22 +2074,22 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 '"Hard light" blend mode is very simple
-                If (topR < 0.5) Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                If (topG < 0.5) Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                If (topB < 0.5) Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                If (topR < 0.5) Then newR = 2 * bottomR * topR Else newR = 1# - 2 * (1# - bottomR) * (1# - topR)
+                If (topG < 0.5) Then newG = 2 * bottomG * topG Else newG = 1# - 2 * (1# - bottomG) * (1# - topG)
+                If (topB < 0.5) Then newB = 2 * bottomB * topB Else newB = 1# - 2 * (1# - bottomB) * (1# - topB)
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2099,7 +2097,7 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2135,7 +2133,7 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2182,7 +2180,7 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2207,22 +2205,22 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
-                If (topR < 1 - bottomR) Then newR = 0 Else newR = 1
-                If (topG < 1 - bottomG) Then newG = 0 Else newG = 1
-                If (topB < 1 - bottomB) Then newB = 0 Else newB = 1
+                If (topR < 1 - bottomR) Then newR = 0# Else newR = 1#
+                If (topG < 1 - bottomG) Then newG = 0# Else newG = 1#
+                If (topB < 1 - bottomB) Then newB = 0# Else newB = 1#
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2230,7 +2228,7 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2314,7 +2312,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2339,11 +2337,11 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -2362,7 +2360,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2398,7 +2396,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2445,7 +2443,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2470,11 +2468,11 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -2485,7 +2483,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2493,7 +2491,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2529,7 +2527,7 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2576,7 +2574,7 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2601,25 +2599,25 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
                 newR = topR + bottomR - 1
-                If (newR < 0) Then newR = 0
+                If (newR < 0#) Then newR = 0#
                 newG = topG + bottomG - 1
-                If (newG < 0) Then newG = 0
+                If (newG < 0#) Then newG = 0#
                 newB = topB + bottomB - 1
-                If (newB < 0) Then newB = 0
+                If (newB < 0#) Then newB = 0#
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2627,7 +2625,7 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2663,7 +2661,7 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2710,7 +2708,7 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2735,11 +2733,11 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -2747,13 +2745,13 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 newR = topR + bottomR
                 newG = topG + bottomG
                 newB = topB + bottomB
-                If newR > 1 Then newR = 1
-                If newG > 1 Then newG = 1
-                If newB > 1 Then newB = 1
+                If newR > 1 Then newR = 1#
+                If newG > 1 Then newG = 1#
+                If newB > 1 Then newB = 1#
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2761,7 +2759,7 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2797,7 +2795,7 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2844,7 +2842,7 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -2869,39 +2867,39 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
                 newR = bottomR + (2 * topR) - 1
-                If (newR > 1) Then
-                    newR = 1
-                ElseIf (newR < 0) Then
-                    newR = 0
+                If (newR > 1#) Then
+                    newR = 1#
+                ElseIf (newR < 0#) Then
+                    newR = 0#
                 End If
                 
                 newG = bottomG + (2 * topG) - 1
-                If (newG > 1) Then
-                    newG = 1
-                ElseIf (newG < 0) Then
-                    newG = 0
+                If (newG > 1#) Then
+                    newG = 1#
+                ElseIf (newG < 0#) Then
+                    newG = 0#
                 End If
                 
                 newB = bottomB + (2 * topB) - 1
-                If (newB > 1) Then
-                    newB = 1
-                ElseIf (newB < 0) Then
-                    newB = 0
+                If (newB > 1#) Then
+                    newB = 1#
+                ElseIf (newB < 0#) Then
+                    newB = 0#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2909,7 +2907,7 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -2946,7 +2944,7 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2994,7 +2992,7 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3019,11 +3017,11 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3035,7 +3033,7 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3043,7 +3041,7 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3079,7 +3077,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3126,7 +3124,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3151,11 +3149,11 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3166,7 +3164,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3174,7 +3172,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3210,7 +3208,7 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3257,7 +3255,7 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3282,22 +3280,22 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 '"Overlay" blend mode is very simple
-                If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1# - 2 * (1# - bottomR) * (1# - topR)
+                If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1# - 2 * (1# - bottomG) * (1# - topG)
+                If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1# - 2 * (1# - bottomB) * (1# - topB)
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3305,7 +3303,7 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3341,7 +3339,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3388,7 +3386,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3413,11 +3411,11 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3428,7 +3426,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3436,7 +3434,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3472,7 +3470,7 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3520,7 +3518,7 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3545,11 +3543,11 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3560,7 +3558,7 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3568,7 +3566,7 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3604,7 +3602,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3651,7 +3649,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3676,22 +3674,27 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
-                '"Screen" blend mode is very simple
-                newR = 1 - (1 - bottomR) * (1 - topR)
-                newG = 1 - (1 - bottomG) * (1 - topG)
-                newB = 1 - (1 - bottomB) * (1 - topB)
+                '"Screen" blend mode is very simple.  A full expansion looks like this:
+                'newR = 1.0 - (1.0 - bottomR) * (1.0 - topR)
+                'newG = 1.0 - (1.0 - bottomG) * (1.0 - topG)
+                'newB = 1.0 - (1.0 - bottomB) * (1.0 - topB)
+                
+                '...but algebraically, we can reduce it to this:
+                newR = bottomR + topR - (bottomR * topR)
+                newG = bottomG + topG - (bottomG * topG)
+                newB = bottomB + topB - (bottomB * topB)
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3699,7 +3702,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3735,7 +3738,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3782,7 +3785,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3807,11 +3810,11 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3822,7 +3825,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3830,7 +3833,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3866,7 +3869,7 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3913,7 +3916,7 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3938,25 +3941,25 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
                 newR = bottomR - topR
-                If (newR < 0) Then newR = 0
+                If (newR < 0#) Then newR = 0#
                 newG = bottomG - topG
-                If (newG < 0) Then newG = 0
+                If (newG < 0#) Then newG = 0#
                 newB = bottomB - topB
-                If (newB < 0) Then newB = 0
+                If (newB < 0#) Then newB = 0#
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3964,7 +3967,7 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -4000,7 +4003,7 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = i * (1# / 255#)
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -4047,7 +4050,7 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0) Then
+        If (topAInt <> 0#) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -4072,39 +4075,39 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 'The actual blend is very simple
                 If (topR > 0.5) Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
-                If (newR > 1) Then
-                    newR = 1
-                ElseIf (newR < 0) Then
-                    newR = 0
+                If (newR > 1#) Then
+                    newR = 1#
+                ElseIf (newR < 0#) Then
+                    newR = 0#
                 End If
                 
                 If (topG > 0.5) Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
-                If (newG > 1) Then
-                    newG = 1
-                ElseIf (newG < 0) Then
-                    newG = 0
+                If (newG > 1#) Then
+                    newG = 1#
+                ElseIf (newG < 0#) Then
+                    newG = 0#
                 End If
                 
                 If (topB > 0.5) Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
-                If (newB > 1) Then
-                    newB = 1
-                ElseIf (newB < 0) Then
-                    newB = 0
+                If (newB > 1#) Then
+                    newB = 1#
+                ElseIf (newB < 0#) Then
+                    newB = 0#
                 End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -4112,7 +4115,7 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If

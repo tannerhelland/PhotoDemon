@@ -168,7 +168,7 @@ Public Sub ConvertToPolar(ByVal effectParams As String, Optional ByVal toPreview
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
@@ -186,7 +186,7 @@ Public Sub ConvertToPolar(ByVal effectParams As String, Optional ByVal toPreview
     srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMath"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2013-2017 by Tanner Helland and Audioglider
+'Copyright 2013-2017 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 12/January/17
 'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.
@@ -119,28 +119,20 @@ Public Function Frac(ByVal srcValue As Double) As Double
     Frac = srcValue - Int(srcValue)
 End Function
 
-'Given an arbitrary output range and input range, convert a value from the input range to the output range
-' Thank you to expert coder Audioglider for contributing this function.
-Public Function ConvertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
-    Dim dScale As Double
-    dScale = (newEnd - newStart) / (originalEnd - originalStart)
-    ConvertRange = (newStart + ((Value - originalStart) * dScale))
-End Function
-
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
 ' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
+Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal accuracy As Double = 100#)
 
-    Const MaxTerms As Long = 50          'Limit to prevent infinite loop
-    Const MinDivisor As Double = 1E-16      'Limit to prevent divide by zero
-    Const MaxError As Double = 1E-50        'How close is enough
+    Const MAX_TERMS As Long = 50          'Limit to prevent infinite loop
+    Const MIN_DIVISOR As Double = 1E-16      'Limit to prevent divide by zero
+    Const MAX_ERROR As Double = 1E-50        'How close is enough
     Dim f As Double                         'Fraction being converted
     Dim a As Double     'Current term in continued fraction
     Dim n1 As Double    'Numerator, denominator of last approx
-    Dim D1 As Double
+    Dim d1 As Double
     Dim n2 As Double    'Numerator, denominator of previous approx
-    Dim D2 As Double
+    Dim d2 As Double
     Dim i As Integer
     Dim t As Double
     Dim maxDenom As Double
@@ -148,8 +140,8 @@ Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     
     If maxDenomDigits = 0 Or maxDenomDigits > 17 Then maxDenomDigits = 17
     maxDenom = 10 ^ maxDenomDigits
-    If Accuracy > 100 Or Accuracy < 1 Then Accuracy = 100
-    Accuracy = Accuracy / 100#
+    If accuracy > 100 Or accuracy < 1 Then accuracy = 100
+    accuracy = accuracy / 100#
     
     bIsNegative = (v < 0)
     w = Abs(Fix(v))
@@ -163,33 +155,33 @@ Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     f = v                       'Initialize fraction being converted
     
     n1 = 1                      'Initialize fractions with 1/0, 0/1
-    D1 = 0
+    d1 = 0
     n2 = 0
-    D2 = 1
+    d2 = 1
 
     On Error GoTo RtnResult
-    For i = 0 To MaxTerms
+    For i = 0 To MAX_TERMS
         a = Fix(f)              'Get next term
         f = f - a               'Get new divisor
         n = n1 * a + n2         'Calculate new fraction
-        d = D1 * a + D2
+        d = d1 * a + d2
         n2 = n1                 'Save last two fractions
-        D2 = D1
+        d2 = d1
         n1 = n
-        D1 = d
+        d1 = d
                                 'Quit if dividing by zero
-        If f < MinDivisor Then Exit For
+        If f < MIN_DIVISOR Then Exit For
 
                                 'Quit if close enough
         t = n / d               ' A=zero indicates exact match or extremely close
         a = Abs(v - t)          ' Difference btwn actual V and calculated T
-        If a < MaxError Then Exit For
+        If a < MAX_ERROR Then Exit For
                                 'Quit if max denominator digits encountered
         If d > maxDenom Then Exit For
                                 ' Quit if preferred accuracy accomplished
         If n Then
             If t > v Then t = v / t Else t = t / v
-            If t >= Accuracy And Abs(t) < 1 Then Exit For
+            If t >= accuracy And Abs(t) < 1 Then Exit For
         End If
         f = 1# / f               'Take reciprocal
     Next i
@@ -197,11 +189,11 @@ Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As D
 RtnResult:
     If Err Or d > maxDenom Then
         ' in above case, use the previous best N & D
-        If D2 = 0 Then
+        If d2 = 0 Then
             n = n1
-            d = D1
+            d = d1
         Else
-            d = D2
+            d = d2
             n = n2
         End If
     End If
@@ -383,14 +375,14 @@ End Function
 
 'Arcsine function
 Public Function Asin(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Asin = Atan2(x, Sqr(1 - x * x))
+    If (x > 1#) Or (x < -1#) Then x = 1#
+    Asin = Atan2(x, Sqr(1# - x * x))
 End Function
 
 'Arccosine function
 Public Function Acos(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Acos = Atan2(Sqr(1 - x * x), x)
+    If (x > 1#) Or (x < -1#) Then x = 1#
+    Acos = Atan2(Sqr(1# - x * x), x)
 End Function
 
 'Max/min functions
@@ -402,7 +394,7 @@ Public Function Max2Int(ByVal f1 As Long, ByVal f2 As Long) As Long
     End If
 End Function
 
-Public Function Max2Float_Single(f1 As Single, f2 As Single) As Single
+Public Function Max2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
     If (f1 > f2) Then
         Max2Float_Single = f1
     Else
@@ -410,79 +402,71 @@ Public Function Max2Float_Single(f1 As Single, f2 As Single) As Single
     End If
 End Function
 
-Public Function Min2Float_Single(f1 As Single, f2 As Single) As Single
-    If f1 < f2 Then
+Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
+    If (f1 < f2) Then
         Min2Float_Single = f1
     Else
         Min2Float_Single = f2
     End If
 End Function
 
-'Return the maximum of three floating point values
-Public Function Max3Float(rR As Double, rG As Double, rB As Double) As Double
+'Return the maximum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Max3Float(ByVal rR As Double, ByVal rG As Double, ByVal rB As Double) As Double
     If (rR > rG) Then
-       If (rR > rB) Then
-          Max3Float = rR
-       Else
-          Max3Float = rB
-       End If
+        If (rR > rB) Then
+            Max3Float = rR
+        Else
+            Max3Float = rB
+        End If
+    ElseIf (rB > rG) Then
+        Max3Float = rB
     Else
-       If (rB > rG) Then
-          Max3Float = rB
-       Else
-          Max3Float = rG
-       End If
+        Max3Float = rG
     End If
 End Function
 
-'Return the minimum of three floating point values
-Public Function Min3Float(rR As Double, rG As Double, rB As Double) As Double
+'Return the minimum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Min3Float(ByVal rR As Double, ByVal rG As Double, ByVal rB As Double) As Double
     If (rR < rG) Then
-       If (rR < rB) Then
-          Min3Float = rR
-       Else
-          Min3Float = rB
-       End If
+        If (rR < rB) Then
+            Min3Float = rR
+        Else
+            Min3Float = rB
+        End If
+    ElseIf (rB < rG) Then
+        Min3Float = rB
     Else
-       If (rB < rG) Then
-          Min3Float = rB
-       Else
-          Min3Float = rG
-       End If
+        Min3Float = rG
     End If
 End Function
 
-'Return the maximum of three integer values
-Public Function Max3Int(rR As Long, rG As Long, rB As Long) As Long
+'Return the maximum of three integer values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Max3Int(ByVal rR As Long, ByVal rG As Long, ByVal rB As Long) As Long
     If (rR > rG) Then
-       If (rR > rB) Then
-          Max3Int = rR
-       Else
-          Max3Int = rB
-       End If
+        If (rR > rB) Then
+            Max3Int = rR
+        Else
+            Max3Int = rB
+        End If
+    ElseIf (rB > rG) Then
+        Max3Int = rB
     Else
-       If (rB > rG) Then
-          Max3Int = rB
-       Else
-          Max3Int = rG
-       End If
+        Max3Int = rG
     End If
 End Function
 
-'Return the minimum of three integer values
-Public Function Min3Int(rR As Long, rG As Long, rB As Long) As Long
+'Return the minimum of three integer values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Min3Int(ByVal rR As Long, ByVal rG As Long, ByVal rB As Long) As Long
     If (rR < rG) Then
-       If (rR < rB) Then
-          Min3Int = rR
-       Else
-          Min3Int = rB
-       End If
+        If (rR < rB) Then
+            Min3Int = rR
+        Else
+            Min3Int = rB
+        End If
+    ElseIf (rB < rG) Then
+        Min3Int = rB
     Else
-       If (rB < rG) Then
-          Min3Int = rB
-       Else
-          Min3Int = rG
-       End If
+        Min3Int = rG
     End If
 End Function
 
@@ -789,11 +773,13 @@ Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As
 End Sub
 
 Public Function RadiansToDegrees(ByVal srcRadian As Double) As Double
-    RadiansToDegrees = (srcRadian * 180) / PI
+    Const ONE_DIV_PI As Double = 1# / PI
+    RadiansToDegrees = (srcRadian * 180#) * ONE_DIV_PI
 End Function
 
 Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
-    DegreesToRadians = (srcDegrees * PI) / 180
+    Const ONE_DIV_180 As Double = 1# / 180#
+    DegreesToRadians = (srcDegrees * PI) * ONE_DIV_180
 End Function
 
 'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed
@@ -843,5 +829,5 @@ Public Function ClampF(ByVal srcF As Double, ByVal minF As Double, ByVal maxF As
 End Function
 
 Public Function ConvertDPIToPels(ByVal srcDPI As Double) As Double
-    ConvertDPIToPels = (srcDPI / 2.54) * 100
+    ConvertDPIToPels = (srcDPI / 2.54) * 100#
 End Function

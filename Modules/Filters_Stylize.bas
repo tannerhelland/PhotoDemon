@@ -60,7 +60,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
         
     'Because we want each halftone point centered around a grid intersection, we'll precalculate a half-radius value as well

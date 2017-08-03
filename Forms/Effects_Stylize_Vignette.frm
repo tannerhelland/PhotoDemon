@@ -247,7 +247,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     ' (We're only going to be blending atop the source, so we don't need to un-premultiply it.)
     Dim dstImageData() As Long
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -256,7 +256,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     finalY = curDIBValues.Bottom
     
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Prep an overlay at the same size as the underlying image.  (We're going to render the vignette to
     ' this overlay, then merge down onto the existing image at the very end.)
@@ -346,7 +346,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     
     For x = 0 To 255
         With tmpQuad
-            .alpha = x
+            .Alpha = x
             blendVal = CSng(x / 255)
             .Red = Int(blendVal * CSng(newR))
             .Green = Int(blendVal * CSng(newG))
@@ -449,7 +449,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     m_OverlayDIB.UnwrapLongArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
         
 End Sub
 

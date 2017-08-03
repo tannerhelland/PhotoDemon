@@ -205,7 +205,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
     
     'Create a second copy of the target DIB.
@@ -238,7 +238,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     
     If (Not toPreview) Then
         SetProgBarMax finalX * adIterations
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
         progBarOffset = 0
     End If
     
@@ -478,7 +478,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

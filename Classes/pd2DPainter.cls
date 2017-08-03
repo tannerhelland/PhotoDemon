@@ -233,7 +233,7 @@ Private Function AlphaBlendWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByV
         ' (My memory is fuzzy after so many years, but I seem to recall old versions of Windows sometimes failing
         '  to AlphaBlend if the alpha value was exactly 255 - as a failsafe, let's use 254 as necessary.
         '  TODO: test this on XP, Win 7, Win 10 to confirm behavior.)
-        If blendOpacity = 255 Then blendOpacity = 254
+        If (blendOpacity = 255) Then blendOpacity = 254
         abParams = (blendOpacity * &H10000)
     End If
     

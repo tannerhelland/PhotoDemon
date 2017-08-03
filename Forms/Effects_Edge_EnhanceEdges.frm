@@ -217,7 +217,7 @@ Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toP
     
     'Use PD's central image handler to populate the public workingDIB object.
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second DIB copy.  This will receive the edge-detection copy of the image.
     Dim edgeDIB As pdDIB
@@ -289,7 +289,7 @@ Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toP
     cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BL_SCREEN, enhanceStrength
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
 
 End Sub
 

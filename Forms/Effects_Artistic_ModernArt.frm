@@ -133,7 +133,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -184,7 +184,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     Dim progBarCheck As Long
     If (Not toPreview) Then
         SetProgBarMax finalX
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -346,7 +346,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
         Set srcDIB = Nothing
     
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-        FinalizeImageData toPreview, dstPic
+        EffectPrep.FinalizeImageData toPreview, dstPic
         
     End If
 

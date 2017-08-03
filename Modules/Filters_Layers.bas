@@ -221,7 +221,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -371,7 +371,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values
@@ -379,9 +379,9 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Maximum and minimum values, which will be detected by our initial histogram run
     Dim RMax As Byte, gMax As Byte, bMax As Byte
-    Dim RMin As Byte, gMin As Byte, bMin As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte
     RMax = 0: gMax = 0: bMax = 0
-    RMin = 255: gMin = 255: bMin = 255
+    rMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore * 0.01
@@ -433,7 +433,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            RMin = r
+            rMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -504,7 +504,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Finally, calculate the difference between max and min for each color
     Dim rDif As Long, gDif As Long, bDif As Long
-    rDif = CLng(RMax) - CLng(RMin)
+    rDif = CLng(RMax) - CLng(rMin)
     gDif = CLng(gMax) - CLng(gMin)
     bDif = CLng(bMax) - CLng(bMin)
     
@@ -512,7 +512,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If (rDif <> 0) Then r = 255# * ((x - RMin) / rDif) Else r = x
+        If (rDif <> 0) Then r = 255# * ((x - rMin) / rDif) Else r = x
         If (gDif <> 0) Then g = 255# * ((x - gMin) / gDif) Else g = x
         If (bDif <> 0) Then b = 255# * ((x - bMin) / bDif) Else b = x
         If (r > 255) Then r = 255
@@ -585,7 +585,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values
@@ -715,14 +715,14 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
  
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SAFEARRAY2D, dstSA1D As SAFEARRAY1D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SAFEARRAY2D, srcSA1D As SAFEARRAY1D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -732,10 +732,10 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     initY = 1
     finalX = srcDIB.GetDIBWidth - 2
     finalY = srcDIB.GetDIBHeight - 2
-            
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
+    Dim xOffset As Long, xOffsetRight As Long, xOffsetLeft As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -747,64 +747,182 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color variables
-    Dim tmpColor As Long, tMin As Long
-        
+    Dim rMin As Long, gMin As Long, bMin As Long
+    Dim r As Long, g As Long, b As Long
+    
+    'Prep a one-dimensional safearray for the source image
+    Dim srcBits As Long, srcStride As Long
+    srcBits = srcDIB.GetDIBPointer
+    srcStride = srcDIB.GetDIBStride
+    
+    With srcSA1D
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcDIB.GetDIBStride
+    End With
+    
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA1D), 4&
+    
+    '...and another one for the destination image
+    Dim dstBits As Long, dstStride As Long
+    dstBits = dstDIB.GetDIBPointer
+    dstStride = dstDIB.GetDIBStride
+    
+    With dstSA1D
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = dstDIB.GetDIBStride
+    End With
+    
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA1D), 4&
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-        QuickValLeft = (x - 1) * qvDepth
+        xOffset = x * qvDepth
+        xOffsetRight = (x + 1) * qvDepth
+        xOffsetLeft = (x - 1) * qvDepth
     For y = initY To finalY
-        For z = 0 To 2
-    
-            tMin = 255
-            tmpColor = srcImageData(QuickValRight + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickVal + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickVal + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(quickVal + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            
-            If tMin > 255 Then tMin = 255
-            If tMin < 0 Then tMin = 0
-            
-            If blackBackground Then
-                dstImageData(quickVal + z, y) = srcImageData(quickVal + z, y) - tMin
-            Else
-                dstImageData(quickVal + z, y) = 255 - (srcImageData(quickVal + z, y) - tMin)
-            End If
-            
-            'The edges of the image will always be missed, so manually check for and correct that
-            If x = initX Then dstImageData(QuickValLeft + z, y) = dstImageData(quickVal + z, y)
-            If x = finalX Then dstImageData(QuickValRight + z, y) = dstImageData(quickVal + z, y)
-            If y = initY Then dstImageData(quickVal + z, y - 1) = dstImageData(quickVal + z, y)
-            If y = finalY Then dstImageData(quickVal + z, y + 1) = dstImageData(quickVal + z, y)
         
-        Next z
+        'Find the smallest RGB values in the local vicinity of this pixel
+        rMin = 255
+        gMin = 255
+        bMin = 255
+        
+        'Previous line
+        srcSA1D.pvData = srcBits + (y - 1) * srcStride
+        b = srcImageData(xOffsetLeft)
+        g = srcImageData(xOffsetLeft + 1)
+        r = srcImageData(xOffsetLeft + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffset)
+        g = srcImageData(xOffset + 1)
+        r = srcImageData(xOffset + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffsetRight)
+        g = srcImageData(xOffsetRight + 1)
+        r = srcImageData(xOffsetRight + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        'Current line
+        srcSA1D.pvData = srcBits + y * srcStride
+        b = srcImageData(xOffsetLeft)
+        g = srcImageData(xOffsetLeft + 1)
+        r = srcImageData(xOffsetLeft + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffset)
+        g = srcImageData(xOffset + 1)
+        r = srcImageData(xOffset + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffsetRight)
+        g = srcImageData(xOffsetRight + 1)
+        r = srcImageData(xOffsetRight + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        'Next line
+        srcSA1D.pvData = srcBits + (y + 1) * srcStride
+        b = srcImageData(xOffsetLeft)
+        g = srcImageData(xOffsetLeft + 1)
+        r = srcImageData(xOffsetLeft + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffset)
+        g = srcImageData(xOffset + 1)
+        r = srcImageData(xOffset + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        b = srcImageData(xOffsetRight)
+        g = srcImageData(xOffsetRight + 1)
+        r = srcImageData(xOffsetRight + 2)
+        If (b < bMin) Then bMin = b
+        If (g < gMin) Then gMin = g
+        If (r < rMin) Then rMin = r
+        
+        'Subtract the minimum value from the current pixel value
+        srcSA1D.pvData = srcBits + y * srcStride
+        dstSA1D.pvData = dstBits + y * dstStride
+        
+        If blackBackground Then
+            dstImageData(xOffset) = srcImageData(xOffset) - bMin
+            dstImageData(xOffset + 1) = srcImageData(xOffset + 1) - gMin
+            dstImageData(xOffset + 2) = srcImageData(xOffset + 2) - rMin
+        Else
+            dstImageData(xOffset) = 255 - (srcImageData(xOffset) - bMin)
+            dstImageData(xOffset + 1) = 255 - (srcImageData(xOffset + 1) - gMin)
+            dstImageData(xOffset + 2) = 255 - (srcImageData(xOffset + 2) - rMin)
+        End If
+        
     Next y
-        If Not suppressMessages Then
+        If (Not suppressMessages) Then
             If (x And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
+    
+    'The edges of the image will always be missed, so manually apply their values now
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Top row
+    For x = initX To finalX
+        xOffset = x * qvDepth
+        dstImageData(xOffset, 0) = dstImageData(xOffset, 1)
+        dstImageData(xOffset + 1, 0) = dstImageData(xOffset + 1, 1)
+        dstImageData(xOffset + 2, 0) = dstImageData(xOffset + 2, 1)
+    Next x
+    
+    'Bottom row
+    y = finalY + 1
+    For x = initX To finalX
+        xOffset = x * qvDepth
+        dstImageData(xOffset, y) = dstImageData(xOffset, finalY)
+        dstImageData(xOffset + 1, y) = dstImageData(xOffset + 1, finalY)
+        dstImageData(xOffset + 2, y) = dstImageData(xOffset + 2, finalY)
+    Next x
+    
+    'Left row
+    For y = initY To finalY
+        dstImageData(0, y) = dstImageData(qvDepth, y)
+        dstImageData(1, y) = dstImageData(qvDepth + 1, y)
+        dstImageData(2, y) = dstImageData(qvDepth + 2, y)
+    Next y
+    
+    'Right row
+    xOffset = finalX * qvDepth
+    xOffsetRight = (finalX + 1) * qvDepth
+    For y = initY To finalY
+        dstImageData(xOffsetRight, y) = dstImageData(xOffset, y)
+        dstImageData(xOffsetRight + 1, y) = dstImageData(xOffset + 1, y)
+        dstImageData(xOffsetRight + 2, y) = dstImageData(xOffset + 2, y)
+    Next y
     
     'Safely deallocate all image arrays
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -1245,7 +1363,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBWidth * numIterations + srcDIB.GetDIBHeight * numIterations
     If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Modify the Gaussian radius, and convert it to an integer.  (Box blurs don't work on floating-point radii.)
     Dim comparableRadius As Long
@@ -1405,7 +1523,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a one-dimensional Gaussian kernel using the requested radius
@@ -1772,7 +1890,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -2002,7 +2120,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -2238,7 +2356,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     Dim xRadius As Long
@@ -2392,7 +2510,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     Dim yRadius As Long
@@ -2542,7 +2660,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -2690,7 +2808,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values
@@ -2765,7 +2883,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values
@@ -2924,7 +3042,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values
@@ -3064,7 +3182,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If (Not suppressMessages) Then progBarCheck = FindBestProgBarValue()
+    If (Not suppressMessages) Then progBarCheck = ProgressBars.FindBestProgBarValue()
         
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long

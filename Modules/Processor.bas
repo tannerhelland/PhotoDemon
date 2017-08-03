@@ -416,31 +416,19 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             MenuAtmospheric
             
         Case "Fog"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFog
-            Else
-                FormFog.fxFog cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormFog Else FormFog.fxFog processParameters
             
         Case "Freeze"
             MenuFrozen
             
         Case "Ignite"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormIgnite
-            Else
-                FormIgnite.fxBurn cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormIgnite Else FormIgnite.fxBurn processParameters
             
         Case "Lava"
             MenuLava
                     
         Case "Metal"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMetal
-            Else
-                FormMetal.ApplyMetalFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormMetal Else FormMetal.ApplyMetalFilter processParameters
             
         Case "Water"
             MenuWater
@@ -495,12 +483,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             End If
         
         Case "Fragment"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFragment
-            Else
-                FormFragment.Fragment cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormFragment Else FormFragment.Fragment processParameters
+            
         Case "Mezzotint"
             If raiseDialog Then
                 ShowPDDialog vbModal, FormMezzotint

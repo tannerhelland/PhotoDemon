@@ -141,7 +141,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second copy of the target DIB.
@@ -189,7 +189,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Dim progBarCheck As Long
     If (Not toPreview) Then
         SetProgBarMax finalX
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current box are tracked dynamically.
@@ -333,7 +333,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
         Set srcDIB = Nothing
     
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-        FinalizeImageData toPreview, dstPic
+        EffectPrep.FinalizeImageData toPreview, dstPic
         
     End If
 

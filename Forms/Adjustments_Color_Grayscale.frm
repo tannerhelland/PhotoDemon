@@ -202,7 +202,7 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
     
     'Create a working copy of the relevant pixel data (with all selection transforms applied)
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Based on the options the user has provided, figure out a maximum progress bar value.  This changes depending on:
     ' - If the user wants shade reduction (as this requires another pass over the image)
@@ -256,7 +256,7 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -290,7 +290,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color variables
@@ -378,7 +378,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color variables
@@ -740,7 +740,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -817,7 +817,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -889,7 +889,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -960,7 +960,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -1031,7 +1031,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables

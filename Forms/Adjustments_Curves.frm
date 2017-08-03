@@ -263,7 +263,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -282,7 +282,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -364,7 +364,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 

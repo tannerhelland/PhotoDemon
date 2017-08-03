@@ -174,7 +174,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Before doing anything else, convert this DIB to 32bpp.  (This simplifies the inner loop.)
     If (workingDIB.GetDIBColorDepth <> 32) Then workingDIB.ConvertTo32bpp
@@ -352,7 +352,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

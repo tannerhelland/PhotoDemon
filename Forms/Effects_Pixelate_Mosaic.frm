@@ -129,7 +129,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Make a note of the original image's size; we need this so we can restore the image to its original angle after
     ' the pixelation is complete.
@@ -198,7 +198,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Dim progBarCheck As Long
     If (Not toPreview) Then
         SetProgBarMax xLoop
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'A number of other variables are required for the nested For..Next loops
@@ -303,7 +303,7 @@ NextPixelatePixel3:
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 

@@ -146,7 +146,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -166,7 +166,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

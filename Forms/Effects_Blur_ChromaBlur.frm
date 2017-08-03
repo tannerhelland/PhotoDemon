@@ -112,7 +112,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, which we need to retrieve luminance
     ' values when merging the blurred color data with the original luminance data.
@@ -163,7 +163,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             
         'Point arrays at three images: the source and gauss DIBs, and the final destination DIB
         Dim dstImageData() As Byte
-        PrepImageData dstSA, toPreview, dstPic
+        EffectPrep.PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
@@ -184,7 +184,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
             
         If (Not toPreview) Then Message "Merging luminance and chroma into final image..."
         
@@ -242,7 +242,7 @@ Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

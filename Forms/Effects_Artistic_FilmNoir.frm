@@ -172,14 +172,14 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     Dim cRandomize As pdRandomize
     If artificialGrain > 0 Then
         Set cRandomize = New pdRandomize
-        cRandomize.setSeed_AutomaticAndRandom
+        cRandomize.SetSeed_AutomaticAndRandom
     End If
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -197,7 +197,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
@@ -231,7 +231,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         
         'We now have a contrast-corrected gray value.  If the user wants noise applied, do so now.
         If artificialGrain > 0 Then
-            grayVal = grayVal + (artificialGrain * cRandomize.getRandomFloat_VB)
+            grayVal = grayVal + (artificialGrain * cRandomize.GetRandomFloat_VB)
         End If
         
         'Copy it to an integer and clamp.
@@ -257,7 +257,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

@@ -67,9 +67,10 @@ Begin VB.Form FormIgnite
       _ExtentY        =   1270
       Caption         =   "flame height"
       Min             =   1
-      Max             =   500
-      Value           =   50
-      DefaultValue    =   50
+      Max             =   100
+      SigDigits       =   1
+      Value           =   10
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdSlider sltOpacity 
       Height          =   705
@@ -95,8 +96,8 @@ Attribute VB_Exposed = False
 '"Burn" Fire FX Form
 'Copyright 2001-2017 by Tanner Helland
 'Created: some time 2001
-'Last updated: 09/July/14
-'Last update: give tool its own form; overhaul algorithm completely
+'Last updated: 03/August/17
+'Last update: migrate to XML params, performance improvements
 '
 'This fun little tool is a product of my own creation.  It works as follows:
 '
@@ -116,34 +117,51 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'To improve performance during previews, we reuse a single temporary copy of the preview image
+Private m_edgeDIB As pdDIB
+
 'Apply the "burn" fire effect filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxOpacity As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Lighting image on fire..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim fxIntensity As Double
+    Dim fxRadius As Double, fxOpacity As Long
+    
+    With cParams
+        fxIntensity = .GetDouble("intensity", sltIntensity.Value)
+        fxRadius = .GetDouble("radius", sltRadius.Value)
+        fxOpacity = .GetLong("opacity", sltOpacity.Value)
+    End With
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
-    'Radius needs to be adjusted during previews, to accurately reflect how the final image will appear
-    If toPreview Then
-        fxRadius = fxRadius * curDIBValues.previewModifier
-        If (fxRadius < 1) Then fxRadius = 1
-    Else
-        SetProgBarMax workingDIB.GetDIBWidth * 3
+    'Radius is simply a proportion of the current image's height
+    fxRadius = (fxRadius * 0.01) * curDIBValues.Height
+    If (fxRadius < 1#) Then fxRadius = 1#
+    
+    Dim progMax As Long
+    If (Not toPreview) Then
+        progMax = curDIBValues.Width * 2 + curDIBValues.Height
+        SetProgBarMax progMax
     End If
     
     'First things first: start by analyzing image edges and generating a white-on-black contour map
-    Dim edgeDIB As pdDIB
-    Set edgeDIB = New pdDIB
-    edgeDIB.CreateFromExistingDIB workingDIB
-    Filters_Layers.CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * 3, 0
+    If (m_edgeDIB Is Nothing) Then Set m_edgeDIB = New pdDIB
+    m_edgeDIB.CreateFromExistingDIB workingDIB
+    Filters_Layers.CreateContourDIB True, workingDIB, m_edgeDIB, toPreview, progMax, 0
     
     'Next, we're going to do two things: blurring the flame upward, while also applying some decay
     ' to the flame.
-    PrepSafeArray tmpSA, edgeDIB
+    PrepSafeArray tmpSA, m_edgeDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -161,7 +179,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
@@ -170,15 +188,16 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
     Dim grayLookUp(0 To 765) As Byte
     For x = 0 To 765
-        grayLookUp(x) = x \ 3
+        grayLookUp(x) = x * 0.333333333333333
     Next x
     
+    'From those grayscale values, calculate a corresponding flame height.  (Brighter pixels cause the flame to travel further.)
     Dim distLookUp(0 To 765) As Single
     For x = 0 To 765
-        distLookUp(x) = CDbl(x / 382) * fxRadius
+        distLookUp(x) = CDbl(x / 765#) * fxRadius
     Next x
     
-    Dim fDistance As Long, fTargetMin As Long, innerY As Long
+    Dim fDistance As Double, fTargetMin As Long, innerY As Long
     Dim inR As Byte, inG As Byte, inB As Byte
     Dim fadeVal As Double
     
@@ -204,20 +223,22 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         End If
         
         'Trace a path upward, blending this value with neighboring pixels as we go
-        If (fDistance > 0) Then
-        
-            For innerY = y To fTargetMin Step -1
+        If (fDistance > 0#) Then
+            
+            fDistance = 1# / fDistance
+            
+            For innerY = fTargetMin To y
                 
                 inB = imageData(quickVal, innerY)
                 inG = imageData(quickVal + 1, innerY)
                 inR = imageData(quickVal + 2, innerY)
                 
                 'Blend this pixel's value with the value at this pixel, using the distance traveled as our blend metric
-                fadeVal = (innerY - fTargetMin) / fDistance
+                fadeVal = (innerY - fTargetMin) * fDistance
                 
-                imageData(quickVal, innerY) = BlendColors(inB, b, fadeVal)
-                imageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
-                imageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
+                imageData(quickVal, innerY) = (b * fadeVal) + (1# - fadeVal) * inB
+                imageData(quickVal + 1, innerY) = (g * fadeVal) + (1# - fadeVal) * inG
+                imageData(quickVal + 2, innerY) = (r * fadeVal) + (1# - fadeVal) * inR
                 
             Next innerY
         
@@ -233,14 +254,17 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Next x
     
     'Loop through the contour map one final time, recolor pixels to flame-like warm colors
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
+    For y = initY To finalY
+        m_edgeDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -252,48 +276,45 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         b = grayVal \ fxIntensity
         
         'Assign the new "fire" value to each color channel
-        imageData(quickVal, y) = b
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal + 2, y) = r
+        imageData(x) = b
+        imageData(x + 1) = g
+        imageData(x + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal finalX * 2 + x
+                SetProgBarVal finalX * 2 + y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Apply premultiplication prior to compositing
-    edgeDIB.SetAlphaPremultiplication True
+    m_edgeDIB.SetAlphaPremultiplication True
     workingDIB.SetAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
-    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BL_SCREEN, fxOpacity
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_edgeDIB, BL_SCREEN, fxOpacity
+    
+    'If this is *not* a preview, free any intermediary data
+    If (Not toPreview) Then Set m_edgeDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Ignite", , BuildParams(sltIntensity, sltRadius, sltOpacity), UNDO_LAYER
+    Process "Ignite", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltIntensity.Value = 5
-    sltRadius = 50
-    sltOpacity.Value = 50
 End Sub
 
 Private Sub Form_Load()
@@ -318,7 +339,7 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxBurn GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltOpacity_Change()
@@ -335,9 +356,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "intensity", sltIntensity.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "opacity", sltOpacity.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
 End Function
+

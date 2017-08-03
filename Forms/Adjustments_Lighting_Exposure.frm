@@ -120,12 +120,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright 2013-2017 by Audioglider and Tanner Helland
+'Copyright 2013-2017 by Tanner Helland, first build Copyright 2013 Audioglider
 'Created: 13/July/13
 'Last updated: 20/July/17
 'Last update: migrate to XML params, minor optimizations
-'
-'Many thanks to talented contributer Audioglider for creating this tool.
 '
 'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
 ' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
@@ -142,6 +140,8 @@ Attribute VB_Exposed = False
 '
 'Also, I have mixed feelings about dumping brightness and gamma corrections on this dialog, but Photoshop does it,
 ' so we may as well, too.  (They can always be ignored if you just want "pure" exposure correction.)
+'
+'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -171,7 +171,7 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -190,7 +190,7 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim r As Long, g As Long, b As Long
     
@@ -232,7 +232,7 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

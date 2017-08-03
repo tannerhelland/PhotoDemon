@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2819</langversion>
+<langversion>6.8.2820</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6757,11 +6757,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>ton aralığı</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>yeni denge</translation>
 </phrase>
@@ -6771,22 +6766,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Ayarlama renk dengesi</translation>
 </phrase>
 
-<phrase>
-<original>shadows</original>
-<translation>gölgeler</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>orta tonlar</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>olayları</translation>
-</phrase>
-
-<!-- Adjustments_ColorBalance.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
@@ -7891,6 +7871,16 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>gölgeler</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>olayları</translation>
+</phrase>
+
+<phrase>
 <original>midtone contrast</original>
 <translation>orta ton kontrastı</translation>
 </phrase>
@@ -7905,7 +7895,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>gölgeler, orta tonlar ve parlak yerlerin ayarlanması</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8835,7 +8825,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation>cam karo üreten</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -10103,11 +10093,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>Applying beer goggles</original>
-<translation>Bira gözlük uygulayarak</translation>
+<original>Calculating image fragments</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -14996,10 +14986,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4496 phrases. -->
+<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12261 total words. -->
 
 </pdData>

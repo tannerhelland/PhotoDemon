@@ -26,12 +26,12 @@ Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     Filters_Layers.WhiteBalanceDIB cParams.GetDouble("threshold", 0.05), workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -42,12 +42,12 @@ Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Op
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     Filters_Layers.ContrastCorrectDIB percentIgnore, workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -59,7 +59,7 @@ Public Sub MenuInvert()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -77,7 +77,7 @@ Public Sub MenuInvert()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = initX To finalX
@@ -97,7 +97,7 @@ Public Sub MenuInvert()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -113,7 +113,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -131,7 +131,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -163,7 +163,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -175,7 +175,7 @@ Public Sub MenuNegative()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -194,7 +194,7 @@ Public Sub MenuNegative()
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -233,7 +233,7 @@ Public Sub MenuNegative()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -245,7 +245,7 @@ Public Sub MenuInvertHue()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -264,7 +264,7 @@ Public Sub MenuInvertHue()
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -307,7 +307,7 @@ Public Sub MenuInvertHue()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -321,7 +321,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -339,7 +339,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -381,7 +381,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -397,7 +397,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -415,7 +415,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, maxVal As Long, minVal As Long
@@ -456,7 +456,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -469,7 +469,7 @@ Public Sub fxAutoEnhanceColors()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -487,7 +487,7 @@ Public Sub fxAutoEnhanceColors()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, gray As Long
@@ -531,7 +531,7 @@ Public Sub fxAutoEnhanceColors()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -544,7 +544,7 @@ Public Sub fxAutoEnhanceContrast()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -562,7 +562,7 @@ Public Sub fxAutoEnhanceContrast()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, gray As Long
@@ -607,7 +607,7 @@ Public Sub fxAutoEnhanceContrast()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -620,7 +620,7 @@ Public Sub fxAutoEnhanceLighting()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -638,7 +638,7 @@ Public Sub fxAutoEnhanceLighting()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, gray As Long
@@ -694,7 +694,7 @@ Public Sub fxAutoEnhanceLighting()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -705,13 +705,13 @@ Public Sub fxAutoCorrectShadowsAndHighlights()
     
     'Make a copy of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA
+    EffectPrep.PrepImageData dstSA
     
     'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
     Filters_Layers.AdjustDIBShadowHighlight 75, 10, -60, 100, 20, 100, 20, workingDIB
     
     'Finalize and render the adjusted image
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
 
 End Sub
 
@@ -722,13 +722,13 @@ Public Sub fxAutoEnhanceShadowsAndHighlights()
     
     'Make a copy of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA
+    EffectPrep.PrepImageData dstSA
     
     'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
     Filters_Layers.AdjustDIBShadowHighlight 100, 33, -100, 75, 30, 100, 30, workingDIB
     
     'Finalize and render the adjusted image
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -766,9 +766,9 @@ Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, By
         r = imageData(quickVal + 2, y)
         a = imageData(quickVal + 3, y)
         
-        If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.alpha) Then
+        If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.Alpha) Then
         
-            imageData(quickVal + 3, y) = newQuad.alpha
+            imageData(quickVal + 3, y) = newQuad.Alpha
             imageData(quickVal + 2, y) = newQuad.Red
             imageData(quickVal + 1, y) = newQuad.Green
             imageData(quickVal, y) = newQuad.Blue

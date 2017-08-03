@@ -102,8 +102,8 @@ Attribute VB_Exposed = False
 '"Metal" or "Chrome" Image effect
 'Copyright 2002-2017 by Tanner Helland
 'Created: sometime 2002
-'Last updated: 04/April/15
-'Last update: rewrite function from scratch
+'Last updated: 03/August/17
+'Last update: migrate to XML params, performance improvements
 '
 'PhotoDemon's "Metal" filter is the rough equivalent of "Chrome" in Photoshop.  Our implementation is relatively
 ' straightforward; a normalized graymap is created for the image, then remapped according to a sinusoidal-like
@@ -111,8 +111,6 @@ Attribute VB_Exposed = False
 '
 'The user currently has control over two parameters: "smoothness", which determines a pre-effect blur radius,
 ' and "detail" which controls the number of octaves in the lookup table.
-'
-'Still TODO: allow the user to set a highlight and shadow color, instead of using boring ol' gray
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -122,13 +120,27 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a metallic "shimmer" to an image
-Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal shadowColor As Long = 0, Optional ByVal highlightColor As Long = vbWhite, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyMetalFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Pouring smoldering metal onto image..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim steelDetail As Long, steelSmoothness As Double
+    Dim shadowColor As Long, highlightColor As Long
+    
+    With cParams
+        steelDetail = .GetLong("detail", sltDetail.Value)
+        steelSmoothness = .GetDouble("radius", sltRadius.Value)
+        shadowColor = .GetLong("shadowcolor", csShadow.Color)
+        highlightColor = .GetLong("highlightcolor", csHighlight.Color)
+    End With
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the smoothness (kernel radius) to match the size of the preview box
     If toPreview Then steelSmoothness = steelSmoothness * curDIBValues.previewModifier
@@ -150,13 +162,13 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
-    If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, steelSmoothness, 3
+    If (steelSmoothness > 0) Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, steelSmoothness, 3
         
     'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
     
     'Next, we need to generate a sinusoidal octave lookup table for the graymap.  This causes the luminance of the map to
-    ' vary evently between the number of detail points requested by the user.
+    ' vary evenly between the number of detail points requested by the user.
     
     'Detail cannot be lower than 2, but it is presented to the user as [0, (arbitrary upper bound)], so add two to the total now
     steelDetail = steelDetail + 2
@@ -167,18 +179,21 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     ReDim gCurve(0 To steelDetail) As POINTFLOAT
     ReDim bCurve(0 To steelDetail) As POINTFLOAT
     
+    Dim detailModifier As Double
+    detailModifier = 1# / CDbl(steelDetail)
+    
     'For all channels, X values are evenly distributed from 0 to 255
     Dim i As Long
     For i = 0 To steelDetail
-        rCurve(i).x = CDbl(i / steelDetail) * 255
-        gCurve(i).x = CDbl(i / steelDetail) * 255
-        bCurve(i).x = CDbl(i / steelDetail) * 255
+        rCurve(i).x = CDbl(i) * detailModifier * 255#
+        gCurve(i).x = CDbl(i) * detailModifier * 255#
+        bCurve(i).x = CDbl(i) * detailModifier * 255#
     Next i
     
     'Y values alternate between the shadow and highlight colors; these are calculated on a per-channel basis
     For i = 0 To steelDetail
         
-        If i Mod 2 = 0 Then
+        If (i Mod 2) = 0 Then
             rCurve(i).y = rShadow
             gCurve(i).y = gShadow
             bCurve(i).y = bShadow
@@ -220,7 +235,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim grayVal As Long
     
@@ -246,13 +261,13 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
             
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Metal", , BuildParams(sltDetail, sltRadius, csShadow.Color, csHighlight.Color), UNDO_LAYER
+    Process "Metal", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -286,7 +301,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyMetalFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltDetail_Change()
@@ -308,7 +323,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "detail", sltDetail.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "shadowcolor", csShadow.Color
+        .AddParam "highlightcolor", csHighlight.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2819</langversion>
+<langversion>6.8.2820</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6764,11 +6764,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>тоновый диапазон</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>новый баланс</translation>
 </phrase>
@@ -6778,22 +6773,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Регулировка цветового баланса</translation>
 </phrase>
 
-<phrase>
-<original>shadows</original>
-<translation>тени</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>полутона</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>Основные моменты</translation>
-</phrase>
-
-<!-- Adjustments_ColorBalance.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
@@ -7898,6 +7878,16 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>тени</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>Основные моменты</translation>
+</phrase>
+
+<phrase>
 <original>midtone contrast</original>
 <translation>полутона контраст</translation>
 </phrase>
@@ -7912,7 +7902,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Настройка теней, полутонов и бликов</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8842,7 +8832,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Генерирование стеклянные плитки</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -10110,11 +10100,11 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
-<original>Applying beer goggles</original>
-<translation>Применение пива очки</translation>
+<original>Calculating image fragments</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -15009,10 +14999,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4496 phrases. -->
+<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12261 total words. -->
 
 </pdData>

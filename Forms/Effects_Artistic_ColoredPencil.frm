@@ -153,7 +153,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
     ' that copy separate from the original (as the two must be blended as the final step of the filter).
@@ -177,7 +177,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         SetProgBarMax finalY * 3 + finalX * 5
         
         Dim progBarCheck As Long
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
         
     End If
     
@@ -361,7 +361,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

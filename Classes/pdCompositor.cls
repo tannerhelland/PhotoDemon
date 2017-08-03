@@ -31,8 +31,6 @@ Attribute VB_Exposed = False
 ' optimizations have been made to try and improve the performance of non-destructive edits, and those optimizations
 ' comprise a large portion of the class.
 '
-'Many thanks to expert contributor Audioglider for his help implementing PhotoDemon's many supported blend modes.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '

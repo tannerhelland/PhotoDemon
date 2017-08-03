@@ -147,10 +147,10 @@ Friend Function ApplyRotation(ByVal rotationAngle As Single, Optional ByVal cent
         
             'If a different center point is desired, we must translate the matrix before and after rotation.
             ' (The optional transformOrder parameter is ignored out of necessity.)
-            If (centerX <> 0) Or (centerY <> 0) Then
+            If (centerX <> 0#) Or (centerY <> 0#) Then
                 
                 'Center the matrix over the rotation center point
-                Me.ApplyTranslation -1 * centerX, -1 * centerY, P2_TO_Append
+                Me.ApplyTranslation -1# * centerX, -1# * centerY, P2_TO_Append
                 
                 'Apply the rotation
                 ApplyRotation = GDI_Plus.GDIPlus_MatrixRotate(m_TransformHandle, rotationAngle, P2_TO_Append)

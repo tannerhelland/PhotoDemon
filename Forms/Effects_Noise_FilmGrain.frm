@@ -107,7 +107,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a separate source DIB. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent adjusted pixel values from spreading across the image as we go.)
@@ -146,7 +146,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     Dim progBarCheck As Long
     If (Not toPreview) Then
         SetProgBarMax finalY * 2 + finalX * 2
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
         
     'Noise variables
@@ -213,7 +213,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
         'We now have a softened noise DIB. Next, create three arrays - one pointing at the original image data, one pointing at
         ' the noise data, and one pointing at the destination data.
-        PrepImageData dstSA, toPreview, dstPic
+        EffectPrep.PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
@@ -287,7 +287,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
