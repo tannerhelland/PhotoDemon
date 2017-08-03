@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2820</langversion>
+<langversion>6.8.2821</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -544,16 +544,6 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>Animating image (stage %1 of %2)</original>
-<translation>Animálása kép (szakasz %1 %2)</translation>
-</phrase>
-
-<phrase>
-<original>Synthesizing new image</original>
-<translation>Szintetizáló új kép</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Gyorsuló 88 mph érdekében antik Ify ezt kép</translation>
 </phrase>
@@ -602,7 +592,7 @@ You használhatja MenuTest () al a Filters_Miscellaneous modul, hogy tesztelje a
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -611,11 +601,6 @@ You használhatja MenuTest () al a Filters_Miscellaneous modul, hogy tesztelje a
 <phrase>
 <original>Submerging image in artificial water</original>
 <translation>Alámerült kép mesterséges víz</translation>
-</phrase>
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Mesterséges légkör</translation>
 </phrase>
 
 <phrase>
@@ -628,7 +613,7 @@ You használhatja MenuTest () al a Filters_Miscellaneous modul, hogy tesztelje a
 <translation>Robbanó képzeletbeli vulkán</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2479,6 +2464,12 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 
 <!-- END text for Selections.bas-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- BEGIN text for TextSupport.bas -->
 
 <phrase>
@@ -2621,6 +2612,12 @@ Please enter a numeric value.</original>
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -8718,6 +8715,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
+<original>Animating image (stage %1 of %2)</original>
+<translation>Animálása kép (szakasz %1 %2)</translation>
+</phrase>
+
+<phrase>
 <original>Animating image</original>
 <translation>animálása kép</translation>
 </phrase>
@@ -8737,7 +8739,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>magas</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -9784,7 +9786,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Natural_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
 <original>smoothness</original>
@@ -9796,9 +9798,9 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>Öntés parázsló fémre kép</translation>
 </phrase>
 
-<!-- Effects_Natural_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- END text for Effects_Natural_Metal.frm-->
+<!-- END text for Effects_Nature_Metal.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9980,6 +9982,22 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
@@ -14946,40 +14964,23 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Strings.bas -->
-
-<!-- Strings.bas contains 0 phrases. -->
-
-<!-- END text for Strings.bas-->
-
-<!-- BEGIN text for Web.bas -->
-
-<!-- Web.bas contains 0 phrases. -->
-
-<!-- END text for Web.bas-->
-
-<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation></translation>
+<original>Creating artificial atmosphere</original>
+<translation>Mesterséges légkör</translation>
 </phrase>
 
-<phrase>
-<original>Applying harmonic mean filter</original>
-<translation></translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_HarmonicMean.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4496 phrases. -->
-<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12258 total words. -->
 
 </pdData>

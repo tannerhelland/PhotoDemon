@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2964</langversion>
+<langversion>6.8.2965</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -545,16 +545,6 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 </phrase>
 
 <phrase>
-<original>Animating image (stage %1 of %2)</original>
-<translation>Bild wird animiert (Phase %1 von %2)</translation>
-</phrase>
-
-<phrase>
-<original>Synthesizing new image</original>
-<translation>Neues Bild wird synthetisiert</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Beschleunigung auf 999 km/h um dieses Bild ein antikes Aussehen zu geben</translation>
 </phrase>
@@ -603,7 +593,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <translation>PhotoDemon Pro Tipp</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -612,11 +602,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Submerging image in artificial water</original>
 <translation>Bild wird in künstliches Wasser eingetaucht</translation>
-</phrase>
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Künstliche Atmosphäre wird erstellt</translation>
 </phrase>
 
 <phrase>
@@ -629,7 +614,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <translation>Imaginärer Vulkan explodiert</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2494,6 +2479,12 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <!-- END text for Selections.bas-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- BEGIN text for TextSupport.bas -->
 
 <phrase>
@@ -2636,6 +2627,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -8738,6 +8735,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Animating image (stage %1 of %2)</original>
+<translation>Bild wird animiert (Phase %1 von %2)</translation>
+</phrase>
+
+<phrase>
 <original>Animating image</original>
 <translation>Bild wird animiert</translation>
 </phrase>
@@ -8757,7 +8759,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Hoch</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -9804,7 +9806,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Natural_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
 <original>smoothness</original>
@@ -9816,9 +9818,9 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Glühendes Metall wird auf Bild eingegossen</translation>
 </phrase>
 
-<!-- Effects_Natural_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- END text for Effects_Natural_Metal.frm-->
+<!-- END text for Effects_Nature_Metal.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -10000,6 +10002,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation>Harmonischer Mittelwert</translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation>Harmonischer Mittelwert-Filter wird angewendet</translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
@@ -14972,40 +14990,23 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Strings.bas -->
-
-<!-- Strings.bas contains 0 phrases. -->
-
-<!-- END text for Strings.bas-->
-
-<!-- BEGIN text for Web.bas -->
-
-<!-- Web.bas contains 0 phrases. -->
-
-<!-- END text for Web.bas-->
-
-<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Harmonischer Mittelwert</translation>
+<original>Creating artificial atmosphere</original>
+<translation>Künstliche Atmosphäre wird erstellt</translation>
 </phrase>
 
-<phrase>
-<original>Applying harmonic mean filter</original>
-<translation>Harmonischer Mittelwert-Filter wird angewendet</translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_HarmonicMean.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4496 phrases. -->
-<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12258 total words. -->
 
 </pdData>

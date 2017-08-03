@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2820</langversion>
+<langversion>6.8.2821</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -545,16 +545,6 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 </phrase>
 
 <phrase>
-<original>Animating image (stage %1 of %2)</original>
-<translation>Animasi imej (peringkat %1 daripada %2)</translation>
-</phrase>
-
-<phrase>
-<original>Synthesizing new image</original>
-<translation>Mensintesis imej baru</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Mempercepatkan untuk 88mph untuk antik-ify imej ini</translation>
 </phrase>
@@ -603,7 +593,7 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <translation>PhotoDemon Pro Petua</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -612,11 +602,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>Submerging image in artificial water</original>
 <translation>Imej terendam dalam air tiruan</translation>
-</phrase>
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Mewujudkan suasana tiruan</translation>
 </phrase>
 
 <phrase>
@@ -629,7 +614,7 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <translation>Meletup gunung berapi khayalan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2492,6 +2477,12 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 
 <!-- END text for Selections.bas-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- BEGIN text for TextSupport.bas -->
 
 <phrase>
@@ -2634,6 +2625,12 @@ Please masukkan nilai berangka.</translation>
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -8736,6 +8733,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>Animating image (stage %1 of %2)</original>
+<translation>Animasi imej (peringkat %1 daripada %2)</translation>
+</phrase>
+
+<phrase>
 <original>Animating image</original>
 <translation>imej animasi</translation>
 </phrase>
@@ -8755,7 +8757,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>tinggi</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -9802,7 +9804,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Natural_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
 <original>smoothness</original>
@@ -9814,9 +9816,9 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mencurah membara logam pada imej</translation>
 </phrase>
 
-<!-- Effects_Natural_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- END text for Effects_Natural_Metal.frm-->
+<!-- END text for Effects_Nature_Metal.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9998,6 +10000,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
@@ -14970,40 +14988,23 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Strings.bas -->
-
-<!-- Strings.bas contains 0 phrases. -->
-
-<!-- END text for Strings.bas-->
-
-<!-- BEGIN text for Web.bas -->
-
-<!-- Web.bas contains 0 phrases. -->
-
-<!-- END text for Web.bas-->
-
-<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation></translation>
+<original>Creating artificial atmosphere</original>
+<translation>Mewujudkan suasana tiruan</translation>
 </phrase>
 
-<phrase>
-<original>Applying harmonic mean filter</original>
-<translation></translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_HarmonicMean.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4496 phrases. -->
-<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12258 total words. -->
 
 </pdData>

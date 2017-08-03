@@ -287,7 +287,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Dilate...", "effects_dilate", 7, 4, 5
         AddMenuItem "Erode...", "effects_erode", 7, 4, 6
     AddMenuItem "Natural", 7, 5
-        AddMenuItem "Atmosphere", "effects_atmosphere", 7, 5, 0
+        AddMenuItem "Atmosphere...", "effects_atmosphere", 7, 5, 0
         AddMenuItem "Fog...", "effects_fog", 7, 5, 1
         AddMenuItem "Freeze", "effects_freeze", 7, 5, 2
         AddMenuItem "Ignite", "effects_ignite", 7, 5, 3

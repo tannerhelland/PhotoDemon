@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2820</langversion>
+<langversion>6.8.2821</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -545,16 +545,6 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 </phrase>
 
 <phrase>
-<original>Animating image (stage %1 of %2)</original>
-<translation>Animera bilden (steg %1 av %2)</translation>
-</phrase>
-
-<phrase>
-<original>Synthesizing new image</original>
-<translation>Syntetisera ny bild</translation>
-</phrase>
-
-<phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
 <translation>Accelerera till 88mph för att antik-cera den här bilden</translation>
 </phrase>
@@ -603,7 +593,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -612,11 +602,6 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <phrase>
 <original>Submerging image in artificial water</original>
 <translation>Sänka ned bild i konstgjorda vatten</translation>
-</phrase>
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Att skapa konstgjord atmosfär</translation>
 </phrase>
 
 <phrase>
@@ -629,7 +614,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <translation>Exploderande imaginära vulkan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2487,6 +2472,12 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 
 <!-- END text for Selections.bas-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- BEGIN text for TextSupport.bas -->
 
 <phrase>
@@ -2629,6 +2620,12 @@ Please ange ett numeriskt värde.</translation>
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
+
+<!-- BEGIN text for Web.bas -->
+
+<!-- Web.bas contains 0 phrases. -->
+
+<!-- END text for Web.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -8731,6 +8728,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>Animating image (stage %1 of %2)</original>
+<translation>Animera bilden (steg %1 av %2)</translation>
+</phrase>
+
+<phrase>
 <original>Animating image</original>
 <translation>animera bilden</translation>
 </phrase>
@@ -8750,7 +8752,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>hög</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -9797,7 +9799,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Natural_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
 <original>smoothness</original>
@@ -9809,9 +9811,9 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Hälla pyrande metall på bild</translation>
 </phrase>
 
-<!-- Effects_Natural_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- END text for Effects_Natural_Metal.frm-->
+<!-- END text for Effects_Nature_Metal.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9993,6 +9995,22 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+
+<phrase>
+<original>Harmonic Mean</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying harmonic mean filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_HarmonicMean.frm-->
 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
@@ -14964,40 +14982,23 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Strings.bas -->
-
-<!-- Strings.bas contains 0 phrases. -->
-
-<!-- END text for Strings.bas-->
-
-<!-- BEGIN text for Web.bas -->
-
-<!-- Web.bas contains 0 phrases. -->
-
-<!-- END text for Web.bas-->
-
-<!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation></translation>
+<original>Creating artificial atmosphere</original>
+<translation>Att skapa konstgjord atmosfär</translation>
 </phrase>
 
-<phrase>
-<original>Applying harmonic mean filter</original>
-<translation></translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_HarmonicMean.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4496 phrases. -->
-<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12258 total words. -->
 
 </pdData>
