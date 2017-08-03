@@ -128,7 +128,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
     
     'Initiate PhotoDemon's central image handler
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'During a preview, the smudge radius must be reduced to match the preview size
     If toPreview Then colorSmudge = colorSmudge * curDIBValues.previewModifier
@@ -207,7 +207,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 

@@ -198,7 +198,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -233,7 +233,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
     ' /* BEGIN SUPERSAMPLING PREPARATION */
@@ -427,7 +427,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 

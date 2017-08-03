@@ -138,7 +138,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -166,7 +166,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Create a Voronoi class to help us with processing; it does all the messy Voronoi work for us.
     Dim cVoronoi As pdVoronoi
@@ -343,7 +343,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
 '    Next x
         
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

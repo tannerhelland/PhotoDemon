@@ -131,7 +131,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     'Start by prepping a workingDIB instance
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Previews require us to adjust the coarseness parameter to match the preview size
     If toPreview Then
@@ -229,7 +229,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     Set overlayDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
 
 End Sub
 

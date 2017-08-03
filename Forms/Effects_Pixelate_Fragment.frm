@@ -155,7 +155,7 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     'Request a working copy of the current layer
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Make a copy of said working data
     Dim srcDIB As pdDIB
@@ -183,10 +183,12 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     If opacityAutomatic Then
     
         'Opacity scales non-linearly with the number of fragments.  (These constants were arrived at by
-        ' trial-and-error, while examining the output of similar filters in other photo editing software.)
+        ' trial-and-error, frankly; a straight division results in alpha values too low, so we artificially
+        ' boost the opacity, while not allowing it to drop to the point where everything becomes a
+        ' muddled gray.)
         opacityLevel = 100# / (numOfFragments + 1) * 1.667
         If (opacityLevel > 100#) Then opacityLevel = 100#
-        If (opacityLevel < 15#) Then opacityLevel = 15#
+        If (opacityLevel < 7.5) Then opacityLevel = 7.5
         
     Else
         opacityLevel = opacityManual
@@ -195,8 +197,8 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     'Wrap pd2D surfaces around the source and destination images.
     Dim srcSurface As pd2DSurface, dstSurface As pd2DSurface
     Set srcSurface = New pd2DSurface: Set dstSurface = New pd2DSurface
-    srcSurface.WrapSurfaceAroundDC srcDIB.GetDIBDC, , srcDIB.GetDIBWidth, srcDIB.GetDIBHeight
-    dstSurface.WrapSurfaceAroundDC workingDIB.GetDIBDC, , workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+    srcSurface.WrapSurfaceAroundPDDIB srcDIB
+    dstSurface.WrapSurfaceAroundPDDIB workingDIB
     dstSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
     
     'Prep a painter.  (It will handle the actual drawing.)
@@ -236,7 +238,7 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Set dstSurface = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
         
 End Sub
 

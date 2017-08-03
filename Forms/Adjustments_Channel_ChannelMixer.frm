@@ -159,12 +159,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright 2013-2017 by Audioglider and Tanner Helland
+'Copyright 2013-2017 by Tanner Helland, first build Copyright 2014 Audioglider
 'Created: 08/June/13
 'Last updated: 23/September/14
 'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
-'
-'Many thanks to talented contributer Audioglider for creating this tool.
 '
 'Standard channel mixer dialog.  Layout and feature set derived from comparable tools in Photoshop and GIMP.
 ' Per convention, all channels can be modified simultaneously.  For convenience, a "constant" slider is also
@@ -176,6 +174,8 @@ Attribute VB_Exposed = False
 'A "preserve luminance" option is provided for applying color changes without changing the overall composition
 ' of the photo.  This is disabled when "monochrome" is active (obviously, as otherwise the gray values would
 ' never change!)
+'
+'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -290,25 +290,25 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
         ' named enums at the top of this module.
-        channelModifiers(0, 0) = .GetDouble("RedOutRedIn", 100) / 100
-        channelModifiers(0, 1) = .GetDouble("RedOutGreenIn", 0) / 100
-        channelModifiers(0, 2) = .GetDouble("RedOutBlueIn", 0) / 100
-        channelModifiers(0, 3) = .GetDouble("RedOutConstantIn", 0)
+        channelModifiers(0, 0) = .GetDouble("RedOutRedIn", 100) / 100#
+        channelModifiers(0, 1) = .GetDouble("RedOutGreenIn", 0#) / 100#
+        channelModifiers(0, 2) = .GetDouble("RedOutBlueIn", 0#) / 100#
+        channelModifiers(0, 3) = .GetDouble("RedOutConstantIn", 0#)
         
-        channelModifiers(1, 0) = .GetDouble("GreenOutRedIn", 0) / 100
-        channelModifiers(1, 1) = .GetDouble("GreenOutGreenIn", 100) / 100
-        channelModifiers(1, 2) = .GetDouble("GreenOutBlueIn", 0) / 100
-        channelModifiers(1, 3) = .GetDouble("GreenOutConstantIn", 0)
+        channelModifiers(1, 0) = .GetDouble("GreenOutRedIn", 0#) / 100#
+        channelModifiers(1, 1) = .GetDouble("GreenOutGreenIn", 100#) / 100#
+        channelModifiers(1, 2) = .GetDouble("GreenOutBlueIn", 0#) / 100#
+        channelModifiers(1, 3) = .GetDouble("GreenOutConstantIn", 0#)
         
-        channelModifiers(2, 0) = .GetDouble("BlueOutRedIn", 0) / 100
-        channelModifiers(2, 1) = .GetDouble("BlueOutGreenIn", 0) / 100
-        channelModifiers(2, 2) = .GetDouble("BlueOutBlueIn", 100) / 100
-        channelModifiers(2, 3) = .GetDouble("BlueOutConstantIn", 0)
+        channelModifiers(2, 0) = .GetDouble("BlueOutRedIn", 0#) / 100#
+        channelModifiers(2, 1) = .GetDouble("BlueOutGreenIn", 0#) / 100#
+        channelModifiers(2, 2) = .GetDouble("BlueOutBlueIn", 100#) / 100#
+        channelModifiers(2, 3) = .GetDouble("BlueOutConstantIn", 0#)
         
-        channelModifiers(3, 0) = .GetDouble("GrayOutRedIn", 0) / 100
-        channelModifiers(3, 1) = .GetDouble("GrayOutGreenIn", 0) / 100
-        channelModifiers(3, 2) = .GetDouble("GrayOutBlueIn", 0) / 100
-        channelModifiers(3, 3) = .GetDouble("GrayOutConstantIn", 100)
+        channelModifiers(3, 0) = .GetDouble("GrayOutRedIn", 0#) / 100#
+        channelModifiers(3, 1) = .GetDouble("GrayOutGreenIn", 0#) / 100#
+        channelModifiers(3, 2) = .GetDouble("GrayOutBlueIn", 0#) / 100#
+        channelModifiers(3, 3) = .GetDouble("GrayOutConstantIn", 100#)
         
     End With
     
@@ -316,7 +316,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -334,7 +334,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -432,7 +432,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

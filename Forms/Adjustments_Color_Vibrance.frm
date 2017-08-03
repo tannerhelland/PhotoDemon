@@ -43,7 +43,7 @@ Begin VB.Form FormVibrance
       _ExtentY        =   1270
       Caption         =   "vibrance"
       Min             =   -100
-      Max             =   200
+      Max             =   100
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -62,17 +62,24 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2013-2017 by Audioglider
+'Copyright 2014-2017 by Tanner Helland, first build Copyright 2013 Audioglider
 'Created: 26/June/13
-'Last updated: 20/July/17
-'Last update: migrate to XML params
+'Last updated: 02/August/17
+'Last update: rewrite against entirely new, improved algorithm
 '
-'Many thanks to talented contributer Audioglider for creating this tool.
+'Photoshop pioneered the concept of a "vibrance" adjustment in CS4.  Vibrance is similar in concept
+' to saturation (as you can probably infer from the name), but unlike saturation, it changes color
+' "vibrance" in non-linear ways.  Already-vibrant colors are largely ignored by the tool, while largely
+' unsaturated colors are also ignored.  Tones with middling saturation receive the largest changes,
+' which is what allows the tool to produce more "realistic" output compared to linear saturation
+' adjustments.
 '
-'Vibrance is similar to saturation, but slightly smarter, more subtle.  The algorithm attempts to provide a greater boost
-' to colors that are less saturated, while performing a smaller adjustment to already saturated colors.
+'The algorithm PhotoDemon uses has undergone a number of revisions.  At present, it automates an
+' S-curve adjustment to the underlying image's saturation (via the HSL space, specifically - not HSV).
+' This provides reasonably good control, while limiting the amount of change applied at the high and
+' low ends of the scale.
 '
-'Positive values indicate "more vibrance", while negative values indicate "less vibrance"
+'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -93,14 +100,12 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     vibranceAdjustment = cParams.GetDouble("vibrance", 0#)
     
     'Reverse the vibrance input; this way, positive values make the image more vibrant.  Negative values make it less vibrant.
-    vibranceAdjustment = -0.01 * vibranceAdjustment
+    'vibranceAdjustment = -0.01 * vibranceAdjustment
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    
-    PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -118,52 +123,62 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and related variables
-    Dim r As Long, g As Long, b As Long, maxVal As Long
-    Dim amtVal As Double, avgVal As Double
+    Dim h As Double, s As Double, v As Double
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
+    Const ONE_DIV_255 As Double = 1# / 255#
     
-    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        grayLookUp(x) = x \ 3
-    Next x
-        
+    'vibranceAdjustment = (vibranceAdjustment + 100#) * 0.01
+    'If (vibranceAdjustment <> 0#) Then vibranceAdjustment = 1# / vibranceAdjustment
+    
+    'Construct a curve-based lookup table
+    Dim sCurve() As POINTFLOAT
+    ReDim sCurve(0 To 2) As POINTFLOAT
+    sCurve(0).x = 0
+    sCurve(0).y = 0
+    sCurve(2).x = 255
+    sCurve(2).y = 255
+    
+    'The middle point of the curve is automatically shifted in a gamma-like curve, according to
+    ' the strength of the current adjustment.
+    Dim midCurveAdj As Single
+    midCurveAdj = (vibranceAdjustment / 100#) * 65#
+    sCurve(1).x = 127 - midCurveAdj
+    sCurve(1).y = 127 + midCurveAdj * 0.5
+    
+    'Use those curve coordinates to construct a full lookup table of converted values
+    Dim cLut As pdFilterLUT
+    Set cLut = New pdFilterLUT
+    Dim sValues() As Byte
+    cLut.FillLUT_Curve sValues, sCurve
+    
     'Loop through each pixel in the image, converting values as we go
     initX = initX * qvDepth
     finalX = finalX * qvDepth
     
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step qvDepth
         
         'Get the source pixel color values
-        b = imageData(x, y)
-        r = imageData(x + 2, y)
-        g = imageData(x + 1, y)
+        bFloat = imageData(x)
+        gFloat = imageData(x + 1)
+        rFloat = imageData(x + 2)
         
-        'Calculate the gray value using the look-up table
-        avgVal = grayLookUp(r + g + b)
-        maxVal = Max3Int(r, g, b)
+        'Convert to HSL
+        Colors.PreciseRGBtoHSL rFloat * ONE_DIV_255, gFloat * ONE_DIV_255, bFloat * ONE_DIV_255, h, s, v
         
-        'Get adjusted average
-        amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
+        'Modify saturation using our pre-built lookup table
+        s = CDbl(sValues(Int(s * 255#))) * ONE_DIV_255
         
-        If (r <> maxVal) Then r = r + (maxVal - r) * amtVal
-        If (g <> maxVal) Then g = g + (maxVal - g) * amtVal
-        If (b <> maxVal) Then b = b + (maxVal - b) * amtVal
+        'Convert the modified HSL values back to RGB
+        Colors.PreciseHSLtoRGB h, s, v, rFloat, gFloat, bFloat
         
-        'Clamp values to [0,255] range
-        If (r < 0) Then r = 0
-        If (r > 255) Then r = 255
-        If (g < 0) Then g = 0
-        If (g > 255) Then g = 255
-        If (b < 0) Then b = 0
-        If (b > 255) Then b = 255
-        
-        imageData(x, y) = b
-        imageData(x + 1, y) = g
-        imageData(x + 2, y) = r
+        imageData(x) = bFloat * 255#
+        imageData(x + 1) = gFloat * 255#
+        imageData(x + 2) = rFloat * 255#
         
     Next x
         If (Not toPreview) Then
@@ -175,10 +190,10 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

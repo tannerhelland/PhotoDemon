@@ -150,7 +150,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     'Create a local array and point it at the pixel data we want to operate on
     Dim srcImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -323,7 +323,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

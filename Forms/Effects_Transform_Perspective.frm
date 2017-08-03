@@ -171,7 +171,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -209,7 +209,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
     ' /* BEGIN SUPERSAMPLING PREPARATION */
@@ -498,7 +498,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -677,7 +677,7 @@ Private Sub RedrawPreviewBox()
     Else
         If cmdBar.PreviewsAllowed Then
             Dim tmpSA As SAFEARRAY2D
-            PrepImageData tmpSA, True, pdFxPreview
+            EffectPrep.PrepImageData tmpSA, True, pdFxPreview
             StretchBlt picDraw.hDC, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
         End If
     End If

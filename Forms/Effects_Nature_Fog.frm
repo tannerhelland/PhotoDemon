@@ -124,8 +124,8 @@ Attribute VB_Exposed = False
 'Fog Effect
 'Copyright 2002-2017 by Tanner Helland
 'Created: 8/April/02
-'Last updated: 10/July/14
-'Last update: rewrite filter from scratch, give it a dialog, and basically rethink the whole way the function is implemented
+'Last updated: 03/August/17
+'Last update: migrate to XML params, minor performance improvements
 '
 'This tool allows the user to apply a layer of artificial "fog" to an image.  Perlin Noise is used to generate
 ' the fog map, using a well-known fractal generation approach to successive layers of noise
@@ -155,17 +155,31 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a "fog" effect to an image, using Perlin Noise as the base
-Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDensity As Long, ByVal fxQuality As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Generating artificial fog..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim fxScale As Double, fxContrast As Double
+    Dim fxDensity As Long, fxQuality As Long
+    
+    With cParams
+        fxScale = .GetDouble("scale", sltScale.Value)
+        fxContrast = .GetDouble("contrast", sltContrast.Value)
+        fxDensity = .GetLong("density", sltDensity.Value)
+        fxQuality = .GetLong("quality", sltQuality.Value)
+    End With
+    
     'Contrast is presented to the user on a [0, 100] scale, but the algorithm needs it on [0, 1]; convert it now
-    fxContrast = fxContrast / 100
+    fxContrast = fxContrast / 100#
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -176,22 +190,25 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim xOffset As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
     ' values, but at some point it distorts the image beyond recognition.
     If (curDIBValues.Width > curDIBValues.Height) Then
-        fxScale = (fxScale / 100) * curDIBValues.Height
+        fxScale = (fxScale / 100#) * curDIBValues.Height
     Else
-        fxScale = (fxScale / 100) * curDIBValues.Width
+        fxScale = (fxScale / 100#) * curDIBValues.Width
     End If
-        
+    
+    If (fxScale > 0#) Then fxScale = 1# / fxScale
+    
     'This effect requires a noise function to operate.  I use Steve McMahon's excellent Perlin Noise class for this.
     Dim cPerlin As cPerlin3D
     Set cPerlin = New cPerlin3D
@@ -227,14 +244,14 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     ReDim fogArray(initX To finalX, initY To finalY) As Byte
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
     For y = initY To finalY
-        
+    For x = initX To finalX
+    
         'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
         ' user's turbulence value.
-        xScaleCache = x / fxScale
-        yScaleCache = y / fxScale
-        pNoiseCache = 0
+        xScaleCache = x * fxScale
+        yScaleCache = y * fxScale
+        pNoiseCache = 0#
         
         'Fractal noise works by summing successively smaller perlin noise values taken from successively larger
         ' amplitudes of the original function.
@@ -246,7 +263,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
         pNoiseCache = pNoiseCache * fxContrast
         
         'Convert the calculated noise value to RGB range and cache it
-        pDisplace = 127 + (pNoiseCache * 127)
+        pDisplace = 127 + (pNoiseCache * 127#)
         If (pDisplace > 255) Then
             pDisplace = 255
         ElseIf (pDisplace < 0) Then
@@ -255,14 +272,14 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
         
         fogArray(x, y) = pDisplace
           
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Next, create a temporary DIB that will hold a grayscale representation of our fog data
     If (m_tmpFogDIB Is Nothing) Then Set m_tmpFogDIB = New pdDIB
@@ -270,19 +287,20 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     m_tmpFogDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Loop through each pixel in the image, converting stored fog values to RGB triplets
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
-        dstImageData(quickVal, y) = fogArray(x, y)
-        dstImageData(quickVal + 1, y) = fogArray(x, y)
-        dstImageData(quickVal + 2, y) = fogArray(x, y)
-    Next y
+    For x = initX To finalX
+        pDisplace = fogArray(x, y)
+        xOffset = x * qvDepth
+        dstImageData(xOffset, y) = pDisplace
+        dstImageData(xOffset + 1, y) = pDisplace
+        dstImageData(xOffset + 2, y) = pDisplace
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If ((y + finalY) And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
             End If
         End If
-    Next x
+    Next y
     
     'tmpFogDIB now contains a grayscale representation of our fog data
     m_tmpFogDIB.UnwrapArrayFromDIB dstImageData
@@ -302,12 +320,12 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     If (Not toPreview) Then Set m_tmpFogDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fog", , BuildParams(sltScale, sltContrast, sltDensity, sltQuality), UNDO_LAYER
+    Process "Fog", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -378,7 +396,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxFog GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -392,7 +410,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "scale", sltScale.Value
+        .AddParam "contrast", sltContrast.Value
+        .AddParam "density", sltDensity.Value
+        .AddParam "quality", sltQuality.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

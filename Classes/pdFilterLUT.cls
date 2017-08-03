@@ -258,10 +258,10 @@ Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     For i = 0 To numOfPoints - 1
         For xPos = curvePoints(i).x To curvePoints(i + 1).x
             yPos = GetCurvePoint(i, xPos, curvePoints, p, u)
-            If xPos < minX Then minX = xPos
-            If xPos > maxX Then maxX = xPos
-            If yPos > 255 Then yPos = 255
-            If yPos < 0 Then yPos = 0
+            If (xPos < minX) Then minX = xPos
+            If (xPos > maxX) Then maxX = xPos
+            If (yPos > 255) Then yPos = 255
+            If (yPos < 0) Then yPos = 0
             cResults(xPos) = yPos
         Next xPos
     Next i
@@ -529,7 +529,7 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
         If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
@@ -685,7 +685,7 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.

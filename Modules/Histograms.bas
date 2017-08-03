@@ -40,7 +40,7 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, , , , True
+    EffectPrep.PrepImageData tmpSA, , , , True
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here

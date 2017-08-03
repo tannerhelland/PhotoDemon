@@ -280,7 +280,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the radius to match the size of the preview box
     sunRadius = (sunRadius * 0.005)
@@ -510,7 +510,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_RayOverlay, overlayBlend
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 

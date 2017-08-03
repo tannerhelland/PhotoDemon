@@ -6,7 +6,7 @@ Begin VB.Form FormColorBalance
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   12360
+   ClientWidth     =   12630
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,7 +21,7 @@ Begin VB.Form FormColorBalance
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   824
+   ScaleWidth      =   842
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -29,8 +29,8 @@ Begin VB.Form FormColorBalance
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12360
-      _ExtentX        =   21802
+      Width           =   12630
+      _ExtentX        =   22278
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -44,9 +44,9 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltRed 
       Height          =   405
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   1
-      Top             =   1800
+      Top             =   1440
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -59,9 +59,9 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltGreen 
       Height          =   405
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   2
-      Top             =   2760
+      Top             =   2400
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -73,9 +73,9 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltBlue 
       Height          =   405
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   3
-      Top             =   3720
+      Top             =   3360
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -87,29 +87,19 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdCheckBox chkLuminance 
       Height          =   360
-      Left            =   6240
+      Left            =   6360
       TabIndex        =   5
-      Top             =   4800
+      Top             =   4440
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   582
       Caption         =   "preserve luminance"
    End
-   Begin PhotoDemon.pdButtonStrip btsTone 
-      Height          =   1080
-      Left            =   5880
-      TabIndex        =   6
-      Top             =   120
-      Width           =   6375
-      _ExtentX        =   11245
-      _ExtentY        =   1905
-      Caption         =   "tonal range"
-   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
-      Left            =   5880
-      Top             =   1440
+      Left            =   6000
+      Top             =   1080
       Width           =   6345
       _ExtentX        =   11192
       _ExtentY        =   503
@@ -117,10 +107,10 @@ Begin VB.Form FormColorBalance
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin PhotoDemon.pdLabel Label1 
+   Begin PhotoDemon.pdLabel lblYellow 
       Height          =   270
-      Left            =   6300
-      Top             =   4200
+      Left            =   6420
+      Top             =   3840
       Width           =   2115
       _ExtentX        =   3731
       _ExtentY        =   476
@@ -129,8 +119,8 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblMagenta 
       Height          =   270
-      Left            =   6300
-      Top             =   3240
+      Left            =   6420
+      Top             =   2880
       Width           =   2190
       _ExtentX        =   3863
       _ExtentY        =   476
@@ -139,8 +129,8 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblCyan 
       Height          =   270
-      Left            =   6300
-      Top             =   2280
+      Left            =   6420
+      Top             =   1920
       Width           =   2145
       _ExtentX        =   3784
       _ExtentY        =   476
@@ -149,8 +139,8 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblBlue 
       Height          =   270
-      Left            =   9120
-      Top             =   4200
+      Left            =   9240
+      Top             =   3840
       Width           =   2070
       _ExtentX        =   3651
       _ExtentY        =   476
@@ -160,8 +150,8 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblGreen 
       Height          =   270
-      Left            =   9045
-      Top             =   3240
+      Left            =   9165
+      Top             =   2880
       Width           =   2115
       _ExtentX        =   3731
       _ExtentY        =   476
@@ -171,8 +161,8 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblRed 
       Height          =   270
-      Left            =   9045
-      Top             =   2280
+      Left            =   9165
+      Top             =   1920
       Width           =   2115
       _ExtentX        =   3731
       _ExtentY        =   476
@@ -188,13 +178,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright 2012-2017 by Tanner Helland & Audioglider
+'Copyright 2013-2017 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 16/June/14
-'Last update: Rewrote the color balance formula to allow the adjustment of
-'             shadow/midtone/highlight tones.
+'Last updated: 02/August/17
+'Last update: revert changes from an outside contributor that may have carried licensing issues
 '
-'Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
+'Color balance Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Photoshop.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -204,18 +193,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Enum TONE_REGION
-    TONE_SHADOWS = 0
-    TONE_MIDTONES = 1
-    TONE_HIGHLIGHTS = 2
-End Enum
-
-#If False Then
-    Private Const TONE_SHADOWS = 0, TONE_MIDTONES = 1, TONE_HIGHLIGHTS = 2
-#End If
-
-'Apply a new color balance to the image
-' Input: offset for each of red, green, and blue
 Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Adjusting color balance..."
@@ -225,13 +202,12 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     cParams.SetParamString effectParams
     
     Dim rVal As Long, gVal As Long, bVal As Long
-    Dim nTone As Long, preserveLuminance As Boolean
+    Dim preserveLuminance As Boolean
     
     With cParams
         rVal = .GetLong("red", 0)
         gVal = .GetLong("green", 0)
         bVal = .GetLong("blue", 0)
-        nTone = .GetLong("tonalrange", btsTone.ListIndex)
         preserveLuminance = .GetBool("preserveluminance", CBool(chkLuminance.Value))
     End With
     
@@ -240,7 +216,7 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     gModifier = 0
     bModifier = 0
     
-    'Now, Build actual RGB modifiers based off the values provided
+    'Now, build actual RGB modifiers based off the values provided
     gModifier = gModifier - rVal
     bModifier = bModifier - rVal
     rModifier = rModifier + rVal
@@ -258,10 +234,8 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    
-    PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -272,85 +246,32 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, l As Double
     
-    Dim rRgn(0 To 2) As Long, gRgn(0 To 2) As Long, bRgn(0 To 2) As Long
-    
-    rRgn(nTone) = rModifier
-    gRgn(nTone) = gModifier
-    bRgn(nTone) = bModifier
-    
-    'Add used for lightening, sub for darkening
-    Dim highlightsAdd(0 To 255) As Double, midtonesAdd(0 To 255) As Double, shadowsAdd(0 To 255) As Double
-    Dim highlightsSub(0 To 255) As Double, midtonesSub(0 To 255) As Double, shadowsSub(0 To 255) As Double
-    
-    Dim dl As Double, dm As Double
-    
-    For x = 0 To 255
-        
-        dl = 1.075 - 1# / (x / 16# + 1#)
-        
-        dm = (x - 127#) / 127#
-        dm = 0.667 * (1# - dm * dm)
-        
-        shadowsAdd(x) = dl
-        shadowsSub(255 - x) = dl
-        highlightsAdd(255 - x) = dl
-        highlightsSub(x) = dl
-        midtonesAdd(x) = dm
-        midtonesSub(x) = dm
-        
-    Next x
-    
-    'Set up transfer arrays
-    Dim rTransfer(0 To 2, 0 To 255) As Double, gTransfer(0 To 2, 0 To 255) As Double, bTransfer(0 To 2, 0 To 255) As Double
-    
-    'Add lighening/darkening modifiers to the transfer arrays
-    For x = 0 To 255
-        
-        If (rRgn(TONE_SHADOWS) > 0) Then rTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else rTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If (rRgn(TONE_MIDTONES) > 0) Then rTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else rTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If (rRgn(TONE_HIGHLIGHTS) > 0) Then rTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else rTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
-    
-        If (gRgn(TONE_SHADOWS) > 0) Then gTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else gTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If (gRgn(TONE_MIDTONES) > 0) Then gTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else gTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If (gRgn(TONE_HIGHLIGHTS) > 0) Then gTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else gTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
-    
-        If (bRgn(TONE_SHADOWS) > 0) Then bTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else bTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If (bRgn(TONE_MIDTONES) > 0) Then bTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else bTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If (bRgn(TONE_HIGHLIGHTS) > 0) Then bTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else bTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
-    
-    Next x
-    
     'Populate the lookup tables
     For x = 0 To 255
+    
+        r = x + rModifier
+        g = x + gModifier
+        b = x + bModifier
         
-        r = x
-        g = x
-        b = x
-        
-        'Apply the modifiers
-        r = Clamp0255(r + (rRgn(TONE_SHADOWS) * rTransfer(TONE_SHADOWS, r)))
-        r = Clamp0255(r + (rRgn(TONE_MIDTONES) * rTransfer(TONE_MIDTONES, r)))
-        r = Clamp0255(r + (rRgn(TONE_HIGHLIGHTS) * rTransfer(TONE_HIGHLIGHTS, r)))
-        
-        g = Clamp0255(g + (gRgn(TONE_SHADOWS) * gTransfer(TONE_SHADOWS, g)))
-        g = Clamp0255(g + (gRgn(TONE_MIDTONES) * gTransfer(TONE_MIDTONES, g)))
-        g = Clamp0255(g + (gRgn(TONE_HIGHLIGHTS) * gTransfer(TONE_HIGHLIGHTS, g)))
-        
-        b = Clamp0255(b + (bRgn(TONE_SHADOWS) * bTransfer(TONE_SHADOWS, b)))
-        b = Clamp0255(b + (bRgn(TONE_MIDTONES) * bTransfer(TONE_MIDTONES, b)))
-        b = Clamp0255(b + (bRgn(TONE_HIGHLIGHTS) * bTransfer(TONE_HIGHLIGHTS, b)))
+        If (r > 255) Then r = 255
+        If (r < 0) Then r = 0
+        If (g > 255) Then g = 255
+        If (g < 0) Then g = 0
+        If (b > 255) Then b = 255
+        If (b < 0) Then b = 0
         
         rLookup(x) = r
         gLookup(x) = g
@@ -362,26 +283,30 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     Const ONE_DIV_255 As Double = 1# / 255#
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
+    For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
-        'Get the original luminance
-        origLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
         
-        r = rLookup(r)
-        g = gLookup(g)
-        b = bLookup(b)
-        
-        'If the user doesn't want us to maintain luminance, our work is done - assign the new values.
-        'If they do want us to maintain luminance, things are a bit trickier.  We need to convert our values to
-        ' HSL, then substitute the original luminance and convert back to RGB.
+        'If the user wants us to maintain luminance, we need to convert the newly modified values to HSL,
+        ' then substitute this pixel's original luminance value when converting back to RGB.
         If preserveLuminance Then
+            
+            'Cache the original luminance
+            origLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
+            
+            'Calculate new values
+            r = rLookup(r)
+            g = gLookup(g)
+            b = bLookup(b)
         
             'Convert the new values to HSL
             Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
@@ -389,42 +314,33 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
             'Now, convert back, using the original luminance
             Colors.ImpreciseHSLtoRGB h, s, origLuminance, r, g, b
             
+        Else
+            r = rLookup(r)
+            g = gLookup(g)
+            b = bLookup(b)
         End If
         
         'Assign the new values to each color channel
-        imageData(quickVal, y) = b
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal + 2, y) = r
+        imageData(x) = b
+        imageData(x + 1) = g
+        imageData(x + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
-
-'Limit color to a 0-255 range
-Private Function Clamp0255(ByVal d As Double) As Double
-    If (d < 255#) Then
-        If (d > 0#) Then
-            Clamp0255 = d
-        Else
-            Clamp0255 = 0#
-        End If
-    Else
-        Clamp0255 = 255#
-    End If
-End Function
 
 Private Sub btsTone_Click(ByVal buttonIndex As Long)
     UpdatePreview
@@ -443,28 +359,14 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltRed.Value = 0
-    sltGreen.Value = 0
-    sltBlue.Value = 0
-    btsTone.ListIndex = 1 'Default to midtone correction
     chkLuminance.Value = vbChecked
 End Sub
 
 Private Sub Form_Load()
-    
     cmdBar.MarkPreviewStatus False
-    
-    'Populate the button strip
-    btsTone.AddItem "shadows", 0
-    btsTone.AddItem "midtones", 1
-    btsTone.AddItem "highlights", 2
-    btsTone.ListIndex = 1
-    
-    'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -501,7 +403,6 @@ Private Function GetLocalParamString() As String
         .AddParam "red", sltRed.Value
         .AddParam "green", sltGreen.Value
         .AddParam "blue", sltBlue.Value
-        .AddParam "tonalrange", btsTone.ListIndex
         .AddParam "preserveluminance", CBool(chkLuminance.Value)
     End With
     

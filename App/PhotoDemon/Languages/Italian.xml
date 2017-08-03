@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.270</langversion>
+<langversion>6.7.271</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -6754,11 +6754,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>gamma tonale</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>nuovo equilibrio</translation>
 </phrase>
@@ -6768,22 +6763,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Regolazione del bilanciamento del colore</translation>
 </phrase>
 
-<phrase>
-<original>shadows</original>
-<translation>ombre</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>mezzitoni</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>evidenziatori</translation>
-</phrase>
-
-<!-- Adjustments_ColorBalance.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
@@ -7888,6 +7868,16 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>ombre</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>evidenziatori</translation>
+</phrase>
+
+<phrase>
 <original>midtone contrast</original>
 <translation></translation>
 </phrase>
@@ -7902,7 +7892,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Regolazione delle ombre, mezzitoni ed evidenziatori</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8832,7 +8822,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Generazione piastrelle di vetro</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -10100,11 +10090,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>Applying beer goggles</original>
-<translation>Applicando gli occhiali da birra</translation>
+<original>Calculating image fragments</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -14997,10 +14987,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4496 phrases. -->
+<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12261 total words. -->
 
 </pdData>

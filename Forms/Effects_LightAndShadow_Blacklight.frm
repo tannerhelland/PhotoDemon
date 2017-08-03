@@ -96,7 +96,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -114,7 +114,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
@@ -166,7 +166,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
 
 End Sub
 

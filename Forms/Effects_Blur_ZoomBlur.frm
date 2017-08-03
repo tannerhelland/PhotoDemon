@@ -151,7 +151,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -323,7 +323,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 

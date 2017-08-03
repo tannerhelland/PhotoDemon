@@ -245,7 +245,7 @@ Private Function CalculateOptimalThreshold() As Long
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -340,11 +340,11 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
     Dim alphaAlreadyPremultiplied As Boolean: alphaAlreadyPremultiplied = False
     If (removeTransparency And (curDIBValues.BytesPerPixel = 4)) Then
-        PrepImageData tmpSA, toPreview, dstPic, , , True
+        EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , True
         workingDIB.CompositeBackgroundColor 255, 255, 255
         alphaAlreadyPremultiplied = True
     Else
-        PrepImageData tmpSA, toPreview, dstPic
+        EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     End If
     
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -365,7 +365,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Low and high color values
     Dim lowR As Long, lowG As Long, lowB As Long
@@ -754,7 +754,7 @@ NextDitheredPixel:     Next j
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied
+    EffectPrep.FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied
 
 End Sub
 

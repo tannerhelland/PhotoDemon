@@ -149,7 +149,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     Dim srcImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic, , , CBool(edgeType = 0)
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , CBool(edgeType = 0)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4
     
     If (Not toPreview) Then
@@ -250,7 +250,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     Set cPen = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
 
 End Sub
 

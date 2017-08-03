@@ -60,9 +60,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarMax 4
     
     'Build a grayscale lookup table.  We will only be comparing luminance - not colors - when determining where to crop.
-    Dim gLookUp(0 To 765) As Long
+    Dim gLookup(0 To 765) As Long
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
     
     'The new edges of the image will mark these values for us
@@ -74,7 +74,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     '1-1) Start by determining the color of the top-left pixel.  This will be our baseline.
     Dim initColor As Long, curColor As Long
-    initColor = gLookUp(CLng(srcImageData(0, 0)) + CLng(srcImageData(1, 0)) + CLng(srcImageData(2, 0)))
+    initColor = gLookup(CLng(srcImageData(0, 0)) + CLng(srcImageData(1, 0)) + CLng(srcImageData(2, 0)))
     
     Dim colorFails As Boolean
     colorFails = False
@@ -83,7 +83,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     For y = 0 To finalY
     For x = 0 To finalX
         quickVal = x * qvDepth
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -122,14 +122,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     Message "Analyzing left edge of image..."
-    initColor = gLookUp(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
+    initColor = gLookup(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
     SetProgBarVal 1
     
     For x = 0 To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -149,14 +149,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     Message "Analyzing right edge of image..."
     quickVal = finalX * qvDepth
-    initColor = gLookUp(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
+    initColor = gLookup(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
         quickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -176,7 +176,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initX = newLeft
     finalX = newRight
     quickVal = initX * qvDepth
-    initColor = gLookUp(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
+    initColor = gLookup(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
     
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
@@ -184,7 +184,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     For y = finalY To initY Step -1
     For x = initX To finalX
         quickVal = x * qvDepth
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -384,7 +384,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         SetProgBarMax numLayersToCrop * imgWidth
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
         
         'Iterate through each layer, cropping them in turn
         For i = startLayerIndex To endLayerIndex

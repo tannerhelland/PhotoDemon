@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2952</langversion>
+<langversion>6.8.2964</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -648,7 +648,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>Bild hat überall eine Farbe. Automatischer Zuschnitt nicht erforderlich.</translation>
+<translation>Bild hat überall eine Farbe. Auto-Zuschnitt nicht erforderlich.</translation>
 </phrase>
 
 <phrase>
@@ -668,7 +668,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>Bild ist bereits intelligent zugeschnitten. Automatischen Zuschnitt abgebrochen. (Es wurden keine Änderungen an dem Bild vorgenommen.)</translation>
+<translation>Bild ist bereits intelligent zugeschnitten. Auto-Zuschnitt abgebrochen. (Es wurden keine Änderungen an dem Bild vorgenommen.)</translation>
 </phrase>
 
 <phrase>
@@ -3852,7 +3852,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>auto</original>
-<translation>Automatisch</translation>
+<translation>Autom.</translation>
 </phrase>
 
 <phrase>
@@ -5116,7 +5116,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Auto correct</original>
-<translation>Automatisch korrigieren</translation>
+<translation>Autom. korrigieren</translation>
 </phrase>
 
 <phrase>
@@ -5136,7 +5136,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Auto enhance</original>
-<translation>Automatisch verbessern</translation>
+<translation>Autom. verbessern</translation>
 </phrase>
 
 <phrase>
@@ -6039,42 +6039,42 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Auto correct color</original>
-<translation>Farbe automatisch korrigieren</translation>
+<translation>Farbe autom. korrigieren</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct contrast</original>
-<translation>Kontrast automatisch korrigieren</translation>
+<translation>Kontrast autom. korrigieren</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct lighting</original>
-<translation>Beleuchtung automatisch korrigieren</translation>
+<translation>Beleuchtung autom. korrigieren</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct shadows and highlights</original>
-<translation>Schatten und Glanzlichter automatisch korrigieren</translation>
+<translation>Schatten und Glanzlichter autom. korrigieren</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance color</original>
-<translation>Farbe automatisch verbessern</translation>
+<translation>Farbe autom. verbessern</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance contrast</original>
-<translation>Kontrast automatisch verbessern</translation>
+<translation>Kontrast autom. verbessern</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance lighting</original>
-<translation>Beleuchtung automatisch verbessern</translation>
+<translation>Beleuchtung autom. verbessern</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance shadows and highlights</original>
-<translation>Schatten und Glanzlichter automatisch verbessern</translation>
+<translation>Schatten und Glanzlichter autom. verbessern</translation>
 </phrase>
 
 <phrase>
@@ -6767,11 +6767,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>Tonwertumfang</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>Neue Balance</translation>
 </phrase>
@@ -6781,22 +6776,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Farbbalance wird angepasst</translation>
 </phrase>
 
-<phrase>
-<original>shadows</original>
-<translation>Schatten</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>Mitteltöne</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>Glanzlichter</translation>
-</phrase>
-
-<!-- Adjustments_ColorBalance.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
@@ -6835,7 +6815,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>number of gray shades</original>
-<translation>Anzahl der Graustufen</translation>
+<translation>Anzahl der Grautöne</translation>
 </phrase>
 
 <phrase>
@@ -7574,7 +7554,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>variant on 32</original>
-<translation>Variante von 32</translation>
+<translation>Abweichend bei 32</translation>
 </phrase>
 
 <phrase>
@@ -7604,7 +7584,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>minus-red, variant on 44</original>
-<translation>Minus rot, Variante von 44</translation>
+<translation>Minus rot, abweichend bei 44</translation>
 </phrase>
 
 <phrase>
@@ -7684,17 +7664,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>variant of 80A, 3400K to 5500K</original>
-<translation>Variante von 80A, 3400K bis 5500K</translation>
+<translation>Variante 80A, 3400K bis 5500K</translation>
 </phrase>
 
 <phrase>
 <original>variant of 80A, 3800K to 5500K</original>
-<translation>Variante von 80A, 3800K bis 5500K</translation>
+<translation>Variante 80A, 3800K bis 5500K</translation>
 </phrase>
 
 <phrase>
 <original>variant of 80A, 4200K to 5500K</original>
-<translation>Variante von 80A, 4200K bis 5500K</translation>
+<translation>Variante 80A, 4200K bis 5500K</translation>
 </phrase>
 
 <phrase>
@@ -7901,6 +7881,16 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>Schatten</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>Glanzlichter</translation>
+</phrase>
+
+<phrase>
 <original>midtone contrast</original>
 <translation>Mitteltonkontrast</translation>
 </phrase>
@@ -7915,7 +7905,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Schatten, Mitteltöne und Glanzlichter werden angepasst</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8845,7 +8835,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Glasziegel werden generiert</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -9787,7 +9777,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>Randomisieren</translation>
 </phrase>
 
 <phrase>
@@ -9802,12 +9792,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Strahlvarianz</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Lichtstrahlen werden generiert</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10113,11 +10103,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Applying beer goggles</original>
-<translation>Bierschutzbrille wird angewendet</translation>
+<original>Calculating image fragments</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -10586,7 +10576,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>rays of light</original>
-<translation>Lichtstrahlen</translation>
+<translation>Strahlen des Lichts</translation>
 </phrase>
 
 <!-- Effects_Transform_Sphere.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -12913,7 +12903,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Transparenz wird entfernt</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13297,7 +13287,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei automatischer Aktivierung von Layern ignorieren</translation>
+<translation>Transparente Pixel bei Auto-Aktivierung von Layern ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -15012,10 +15002,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4496 phrases. -->
+<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12261 total words. -->
 
 </pdData>

@@ -938,7 +938,7 @@ Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -1061,7 +1061,7 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -1176,7 +1176,7 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.

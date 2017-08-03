@@ -26,7 +26,7 @@ Public Sub MenuWater()
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA
+    EffectPrep.PrepImageData dstSA
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -61,7 +61,7 @@ Public Sub MenuWater()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
           
     'This wave transformation requires specialized variables
     Dim xWavelength As Double
@@ -136,7 +136,7 @@ Public Sub MenuWater()
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -148,7 +148,7 @@ Public Sub MenuAtmospheric()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -166,7 +166,7 @@ Public Sub MenuAtmospheric()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -200,7 +200,7 @@ Public Sub MenuAtmospheric()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -212,7 +212,7 @@ Public Sub MenuFrozen()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -230,7 +230,7 @@ Public Sub MenuFrozen()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -271,7 +271,7 @@ Public Sub MenuFrozen()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub
 
@@ -283,7 +283,7 @@ Public Sub MenuLava()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -301,7 +301,7 @@ Public Sub MenuLava()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -343,6 +343,6 @@ Public Sub MenuLava()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData
+    EffectPrep.FinalizeImageData
     
 End Sub

@@ -133,7 +133,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
@@ -206,7 +206,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
             
         If (Not toPreview) Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
             
@@ -295,7 +295,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
         
 End Sub
 

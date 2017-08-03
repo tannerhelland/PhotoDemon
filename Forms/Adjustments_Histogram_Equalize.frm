@@ -129,7 +129,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local histogram equalizing requires a second copy of the source image
@@ -168,10 +168,10 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         'Global and local modes use different progress calculations
         If ehMode = 0 Then
             SetProgBarMax finalY * 2
-            progBarCheck = FindBestProgBarValue()
+            progBarCheck = ProgressBars.FindBestProgBarValue()
         Else
             SetProgBarMax finalXStride
-            progBarCheck = FindBestProgBarValue()
+            progBarCheck = ProgressBars.FindBestProgBarValue()
         End If
     End If
     
@@ -489,7 +489,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

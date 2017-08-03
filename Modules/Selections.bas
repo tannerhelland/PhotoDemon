@@ -704,7 +704,7 @@ Public Sub InvertCurrentSelection()
     ' based on the size of the area to be processed.
     SetProgBarMax maskHeight
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim selMaskDepth As Long
     selMaskDepth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
@@ -830,7 +830,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         'We're now going to perform an "unsharp mask" effect, but because we're using a single channel, it goes a bit faster
         Dim progBarCheck As Long
         SetProgBarMax pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
-        progBarCheck = FindBestProgBarValue()
+        progBarCheck = ProgressBars.FindBestProgBarValue()
         
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10
         ' for selections (which are predictably feathered, using exact gaussian techniques).

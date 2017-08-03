@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2819</langversion>
+<langversion>6.8.2820</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6758,11 +6758,6 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>sävyalueen</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>uusi tasapaino</translation>
 </phrase>
@@ -6772,22 +6767,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Säätäminen väritasapainoa</translation>
 </phrase>
 
-<phrase>
-<original>shadows</original>
-<translation>varjot</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>keskisävyt</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>kohokohtia</translation>
-</phrase>
-
-<!-- Adjustments_ColorBalance.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
@@ -7892,6 +7872,16 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>varjot</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>kohokohtia</translation>
+</phrase>
+
+<phrase>
 <original>midtone contrast</original>
 <translation>keskisävyjen kontrasti</translation>
 </phrase>
@@ -7906,7 +7896,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Säätäminen varjot, keskisävyjä, ja korostaa</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8836,7 +8826,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Luodaan lasitiiltä</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -10104,11 +10094,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>Applying beer goggles</original>
-<translation>Hakeminen olut suojalasit</translation>
+<original>Calculating image fragments</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -15003,10 +14993,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1971 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4496 phrases. -->
+<!-- 1969 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12261 total words. -->
 
 </pdData>

@@ -197,7 +197,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, calculatedProgBarMax
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, calculatedProgBarMax
     
     'Distance is calculated as (csDistance / 100) * (smallestImageDimension).  This yields identical results in both the preview
     ' and final image, and it also makes distance scale nicely by image size.
@@ -415,7 +415,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
 PrematureCrossScreenExit:
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 

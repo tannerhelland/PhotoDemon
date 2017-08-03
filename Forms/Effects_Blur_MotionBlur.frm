@@ -137,7 +137,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic, , , True
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -196,7 +196,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     Set rotateDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    FinalizeImageData toPreview, dstPic, True
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
