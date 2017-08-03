@@ -836,7 +836,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         ' for selections (which are predictably feathered, using exact gaussian techniques).
         Dim scaleFactor As Double, invScaleFactor As Double
         scaleFactor = sharpenRadius
-        invScaleFactor = 1 - scaleFactor
+        invScaleFactor = 1# - scaleFactor
         
         Dim iWidth As Long, iHeight As Long
         iWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1
@@ -844,6 +844,8 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim lOrig As Long, lBlur As Long, lDelta As Single, lFull As Single, lNew As Long
         Dim x As Long, y As Long
+        
+        Const ONE_DIV_255 As Double = 1# / 255#
         
         For y = 0 To iHeight
         For x = 0 To iWidth
@@ -853,14 +855,14 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
             lBlur = tmpArray(x, y)
             
             'Calculate the delta between the two, which is then converted to a blend factor
-            lDelta = Abs(lOrig - lBlur) / 255
+            lDelta = Abs(lOrig - lBlur) * ONE_DIV_255
             
             'Calculate a "fully" sharpened value; we're going to manually feather between this value and the original,
             ' based on the delta between the two.
             lFull = (scaleFactor * lOrig) + (invScaleFactor * lBlur)
             
             'Feather to arrive at a final "unsharp" value
-            lNew = ((1 - lDelta) * lFull) + (lDelta * lOrig)
+            lNew = (1# - lDelta) * lFull + (lDelta * lOrig)
             If (lNew < 0) Then
                 lNew = 0
             ElseIf (lNew > 255) Then
