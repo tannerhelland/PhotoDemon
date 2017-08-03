@@ -393,20 +393,20 @@ End Enum
 
 'Certain structs are immensely helpful when drawing
 Public Type RGBQUAD
-   Blue As Byte
-   Green As Byte
-   Red As Byte
-   Alpha As Byte
+    Blue As Byte
+    Green As Byte
+    Red As Byte
+    Alpha As Byte
 End Type
 
 Public Type POINTFLOAT
-   x As Single
-   y As Single
+    x As Single
+    y As Single
 End Type
 
 Public Type POINTLONG
-   x As Long
-   y As Long
+    x As Long
+    y As Long
 End Type
 
 Public Type RECTL

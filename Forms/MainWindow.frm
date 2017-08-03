@@ -1143,7 +1143,7 @@ Begin VB.Form FormMain
          Caption         =   "Natural"
          Index           =   5
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Atmosphere"
+            Caption         =   "Atmosphere..."
             Index           =   0
          End
          Begin VB.Menu MnuNatureFilter 
@@ -3893,7 +3893,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
     
         'Atmosphere
         Case 0
-            Process "Atmosphere", , , UNDO_LAYER
+            Process "Atmosphere", True
         
         'Fog
         Case 1

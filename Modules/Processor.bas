@@ -413,7 +413,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Natural
         
         Case "Atmosphere"
-            MenuAtmospheric
+            If raiseDialog Then ShowPDDialog vbModal, FormAtmosphere Else FormAtmosphere.ApplyAtmosphereEffect processParameters
             
         Case "Fog"
             If raiseDialog Then ShowPDDialog vbModal, FormFog Else FormFog.fxFog processParameters
@@ -579,9 +579,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Dream"
             MenuDream
             
-        Case "Synthesize"
-            MenuSynthesize
-        
         Case "Thermograph (heat map)"
             MenuHeatMap
         

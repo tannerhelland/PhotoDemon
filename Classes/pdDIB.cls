@@ -1885,7 +1885,9 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     End If
     
     If allowedToProceed Then
-    
+        
+        Const ONE_DIV_255 As Double = 1# / 255#
+        
         'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
         ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
         Dim intToFloat() As Single
@@ -1893,9 +1895,9 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Dim i As Long
         For i = 0 To 255
             If applyPremultiplication Then
-                intToFloat(i) = i / 255
+                intToFloat(i) = i * ONE_DIV_255
             Else
-                If i <> 0 Then intToFloat(i) = 255 / i
+                If (i <> 0) Then intToFloat(i) = 255# / i
             End If
         Next i
         
