@@ -534,7 +534,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'Calculate IIR values
     lambda = (q * q) / (2# * numSteps)
-    dnu = (1# + 0.02 * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
+    dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
     nu = dnu
     boundaryScale = (1# / (1# - dnu))
     postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
