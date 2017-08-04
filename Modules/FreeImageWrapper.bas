@@ -2318,10 +2318,10 @@ Public Declare Sub FreeImage_ConvertLine24To32 Lib "FreeImage.dll" Alias "_FreeI
 ' Initialization functions
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_IsAvailable(Optional ByRef Version As String) As Boolean
+Public Function FreeImage_IsAvailable(Optional ByRef version As String) As Boolean
 
    On Error Resume Next
-   Version = FreeImage_GetVersion()
+   version = FreeImage_GetVersion()
    FreeImage_IsAvailable = (Err.Number = ERROR_SUCCESS)
    On Error GoTo 0
 

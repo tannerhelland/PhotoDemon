@@ -1231,7 +1231,6 @@ Private m_AttributesMatrix() As Single
 'Old declarations and descriptions follow.  These need to be reworked into something coherent, but it's a
 ' slog of a process...
 
-'EMFs can be converted between various formats.  GDI+ prefers "EMF+", which supports GDI+ primitives as well
 Private Type clsID
     Data1         As Long
     Data2         As Integer
@@ -1239,21 +1238,6 @@ Private Type clsID
     Data4(0 To 7) As Byte
 End Type
 
-Private Type ImageCodecInfo
-    classID           As clsID
-    FormatID          As clsID
-    CodecName         As Long
-    DllName           As Long
-    formatDescription As Long
-    FilenameExtension As Long
-    MimeType          As Long
-    Flags             As Long
-    Version           As Long
-    SigCount          As Long
-    SigSize           As Long
-    SigPattern        As Long
-    SigMask           As Long
-End Type
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
@@ -1271,36 +1255,10 @@ Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As
 Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
-Private Declare Function GdipDrawCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawCurve3 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
-Private Declare Function GdipDrawCurve3I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
-Private Declare Function GdipDrawClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
-Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As GP_ColorAdjustType) As Long
-
-'Transforms
-Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
 
 Private Type BlurParams
     bRadius As Single
     ExpandEdge As Long
-End Type
-
-'Information about image pixel data
-Private Type BitmapData
-    Width As Long
-    Height As Long
-    Stride As Long
-    PixelFormat As Long
-    Scan0 As Long
-    Reserved As Long
 End Type
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
@@ -1421,86 +1379,6 @@ Public Function GDIPlusRotateFlip_InPlace(ByRef srcDIB As pdDIB, ByVal rotationT
         GDIPlusRotateFlip_InPlace = GdipImageRotateFlip(hGdipBitmap, rotationType) = GP_OK
         GdipDisposeImage hGdipBitmap
     End If
-End Function
-
-'Use GDI+ to rotate a DIB.  (Technically, to copy a rotated portion of a source image into a destination image.)
-' The function currently expects the rotation to occur around the center point of the source image.  Unlike the various
-' size interaction calls in this module, all (x,y) coordinate pairs refer to the CENTER of the image, not the top-left
-' corner.  This was a deliberate decision to make copying rotated data easier.
-Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal wrapModeForEdges As GP_WrapMode = GP_WM_TileFlipXY) As Boolean
-
-    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
-    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
-    ' have timing reports sent to the debug window.
-    'Dim profileTime As Double
-    'profileTime = Timer
-
-    GDIPlusRotateDIB = True
-
-    'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    
-    'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
-    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
-    
-    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
-    
-    'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
-    
-        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
-        ' algorithm from drawing semi-transparent lines randomly around image borders.
-        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
-        Dim imgAttributesHandle As Long
-        GdipCreateImageAttributes imgAttributesHandle
-        GdipSetImageAttributesWrapMode imgAttributesHandle, wrapModeForEdges, 0&, 0&
-        
-        'To improve performance, explicitly request high-speed alpha compositing operation
-        GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
-        
-        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
-        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
-        GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality
-    
-        'Lock the incoming angle to something in the range [-360, 360]
-        'rotationAngle = rotationAngle + 180
-        If (rotationAngle <= -360) Or (rotationAngle >= 360) Then rotationAngle = (Int(rotationAngle) Mod 360) + (rotationAngle - Int(rotationAngle))
-        
-        'Perform the rotation
-        
-        'Transform the destination world matrix twice: once for the rotation angle, and once again to offset all coordinates.
-        ' This allows us to rotate the image around its *center* rather than around its top-left corner.
-        If GdipRotateWorldTransform(iGraphics, rotationAngle, 0&) = GP_OK Then
-            If GdipTranslateWorldTransform(iGraphics, dstX + dstWidth / 2, dstY + dstHeight / 2, 1&) = GP_OK Then
-        
-                'Render the image onto the destination
-                If GdipDrawImageRectRectI(iGraphics, tBitmap, -dstWidth / 2, -dstHeight / 2, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle) <> 0 Then
-                    GDIPlusRotateDIB = False
-                End If
-                
-            Else
-                GDIPlusRotateDIB = False
-            End If
-        Else
-            GDIPlusRotateDIB = False
-        End If
-        
-        'Release our image attributes object
-        GdipDisposeImageAttributes imgAttributesHandle
-        
-    Else
-        GDIPlusRotateDIB = False
-    End If
-    
-    'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
-    GdipDisposeImage tBitmap
-    
-    'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
-    
 End Function
 
 'Use GDI+ to blur a DIB with variable radius
@@ -2652,7 +2530,7 @@ End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
-Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GP_ImageFormat, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As PD_2D_FileFormatExport, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
 
@@ -2664,7 +2542,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
-    If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = GP_IF_JPEG Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+    If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = P2_FFE_JPEG Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
@@ -2712,7 +2590,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     
     'TIFF has some unique constraints on account of its many compression schemes.  Because it only supports a subset
     ' of compression types, we must adjust our code accordingly.
-    If (imgFormat = GP_IF_TIFF) Then
+    If (imgFormat = P2_FFE_TIFF) Then
     
         Select Case g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
         
@@ -2764,12 +2642,14 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim aEncParams() As Byte
 
     Message "Preparing GDI+ encoder for this filetype..."
-
+    
+    'Get the clsID for this encoder
+    GetEncoderGUIDForPd2dFormat imgFormat, VarPtr(uEncClsID)
+    
     Select Case imgFormat
         
         'BMP export
-        Case GP_IF_BMP
-            GetEncoderFromMimeType "image/bmp", uEncClsID
+        Case P2_FFE_BMP
             uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
@@ -2783,8 +2663,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
     
         'GIF export
-        Case GP_IF_GIF
-            GetEncoderFromMimeType "image/gif", uEncClsID
+        Case P2_FFE_GIF
             uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
@@ -2798,8 +2677,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
             
         'JPEG export (requires extra work to specify a quality for the encode)
-        Case GP_IF_JPEG
-            GetEncoderFromMimeType "image/jpeg", uEncClsID
+        Case P2_FFE_JPEG
             uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
@@ -2813,8 +2691,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
         
         'PNG export
-        Case GP_IF_PNG
-            GetEncoderFromMimeType "image/png", uEncClsID
+        Case P2_FFE_PNG
             uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
@@ -2828,8 +2705,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
         
         'TIFF export (requires extra work to specify compression and color depth for the encode)
-        Case GP_IF_TIFF
-            GetEncoderFromMimeType "image/tiff", uEncClsID
+        Case P2_FFE_TIFF
             uEncParams.EP_Count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.EP_Parameter) * 2)
             
@@ -2896,7 +2772,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         Dim uEncParams As GP_EncoderParameters
         Dim aEncParams() As Byte
             
-        GetEncoderFromMimeType "image/png", uEncClsID
+        GetEncoderGUIDForPd2dFormat P2_FFE_PNG, VarPtr(uEncClsID)
         uEncParams.EP_Count = 1
         ReDim aEncParams(1 To Len(uEncParams))
         
@@ -3462,48 +3338,8 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
 
 End Sub
 
-'Thanks to Carles P.V. for providing the following three functions, which are used as part of GDI+ image saving.
-' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef classID As clsID) As Long
-
-    Dim Num      As Long
-    Dim Size     As Long
-    Dim lIdx     As Long
-    Dim ICI()    As ImageCodecInfo
-    Dim Buffer() As Byte
-    
-    GetEncoderFromMimeType = -1 ' Failure flag
-    
-    '-- Get the encoder array size
-    Call GdipGetImageEncodersSize(Num, Size)
-    If (Size = 0) Then Exit Function ' Failed!
-    
-    '-- Allocate room for the arrays dynamically
-    ReDim ICI(1 To Num) As ImageCodecInfo
-    ReDim Buffer(1 To Size) As Byte
-    
-    '-- Get the array and string data
-    Call GdipGetImageEncoders(Num, Size, Buffer(1))
-    '-- Copy the class headers
-    Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * Num))
-    
-    '-- Loop through all the codecs
-    For lIdx = 1 To Num
-        '-- Must convert the pointer into a usable string
-        If Strings.StringsEqual(Strings.StringFromCharPtr(ICI(lIdx).MimeType, True), strMimeType, True) Then
-            classID = ICI(lIdx).classID ' Save the Class ID
-            GetEncoderFromMimeType = lIdx      ' Return the index number for success
-            Exit For
-        End If
-    Next lIdx
-    
-End Function
-
-'Convenience wrapper for the CLSIDFromString API
-Private Function GetClsIDFromGUID(ByVal sGuid As String) As clsID
-    CLSIDFromString StrPtr(sGuid), VarPtr(GetClsIDFromGUID)
-End Function
-
+'Thanks to Carles P.V. for providing the following function, which is used as part of GDI+ image saving.
+' You can download Carles's full original project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 Private Sub CopyGUIDIntoByteArray(ByVal sGuid As String, ByVal ptrToArray As Long)
     CLSIDFromString StrPtr(sGuid), ptrToArray
 End Sub
@@ -3763,29 +3599,36 @@ Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
 End Function
 
-'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
-Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
+'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format.
+' (Note that various GDI+ settings, like brush colors, return their RGBA results as *not* premultiplied.)
+Public Function GetColorFromPARGB(ByVal pARGB As Long, Optional ByVal removePremultiplication As Boolean = False) As Long
     
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
     
-    If (srcQuad.Alpha = 255) Then
-        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
-    Else
+    If removePremultiplication Then
     
-        Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.Alpha) / 255
-        
-        If (tmpSingle <> 0) Then
-            Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
-            tmpRed = CSng(srcQuad.Red) / tmpSingle
-            tmpGreen = CSng(srcQuad.Green) / tmpSingle
-            tmpBlue = CSng(srcQuad.Blue) / tmpSingle
-            GetColorFromPARGB = RGB(tmpRed, tmpGreen, tmpBlue)
+        If (srcQuad.Alpha = 255) Then
+            GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
         Else
-            GetColorFromPARGB = 0
+        
+            Dim tmpSingle As Single
+            tmpSingle = CSng(srcQuad.Alpha) / 255#
+            
+            If (tmpSingle > 0#) Then
+                Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
+                tmpRed = CSng(srcQuad.Red) / tmpSingle
+                tmpGreen = CSng(srcQuad.Green) / tmpSingle
+                tmpBlue = CSng(srcQuad.Blue) / tmpSingle
+                GetColorFromPARGB = RGB(tmpRed, tmpGreen, tmpBlue)
+            Else
+                GetColorFromPARGB = 0
+            End If
+            
         End If
         
+    Else
+        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     End If
     
 End Function
@@ -3993,7 +3836,7 @@ Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 
            Case P2_BrushColor
                 gResult = GdipGetSolidFillColor(hBrush, tmpLong)
-                GetGDIPlusBrushProperty = GetColorFromPARGB(tmpLong)
+                GetGDIPlusBrushProperty = GetColorFromPARGB(tmpLong, False)
                 
             Case P2_BrushOpacity
                 gResult = GdipGetSolidFillColor(hBrush, tmpLong)
@@ -4219,7 +4062,7 @@ Public Function GetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
             
             Case P2_PenColor
                 gResult = GdipGetPenColor(hPen, tmpLong)
-                GetGDIPlusPenProperty = GetColorFromPARGB(tmpLong)
+                GetGDIPlusPenProperty = GetColorFromPARGB(tmpLong, False)
                 
             Case P2_PenOpacity
                 gResult = GdipGetPenColor(hPen, tmpLong)
@@ -5026,6 +4869,7 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
         'Start by retrieving the number of encoders, and the size of the full encoder list
         Dim numOfEncoders As Long, sizeOfEncoders As Long
         If (GdipGetImageEncodersSize(numOfEncoders, sizeOfEncoders) = GP_OK) Then
+            
             If (numOfEncoders > 0) And (sizeOfEncoders > 0) Then
             
                 Dim encoderBuffer() As Byte
@@ -5044,18 +4888,11 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
                         'Extract this codec
                         CopyMemory_Strict VarPtr(tmpCodec), VarPtr(encoderBuffer(0)) + LenB(tmpCodec) * i, LenB(tmpCodec)
                         
-                        'Extract the codec's mimetype
-                        strLength = lstrlenW(tmpCodec.IC_MimeType)
-                        If (strLength <> 0) Then
-                            tmpMimeType = String$(strLength, 0&)
-                            CopyMemory_Strict StrPtr(tmpMimeType), tmpCodec.IC_MimeType, strLength * 2
-                            
-                            'If we find a match, copy the encoder GUID and exit
-                            If (StrComp(srcMimetype, tmpMimeType, vbBinaryCompare) = 0) Then
-                                GetEncoderGUIDForPd2dFormat = True
-                                CopyMemory_Strict ptrToDstGuid, VarPtr(tmpCodec.IC_ClassID(0)), 16&
-                                Exit For
-                            End If
+                        'Compare mimetypes
+                        If Strings.StringsEqual(Strings.StringFromCharPtr(tmpCodec.IC_MimeType, True), srcMimetype, True) Then
+                            GetEncoderGUIDForPd2dFormat = True
+                            CopyMemory_Strict ptrToDstGuid, VarPtr(tmpCodec.IC_ClassID(0)), 16&
+                            Exit For
                         End If
                         
                     Next i
