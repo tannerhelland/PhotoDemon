@@ -418,9 +418,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Fog"
             If raiseDialog Then ShowPDDialog vbModal, FormFog Else FormFog.fxFog processParameters
             
-        Case "Freeze"
-            MenuFrozen
-            
         Case "Ignite"
             If raiseDialog Then ShowPDDialog vbModal, FormIgnite Else FormIgnite.fxBurn processParameters
             
@@ -429,6 +426,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                     
         Case "Metal"
             If raiseDialog Then ShowPDDialog vbModal, FormMetal Else FormMetal.ApplyMetalFilter processParameters
+            
+        Case "Snow"
+            If raiseDialog Then ShowPDDialog vbModal, FormSnow Else FormSnow.ApplySnowEffect processParameters
             
         Case "Water"
             MenuWater

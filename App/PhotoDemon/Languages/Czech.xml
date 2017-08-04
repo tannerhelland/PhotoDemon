@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -605,16 +605,11 @@ You lze použít MenuTest (sub) v Filters_Miscellaneous modulu otestovat své vl
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Klesá teplota image</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Explodující imaginární sopku</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1272,7 +1267,7 @@ To povolit podporu pro komprimované soubory PDI, klepněte na Nápověda> Zkont
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Upozornění - soubor nebyl nalezen: %1</translation>
 </phrase>
 
 <phrase>
@@ -1291,19 +1286,21 @@ Pokud byl tento obraz původně umístěna na vyměnitelných médií (DVD, USB 
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Upozornění - soubor je uzamčen: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Soubor ' %1' je bohužel v současné době uzamčen jiným programem v tomto počítači. 
+
+Při zavření tohoto souboru v jakémkoli jiném spuštěném programu, zkuste to znovu.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Soubor je uzamčen</translation>
 </phrase>
 
 <phrase>
@@ -2250,22 +2247,7 @@ In té doby, zkuste uložení obrázku do alternativního formátu. Můžete si 
 <translation>Uložení %1 vrstvu</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Náhledy uložit selhala (FreeImage_Save tichý selhání). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Náhledy uložit selhala (FreeImage vrátil prázdný rukojeť). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Náhledy uložit nezdařilo (nespecifikované chybě GDI).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5542,11 +5524,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Zmrazit</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Zapálit</translation>
 </phrase>
@@ -5559,6 +5536,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 <phrase>
 <original>Metal</original>
 <translation>Kov</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5593,7 +5575,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Harmonický průměr</translation>
 </phrase>
 
 <phrase>
@@ -9084,7 +9066,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>přesný</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9761,7 +9743,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>Randomize</translation>
 </phrase>
 
 <phrase>
@@ -9776,12 +9758,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Ray rozptylu</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Generování světelných paprsků</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9989,12 +9971,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Harmonický průměr</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Použití harmonického středního filtru</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10104,7 +10086,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Výpočet fragmentů obrazu</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12904,7 +12886,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Odstranění průhlednosti</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14222,12 +14204,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Nedávno používané zkratky pro soubory</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Hlavní text okna okna nadpisu</translation>
 </phrase>
 
 <phrase>
@@ -14417,7 +14399,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Obnovte všechna nastavení programu</translation>
 </phrase>
 
 <phrase>
@@ -14504,12 +14486,14 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Všechna nastavení budou obnovena na výchozí hodnoty. Tuto akci nelze zrušit.
+ 
+Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Resetujte aplikaci PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14977,12 +14961,28 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

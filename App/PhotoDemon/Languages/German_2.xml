@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2965</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -479,7 +479,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Calculating film negative values</original>
-<translation>Filmnegativwerte werden berechnet</translation>
+<translation>Filmnegativ-Werte werden berechnet</translation>
 </phrase>
 
 <phrase>
@@ -605,16 +605,11 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Bildtemperatur verringern</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Imaginärer Vulkan explodiert</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1185,7 +1180,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Diese Aktion wird Text- und Vektorlayer zu Bildlayern (Raster) kon- vertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
+<translation>Diese Aktion wird Text- und Vektorlayer in Bildlayer (Raster) kon- vertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
 </phrase>
 
 <phrase>
@@ -1195,7 +1190,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation>Ja.  Text- und Vektorlayer zu Bildlayern (Raster) konvertieren.</translation>
+<translation>Ja.  Text- und Vektorlayer in Bildlayer (Raster) konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -2050,12 +2045,12 @@ Beschreibung: %2
 
 <phrase>
 <original>outline</original>
-<translation>Kontur</translation>
+<translation>Outline</translation>
 </phrase>
 
 <phrase>
 <original>outline style</original>
-<translation>Konturstil</translation>
+<translation>Outline-Stil</translation>
 </phrase>
 
 <phrase>
@@ -2263,22 +2258,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Layer %1 wird gespeichert</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Speichern von Thumbnail fehlgeschlagen (nicht spezifizierter GDI+ Fehler).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5138,12 +5118,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Black and white</original>
-<translation>Schwarz-Weiß</translation>
+<translation>Schwarzweiß</translation>
 </phrase>
 
 <phrase>
 <original>Brightness and contrast</original>
-<translation>Helligkeit/Kontrast</translation>
+<translation>Helligkeit und Kontrast</translation>
 </phrase>
 
 <phrase>
@@ -5557,11 +5537,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Einfrieren</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Anzünden</translation>
 </phrase>
@@ -5574,6 +5549,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metall</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5673,7 +5653,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Outline</original>
-<translation>Kontur</translation>
+<translation>Outline</translation>
 </phrase>
 
 <phrase>
@@ -6606,7 +6586,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Converting image to two colors</original>
-<translation>Bild wird zu zwei Farben konvertiert</translation>
+<translation>Bild wird in zwei Farben konvertiert</translation>
 </phrase>
 
 <!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -6822,7 +6802,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Converting image to black and white</original>
-<translation>Bild wird zu Schwarz-Weiß konvertiert</translation>
+<translation>Bild wird in Schwarzweiß konvertiert</translation>
 </phrase>
 
 <phrase>
@@ -7339,12 +7319,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Convert Monochrome Image to Grayscale</original>
-<translation>Monochromes Bild zu Graustufen konvertieren</translation>
+<translation>Monochromes Bild in Graustufen konvertieren</translation>
 </phrase>
 
 <phrase>
 <original>advice from the experts</original>
-<translation>Rat von Experten</translation>
+<translation>Rat von den Experten</translation>
 </phrase>
 
 <phrase>
@@ -7354,7 +7334,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Converting monochrome image to grayscale</original>
-<translation>Monochromes Bild wird zu Graustufen konvertiert</translation>
+<translation>Monochromes Bild wird in Graustufen konvertiert</translation>
 </phrase>
 
 <phrase>
@@ -7431,7 +7411,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>Übermäßiges Himmelblau absorbieren, Himmel in Schwarzweißfotos dunkler machen</translation>
+<translation>Übermäßiges Himmelblau absorbieren, Himmel in Schwarzweiß-Fotos dunkler machen</translation>
 </phrase>
 
 <phrase>
@@ -7451,7 +7431,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>moderate contrast in black/white outdoor photography</original>
-<translation>Kontrast in Schwarzweiß-Außenaufnahme abschwächen</translation>
+<translation>Moderater Kontrast in Schwarzweiß-Außenaufnahme</translation>
 </phrase>
 
 <phrase>
@@ -7521,12 +7501,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>Dreifarbiges Rot; Kontrasteffekte bei Außenaufnahmen</translation>
+<translation>Dreifarbiges Rot; Kontrasteffekte in Außenaufnahmen</translation>
 </phrase>
 
 <phrase>
 <original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>Stereo rot; durchdringt Dunst, hilfreich bei Sturm- oder Mondlichteinstellungen</translation>
+<translation>Stereo rot; schneidet Dunst, nützlich für Sturm- oder Mondlichteinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -7536,7 +7516,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>color separation; extreme sky darkening in black/white photos</original>
-<translation>Farbseparation; extreme Himmelsverdunkelung in Schwarzweißfotos</translation>
+<translation>Farbseparation; extreme Himmelsverdunkelung in Schwarzweiß-Fotos</translation>
 </phrase>
 
 <phrase>
@@ -7566,7 +7546,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>red absorption; useful for contrast in microscopy</original>
-<translation>Rotabsorption; sinnvoll für Kontrast in Mikroskopie</translation>
+<translation>Rotabsorption; nützlich für Kontrast in Mikroskopie</translation>
 </phrase>
 
 <phrase>
@@ -8254,17 +8234,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Outline settings</original>
-<translation>Kontureinstellungen</translation>
+<translation>Outline-Einstellungen</translation>
 </phrase>
 
 <phrase>
 <original>outline color and opacity</original>
-<translation>Konturfarbe und Opazität</translation>
+<translation>Outline-Farbe und Opazität</translation>
 </phrase>
 
 <phrase>
 <original>outline width</original>
-<translation>Konturbreite</translation>
+<translation>Outline-Breite</translation>
 </phrase>
 
 <phrase>
@@ -8798,7 +8778,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>contrast boost</original>
-<translation>Kontrast erhöhen</translation>
+<translation>Kontrastverstärkung</translation>
 </phrase>
 
 <phrase>
@@ -9020,7 +9000,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Carving image from stained glass</original>
-<translation>Bild aus farbigem Glas wird geschnitzt</translation>
+<translation>Bild aus Buntglas wird geschnitzt</translation>
 </phrase>
 
 <phrase>
@@ -9763,7 +9743,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>saturation boost</original>
-<translation>Sättigung erhöhen</translation>
+<translation>Sättigungsverstärkung</translation>
 </phrase>
 
 <phrase>
@@ -10122,7 +10102,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Bildfragmente werden berechnet</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10258,7 +10238,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating image outline</original>
-<translation>Bildkontur wird generiert</translation>
+<translation>Bild-Outline wird generiert</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10335,7 +10315,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>exposure boost</original>
-<translation>Belichtung erhöhen</translation>
+<translation>Belichtungsverstärkung</translation>
 </phrase>
 
 <phrase>
@@ -10455,12 +10435,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>forward (outline defines destination area)</original>
-<translation>Vor (Kontur definiert Zielbereich)</translation>
+<translation>Vor (Outline definiert Zielbereich)</translation>
 </phrase>
 
 <phrase>
 <original>reverse (outline defines source area)</original>
-<translation>Umgekehrt (Kontur definiert Quellbereich)</translation>
+<translation>Umgekehrt (Outline definiert Quellbereich)</translation>
 </phrase>
 
 <phrase>
@@ -10491,12 +10471,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Polar Coordinate Conversion</original>
-<translation>Konvertierung in Polarkoordinaten</translation>
+<translation>Polarkoordinaten-Konvertierung</translation>
 </phrase>
 
 <phrase>
 <original>swap x and y coordinates</original>
-<translation>x- und y-Koordinaten tauschen</translation>
+<translation>Koordinaten x und y tauschen</translation>
 </phrase>
 
 <phrase>
@@ -10506,17 +10486,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Performing polar coordinate conversion</original>
-<translation>Konvertierung in Polarkoordinaten wird durchgeführt</translation>
+<translation>Polarkoordinaten-Konvertierung wird durchgeführt</translation>
 </phrase>
 
 <phrase>
 <original>Rectangular to polar</original>
-<translation>Rechteckig zu polar</translation>
+<translation>Rechteckig in polar</translation>
 </phrase>
 
 <phrase>
 <original>Polar to rectangular</original>
-<translation>Polar zu rechteckig</translation>
+<translation>Polar in rechteckig</translation>
 </phrase>
 
 <phrase>
@@ -10733,7 +10713,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>convert all images to a new format</original>
-<translation>Alle Bilder zu einem neuen Format konvertieren</translation>
+<translation>Alle Bilder in ein neues Format konvertieren</translation>
 </phrase>
 
 <phrase>
@@ -12010,7 +11990,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>black and white (8-bpp)</original>
-<translation>Schwarz-Weiß (8-bpp)</translation>
+<translation>Schwarzweiß (8-bpp)</translation>
 </phrase>
 
 <!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -13660,7 +13640,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Dieser Layer ist ein Typografie-Layer. Um ihn mit dem grundlegenden Texttool zu bearbeiten, müssen Sie diesen zuerst zu einem grundlegenden Textlayer konvertieren.</translation>
+<translation>Dieser Layer ist ein Typografie-Layer. Um ihn mit dem grundlegenden Texttool zu bearbeiten, müssen Sie ihn zuerst in einen grundlegenden Textlayer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -13816,7 +13796,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Click here to convert this layer to a typography layer.</original>
-<translation>Klicken Sie hier, um diesen Layer zu einem Typografie-Layer zu konvertieren.</translation>
+<translation>Klicken Sie hier, um diesen Layer in einen Typografie-Layer zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -14653,7 +14633,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es hilfreich PhotoDemon daran zu erinnern - daher die "zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "zuletzt verwendet"-Option.</translation>
 </phrase>
 
 <phrase>
@@ -15001,12 +14981,28 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

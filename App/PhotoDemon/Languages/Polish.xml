@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -604,16 +604,11 @@ You można używać MenuTest (sub) w module Filters_Miscellaneous przetestować 
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Spadającą temperaturą obrazu</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Eksplodujące wyimaginowany wulkanu</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1271,7 +1266,7 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Ostrzeżenie - plik nie znaleziono: %1</translation>
 </phrase>
 
 <phrase>
@@ -1289,19 +1284,21 @@ Jeżeli obraz ten został pierwotnie znajdował się na nośniku wymiennym (DVD,
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Ostrzeżenie - plik zablokowany: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Niestety, plik " %1" jest obecnie blokowany przez inny program na tym komputerze.
+
+PWybierz ten plik w innych uruchomionych programach, a następnie spróbuj ponownie.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Plik zablokowany</translation>
 </phrase>
 
 <phrase>
@@ -2248,22 +2245,7 @@ In międzyczasie spróbuj zapisywania obrazu w alternatywnym formacie. Można r�
 <translation>Zapisywanie %1 warstwę</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail chyba nie powiodło się (FreeImage_Save milczy fail). Proszę zgłosić ten błąd za pomocą Pomoc -> Prześlij raporcie.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail chyba nie powiodło się (FreeImage wrócił pusty uchwyt). Proszę zgłosić ten błąd za pomocą Pomoc -> Prześlij raporcie.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Thumbnail zapisać powiodło się (Nieokreślony błąd GDI).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5542,11 +5524,6 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>zamarznąć</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Zapalać</translation>
 </phrase>
@@ -5559,6 +5536,11 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5593,7 +5575,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Średnia harmoniczna</translation>
 </phrase>
 
 <phrase>
@@ -9084,7 +9066,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>precyzyjny</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9761,7 +9743,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>Randomizować</translation>
 </phrase>
 
 <phrase>
@@ -9776,12 +9758,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Ray</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Generowanie belek świetlnych</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9989,12 +9971,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Średnia harmoniczna</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Zastosowanie filtra średniego harmonicznego</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10104,7 +10086,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Obliczanie fragmentów obrazu</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12904,7 +12886,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Usuwanie przezroczystości</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14222,12 +14204,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Ostatnio używane skróty do plików</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Tekst paska tytułowego okna głównego</translation>
 </phrase>
 
 <phrase>
@@ -14417,7 +14399,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Zresetować wszystkie ustawienia programu</translation>
 </phrase>
 
 <phrase>
@@ -14504,12 +14486,14 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Wszystkie ustawienia zostaną przywrócone do wartości domyślnych. Ta czynność nie może zostać cofnięta.
+ 
+ Czy na pewno chcesz kontynuować?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Zresetuj program PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14977,12 +14961,28 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

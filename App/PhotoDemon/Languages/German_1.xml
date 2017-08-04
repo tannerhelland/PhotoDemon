@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.272</langversion>
+<langversion>6.7.273</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -605,16 +605,11 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Bild-Temperatur verringern</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Ein imaginärer Vulkan explodiert</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2251,22 +2246,7 @@ Versuchen Sie bitte vorläufig, das Bild in einem anderen Format zu speichern. S
 <translation>Ebene %1 speichern</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern des Vorschaubildes fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern des Vorschaubildes fehlgeschlagen (FreeImage returned blank handle). Bitte melden Sie diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Speichern des Vorschaubildes fehlgeschlagen (unklare Fehlermeldung von GDI+).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5545,11 +5525,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Einfrieren</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Anzünden</translation>
 </phrase>
@@ -5561,6 +5536,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <phrase>
 <original>Metal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
 <translation></translation>
 </phrase>
 
@@ -14987,12 +14967,28 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

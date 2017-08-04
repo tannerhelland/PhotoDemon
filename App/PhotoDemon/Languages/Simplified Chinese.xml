@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2784</langversion>
+<langversion>6.8.2785</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -604,16 +604,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>删除图像温度</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>虚拟火山爆发</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -2253,22 +2248,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>保存层 %1</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>缩略图保存失败（freeimage_saveex沉默失败）。请报告此错误使用帮助- >提交错误报告。</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>缩略图保存失败（FreeImage返回空白处理）。请报告此错误使用帮助- >提交错误报告。</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>缩略图保存失败（未指明的GDI+错误）。</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5545,11 +5525,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>冻结</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>点燃</translation>
 </phrase>
@@ -5562,6 +5537,11 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Metal</original>
 <translation>金属</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14982,12 +14962,28 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

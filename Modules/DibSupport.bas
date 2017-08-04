@@ -309,22 +309,23 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long, gValue As Byte
         qvDepth = dstDIB.GetDIBColorDepth \ 8
         
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
             quickVal = x * qvDepth
         For y = initY To finalY
-            dstImageData(quickVal, y) = srcGrayArray(x, y)
-            dstImageData(quickVal + 1, y) = srcGrayArray(x, y)
-            dstImageData(quickVal + 2, y) = srcGrayArray(x, y)
+            gValue = srcGrayArray(x, y)
+            dstImageData(quickVal, y) = gValue
+            dstImageData(quickVal + 1, y) = gValue
+            dstImageData(quickVal + 2, y) = gValue
         Next y
         Next x
         
         'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-                
+        dstDIB.SetInitialAlphaPremultiplicationState True
         CreateDIBFromGrayscaleMap = True
         
     Else
@@ -381,11 +382,11 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         conversionFactor = (255 / (numOfShades - 1))
         
         'Build a look-up table for our custom grayscale conversion results
-        Dim gLookUp(0 To 255) As Byte
+        Dim gLookup(0 To 255) As Byte
         For x = 0 To 255
             grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
             If grayVal > 255 Then grayVal = 255
-            gLookUp(x) = CByte(grayVal)
+            gLookup(x) = CByte(grayVal)
         Next x
             
         'Now we can loop through each pixel in the image, converting values as we go
@@ -413,7 +414,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             If grayVal > 255 Then grayVal = 255
             
             'If less than 256 shades are in play, calculate that now as well
-            grayVal = gLookUp(grayVal)
+            grayVal = gLookup(grayVal)
             
             'If alpha is premultiplied, calculate that now
             If alphaIsPremultiplied Then
@@ -838,8 +839,8 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             finalX = (srcDIB.GetDIBWidth - 1)
             finalY = (srcDIB.GetDIBHeight - 1)
             
-            Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
-            ReDim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
+            Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+            ReDim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
             Dim chkA As Byte
             
             Dim targetR As Long, targetG As Long, targetB As Long
@@ -853,7 +854,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             For x = 0 To 255
                 aFloat = CDbl(x) / 255
                 rLookup(x) = targetR * aFloat
-                gLookUp(x) = targetG * aFloat
+                gLookup(x) = targetG * aFloat
                 bLookup(x) = targetB * aFloat
             Next x
             
@@ -866,7 +867,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             For x = 0 To finalX Step 4
                 chkA = iData(x + 3, y)
                 iData(x, y) = bLookup(chkA)
-                iData(x + 1, y) = gLookUp(chkA)
+                iData(x + 1, y) = gLookup(chkA)
                 iData(x + 2, y) = rLookup(chkA)
             Next x
             Next y
