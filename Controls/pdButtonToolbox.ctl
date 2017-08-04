@@ -312,19 +312,19 @@ Private Sub GenerateVariantButtonImages()
     initX = 0
     finalX = (m_ButtonWidth - 1) * 4
     
-    Dim r As Long, g As Long, b As Long, gray As Long, alpha As Long
+    Dim r As Long, g As Long, b As Long, gray As Long, a As Long
     Dim tmpY As Long
     
     'Paint the hovered segment of the sprite strip
     For y = initY To finalY
         tmpY = y - offsetY
     For x = initX To finalX Step 4
-        alpha = srcPixels(x + 3, tmpY)
-        If (alpha <> 0) Then
+        a = srcPixels(x + 3, tmpY)
+        If (a <> 0) Then
             srcPixels(x, y) = hLookup(srcPixels(x, tmpY))
             srcPixels(x + 1, y) = hLookup(srcPixels(x + 1, tmpY))
             srcPixels(x + 2, y) = hLookup(srcPixels(x + 2, tmpY))
-            srcPixels(x + 3, y) = alpha
+            srcPixels(x + 3, y) = a
         End If
     Next x
     Next y
@@ -344,12 +344,12 @@ Private Sub GenerateVariantButtonImages()
     
     For y = initY To finalY
     For x = initX To finalX Step 4
-        alpha = srcPixels(x + 3, y - offsetY)
-        If (alpha <> 0) Then
+        a = srcPixels(x + 3, y - offsetY)
+        If (a <> 0) Then
             srcPixels(x, y) = dR
             srcPixels(x + 1, y) = dG
             srcPixels(x + 2, y) = dB
-            srcPixels(x + 3, y) = alpha
+            srcPixels(x + 3, y) = a
         End If
     Next x
     Next y

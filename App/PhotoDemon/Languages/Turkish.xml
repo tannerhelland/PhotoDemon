@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -604,16 +604,11 @@ You görünür. Ben genellikle filtre düzgün çalışıyor sonra bir kez, ben 
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Görüntü sıcaklığı Damlama</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>hayali yanardağ Patlayan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1271,7 +1266,7 @@ To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Uyarı - dosya bulunamadı: %1</translation>
 </phrase>
 
 <phrase>
@@ -1289,19 +1284,21 @@ Olamazdı-insert yeniden lütfen veya ortamı yeniden takmak ve tekrar deneyin.<
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Uyarı - dosya kilitli: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Maalesef, ' %1' dosyası şu anda bu PC'deki başka bir program tarafından kilitlidir. 
+
+Probot dosyasını diğer çalışan programlarda kapatın ve tekrar deneyin.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Dosya kilitli</translation>
 </phrase>
 
 <phrase>
@@ -2256,22 +2253,7 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 <translation> %1 katman kaydetme</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>(Sessiz FreeImage_Save başarısız) Küçük resim kaydedilemedi. > Hata Raporu Gönder - Bu hata kullanarak Yardım Lütfen rapor.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Küçük resim kaydedilemedi (FreeImage boş kolu iade edilir). > Hata Raporu Gönder - Bu hata kullanarak Yardım Lütfen rapor.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Küçük resim başarısız (belirtilmemiş GDI hatası) kaydedin.</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5548,11 +5530,6 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Donmak</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Tutuşturmak</translation>
 </phrase>
@@ -5565,6 +5542,11 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5599,7 +5581,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Harmonik ortalama</translation>
 </phrase>
 
 <phrase>
@@ -9092,7 +9074,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>kesin</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9769,7 +9751,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>rasgele seçmek</translation>
 </phrase>
 
 <phrase>
@@ -9784,12 +9766,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Işın varyansı</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Işık ışınları üretme</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9997,12 +9979,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Harmonik ortalama</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Armonik ortalama filtre uygulama</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10112,7 +10094,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Görüntü parçalarını hesaplama</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12912,7 +12894,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Şeffaflığı kaldırma</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14230,12 +14212,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Son kullanılan dosya kısayolları</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Ana pencere başlık çubuğu metni</translation>
 </phrase>
 
 <phrase>
@@ -14425,7 +14407,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Tüm program ayarlarını sıfırlayın</translation>
 </phrase>
 
 <phrase>
@@ -14512,12 +14494,14 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Tüm ayarlar varsayılan değerlerine geri yüklenecektir. Bu işlem geri alınamaz. 
+ 
+ Devam etmek istediğinizden emin misiniz?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Photodemon'u sıfırlayın</translation>
 </phrase>
 
 <phrase>
@@ -14985,12 +14969,28 @@ If yamalı vardır.</translation>
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

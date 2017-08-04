@@ -564,6 +564,18 @@ Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As 
 
 End Sub
 
+Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius As Single, ByRef dstX As Single, ByRef dstY As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#)
+
+    'Calculate the new (x, y)
+    dstX = srcRadius * Cos(srcAngle)
+    dstY = srcRadius * Sin(srcAngle)
+    
+    'Offset by the supplied center (x, y)
+    dstX = dstX + centerX
+    dstY = dstY + centerY
+
+End Sub
+
 'This is a modified modulo function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
@@ -780,6 +792,21 @@ End Function
 Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
     Const ONE_DIV_180 As Double = 1# / 180#
     DegreesToRadians = (srcDegrees * PI) * ONE_DIV_180
+End Function
+
+'Helper function to rotate one arbitrary point around another arbitrary point.
+Public Function RotatePointAroundPoint(ByVal rotateX As Single, ByVal rotateY As Single, ByVal centerX As Single, ByVal centerY As Single, ByVal angleInRadians As Single, ByRef newX As Single, ByRef newY As Single)
+
+    'For performance reasons, it's easier to cache the cos and sin of the angle in question
+    Dim sinAngle As Double, cosAngle As Double
+    sinAngle = Sin(angleInRadians)
+    cosAngle = Cos(angleInRadians)
+    
+    'Rotation works the same way as it does around (0, 0), except we transform the center position before and
+    ' after rotation.
+    newX = cosAngle * (rotateX - centerX) - sinAngle * (rotateY - centerY) + centerX
+    newY = cosAngle * (rotateY - centerY) + sinAngle * (rotateX - centerX) + centerY
+    
 End Function
 
 'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed

@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -604,16 +604,11 @@ You mogu koristiti MenuTest () sub u Filters_Miscellaneous modul za testiranje v
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Pada temperature slika</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Exploding imaginarni vulkan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1271,7 +1266,7 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Upozorenje - datoteka nije pronađena: %1</translation>
 </phrase>
 
 <phrase>
@@ -1290,19 +1285,21 @@ If ova slika je izvorno bio smješten na prijenosni medij (DVD, USB disk, itd), 
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Upozorenje - datoteka je zaključana: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Nažalost, datoteka ' %1' trenutno je zaključana s nekim drugim programom na ovom računalu. 
+
+Zatvorite ovu datoteku u bilo kojem drugom programu pokrenutom, a zatim pokušajte ponovo.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Datoteka je zaključana</translation>
 </phrase>
 
 <phrase>
@@ -2260,22 +2257,7 @@ In međuvremenu, pokušajte spremanja slike u izmijenjenom formatu. Također mo�
 <translation>Spremanje %1 sloja</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail spremanje nije uspjelo (FreeImage_SaveEx tihi uspjeti). Prijavite pogrešku koristeći Pomoć -> Pošaljite Bug Report.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail spremanje nije uspjelo (FreeImage vratio prazan ručku). Prijavite pogrešku koristeći Pomoć -> Pošaljite Bug Report.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Thumbnail Spremanje nije uspjelo (neodređeni GDI pogrešku).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5554,11 +5536,6 @@ or na File> Open i File> Import izbornika.</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Zamrznuti</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Zapaliti</translation>
 </phrase>
@@ -5571,6 +5548,11 @@ or na File> Open i File> Import izbornika.</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5605,7 +5587,7 @@ or na File> Open i File> Import izbornika.</translation>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Harmonska sredina</translation>
 </phrase>
 
 <phrase>
@@ -9099,7 +9081,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite „Cancel”, zatim 
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>precizan</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9776,7 +9758,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite „Cancel”, zatim 
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>slučajnom</translation>
 </phrase>
 
 <phrase>
@@ -9791,12 +9773,12 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite „Cancel”, zatim 
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Ray varijanse</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Izrada svjetlosnih zraka</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10004,12 +9986,12 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite „Cancel”, zatim 
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Srednja harmonika</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Primjena harmonijskog srednjeg filtera</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10119,7 +10101,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite „Cancel”, zatim 
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Izračunavanje fragmenata slike</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12920,7 +12902,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Uklanjanje prozirnosti</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14243,12 +14225,12 @@ To dalje, preuzmite novi primjerak PhotoDemon od photodemon.org.</translation>
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Nedavno korištenih prečaca datoteka</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Tekst glavnog naslova prozora</translation>
 </phrase>
 
 <phrase>
@@ -14438,7 +14420,7 @@ To dalje, preuzmite novi primjerak PhotoDemon od photodemon.org.</translation>
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Resetiraj sve postavke programa</translation>
 </phrase>
 
 <phrase>
@@ -14525,12 +14507,14 @@ To dalje, preuzmite novi primjerak PhotoDemon od photodemon.org.</translation>
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Sve će se postavke vratiti na njihove zadane vrijednosti. Ova se radnja ne može poništiti.
+ 
+ Jeste li sigurni da želite nastaviti?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Ponovno postavite PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14998,12 +14982,28 @@ If još uvijek onemogućiti ažuriranja, ne zaboravite posjetiti photodemon.org 
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

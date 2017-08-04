@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -605,16 +605,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Menjatuhkan imej suhu</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Meletup gunung berapi khayalan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1272,7 +1267,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Amaran - fail tidak dijumpai: %1</translation>
 </phrase>
 
 <phrase>
@@ -1291,19 +1286,20 @@ If imej ini pada asalnya terletak di media boleh alih (DVD, pemacu USB, dan lain
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Amaran - fail dikunci: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Malangnya, fail ' %1' kini dikunci oleh program lain pada PC ini. 
+VBCRLSila tutup fail ini dalam sebarang program lain yang dijalankan, kemudian cuba lagi.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Fail dikunci</translation>
 </phrase>
 
 <phrase>
@@ -2261,22 +2257,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>Menyimpan %1 lapisan</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail save gagal (FreeImage_SaveEx senyap gagal). Sila laporkan ralat menggunakan ini Bantuan -> Hantar Laporan Bug.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail save gagal (FreeImage kembali pemegang kosong). Sila laporkan ralat menggunakan ini Bantuan -> Hantar Laporan Bug.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Thumbnail menyelamatkan gagal (ralat GDI tidak ditentukan).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5555,11 +5536,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Freeze</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>menyalakan</translation>
 </phrase>
@@ -5572,6 +5548,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5606,7 +5587,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Maksud harmonik</translation>
 </phrase>
 
 <phrase>
@@ -9100,7 +9081,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>Tepat</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9777,7 +9758,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>Rawak</translation>
 </phrase>
 
 <phrase>
@@ -9792,12 +9773,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Varians ray</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Menjana rasuk cahaya</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10005,12 +9986,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Harmonic Mean</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Memohon penapis bermakna harmonik</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10120,7 +10101,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Mengira serpihan imej</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12921,7 +12902,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Mengalih keluar ketelusan</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14244,12 +14225,12 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Jalan pintas fail yang baru digunakan</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Teks bar tajuk utama</translation>
 </phrase>
 
 <phrase>
@@ -14439,7 +14420,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Tetapkan semula semua tetapan program</translation>
 </phrase>
 
 <phrase>
@@ -14526,12 +14507,14 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Semua tetapan akan dipulihkan kepada nilai lalai mereka. Tindakan ini tidak boleh dibatalkan. 
+ 
+ Adakah anda pasti mahu teruskan?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Tetapkan semula PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14999,12 +14982,28 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

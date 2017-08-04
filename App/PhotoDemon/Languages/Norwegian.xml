@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2821</langversion>
+<langversion>6.8.2987</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -604,16 +604,11 @@ You kan bruke MenuTest () sub i Filters_Miscellaneous modulen for å teste dine 
 </phrase>
 
 <phrase>
-<original>Dropping image temperature</original>
-<translation>Slippe bilde temperatur</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Exploding imaginære vulkan</translation>
 </phrase>
 
-<!-- Filters_Natural.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -1271,7 +1266,7 @@ To aktivere støtte for komprimerte PDI-filer, klikker du på Hjelp> Se etter op
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Advarsel - fil ikke funnet: %1</translation>
 </phrase>
 
 <phrase>
@@ -1290,19 +1285,21 @@ Hvis dette bildet ble opprinnelig plassert på et flyttbart medium (DVD, USB-sta
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Advarsel - filen er låst: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Dessverre er filen ' %1' for øyeblikket låst av et annet program på denne PC.
+
+Velg denne filen i andre kjørende programmer, og prøv deretter igjen.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Fil låst</translation>
 </phrase>
 
 <phrase>
@@ -2260,22 +2257,7 @@ In mellomtiden  kan du prøve å lagre bildet til et alternativt format. Du kan 
 <translation>Sparer %1 lag</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail lagre mislyktes (FreeImage_Save stille bestått). Vennligst rapporter denne feilen ved hjelp av Hjelp -> Send feilrapport.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Thumbnail lagre mislyktes (FreeImage returnert blank håndtak). Vennligst rapporter denne feilen ved hjelp av Hjelp -> Send feilrapport.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Thumbnail spare mislyktes (uspesifisert GDI feil).</translation>
-</phrase>
-
-<!-- Saving.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5554,11 +5536,6 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Freeze</original>
-<translation>Fryse</translation>
-</phrase>
-
-<phrase>
 <original>Ignite</original>
 <translation>Antenne</translation>
 </phrase>
@@ -5571,6 +5548,11 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <phrase>
 <original>Metal</original>
 <translation>Metall</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5605,7 +5587,7 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Harmonisk middel</translation>
 </phrase>
 
 <phrase>
@@ -9099,7 +9081,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>nøyaktig</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9776,7 +9758,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>random</translation>
 </phrase>
 
 <phrase>
@@ -9791,12 +9773,12 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>Ray varians</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Genererer lysstråler</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10004,12 +9986,12 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Harmonisk middel</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Bruke harmonisk middelfilter</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10119,7 +10101,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Beregning av bildefragmenter</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12920,7 +12902,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Fjerner gjennomsiktighet</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14243,12 +14225,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>Nylig brukte filgenveier</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>Hovedvinduets tittellinje tekst</translation>
 </phrase>
 
 <phrase>
@@ -14438,7 +14420,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>Nullstill alle programinnstillinger</translation>
 </phrase>
 
 <phrase>
@@ -14525,12 +14507,14 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Alle innstillinger blir gjenopprettet til standardverdiene. Denne handlingen kan ikke utelukkes. 
+ 
+ Er du sikker på at du vil fortsette?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Tilbakestill PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14998,12 +14982,28 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- END text for Effects_Nature_Atmosphere.frm-->
 
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1973 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12230 total words. -->
 
 </pdData>

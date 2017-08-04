@@ -1151,19 +1151,19 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Freeze"
+            Caption         =   "Ignite..."
             Index           =   2
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Ignite..."
+            Caption         =   "Lava"
             Index           =   3
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Lava"
+            Caption         =   "Metal..."
             Index           =   4
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Metal..."
+            Caption         =   "Snow..."
             Index           =   5
          End
          Begin VB.Menu MnuNatureFilter 
@@ -3899,22 +3899,22 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         Case 1
             Process "Fog", True
         
-        'Freeze
-        Case 2
-            Process "Freeze", , , UNDO_LAYER
-            
         'Ignite
-        Case 3
+        Case 2
             Process "Ignite", True
         
         'Lava
-        Case 4
+        Case 3
             Process "Lava", , , UNDO_LAYER
         
         'Metal (formerly "steel")
-        Case 5
+        Case 4
             Process "Metal", True
         
+        'Snow
+        Case 5
+            Process "Snow", True
+            
         'Water
         Case 6
             Process "Water", , , UNDO_LAYER

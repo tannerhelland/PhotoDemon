@@ -29,9 +29,9 @@ Begin VB.Form FormAtmosphere
       TabIndex        =   4
       Top             =   3480
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1720
-      caption         =   "blend mode"
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "blend mode"
    End
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   975
@@ -39,9 +39,9 @@ Begin VB.Form FormAtmosphere
       TabIndex        =   3
       Top             =   1320
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1720
-      caption         =   "style"
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "style"
    End
    Begin PhotoDemon.pdSlider sltIntensity 
       Height          =   705
@@ -49,12 +49,12 @@ Begin VB.Form FormAtmosphere
       TabIndex        =   2
       Top             =   2520
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "intensity"
-      max             =   100
-      value           =   50
-      defaultvalue    =   50
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "intensity"
+      Max             =   100
+      Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -62,8 +62,8 @@ Begin VB.Form FormAtmosphere
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -72,8 +72,8 @@ Begin VB.Form FormAtmosphere
       TabIndex        =   0
       Top             =   5790
       Width           =   12120
-      _extentx        =   21378
-      _extenty        =   1323
+      _ExtentX        =   21378
+      _ExtentY        =   1323
    End
 End
 Attribute VB_Name = "FormAtmosphere"
@@ -82,14 +82,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Blacklight Form
+'Nature > "Atmosphere" Effect Form
 'Copyright 2001-2017 by Tanner Helland
 'Created: some time 2001
-'Last updated: 01/October/13
-'Last update: use a floating-point slider for more precise results
+'Last updated: 03/August/17
+'Last update: expand function into full-featured dialog
 '
-'I found this effect on accident, and it has gradually become one of my favorite effects.
-' Visually stunning on many photographs.
+'This is one of those really old features that has been in PhotoDemon ever since the beginning.  It has nothing
+' to do with "Atmosphere" (although I could probably make something up about mixing light wavelengths,
+' given how the underlying function works), but somehow it ended up with that name, and it's stuck ever since.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
