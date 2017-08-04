@@ -165,7 +165,7 @@ Private Type ARGB
     Blue As Byte
     Green As Byte
     Red As Byte
-    alpha As Byte
+    Alpha As Byte
 End Type
 
 Private Type BitmapData
@@ -971,8 +971,8 @@ Private Function IsAlphaIcon(ByVal IconHandle As Long) As Boolean
                                 For lngY = 0 To tBitmapData.Height - 1
                                     For lngX = 0 To tBitmapData.Width - 1
                                     
-                                        If tARGB(lngX, lngY).alpha > 0 Then
-                                            If tARGB(lngX, lngY).alpha < 255 Then
+                                        If tARGB(lngX, lngY).Alpha > 0 Then
+                                            If tARGB(lngX, lngY).Alpha < 255 Then
                                             
                                                 bolRet = True
                                                 Exit For

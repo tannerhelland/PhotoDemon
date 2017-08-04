@@ -437,7 +437,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             uniqueColors(i).Red = 1
             uniqueColors(i).Green = 1
             uniqueColors(i).Blue = 0
-            uniqueColors(i).alpha = 1
+            uniqueColors(i).Alpha = 1
         Next i
 
         'Total number of unique colors counted so far
@@ -474,7 +474,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                     If (uniqueColors(i).Red = r) Then
                         If (uniqueColors(i).Green = g) Then
                             If (uniqueColors(i).Blue = b) Then
-                                If (uniqueColors(i).alpha = a) Then
+                                If (uniqueColors(i).Alpha = a) Then
                                     colorFound = True
                                     Exit For
                                 End If
@@ -492,7 +492,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                         uniqueColors(numUniqueColors).Red = r
                         uniqueColors(numUniqueColors).Green = g
                         uniqueColors(numUniqueColors).Blue = b
-                        uniqueColors(numUniqueColors).alpha = a
+                        uniqueColors(numUniqueColors).Alpha = a
                         numUniqueColors = numUniqueColors + 1
                     End If
                 End If
@@ -685,7 +685,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
         Else
-            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_BMP, outputColorDepth)
+            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_BMP, outputColorDepth)
         End If
     
     End If
@@ -763,7 +763,7 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         End If
         
     ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_GIF, 8)
+        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_GIF, 8)
     Else
         ExportGIF = False
         Message "No %1 encoder found. Save aborted.", "JPEG"
@@ -970,7 +970,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         End If
         
     ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_JPEG, outputColorDepth, jpegQuality)
+        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_JPEG, outputColorDepth, jpegQuality)
     Else
         ExportJPEG = False
         Message "No %1 encoder found. Save aborted.", "JPEG"
@@ -1443,7 +1443,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
         Else
-            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_PNG, outputColorDepth)
+            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, outputColorDepth)
         End If
         
     End If
@@ -2082,7 +2082,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             End If
             
         Else
-            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_TIFF, outputColorDepth)
+            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_TIFF, outputColorDepth)
         End If
         
     End If
