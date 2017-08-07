@@ -174,7 +174,9 @@ Public Function IsDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
 End Function
 
 'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
-' stretches from 0 to 255.  (Also note: this function does not support progress bar reports.)
+' stretches from 0 to 255.
+'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
+'ALSO NOTE: this function does not support progress reports, by design.
 Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean
     
     'Make sure the DIB exists
@@ -220,8 +222,8 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             r = imageData(quickVal + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-            grayVal = (213 * r + 715 * g + 72 * b) \ 1000
-            If grayVal > 255 Then grayVal = 255
+            grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+            If (grayVal > 255) Then grayVal = 255
             
             'Cache the value
             dstGrayArray(x, y) = grayVal
@@ -285,7 +287,9 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
 
 End Function
 
-'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.
+'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.  The final DIB will be
+' fully opaque, by design.  If you want to treat the grayscale values as alpha values, use the matching
+' alpha-based function, below.
 ' (Note: this function does not support progress bar reports, by design.)
 Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
@@ -331,6 +335,66 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
     Else
         Debug.Print "WARNING! Could not create blank DIB inside createDIBFromGrayscaleMap."
         CreateDIBFromGrayscaleMap = False
+    End If
+
+End Function
+
+'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.  The final DIB will have
+' variable alpha, as determined by the incoming grayscale values, and the resulting DIB will be premultiplied.
+' (Note: this function does not support progress bar reports, by design.)
+Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
+    
+    'Create the DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
+    If dstDIB.CreateBlank(arrayWidth, arrayHeight, 32, 0, 0) Then
+        
+        'Point a local array at the DIB
+        Dim dstImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        PrepSafeArray tmpSA, dstDIB
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = dstDIB.GetDIBWidth - 1
+        finalY = dstDIB.GetDIBHeight - 1
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim quickVal As Long, qvDepth As Long, gValue As Byte, aValue As Byte
+        qvDepth = dstDIB.GetDIBColorDepth \ 8
+        
+        'Create a lookup table of possible grayscale values
+        Dim gLookup() As Byte
+        ReDim gLookup(0 To 255) As Byte
+        For x = 0 To 255
+            gLookup(x) = Int(CDbl(x) * (CDbl(x) / 255#))
+        Next x
+        
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            quickVal = x * qvDepth
+        For y = initY To finalY
+            aValue = srcGrayArray(x, y)
+            gValue = gLookup(aValue)
+            dstImageData(quickVal, y) = gValue
+            dstImageData(quickVal + 1, y) = gValue
+            dstImageData(quickVal + 2, y) = gValue
+            dstImageData(quickVal + 3, y) = aValue
+        Next y
+        Next x
+        
+        'Safely deallocate imageData()
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.SetInitialAlphaPremultiplicationState True
+        CreateDIBFromGrayscaleMap_Alpha = True
+        
+    Else
+        Debug.Print "WARNING! Could not create blank DIB inside CreateDIBFromGrayscaleMap_Alpha."
+        CreateDIBFromGrayscaleMap_Alpha = False
     End If
 
 End Function
@@ -1016,7 +1080,7 @@ Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
             .Blue = srcPixels(0, 0)
             .Green = srcPixels(1, 0)
             .Red = srcPixels(2, 0)
-            .alpha = srcPixels(3, 0)
+            .Alpha = srcPixels(3, 0)
         End With
         
         Dim r As Long, g As Long, b As Long, a As Long, i As Long
@@ -1037,7 +1101,7 @@ Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
                 If (b = colorList(i).Blue) Then
                     If (g = colorList(i).Green) Then
                         If (r = colorList(i).Red) Then
-                            If (a = colorList(i).alpha) Then
+                            If (a = colorList(i).Alpha) Then
                                 matchFound = True
                                 Exit For
                             End If
@@ -1055,7 +1119,7 @@ Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
                 colorList(i).Blue = b
                 colorList(i).Green = g
                 colorList(i).Red = r
-                colorList(i).alpha = a
+                colorList(i).Alpha = a
                 numColors = numColors + 1
             End If
             
@@ -1107,7 +1171,7 @@ Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As R
             .Blue = srcPixels(0, 0)
             .Green = srcPixels(1, 0)
             .Red = srcPixels(2, 0)
-            .alpha = srcPixels(3, 0)
+            .Alpha = srcPixels(3, 0)
         End With
         
         dstPixels(0, 0) = 0
@@ -1130,7 +1194,7 @@ Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As R
                 If (b = dstPalette(i).Blue) Then
                     If (g = dstPalette(i).Green) Then
                         If (r = dstPalette(i).Red) Then
-                            If (a = dstPalette(i).alpha) Then
+                            If (a = dstPalette(i).Alpha) Then
                                 matchFound = True
                                 Exit For
                             End If
@@ -1151,7 +1215,7 @@ Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As R
                     .Blue = b
                     .Green = g
                     .Red = r
-                    .alpha = a
+                    .Alpha = a
                 End With
                 dstPixels(x \ pxSize, y) = numColors
                 numColors = numColors + 1
@@ -1206,7 +1270,7 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByRef colorCount A
                     dstPixels(x, y) = .Blue
                     dstPixels(x + 1, y) = .Green
                     dstPixels(x + 2, y) = .Red
-                    dstPixels(x + 3, y) = .alpha
+                    dstPixels(x + 3, y) = .Alpha
                 End With
             End If
             
@@ -1297,7 +1361,7 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
             Dim tmpQuad As RGBQUAD
             
             For x = 0 To 255
-                tmpQuad.alpha = x
+                tmpQuad.Alpha = x
                 tmpA = x * (x / 255)
                 tmpQuad.Red = tmpA
                 tmpQuad.Green = tmpA
