@@ -42,8 +42,8 @@ Begin VB.Form FormFilmGrain
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "strength"
-      Min             =   1
-      Max             =   50
+      Max             =   100
+      SigDigits       =   1
       Value           =   10
       DefaultValue    =   10
    End
@@ -80,8 +80,8 @@ Attribute VB_Exposed = False
 'Add Film Grain Tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 11/January/14
-'Last update: convert softness to floating point; minor performance improvements
+'Last updated: 07/August/17
+'Last update: convert to XML params, large performance improvements
 '
 'Tool for simulating film grain. For aesthetic reasons, film grain is restricted to monochromatic noise
 ' (luminance only) to better mimic traditional film grain.
@@ -95,34 +95,24 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
-'Subroutine for adding noise to an image
-' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub AddFilmGrain(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If (Not toPreview) Then Message "Generating film grain texture..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim gStrength As Double, gSoftness As Double
+    
+    With cParams
+        gStrength = .GetDouble("noise", sltNoise.Value)
+        gSoftness = .GetDouble("radius", sltRadius.Value)
+    End With
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    
-    'Create a separate source DIB. This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent adjusted pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-    
-    'Create a DIB to hold the gaussian blur
-    Dim gaussDIB As pdDIB
-    Set gaussDIB = New pdDIB
-    
-    'Create a DIB to hold the film grain
-    Dim noiseDIB As pdDIB
-    Set noiseDIB = New pdDIB
-    noiseDIB.CreateFromExistingDIB workingDIB
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -131,168 +121,80 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'Point an array at the noise DIB
-    Dim dstImageData() As Byte
-    PrepSafeArray dstSA, noiseDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not toPreview) Then
-        SetProgBarMax finalY * 2 + finalX * 2
+        SetProgBarMax finalY
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
         
     'Noise variables
     Dim nColor As Long
-    Dim gStrength2 As Long
-    
-    'Double the amount of noise we plan on using (so we can add noise above or below the current color value)
-    gStrength2 = gStrength * 2
     
     'Although it's slow, we're stuck using random numbers for noise addition. Seed the generator with a pseudo-random value.
-    Randomize Timer
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
+    
+    'All results are going to be placed inside a byte array, which is faster to manipulate than a DIB.
+    Dim noiseBytes() As Byte
+    ReDim noiseBytes(0 To finalX, 0 To finalY) As Byte
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+    For x = initX To finalX
                     
         'Generate monochromatic noise, e.g. the same amount of noise for each color component, based around RGB(127, 127, 127)
-        nColor = 127 + (gStrength2 * Rnd) - gStrength
+        nColor = 127 + gStrength * cRandom.GetGaussianFloat_WH()
+        If (nColor < 0) Then nColor = 0
+        If (nColor > 255) Then nColor = 255
+        noiseBytes(x, y) = nColor
         
-        'Assign that noise to each color component
-        dstImageData(quickVal + 2, y) = nColor
-        dstImageData(quickVal + 1, y) = nColor
-        dstImageData(quickVal, y) = nColor
-        
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'With our noise generation complete, point dstImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'Next, we need to soften the noise DIB
-    If (Not toPreview) And (Not g_cancelCurrentAction) Then Message "Softening film grain..."
-    
-    If (gSoftness > 0) And (Not g_cancelCurrentAction) Then
-    
+    If (gSoftness > 0#) And (Not g_cancelCurrentAction) Then
+        
+        'Next, we need to soften the noise DIB
+        If (Not toPreview) And (Not g_cancelCurrentAction) Then Message "Softening film grain..."
+        
         'If this is a preview, we need to adjust the softening radius to match the size of the preview box
         If toPreview Then
             gSoftness = gSoftness * curDIBValues.previewModifier
-            If gSoftness = 0 Then gSoftness = 0.1
+            If (gSoftness < 0.1) Then gSoftness = 0.1
         End If
-    
-        gaussDIB.CreateFromExistingDIB workingDIB
-    
-        'Blur the noise texture as required by the user
-        CreateGaussianBlurDIB gSoftness, noiseDIB, gaussDIB, toPreview, finalY * 2 + finalX * 2, finalX
         
-    Else
-        gaussDIB.CreateFromExistingDIB noiseDIB
+        Filters_ByteArray.GaussianBlur_IIR_ByteArray noiseBytes, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, gSoftness, 3
+        
     End If
     
-    'Delete the original noise DIB to conserve resources
-    noiseDIB.EraseDIB
-    Set noiseDIB = Nothing
-    
-    If Not g_cancelCurrentAction Then
-    
-        'We now have a softened noise DIB. Next, create three arrays - one pointing at the original image data, one pointing at
-        ' the noise data, and one pointing at the destination data.
-        EffectPrep.PrepImageData dstSA, toPreview, dstPic
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    If (Not g_cancelCurrentAction) Then
         
-        Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-            
-        Dim GaussImageData() As Byte
-        Dim gaussSA As SAFEARRAY2D
-        PrepSafeArray gaussSA, gaussDIB
-        CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
-            
-        If (Not toPreview) Then Message "Applying film grain to image..."
+        'As our final operation, merge the noise onto the original image, using pdCompositor
+        Dim noiseImage As pdDIB
+        Set noiseImage = New pdDIB
+        DIBs.CreateDIBFromGrayscaleMap noiseImage, noiseBytes, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
         
-        Dim r As Long, g As Long, b As Long
-        
-        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            quickVal = x * qvDepth
-        For y = initY To finalY
-            
-            'Retrieve the original image's pixels
-            r = srcImageData(quickVal + 2, y)
-            g = srcImageData(quickVal + 1, y)
-            b = srcImageData(quickVal, y)
-                    
-            'Now, retrieve a noise pixel (we only need one, as each color component will be identical)
-            nColor = GaussImageData(quickVal, y) - 127
-                    
-            'Add the noise to each color component
-            r = r + nColor
-            g = g + nColor
-            b = b + nColor
-            
-            If r > 255 Then r = 255
-            If r < 0 Then r = 0
-            If g > 255 Then g = 255
-            If g < 0 Then g = 0
-            If b > 255 Then b = 255
-            If b < 0 Then b = 0
-            
-            dstImageData(quickVal + 2, y) = r
-            dstImageData(quickVal + 1, y) = g
-            dstImageData(quickVal, y) = b
-            
-        Next y
-            If (Not toPreview) Then
-                If (x And progBarCheck) = 0 Then
-                    If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal finalX + x + finalY + finalY
-                End If
-            End If
-        Next x
-        
-        'With our work complete, release all arrays
-        CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-        Erase GaussImageData
-        
-        gaussDIB.EraseDIB
-        Set gaussDIB = Nothing
-        
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
-        srcDIB.EraseDIB
-        Set srcDIB = Nothing
-        
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
+        Dim cCompositor As pdCompositor
+        Set cCompositor = New pdCompositor
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, noiseImage, BL_SOFTLIGHT, , , LA_INHERIT
         
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Add film grain", , BuildParams(sltNoise.Value, sltRadius.Value), UNDO_LAYER
+    Process "Add film grain", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -302,18 +204,6 @@ End Sub
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False
-    
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
-        iWidth = selBounds.Width
-        iHeight = selBounds.Height
-    Else
-        iWidth = pdImages(g_CurrentImage).Width
-        iHeight = pdImages(g_CurrentImage).Height
-    End If
-    
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -335,7 +225,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.AddFilmGrain GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -349,7 +239,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "noise", sltNoise.Value
+        .AddParam "radius", sltRadius.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

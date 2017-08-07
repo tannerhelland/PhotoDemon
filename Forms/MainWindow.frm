@@ -1318,36 +1318,6 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuCustomFilter 
          Caption         =   "Custom filter..."
       End
-      Begin VB.Menu MnuFilterSepBar2 
-         Caption         =   "-"
-         Visible         =   0   'False
-      End
-      Begin VB.Menu MnuEffectExperimental 
-         Caption         =   "Experimental"
-         Index           =   4
-         Visible         =   0   'False
-         Begin VB.Menu MnuAlien 
-            Caption         =   "Alien"
-         End
-         Begin VB.Menu MnuDream 
-            Caption         =   "Dream"
-         End
-         Begin VB.Menu MnuNatureTest 
-            Caption         =   "New freeze effect"
-         End
-         Begin VB.Menu MnuRadioactive 
-            Caption         =   "Radioactive"
-         End
-         Begin VB.Menu MnuSynthesize 
-            Caption         =   "Synthesize"
-         End
-         Begin VB.Menu MnuHeatmap 
-            Caption         =   "Thermograph (heat map)"
-         End
-         Begin VB.Menu MnuVibrate 
-            Caption         =   "Vibrate"
-         End
-      End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
       End
@@ -2357,10 +2327,6 @@ Private Sub MnuLightShadow_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuNatureTest_Click()
-    'showPDDialog vbModal, FormFreeze2
-End Sub
-
 Private Sub MnuPixelate_Click(Index As Integer)
     
     Select Case Index
@@ -3364,10 +3330,6 @@ Private Sub MnuDistortEffects_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuDream_Click()
-    Process "Dream", , , UNDO_LAYER
-End Sub
-
 Private Sub MnuEdge_Click(Index As Integer)
 
     Select Case Index
@@ -3547,10 +3509,6 @@ End Sub
 
 Private Sub MnuFitOnScreen_Click()
     CanvasManager.FitOnScreen
-End Sub
-
-Private Sub MnuHeatmap_Click()
-    Process "Thermograph (heat map)", , , UNDO_LAYER
 End Sub
 
 'All help menu entries are launched from here
@@ -3735,10 +3693,6 @@ End Sub
 'Attempt to import an image from the Internet
 Private Sub MnuImportFromInternet_Click()
     Process "Internet import", True
-End Sub
-
-Private Sub MnuAlien_Click()
-    Process "Alien", , , UNDO_LAYER
 End Sub
 
 'When a language is clicked, immediately activate it
@@ -3978,10 +3932,6 @@ Private Sub MnuNoise_Click(Index As Integer)
         
 End Sub
 
-Private Sub MnuRadioactive_Click()
-    Process "Radioactive", , , UNDO_LAYER
-End Sub
-
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
 Public Sub mnuRecDocs_Click(Index As Integer)
     
@@ -4214,11 +4164,17 @@ Private Sub MnuStylize_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuSynthesize_Click()
-    Process "Synthesize", , , UNDO_LAYER
-End Sub
-
 Private Sub MnuTest_Click()
+    
+    Dim i As Long
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
+    
+    For i = 0 To 9
+        Debug.Print cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(); cRandom.GetGaussianFloat_WH()
+    Next i
+    
     
 '    'Want to test a new dialog?  Call it here:
 '    showPDDialog vbModal, FormToTest
@@ -4327,10 +4283,6 @@ Private Sub MnuLayerTransparency_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-Private Sub MnuVibrate_Click()
-    Process "Vibrate", , , UNDO_LAYER
 End Sub
 
 'All "Window" menu items are handled here
