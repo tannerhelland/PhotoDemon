@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2988</langversion>
+<langversion>6.8.2989</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5709,46 +5709,6 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>Eksperymentalny</translation>
-</phrase>
-
-<phrase>
-<original>Alien</original>
-<translation>Obcy</translation>
-</phrase>
-
-<phrase>
-<original>Dream</original>
-<translation>Śnić</translation>
-</phrase>
-
-<phrase>
-<original>New freeze effect</original>
-<translation>Nowy efekt zamrażania</translation>
-</phrase>
-
-<phrase>
-<original>Radioactive</original>
-<translation>Radioaktywny</translation>
-</phrase>
-
-<phrase>
-<original>Synthesize</original>
-<translation>syntetyzują</translation>
-</phrase>
-
-<phrase>
-<original>Thermograph (heat map)</original>
-<translation>Termografia (mapa ciepła)</translation>
-</phrase>
-
-<phrase>
-<original>Vibrate</original>
-<translation>Wibrować</translation>
-</phrase>
-
-<phrase>
 <original>Test</original>
 <translation>Test</translation>
 </phrase>
@@ -6472,7 +6432,7 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 <translation>Usuń kanał alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9846,11 +9806,21 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 </phrase>
 
 <phrase>
+<original>distribution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Increasing image noise</original>
 <translation>Zwiększenie zakłócenia obrazu</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>uniform</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -9963,12 +9933,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 <translation>Zmiękczanie Ziarno</translation>
 </phrase>
 
-<phrase>
-<original>Applying film grain to image</original>
-<translation>Zastosowanie folii ziarno obrazu</translation>
-</phrase>
-
-<!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
@@ -15005,10 +14970,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12240 total words. -->
+<!-- As of this build, PhotoDemon contains 4502 phrases. -->
+<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12225 total words. -->
 
 </pdData>

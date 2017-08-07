@@ -440,19 +440,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Noise
         
         Case "Add film grain"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFilmGrain
-            Else
-                FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetDouble(2)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormFilmGrain Else FormFilmGrain.AddFilmGrain processParameters
+            
         Case "Add RGB noise"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormNoise
-            Else
-                FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormNoise Else FormNoise.AddNoise processParameters
+            
         Case "Anisotropic diffusion"
             If raiseDialog Then ShowPDDialog vbModal, FormAnisotropic Else FormAnisotropic.ApplyAnisotropicDiffusion processParameters
             

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2988</langversion>
+<langversion>6.8.2989</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5715,46 +5715,6 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>Deneysel</translation>
-</phrase>
-
-<phrase>
-<original>Alien</original>
-<translation>Yabancı</translation>
-</phrase>
-
-<phrase>
-<original>Dream</original>
-<translation>Rüya</translation>
-</phrase>
-
-<phrase>
-<original>New freeze effect</original>
-<translation>Yeni donma etkisi</translation>
-</phrase>
-
-<phrase>
-<original>Radioactive</original>
-<translation>Radyoaktif</translation>
-</phrase>
-
-<phrase>
-<original>Synthesize</original>
-<translation>sentezlemek</translation>
-</phrase>
-
-<phrase>
-<original>Thermograph (heat map)</original>
-<translation>Termografi (ısı haritası)</translation>
-</phrase>
-
-<phrase>
-<original>Vibrate</original>
-<translation>titremek</translation>
-</phrase>
-
-<phrase>
 <original>Test</original>
 <translation>Test</translation>
 </phrase>
@@ -6480,7 +6440,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9854,11 +9814,21 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
+<original>distribution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Increasing image noise</original>
 <translation>Artan görüntü gürültüsü</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>uniform</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -9971,12 +9941,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation>Yumuşama film tahıl</translation>
 </phrase>
 
-<phrase>
-<original>Applying film grain to image</original>
-<translation>Görüntünün film tahıl Uygulanması</translation>
-</phrase>
-
-<!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
@@ -15013,10 +14978,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12240 total words. -->
+<!-- As of this build, PhotoDemon contains 4502 phrases. -->
+<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12225 total words. -->
 
 </pdData>

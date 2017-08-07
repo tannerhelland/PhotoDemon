@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.274</langversion>
+<langversion>6.7.275</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -5710,46 +5710,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>Experimentell</translation>
-</phrase>
-
-<phrase>
-<original>Alien</original>
-<translation>Außerirdische</translation>
-</phrase>
-
-<phrase>
-<original>Dream</original>
-<translation>Traum</translation>
-</phrase>
-
-<phrase>
-<original>New freeze effect</original>
-<translation>Neuer Frosteffekt</translation>
-</phrase>
-
-<phrase>
-<original>Radioactive</original>
-<translation>Radioaktiv</translation>
-</phrase>
-
-<phrase>
-<original>Synthesize</original>
-<translation>Synthetisieren</translation>
-</phrase>
-
-<phrase>
-<original>Thermograph (heat map)</original>
-<translation>Thermographie (Hitzekarte)</translation>
-</phrase>
-
-<phrase>
-<original>Vibrate</original>
-<translation>Vibrieren</translation>
-</phrase>
-
-<phrase>
 <original>Test</original>
 <translation>Test</translation>
 </phrase>
@@ -6476,7 +6436,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9850,11 +9810,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>distribution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Increasing image noise</original>
 <translation>Bildrauschen verstärken</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>uniform</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -9967,12 +9937,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Filmkorn weicher machen</translation>
 </phrase>
 
-<phrase>
-<original>Applying film grain to image</original>
-<translation>Filmkorn auf das Bild anwenden</translation>
-</phrase>
-
-<!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
@@ -15011,10 +14976,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12240 total words. -->
+<!-- As of this build, PhotoDemon contains 4502 phrases. -->
+<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12225 total words. -->
 
 </pdData>

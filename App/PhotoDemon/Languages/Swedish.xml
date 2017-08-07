@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2988</langversion>
+<langversion>6.8.2989</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5717,46 +5717,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>Experimentellt</translation>
-</phrase>
-
-<phrase>
-<original>Alien</original>
-<translation>främmande</translation>
-</phrase>
-
-<phrase>
-<original>Dream</original>
-<translation>dröm</translation>
-</phrase>
-
-<phrase>
-<original>New freeze effect</original>
-<translation>Ny fryst effekt</translation>
-</phrase>
-
-<phrase>
-<original>Radioactive</original>
-<translation>Radioaktivt</translation>
-</phrase>
-
-<phrase>
-<original>Synthesize</original>
-<translation>Syntetisera</translation>
-</phrase>
-
-<phrase>
-<original>Thermograph (heat map)</original>
-<translation>Termograf (värme karta)</translation>
-</phrase>
-
-<phrase>
-<original>Vibrate</original>
-<translation>vibration</translation>
-</phrase>
-
-<phrase>
 <original>Test</original>
 <translation>Test</translation>
 </phrase>
@@ -6483,7 +6443,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9857,11 +9817,21 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>distribution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Increasing image noise</original>
 <translation>Öka bildbrus</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>uniform</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -9974,12 +9944,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Mjukgörande filmkorn</translation>
 </phrase>
 
-<phrase>
-<original>Applying film grain to image</original>
-<translation>Tillämpa film spannmål till bild</translation>
-</phrase>
-
-<!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
@@ -15021,10 +14986,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12240 total words. -->
+<!-- As of this build, PhotoDemon contains 4502 phrases. -->
+<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12225 total words. -->
 
 </pdData>

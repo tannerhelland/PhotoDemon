@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2786</langversion>
+<langversion>6.8.2787</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -5710,46 +5710,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>实验</translation>
-</phrase>
-
-<phrase>
-<original>Alien</original>
-<translation>外星人</translation>
-</phrase>
-
-<phrase>
-<original>Dream</original>
-<translation>梦想</translation>
-</phrase>
-
-<phrase>
-<original>New freeze effect</original>
-<translation>新的凝固效果</translation>
-</phrase>
-
-<phrase>
-<original>Radioactive</original>
-<translation>放射性</translation>
-</phrase>
-
-<phrase>
-<original>Synthesize</original>
-<translation>综合</translation>
-</phrase>
-
-<phrase>
-<original>Thermograph (heat map)</original>
-<translation>温度计（热图）</translation>
-</phrase>
-
-<phrase>
-<original>Vibrate</original>
-<translation>振动</translation>
-</phrase>
-
-<phrase>
 <original>Test</original>
 <translation>测试</translation>
 </phrase>
@@ -6474,7 +6434,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9849,11 +9809,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>distribution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Increasing image noise</original>
 <translation>增加图像噪声</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>uniform</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -9966,12 +9936,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>软化胶片颗粒</translation>
 </phrase>
 
-<phrase>
-<original>Applying film grain to image</original>
-<translation>应用胶片颗粒到图像</translation>
-</phrase>
-
-<!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
@@ -15006,10 +14971,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12240 total words. -->
+<!-- As of this build, PhotoDemon contains 4502 phrases. -->
+<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12225 total words. -->
 
 </pdData>

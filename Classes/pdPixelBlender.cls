@@ -43,7 +43,7 @@ Private m_topDIBCopy As pdDIB
 ' After the blend, we restore the original values (regardless of any changes caused by the blend).
 Private m_AlphaCopy() As Byte
 
-Private Const ONE_DIV_255 As Single = 1# / 255#
+Private Const ONE_DIV_255 As Double = 1# / 255#
 
 'Given two DIBs, blend them together and place the result inside the bottom DIB.
 ' IMPORTANT NOTES FOR THIS FUNCTION:
@@ -3819,9 +3819,9 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 End If
                 
                 '"Soft light" blend mode is very simple
-                newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
-                newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
-                newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
+                newR = (1# - 2# * topR) * bottomR * bottomR + 2# * bottomR * topR
+                newG = (1# - 2# * topG) * bottomG * bottomG + 2# * bottomG * topG
+                newB = (1# - 2# * topB) * bottomB * bottomB + 2# * bottomB * topB
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
