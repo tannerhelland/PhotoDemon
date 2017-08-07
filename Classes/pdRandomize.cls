@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Random Number Generator
 'Copyright 2015-2017 by Tanner Helland
 'Created: 23/June/15 (but assembled from bits scattered throughout PD, many from years earlier)
-'Last updated: 14/September/15
-'Last update: fix potential integer overflow; thanks to GioRock for catching and reporting
+'Last updated: 07/August/17
+'Last update: add gaussian distribution functions, which use a Box-Muller transform to produce random
+'             floats with a normal distribution.
 '
 'VB's internal randomize function is confusing and ill-conceived, especially when it comes to seeding it.  This class aims to
 ' make random number generation far more predictable (lol, ironic?) and convenient.
@@ -28,6 +29,7 @@ Attribute VB_Exposed = False
 ' http://web.archive.org/web/20110113032316/http://www.15seconds.com/issue/051110.htm
 ' http://www.vbforums.com/showthread.php?499661-Wichmann-Hill-Pseudo-Random-Number-Generator-an-alternative-for-VB-Rnd%28%29-function
 ' http://stackoverflow.com/questions/22384451/vb6-how-to-get-c-like-integer-overflow/22389687#22389687
+' https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -115,7 +117,7 @@ Private Function GetSafeIntFromDouble(ByVal srcDouble As Double) As Long
 End Function
 
 'Return the current seed.  Note that this class always stores the seed as a Double, regardless of how it was originally supplied.
-Public Function GetSeed() As Double
+Friend Function GetSeed() As Double
     GetSeed = m_Seed_Float
 End Function
 
@@ -159,23 +161,23 @@ Private Sub Class_Initialize()
 End Sub
 
 'Return a random integer using VB's internal randomize engine.  If supplied earlier, bounds are used.
-Public Function GetRandomInt_VB() As Long
+Friend Function GetRandomInt_VB() As Long
     GetRandomInt_VB = Int((m_HighBound - m_LowBound + 1) * Rnd + m_LowBound)
 End Function
 
 'Return a random float using VB's internal randomize engine.  Bounds are ignored.  This is kind of a stupid function, as it would
 ' be faster to just use Rnd yourself, but it's included here for completeness.
-Public Function GetRandomFloat_VB() As Double
+Friend Function GetRandomFloat_VB() As Double
     GetRandomFloat_VB = Rnd
 End Function
 
 'Return a random integer using the Wichmann-Hill PRNG.  If supplied earlier, bounds are used.
-Public Function GetRandomInt_WH() As Long
+Friend Function GetRandomInt_WH() As Long
     GetRandomInt_WH = Int((m_HighBound - m_LowBound + 1) * GetRandomFloat_WH + m_LowBound)
 End Function
 
 'Return a random float using the Wichmann-Hill PRNG.  Pretty fast, good distribution too.
-Public Function GetRandomFloat_WH() As Double
+Friend Function GetRandomFloat_WH() As Double
     
     'Generate new offsets, using the previous offsets as our inputs
     iX = (171& * iX) Mod 30269&
@@ -191,5 +193,29 @@ Public Function GetRandomFloat_WH() As Double
     
     '...then return the floating-point portion
     GetRandomFloat_WH = m_WH_Float - Int(m_WH_Float)
+    
+End Function
+
+'Gaussian distribution functions are also provided; obviously, they impose a somewhat unpleasant performance hit.
+' IMPORTANTLY, note that Gaussian functions, by definition, return values on the theoretical range
+' [-DoubleMax, +DoubleMax], with the distribution centered around [0].  This differs from the standard behavior
+' of returning floats on the range [0.0, 1.0]
+Friend Function GetGaussianFloat_VB() As Double
+    
+    'Pass two random values them through a Box-Muller transform to produce a gaussian distribution.
+    ' (The math behind this is a little weird; see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform)
+    GetGaussianFloat_VB = Sqr(-2# * Log(GetRandomFloat_VB())) * Cos(PI_DOUBLE * GetRandomFloat_VB())
+    
+End Function
+
+'Gaussian distribution functions are also provided; obviously, they impose a somewhat unpleasant performance hit.
+' IMPORTANTLY, note that Gaussian functions, by definition, return values on the theoretical range
+' [-DoubleMax, +DoubleMax], with the distribution centered around [0].  This differs from the standard behavior
+' of returning floats on the range [0.0, 1.0]
+Friend Function GetGaussianFloat_WH() As Double
+    
+    'Pass two random values them through a Box-Muller transform to produce a gaussian distribution.
+    ' (The math behind this is a little weird; see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform)
+    GetGaussianFloat_WH = Sqr(-2# * Log(GetRandomFloat_WH())) * Cos(PI_DOUBLE * GetRandomFloat_WH())
     
 End Function
