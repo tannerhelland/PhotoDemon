@@ -378,7 +378,7 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Lighter, modern blend:
     DIBs.CreateDIBFromGrayscaleMap m_GrayDIB, finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BL_SCREEN, 100#
+    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BL_SCREEN, 100#, , LA_INHERIT
     
     'If this is *not* a preview, wipe our local caches before exiting
     If (Not toPreview) Then Set m_GrayDIB = Nothing
