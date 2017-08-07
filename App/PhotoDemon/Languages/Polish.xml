@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2987</langversion>
+<langversion>6.8.2988</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5329,6 +5329,11 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
+<original>Plastic wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Posterize</original>
 <translation>Posterize</translation>
 </phrase>
@@ -6467,7 +6472,7 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 <translation>Usuń kanał alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 186 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14977,12 +14982,33 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- END text for Effects_Nature_Snow.frm-->
 
+<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
+
+<phrase>
+<original>light angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light intensity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Wrapping image in plastic</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Artistic_PlasticWrap.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2528</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4504 phrases. -->
-<!-- 1980 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12230 total words. -->
+<!-- As of this build, PhotoDemon contains 4514 phrases. -->
+<!-- 1986 are duplicates, so only 2528 unique phrases have been written to file. -->
+<!-- These 2528 phrases contain approximately 12240 total words. -->
 
 </pdData>

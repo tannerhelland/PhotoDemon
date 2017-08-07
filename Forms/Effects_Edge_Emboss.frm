@@ -174,7 +174,7 @@ Public Sub ApplyEmbossEffect(ByVal effectParams As String, Optional ByVal toPrev
     End With
     
     'Don't allow distance to be 0
-    If eDistance = 0# Then eDistance = 0.01
+    If (eDistance < 0.01) Then eDistance = 0.01
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte

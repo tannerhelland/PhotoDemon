@@ -306,7 +306,7 @@ Private Function PInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iDat
     Dim xBlend As Double, xBlendInv As Double
     yBlend = y1 - Int(y1)
     xBlend = x1 - Int(x1)
-    xBlendInv = 1 - xBlend
+    xBlendInv = 1# - xBlend
     
     'Blend in the x-direction
     Dim topRowColor As Double, bottomRowColor As Double
@@ -314,6 +314,6 @@ Private Function PInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iDat
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
     'Blend in the y-direction
-    PInterpolate = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
+    PInterpolate = bottomRowColor * yBlend + topRowColor * (1# - yBlend)
 
 End Function

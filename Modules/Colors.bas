@@ -82,7 +82,7 @@ Public Function ExtractBlue(ByVal currentColor As Long) As Integer
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
+Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByVal mixRatio As Double) As Byte
     BlendColors = ((1# - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
 

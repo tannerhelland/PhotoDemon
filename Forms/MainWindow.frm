@@ -975,16 +975,20 @@ Begin VB.Form FormMain
             Index           =   7
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Posterize..."
+            Caption         =   "Plastic wrap..."
             Index           =   8
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Relief..."
+            Caption         =   "Posterize..."
             Index           =   9
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Stained glass..."
+            Caption         =   "Relief..."
             Index           =   10
+         End
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Stained glass..."
+            Index           =   11
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3102,53 +3106,44 @@ Private Sub MnuAdjustments_Click(Index As Integer)
 
 End Sub
 
-'All artistic filters are launched here
 Private Sub MnuArtistic_Click(Index As Integer)
 
     Select Case Index
         
-        'Colored pencil
         Case 0
             Process "Colored pencil", True
         
-        'Comic book
         Case 1
             Process "Comic book", True
             
-        'Figured glass
         Case 2
             Process "Figured glass", True
             
-        'Film noir
         Case 3
             Process "Film noir", True
         
-        'Glass tiles
         Case 4
             Process "Glass tiles", True
         
-        'Kaleidoscope
         Case 5
             Process "Kaleidoscope", True
         
-        'Modern art
         Case 6
             Process "Modern art", True
         
-        'Oil painting
         Case 7
             Process "Oil painting", True
-                        
-        'Posterize
+            
         Case 8
+            Process "Plastic wrap", True
+            
+        Case 9
             Process "Posterize", True
             
-        'Relief
-        Case 9
+        Case 10
             Process "Relief", True
             
-        'Stained glass
-        Case 10
+        Case 11
             Process "Stained glass", True
     
     End Select

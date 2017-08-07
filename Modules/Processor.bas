@@ -291,6 +291,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Case "Oil painting"
             If raiseDialog Then ShowPDDialog vbModal, FormOilPainting Else FormOilPainting.ApplyOilPaintingEffect processParameters
             
+        Case "Plastic wrap"
+            If raiseDialog Then ShowPDDialog vbModal, FormPlasticWrap Else FormPlasticWrap.ApplyPlasticWrap processParameters
+            
         Case "Posterize"
             If raiseDialog Then ShowPDDialog vbModal, FormPosterize Else FormPosterize.fxPosterize processParameters
                     

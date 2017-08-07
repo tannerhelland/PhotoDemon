@@ -250,9 +250,10 @@ Public Sub InitializeMenus()
         AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 7, 0, 5
         AddMenuItem "Modern art...", "effects_modernart", 7, 0, 6
         AddMenuItem "Oil painting...", "effects_oilpainting", 7, 0, 7
-        AddMenuItem "Posterize...", "effects_posterize", 7, 0, 8
-        AddMenuItem "Relief...", "effects_relief", 7, 0, 9
-        AddMenuItem "Stained glass...", "effects_stainedglass", 7, 0, 10
+        AddMenuItem "Plastic wrap...", "effects_plasticwrap", 7, 0, 8
+        AddMenuItem "Posterize...", "effects_posterize", 7, 0, 9
+        AddMenuItem "Relief...", "effects_relief", 7, 0, 10
+        AddMenuItem "Stained glass...", "effects_stainedglass", 7, 0, 11
     AddMenuItem "Blur", "effects_blur", 7, 1
         AddMenuItem "Box blur...", "effects_boxblur", 7, 1, 0
         AddMenuItem "Gaussian blur...", "effects_gaussianblur", 7, 1, 1
