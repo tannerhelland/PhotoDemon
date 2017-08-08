@@ -42,6 +42,8 @@ Begin VB.Form FormDiffuse
       _ExtentX        =   10610
       _ExtentY        =   1270
       Caption         =   "horizontal strength"
+      Max             =   100
+      SigDigits       =   2
       Value           =   1
       DefaultValue    =   1
    End
@@ -73,6 +75,8 @@ Begin VB.Form FormDiffuse
       _ExtentX        =   10610
       _ExtentY        =   1270
       Caption         =   "vertical strength"
+      Max             =   100
+      SigDigits       =   2
       Value           =   1
       DefaultValue    =   1
    End
@@ -86,8 +90,8 @@ Attribute VB_Exposed = False
 'Diffuse Filter Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 8/14/01
-'Last updated: 22/August/13
-'Last update: add command bar user control
+'Last updated: 08/August/17
+'Last update: migrate to XML params, large performance improvements
 '
 'Module for handling "diffuse"-style filters (also called "displace", e.g. in GIMP).
 '
@@ -98,17 +102,13 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image width in order to establish the right ratio.
-Private iWidth As Long, iHeight As Long
-
-Private Sub ChkWrap_Click()
+Private Sub chkWrap_Click()
     UpdatePreview
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Diffuse", , BuildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value)), UNDO_LAYER
+    Process "Diffuse", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -119,24 +119,7 @@ Private Sub Form_Load()
 
     'Disable previews until everything is loaded
     cmdBar.MarkPreviewStatus False
-    
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
-        iWidth = selBounds.Width
-        iHeight = selBounds.Height
-    Else
-        iWidth = pdImages(g_CurrentImage).Width
-        iHeight = pdImages(g_CurrentImage).Height
-    End If
-    
-    'Adjust the scroll bar dimensions to match the current image's width and height
-    sltX.Max = iWidth - 1
-    sltY.Max = iHeight - 1
-    sltX.Value = Int(sltX.Max \ 2)
-    sltY.Value = Int(sltY.Max \ 2)
-    
+     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
@@ -150,28 +133,41 @@ End Sub
 
 'Custom diffuse effect
 ' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
-Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Simulating large image explosion..."
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim xDiffuse As Long, yDiffuse As Long, wrapPixels As Boolean
+    Dim xDiffuseRatio As Double, yDiffuseRatio As Double
+    
+    With cParams
+        xDiffuseRatio = .GetDouble("xsize", sltX.Value)
+        yDiffuseRatio = .GetDouble("ysize", sltY.Value)
+        wrapPixels = .GetBool("wrap", False)
+    End With
+    
+    'Remap the diffuse ratios to the scale [0, 1]
+    xDiffuseRatio = 0.01 * xDiffuseRatio
+    yDiffuseRatio = 0.01 * yDiffuseRatio
+    
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Long, dstSA As SAFEARRAY2D
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
+    workingDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
+    Dim srcImageData() As Long, srcSA As SAFEARRAY2D
+    srcDIB.WrapLongArrayAroundDIB srcImageData, srcSA
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -179,27 +175,23 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'If this is a preview, we need to adjust the xDiffuse and yDiffuse values to match the size of the preview box
-    If toPreview Then
-        xDiffuse = (xDiffuse / iWidth) * curDIBValues.Width
-        yDiffuse = (yDiffuse / iHeight) * curDIBValues.Height
-    End If
+    'Scale the diffuse ratios to actual physical diffuse amounts
+    xDiffuse = xDiffuseRatio * curDIBValues.Width
+    yDiffuse = yDiffuseRatio * curDIBValues.Height
     
     'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, quickValDiffuseX As Long, quickValDiffuseY As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    Dim maxX As Long
-    maxX = finalX * qvDepth
+    Dim quickValDiffuseX As Long, quickValDiffuseY As Long
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
 
-    'Seed the random number generator with a pseudo-random value (the number of milliseconds elapsed since midnight)
-    Randomize Timer
+    'pdRandomize handles random number duties
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
     
     'hDX and hDY are the half-values (or radius) of the diffuse area.  Pre-calculating them is faster than recalculating
     ' them every time we need to access a radius value.
@@ -208,57 +200,51 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     hDY = yDiffuse / 2
     
     'Finally, these two variables will be used to store the position of diffused pixels
-    Dim DiffuseX As Long, DiffuseY As Long
+    Dim diffuseX As Long, diffuseY As Long
     
     'Loop through each pixel in the image, diffusing as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+    For x = initX To finalX
         
-        DiffuseX = Rnd * xDiffuse - hDX
-        DiffuseY = Rnd * yDiffuse - hDY
+        diffuseX = cRandom.GetRandomFloat_WH() * xDiffuse - hDX
+        diffuseY = cRandom.GetRandomFloat_WH() * yDiffuse - hDY
         
-        quickValDiffuseX = (DiffuseX * qvDepth) + quickVal
-        quickValDiffuseY = DiffuseY + y
+        quickValDiffuseX = diffuseX + x
+        quickValDiffuseY = diffuseY + y
             
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
         ' "wrapPixels" setting.
         If wrapPixels Then
-            If quickValDiffuseX < 0 Then quickValDiffuseX = quickValDiffuseX + maxX
-            If quickValDiffuseY < 0 Then quickValDiffuseY = quickValDiffuseY + finalY
+            If (quickValDiffuseX < initX) Then quickValDiffuseX = quickValDiffuseX + finalX
+            If (quickValDiffuseY < initY) Then quickValDiffuseY = quickValDiffuseY + finalY
             
-            If quickValDiffuseX > maxX Then quickValDiffuseX = quickValDiffuseX - maxX
-            If quickValDiffuseY > finalY Then quickValDiffuseY = quickValDiffuseY - finalY
+            If (quickValDiffuseX > finalX) Then quickValDiffuseX = quickValDiffuseX - finalX
+            If (quickValDiffuseY > finalY) Then quickValDiffuseY = quickValDiffuseY - finalY
         Else
-            If quickValDiffuseX < 0 Then quickValDiffuseX = 0
-            If quickValDiffuseY < 0 Then quickValDiffuseY = 0
+            If (quickValDiffuseX < initX) Then quickValDiffuseX = initX
+            If (quickValDiffuseY < initY) Then quickValDiffuseY = initY
             
-            If quickValDiffuseX > maxX Then quickValDiffuseX = maxX
-            If quickValDiffuseY > finalY Then quickValDiffuseY = finalY
+            If (quickValDiffuseX > finalX) Then quickValDiffuseX = finalX
+            If (quickValDiffuseY > finalY) Then quickValDiffuseY = finalY
         End If
-            
-        dstImageData(quickVal + 2, y) = srcImageData(quickValDiffuseX + 2, quickValDiffuseY)
-        dstImageData(quickVal + 1, y) = srcImageData(quickValDiffuseX + 1, quickValDiffuseY)
-        dstImageData(quickVal, y) = srcImageData(quickValDiffuseX, quickValDiffuseY)
         
-        'Handle alpha as well, if present
-        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = srcImageData(quickValDiffuseX + 3, quickValDiffuseY)
-
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+        dstImageData(x, y) = srcImageData(quickValDiffuseX, quickValDiffuseY)
+        
+    Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    workingDIB.UnwrapLongArrayFromDIB dstImageData
+    srcDIB.UnwrapLongArrayFromDIB srcImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
      
 End Sub
 
@@ -267,7 +253,7 @@ Private Sub sltX_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then DiffuseCustom GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltY_Change()
@@ -285,7 +271,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "xsize", sltX.Value
+        .AddParam "ysize", sltY.Value
+        .AddParam "wrap", CBool(chkWrap.Value)
     End With
     
     GetLocalParamString = cParams.GetParamString()

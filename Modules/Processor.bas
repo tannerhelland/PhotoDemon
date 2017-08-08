@@ -3,8 +3,9 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/June/17
-'Last update: large overhaul to prep for 7.0 release
+'Last updated: 08/August/17
+'Last update: finish migrating *every last damn function* to XML params.  For the first time in history,
+'             this module is now sensibly organized!
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -14,8 +15,8 @@ Attribute VB_Name = "Processor"
 '    if the program is busy applying a filter, we can wait to process subsequent calls)
 ' 4) miscellaneous semantic benefits
 '
-'Due to the nature of this routine, very little of interest happens here - this is primarily a router
-' for various functions, so the majority of the routine is a huge Case Select statement.
+'Due to the nature of this routine, very little of interest happens here - this is primarily a router to other,
+' more interesting functions.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -135,13 +136,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'Create a parameter parser to handle the parameter string.  This can parse out individual function parameters as specific
     ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
-    '
-    'Note that at present, I am migrating all parameter strings to a new XML-based format.  As such, there are two
-    ' param string processors running in parallel here.  cParams is due for deprecation as soon as that work finishes.
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
-    
     Dim cXMLParams As pdParamXML
     Set cXMLParams = New pdParamXML
     If (Len(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
@@ -253,367 +247,62 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Adjustment menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_AdjustmentsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
+    'Effects menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_EffectsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
     'Tool menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_ToolsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
     'If the process hasn't been found yet, resume with our legacy processID checks...
-    ' (Note that this block hasn't been indented to reduce git clutter.)
     If (Not processFound) Then
     
-    Select Case processID
-        
-        
-        'EFFECT FUNCTIONS
-        
-        
-        'Artistic
-        Case "Colored pencil"
-            If raiseDialog Then ShowPDDialog vbModal, FormPencil Else FormPencil.fxColoredPencil processParameters
-            
-        Case "Comic book"
-            If raiseDialog Then ShowPDDialog vbModal, FormComicBook Else FormComicBook.fxComicBook processParameters
-            
-        Case "Figured glass"
-            If raiseDialog Then ShowPDDialog vbModal, FormFiguredGlass Else FormFiguredGlass.FiguredGlassFX processParameters
-            
-        Case "Film noir"
-            If raiseDialog Then ShowPDDialog vbModal, FormFilmNoir Else FormFilmNoir.fxFilmNoir processParameters
-            
-        Case "Glass tiles"
-            If raiseDialog Then ShowPDDialog vbModal, FormGlassTiles Else FormGlassTiles.GlassTiles processParameters
-            
-        Case "Kaleidoscope"
-            If raiseDialog Then ShowPDDialog vbModal, FormKaleidoscope Else FormKaleidoscope.KaleidoscopeImage processParameters
-            
-        Case "Modern art"
-            If raiseDialog Then ShowPDDialog vbModal, FormModernArt Else FormModernArt.ApplyModernArt processParameters
-            
-        Case "Oil painting"
-            If raiseDialog Then ShowPDDialog vbModal, FormOilPainting Else FormOilPainting.ApplyOilPaintingEffect processParameters
-            
-        Case "Plastic wrap"
-            If raiseDialog Then ShowPDDialog vbModal, FormPlasticWrap Else FormPlasticWrap.ApplyPlasticWrap processParameters
-            
-        Case "Posterize"
-            If raiseDialog Then ShowPDDialog vbModal, FormPosterize Else FormPosterize.fxPosterize processParameters
-                    
-        Case "Relief"
-            If raiseDialog Then ShowPDDialog vbModal, FormRelief Else FormRelief.ApplyReliefEffect processParameters
-            
-        Case "Stained glass"
-            If raiseDialog Then ShowPDDialog vbModal, FormStainedGlass Else FormStainedGlass.fxStainedGlass processParameters
-            
-        'Blur
-        
-        'Standard blur filters
-        Case "Box blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormBoxBlur Else FormBoxBlur.BoxBlurFilter processParameters
-            
-        Case "Gaussian blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormGaussianBlur Else FormGaussianBlur.GaussianBlurFilter processParameters
-            
-        Case "Surface blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.SurfaceBlurFilter processParameters
-            
-        'Motion (directional) blurs
-        Case "Motion blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormMotionBlur Else FormMotionBlur.MotionBlurFilter processParameters
-            
-        Case "Radial blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormRadialBlur Else FormRadialBlur.RadialBlurFilter processParameters
-            
-        Case "Zoom blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormZoomBlur Else FormZoomBlur.ApplyZoomBlur processParameters
-            
-        'Miscellaneous blurs
-        Case "Kuwahara filter"
-            If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.Kuwahara processParameters
-            
-        Case "Symmetric nearest-neighbor"
-            If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
-            
-        'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
-        Case "Chroma blur"
-            If raiseDialog Then ShowPDDialog vbModal, FormChromaBlur Else FormChromaBlur.ChromaBlurFilter processParameters
-            
-        Case "Grid blur"
-            FilterGridBlur
-            
-        
-        'Distort filters
-                    
-        Case "Correct lens distortion"
-            If raiseDialog Then ShowPDDialog vbModal, FormLensCorrect Else FormLensCorrect.CorrectLensDistortion processParameters
-            
-        Case "Apply lens distortion"
-            If raiseDialog Then ShowPDDialog vbModal, FormLens Else FormLens.ApplyLensDistortion processParameters
-            
-        Case "Donut"
-            If raiseDialog Then ShowPDDialog vbModal, FormDonut Else FormDonut.ApplyDonutDistortion processParameters
-            
-        Case "Miscellaneous distort"
-            If raiseDialog Then ShowPDDialog vbModal, FormMiscDistorts Else FormMiscDistorts.ApplyMiscDistort processParameters
-            
-        Case "Pinch and whirl"
-            If raiseDialog Then ShowPDDialog vbModal, FormPinch Else FormPinch.PinchImage processParameters
-            
-        Case "Poke"
-            If raiseDialog Then ShowPDDialog vbModal, FormPoke Else FormPoke.ApplyPokeDistort processParameters
-            
-        Case "Polar conversion"
-            If raiseDialog Then ShowPDDialog vbModal, FormPolar Else FormPolar.ConvertToPolar processParameters
-            
-        Case "Ripple"
-            If raiseDialog Then ShowPDDialog vbModal, FormRipple Else FormRipple.RippleImage processParameters
-            
-        Case "Squish"
-            If raiseDialog Then ShowPDDialog vbModal, FormSquish Else FormSquish.SquishImage processParameters
-            
-        Case "Swirl"
-            If raiseDialog Then ShowPDDialog vbModal, FormSwirl Else FormSwirl.SwirlImage processParameters
-            
-        Case "Waves"
-            If raiseDialog Then ShowPDDialog vbModal, FormWaves Else FormWaves.WaveImage processParameters
-            
-            
-        'Edge filters
-        Case "Emboss"
-            If raiseDialog Then ShowPDDialog vbModal, FormEmbossEngrave Else FormEmbossEngrave.ApplyEmbossEffect processParameters
-            
-        Case "Enhance edges"
-            If raiseDialog Then ShowPDDialog vbModal, FormEdgeEnhance Else FormEdgeEnhance.ApplyEdgeEnhancement processParameters
-            
-        Case "Find edges"
-            If raiseDialog Then ShowPDDialog vbModal, FormFindEdges Else FormFindEdges.ApplyEdgeDetection processParameters
-            
-        Case "Range filter"
-            If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
-            
-        Case "Trace contour"
-            If raiseDialog Then ShowPDDialog vbModal, FormContour Else FormContour.TraceContour processParameters
-            
-        
-        'Lights and shadows
-        
-        Case "Black light"
-            If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
-            
-        Case "Cross-screen"
-            If raiseDialog Then ShowPDDialog vbModal, FormCrossScreen Else FormCrossScreen.CrossScreenFilter processParameters
-            
-        Case "Rainbow"
-            If raiseDialog Then ShowPDDialog vbModal, FormRainbow Else FormRainbow.ApplyRainbowEffect processParameters
-            
-        Case "Sunshine"
-            If raiseDialog Then ShowPDDialog vbModal, FormSunshine Else FormSunshine.fxSunshine processParameters
-            
-        Case "Dilate (maximum rank)"
-            If raiseDialog Then FormMedian.showMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
-            
-        Case "Erode (minimum rank)"
-            If raiseDialog Then FormMedian.showMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
-            
-        'Natural
-        
-        Case "Atmosphere"
-            If raiseDialog Then ShowPDDialog vbModal, FormAtmosphere Else FormAtmosphere.ApplyAtmosphereEffect processParameters
-            
-        Case "Fog"
-            If raiseDialog Then ShowPDDialog vbModal, FormFog Else FormFog.fxFog processParameters
-            
-        Case "Ignite"
-            If raiseDialog Then ShowPDDialog vbModal, FormIgnite Else FormIgnite.fxBurn processParameters
-            
-        Case "Lava"
-            MenuLava
-                    
-        Case "Metal"
-            If raiseDialog Then ShowPDDialog vbModal, FormMetal Else FormMetal.ApplyMetalFilter processParameters
-            
-        Case "Snow"
-            If raiseDialog Then ShowPDDialog vbModal, FormSnow Else FormSnow.ApplySnowEffect processParameters
-            
-        Case "Water"
-            MenuWater
-            
-        
-        'Noise
-        
-        Case "Add film grain"
-            If raiseDialog Then ShowPDDialog vbModal, FormFilmGrain Else FormFilmGrain.AddFilmGrain processParameters
-            
-        Case "Add RGB noise"
-            If raiseDialog Then ShowPDDialog vbModal, FormNoise Else FormNoise.AddNoise processParameters
-            
-        Case "Anisotropic diffusion"
-            If raiseDialog Then ShowPDDialog vbModal, FormAnisotropic Else FormAnisotropic.ApplyAnisotropicDiffusion processParameters
-            
-        Case "Bilateral smoothing"
-            If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralWrapper processParameters
-        
-        Case "Harmonic mean"
-            If raiseDialog Then ShowPDDialog vbModal, FormHarmonicMean Else FormHarmonicMean.ApplyHarmonicMean processParameters
-            
-        Case "Mean shift"
-            If raiseDialog Then ShowPDDialog vbModal, FormMeanShift Else FormMeanShift.ApplyMeanShiftFilter processParameters
-            
-        Case "Median"
-            If raiseDialog Then FormMedian.showMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
-            
-        
-        'Pixelate
-        
-        Case "Color halftone"
-            If raiseDialog Then ShowPDDialog vbModal, FormColorHalftone Else FormColorHalftone.ColorHalftoneFilter processParameters
-            
-        Case "Crystallize"
-            If raiseDialog Then ShowPDDialog vbModal, FormCrystallize Else FormCrystallize.fxCrystallize processParameters
-            
-        Case "Fragment"
-            If raiseDialog Then ShowPDDialog vbModal, FormFragment Else FormFragment.Fragment processParameters
-            
-        Case "Mezzotint"
-            If raiseDialog Then ShowPDDialog vbModal, FormMezzotint Else FormMezzotint.ApplyMezzotintEffect processParameters
-            
-        Case "Mosaic"
-            If raiseDialog Then ShowPDDialog vbModal, FormMosaic Else FormMosaic.MosaicFilter processParameters
-            
-        
-        'Sharpen
-        
-        Case "Sharpen"
-            If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters
-            
-        Case "Unsharp mask"
-            If raiseDialog Then ShowPDDialog vbModal, FormUnsharpMask Else FormUnsharpMask.UnsharpMask processParameters
-            
-            
-        'Stylize
-            
-        Case "Antique"
-            MenuAntique
-                    
-        Case "Diffuse"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormDiffuse
-            Else
-                FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
-            End If
-        
-        Case "Outline"
-            If raiseDialog Then ShowPDDialog vbModal, FormOutlineEffect Else FormOutlineEffect.ApplyOutlineEffect processParameters
-            
-        Case "Palettize"
-            If raiseDialog Then ShowPDDialog vbModal, FormPalettize Else FormPalettize.ApplyPalettizeEffect processParameters
-            
-        Case "Portrait glow"
-            If raiseDialog Then ShowPDDialog vbModal, FormPortraitGlow Else FormPortraitGlow.ApplyPortraitGlow processParameters
-            
-        Case "Solarize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormSolarize
-            Else
-                FormSolarize.SolarizeImage cParams.GetByte(1)
-            End If
-            
-        Case "Twins"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormTwins
-            Else
-                FormTwins.GenerateTwins cParams.GetLong(1)
-            End If
-            
-        Case "Vignetting"
-            If raiseDialog Then ShowPDDialog vbModal, FormVignette Else FormVignette.ApplyVignette processParameters
-            
-        'Transform
-        
-        Case "Pan and zoom"
-            If raiseDialog Then ShowPDDialog vbModal, FormPanAndZoom Else FormPanAndZoom.PanAndZoomFilter processParameters
-            
-        Case "Perspective"
-            If raiseDialog Then ShowPDDialog vbModal, FormPerspective Else FormPerspective.PerspectiveImage processParameters
-            
-        Case "Rotate"
-            If raiseDialog Then ShowPDDialog vbModal, FormRotateDistort Else FormRotateDistort.RotateFilter processParameters
-            
-        Case "Shear"
-            If raiseDialog Then ShowPDDialog vbModal, FormShear Else FormShear.ShearImage processParameters
-            
-        Case "Spherize"
-            If raiseDialog Then ShowPDDialog vbModal, FormSpherize Else FormSpherize.SpherizeImage processParameters
-            
-        'Custom
-        
-        Case "Custom filter"
-            If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
-            
-        
-        'Experimental
-        
-        Case "Dream"
-            MenuDream
-            
-        Case "Thermograph (heat map)"
-            MenuHeatMap
-        
-            
-        
         'PAINT OPERATIONS
-        Case "Paint stroke"
+        If Strings.StringsEqual(processID, "Paint stroke", True) Then
             'If we are in the midst of a batch operation, this is where we actually apply the paint stroke.  During normal operations,
             ' however, we don't need to do anything here.
+            processFound = True
             
-        'SPECIAL OPERATIONS
-        Case "Fade"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormFadeLast
-            Else
-                FormFadeLast.fxFadeLastAction cParams.GetDouble(1), cParams.GetLong(2)
-            End If
-            
-        'This secret action is used internally by PD when we need some response from the processor engine - like checking for
+        'A "secret" action is used internally by PD when we need some response from the processor engine - like checking for
         ' non-destructive layer changes - but the user is not actually modifying the image.
-        Case "Do nothing"
+        ElseIf Strings.StringsEqual(processID, "Do nothing", True) Then
+            processFound = True
         
-        'Other specialized returns are handled here
-        Case Else
+        'Non-destructive layer header modifications are handled by their own specialized non-destructive processor (below).
+        ' The only way this case will ever be triggered in *this function* is during macro playback.  If encountered, all
+        ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
+        ' ID, and the second is a layer setting value.
+        ElseIf Strings.StringsEqual(processID, "Modify layer", True) Then
+            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+                pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+            End If
+            processFound = True
         
-            Select Case processID
+        'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
+        ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
+        ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
+        ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
+            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+                If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+            End If
+            processFound = True
             
-                'Non-destructive layer header modifications are handled by their own specialized non-destructive processor (below).
-                ' The only way this case will ever be triggered in *this function * is during macro playback.  If encountered, all
-                ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
-                ' ID, and the second is a layer setting value.
-                Case "Modify layer"
-                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
-                    End If
-                
-                'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
-                ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
-                ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
-                Case "Modify text layer"
-                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
-                    End If
+        'Non-destructive "quick-fix" type effects follow the same logic as above.
+        ElseIf Strings.StringsEqual(processID, "Non-destructive effect", True) Then
+            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+            End If
+            processFound = True
                     
-                'Non-destructive "quick-fix" type effects follow the same logic as above.
-                Case "Non-destructive effect"
-                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
-                    End If
-                
-                'DEBUG FAILSAFE
-                Case Else
-                    ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
-                    If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
+        'DEBUG FAILSAFE
+        Else
+        
+            'This function should never be passed a process ID it can't parse, but if that happens,
+            ' ask the user to report the unparsed ID
+            If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
             
-            End Select
-            
-    End Select
-    
-    'End of temporary "If (Not processFound) Then/Else..." check
+        End If
+        
+    'End of special processID checks
     End If
     
     'If the user wants us to time this action, display the results now.  (Note that we only do this for actions that change the image
@@ -1715,7 +1404,7 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
-            
+        
     ElseIf Strings.StringsEqual(processID, "Undo history", True) Then
         If raiseDialog Then
             ShowPDDialog vbModal, FormUndoHistory
@@ -1724,7 +1413,11 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
-        
+    
+    ElseIf Strings.StringsEqual(processID, "Fade", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFadeLast Else FormFadeLast.fxFadeLastAction processParameters
+        Process_EditMenu = True
+            
     ElseIf Strings.StringsEqual(processID, "Cut", True) Then
         g_Clipboard.ClipboardCut True
         Process_EditMenu = True
@@ -1788,16 +1481,361 @@ Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDial
         
 End Function
 
+'Helper wrapper for EFFECTS MENU operations.
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+
+    'Artistic
+    If Strings.StringsEqual(processID, "Colored pencil", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPencil Else FormPencil.fxColoredPencil processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Comic book", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormComicBook Else FormComicBook.fxComicBook processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Figured glass", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFiguredGlass Else FormFiguredGlass.FiguredGlassFX processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Film noir", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFilmNoir Else FormFilmNoir.fxFilmNoir processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Glass tiles", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormGlassTiles Else FormGlassTiles.GlassTiles processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Kaleidoscope", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormKaleidoscope Else FormKaleidoscope.KaleidoscopeImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Modern art", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormModernArt Else FormModernArt.ApplyModernArt processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Oil painting", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormOilPainting Else FormOilPainting.ApplyOilPaintingEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Plastic wrap", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPlasticWrap Else FormPlasticWrap.ApplyPlasticWrap processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Posterize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPosterize Else FormPosterize.fxPosterize processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Relief", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRelief Else FormRelief.ApplyReliefEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Stained glass", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormStainedGlass Else FormStainedGlass.fxStainedGlass processParameters
+        Process_EffectsMenu = True
+        
+    'Blur
+    
+    'Standard blur filters
+    ElseIf Strings.StringsEqual(processID, "Box blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormBoxBlur Else FormBoxBlur.BoxBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Gaussian blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormGaussianBlur Else FormGaussianBlur.GaussianBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Surface blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.SurfaceBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    'Motion (directional) blurs
+    ElseIf Strings.StringsEqual(processID, "Motion blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMotionBlur Else FormMotionBlur.MotionBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Radial blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRadialBlur Else FormRadialBlur.RadialBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Zoom blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormZoomBlur Else FormZoomBlur.ApplyZoomBlur processParameters
+        Process_EffectsMenu = True
+        
+    'Miscellaneous blurs
+    ElseIf Strings.StringsEqual(processID, "Kuwahara filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.Kuwahara processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Symmetric nearest-neighbor", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
+        Process_EffectsMenu = True
+        
+    'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
+    ElseIf Strings.StringsEqual(processID, "Chroma blur", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormChromaBlur Else FormChromaBlur.ChromaBlurFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Grid blur", True) Then
+        FilterGridBlur
+        Process_EffectsMenu = True
+    
+    'Distort filters
+                
+    ElseIf Strings.StringsEqual(processID, "Correct lens distortion", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormLensCorrect Else FormLensCorrect.CorrectLensDistortion processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Apply lens distortion", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormLens Else FormLens.ApplyLensDistortion processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Donut", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormDonut Else FormDonut.ApplyDonutDistortion processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Miscellaneous distort", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMiscDistorts Else FormMiscDistorts.ApplyMiscDistort processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Pinch and whirl", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPinch Else FormPinch.PinchImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Poke", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPoke Else FormPoke.ApplyPokeDistort processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Polar conversion", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPolar Else FormPolar.ConvertToPolar processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Ripple", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRipple Else FormRipple.RippleImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Squish", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSquish Else FormSquish.SquishImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Swirl", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSwirl Else FormSwirl.SwirlImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Waves", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormWaves Else FormWaves.WaveImage processParameters
+        Process_EffectsMenu = True
+        
+    'Edge filters
+    ElseIf Strings.StringsEqual(processID, "Emboss", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormEmbossEngrave Else FormEmbossEngrave.ApplyEmbossEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Enhance edges", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormEdgeEnhance Else FormEdgeEnhance.ApplyEdgeEnhancement processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Find edges", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFindEdges Else FormFindEdges.ApplyEdgeDetection processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Range filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Trace contour", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormContour Else FormContour.TraceContour processParameters
+        Process_EffectsMenu = True
+    
+    'Lights and shadows
+    
+    ElseIf Strings.StringsEqual(processID, "Black light", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Cross-screen", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormCrossScreen Else FormCrossScreen.CrossScreenFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rainbow", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRainbow Else FormRainbow.ApplyRainbowEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Sunshine", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSunshine Else FormSunshine.fxSunshine processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Dilate (maximum rank)", True) Then
+        If raiseDialog Then FormMedian.showMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Erode (minimum rank)", True) Then
+        If raiseDialog Then FormMedian.showMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
+        Process_EffectsMenu = True
+        
+    'Natural
+    
+    ElseIf Strings.StringsEqual(processID, "Atmosphere", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAtmosphere Else FormAtmosphere.ApplyAtmosphereEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Fog", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFog Else FormFog.fxFog processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Ignite", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormIgnite Else FormIgnite.fxBurn processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Lava", True) Then
+        MenuLava
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Metal", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMetal Else FormMetal.ApplyMetalFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Snow", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSnow Else FormSnow.ApplySnowEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Water", True) Then
+        MenuWater
+        Process_EffectsMenu = True
+    
+    'Noise
+    
+    ElseIf Strings.StringsEqual(processID, "Add film grain", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFilmGrain Else FormFilmGrain.AddFilmGrain processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Add RGB noise", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormNoise Else FormNoise.AddNoise processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Anisotropic diffusion", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAnisotropic Else FormAnisotropic.ApplyAnisotropicDiffusion processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Bilateral smoothing", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralWrapper processParameters
+        Process_EffectsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Harmonic mean", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormHarmonicMean Else FormHarmonicMean.ApplyHarmonicMean processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Mean shift", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMeanShift Else FormMeanShift.ApplyMeanShiftFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Median", True) Then
+        If raiseDialog Then FormMedian.showMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
+        Process_EffectsMenu = True
+    
+    'Pixelate
+    
+    ElseIf Strings.StringsEqual(processID, "Color halftone", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorHalftone Else FormColorHalftone.ColorHalftoneFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Crystallize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormCrystallize Else FormCrystallize.fxCrystallize processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Fragment", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFragment Else FormFragment.Fragment processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Mezzotint", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMezzotint Else FormMezzotint.ApplyMezzotintEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Mosaic", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormMosaic Else FormMosaic.MosaicFilter processParameters
+        Process_EffectsMenu = True
+    
+    'Sharpen
+    
+    ElseIf Strings.StringsEqual(processID, "Sharpen", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Unsharp mask", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormUnsharpMask Else FormUnsharpMask.UnsharpMask processParameters
+        Process_EffectsMenu = True
+        
+    'Stylize
+        
+    ElseIf Strings.StringsEqual(processID, "Antique", True) Then
+        MenuAntique
+        Process_EffectsMenu = True
+                
+    ElseIf Strings.StringsEqual(processID, "Diffuse", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormDiffuse Else FormDiffuse.DiffuseCustom processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Outline", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormOutlineEffect Else FormOutlineEffect.ApplyOutlineEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Palettize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPalettize Else FormPalettize.ApplyPalettizeEffect processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Portrait glow", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPortraitGlow Else FormPortraitGlow.ApplyPortraitGlow processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Solarize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSolarize Else FormSolarize.SolarizeImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Twins", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormTwins Else FormTwins.GenerateTwins processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Vignetting", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormVignette Else FormVignette.ApplyVignette processParameters
+        Process_EffectsMenu = True
+        
+    'Transform
+    
+    ElseIf Strings.StringsEqual(processID, "Pan and zoom", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPanAndZoom Else FormPanAndZoom.PanAndZoomFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Perspective", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPerspective Else FormPerspective.PerspectiveImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rotate", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormRotateDistort Else FormRotateDistort.RotateFilter processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Shear", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormShear Else FormShear.ShearImage processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Spherize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSpherize Else FormSpherize.SpherizeImage processParameters
+        Process_EffectsMenu = True
+        
+    'Custom
+    
+    ElseIf Strings.StringsEqual(processID, "Custom filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
+        Process_EffectsMenu = True
+        
+    End If
+        
+End Function
+
 'Helper wrapper for ADJUSTMENTS MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
 Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
-    
-    'Temp placeholder for compiling purposes only
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
-    
     
     'Auto correct functions
     If Strings.StringsEqual(processID, "Auto correct color", True) Then
