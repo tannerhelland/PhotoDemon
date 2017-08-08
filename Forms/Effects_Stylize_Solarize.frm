@@ -51,8 +51,7 @@ Begin VB.Form FormSolarize
       _ExtentX        =   10451
       _ExtentY        =   1270
       Caption         =   "threshold"
-      Min             =   1
-      Max             =   254
+      Max             =   255
       Value           =   127
       NotchPosition   =   2
       NotchValueCustom=   127
@@ -67,8 +66,8 @@ Attribute VB_Exposed = False
 'Solarizing Effect Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 4/14/01
-'Last updated: 24/August/13
-'Last update: added command bar
+'Last updated: 08/August/17
+'Last update: migrate to XML params, performance improvements
 '
 'Updated solarizing interface; it has been optimized for speed and ease-of-implementation.
 '
@@ -81,14 +80,23 @@ Option Explicit
 
 'Subroutine for "solarizing" an image
 ' Inputs: solarize threshold [0,255], optional previewing information
-Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SolarizeImage(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Solarizing image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim sThreshold As Byte
+    
+    With cParams
+        sThreshold = .GetByte("threshold", sltThreshold.Value)
+    End With
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -107,32 +115,35 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
             
     'Because solarize values are constant, we can use a look-up table to calculate them.  Very fast.
     Dim sLookup(0 To 255) As Byte
     For x = 0 To 255
-        If x > Threshold Then sLookup(x) = 255 - x Else sLookup(x) = x
+        If (x > sThreshold) Then sLookup(x) = 255 - x Else sLookup(x) = x
     Next x
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
-        'Perform the solarize in a single line, thanks to our pre-built look-up table
-        imageData(quickVal + 2, y) = sLookup(imageData(quickVal + 2, y))
-        imageData(quickVal + 1, y) = sLookup(imageData(quickVal + 1, y))
-        imageData(quickVal, y) = sLookup(imageData(quickVal, y))
+    For y = initY To finalY
+    For x = initX To finalX Step qvDepth
         
-    Next y
+        'Perform the solarize in a single line, thanks to our pre-built look-up table
+        imageData(x, y) = sLookup(imageData(x, y))
+        imageData(x + 1, y) = sLookup(imageData(x + 1, y))
+        imageData(x + 2, y) = sLookup(imageData(x + 2, y))
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
@@ -144,7 +155,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Solarize", , BuildParams(sltThreshold.Value), UNDO_LAYER
+    Process "Solarize", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -167,7 +178,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then SolarizeImage sltThreshold.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.SolarizeImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -181,7 +192,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "threshold", sltThreshold.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

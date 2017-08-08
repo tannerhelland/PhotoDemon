@@ -64,8 +64,8 @@ Attribute VB_Exposed = False
 '"Twin" Filter Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 24/August/13
-'Last update: added command bar
+'Last updated: 08/August/17
+'Last update: migrate to XML params, minor performance improvements
 '
 'Unoptimized "twin" generator.  Simple 50% alpha blending combined with a flip.
 '
@@ -77,9 +77,19 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
-Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
    
     If (Not toPreview) Then Message "Generating image twin..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim tType As Long
+    
+    With cParams
+        tType = .GetLong("orientation", btsOrientation.ListIndex)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -137,30 +147,29 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     For y = initY To finalY
     
         'Grab the current pixel values
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
         b = srcImageData(quickVal, y)
-        If qvDepth = 4 Then a = srcImageData(quickVal + 3, y)
+        g = srcImageData(quickVal + 1, y)
+        r = srcImageData(quickVal + 2, y)
+        a = srcImageData(quickVal + 3, y)
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
-        If tType = 0 Then
-            r2 = srcImageData(maxX - quickVal + 2, y)
-            g2 = srcImageData(maxX - quickVal + 1, y)
+        If (tType = 0) Then
             b2 = srcImageData(maxX - quickVal, y)
-            If qvDepth = 4 Then a2 = srcImageData(maxX - quickVal + 3, y)
+            g2 = srcImageData(maxX - quickVal + 1, y)
+            r2 = srcImageData(maxX - quickVal + 2, y)
+            a2 = srcImageData(maxX - quickVal + 3, y)
         Else
-            r2 = srcImageData(quickVal + 2, finalY - y)
-            g2 = srcImageData(quickVal + 1, finalY - y)
             b2 = srcImageData(quickVal, finalY - y)
-            If qvDepth = 4 Then a2 = srcImageData(quickVal + 3, finalY - y)
+            g2 = srcImageData(quickVal + 1, finalY - y)
+            r2 = srcImageData(quickVal + 2, finalY - y)
+            a2 = srcImageData(quickVal + 3, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(quickVal + 2, y) = hLookup(r + r2)
-        dstImageData(quickVal + 1, y) = hLookup(g + g2)
         dstImageData(quickVal, y) = hLookup(b + b2)
-        
-        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = hLookup(a + a2)
+        dstImageData(quickVal + 1, y) = hLookup(g + g2)
+        dstImageData(quickVal + 2, y) = hLookup(r + r2)
+        dstImageData(quickVal + 3, y) = hLookup(a + a2)
         
     Next y
         If (Not toPreview) Then
@@ -185,7 +194,7 @@ Private Sub btsOrientation_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Twins", , BuildParams(btsOrientation.ListIndex), UNDO_LAYER
+    Process "Twins", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -212,7 +221,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then GenerateTwins btsOrientation.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.GenerateTwins GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -226,7 +235,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "orientation", btsOrientation.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

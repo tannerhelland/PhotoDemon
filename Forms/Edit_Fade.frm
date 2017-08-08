@@ -77,8 +77,8 @@ Attribute VB_Exposed = False
 'Fade Previous Action Dialog
 'Copyright 2000-2017 by Tanner Helland
 'Created: 13/October/00
-'Last updated: 14/April/14
-'Last update: give function a full dialog, with variable opacity and blend modes of the user's choosing
+'Last updated: 08/August/17
+'Last update: migrate to XML params
 '
 'This new and improved Fade dialog gives the user a great deal of control over how they blend the results of the latest
 ' destructive edit with the original layer contents.  Opacity and blend mode can be custom-set, allowing for great
@@ -106,27 +106,18 @@ Private m_curLayerDIBCopy As pdDIB, m_prevLayerDIBCopy As pdDIB
 'These variables will store the layer ID of the relevant layer, and the name of the action being faded (pre-translation,
 ' so always in English).
 Private m_relevantLayerID As Long, m_actionName As String
-    
+
 Private Sub cboBlendMode_Click()
     UpdatePreview
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Fade", , BuildParams(sltOpacity.Value, cboBlendMode.ListIndex), UNDO_LAYER
+    Process "Fade", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltOpacity.Value = 50
-End Sub
-
-Private Sub Form_Deactivate()
-    Set m_curLayerDIBCopy = Nothing
-    Set m_prevLayerDIBCopy = Nothing
 End Sub
 
 Private Sub Form_Load()
@@ -140,7 +131,7 @@ Private Sub Form_Load()
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB
     
-    If (Not pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False)) Then
+    If (Not pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False)) Then
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
@@ -167,14 +158,25 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Fade the current image against its most recent previous state, using the opacity and blend mode supplied by the user.
-Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As LAYER_BLENDMODE, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim fadeOpacity As Double, dstBlendMode As LAYER_BLENDMODE
+    
+    With cParams
+        fadeOpacity = .GetDouble("opacity", sltOpacity.Value)
+        dstBlendMode = .GetLong("blendmode", cboBlendMode.ListIndex)
+    End With
     
     'Status bar and message updates are only provided for non-previews.  Also, because PD's central compositor does all the legwork
     ' for this function, and it does not provide detailed progress reports, we use a cheap progress bar estimation method.
     ' (It really shouldn't matter as this function is extremely fast.)
     If (Not toPreview) Then
-        SetProgBarMax 2
-        SetProgBarVal 0
+        ProgressBars.SetProgBarMax 2
+        ProgressBars.SetProgBarVal 0
         Message "Fading previous action (%1)...", g_Language.TranslateMessage(m_actionName)
     End If
     
@@ -203,7 +205,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
     
-    If (Not toPreview) Then SetProgBarVal 1
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 1
     cComposite.QuickMergeTwoDibsOfEqualSize m_prevLayerDIBCopy, m_curLayerDIBCopy, dstBlendMode, fadeOpacity
     
     'If this is a preview, draw the composited image to the picture box and exit.
@@ -222,7 +224,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         SyncInterfaceToCurrentImage
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
-        SetProgBarVal 0
+        ProgressBars.SetProgBarVal 0
         ReleaseProgressBar
         
         Message "Fade complete."
@@ -233,7 +235,7 @@ End Sub
 
 'Use this sub to update the on-screen preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxFadeLastAction sltOpacity.Value, cboBlendMode.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxFadeLastAction GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -251,7 +253,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "opacity", sltOpacity.Value
+        .AddParam "blendmode", cboBlendMode.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

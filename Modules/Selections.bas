@@ -59,7 +59,7 @@ Public Function DisplaySelectionDialog(ByVal typeOfDialog As SelectionDialogType
 
 End Function
 
-'Create a new selection using the settings stored in a pdParamString-compatible string
+'Create a new selection using the settings stored in a pdParamXML-compatible string
 Public Sub CreateNewSelection(ByVal paramString As String)
     
     'Use the passed parameter string to initialize the selection
@@ -93,7 +93,7 @@ Public Sub RemoveCurrentSelection()
     
 End Sub
 
-'Create a new selection using the settings stored in a pdParamString-compatible string
+'"Select all"
 Public Sub SelectWholeImage()
     
     'Unselect any existing selection
