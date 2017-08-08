@@ -243,9 +243,9 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         If (colorSamplingMethod = 1) Then
         
             'Retrieve RGBA values for this pixel
-            r = dstImageData(quickVal + 2, y)
-            g = dstImageData(quickVal + 1, y)
             b = dstImageData(quickVal, y)
+            g = dstImageData(quickVal + 1, y)
+            r = dstImageData(quickVal + 2, y)
             a = dstImageData(quickVal + 3, y)
             
             'Store those RGBA values into their respective lookup "bin"
@@ -301,7 +301,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         Else
         
             numPixelsCache = numPixels(x)
-            invNumPixelsCache = 1# / numPixelsCache
+            If (numPixelsCache <> 0) Then invNumPixelsCache = 1# / numPixelsCache Else invNumPixelsCache = 0#
             
             If (numPixelsCache > 0) Then
                 rLookup(x) = rLookup(x) * invNumPixelsCache
