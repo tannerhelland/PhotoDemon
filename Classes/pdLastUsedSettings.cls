@@ -133,11 +133,8 @@ Private Sub FillXMLSettings()
             Case "pdTextBox"
                 controlValue = eControl.Text
                 
-            'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
-            ' a single control), we must combine its various values into a single string.
-            ' TODO: have the control do this internally, to reduce code maintenance burdens
             Case "pdResize"
-                controlValue = BuildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
+                controlValue = eControl.GetCurrentSettingsAsXML()
             
             Case "pdHistory"
                 controlValue = eControl.GetHistoryAsString()
@@ -264,28 +261,8 @@ Private Function ReadXMLSettings() As Boolean
                 Case "pdTextBox"
                     eControl.Text = controlValue
                     
-                'PD's "smart resize" control has some special needs, on account of using multiple value properties
-                ' within a single control.  Parse out those values from the control string.
-                ' TODO: make the control use internal param strings instead of this nonsense
                 Case "pdResize"
-                    
-                    Dim cParam As pdParamString
-                    Set cParam = New pdParamString
-                    cParam.SetParamString controlValue
-                    
-                    'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
-                    ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
-                    ' aspect ratio!)
-                    eControl.LockAspectRatio = False
-                    
-                    eControl.UnitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
-                    eControl.UnitOfResolution = cParam.GetLong(6, RU_PPI)
-                    
-                    eControl.imgDPI = cParam.GetLong(5, 96)
-                    eControl.imgWidth = cParam.GetDouble(1, 1920)
-                    eControl.imgHeight = cParam.GetDouble(2, 1080)
-                    
-                    Set cParam = Nothing
+                    eControl.SetAllSettingsFromXML controlValue
                     
                 Case "pdHistory"
                     eControl.SetHistoryFromString controlValue
