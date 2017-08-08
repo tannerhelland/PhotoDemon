@@ -1755,7 +1755,7 @@ Private Sub PrepareForBatchConversion()
                 
                     'If the user has requested automatic lighting fixes, apply it now
                     If CBool(chkActions(0)) Then
-                        Process "White balance", , BuildParams("0.1"), UNDO_LAYER
+                        Process "White balance", , TextSupport.BuildParamList("threshold", "0.1"), UNDO_LAYER
                     End If
                 
                     'If the user has requested an image resize, apply it now
@@ -1779,7 +1779,7 @@ Private Sub PrepareForBatchConversion()
                     End If
                     
                     'If the user has requested a macro, play it now
-                    If CBool(chkActions(2)) Then PlayMacroFromFile txtMacro
+                    If CBool(chkActions(2)) Then Macros.PlayMacroFromFile txtMacro
                     
                 End If
                 
