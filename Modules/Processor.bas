@@ -485,11 +485,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters
             
         Case "Unsharp mask"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormUnsharpMask
-            Else
-                FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4, 2)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormUnsharpMask Else FormUnsharpMask.UnsharpMask processParameters
             
             
         'Stylize
