@@ -999,6 +999,54 @@ Private Function GetCurrentHeightUnit() As Long
     If m_PercentDisabled Then GetCurrentHeightUnit = cmbHeightUnit.ListIndex + 1 Else GetCurrentHeightUnit = cmbHeightUnit.ListIndex
 End Function
 
+'Returns all control settings in a single XML string; this is basically a serialized copy of the current
+' control instance, and these settings can be restored via SetAllSettingsFromXML(), below.
+Public Function GetCurrentSettingsAsXML() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+        'We do store the "lock aspect ratio" setting, but note that this setting is deliberately
+        ' *not used* by SetAllSettingsFromXML(), below.
+        .AddParam "lockaspectratio", Me.LockAspectRatio
+    
+        .AddParam "sizeunit", Me.UnitOfMeasurement
+        .AddParam "dpiunit", Me.UnitOfResolution
+    
+        .AddParam "dpi", Me.ResizeDPI
+        .AddParam "width", Me.ResizeWidth
+        .AddParam "height", Me.ResizeHeight
+    
+    End With
+    
+    GetCurrentSettingsAsXML = cParams.GetParamString()
+
+End Function
+
+Public Sub SetAllSettingsFromXML(ByVal xmlData As String)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString xmlData
+    
+    'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
+    ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
+    ' aspect ratio!)
+    Me.LockAspectRatio = False
+    
+    With cParams
+        Me.UnitOfMeasurement = .GetLong("sizeunit", MU_PIXELS)
+        Me.UnitOfResolution = .GetLong("dpiunit", RU_PPI)
+        Me.ResizeDPI = .GetLong("dpi", 96)
+        Me.ResizeWidth = .GetDouble("width", 1920)
+        Me.ResizeHeight = .GetDouble("height", 1080)
+    End With
+    
+End Sub
+
+
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's internal layout
 Private Sub UpdateControlLayout()

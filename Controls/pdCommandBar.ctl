@@ -901,7 +901,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
-                controlValue = BuildParams(eControl.ResizeWidth, eControl.ResizeHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.ResizeDPI, eControl.UnitOfResolution)
+                controlValue = eControl.GetCurrentSettingsAsXML()
                 
             'Metadata management controls provide their own XML string
             Case "pdMetadataExport"
@@ -917,16 +917,11 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
-        If Len(controlValue) <> 0 Then controlValue = Trim$(controlValue)
+        If (Len(controlValue) <> 0) Then controlValue = Trim$(controlValue)
         
         'If the control value still has a non-zero length, add it now
-        If Len(controlValue) <> 0 Then
+        If (Len(controlValue) <> 0) Then m_Presets.WritePresetValue controlName, controlValue
         
-            'Use the preset manager to actually store the value
-            m_Presets.WritePresetValue controlName, controlValue
-            
-        End If
-    
     'Continue with the next control on the parent dialog
     Next eControl
     
@@ -937,7 +932,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
     RaiseEvent AddCustomPresetData
     
     'If the user added one or more custom preset entries, the custom preset count will be non-zero.
-    If m_numCustomPresetEntries > 0 Then
+    If (m_numCustomPresetEntries > 0) Then
     
         'Loop through all custom data, and add it one-at-a-time to the preset object
         Dim i As Long
@@ -1014,10 +1009,6 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
         ' of these changes from triggering a full preview redraw, we forcibly suspend previews now.
         m_allowPreviews = False
         
-        'Some specialty user controls (e.g. the resize control) require us to parse out individual values from a lengthy param
-        ' string, so to be safe we'll declare a pdParamString handler in advance.
-        Dim cParam As pdParamString
-        
         Dim controlName As String, controlType As String, controlValue As String
         Dim controlIndex As Long
         
@@ -1029,7 +1020,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
             ' name for this control.
             controlName = eControl.Name
             If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
-            If controlIndex >= 0 Then controlName = controlName & ":" & controlIndex
+            If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
             
             'See if a preset exists for this control and this particular preset
             If m_Presets.ReadPresetValue(controlName, controlValue) Then
@@ -1058,10 +1049,10 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                     
                         'To protect against future changes that modify the number of available entries in a button strip, we always
                         ' validate the list index against the current list count prior to setting it.
-                        If CLng(controlValue) < eControl.ListCount Then
+                        If (CLng(controlValue) < eControl.ListCount) Then
                             eControl.ListIndex = CLng(controlValue)
                         Else
-                            If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                            If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
                         End If
                     
                     'Various PD controls have their own custom "value"-type properties.
@@ -1086,10 +1077,10 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                     Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
                     
                         'Validate range before setting
-                        If CLng(controlValue) < eControl.ListCount Then
+                        If (CLng(controlValue) < eControl.ListCount) Then
                             eControl.ListIndex = CLng(controlValue)
                         Else
-                            If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                            If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
                         End If
                     
                     'Text boxes just take the stored string as-is
@@ -1103,27 +1094,8 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                     Case "pdColorDepth"
                         eControl.SetAllSettings controlValue
                     
-                    'PD's "smart resize" control has some special needs, on account of using multiple value properties
-                    ' within a single control.  We now parse out those values from the control string.
                     Case "pdResize"
-                        
-                        'Initialize the param string object as necessary
-                        If (cParam Is Nothing) Then Set cParam = New pdParamString
-                        cParam.SetParamString controlValue
-                        
-                        'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
-                        ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
-                        ' aspect ratio!)
-                        eControl.LockAspectRatio = False
-                        
-                        'Retrieve units for the combo boxes
-                        eControl.UnitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
-                        eControl.UnitOfResolution = cParam.GetLong(6, RU_PPI)
-                        
-                        'Retrieve any numeric values for the control
-                        eControl.ResizeDPI = cParam.GetLong(5, 96)
-                        eControl.ResizeWidth = cParam.GetDouble(1, 1920)
-                        eControl.ResizeHeight = cParam.GetDouble(2, 1080)
+                        eControl.SetAllSettingsFromXML controlValue
                         
                     'Metadata management controls handle their own XML parsing
                     Case "pdMetadataExport"
