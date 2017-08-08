@@ -390,20 +390,27 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long, j As Long
     
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    Dim nodeName As String
+    
     For i = 0 To 3
     
         'Write the number of nodes for this array to file
         cmdBar.AddPresetData "NodeCount_" & i, Trim$(Str(m_numOfNodes(i)))
         
-        nodeString = ""
+        cParams.Reset
         
         'Compile all nodes into a single string, with coordinate pairs separated by "|" and x/y values separated by ";"
         For j = 1 To m_numOfNodes(i)
-            nodeString = nodeString & Trim$(Str((m_curveNodes(i, j).pX - PREVIEW_BORDER_PX) / nodeBoxWidth)) & ";" & Trim$(Str((m_curveNodes(i, j).pY - PREVIEW_BORDER_PX) / nodeBoxHeight))
-            If (j < m_numOfNodes(i)) Then nodeString = nodeString & "|"
+            nodeName = Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x"
+            cParams.AddParam nodeName, Trim$(Str((m_curveNodes(i, j).pX - PREVIEW_BORDER_PX) / nodeBoxWidth))
+            nodeName = Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_y"
+            cParams.AddParam nodeName, Trim$(Str((m_curveNodes(i, j).pY - PREVIEW_BORDER_PX) / nodeBoxHeight))
         Next j
     
-        cmdBar.AddPresetData "NodeData_" & i, nodeString
+        cmdBar.AddPresetData "NodeData_" & i, cParams.GetParamString()
     
     Next i
     
@@ -469,7 +476,10 @@ Private Sub cmdBar_ReadCustomPresetData()
     nodeBoxWidth = picDraw.ScaleWidth - (PREVIEW_BORDER_PX * 2)
     nodeBoxHeight = picDraw.ScaleHeight - (PREVIEW_BORDER_PX * 2)
     
-    Dim tmpString As String, cParams As pdParamString
+    Dim tmpString As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     
     Dim i As Long, j As Long
     For i = 0 To 3
@@ -489,35 +499,19 @@ Private Sub cmdBar_ReadCustomPresetData()
         tmpString = cmdBar.RetrievePresetData("NodeData_" & i)
     
         'With the help of a paramString class, parse out individual coordinates into the m_curveNodes array
-        Set cParams = New pdParamString
-    
-        'Old versions of the Curves dialog used the comma to separate coordinate entries.  This was a bad idea, because
-        ' some locales (e.g. IT-IT) use the comma as a decimal separator!  We now use a semicolon instead, but to make
-        ' sure old data doesn't crash the program, check for it now.
-        If InStr(1, tmpString, ",") > 0 Then
-            
-            If InStr(1, tmpString, ".") > 0 Then
-                cParams.SetParamString Replace(tmpString, ",", "|")
-            Else
-                cParams.SetParamString Replace(tmpString, ";", "|")
-            End If
-            
-        Else
-            cParams.SetParamString Replace(tmpString, ";", "|")
-        End If
-        
-        tmpString = cParams.GetParamString
-        
-        If InStr(1, tmpString, ":") > 0 Then
-            cParams.SetParamString Replace(tmpString, ":", "|")
-        End If
+        cParams.SetParamString tmpString
         
         'Iterate through all nodes in the list, copying them into our m_curveNodes array as we go
         For j = 1 To m_numOfNodes(i)
             
             'Retrieve this node's x and y values
-            m_curveNodes(i, j).pX = cParams.GetDouble((j - 1) * 2 + 1)
-            m_curveNodes(i, j).pY = cParams.GetDouble((j - 1) * 2 + 2)
+            If cParams.DoesParamExist(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x") Then
+                m_curveNodes(i, j).pX = cParams.GetDouble(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x")
+                m_curveNodes(i, j).pY = cParams.GetDouble(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_y")
+            Else
+                ResetCurvePoints
+                Exit Sub
+            End If
             
             'Old preset values may store the node values as absolutes rather than relatives.  Check for this, and
             ' adjust node values accordingly.
