@@ -237,7 +237,7 @@ Public Sub ShowStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
 End Sub
 
 'Present a dialog box to ask the user how they want to tone map an incoming high bit-depth image.  Unlike other dialog
-' requests, this one returns a pdParamString.  This is necessary because the return may have multiple parameters.
+' requests, this one returns an XML string.  This is necessary because the return may have multiple parameters.
 Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParamString As String) As VbMsgBoxResult
     
     'Before displaying the dialog, see if the user has requested that we automatically display previously specified settings
@@ -280,9 +280,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         copyOfParamString = g_UserPreferences.GetPref_String("Loading", "Tone Mapping Settings", "")
         
         'Check for an empty string; if found, build a default param string
-        If Len(copyOfParamString) = 0 Then
-            copyOfParamString = BuildParams(1, 0, 0)
-        End If
+        If (Len(copyOfParamString) = 0) Then copyOfParamString = BuildParamList("method", PDTM_DRAGO)
         
         'Return "OK"
         PromptToneMapSettings = vbOK
