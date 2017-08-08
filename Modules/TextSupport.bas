@@ -3,8 +3,8 @@ Attribute VB_Name = "TextSupport"
 'Miscellaneous functions related to specialized text handling
 'Copyright 2000-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 07/May/14
-'Last update: Fix bugs with IsNumberLocaleUnaware() so that very large and very small exponents are handled correctly.
+'Last updated: 08/August/17
+'Last update: remove legacy BuildParams() parameter system
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -76,7 +76,7 @@ End Function
 
 'Check a Variant-type value to see if it's numeric
 Public Function NumberValid(ByVal checkVal As Variant) As Boolean
-    If Not IsNumeric(checkVal) Then
+    If (Not IsNumeric(checkVal)) Then
         PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         NumberValid = False
     Else
@@ -87,13 +87,13 @@ End Function
 'A pleasant combination of RangeValid and NumberValid
 Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
     If Not IsNumeric(checkVal) Then
-        If displayNumError = True Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
+        If displayNumError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         EntryValid = False
     Else
         If (checkVal >= cMin) And (checkVal <= cMax) Then
             EntryValid = True
         Else
-            If displayRangeError = True Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
+            If displayRangeError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
             EntryValid = False
         End If
     End If
@@ -109,7 +109,7 @@ Public Function CDblCustom(ByVal srcString As String) As Double
     If IsNumberLocaleUnaware(srcString) Then
         CDblCustom = Val(srcString)
     Else
-        CDblCustom = 0
+        CDblCustom = 0#
     End If
 
 End Function
@@ -203,73 +203,6 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
     
     IncrementTrailingNumber = srcString & " (" & CStr(numToAppend) & ")"
 
-End Function
-
-'PhotoDemon's software processor requires that all parameters be passed as a string, with individual parameters separated by
-' the pipe "|" character.  This function can be used to automatically assemble any number of parameters into such a string.
-Public Function BuildParams(ParamArray allParams() As Variant) As String
-
-    BuildParams = ""
-
-    If UBound(allParams) >= LBound(allParams) Then
-    
-        Dim tmpString As String
-        
-        Dim i As Long
-        For i = LBound(allParams) To UBound(allParams)
-        
-            If IsNumeric(allParams(i)) Then
-                tmpString = Trim$(Str(allParams(i)))
-            Else
-                tmpString = Trim$(allParams(i))
-            End If
-        
-            If Len(tmpString) <> 0 Then
-                
-                'Add the string (properly escaped) to the param string
-                BuildParams = BuildParams & EscapeParamCharacters(tmpString)
-                
-            Else
-                BuildParams = BuildParams & " "
-            End If
-            
-            If i < UBound(allParams) Then BuildParams = BuildParams & "|"
-            
-        Next i
-    
-    End If
-
-End Function
-
-'Given a parameter to be added to a param string, apply any necessary escaping
-Public Function EscapeParamCharacters(ByVal srcString As String) As String
-
-    EscapeParamCharacters = srcString
-                
-    'The most crucial character to escape is the pipe "|", as PD uses it to separate individual params
-    If InStr(1, EscapeParamCharacters, "|", vbBinaryCompare) > 0 Then
-        
-        'In lieu of a better escape system, use the HTML system
-        EscapeParamCharacters = Replace$(EscapeParamCharacters, "|", "&#124;")
-        
-    End If
-    
-End Function
-
-'Given a parameter that is ready to be removed from a passed string and reported to a calling function, replace
-' any escaped characters with their correct equivalents.
-Public Function UnEscapeParamCharacters(ByVal srcString As String) As String
-
-    UnEscapeParamCharacters = srcString
-    
-    'At present, the only character PD forcibly escapes is the pipe "|"
-    If InStr(1, UnEscapeParamCharacters, "&#124;", vbBinaryCompare) > 0 Then
-        
-        'In lieu of a better escape system, use the HTML system
-        UnEscapeParamCharacters = Replace$(UnEscapeParamCharacters, "&#124;", "|")
-        
-    End If
-    
 End Function
 
 'As of PD 7.0, XML strings are universally used for parameter parsing.  The old pipe-delimited system is currently being
