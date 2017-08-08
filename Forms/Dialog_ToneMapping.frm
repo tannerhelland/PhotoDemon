@@ -28,7 +28,7 @@ Begin VB.Form dialog_ToneMapping
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   5910
       Width           =   11655
       _ExtentX        =   20558
@@ -45,14 +45,14 @@ Begin VB.Form dialog_ToneMapping
       ScaleHeight     =   298
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   298
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   1200
       Width           =   4500
    End
    Begin PhotoDemon.pdCheckBox chkRemember 
       Height          =   330
       Left            =   4920
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   5490
       Width           =   6660
       _ExtentX        =   11748
@@ -63,131 +63,11 @@ Begin VB.Form dialog_ToneMapping
    Begin PhotoDemon.pdButtonStrip btsMethod 
       Height          =   720
       Left            =   4920
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1200
       Width           =   6615
       _ExtentX        =   9790
       _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   3375
-      Index           =   3
-      Left            =   4800
-      TabIndex        =   6
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltIntensity 
-         Height          =   690
-         Left            =   120
-         TabIndex        =   11
-         Top             =   0
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "intensity"
-         FontSizeCaption =   11
-         Min             =   -4
-         Max             =   4
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdSlider sltAdaptation 
-         Height          =   690
-         Left            =   120
-         TabIndex        =   12
-         Top             =   960
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "adaptation"
-         FontSizeCaption =   11
-         Max             =   1
-         SigDigits       =   2
-         SliderTrackStyle=   1
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.pdSlider sltColorCorrection 
-         Height          =   690
-         Left            =   120
-         TabIndex        =   13
-         Top             =   1920
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "color correction"
-         FontSizeCaption =   11
-         Max             =   1
-         SigDigits       =   2
-         SliderTrackStyle=   1
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   3375
-      Index           =   1
-      Left            =   4800
-      TabIndex        =   14
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltGamma 
-         Height          =   690
-         Index           =   2
-         Left            =   120
-         TabIndex        =   15
-         Top             =   0
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "gamma"
-         FontSizeCaption =   11
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   2.2
-         NotchPosition   =   2
-         NotchValueCustom=   2.2
-      End
-      Begin PhotoDemon.pdSlider sltExposure 
-         Height          =   690
-         Index           =   1
-         Left            =   120
-         TabIndex        =   16
-         Top             =   960
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "exposure"
-         FontSizeCaption =   11
-         Min             =   0.01
-         Max             =   8
-         SigDigits       =   2
-         Value           =   2
-         NotchPosition   =   2
-         NotchValueCustom=   2
-      End
-      Begin PhotoDemon.pdSlider sltWhitepoint 
-         Height          =   690
-         Left            =   120
-         TabIndex        =   17
-         Top             =   1920
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "white point"
-         FontSizeCaption =   11
-         Min             =   1
-         Max             =   40
-         SigDigits       =   2
-         Value           =   11.2
-         NotchPosition   =   2
-         NotchValueCustom=   11.2
-      End
    End
    Begin PhotoDemon.pdLabel lblWarning 
       Height          =   765
@@ -204,16 +84,27 @@ Begin VB.Form dialog_ToneMapping
       Height          =   3375
       Index           =   0
       Left            =   4800
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2040
       Width           =   6855
       _ExtentX        =   0
       _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsNormalize 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   17
+         Top             =   840
+         Width           =   6615
+         _ExtentX        =   11456
+         _ExtentY        =   1085
+         Caption         =   "normalize"
+         FontSizeCaption =   11
+      End
       Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   0
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   6615
          _ExtentX        =   11668
@@ -227,57 +118,12 @@ Begin VB.Form dialog_ToneMapping
          NotchPosition   =   2
          NotchValueCustom=   2.2
       End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   9
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "normalize"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   0
-         Left            =   360
-         TabIndex        =   18
-         Top             =   1380
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "none"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   1
-         Left            =   360
-         TabIndex        =   19
-         Top             =   1740
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "visible spectrum"
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   2
-         Left            =   360
-         TabIndex        =   0
-         Top             =   2100
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "full spectrum"
-      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   3375
       Index           =   2
       Left            =   4800
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
@@ -287,7 +133,7 @@ Begin VB.Form dialog_ToneMapping
          Height          =   690
          Index           =   1
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   0
          Width           =   6615
          _ExtentX        =   11668
@@ -305,7 +151,7 @@ Begin VB.Form dialog_ToneMapping
          Height          =   690
          Index           =   0
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   960
          Width           =   6615
          _ExtentX        =   11668
@@ -315,6 +161,126 @@ Begin VB.Form dialog_ToneMapping
          Min             =   -8
          Max             =   8
          SigDigits       =   2
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   3375
+      Index           =   3
+      Left            =   4800
+      TabIndex        =   5
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdSlider sltIntensity 
+         Height          =   690
+         Left            =   120
+         TabIndex        =   10
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "intensity"
+         FontSizeCaption =   11
+         Min             =   -4
+         Max             =   4
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdSlider sltAdaptation 
+         Height          =   690
+         Left            =   120
+         TabIndex        =   11
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "adaptation"
+         FontSizeCaption =   11
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.pdSlider sltColorCorrection 
+         Height          =   690
+         Left            =   120
+         TabIndex        =   12
+         Top             =   1920
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "color correction"
+         FontSizeCaption =   11
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   3375
+      Index           =   1
+      Left            =   4800
+      TabIndex        =   13
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdSlider sltGamma 
+         Height          =   690
+         Index           =   2
+         Left            =   120
+         TabIndex        =   14
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
+      End
+      Begin PhotoDemon.pdSlider sltExposure 
+         Height          =   690
+         Index           =   1
+         Left            =   120
+         TabIndex        =   15
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "exposure"
+         FontSizeCaption =   11
+         Min             =   0.01
+         Max             =   8
+         SigDigits       =   2
+         Value           =   2
+         NotchPosition   =   2
+         NotchValueCustom=   2
+      End
+      Begin PhotoDemon.pdSlider sltWhitepoint 
+         Height          =   690
+         Left            =   120
+         TabIndex        =   16
+         Top             =   1920
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "white point"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   40
+         SigDigits       =   2
+         Value           =   11.2
+         NotchPosition   =   2
+         NotchValueCustom=   11.2
       End
    End
 End
@@ -327,21 +293,22 @@ Attribute VB_Exposed = False
 'Tone Mapping (e.g. high-bit-depth image import) Dialog
 'Copyright 2014-2017 by Tanner Helland
 'Created: 04/December/14
-'Last updated: 07/December/14
-'Last update: add new filmic tone-mapping mode; see http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
+'Last updated: 08/Augusts/17
+'Last update: migrate to XML params, many performance improvements
 '
 'Images with more than 8-bits per channel cannot be displayed on conventional monitors.  These images must undergo a
 ' process called Tone Mapping (http://en.wikipedia.org/wiki/Tone_mapping) which reduces their color count to a range
 ' acceptable for display.
 '
 'Unfortunately, there are many nuances to tone-mapping, which makes handling difficult to automate.  HDR images
-' (I'm using the literal meaning here, not the literal HDR format) come in many shapes and sizes: some are pre-normalized.
-' Some include infrared channels.  Some are in non-floating point HDR formats, and thus require conversion to RGBF.
-' Some are already gamma corrected.  My frequent use of "some" here is not accidental - there are variations in all these
+' (I'm using the literal meaning here, not the .HDR file format) come in many shapes and sizes: some are pre-normalized.
+' Some include infrared channels.  Some use non-floating point HDR formats, and thus require conversion to RGBF.
+' Some are already gamma-corrected.  My frequent use of "some" here is not accidental - there are variations in all these
 ' parameters, and a lack of good metadata handling for these formats means that handling is not clear-cut.
 '
-'Hence the need for this dialog.  When an HDR image is loaded (including many RAW formats), this dialog will be triggered,
-' giving the user a way to control how the image is mapped to their display.
+'Hence the need for this dialog.  When an HDR image is loaded (including many RAW formats), and the file does not contain
+' ICC data that explicitly states how to tone-map, this dialog will be triggered.  It provides a way for the user to
+' control how the image is ultimately mapped to their display.
 '
 'The linear and filmic options are custom coded for PD.  Drago and Reinhard simply wrap the matching FreeImage.dll functions.
 '
@@ -371,9 +338,6 @@ Private src_FIHandle As Long
 ' computationally expensive to generate this image, so please do not destroy it.  Instead, make a temporary copy prior
 ' to applying tone-mapping operations for preview purposes.
 Private mini_FIHandle As Long
-
-'Param string assembler
-Private cParams As pdParamString
 
 'The user's dialog answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -449,19 +413,17 @@ Private Sub UpdatePreview()
     Dim tmp_FIHandle As Long
     
     'Retrieve a tone-mapped image, using the master tone-map function
-    If mini_FIHandle <> 0 Then
-        tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, GetToneMapParamString())
-    End If
+    If (mini_FIHandle <> 0) Then tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, GetToneMapParamString())
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
-    If tmp_FIHandle <> 0 Then
+    If (tmp_FIHandle <> 0) Then
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         If Plugin_FreeImage.GetPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
-            If tmpDIB.GetDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication True
+            If (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.SetAlphaPremultiplication True
             tmpDIB.RenderToPictureBox picPreview
             
             'Release our DIB
@@ -493,6 +455,10 @@ Private Sub btsMethod_Click(ByVal buttonIndex As Long)
     
     UpdatePreview
     
+End Sub
+
+Private Sub btsNormalize_Click(ByVal buttonIndex As Long)
+    UpdatePreview
 End Sub
 
 'CANCEL button
@@ -541,22 +507,23 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Initialize a parameter assembler
-    Set cParams = New pdParamString
-    
     'Initialize any/all controls
     btsMethod.AddItem "Linear", 0
     btsMethod.AddItem "Filmic", 1
     btsMethod.AddItem "Drago", 2
     btsMethod.AddItem "Reinhard", 3
     btsMethod.ListIndex = 0
+    
+    btsNormalize.AddItem "none", 0
+    btsNormalize.AddItem "visible spectrum", 1
+    btsNormalize.AddItem "full spectrum", 2
         
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release our mini-FreeImage handle
-    If mini_FIHandle <> 0 Then FreeImage_Unload mini_FIHandle
+    If (mini_FIHandle <> 0) Then FreeImage_Unload mini_FIHandle
     ReleaseFormTheming Me
     
 End Sub
@@ -564,54 +531,54 @@ End Sub
 'Assemble the current settings into a parameter string
 Private Function GetToneMapParamString() As String
     
-    'The param string's functions are highly variable, depending on the selected values
-    Dim vParams() As Variant
-    ReDim vParams(0 To 4) As Variant
+    'Like everything else in PD, parameters are returned as XML strings
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     
-    'First comes the actual conversion method
-    vParams(0) = btsMethod.ListIndex
-    
-    'Subsequent parameters vary by method
-    Select Case vParams(0)
-    
-        Case PDTM_LINEAR
-            vParams(1) = sltGamma(0).Value
+    With cParams
+        
+        'As you can imagine, the parameters we care about are highly variable, depending on the user's selected values.
+        ' To keep this function simple, we potentially write out parameters that may not be required, but the load
+        ' function doesn't care because it just grabs the parameters relevant to the active tone-mapping method.
+        .AddParam "method", btsMethod.ListIndex
+        
+        If (btsMethod.ListIndex = PDTM_LINEAR) Then
+        
+            .AddParam "gamma", sltGamma(0).Value
             
             'Normalization is a little weird, because it controls two values in the destination
-            If optNormalize(0) Then
-                vParams(2) = PD_BOOL_FALSE
-                vParams(3) = False
-            ElseIf optNormalize(1) Then
-                vParams(2) = PD_BOOL_AUTO
-                vParams(3) = True
+            If (btsNormalize.ListIndex = 0) Then
+                .AddParam "normalize", PD_BOOL_FALSE
+                .AddParam "ignorenegative", False
+            ElseIf (btsNormalize.ListIndex = 1) Then
+                .AddParam "normalize", PD_BOOL_AUTO
+                .AddParam "ignorenegative", True
             Else
-                vParams(2) = PD_BOOL_TRUE
-                vParams(3) = False
+                .AddParam "normalize", PD_BOOL_TRUE
+                .AddParam "ignorenegative", False
             End If
+            
+        ElseIf (btsMethod.ListIndex = PDTM_FILMIC) Then
+            .AddParam "gamma", sltGamma(2).Value
+            .AddParam "exposure", sltExposure(1).Value
+            .AddParam "whitepoint", sltWhitepoint.Value
         
-        Case PDTM_FILMIC
-            vParams(1) = sltGamma(2).Value
-            vParams(2) = sltExposure(1).Value
-            vParams(3) = sltWhitepoint.Value
+        ElseIf (btsMethod.ListIndex = PDTM_DRAGO) Then
+            .AddParam "gamma", sltGamma(1).Value
+            .AddParam "exposure", sltExposure(0).Value
         
-        Case PDTM_DRAGO
-            vParams(1) = sltGamma(1).Value
-            vParams(2) = sltExposure(0).Value
+        ElseIf (btsMethod.ListIndex = PDTM_REINHARD) Then
+            .AddParam "intensity", sltIntensity.Value
+            .AddParam "adaptation", sltAdaptation.Value
+            .AddParam "colorcorrection", sltColorCorrection.Value
         
-        Case PDTM_REINHARD
-            vParams(1) = sltIntensity.Value
-            vParams(2) = sltAdaptation.Value
-            vParams(3) = sltColorCorrection.Value
-        
-    End Select
+        End If
     
-    GetToneMapParamString = BuildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
+    End With
+    
+    GetToneMapParamString = cParams.GetParamString()
     
 End Function
-
-Private Sub optNormalize_Click(Index As Integer)
-    UpdatePreview
-End Sub
 
 Private Sub sltAdaptation_Change()
     UpdatePreview
