@@ -301,8 +301,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     If blurNeeded Then
         Set tmpDIB = New pdDIB
         tmpDIB.CreateFromExistingDIB m_snowDIB
-        Filters_Layers.CreateGaussianBlurDIB softenRadius, tmpDIB, m_snowDIB, True
-        tmpDIB.EraseDIB True
+        Filters_Layers.CreateApproximateGaussianBlurDIB softenRadius, tmpDIB, m_snowDIB, 3, True
     End If
     
     If (Not toPreview) Then ProgressBars.SetProgBarVal 3
