@@ -158,8 +158,13 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     initX = initX * qvDepth
     finalX = finalX * qvDepth
     
+    Dim dibPointer As Long, dibStride As Long
+    workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, 0
+    dibPointer = tmpSA1D.pvData
+    dibStride = tmpSA1D.cElements
+    
     For y = initY To finalY
-        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+        tmpSA1D.pvData = dibPointer + y * dibStride
     For x = initX To finalX Step qvDepth
         
         'Get the source pixel color values

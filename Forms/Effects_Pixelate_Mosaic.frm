@@ -103,8 +103,8 @@ Attribute VB_Exposed = False
 'Pixelate/Mosaic filter interface
 'Copyright 2000-2017 by Tanner Helland
 'Created: 08/May/00
-'Last updated: 02/October/15
-'Last update: add support for variable angles
+'Last updated: 08/August/17
+'Last update: convert to XML params, minor performance improvements
 '
 'Form for handling all the pixellation image transform code.
 '
@@ -122,10 +122,22 @@ End Sub
 
 'Apply a pixelate effect (sometimes called "mosaic") to an image
 ' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
-Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVal blockAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Applying mosaic..."
         
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim blockSizeX As Long, blockSizeY As Long, blockAngle As Double
+    
+    With cParams
+        blockSizeX = .GetLong("width", sltWidth.Value)
+        blockSizeY = .GetLong("height", sltHeight.Value)
+        blockAngle = .GetDouble("angle", sltAngle.Value)
+    End With
+    
     'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -146,7 +158,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Set srcDIB = New pdDIB
     
     'If an angle has been specified, we need to pre-rotate the image to match.
-    If blockAngle <> 0 Then
+    If (blockAngle <> 0) Then
         GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, srcDIB, blockAngle
         workingDIB.CreateFromExistingDIB srcDIB
     Else
@@ -157,7 +169,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     ' the order of the source and destination DIBs if an angle is active; this spares us from having to perform an
     ' extra BitBlt after the operation is complete.
     
-    If blockAngle = 0 Then
+    If (blockAngle = 0) Then
         PrepSafeArray dstSA, workingDIB
         PrepSafeArray srcSA, srcDIB
     Else
@@ -177,10 +189,10 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     
     'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
-        BlockSizeX = BlockSizeX * curDIBValues.previewModifier
-        BlockSizeY = BlockSizeY * curDIBValues.previewModifier
-        If BlockSizeX < 1 Then BlockSizeX = 1
-        If BlockSizeY < 1 Then BlockSizeY = 1
+        blockSizeX = blockSizeX * curDIBValues.previewModifier
+        blockSizeY = blockSizeY * curDIBValues.previewModifier
+        If (blockSizeX < 1) Then blockSizeX = 1
+        If (blockSizeY < 1) Then blockSizeY = 1
     End If
     
     'These values will help us access locations in the array more quickly.
@@ -190,8 +202,8 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     
     'Calculate how many mosaic tiles will fit on the current image's size
     Dim xLoop As Long, yLoop As Long
-    xLoop = initX + Int(workingDIB.GetDIBWidth \ BlockSizeX) + 1
-    yLoop = initY + Int(workingDIB.GetDIBHeight \ BlockSizeY) + 1
+    xLoop = initX + Int(workingDIB.GetDIBWidth \ blockSizeX) + 1
+    yLoop = initY + Int(workingDIB.GetDIBHeight \ blockSizeY) + 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -207,7 +219,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Dim i As Long, j As Long
     
     'We also need to count how many pixels must be averaged in each mosaic tile
-    Dim numOfPixels As Long
+    Dim numOfPixels As Long, pxDivisor As Double
     
     'Finally, individual colors also need to be tracked
     Dim r As Long, g As Long, b As Long, a As Long
@@ -218,24 +230,24 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     For y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
-        initXLoop = x * BlockSizeX
-        initYLoop = y * BlockSizeY
-        dstXLoop = (x + 1) * BlockSizeX - 1
-        dstYLoop = (y + 1) * BlockSizeY - 1
+        initXLoop = x * blockSizeX
+        initYLoop = y * blockSizeY
+        dstXLoop = (x + 1) * blockSizeX - 1
+        dstYLoop = (y + 1) * blockSizeY - 1
         
         For i = initXLoop To dstXLoop
             quickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
-            If i > finalX Or j > finalY Then GoTo NextPixelatePixel1
+            If (i > finalX) Or (j > finalY) Then GoTo NextPixelatePixel1
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(quickVal + 2, j)
-            g = g + srcImageData(quickVal + 1, j)
             b = b + srcImageData(quickVal, j)
-            If qvDepth = 4 Then a = a + srcImageData(quickVal + 3, j)
+            g = g + srcImageData(quickVal + 1, j)
+            r = r + srcImageData(quickVal + 2, j)
+            a = a + srcImageData(quickVal + 3, j)
             
             'Count this as a valid pixel
             numOfPixels = numOfPixels + 1
@@ -246,13 +258,14 @@ NextPixelatePixel1:
         Next i
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
-        If numOfPixels = 0 Then GoTo NextPixelatePixel3
+        If (numOfPixels = 0) Then GoTo NextPixelatePixel3
         
         'Take the average red, green, and blue values of all the pixels within this tile
-        r = r \ numOfPixels
-        g = g \ numOfPixels
-        b = b \ numOfPixels
-        If qvDepth = 4 Then a = a \ numOfPixels
+        pxDivisor = 1# / numOfPixels
+        r = r * pxDivisor
+        g = g * pxDivisor
+        b = b * pxDivisor
+        a = a * pxDivisor
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
@@ -261,13 +274,13 @@ NextPixelatePixel1:
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
-            If i > finalX Or j > finalY Then GoTo NextPixelatePixel2
+            If (i > finalX) Or (j > finalY) Then GoTo NextPixelatePixel2
             
             'Set the pixel
-            If qvDepth = 4 Then dstImageData(quickVal + 3, j) = a
-            dstImageData(quickVal + 2, j) = r
-            dstImageData(quickVal + 1, j) = g
             dstImageData(quickVal, j) = b
+            dstImageData(quickVal + 1, j) = g
+            dstImageData(quickVal + 2, j) = r
+            dstImageData(quickVal + 3, j) = a
             
 NextPixelatePixel2:
 
@@ -297,7 +310,7 @@ NextPixelatePixel3:
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'If rotation was applied, restore the image to its original orientation.
-    If blockAngle <> 0 Then
+    If (blockAngle <> 0) Then
         workingDIB.CreateBlank origWidth, origHeight, srcDIB.GetDIBColorDepth, 0, 0
         GDI_Plus.GDIPlus_RotateDIBPlgStyle srcDIB, workingDIB, -blockAngle, True
     End If
@@ -309,7 +322,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mosaic", , BuildParams(sltWidth.Value, sltHeight.Value, sltAngle.Value), UNDO_LAYER
+    Process "Mosaic", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -352,23 +365,23 @@ End Sub
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
 Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
-    If sltWidth.Value = sltHeight.Value Then Exit Sub
+    If (sltWidth.Value = sltHeight.Value) Then Exit Sub
     
     Dim tmpVal As Long
     
     If srcHorizontal Then
         tmpVal = sltWidth.Value
-        If tmpVal < sltHeight.Max Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
+        If (tmpVal < sltHeight.Max) Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
     Else
         tmpVal = sltHeight.Value
-        If tmpVal < sltWidth.Max Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
+        If (tmpVal < sltWidth.Max) Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
     End If
     
 End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.MosaicFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -396,7 +409,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "width", sltWidth.Value
+        .AddParam "height", sltHeight.Value
+        .AddParam "angle", sltAngle.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
