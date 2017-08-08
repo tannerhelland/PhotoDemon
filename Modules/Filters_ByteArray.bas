@@ -466,9 +466,9 @@ Public Function AddNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As 
         
         newValue = oldValue + ((Rnd * noiseAmount) - halfNoise)
         
-        If newValue < 0 Then
+        If (newValue < 0) Then
             newValue = 0
-        ElseIf newValue > 255 Then
+        ElseIf (newValue > 255) Then
             newValue = 255
         End If
         

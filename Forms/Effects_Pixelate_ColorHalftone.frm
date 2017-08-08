@@ -144,10 +144,27 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'To improve preview performance, a copy of the working image is cached locally
+Private m_EffectDIB As pdDIB
+
 'Apply a CMYK halftone filter to the current image.
-Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Double, ByVal magentaAngle As Double, ByVal yellowAngle As Double, ByVal dotDensity As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ColorHalftoneFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Printing image to digital halftone surface..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim pxRadius As Double, cyanAngle As Double, magentaAngle As Double, yellowAngle As Double, dotDensity As Double
+    
+    With cParams
+        pxRadius = .GetDouble("radius", sltRadius.Value)
+        dotDensity = .GetDouble("density", sltDensity.Value)
+        cyanAngle = .GetDouble("cyanangle", sltAngle(0).Value)
+        magentaAngle = .GetDouble("magentaangle", sltAngle(1).Value)
+        yellowAngle = .GetDouble("yellowangle", sltAngle(2).Value)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -155,28 +172,26 @@ Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Doub
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
+    If (m_EffectDIB Is Nothing) Then Set m_EffectDIB = New pdDIB
+    m_EffectDIB.CreateFromExistingDIB workingDIB
     
     'Modify the radius value for previews
     If toPreview Then pxRadius = pxRadius * curDIBValues.previewModifier
-    If pxRadius < 2 Then pxRadius = 2
+    If (pxRadius < 2#) Then pxRadius = 2#
     
     'Use the external function to apply the actual effect
-    Filters_Stylize.CreateColorHalftoneDIB pxRadius, cyanAngle, magentaAngle, yellowAngle, dotDensity, srcDIB, workingDIB, toPreview
+    Filters_Stylize.CreateColorHalftoneDIB pxRadius, cyanAngle, magentaAngle, yellowAngle, dotDensity, m_EffectDIB, workingDIB, toPreview
     
-    srcDIB.EraseDIB
-    Set srcDIB = Nothing
+    'If this is *not* a preview, we won't need our local image copy any more
+    If (Not toPreview) Then Set m_EffectDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
-        
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color halftone", , BuildParams(sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value), UNDO_LAYER
+    Process "Color halftone", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -203,7 +218,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorHalftoneFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -228,7 +243,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "radius", sltRadius.Value
+        .AddParam "density", sltDensity.Value
+        .AddParam "cyanangle", sltAngle(0).Value
+        .AddParam "magentaangle", sltAngle(1).Value
+        .AddParam "yellowangle", sltAngle(2).Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

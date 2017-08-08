@@ -65,20 +65,20 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
         
     'Because we want each halftone point centered around a grid intersection, we'll precalculate a half-radius value as well
     Dim pxRadiusHalf As Double
-    pxRadiusHalf = pxRadius / 2
+    pxRadiusHalf = pxRadius * 0.5
     
     'Density is a [0, 1] scale, but we report it to the user as [0, 100]; transform it now
-    dotDensity = dotDensity / 100
+    dotDensity = dotDensity * 0.01
     
     'At maximum density, a dot of max luminance will extend from the center of a grid point to the diagonal edge
     ' of the grid "block".  This is a distance of Sqr(2) * (grid block size / 2).  We multiply our density value
     ' - in advance - by this value, which simplifies dot calculations in the inner loop.
-    dotDensity = dotDensity * Sqr(2) * pxRadiusHalf
+    dotDensity = dotDensity * Sqr(2#) * pxRadiusHalf
         
     'Convert the various input rotation angles to radians
-    cyanAngle = cyanAngle * (PI / 180)
-    yellowAngle = yellowAngle * (PI / 180)
-    magentaAngle = magentaAngle * (PI / 180)
+    cyanAngle = cyanAngle * (PI / 180#)
+    yellowAngle = yellowAngle * (PI / 180#)
+    magentaAngle = magentaAngle * (PI / 180#)
     
     'Prep a bunch of calculation values.  (Yes, there are many.)
     Dim cosTheta As Double, sinTheta As Double
@@ -116,8 +116,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     For x = 0 To 255
         
         'Convert the color value to floating-point CMY, then square it (which yields better luminance control)
-        fTarget = x / 255
-        fTarget = 1 - (fTarget * fTarget)
+        fTarget = x / 255#
+        fTarget = 1# - (fTarget * fTarget)
             
         'Modify the radius to match the density requested by the user
         fTarget = fTarget * dotDensity
@@ -161,8 +161,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             srcY = -x * sinTheta + y * cosTheta
             
             'Lock those source values to a predetermined grid, using the supplied radius value as grid size
-            srcX = srcX - Modulo(srcX - pxRadiusHalf, pxRadius) + pxRadiusHalf
-            srcY = srcY - Modulo(srcY - pxRadiusHalf, pxRadius) + pxRadiusHalf
+            srcX = srcX - PDMath.Modulo(srcX - pxRadiusHalf, pxRadius) + pxRadiusHalf
+            srcY = srcY - PDMath.Modulo(srcY - pxRadiusHalf, pxRadius) + pxRadiusHalf
             
             'We now have a literal "round peg in square hole" problem.  The halftone dots we're drawing are circles, but the underlying
             ' calculation grid is comprised of squares.  This presents an ugly problem: dots can extend outside the underlying grid
@@ -204,11 +204,11 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             'Calculate a dot size, relative to the underlying grid control point
             dx = x - dstX
             dy = y - dstY
-            tmpRadius = Sqr(dx * dx + dy * dy) + 1
+            tmpRadius = Sqr(dx * dx + dy * dy) + 1#
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
-            f2 = 1 - BasicAA(tmpRadius - 1, tmpRadius, densityLookup(target))
+            f2 = 1# - BasicAA(tmpRadius - 1#, tmpRadius, densityLookup(target))
             
             'If this dot's calculated radius density is greater than a grid block's half-width, this "dot" extends outside
             ' its underlying grid block.  This means it overlaps a neighboring grid, which may have a *different* maximum
@@ -216,7 +216,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             ' and find the smallest possible value within the overlapping area.  (This strategy makes the function
             ' properly deterministic, so the darkest dot is always guaranteed to be on "top", regardless of channel
             ' processing order.)
-            If tmpRadius >= pxRadiusHalf Then
+            If (tmpRadius >= pxRadiusHalf) Then
                 
                 'Check four neighboring pixels (left, up, right, down)
                 For overlapCheck = 0 To 3
@@ -250,10 +250,10 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     dx = x - dstX
                     dy = y - dstY
                     tmpRadius = Sqr(dx * dx + dy * dy)
-                    f3 = 1 - BasicAA(tmpRadius, tmpRadius + 1, densityLookup(newTarget))
+                    f3 = 1# - BasicAA(tmpRadius, tmpRadius + 1#, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)
-                    If f3 < f2 Then
+                    If (f3 < f2) Then
                         f2 = f3
                         target = newTarget
                     End If
@@ -265,8 +265,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Convert the final calculated intensity back to byte range, and set the corresponding color in the
             ' destination array.
-            target = 255 * f2
-            dstImageData(quickVal + curChannel, y) = target
+            dstImageData(quickVal + curChannel, y) = Int(255# * f2)
             
         Next y
             If Not suppressMessages Then
@@ -289,18 +288,19 @@ End Function
 
 'This function - courtesy of Jerry Huxtable and jhlabs.com - provides nice, cheap antialiasing along a 1px border
 ' between two double-type values.
-Private Function BasicAA(ByRef a As Double, ByRef b As Double, ByRef x As Single) As Double
+Private Function BasicAA(ByVal a As Double, ByVal b As Double, ByVal x As Single) As Double
 
     If (x < a) Then
-        BasicAA = 0
+        BasicAA = 0#
     ElseIf (x >= b) Then
-        BasicAA = 1
+        BasicAA = 1#
     Else
         BasicAA = (x - a) / (b - a)
         
         'In his original code, Jerry used a more complicated AA approach, but it seems overkill for a function like this
         ' (especially where the quality trade-off is so minimal):
-        'basicAA = x * x * (3 - 2 * x)
+        'BasicAA = x * x * (3# - 2# * x)
+        
     End If
 
 End Function

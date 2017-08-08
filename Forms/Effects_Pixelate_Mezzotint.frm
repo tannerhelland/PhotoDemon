@@ -120,11 +120,22 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a Photoshop-like "mezzotint" effect to an image
-Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVal mSmoothness As Long, ByVal mStipplingLevel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-    
-    Debug.Print mType, mRandom, mSmoothness, mStipplingLevel
+Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Mezzotinting image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim mType As Long, mRandom As Long, mSmoothness As Long, mStipplingLevel As Long
+    
+    With cParams
+        mType = .GetLong("type", btsType.ListIndex)
+        mRandom = .GetLong("randomness", sltRandom.Value)
+        mSmoothness = .GetLong("smoothness", sltSmoothness.Value)
+        mStipplingLevel = .GetLong("stippling", btsStippling.ListIndex)
+    End With
     
     'The way we calculate mezzotinting varies depending on whether points or strokes are being used.
     
@@ -139,24 +150,24 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'If this isn't a preview, prep the on-screen progress bar
     Else
-        SetProgBarMax 8
-        SetProgBarVal 0
+        ProgressBars.SetProgBarMax 8
+        ProgressBars.SetProgBarVal 0
     End If
     
     'From that, grab a grayscale map
     Dim grayMap() As Byte
     DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
     
-    If (Not toPreview) Then SetProgBarVal 1
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 1
     
     'Randomness roughly corresponds to the strength of the "divots" used in the mezzotinting plate.  PD provides a graymap
     ' version of this, to which we simply supply the mRandom parameter (normalized from [0, 100] to [0, 255]).
     Filters_ByteArray.AddNoiseByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mRandom * 2.55
     
-    If (Not toPreview) Then SetProgBarVal 2
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 2
     
     'Coarseness controls the amount of blurring applied
-    If mSmoothness > 0 Then
+    If (mSmoothness > 0) Then
         
         'Point and horizontal stroke mezzotinting blurs horizontally
         If (mType = 0) Or (mType = 1) Then
@@ -168,12 +179,12 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
             Filters_ByteArray.VerticalBlur_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mSmoothness, mSmoothness
         End If
         
-        If (Not toPreview) Then SetProgBarVal 3
+        If (Not toPreview) Then ProgressBars.SetProgBarVal 3
         
         'After blurring, we want to white-balance the graymap, so that everything isn't just a muddy gray.
         Filters_ByteArray.ContrastCorrect_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 10
         
-        If (Not toPreview) Then SetProgBarVal 4
+        If (Not toPreview) Then ProgressBars.SetProgBarVal 4
     
     End If
     
@@ -193,13 +204,13 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
             
     End Select
         
-    If (Not toPreview) Then SetProgBarVal 5
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 5
     
     'Our overlay is now complete.  We now need to convert it back into a DIB.
     Dim overlayDIB As pdDIB
     DIBs.CreateDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
     
-    If (Not toPreview) Then SetProgBarVal 6
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 6
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
@@ -210,20 +221,20 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
         overlayDIB.SetAlphaPremultiplication True
     End If
     
-    If (Not toPreview) Then SetProgBarVal 7
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 7
     
     'Finally, composite the new overlay DIB over working DIB.
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
     
     'Fine stippling uses a totally different approach, but the results are (IMO) much more interesting than Photoshop's
-    If mStipplingLevel = 2 Then
+    If (mStipplingLevel = 2) Then
         cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_OVERLAY
     Else
         cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
     End If
     
-    If (Not toPreview) Then SetProgBarVal 8
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 8
     
     'Erase our temporary image copy
     Set overlayDIB = Nothing
@@ -243,7 +254,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mezzotint", , BuildParams(btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex), UNDO_LAYER
+    Process "Mezzotint", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -251,8 +262,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltRandom = 50
-    sltSmoothness = 10
     btsType.ListIndex = 0
     btsStippling.ListIndex = 2
 End Sub
@@ -286,7 +295,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyMezzotintEffect btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMezzotintEffect GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -308,7 +317,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "type", btsType.ListIndex
+        .AddParam "randomness", sltRandom.Value
+        .AddParam "smoothness", sltSmoothness.Value
+        .AddParam "stippling", btsStippling.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -188,7 +188,6 @@ Friend Function GetRandomFloat_WH() As Double
     Const RND_X_DIVISOR As Double = 1# / 30269#
     Const RND_Y_DIVISOR As Double = 1# / 30307#
     Const RND_Z_DIVISOR As Double = 1# / 30323#
-    
     m_WH_Float = CDbl(iX) * RND_X_DIVISOR + CDbl(iy) * RND_Y_DIVISOR + CDbl(iZ) * RND_Z_DIVISOR
     
     '...then return the floating-point portion

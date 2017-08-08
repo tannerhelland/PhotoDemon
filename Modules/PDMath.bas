@@ -579,7 +579,7 @@ End Sub
 'This is a modified modulo function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
-    If (Modulo < 0) Then Modulo = Modulo + Divisor
+    If (Modulo < 0#) Then Modulo = Modulo + Divisor
 End Function
 
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)

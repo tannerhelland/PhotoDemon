@@ -101,8 +101,8 @@ Attribute VB_Exposed = False
 'Crystallize Effect Interface
 'Copyright 2014-2017 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 05/April/15
-'Last update: split off Crystallize into its own function, separate from Stained Glass
+'Last updated: 08/April/17
+'Last update: convert to XML params, performance improvements
 '
 'PhotoDemon's crystallize effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
 ' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
@@ -123,7 +123,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'To make sure the function looks similar in the preview and final image, we cache the random seed used
-Private m_RndSeed As Long
+Private m_RndSeed As Double
 
 'Apply a Crystallize effect to an image
 ' Inputs:
@@ -131,14 +131,28 @@ Private m_RndSeed As Long
 '  fxTurbulence = how much to distort cell shape, range [0, 1], 0 = perfect grid
 '  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
 '  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
-Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If (Not toPreview) Then Message "Crystallizing image..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim cellSize As Long, colorSamplingMethod As Long, distanceMethod As Long
+    Dim fxTurbulence As Double
+    
+    With cParams
+        cellSize = .GetLong("size", sltSize.Value)
+        fxTurbulence = .GetDouble("turbulence", sltTurbulence.Value)
+        colorSamplingMethod = .GetLong("colorsampling", cboColorSampling.ListIndex)
+        distanceMethod = .GetLong("distance", cboDistance.ListIndex)
+    End With
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -160,7 +174,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     'If this is a preview, reduce cell size to better portray how the final image will look
     Else
         cellSize = cellSize * curDIBValues.previewModifier
-        If cellSize < 3 Then cellSize = 3
+        If (cellSize < 3) Then cellSize = 3
     End If
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -173,10 +187,10 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     Set cVoronoi = New pdVoronoi
     
     'Pass all meaningful input parameters on to the Voronoi class
-    cVoronoi.initPoints cellSize, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    cVoronoi.randomizePoints fxTurbulence, m_RndSeed
-    cVoronoi.setDistanceMode distanceMethod
-    cVoronoi.setShadingMode NO_SHADE
+    cVoronoi.InitPoints cellSize, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+    cVoronoi.RandomizePoints fxTurbulence, m_RndSeed
+    cVoronoi.SetDistanceMode distanceMethod
+    cVoronoi.SetShadingMode NO_SHADE
     
     'Create several look-up tables, specifically:
     ' One table for each color channel (RGBA)
@@ -193,7 +207,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     'Size all pixels to match the number of possible Voronoi points; the nearest Voronoi point for each pixel
     ' will be used to determine the relevant point in the lookup tables.
     Dim numVoronoiPoints As Long
-    numVoronoiPoints = cVoronoi.getTotalNumOfVoronoiPoints() - 1
+    numVoronoiPoints = cVoronoi.GetTotalNumOfVoronoiPoints() - 1
     
     'If the number of unique Voronoi points is less than 32767 (the limit for an unsigned Int), we could get away with
     ' using an Integer lookup table instead of Longs, but as VB6 doesn't provide an easy way to change array types
@@ -218,27 +232,27 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     For y = initY To finalY
         
         'Use the Voronoi class to find the nearest point to this pixel
-        nearestPoint = cVoronoi.getNearestPointIndex(x, y)
+        nearestPoint = cVoronoi.GetNearestPointIndex(x, y)
         
-        'Store the nearest and second-nearest point indices in our master lookup table
+        'Store the nearest point index in our master lookup table
         vLookup(x, y) = nearestPoint
         
         'If the user has elected to recolor each cell using the average color for the cell, we need to track
         ' color values.  This is no different from a histogram approach, except in this case, each histogram
         ' bucket corresponds to one Voronoi cell.
-        If colorSamplingMethod = 1 Then
+        If (colorSamplingMethod = 1) Then
         
             'Retrieve RGBA values for this pixel
             r = dstImageData(quickVal + 2, y)
             g = dstImageData(quickVal + 1, y)
             b = dstImageData(quickVal, y)
-            If qvDepth = 4 Then a = dstImageData(quickVal + 3, y)
+            a = dstImageData(quickVal + 3, y)
             
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
             gLookup(nearestPoint) = gLookup(nearestPoint) + g
             bLookup(nearestPoint) = bLookup(nearestPoint) + b
-            If qvDepth = 4 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
+            aLookup(nearestPoint) = aLookup(nearestPoint) + a
             
             'Increment the count of all pixels who share this Voronoi point as their nearest point
             numPixels(nearestPoint) = numPixels(nearestPoint) + 1
@@ -256,43 +270,44 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     
     'All lookup tables are now properly initialized.  Depending on the user's color sampling choice, calculate
     ' cell colors now.
-    Dim numPixelsCache As Long
+    Dim numPixelsCache As Long, invNumPixelsCache As Double
     Dim thisPoint As POINTAPI
     
     For x = 0 To numVoronoiPoints
     
         'The user wants a "fast and dirty" approach to coloring.  For each cell, use only the color of the
         ' corresponding Voronoi point pixel of that cell.
-        If colorSamplingMethod = 0 Then
+        If (colorSamplingMethod = 0) Then
         
             'Retrieve the location of this Voronoi point
-            thisPoint = cVoronoi.getVoronoiCoordinates(x)
+            thisPoint = cVoronoi.GetVoronoiCoordinates(x)
             
             'Validate its bounds
-            If thisPoint.x < initX Then thisPoint.x = initX
-            If thisPoint.x > finalX Then thisPoint.x = finalX
+            If (thisPoint.x < initX) Then thisPoint.x = initX
+            If (thisPoint.x > finalX) Then thisPoint.x = finalX
             
-            If thisPoint.y < initX Then thisPoint.y = initY
-            If thisPoint.y > finalY Then thisPoint.y = finalY
+            If (thisPoint.y < initX) Then thisPoint.y = initY
+            If (thisPoint.y > finalY) Then thisPoint.y = finalY
             
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
             quickVal = thisPoint.x * qvDepth
-            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
-            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
             bLookup(x) = dstImageData(quickVal, thisPoint.y)
-            If qvDepth = 4 Then aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
+            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
+            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
+            aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
         Else
         
             numPixelsCache = numPixels(x)
+            invNumPixelsCache = 1# / numPixelsCache
             
-            If numPixelsCache > 0 Then
-                rLookup(x) = rLookup(x) \ numPixelsCache
-                gLookup(x) = gLookup(x) \ numPixelsCache
-                bLookup(x) = bLookup(x) \ numPixelsCache
-                If qvDepth = 4 Then aLookup(x) = aLookup(x) \ numPixelsCache
+            If (numPixelsCache > 0) Then
+                rLookup(x) = rLookup(x) * invNumPixelsCache
+                gLookup(x) = gLookup(x) * invNumPixelsCache
+                bLookup(x) = bLookup(x) * invNumPixelsCache
+                aLookup(x) = aLookup(x) * invNumPixelsCache
             End If
             
         End If
@@ -311,18 +326,12 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
         ' (NOTE: this step could be rewritten to simply re-request a distance calculation from the Voronoi class,
         '        but that would slow the function considerably.)
         nearestPoint = vLookup(x, y)
-        
-        'Retrieve the RGB values from the relevant Voronoi cell bin
-        r = rLookup(nearestPoint)
-        g = gLookup(nearestPoint)
-        b = bLookup(nearestPoint)
-        If qvDepth = 4 Then a = aLookup(nearestPoint)
                 
-        'Set the new RGBA values to the image
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
-        dstImageData(quickVal, y) = b
-        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = a
+        'Retrieve the RGB values from the relevant Voronoi cell bin
+        dstImageData(quickVal, y) = bLookup(nearestPoint)
+        dstImageData(quickVal + 1, y) = gLookup(nearestPoint)
+        dstImageData(quickVal + 2, y) = rLookup(nearestPoint)
+        dstImageData(quickVal + 3, y) = aLookup(nearestPoint)
         
     Next y
         If (Not toPreview) Then
@@ -334,7 +343,6 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     Next x
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
     
     'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
 '    For x = 0 To numVoronoiPoints
@@ -343,7 +351,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
 '    Next x
         
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -357,7 +365,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Crystallize", , BuildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex), UNDO_LAYER
+    Process "Crystallize", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -383,9 +391,10 @@ Private Sub Form_Load()
     cboDistance.ListIndex = 0
     
     'Calculate a random noise seed
-    Rnd -1
-    Randomize (-Timer * Now)
-    m_RndSeed = Rnd * &HEFFFFFFF
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
+    m_RndSeed = cRandom.GetSeed()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -402,7 +411,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxCrystallize GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -424,7 +433,10 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "size", sltSize.Value
+        .AddParam "turbulence", sltTurbulence.Value
+        .AddParam "colorsampling", cboColorSampling.ListIndex
+        .AddParam "distance", cboDistance.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()

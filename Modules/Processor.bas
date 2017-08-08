@@ -464,36 +464,20 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         'Pixelate
         
         Case "Color halftone"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormColorHalftone
-            Else
-                FormColorHalftone.ColorHalftoneFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormColorHalftone Else FormColorHalftone.ColorHalftoneFilter processParameters
+            
         Case "Crystallize"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormCrystallize
-            Else
-                FormCrystallize.fxCrystallize cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormCrystallize Else FormCrystallize.fxCrystallize processParameters
+            
         Case "Fragment"
             If raiseDialog Then ShowPDDialog vbModal, FormFragment Else FormFragment.Fragment processParameters
             
         Case "Mezzotint"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMezzotint
-            Else
-                FormMezzotint.ApplyMezzotintEffect cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormMezzotint Else FormMezzotint.ApplyMezzotintEffect processParameters
+            
         Case "Mosaic"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormMosaic
-            Else
-                FormMosaic.MosaicFilter cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3, 0#)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormMosaic Else FormMosaic.MosaicFilter processParameters
+            
         
         'Sharpen
         

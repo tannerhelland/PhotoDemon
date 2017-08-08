@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2787</langversion>
+<langversion>6.8.3007</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1154,7 +1154,7 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>可见</translation>
 </phrase>
 
 <phrase>
@@ -1266,7 +1266,7 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>警告-找不到文件：%1</translation>
 </phrase>
 
 <phrase>
@@ -1284,19 +1284,21 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>警告-文件锁定：%1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>不幸的是，文件  '%1' 当前被该PC上的另一个程序锁定。
+
+请在任何其他正在运行的程序中关闭此文件，然后重试。</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>文件锁定</translation>
 </phrase>
 
 <phrase>
@@ -1930,12 +1932,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>水平剪切</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>垂直剪切</translation>
 </phrase>
 
 <phrase>
@@ -2010,7 +2012,7 @@ Description: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>文本类型</translation>
 </phrase>
 
 <phrase>
@@ -2020,12 +2022,12 @@ Description: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>自动换行</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>填充</translation>
 </phrase>
 
 <phrase>
@@ -2035,7 +2037,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>概述</translation>
 </phrase>
 
 <phrase>
@@ -2050,7 +2052,7 @@ Description: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>背景风格</translation>
 </phrase>
 
 <phrase>
@@ -2060,7 +2062,7 @@ Description: %2
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>背景边框样式</translation>
 </phrase>
 
 <phrase>
@@ -2070,32 +2072,32 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>边缘</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>字符映射</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>字符间距</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>字符方向</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>横向抖动</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>垂直抖动</translation>
 </phrase>
 
 <phrase>
@@ -2105,7 +2107,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>镜像</translation>
 </phrase>
 
 <phrase>
@@ -4871,7 +4873,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>基本层</translation>
 </phrase>
 
 <phrase>
@@ -4886,7 +4888,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>从可见层</translation>
 </phrase>
 
 <phrase>
@@ -5331,7 +5333,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>保鲜膜</translation>
 </phrase>
 
 <phrase>
@@ -5546,7 +5548,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>雪花</translation>
 </phrase>
 
 <phrase>
@@ -5581,7 +5583,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>调和平均值</translation>
 </phrase>
 
 <phrase>
@@ -6043,7 +6045,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>可见层的新层</translation>
 </phrase>
 
 <phrase>
@@ -9034,7 +9036,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>精确</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9711,7 +9713,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>随机</translation>
 </phrase>
 
 <phrase>
@@ -9726,12 +9728,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>射线方差</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>产生光束</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9810,7 +9812,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>分布</translation>
 </phrase>
 
 <phrase>
@@ -9820,7 +9822,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>均匀性</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9944,12 +9946,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>调和平均值</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>应用谐波平均滤波器</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10059,7 +10061,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>计算图像片段</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12857,7 +12859,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>去除透明度</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14178,12 +14180,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>最近使用的文件快捷方式</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>主窗口标题栏文本</translation>
 </phrase>
 
 <phrase>
@@ -14373,7 +14375,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>重置所有程序设置</translation>
 </phrase>
 
 <phrase>
@@ -14460,12 +14462,13 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>所有设置都将恢复到默认值。此动作无法撤消。
+您确定要继续吗？</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>重置 PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14936,12 +14939,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>风</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>让它下雪，下雪吧，下雪吧</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -14952,17 +14955,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>光角度</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>光强度</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>塑料包装图像</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
