@@ -435,7 +435,6 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         If parentImage.IsSelectionActive Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
-            ' (TODO: pass the paint rect, if any, and use that to constrain the processed area - this should yield a performance boost)
             m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.MainSelection.GetMaskDIB, ptrToPaintbrushRectF
             
         End If

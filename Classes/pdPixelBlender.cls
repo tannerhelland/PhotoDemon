@@ -341,7 +341,9 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     For x = initX To finalX Step 4
         
         'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
-        topAInt = topPixels(x + 3)
+        'NOTE: this was changed to check color on 09 August 2017.  Exterior and bordered selections
+        ' were not working correctly, and this fixes it; I don't know if it was future repercussions.
+        topAInt = topPixels(x)  'topPixels(x + 3)
         
         'Ignore opaque mask pixels
         If (topAInt <> 255) Then
@@ -439,7 +441,9 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             For x = tmpInitX To tmpFinalX Step 4
                 
                 'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
-                topAInt = topPixels(x + 3)
+                'NOTE: this was changed to check color on 09 August 2017.  Exterior and bordered selections
+                ' were not working correctly, and this fixes it; I don't know if it was future repercussions.
+                topAInt = topPixels(x)  'topPixels(x + 3)
                 
                 'Ignore opaque mask pixels
                 If (topAInt <> 255) Then
