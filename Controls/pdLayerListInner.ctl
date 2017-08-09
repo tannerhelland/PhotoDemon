@@ -769,14 +769,10 @@ End Sub
 
 'External functions can request a redraw of the layer box by calling this function.  (This is necessary
 ' whenever layers are added, deleted, re-ordered, etc.)  If the action requires us to rebuild our thumbnail
-' cache (because we switched images, maybe) make sure to clarify that via hte matching parameter.
+' cache (because we switched images, maybe) make sure to clarify that via the matching parameter.
 Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
-    
     If refreshThumbnailCache Then CacheLayerThumbnails layerID
-    
-    'TODO: figure out whether we should raise a redraw internally, or rely on auto-redraws to save us
     RedrawBackBuffer
-    
 End Sub
 
 'Re-cache all thumbnails for all layers in the current image.  This is required when the user switches to a new image,
