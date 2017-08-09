@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2017 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 01/June/17
-'Last update: redesign the entire selection UI pipeline to prep for paint tool integration
+'Last updated: 09/August/17
+'Last update: tons of bug-fixes and performance improvements; still more work to do (as always), but this class is slowly stabilizing
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -380,7 +380,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
             SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", ss_None)
             SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
             SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
-            SetSelectionProperty sp_RoundedCornerRadius, cParams.GetLong("SelectionRoundedCornerRadius", 0)
+            SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
             SetSelectionProperty sp_LineWidth, cParams.GetLong("SelectionLineWidth", 1)
             
             'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
@@ -599,7 +599,7 @@ Friend Sub SelectAll()
     SetSelectionProperty sp_Area, sa_Interior
     SetSelectionProperty sp_FeatheringRadius, 0
     SetSelectionProperty sp_Smoothing, ss_Antialiased
-    SetSelectionProperty sp_RoundedCornerRadius, 0
+    SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
         .Left = 0
@@ -1433,7 +1433,9 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_PolygonCurvature) > 0)) Then Me.FillBoundsUsingGDIPlus
+                '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
+                ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
+                'If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_PolygonCurvature) > 0)) Then Me.FillBoundsUsingGDIPlus
             
             'Like polygon selection, lasso selections require us to search all lasso points in order to construct
             ' a bounding rect.
@@ -1463,7 +1465,9 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_SmoothStroke) > 0)) Then Me.FillBoundsUsingGDIPlus
+                '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
+                ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
+                'If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_SmoothStroke) > 0)) Then Me.FillBoundsUsingGDIPlus
             
             'Wand selections require manual bounds-checking
             Case ss_Wand
@@ -1507,7 +1511,9 @@ Friend Function AreAllCoordinatesInvalid() As Boolean
         Case ss_Polygon, ss_Lasso
         
             'If curvature is active, use GDI+ to update the current boundaries.
-            If ((m_SelectionShape = ss_Polygon) And (GetSelectionProperty_Float(sp_PolygonCurvature) <> 0)) Or ((m_SelectionShape = ss_Lasso) And (GetSelectionProperty_Float(sp_SmoothStroke) <> 0)) Then Me.FillBoundsUsingGDIPlus
+            '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
+            ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
+            'If ((m_SelectionShape = ss_Polygon) And (GetSelectionProperty_Float(sp_PolygonCurvature) <> 0)) Or ((m_SelectionShape = ss_Lasso) And (GetSelectionProperty_Float(sp_SmoothStroke) <> 0)) Then Me.FillBoundsUsingGDIPlus
             
             If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
@@ -1749,21 +1755,6 @@ Private Sub CreateSelectionMask()
     m_FinalOutlineIsReady = False
     m_OverlayIsReady = False
     
-    Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte, maskForeByte As Byte
-    
-    'Interior and exterior selections are rendered using identical code; the only difference is the colors used
-    If (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-        maskBackColor = RGB(255, 255, 255)
-        maskBackByte = 255
-        maskForeColor = RGB(0, 0, 0)
-        maskForeByte = 0
-    Else
-        maskBackColor = RGB(0, 0, 0)
-        maskBackByte = 0
-        maskForeColor = RGB(255, 255, 255)
-        maskForeByte = 0
-    End If
-
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
     Dim minX As Long, maxX As Long, minY As Long, maxY As Long
     If (m_CornersUnlocked.Left < m_CornersUnlocked.Right) Then
@@ -1785,34 +1776,103 @@ Private Sub CreateSelectionMask()
     ' like "Invert selection", rely on an already-created mask - so attempting to create a mask again will have undesirable behavior.
     ' As such, use caution when calling this function, as the existing mask will be completely erased.
     
+    'Before proceeding, we need to establish mask rendering colors.  PD supports both "interior" and "exterior" selections (and some
+    ' tools support a hybrid, called "bordered" selections), and we use identical code to render such selections.  The only difference
+    ' is the back and forecolors used; these colors are *inverted* when rendering exterior selections, which makes mask generation
+    ' extremely simple.
+    
+    '(Note also that alpha bytes are generally ignored in mask operations; it is mask *color* that matters.)
+    Dim maskBackColor As Long, maskForeColor As Long, maskBackOpacity As Byte, maskForeOpacity As Byte
+    
+    'Interior and exterior selections are rendered using identical code; the only difference is the colors used
+    If (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+        maskBackColor = RGB(255, 255, 255)
+        maskBackOpacity = 255
+        maskForeColor = RGB(0, 0, 0)
+        maskForeOpacity = 255
+    Else
+        maskBackColor = RGB(0, 0, 0)
+        maskBackOpacity = 0
+        maskForeColor = RGB(255, 255, 255)
+        maskForeOpacity = 255
+    End If
+    
     'Start by creating a blank mask (this will also erase any existing mask)
     If ((m_SelMask.GetDIBWidth <> m_parentPDImage.Width) Or (m_SelMask.GetDIBHeight <> m_parentPDImage.Height)) Then
-        m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, maskBackColor, maskBackByte
+        m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, maskBackColor, maskBackOpacity
         m_SelMask.SetInitialAlphaPremultiplicationState True
     Else
-        m_SelMask.ResetDIB maskBackByte
+        m_SelMask.ResetDIB maskBackOpacity
     End If
+    
+    'We use pd2D for as much of the actual selection rendering as we can.  (The plan is still to migrate this code to dedicated
+    ' per-shape child classes, but for now, this at least gives us a clean way to standardize all our rendering.)
+    Dim dstSurface As pd2DSurface
+    Set dstSurface = New pd2DSurface
+    
+    Dim surfaceOK As Boolean
+    surfaceOK = dstSurface.WrapSurfaceAroundPDDIB(m_SelMask)
+    
+    'Set some surface properties in advance, like antialiasing and compositing.
+    If (Me.GetSelectionProperty_Long(sp_Smoothing) > ss_None) Then
         
-    'Border selections are automatically disabled if the border size exceeds the smallest dimension (width or height)
-    ' of the image
-    Dim minDimension As Single
-    If (m_CornersLocked.Width < m_CornersLocked.Height) Then minDimension = m_CornersLocked.Width Else minDimension = m_CornersLocked.Height
-            
-    'When rendering rectangle and ellipse selections in BORDERED mode, we calculate some values in advance.  Basically, these shapes
-    ' handle border selections by rendering a smaller version of the selection shape within itself.  We never want the smaller copy
-    ' of the shape to have negative width or height, so we check its dimensions in advance to make sure the border value is acceptable.
-    ' If it isn't, we'll simply ignore it, and render the shape as a solid.
-    Dim ignoreBorderValue As Boolean
-    Dim rectModifier As Long
-    
-    ignoreBorderValue = False
-    
-    If (GetSelectionProperty_Long(sp_Area) = sa_Border) And ((m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle)) Then
-        rectModifier = GetSelectionProperty_Long(sp_BorderWidth)
-        If (rectModifier < 1) Then rectModifier = 1
-        If (rectModifier > (minDimension * 0.5)) Then ignoreBorderValue = True
+        'Rectangle selections are an exception here; we don't want to antialias them at all, even if antialiasing is enabled.
+        ' (GDI+ tends to mess up antialiasing for perfect rects.)
+        If (m_SelectionShape = ss_Rectangle) And (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#) Then
+            dstSurface.SetSurfaceAntialiasing P2_AA_None
+        Else
+            dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        End If
+        
+    Else
+        dstSurface.SetSurfaceAntialiasing P2_AA_None
     End If
+    
+    dstSurface.SetSurfaceCompositing P2_CM_Overwrite
+    
+    If (Not surfaceOK) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdSelection.CreateSelectionMask() failed to wrap the destination mask surface."
+        #End If
+    End If
+    
+    'Interior/exterior selections use brushes to fill the appropriate region; bordered selections use a pen to *stroke*
+    ' the selection outline.  (For bordered selections, note that we also generate a matching pd2DPath object, which is
+    ' then used to determine selection boundaries (which vary due to pen mitre settings).)
+    Dim backBrush As pd2DBrush, foreBrush As pd2DBrush
+    Drawing2D.QuickCreateSolidBrush backBrush, maskBackColor, CSng(maskBackOpacity) / 2.55
+    Drawing2D.QuickCreateSolidBrush foreBrush, maskForeColor, CSng(maskForeOpacity) / 2.55
+    
+    Dim maskPen As pd2DPen, maskPath As pd2DPath
+    If (Me.GetSelectionProperty_Long(sp_Area) = sa_Border) Then
                 
+        'Border-type selections need to calculate a border size in advance.  If the user's specified border size is too large
+        ' (e.g. it is larger than the selection's width or height), we will manually rein it in.
+        Dim actualBorderSize As Single
+        If (GetSelectionProperty_Long(sp_Area) = sa_Border) Then
+            actualBorderSize = PDMath.Max2Float_Single(GetSelectionProperty_Long(sp_BorderWidth), 1#)
+            
+            If (Me.GetSelectionShape = ss_Rectangle) Or (Me.GetSelectionShape = ss_Circle) Then
+                If (actualBorderSize > PDMath.Min2Float_Single(m_CornersLocked.Width + 1#, m_CornersLocked.Height + 1#)) Then actualBorderSize = PDMath.Min2Float_Single(m_CornersLocked.Width + 1#, m_CornersLocked.Height + 1#)
+            ElseIf (Me.GetSelectionShape = ss_Line) Then
+                If (actualBorderSize > Me.GetSelectionProperty_Float(sp_LineWidth)) Then actualBorderSize = Me.GetSelectionProperty_Float(sp_LineWidth)
+            End If
+            
+        End If
+        
+        'Note that we technically would want to use the specified foreground opacity, but because GDI+ won't give us correct
+        ' antialiasing with a fully transparent brush, we rely on an opaque brush instead.
+        If (Me.GetSelectionShape = ss_Rectangle) Or (Me.GetSelectionShape = ss_Line) Then
+            Drawing2D.QuickCreateSolidPen maskPen, actualBorderSize, maskForeColor, 100#, P2_LJ_Miter, P2_LC_Flat
+            maskPen.SetPenMiterLimit 10#
+        Else
+            Drawing2D.QuickCreateSolidPen maskPen, actualBorderSize, maskForeColor, 100#, P2_LJ_Round, P2_LC_Flat
+        End If
+        
+        Set maskPath = New pd2DPath
+        
+    End If
+    
     'The actual rendering of the selection will vary based on the current selection type (obviously).
     ' TODO: move all rendering into a separate child class.  This is necessary for union/intersect/etc with multiple selections.
     Select Case m_SelectionShape
@@ -1820,44 +1880,28 @@ Private Sub CreateSelectionMask()
         Case ss_Rectangle
         
             'RECTANGLE SELECTION, NO ROUNDED CORNERS
-            ' (Note: rectangular selections ignore the current antialiasing setting, as there's no point)
-            If (Me.GetSelectionProperty_Long(sp_RoundedCornerRadius) = 0) Then
+            If (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#) Then
             
-                'Interior/exterior selections, and bordered selections with too large of a width use identical rendering code.
-                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
-                
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, maskForeByte, GP_CM_SourceCopy
-                    
-                'Border selections are a bit different; we must draw two rectangles - an exterior and an interior one.
+                If (Me.GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    m_Painter.FillRectangleF_FromRectF dstSurface, foreBrush, m_CornersLocked
                 Else
-                
-                    'Draw the exterior rectangle
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, maskForeByte, GP_CM_SourceCopy
-                    
-                    'Next, draw the interior one
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor, maskBackByte, GP_CM_SourceCopy
-                    
+                    maskPath.AddRectangle_RectF m_CornersLocked
+                    m_Painter.DrawRectangleF_FromRectF dstSurface, maskPen, m_CornersLocked
                 End If
             
             'RECTANGLE SELECTION *WITH* ROUNDED CORNERS
             Else
                 
-                'Interior/exterior selections use identical rendering code.  The only difference is the render color (whether the
-                ' rounded rect represents the selected or non-selected region, basically).
-                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
-                    
-                    'Use GDI+ for antialiasing, regular GDI for non-antialiased
-                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-                    
-                'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
+                'The round-rectangle radius property is stored as a ratio on the scale [0, 100.0].  We want to scale this value to
+                ' an absolute value, based on the current size of the rectangle.  (Where 100.0 = maximum corner curvature.)
+                Dim actualRoundedRadius As Double
+                actualRoundedRadius = PDMath.Min2Float_Single(m_CornersLocked.Width, m_CornersLocked.Height) * (GetSelectionProperty_Float(sp_RoundedCornerRadius) * 0.01)
+                
+                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    m_Painter.FillRoundRectangleF_FromRectF dstSurface, foreBrush, m_CornersLocked, actualRoundedRadius
                 Else
-                    
-                    'Draw the exterior rectangle
-                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-                    
-                    'Next, draw the interior one.
-                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskBackColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-                    
+                    maskPath.AddRoundedRectangle_RectF m_CornersLocked, actualRoundedRadius
+                    m_Painter.DrawRoundRectangleF_FromRectF dstSurface, maskPen, m_CornersLocked, actualRoundedRadius
                 End If
                 
             End If
@@ -1865,101 +1909,147 @@ Private Sub CreateSelectionMask()
         'CIRCLES / ELLIPSES
         Case ss_Circle
         
-            'Interior/exterior selections use identical rendering code.
-            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
-            
-                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width - 1, m_CornersLocked.Height - 1, maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
+            'Note that ellipses require us to manually reduce the specified rect by 1px on the right and bottom border; I'm not sure
+            ' why GDI+ renders this way, but it's possible that they did it to make it semi-"backwards compatible" with GDI methods
+            ' (which treat the bottom-right point as exclusive).
+            Dim newEllipseWidth As Single, newEllipseHeight As Single
+            newEllipseWidth = PDMath.Max2Float_Single(m_CornersLocked.Width - 1#, 1#)
+            newEllipseHeight = PDMath.Max2Float_Single(m_CornersLocked.Height - 1#, 1#)
                 
-            'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                m_Painter.FillEllipseF dstSurface, foreBrush, m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
             Else
-            
-                'Draw the exterior oval
-                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-                
-                'Next, draw the interior one
-                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-                        
+                maskPath.AddEllipse_Relative m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
+                m_Painter.DrawEllipseF dstSurface, maskPen, m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
             End If
             
         
         'Line selections
         ' TODO: let the user specify line caps
         Case ss_Line
-        
-            'Interior/exterior line selections use identical rendering code.
-            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, maskForeColor, 255, GetSelectionProperty_Long(sp_LineWidth), (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
-                
-            'Border selections are a bit different; we must draw two lines - an interior and an exterior one.
-            ' TODO: GDI+ supplies a function that generates a new path, using the outline of an existing path as drawn with a specified pen.
-            '        That may be a more convenient way to render bordered line selections.  (GdipWidenPath FYI)
+            'So, line selections are a little weird.  Interior/exterior versions require a pen to draw (as a line segment
+            ' does not constitute a valid "fill" target), while bordered selections require us to manually calculate a "box"
+            ' describing the line's outline.  Because of these oddities, we handle some items here (like boundary checks)
+            ' instead of using the catch-all code at the end of this class.
+            Dim linePen As pd2DPen, lineWidth As Single
+            lineWidth = GetSelectionProperty_Long(sp_LineWidth)
+            Drawing2D.QuickCreateSolidPen linePen, lineWidth, maskForeColor, 100#, P2_LJ_Miter, P2_LC_Flat
+            
+            Dim linePath As pd2DPath
+            Set linePath = New pd2DPath
+            
+            'Interior/exterior selections are easy: just add a single line to a path object
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                linePath.AddLine m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom
+                m_Painter.DrawPath dstSurface, linePen, linePath
+                m_Bounds = linePath.GetPathBoundariesF(linePen)
             Else
+                    
+                'Bordered selections require a little more creativity.  We could use some GDI+ functions to calculate the border
+                ' (specifically, the GdipWidenPath call), but that call is prone to unpredictable failures, so we play it safe
+                ' and manually calculate our own outline instead.
                 
-                'Draw the exterior line
-                GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, maskForeColor, 255, GetSelectionProperty_Long(sp_LineWidth), (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
+                'First, copy the endpoints of the current line into dedicated floats
+                Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT
+                pt1.x = m_CornersUnlocked.Left
+                pt1.y = m_CornersUnlocked.Top
+                pt2.x = m_CornersUnlocked.Right
+                pt2.y = m_CornersUnlocked.Bottom
                 
-                'Next, draw the interior one.  Note that some additional calculations are required to
-                Dim xDiff As Double, yDiff As Double
-                xDiff = Abs(m_CornersUnlocked.Left - m_CornersUnlocked.Right)
-                yDiff = Abs(m_CornersUnlocked.Top - m_CornersUnlocked.Bottom)
-                Dim xModifier As Long, yModifier As Long
-                If (xDiff > yDiff) Then
-                    If (xDiff = 0) Then xDiff = 0.00001
-                    xModifier = GetSelectionProperty_Long(sp_BorderWidth)
-                    yModifier = GetSelectionProperty_Long(sp_BorderWidth) * (yDiff / xDiff)
-                Else
-                    If (yDiff = 0) Then yDiff = 0.00001
-                    xModifier = GetSelectionProperty_Long(sp_BorderWidth) * (xDiff / yDiff)
-                    yModifier = GetSelectionProperty_Long(sp_BorderWidth)
-                End If
+                'Determine the angle between said points, then add PI/2 to it to get the 90-degree alternative.
+                Dim ptAngle As Double
+                ptAngle = PDMath.Atan2(pt2.y - pt1.y, pt2.x - pt1.x)
                 
-                Dim newLineWidth As Double
-                newLineWidth = GetSelectionProperty_Long(sp_LineWidth) - GetSelectionProperty_Long(sp_BorderWidth)
+                Dim ptAngle2 As Double
+                ptAngle2 = ptAngle + PI * 0.5
                 
-                If (newLineWidth > 0) Then
-                    If (m_CornersUnlocked.Left = minX) Then
-                        If (m_CornersUnlocked.Top = minY) Then
-                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left + xModifier, m_CornersUnlocked.Top + yModifier, m_CornersUnlocked.Right - xModifier, m_CornersUnlocked.Bottom - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
+                'Calculate endpoints of the box surrounding the line, when drawn with the current line thickness
+                Dim endPoints(0 To 3) As POINTFLOAT
+                PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2, endPoints(0).x, endPoints(0).y
+                PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2 + PI, endPoints(1).x, endPoints(1).y
+                PDMath.RotatePointAroundPoint pt2.x + lineWidth * 0.5, pt2.y, pt2.x, pt2.y, ptAngle2, endPoints(2).x, endPoints(2).y
+                PDMath.RotatePointAroundPoint pt2.x + lineWidth * 0.5, pt2.y, pt2.x, pt2.y, ptAngle2 + PI, endPoints(3).x, endPoints(3).y
+                
+                'Next, sort the points in clockwise order.  (This lets us use the points as a path.)
+                Dim i As Long, j As Long
+                For i = 0 To 3
+                    For j = 0 To 3
+                        If (endPoints(j).x < endPoints(i).x) Then
+                            pt1 = endPoints(i)
+                            endPoints(i) = endPoints(j)
+                            endPoints(j) = pt1
                         Else
-                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left + xModifier, m_CornersUnlocked.Top - yModifier, m_CornersUnlocked.Right - xModifier, m_CornersUnlocked.Bottom + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
+                            If (endPoints(j).x = endPoints(i).x) Then
+                                If (endPoints(j).y < endPoints(i).y) Then
+                                    pt1 = endPoints(i)
+                                    endPoints(i) = endPoints(j)
+                                    endPoints(j) = pt1
+                                End If
+                            End If
                         End If
-                    Else
-                        If (m_CornersUnlocked.Top = minY) Then
-                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left - xModifier, m_CornersUnlocked.Top + yModifier, m_CornersUnlocked.Right + xModifier, m_CornersUnlocked.Bottom - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
-                        Else
-                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left - xModifier, m_CornersUnlocked.Top - yModifier, m_CornersUnlocked.Right + xModifier, m_CornersUnlocked.Bottom + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
-                        End If
-                    End If
-                End If
+                    Next j
+                Next i
+                
+                pt1 = endPoints(3)
+                endPoints(3) = endPoints(2)
+                endPoints(2) = pt1
+                
+                'We finally have our outline!  Add it to a path object (and make sure to close the path after).
+                linePath.AddLines 4, VarPtr(endPoints(0))
+                linePath.CloseCurrentFigure
+                
+                '*Now* we can draw this like any other bordered selection
+                maskPath.AddPath linePath
+                m_Painter.DrawPath dstSurface, maskPen, linePath
+                
+                'Because it's convenient, calculate boundaries while we're here
+                m_Bounds = linePath.GetPathBoundariesF(maskPen)
                 
             End If
+            
         
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
         Case ss_Polygon
-        
-            'Interior/exterior lasso selections use identical rendering code.
+            
+            'Start by storing the current polygon in a path object
+            Dim polyPath As pd2DPath
+            Set polyPath = New pd2DPath
+            polyPath.SetFillRule P2_FR_Winding
+            polyPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, (GetSelectionProperty_Float(sp_PolygonCurvature) > 0#), GetSelectionProperty_Float(sp_PolygonCurvature)
+            
             If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                GDIPlusDrawFilledShapeToDC m_SelMask.GetDIBDC, m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), True, GetSelectionProperty_Float(sp_PolygonCurvature), GP_FM_Winding
-                
-            'Border selections stroke the path instead of filling it
+                m_Painter.FillPath dstSurface, foreBrush, polyPath
+                m_Bounds = polyPath.GetPathBoundariesF()
             Else
-                GDI_Plus.GDIPlusStrokePathToDC m_SelMask.GetDIBDC, m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GetSelectionProperty_Long(sp_BorderWidth), GP_LC_Flat, True, GetSelectionProperty_Float(sp_PolygonCurvature)
+                m_Painter.DrawPath dstSurface, maskPen, polyPath
+                m_Bounds = polyPath.GetPathBoundariesF(maskPen)
             End If
-        
+            
+            'To ensure clipping is correct, make sure our corner coordinates match our boundary coordinates
+            m_CornersLocked = m_Bounds
+            
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
         ' then fill it as if it represents an arbitrary region.
         Case ss_Lasso
         
-            'Interior/exterior lasso selections use identical rendering code.
+            'Start by storing the current polygon in a path object
+            Dim lassoPath As pd2DPath
+            Set lassoPath = New pd2DPath
+            lassoPath.SetFillRule P2_FR_Winding
+            lassoPath.AddPolygon m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, (GetSelectionProperty_Float(sp_SmoothStroke) > 0#), GetSelectionProperty_Float(sp_SmoothStroke)
+            
             If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                GDIPlusDrawFilledShapeToDC m_SelMask.GetDIBDC, m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), True, GetSelectionProperty_Float(sp_SmoothStroke), GP_FM_Winding
-                
-            'Border selections stroke the path instead of filling it
+                m_Painter.FillPath dstSurface, foreBrush, lassoPath
+                m_Bounds = lassoPath.GetPathBoundariesF()
             Else
-                GDI_Plus.GDIPlusStrokePathToDC m_SelMask.GetDIBDC, m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GetSelectionProperty_Long(sp_BorderWidth), GP_LC_Flat, True, GetSelectionProperty_Float(sp_SmoothStroke)
+                m_Painter.DrawPath dstSurface, maskPen, lassoPath
+                m_Bounds = lassoPath.GetPathBoundariesF(maskPen)
             End If
-        
+            
+            'To ensure clipping is correct, make sure our corner coordinates match our boundary coordinates
+            m_CornersLocked = m_Bounds
+            
         'Wand selections use a custom class to perform a flood fill
         Case ss_Wand
         
@@ -2043,144 +2133,67 @@ Private Sub CreateSelectionMask()
         
         'Interior and bordered selections are handled more normally
         Case Else
-        
+            
+            'If feathering is in play, we'll account for it programmatically.
+            Dim needToAddFeathering As Boolean
+            needToAddFeathering = (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered)
+            
             'Next, we sort bound calculations by selection shape
             Select Case m_SelectionShape
             
                 'Rectangle, ellipse, and lasso selections are easy; bounds have already been set by the width/height values
                 Case ss_Rectangle, ss_Circle
-                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
-                        With m_Bounds
-                            .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                            .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                        End With
-                    Else
+                
+                    If (GetSelectionProperty_Long(sp_Area) <> sa_Border) Then
+                        
                         With m_Bounds
                             .Left = m_CornersLocked.Left
                             .Top = m_CornersLocked.Top
                             .Width = m_CornersLocked.Width
                             .Height = m_CornersLocked.Height
                         End With
+                        
+                    Else
+                        
+                        'Retrieve boundaries directly from the relevant path object
+                        m_Bounds = maskPath.GetPathBoundariesF(maskPen)
+                        
+                        'When a selection is first created, the clicked point may result in a selection of size [0x0] which
+                        ' will fail to generate a path, and thus the boundary check will fail.  Check for this potential case
+                        ' and handle it manually.
+                        If (m_Bounds.Width = 0#) And (m_Bounds.Height = 0#) Then m_Bounds = m_CornersLocked
+                        
                     End If
                     
-                'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
+                'Line boundaries are already calculated in a previous step
                 Case ss_Line
-                
-                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
-                        With m_Bounds
-                            .Left = minX - (GetSelectionProperty_Long(sp_LineWidth) / 2) - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Top = minY - (GetSelectionProperty_Long(sp_LineWidth) / 2) - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Width = (maxX - minX) + GetSelectionProperty_Long(sp_LineWidth) + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                            .Height = (maxY - minY) + GetSelectionProperty_Long(sp_LineWidth) + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                        End With
-                    Else
-                        With m_Bounds
-                            .Left = minX - (GetSelectionProperty_Long(sp_LineWidth) / 2)
-                            .Top = minY - (GetSelectionProperty_Long(sp_LineWidth) / 2)
-                            .Width = (maxX - minX) + GetSelectionProperty_Long(sp_LineWidth)
-                            .Height = (maxY - minY) + GetSelectionProperty_Long(sp_LineWidth)
-                        End With
-                    End If
-                
-                'Polygon selections support curvature via cardinal spline.  If active, we must manually calculate bounds,
-                ' because the spline may extend beyond the current coordinate collection.
+                    
+                'Polygon boundaries are already calculated in a previous step
                 Case ss_Polygon
-                
-                    'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
-                    ' but they are guaranteed to enclose the entire path.
-                    Me.FillBoundsUsingGDIPlus
                     
-                    'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
-                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
-                    
-                        'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
-                        ' factor the pen width into our boundary calculations.
-                        If (GetSelectionProperty_Long(sp_Area) = sa_Border) Then
-                            With m_Bounds
-                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
-                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
-                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
-                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
-                            End With
-                        Else
-                            With m_Bounds
-                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
-                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
-                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                            End With
-                        End If
-                        
-                    Else
-                        With m_Bounds
-                            .Left = m_CornersLocked.Left
-                            .Top = m_CornersLocked.Top
-                            .Width = m_CornersLocked.Width
-                            .Height = m_CornersLocked.Height
-                        End With
-                    End If
-                    
-                    
-                'Lasso selections support artificial smoothing via cardinal spline.  If active, we must manually calculate bounds,
-                ' because the spline may extend beyond the drawn coordinates.
+                'Lasso boundaries are already calculated in a previous step
                 Case ss_Lasso
-                
-                    'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
-                    ' but they are guaranteed to enclose the entire path.
-                    Me.FillBoundsUsingGDIPlus
-                    
-                    'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
-                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
-                    
-                        'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
-                        ' factor the pen width into our boundary calculations.
-                        If GetSelectionProperty_Long(sp_Area) = sa_Border Then
-                            With m_Bounds
-                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
-                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
-                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
-                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
-                            End With
-                        Else
-                            With m_Bounds
-                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
-                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
-                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                            End With
-                        End If
-                        
-                    Else
-                        With m_Bounds
-                            .Left = m_CornersLocked.Left
-                            .Top = m_CornersLocked.Top
-                            .Width = m_CornersLocked.Width
-                            .Height = m_CornersLocked.Height
-                        End With
-                    End If
                 
                 'Magic wand requires manual bounds-finding
                 Case ss_Wand
-                    
                     Me.FindNewBoundsManually True
                     
-                    'If feathering is active, increase bounds accordingly
-                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
-                        With m_Bounds
-                            .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
-                            .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                            .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                        End With
-                    End If
-                
                 'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
                 Case Else
                     Me.FindNewBoundsManually
+                    needToAddFeathering = False
                     
             End Select
+            
+            'Finally, add the current feathering size, if any, to the selection boundaries
+            If needToAddFeathering Then
+                With m_Bounds
+                    .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                    .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                    .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                    .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                End With
+            End If
                 
     End Select
     
@@ -2220,7 +2233,7 @@ End Sub
 
 'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we may choose to do this via GDI+.
 Private Sub ApplyFeatheringToMask()
-    QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
+    Filters_Layers.QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
 End Sub
 
 'Helper function for retrieving the current selection corners (*not* boundary corners; this means things like feathering are
@@ -2457,7 +2470,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
     'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries.
     ' (I still need to do something similar in the central viewport; hence why this is labeled as "experimental".)
-    PDMath.GetIntClampedRectF dstRectF
+    'PDMath.GetIntClampedRectF dstRectF
     
     'If we've already cached a viewport-specific mask copy on a previous run, we now want to perform two additional checks:
     ' one against the source image region, and another against the destination viewport region.  If either of these rects
@@ -2595,9 +2608,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' viewport cached has changed, we obviously need to regenerate our overlay cache - but we also need to regenerate the
     ' cache if the current selection UI settings have changed (such as selection rendering color).
     Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
-    If (Not overlayWasRegenerated) Then
-        renderingSettingsChanged = (StrComp(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor), vbBinaryCompare) <> 0)
-    End If
+    If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor), False)
     
     'If any preceding checks failed, generate a new UI DIB to match current settings.
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
@@ -2716,39 +2727,63 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
         loopStartX = Int(m_ViewportRefRectF.Left)
         loopStartY = Int(m_ViewportRefRectF.Top)
-        loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + 1.999999)
-        loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + 1.999999)
         
-        If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
-        If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
+        '(When the viewport is deeply zoomed in, we need larger compensation boundaries around the image's edges.)
+        Dim extendX As Single, extendY As Single
+        extendX = 1.999999
+        extendY = 1.999999
+        loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + extendX)
+        loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + extendY)
+        
+        If (loopEndX > m_ViewportOverlay.GetDIBWidth - 1) Then loopEndX = m_ViewportOverlay.GetDIBWidth - 1
+        If (loopEndY > m_ViewportOverlay.GetDIBHeight - 1) Then loopEndY = m_ViewportOverlay.GetDIBHeight - 1
         If (loopStartX < 0) Then loopStartX = 0
         If (loopStartY < 0) Then loopStartY = 0
         If (loopStartX > loopEndX) Then loopStartX = loopEndX
         If (loopStartY > loopEndY) Then loopStartY = loopEndY
         
-        'With everything prepared, we can now (finally) apply the results to the overlay DIB.  Note that we use a
-        ' per-scanline approach for accessing pixels.  This lets us use 1-dimensional arrays instead of 2-dimensional
-        ' arrays for a slight performance boost.
-        For y = loopStartY To loopEndY
-            m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
-            m_ViewportOverlay.WrapLongArrayAroundScanline overlayPixels, overlaySALine, y
-        For x = loopStartX To loopEndX
-            overlayPixels(x) = overlayLookup(maskPixels(x) And 255)
-        Next x
-        Next y
+        'Failsafe check for disastrous inputs
+        If (loopStartX >= 0) And (loopStartY >= 0) Then
         
-        'Because the arrays wrapped around the target DIBs are scoped locally, we have to manually free them before
-        ' the function exits.
-        m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
-        m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
-        
-        'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
-        ' UI settings change, we'll need to generate a new overlay, even if the selection itself hasn't changed.)
-        
-        'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
-        ' previously overlay cache check, above.
-        m_LastOverlayCache = GenerateArbitraryHash(renderType, renderColor)
-        m_OverlayIsReady = True
+            'With everything prepared, we can now (finally) apply the results to the overlay DIB.  Note that we use a
+            ' per-scanline approach for accessing pixels.  This lets us use 1-dimensional arrays instead of 2-dimensional
+            ' arrays for a slight performance boost.
+            m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, 0
+            Dim viewRefPtr As Long, viewRefStride As Long
+            viewRefPtr = maskSALine.pvData
+            viewRefStride = maskSALine.cElements * 4
+            
+            m_ViewportOverlay.WrapLongArrayAroundScanline overlayPixels, overlaySALine, 0
+            Dim viewOverPtr As Long, viewOverStride As Long
+            viewOverPtr = overlaySALine.pvData
+            viewOverStride = overlaySALine.cElements * 4
+            
+            For y = loopStartY To loopEndY
+                maskSALine.pvData = viewRefPtr + viewRefStride * y
+                overlaySALine.pvData = viewOverPtr + viewOverStride * y
+            For x = loopStartX To loopEndX
+                overlayPixels(x) = overlayLookup(maskPixels(x) And 255)
+            Next x
+            Next y
+            
+            'Because the arrays wrapped around the target DIBs are scoped locally, we have to manually free them before
+            ' the function exits.
+            m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
+            m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
+            
+            'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
+            ' UI settings change, we'll need to generate a new overlay, even if the selection itself hasn't changed.)
+            
+            'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
+            ' previously overlay cache check, above.
+            m_LastOverlayCache = GenerateArbitraryHash(renderType, renderColor)
+            m_OverlayIsReady = True
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
+            #End If
+        End If
         
     End If
     
@@ -3287,9 +3322,13 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     'Point a standard int array at the selection mask
     Dim x As Long, y As Long
     
-    Dim selMaskData() As Long
-    Dim selMaskSA As SAFEARRAY2D
-    m_SelMask.WrapLongArrayAroundDIB selMaskData, selMaskSA
+    Dim selMaskData() As Long, selMaskSA As SAFEARRAY2D, selMaskSA1D As SAFEARRAY1D
+    
+    'While here, grab a baseline DIB pointer and stride, so we can quickly wrap individual lines
+    Dim maskPtr As Long, maskStride As Long
+    m_SelMask.WrapLongArrayAroundScanline selMaskData, selMaskSA1D
+    maskPtr = selMaskSA1D.pvData
+    maskStride = selMaskSA1D.cElements * 4
     
     Dim maskWidth As Long, maskHeight As Long
     maskWidth = m_SelMask.GetDIBWidth - 1
@@ -3302,11 +3341,13 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     y = 0
     Do
     
+        selMaskSA1D.pvData = maskPtr + y * maskStride
+    
         For x = 0 To maskWidth
             
             'In the future, if we decide to let the user select individual color channels, this code will need to be reworked.
             ' For now, however, all pixels are rendered as grayscale, so we can shortcut and just check for non-zero entries.
-            If (selMaskData(x, y) <> 0) Then
+            If (selMaskData(x) <> 0) Then
                 boundFound = True
                 m_CornersLocked.Top = y
                 m_Bounds.Top = m_CornersLocked.Top
@@ -3340,8 +3381,10 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     
     Do
     
+        selMaskSA1D.pvData = maskPtr + y * maskStride
+    
         For x = 0 To maskWidth
-            If (selMaskData(x, y) <> 0) Then
+            If (selMaskData(x) <> 0) Then
                 boundFound = True
                 m_CornersLocked.Height = y - m_CornersLocked.Top + 1
                 m_Bounds.Height = m_CornersLocked.Height
@@ -3356,6 +3399,10 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     'Next, find the left bound
     boundFound = False
     x = 0
+    
+    m_SelMask.UnwrapLongArrayFromDIB selMaskData
+    m_SelMask.WrapLongArrayAroundDIB selMaskData, selMaskSA
+    
     Do
     
         For y = 0 To maskHeight

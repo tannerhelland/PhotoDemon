@@ -1632,45 +1632,7 @@ End Function
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByRef srcImage As pdImage)
-    
-    If (Not srcImage Is Nothing) Then
-        
-        FormMain.mainCanvas(0).DisplayImageSize srcImage
-        
-        'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
-        ' now is an excellent time to update them.
-        Dim newLimitingSize_Small As Single, newLimitingSize_Large As Single
-        
-        If (srcImage.Width < srcImage.Height) Then
-            newLimitingSize_Small = srcImage.Width
-            newLimitingSize_Large = srcImage.Height
-        Else
-            newLimitingSize_Small = srcImage.Height
-            newLimitingSize_Large = srcImage.Width
-        End If
-        
-        If (m_LastUILimitingSize_Small <> newLimitingSize_Small) Or (m_LastUILimitingSize_Large <> newLimitingSize_Large) Then
-            
-            m_LastUILimitingSize_Small = newLimitingSize_Small
-            m_LastUILimitingSize_Large = newLimitingSize_Large
-            
-            If Tools.IsSelectionToolActive Then
-            
-                'Certain selection tools are size-limited by the current image; update those now!
-                toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
-                toolpanel_Selections.sltSelectionLineWidth.Max = m_LastUILimitingSize_Large
-            
-                Dim i As Long
-                For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
-                    toolpanel_Selections.sltSelectionBorder(i).Max = m_LastUILimitingSize_Small
-                Next i
-                
-            End If
-            
-        End If
-    
-    End If
-    
+    If (Not srcImage Is Nothing) Then FormMain.mainCanvas(0).DisplayImageSize srcImage
 End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but

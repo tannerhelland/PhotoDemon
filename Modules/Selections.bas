@@ -414,7 +414,7 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
             Select Case pdImages(formID).MainSelection.GetSelectionShape
             
                 Case ss_Rectangle
-                    If toolpanel_Selections.sltCornerRounding.Value <> pdImages(formID).MainSelection.GetSelectionProperty_Long(sp_RoundedCornerRadius) Then toolpanel_Selections.sltCornerRounding.Value = pdImages(formID).MainSelection.GetSelectionProperty_Long(sp_RoundedCornerRadius)
+                    If (toolpanel_Selections.sltCornerRounding.Value <> pdImages(formID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)) Then toolpanel_Selections.sltCornerRounding.Value = pdImages(formID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)
                 
                 Case ss_Circle
                 

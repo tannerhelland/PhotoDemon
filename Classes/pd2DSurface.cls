@@ -97,6 +97,7 @@ Private m_SurfaceBlendUsingSRGBGamma As Boolean
 Private m_SurfacePixelOffset As PD_2D_PixelOffset
 Private m_SurfaceRenderingOriginX As Single, m_SurfaceRenderingOriginY As Single
 Private m_SurfaceResizeQuality As PD_2D_ResizeQuality
+Private m_SurfaceCompositeMode As PD_2D_CompositeMode
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
 Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
@@ -105,6 +106,10 @@ End Function
 
 Public Function GetSurfaceBlendUsingSRGBGamma() As Boolean
     GetSurfaceBlendUsingSRGBGamma = Me.GetSurfaceProperty(P2_SurfaceBlendUsingSRGBGamma)
+End Function
+
+Public Function GetSurfaceCompositing() As PD_2D_CompositeMode
+    GetSurfaceCompositing = Me.GetSurfaceProperty(P2_SurfaceCompositeMode)
 End Function
 
 Public Function GetSurfacePixelOffset() As PD_2D_PixelOffset
@@ -129,6 +134,10 @@ End Sub
 
 Public Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
     Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, newSetting
+End Sub
+
+Public Sub SetSurfaceCompositing(ByVal newSetting As PD_2D_CompositeMode)
+    Me.SetSurfaceProperty P2_SurfaceCompositeMode, newSetting
 End Sub
 
 Public Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
@@ -169,6 +178,9 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
             
         Case P2_SurfaceResizeQuality
             GetSurfaceProperty = m_SurfaceResizeQuality
+            
+        Case P2_SurfaceCompositeMode
+            GetSurfaceProperty = m_SurfaceCompositeMode
     
     End Select
 
@@ -195,6 +207,9 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
             
         Case P2_SurfaceResizeQuality
             m_SurfaceResizeQuality = CLng(newSetting)
+            
+        Case P2_SurfaceCompositeMode
+            m_SurfaceCompositeMode = CLng(newSetting)
             
     End Select
     
@@ -361,6 +376,7 @@ Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
                         RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                        RelayPropertyChangeToBackend P2_SurfaceCompositeMode
                     End If
                     
                     'When debug mode is active, all object creations are reported back to the master Drawing2D module
@@ -594,6 +610,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
                 RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
                 RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
                 RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                RelayPropertyChangeToBackend P2_SurfaceCompositeMode
             End If
             
         End If
@@ -670,6 +687,7 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
                         RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                        RelayPropertyChangeToBackend P2_SurfaceCompositeMode
                         
                         'Determine how we're gonna get size data from this DC
                         If (srcHwnd <> 0) Then
@@ -731,6 +749,7 @@ Public Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
                     RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
                     RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
                     RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                    RelayPropertyChangeToBackend P2_SurfaceCompositeMode
                 End If
                 
         End Select
@@ -1112,6 +1131,13 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                                 GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_HighQualityBicubic
                         End Select
                         
+                    Case P2_SurfaceCompositeMode
+                        If (m_SurfaceCompositeMode = P2_CM_Blend) Then
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceCompositeMode, GP_CM_SourceOver
+                        Else
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceCompositeMode, GP_CM_SourceCopy
+                        End If
+                        
                 End Select
                 
             'In the future, other backends can be handled here...
@@ -1130,6 +1156,7 @@ Public Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, 0#
     Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, False
     Me.SetSurfaceProperty P2_SurfaceResizeQuality, P2_RQ_Fast
+    Me.SetSurfaceProperty P2_SurfaceCompositeMode, P2_CM_Blend
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
