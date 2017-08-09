@@ -114,7 +114,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)
             ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_WAND) Then
-                If srcImage.IsSelectionActive Then srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
+                If srcImage.IsSelectionActive Then srcImage.MainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
                     
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = VECTOR_TEXT) Or (g_CurrentTool = VECTOR_FANCYTEXT) Then
@@ -172,15 +172,15 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             
             'Create the front buffer as necessary
             If (m_FrontBuffer Is Nothing) Then Set m_FrontBuffer = New pdDIB
-            If (m_FrontBuffer.GetDIBWidth <> srcImage.canvasBuffer.GetDIBWidth) Or (m_FrontBuffer.GetDIBHeight <> srcImage.canvasBuffer.GetDIBHeight) Then
-                m_FrontBuffer.CreateFromExistingDIB srcImage.canvasBuffer
+            If (m_FrontBuffer.GetDIBWidth <> srcImage.CanvasBuffer.GetDIBWidth) Or (m_FrontBuffer.GetDIBHeight <> srcImage.CanvasBuffer.GetDIBHeight) Then
+                m_FrontBuffer.CreateFromExistingDIB srcImage.CanvasBuffer
             Else
-                BitBlt m_FrontBuffer.GetDIBDC, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, srcImage.canvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
+                BitBlt m_FrontBuffer.GetDIBDC, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, srcImage.CanvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
             End If
             
             'Retrieve a copy of the intersected viewport rect; subsequent rendering ops may use this to optimize their operations
             Dim viewportIntersectRect As RECTF
-            srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRect
+            srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRect
             
             '*Now* is when we want to apply color management to the front buffer.  (For performance reasons, UI elements drawn atop
             ' the canvas are not color-managed - only the image itself is.)  Note also that although the front buffer is 32-bpp,
@@ -190,7 +190,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             'Check to see if a selection is active.  If it is, we want to render it now, directly atop the front buffer.  This allows any
             ' subsequent overlays (e.g. brush outlines) to appear "on top" of the selection, without us needing to redraw the selection outline
             ' on every overlay render.
-            If srcImage.IsSelectionActive Then srcImage.mainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas
+            If srcImage.IsSelectionActive Then srcImage.MainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas
             
             'Before exiting, calculate the time spent in this stage
             m_TimeStage3 = VBHacks.GetTimerDifferenceNow(startTime)
@@ -237,14 +237,14 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
         Dim imageRect_CanvasCoords As RECTF, canvasRect_ImageCoords As RECTF, canvasRect_ActualPixels As RECTF
-        With srcImage.imgViewport
+        With srcImage.ImgViewport
             .GetCanvasRectActualPixels canvasRect_ActualPixels
             .GetCanvasRectImageCoords canvasRect_ImageCoords
             .GetImageRectCanvasCoords imageRect_CanvasCoords
         End With
         
         'We also need to wipe the back buffer
-        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
+        GDI_Plus.GDIPlusFillDIBRect srcImage.CanvasBuffer, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
         
         'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
         ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
@@ -282,19 +282,19 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         End With
         
         'This translated rect allows us to shortcut a lot of coordinate math, so cache a copy inside the source image.
-        srcImage.imgViewport.SetImageRectTranslated translatedImageRect
+        srcImage.ImgViewport.SetImageRectTranslated translatedImageRect
         
         'We now know where the full image lies, with zoom applied, relative to the canvas coordinate space.  Think of the canvas as
         ' a tiny window, and the image as a huge poster behind the window.  What we're going to do now is find the intersect rect
         ' between the window rect (which is easy - just the size of the canvas itself) and the image rect we've now calculated.
         Dim viewportRect As RECTF
-        srcImage.imgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, canvasRect_ActualPixels, translatedImageRect)
+        srcImage.ImgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, canvasRect_ActualPixels, translatedImageRect)
         
-        If srcImage.imgViewport.GetIntersectState Then
+        If srcImage.ImgViewport.GetIntersectState Then
             
             'The intersection between the canvas and image is now stored in viewportRect.  Cool!  This is the destination rect of
             ' our viewport StretchBlt function.
-            srcImage.imgViewport.SetIntersectRectCanvas viewportRect
+            srcImage.ImgViewport.SetIntersectRectCanvas viewportRect
             
             'What we need to do now is reverse-map that rect back onto the image itself.  How do we do this?
             ' Well, we need two key pieces of information:
@@ -319,7 +319,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
             'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
             ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
             With viewportRect
-                GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern, , True
+                GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.CanvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern, , True
             End With
             
             'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
@@ -344,7 +344,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
                     
                 End If
                 
-                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, renderScratchLayerIndex
+                srcImage.GetCompositedRect srcImage.CanvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, renderScratchLayerIndex
                         
             'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
             Else
@@ -352,7 +352,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
             End If
             
             'Cache the relevant section of the image, in case outside functions require it.
-            srcImage.imgViewport.SetIntersectRectImage srcRectF
+            srcImage.ImgViewport.SetIntersectRectImage srcRectF
             
         'The canvas and image do not overlap.  That's okay!  It means we don't have to do any compositing.  Exit now.
         Else
@@ -565,27 +565,27 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
                 dstCanvas.SetScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange PD_HORIZONTAL, 1
+                dstCanvas.SetScrollLargeChange PD_HORIZONTAL, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
             End If
             
             If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
                 dstCanvas.SetScrollLargeChange PD_VERTICAL, vScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange PD_VERTICAL, 1
+                dstCanvas.SetScrollLargeChange PD_VERTICAL, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
             End If
             
             'Scroll bars are now prepped and ready!
             
             'With all scroll bar data assembled, we have enough information to create a target back buffer.
-            If (srcImage.canvasBuffer.GetDIBWidth <> canvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> canvasRect_ActualPixels.Height) Then
-                srcImage.canvasBuffer.CreateBlank canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
+            If (srcImage.CanvasBuffer.GetDIBWidth <> canvasRect_ActualPixels.Width) Or (srcImage.CanvasBuffer.GetDIBHeight <> canvasRect_ActualPixels.Height) Then
+                srcImage.CanvasBuffer.CreateBlank canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
             Else
-                GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
+                GDI_Plus.GDIPlusFillDIBRect srcImage.CanvasBuffer, 0, 0, canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
             End If
             
             'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects
             ' inside the source pdImage object.
-            With srcImage.imgViewport
+            With srcImage.ImgViewport
                 .SetCanvasRectActualPixels canvasRect_ActualPixels
                 .SetCanvasRectImageCoords canvasRect_ImageCoords
                 .SetImageRectCanvasCoords imageRect_CanvasCoords
@@ -640,7 +640,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                         '...then set a fake, "translated" image rect, that is correct for the case of h/v/scroll = 0.  (Normally stage 3 of the
                         ' pipeline creates a translated rect, but we have to provide one now because the canvas/image coordinate translation code
                         ' relies on that rect!)
-                        srcImage.imgViewport.SetImageRectTranslated imageRect_CanvasCoords
+                        srcImage.ImgViewport.SetImageRectTranslated imageRect_CanvasCoords
                         
                         'With those values successfully set, we can now translate the target image coords into canvas coords, for the case of
                         ' h/v/scroll = 0.
