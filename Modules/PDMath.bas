@@ -386,28 +386,20 @@ Public Function Acos(ByVal x As Double) As Double
 End Function
 
 'Max/min functions
-Public Function Max2Int(ByVal f1 As Long, ByVal f2 As Long) As Long
-    If (f1 > f2) Then
-        Max2Int = f1
-    Else
-        Max2Int = f2
-    End If
+Public Function Max2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
+    If (l1 > l2) Then Max2Int = l1 Else Max2Int = l2
+End Function
+
+Public Function Min2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
+    If (l1 < l2) Then Min2Int = l1 Else Min2Int = l2
 End Function
 
 Public Function Max2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
-    If (f1 > f2) Then
-        Max2Float_Single = f1
-    Else
-        Max2Float_Single = f2
-    End If
+    If (f1 > f2) Then Max2Float_Single = f1 Else Max2Float_Single = f2
 End Function
 
 Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
-    If (f1 < f2) Then
-        Min2Float_Single = f1
-    Else
-        Min2Float_Single = f2
-    End If
+    If (f1 < f2) Then Min2Float_Single = f1 Else Min2Float_Single = f2
 End Function
 
 'Return the maximum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)

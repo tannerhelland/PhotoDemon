@@ -1459,29 +1459,6 @@ Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single,
     
 End Function
 
-'Identical function to GdiPlusDrawCanvasCircle, above, but a rect is used instead.  Note that it's inconvenient to the user to display
-' a square but use circles for hit-detection, so plan accordingly!
-Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
-
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
-    
-    Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
-    
-End Function
-
-'Similar function to GdiPlusDrawCanvasCircle, above, but only draws a single line
-Public Function GDIPlusDrawCanvasLine(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
-
-    GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Square, True
-    
-    Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, topColor, 220, 1.6, True, GP_LC_Round, True
-    
-End Function
-
 'Similar function to GdiPlusDrawCanvasCircle, above, but draws a RectF outline, specifically
 Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As RECTF, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor), cTransparency, 3#, True, GP_LJ_Miter
@@ -1516,75 +1493,6 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Render the line
     GdipDrawLine hGraphics, iPen, x1, y1, x2, y2
         
-    'Release all created objects
-    GdipDeletePen iPen
-    GdipDeleteGraphics hGraphics
-
-End Function
-
-'Use GDI+ to render a filled, closed shape, with optional color, opacity, antialiasing, curvature, and more
-Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal useFillMode As GP_FillMode = GP_FM_Alternate) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    
-    'Create a solid fill brush
-    Dim hBrush As Long
-    hBrush = GetGDIPlusSolidBrushHandle(eColor, cTransparency)
-    
-    If hBrush <> 0 Then
-    
-        'We have a few different options for drawing the shape, based on the passed parameters.
-        If useCurveAlgorithm Then
-            GdipFillClosedCurve2 hGraphics, hBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
-        Else
-            GdipFillPolygon hGraphics, hBrush, ptrToFloatArray, numOfPoints, useFillMode
-        End If
-        
-        ReleaseGDIPlusBrush hBrush
-        
-    End If
-    
-    GdipDeleteGraphics hGraphics
-
-End Function
-
-'Use GDI+ to render the outline of a closed shape, with optional color, opacity, antialiasing, curvature, and more
-Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal strokeWidth As Single = 1, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    
-    'Create a pen, which will be used to stroke the line
-    Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), strokeWidth, GP_U_Pixel, iPen
-    
-    'If a custom line cap was specified, apply it now
-    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
-        
-    'We have a few different options for drawing the shape, based on the passed parameters.
-    If autoCloseShape Then
-    
-        If useCurveAlgorithm Then
-            GdipDrawClosedCurve2 hGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
-        Else
-            GdipDrawPolygon hGraphics, iPen, ptrToFloatArray, numOfPoints
-        End If
-        
-    Else
-    
-        If useCurveAlgorithm Then
-            GdipDrawCurve2 hGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
-        Else
-            GdipDrawLines hGraphics, iPen, ptrToFloatArray, numOfPoints
-        End If
-    
-    End If
-    
     'Release all created objects
     GdipDeletePen iPen
     GdipDeleteGraphics hGraphics
@@ -1809,83 +1717,6 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
 
 End Function
 
-'Use GDI+ to render an ellipse outline, with optional antialiasing
-Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255, Optional ByVal strokeWidth As Single = 1#) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-        
-    'Create a pen with matching attributes
-    Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, eTransparency), strokeWidth, GP_U_Pixel, hPen
-    
-    'Render the ellipse
-    GdipDrawEllipse hGraphics, hPen, x1, y1, xWidth, yHeight
-    
-    'Release all created objects
-    GdipDeletePen hPen
-    GdipDeleteGraphics hGraphics
-
-    GDIPlusStrokeEllipseToDC = True
-
-End Function
-
-'Use GDI+ to render a rectangle with rounded corners, with optional antialiasing
-Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal rRadius As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal FillRect As Boolean = True) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    
-    'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
-    Dim rrPath As Long
-    GdipCreatePath GP_FM_Winding, rrPath
-        
-    'The path will be rendered in two sections: first, filling it.  Second, stroking the path itself to complete the
-    ' 1px outside border.
-    xWidth = xWidth - 1
-    yHeight = yHeight - 1
-    
-    'Validate the radius twice before applying it.  The width and height curvature cannot be less than
-    ' 1/2 the width (or height) of the rect.
-    Dim xCurvature As Single, yCurvature As Single
-    xCurvature = rRadius
-    yCurvature = rRadius
-    
-    If xCurvature > xWidth Then xCurvature = xWidth
-    If yCurvature > yHeight Then yCurvature = yHeight
-    
-    'Add four arcs, which are auto-connected by the path engine, then close the figure
-    GdipAddPathArc rrPath, x1 + xWidth - xCurvature, y1, xCurvature, yCurvature, 270, 90
-    GdipAddPathArc rrPath, x1 + xWidth - xCurvature, y1 + yHeight - yCurvature, xCurvature, yCurvature, 0, 90
-    GdipAddPathArc rrPath, x1, y1 + yHeight - yCurvature, xCurvature, yCurvature, 90, 90
-    GdipAddPathArc rrPath, x1, y1, xCurvature, yCurvature, 180, 90
-    GdipClosePathFigure rrPath
-    
-    'Create a solid fill brush
-    Dim hBrush As Long
-    hBrush = GetGDIPlusSolidBrushHandle(eColor, 255)
-    
-    If hBrush <> 0 Then
-        If FillRect Then GdipFillPath hGraphics, hBrush, rrPath
-        ReleaseGDIPlusBrush hBrush
-    End If
-    
-    'Stroke the path as well (to fill the 1px exterior border)
-    Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, 255), 1, GP_U_Pixel, iPen
-    GdipDrawPath hGraphics, iPen, rrPath
-    
-    'Release all created objects
-    GdipDeletePen iPen
-    GdipDeletePath rrPath
-    GdipDeleteGraphics hGraphics
-
-End Function
-
 'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
 ' in a single pass.
 Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal cOpacity As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
@@ -1975,7 +1806,6 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     GDIPlusFillDIBRect_Pattern = True
     
 End Function
-
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
 ' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is faster,
@@ -2084,18 +1914,6 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     GdipDisposeImage dstBitmap
     GdipDeleteGraphics hGraphics
  
-End Sub
-
-Public Function GDIPlusGetCachedBitmap(ByVal srcBitmap As Long, ByVal srcGraphics As Long) As Long
-    GdipCreateCachedBitmap srcBitmap, srcGraphics, GDIPlusGetCachedBitmap
-End Function
-
-Public Sub GDIPlusDeleteCachedBitmap(ByVal srcCachedBitmap As Long)
-    GdipDeleteCachedBitmap srcCachedBitmap
-End Sub
-
-Public Sub GDIPlusDrawCachedBitmap(ByVal dstGraphics As Long, ByVal srcCachedBitmap As Long, ByVal x As Long, ByVal y As Long)
-    GdipDrawCachedBitmap dstGraphics, srcCachedBitmap, x, y
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.

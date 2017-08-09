@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Layers"
 'DIB Filters Module
 'Copyright 2013-2017 by Tanner Helland
 'Created: 15/February/13
-'Last updated: 17/September/13
-'Last update: removed the old dedicated box blur routine.  A horizontal/vertical two-pass is waaaaay faster!
+'Last updated: 09/August/17
+'Last update: new functions for blurring just a sub-region of an image
 '
 'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied DIBs.  In a perfect world, *all*
 ' filters would work this way - but alas I did not design the program very well up front.  Going forward I will be
@@ -127,6 +127,19 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
     End If
     
     QuickBlurDIB = True
+    
+End Function
+
+'Want to blur just some sub-portion of a DIB?  Use this function instead.
+Public Function QuickBlurDIBRegion(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, ByRef blurBounds As RECTF) As Boolean
+    
+    'Create a copy of the current DIB; we need this to hold an intermediate blur copy
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateFromExistingDIB srcDIB
+    If (Filters_Layers.HorizontalBlur_SubRegion(blurRadius, blurRadius, srcDIB, tmpDIB, blurBounds) <> 0) Then
+        QuickBlurDIBRegion = (Filters_Layers.VerticalBlur_SubRegion(blurRadius, blurRadius, tmpDIB, srcDIB, blurBounds) <> 0)
+    End If
     
 End Function
 
@@ -378,10 +391,10 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim r As Long, g As Long, b As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim rMax As Byte, gMax As Byte, bMax As Byte
-    Dim rMin As Byte, gMin As Byte, bMin As Byte
-    rMax = 0: gMax = 0: bMax = 0
-    rMin = 255: gMin = 255: bMin = 255
+    Dim RMax As Byte, gMax As Byte, bMax As Byte
+    Dim RMin As Byte, gMin As Byte, bMin As Byte
+    RMax = 0: gMax = 0: bMax = 0
+    RMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore * 0.01
@@ -433,7 +446,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            rMin = r
+            RMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -473,7 +486,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            rMax = r
+            RMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -504,7 +517,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Finally, calculate the difference between max and min for each color
     Dim rDif As Long, gDif As Long, bDif As Long
-    rDif = CLng(rMax) - CLng(rMin)
+    rDif = CLng(RMax) - CLng(RMin)
     gDif = CLng(gMax) - CLng(gMin)
     bDif = CLng(bMax) - CLng(bMin)
     
@@ -512,7 +525,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If (rDif <> 0) Then r = 255# * ((x - rMin) / rDif) Else r = x
+        If (rDif <> 0) Then r = 255# * ((x - RMin) / rDif) Else r = x
         If (gDif <> 0) Then g = 255# * ((x - gMin) / gDif) Else g = x
         If (bDif <> 0) Then b = 255# * ((x - bMin) / bDif) Else b = x
         If (r > 255) Then r = 255
@@ -751,7 +764,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     End If
     
     'Color variables
-    Dim rMin As Long, gMin As Long, bMin As Long
+    Dim RMin As Long, gMin As Long, bMin As Long
     Dim r As Long, g As Long, b As Long
     
     'Prep a one-dimensional safearray for the source image
@@ -792,7 +805,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     For y = initY To finalY
         
         'Find the smallest RGB values in the local vicinity of this pixel
-        rMin = 255
+        RMin = 255
         gMin = 255
         bMin = 255
         
@@ -803,21 +816,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         'Current line
         srcSA1D.pvData = srcBits + y * srcStride
@@ -826,21 +839,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         'Next line
         srcSA1D.pvData = srcBits + (y + 1) * srcStride
@@ -849,21 +862,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < rMin) Then rMin = r
+        If (r < RMin) Then RMin = r
         
         'Subtract the minimum value from the current pixel value
         srcSA1D.pvData = srcBits + y * srcStride
@@ -872,11 +885,11 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         If blackBackground Then
             dstImageData(xOffset) = srcImageData(xOffset) - bMin
             dstImageData(xOffset + 1) = srcImageData(xOffset + 1) - gMin
-            dstImageData(xOffset + 2) = srcImageData(xOffset + 2) - rMin
+            dstImageData(xOffset + 2) = srcImageData(xOffset + 2) - RMin
         Else
             dstImageData(xOffset) = 255 - (srcImageData(xOffset) - bMin)
             dstImageData(xOffset + 1) = 255 - (srcImageData(xOffset + 1) - gMin)
-            dstImageData(xOffset + 2) = 255 - (srcImageData(xOffset + 2) - rMin)
+            dstImageData(xOffset + 2) = 255 - (srcImageData(xOffset + 2) - RMin)
         End If
         
     Next y
@@ -2034,11 +2047,12 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
         xStride = x * 4
         avgSample = 1# / numOfPixels
+        
         For y = initY To finalY
-            dstImageData(xStride, y) = bTotals(y) * avgSample
-            dstImageData(xStride + 1, y) = gTotals(y) * avgSample
-            dstImageData(xStride + 2, y) = rTotals(y) * avgSample
-            dstImageData(xStride + 3, y) = aTotals(y) * avgSample
+            dstImageData(xStride, y) = Int(bTotals(y) * avgSample)
+            dstImageData(xStride + 1, y) = Int(gTotals(y) * avgSample)
+            dstImageData(xStride + 2, y) = Int(rTotals(y) * avgSample)
+            dstImageData(xStride + 3, y) = Int(aTotals(y) * avgSample)
         Next y
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
@@ -2224,6 +2238,296 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     If g_cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
+    
+End Function
+
+'Given two DIBs, horizontally blur some sub-region of the source, and place the results inside the destination.
+' A highly-optimized modified accumulation algorithm is used to improve performance.
+'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
+'
+'NOTE: source and destination DIBs must be 32-bpp
+Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RECTF) As Long
+    
+    'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
+    If (srcDIB.GetDIBColorDepth <> 32) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        #End If
+        Exit Function
+    End If
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    PrepSafeArray dstSA, dstDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    PrepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = PDMath.Max2Int(Int(blurBounds.Left), 0)
+    initY = PDMath.Max2Int(Int(blurBounds.Top), 0)
+    finalX = PDMath.Min2Int(srcDIB.GetDIBWidth - 1, Int(blurBounds.Left + blurBounds.Width + 0.999999))
+    finalY = PDMath.Min2Int(srcDIB.GetDIBHeight - 1, Int(blurBounds.Top + blurBounds.Height + 0.999999))
+    
+    Dim xLimit As Long, xStride As Long
+    xLimit = srcDIB.GetDIBWidth - 1
+    
+    Dim xRadius As Long
+    xRadius = finalX - initX
+    
+    'Limit the left and right offsets to the width of the sub-region
+    If (lRadius > xRadius) Then lRadius = xRadius
+    If (rRadius > xRadius) Then rRadius = xRadius
+        
+    'The number of pixels in the current horizontal line are tracked dynamically.  (This lets us weight edges differently,
+    ' yielding a much nicer blur along boundary pixels.)
+    Dim numOfPixels As Long
+    numOfPixels = 0
+    
+    'Left and right bounds of the current accumulator
+    Dim lbX As Long, ubX As Long
+    
+    'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
+    ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
+    Dim rTotals() As Long, gTotals() As Long, bTotals() As Long, aTotals() As Long
+    ReDim rTotals(initY To finalY) As Long
+    ReDim gTotals(initY To finalY) As Long
+    ReDim bTotals(initY To finalY) As Long
+    ReDim aTotals(initY To finalY) As Long
+    
+    Dim avgSample As Double
+    
+    'Populate the initial arrays.
+    Dim startX As Long
+    startX = initX - lRadius
+    If (startX < 0) Then startX = 0
+    
+    For x = startX To initX + rRadius - 1
+        xStride = x * 4
+    For y = initY To finalY
+        bTotals(y) = bTotals(y) + srcImageData(xStride, y)
+        gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
+        rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
+        aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
+    Next y
+        numOfPixels = numOfPixels + 1
+    Next x
+                
+    'Loop through each column in the image, tallying blur values as we go
+    For x = initX To finalX
+        
+        'Remove trailing values from the blur collection if they lie outside the processing radius
+        lbX = x - lRadius
+        If (lbX > startX) Then
+        
+            xStride = (lbX - 1) * 4
+        
+            For y = initY To finalY
+                bTotals(y) = bTotals(y) - srcImageData(xStride, y)
+                gTotals(y) = gTotals(y) - srcImageData(xStride + 1, y)
+                rTotals(y) = rTotals(y) - srcImageData(xStride + 2, y)
+                aTotals(y) = aTotals(y) - srcImageData(xStride + 3, y)
+            Next y
+            
+            numOfPixels = numOfPixels - 1
+        
+        End If
+        
+        'Add leading values to the blur box if they lie inside the processing radius
+        ubX = x + rRadius
+        If (ubX <= xLimit) Then
+        
+            xStride = ubX * 4
+            
+            For y = initY To finalY
+                bTotals(y) = bTotals(y) + srcImageData(xStride, y)
+                gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
+                rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
+                aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
+            Next y
+            
+            numOfPixels = numOfPixels + 1
+            
+        End If
+            
+        'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
+        xStride = x * 4
+        avgSample = 1# / CDbl(numOfPixels)
+        For y = initY To finalY
+            dstImageData(xStride, y) = Int(CDbl(bTotals(y)) * avgSample)
+            dstImageData(xStride + 1, y) = Int(CDbl(gTotals(y)) * avgSample)
+            dstImageData(xStride + 2, y) = Int(CDbl(rTotals(y)) * avgSample)
+            dstImageData(xStride + 3, y) = Int(CDbl(aTotals(y)) * avgSample)
+        Next y
+        
+    Next x
+        
+    'Safely deallocate all image arrays
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
+    If g_cancelCurrentAction Then HorizontalBlur_SubRegion = 0 Else HorizontalBlur_SubRegion = 1
+    
+End Function
+
+'Given two DIBs, vertically blur some sub-region of the source, and place the results inside the destination.
+' A highly-optimized modified accumulation algorithm is used to improve performance.
+'Input: up and down distance to blur (I call these radii, because the final box size is (upoffset + downoffset + 1)
+'
+'NOTE: source and destination DIBs must be 32-bpp
+Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RECTF) As Long
+    
+    'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
+    If (srcDIB.GetDIBColorDepth <> 32) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        #End If
+        Exit Function
+    End If
+    
+    'Wrap 1D arrays around the source and destination images
+    Dim dstImageData() As Byte, dstSA1D As SAFEARRAY1D
+    dstDIB.WrapArrayAroundScanline dstImageData, dstSA1D, 0
+    
+    Dim dstDibPointer As Long, dstDibStride As Long
+    dstDibPointer = dstSA1D.pvData
+    dstDibStride = dstSA1D.cElements
+    
+    Dim srcImageData() As Byte, srcSA1D As SAFEARRAY1D
+    srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, 0
+    
+    Dim srcDibPointer As Long, srcDibStride As Long
+    srcDibPointer = srcSA1D.pvData
+    srcDibStride = srcSA1D.cElements
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = PDMath.Max2Int(Int(blurBounds.Left), 0)
+    initY = PDMath.Max2Int(Int(blurBounds.Top), 0)
+    finalX = PDMath.Min2Int(srcDIB.GetDIBWidth - 1, Int(blurBounds.Left + blurBounds.Width + 0.999999))
+    finalY = PDMath.Min2Int(srcDIB.GetDIBHeight - 1, Int(blurBounds.Top + blurBounds.Height + 0.999999))
+    
+    Dim yLimit As Long
+    yLimit = srcDIB.GetDIBHeight - 1
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim xStride As Long, QuickY As Long
+    
+    Dim yRadius As Long
+    yRadius = finalY - initY
+    
+    'Limit the up and down offsets to the height of the image
+    If (uRadius > yRadius) Then uRadius = yRadius
+    If (dRadius > yRadius) Then dRadius = yRadius
+        
+    'The number of pixels in the current vertical line are tracked dynamically.
+    Dim numOfPixels As Long
+    numOfPixels = 0
+            
+    'Blurring takes a lot of variables
+    Dim lbY As Long, ubY As Long
+        
+    'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
+    ' we will store the accumulated blur total for each vertical line, and only update it when we move one row down.
+    Dim rTotals() As Long, gTotals() As Long, bTotals() As Long, aTotals() As Long
+    ReDim rTotals(initX To finalX) As Long
+    ReDim gTotals(initX To finalX) As Long
+    ReDim bTotals(initX To finalX) As Long
+    ReDim aTotals(initX To finalX) As Long
+    
+    'Populate the initial arrays.
+    
+    Dim startY As Long
+    startY = initY - uRadius
+    If (startY < 0) Then startY = 0
+    
+    For y = startY To initY + dRadius - 1
+        srcSA1D.pvData = srcDibPointer + srcDibStride * y
+    For x = initX To finalX
+        xStride = x * 4
+        bTotals(x) = bTotals(x) + srcImageData(xStride)
+        gTotals(x) = gTotals(x) + srcImageData(xStride + 1)
+        rTotals(x) = rTotals(x) + srcImageData(xStride + 2)
+        aTotals(x) = aTotals(x) + srcImageData(xStride + 3)
+    Next x
+        numOfPixels = numOfPixels + 1
+    Next y
+    
+    Dim avgSample As Double
+    
+    'Loop through each row in the image, tallying blur values as we go
+    For y = initY To finalY
+                
+        'Remove trailing values from the blur collection if they lie outside the processing radius
+        lbY = y - uRadius
+        If (lbY > startY) Then
+        
+            QuickY = lbY - 1
+            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            
+            For x = initX To finalX
+                xStride = x * 4
+                bTotals(x) = bTotals(x) - srcImageData(xStride)
+                gTotals(x) = gTotals(x) - srcImageData(xStride + 1)
+                rTotals(x) = rTotals(x) - srcImageData(xStride + 2)
+                aTotals(x) = aTotals(x) - srcImageData(xStride + 3)
+            Next x
+            
+            numOfPixels = numOfPixels - 1
+        
+        End If
+        
+        'Add leading values to the blur box if they lie inside the processing radius
+        ubY = y + dRadius
+        If (ubY <= yLimit) Then
+        
+            QuickY = ubY
+            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            
+            For x = initX To finalX
+                xStride = x * 4
+                bTotals(x) = bTotals(x) + srcImageData(xStride)
+                gTotals(x) = gTotals(x) + srcImageData(xStride + 1)
+                rTotals(x) = rTotals(x) + srcImageData(xStride + 2)
+                aTotals(x) = aTotals(x) + srcImageData(xStride + 3)
+            Next x
+            
+            numOfPixels = numOfPixels + 1
+            
+        End If
+        
+        avgSample = 1# / numOfPixels
+        
+        dstSA1D.pvData = dstDibPointer + dstDibStride * y
+        
+        'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
+        For x = initX To finalX
+            
+            xStride = x * 4
+            
+            'With the blur box successfully calculated, we can finally apply the results to the image.
+            dstImageData(xStride) = Int(bTotals(x) * avgSample)
+            dstImageData(xStride + 1) = Int(gTotals(x) * avgSample)
+            dstImageData(xStride + 2) = Int(rTotals(x) * avgSample)
+            dstImageData(xStride + 3) = Int(aTotals(x) * avgSample)
+    
+        Next x
+        
+    Next y
+        
+    'Safely deallocate all image arrays
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
+    If g_cancelCurrentAction Then VerticalBlur_SubRegion = 0 Else VerticalBlur_SubRegion = 1
     
 End Function
 

@@ -2145,14 +2145,7 @@ Private Sub CreateSelectionMask()
                 Case ss_Rectangle, ss_Circle
                 
                     If (GetSelectionProperty_Long(sp_Area) <> sa_Border) Then
-                        
-                        With m_Bounds
-                            .Left = m_CornersLocked.Left
-                            .Top = m_CornersLocked.Top
-                            .Width = m_CornersLocked.Width
-                            .Height = m_CornersLocked.Height
-                        End With
-                        
+                        m_Bounds = m_CornersLocked
                     Else
                         
                         'Retrieve boundaries directly from the relevant path object
@@ -2188,10 +2181,10 @@ Private Sub CreateSelectionMask()
             'Finally, add the current feathering size, if any, to the selection boundaries
             If needToAddFeathering Then
                 With m_Bounds
-                    .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
-                    .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
-                    .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
-                    .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                    .Left = m_Bounds.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                    .Top = m_Bounds.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                    .Width = m_Bounds.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                    .Height = m_Bounds.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
                 End With
             End If
                 
@@ -2233,7 +2226,8 @@ End Sub
 
 'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we may choose to do this via GDI+.
 Private Sub ApplyFeatheringToMask()
-    Filters_Layers.QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
+    'Filters_Layers.QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
+    Filters_Layers.QuickBlurDIBRegion m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), m_Bounds
 End Sub
 
 'Helper function for retrieving the current selection corners (*not* boundary corners; this means things like feathering are
