@@ -258,7 +258,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
             selectionIsPureRectangle = (.GetSelectionShape = ss_Rectangle)
             
             If selectionIsPureRectangle Then
-                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_RoundedCornerRadius) = 0)
+                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#)
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Area) = sa_Interior)
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Smoothing) = ss_None)
             End If

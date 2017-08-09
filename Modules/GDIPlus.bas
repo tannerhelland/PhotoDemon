@@ -1086,6 +1086,7 @@ Private Declare Function GdipFillRectangle Lib "gdiplus" (ByVal hGraphics As Lon
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
+Private Declare Function GdipGetCompositingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal dstCompositingMode As GP_CompositingMode) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RECTF, ByRef dstUnit As GP_Unit) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Single, ByRef dstHeight As Single) As GP_Result
@@ -1385,8 +1386,8 @@ End Function
 Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, ByVal rLeft As Double, ByVal rTop As Double, ByVal rWidth As Double, ByVal rHeight As Double) As Boolean
 
     'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+    Dim hGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -1416,7 +1417,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
             
             'Attempt to render the blur effect
             Dim GDIPlusDebug As Long
-            GDIPlusDebug = GdipDrawImageFX(iGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, GP_U_Pixel)
+            GDIPlusDebug = GdipDrawImageFX(hGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, GP_U_Pixel)
             
             If GDIPlusDebug = 0 Then
                 GDIPlusBlurDIB = True
@@ -1442,7 +1443,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     End If
         
     'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     GdipDisposeImage tBitmap
     
 End Function
@@ -1500,10 +1501,10 @@ End Sub
 Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal hqOffsets As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
-    If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If hqOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1513,11 +1514,11 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     
     'Render the line
-    GdipDrawLine iGraphics, iPen, x1, y1, x2, y2
+    GdipDrawLine hGraphics, iPen, x1, y1, x2, y2
         
     'Release all created objects
     GdipDeletePen iPen
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1525,9 +1526,9 @@ End Function
 Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal useFillMode As GP_FillMode = GP_FM_Alternate) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     
     'Create a solid fill brush
     Dim hBrush As Long
@@ -1537,16 +1538,16 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     
         'We have a few different options for drawing the shape, based on the passed parameters.
         If useCurveAlgorithm Then
-            GdipFillClosedCurve2 iGraphics, hBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
+            GdipFillClosedCurve2 hGraphics, hBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
         Else
-            GdipFillPolygon iGraphics, hBrush, ptrToFloatArray, numOfPoints, useFillMode
+            GdipFillPolygon hGraphics, hBrush, ptrToFloatArray, numOfPoints, useFillMode
         End If
         
         ReleaseGDIPlusBrush hBrush
         
     End If
     
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1554,9 +1555,9 @@ End Function
 Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal strokeWidth As Single = 1, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1569,24 +1570,24 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     If autoCloseShape Then
     
         If useCurveAlgorithm Then
-            GdipDrawClosedCurve2 iGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
+            GdipDrawClosedCurve2 hGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
         Else
-            GdipDrawPolygon iGraphics, iPen, ptrToFloatArray, numOfPoints
+            GdipDrawPolygon hGraphics, iPen, ptrToFloatArray, numOfPoints
         End If
         
     Else
     
         If useCurveAlgorithm Then
-            GdipDrawCurve2 iGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
+            GdipDrawCurve2 hGraphics, iPen, ptrToFloatArray, numOfPoints, curvatureTension
         Else
-            GdipDrawLines iGraphics, iPen, ptrToFloatArray, numOfPoints
+            GdipDrawLines hGraphics, iPen, ptrToFloatArray, numOfPoints
         End If
     
     End If
     
     'Release all created objects
     GdipDeletePen iPen
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1594,10 +1595,10 @@ End Function
 Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As GP_LineJoin = GP_LJ_Bevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
-    If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If hqOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1608,11 +1609,11 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     If useInsetMode Then GdipSetPenMode iPen, GP_PA_Inset Else GdipSetPenMode iPen, GP_PA_Center
     
     'Render the rectangle
-    GdipDrawRectangle iGraphics, iPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop
+    GdipDrawRectangle hGraphics, iPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop
             
     'Release all created objects
     GdipDeletePen iPen
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1628,20 +1629,20 @@ End Function
 Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
     GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, GP_U_Pixel, iPen
     
     'Render the circle
-    GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
+    GdipDrawEllipse hGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
         
     'Release all created objects
     GdipDeletePen iPen
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1649,20 +1650,20 @@ End Function
 Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     
     'Create a brush, which will be used to stroke the circle
     Dim hBrush As Long
     hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
     If hBrush <> 0 Then
-        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
+        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(hGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
         GDI_Plus.ReleaseGDIPlusBrush hBrush
     End If
     
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1788,21 +1789,21 @@ End Function
 Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255, Optional ByVal hqOffsets As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA and offset behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
-    If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If hqOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     
     'Create a solid fill brush
     Dim hBrush As Long
     hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
     If (hBrush <> 0) Then
-        GdipFillEllipseI iGraphics, hBrush, x1, y1, xWidth, yHeight
+        GdipFillEllipseI hGraphics, hBrush, x1, y1, xWidth, yHeight
         ReleaseGDIPlusBrush hBrush
     End If
     
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     
     GDIPlusFillEllipseToDC = True
 
@@ -1812,20 +1813,20 @@ End Function
 Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255, Optional ByVal strokeWidth As Single = 1#) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
         
     'Create a pen with matching attributes
     Dim hPen As Long
     GdipCreatePen1 FillQuadWithVBRGB(eColor, eTransparency), strokeWidth, GP_U_Pixel, hPen
     
     'Render the ellipse
-    GdipDrawEllipse iGraphics, hPen, x1, y1, xWidth, yHeight
+    GdipDrawEllipse hGraphics, hPen, x1, y1, xWidth, yHeight
     
     'Release all created objects
     GdipDeletePen hPen
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
     GDIPlusStrokeEllipseToDC = True
 
@@ -1835,9 +1836,9 @@ End Function
 Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal rRadius As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal FillRect As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
     Dim rrPath As Long
@@ -1869,19 +1870,19 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     hBrush = GetGDIPlusSolidBrushHandle(eColor, 255)
     
     If hBrush <> 0 Then
-        If FillRect Then GdipFillPath iGraphics, hBrush, rrPath
+        If FillRect Then GdipFillPath hGraphics, hBrush, rrPath
         ReleaseGDIPlusBrush hBrush
     End If
     
     'Stroke the path as well (to fill the 1px exterior border)
     Dim iPen As Long
     GdipCreatePen1 FillQuadWithVBRGB(eColor, 255), 1, GP_U_Pixel, iPen
-    GdipDrawPath iGraphics, iPen, rrPath
+    GdipDrawPath hGraphics, iPen, rrPath
     
     'Release all created objects
     GdipDeletePen iPen
     GdipDeletePath rrPath
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -2015,22 +2016,22 @@ End Function
 Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDC, iGraphics
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
+        GdipSetSmoothingMode hGraphics, GP_SM_Antialias
     Else
-        GdipSetSmoothingMode iGraphics, GP_SM_None
+        GdipSetSmoothingMode hGraphics, GP_SM_None
     End If
     
-    GdipSetCompositingMode iGraphics, dstFillMode
+    GdipSetCompositingMode hGraphics, dstFillMode
     
     'Apply the brush
-    GdipFillRectangle iGraphics, srcBrushHandle, x1, y1, xWidth, yHeight
+    GdipFillRectangle hGraphics, srcBrushHandle, x1, y1, xWidth, yHeight
     
     'Release all created objects
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     
     GDIPlusFillDC_Brush = True
 
@@ -2068,11 +2069,11 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, GP_PF_32bppPARGB, srcBitmap, dstBitmap)
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     
     'Paint the converted image to the destination
-    GdipDrawImage iGraphics, dstBitmap, 0, 0
+    GdipDrawImage hGraphics, dstBitmap, 0, 0
     
     'The target image will always have premultiplied alpha (not really relevant, as the source is 24-bpp, but this
     ' lets us use various accelerated codepaths throughout the project).
@@ -2081,7 +2082,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     'Release our bitmap copies and GDI+ instances
     GdipDisposeImage srcBitmap
     GdipDisposeImage dstBitmap
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
  
 End Sub
 
@@ -2989,7 +2990,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
     GetGdipBitmapHandleFromDIB hBitmap, srcDIB
     
-    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    'hGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
     If (GdipSetInterpolationMode(hGraphics, interpolationType) = GP_OK) Then
@@ -3062,17 +3063,17 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     'profileTime = Timer
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+    Dim hGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
     GetGdipBitmapHandleFromDIB tBitmap, srcDIB
     
-    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    'hGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
+    If GdipSetInterpolationMode(hGraphics, interpolationType) = GP_OK Then
         
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -3083,8 +3084,8 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         'To improve performance and quality, explicitly request high-speed (aka linear) alpha compositing operation, and high-quality
         ' pixel offsets (treat pixels as if they fall on pixel borders, instead of center points - this provides rudimentary edge
         ' antialiasing, which is the best we can do without murdering performance)
-        GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
-        If useHQOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+        GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
+        If useHQOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
         If (newAlpha <> 1) Then
@@ -3093,7 +3094,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         End If
         
         'Perform the draw
-        GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
+        GdipDrawImagePointsRect hGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
         
         'Release our image attributes object
         If (imgAttributesHandle <> 0) Then GdipDisposeImageAttributes imgAttributesHandle
@@ -3108,7 +3109,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     
     'Release both the destination graphics object and the source bitmap object
     GdipDisposeImage tBitmap
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
@@ -4004,6 +4005,10 @@ Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 gResult = GdipGetInterpolationMode(hGraphics, tmpLong1)
                 GetGDIPlusGraphicsProperty = tmpLong1
                 
+            Case P2_SurfaceCompositeMode
+                gResult = GdipGetCompositingMode(hGraphics, tmpLong1)
+                GetGDIPlusGraphicsProperty = tmpLong1
+                
         End Select
         
         If (gResult <> GP_OK) Then
@@ -4039,6 +4044,9 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 
             Case P2_SurfaceResizeQuality
                 SetGDIPlusGraphicsProperty = CBool(GdipSetInterpolationMode(hGraphics, CLng(newSetting)) = GP_OK)
+                
+            Case P2_SurfaceCompositeMode
+                SetGDIPlusGraphicsProperty = CBool(GdipSetCompositingMode(hGraphics, CLng(newSetting)) = GP_OK)
             
         End Select
     

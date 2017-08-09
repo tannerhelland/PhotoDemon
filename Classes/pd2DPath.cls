@@ -206,6 +206,14 @@ Friend Sub AddArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, B
     End Select
 End Sub
 
+Friend Sub AddArc_Absolute(ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
+    If (m_PathHandle = 0) Then CreatePath
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddArc m_PathHandle, x, y, arcWidth, arcHeight, startAngle, sweepAngle
+    End Select
+End Sub
+
 Friend Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
@@ -334,6 +342,32 @@ Friend Sub AddRectangle_RectF(ByRef srcRect As RECTF)
                 GDI_Plus.GDIPlus_PathAddRectangle m_PathHandle, .Left, .Top, .Width, .Height
             End With
     End Select
+End Sub
+
+Friend Sub AddRoundedRectangle_RectF(ByRef srcRect As RECTF, ByVal cornerRadius As Single)
+    
+    If (m_PathHandle = 0) Then CreatePath
+    
+    'Validate the radius twice before applying it.  The width and height curvature cannot be less than
+    ' 1/2 the width (or height) of the rect.
+    Dim xCurvature As Single, yCurvature As Single
+    xCurvature = cornerRadius
+    yCurvature = cornerRadius
+    
+    If (xCurvature > srcRect.Width) Then xCurvature = srcRect.Width
+    If (yCurvature > srcRect.Height) Then yCurvature = srcRect.Height
+    
+    'Add four arcs, which are auto-connected by the path engine, then close the figure
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddArc m_PathHandle, srcRect.Left + srcRect.Width - xCurvature, srcRect.Top, xCurvature, yCurvature, 270#, 90#
+            GDI_Plus.GDIPlus_PathAddArc m_PathHandle, srcRect.Left + srcRect.Width - xCurvature, srcRect.Top + srcRect.Height - yCurvature, xCurvature, yCurvature, 0#, 90#
+            GDI_Plus.GDIPlus_PathAddArc m_PathHandle, srcRect.Left, srcRect.Top + srcRect.Height - yCurvature, xCurvature, yCurvature, 90#, 90#
+            GDI_Plus.GDIPlus_PathAddArc m_PathHandle, srcRect.Left, srcRect.Top, xCurvature, yCurvature, 180#, 90#
+            GDI_Plus.GDIPlus_PathCloseFigure m_PathHandle
+            
+    End Select
+    
 End Sub
 
 Friend Sub AddRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
@@ -748,7 +782,24 @@ Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, 
     
         Dim penHandle As Long, transformHandle As Long
         If (Not testPen Is Nothing) Then penHandle = testPen.GetHandle Else penHandle = 0
-        If (Not testTransform Is Nothing) Then transformHandle = testTransform.GetHandle Else transformHandle = 0
+        If (Not testTransform Is Nothing) Then
+            transformHandle = testTransform.GetHandle
+        Else
+            
+            'If the caller specified a pen but *not* a transform, we need to create a temporary transform for them.
+            If (penHandle <> 0) Then
+                
+                Dim tmpTransform As pd2DTransform
+                Set tmpTransform = New pd2DTransform
+                tmpTransform.Reset
+                
+                transformHandle = tmpTransform.GetHandle
+                
+            Else
+                transformHandle = 0
+            End If
+            
+        End If
         
         Select Case m_PathBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend

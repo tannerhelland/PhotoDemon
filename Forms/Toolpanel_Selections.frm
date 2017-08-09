@@ -101,7 +101,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4498
          _ExtentY        =   714
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End
@@ -166,7 +167,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   1296
          Caption         =   "corner rounding"
          FontSizeCaption =   10
-         Max             =   1
+         Max             =   100
+         SigDigits       =   1
       End
       Begin PhotoDemon.pdLabel lblSelection 
          Height          =   240
@@ -221,7 +223,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4498
          _ExtentY        =   714
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End
@@ -328,7 +331,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4498
          _ExtentY        =   714
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End
@@ -392,7 +396,8 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "line width"
          FontSizeCaption =   10
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End
@@ -449,7 +454,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4498
          _ExtentY        =   714
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End
@@ -500,7 +506,8 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4498
          _ExtentY        =   714
          Min             =   1
-         Max             =   10000
+         Max             =   1000
+         ScaleStyle      =   2
          Value           =   1
          DefaultValue    =   1
       End

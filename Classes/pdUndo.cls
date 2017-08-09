@@ -1113,7 +1113,7 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
     If (m_UndoNum > 0) Then
-        If (Not (m_UndoStack(m_UndoNum - 1).thumbnailLarge Is Nothing)) Then m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
+        If (Not m_UndoStack(m_UndoNum - 1).thumbnailLarge Is Nothing) And (Not m_UndoStack(m_UndoNum - 1).undoType = UNDO_SELECTION) Then m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
     End If
     
     #If DEBUGMODE = 1 Then

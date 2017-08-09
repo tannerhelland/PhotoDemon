@@ -502,6 +502,23 @@ Friend Function DrawRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef 
     DrawRectangleI_FromRectL = Me.DrawRectangleI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
+Friend Function DrawRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF, ByVal cornerRadius As Single) As Boolean
+        
+    'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
+    tmpPath.AddRoundedRectangle_RectF srcRect, cornerRadius
+    
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                DrawRoundRectangleF_FromRectF = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, tmpPath.GetHandle)
+        End Select
+    End If
+    
+End Function
+
 'Fill functions.  Given a target pd2dSurface and a source pd2dBrush, apply the brush to the surface in said shape.
 
 Public Function FillCircleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single) As Boolean
@@ -615,6 +632,39 @@ Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef 
     FillRectangleI_FromRectL = Me.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
+Friend Function FillRoundRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal x As Single, ByVal y As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single) As Boolean
+        
+    'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
+    tmpPath.AddRoundedRectangle_Relative x, y, rectWidth, rectHeight, cornerRadius
+    
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                FillRoundRectangleF = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
+        End Select
+    End If
+    
+End Function
+
+Friend Function FillRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF, ByVal cornerRadius As Single) As Boolean
+        
+    'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
+    tmpPath.AddRoundedRectangle_RectF srcRect, cornerRadius
+    
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                FillRoundRectangleF_FromRectF = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
+        End Select
+    End If
+    
+End Function
 
 'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
 ' better fit your project (e.g. perhaps it could raise an actual error event).
