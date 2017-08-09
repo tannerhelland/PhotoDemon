@@ -645,6 +645,9 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'Synchronize *only* Undo/Redo related elements
     Interface.SyncUndoRedoInterfaceElements
     
+    'Also synchronize the current layer thumbnail
+    If (targetLayerID >= 0) Then toolbar_Layers.NotifyLayerChange targetLayerID
+    
     'Mark the processor as ready
     m_Processing = False
     

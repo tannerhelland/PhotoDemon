@@ -933,6 +933,7 @@ Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal
     'Note that the setGenericTextProperty function will return TRUE if the requested change matters (e.g. if the text needs to be re-rendered
     ' due to this property change).  We modify our internal VectorDIBSynched tracker accordingly.
     m_VectorDIBSynched = m_VectorDIBSynched And (Not myTextRenderer.SetGenericTextProperty(desiredProperty, newValue))
+    If (Not m_VectorDIBSynched) Then m_IsThumbClean = False
     
 End Sub
 
