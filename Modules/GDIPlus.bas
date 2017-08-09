@@ -1890,27 +1890,29 @@ End Function
 Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal cOpacity As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
+        GdipSetSmoothingMode hGraphics, GP_SM_Antialias
     Else
-        GdipSetSmoothingMode iGraphics, GP_SM_None
+        GdipSetSmoothingMode hGraphics, GP_SM_None
     End If
     
-    GdipSetCompositingMode iGraphics, dstFillMode
+    GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush from the source image
     Dim hBrush As Long
     hBrush = GetGDIPlusSolidBrushHandle(eColor, cOpacity)
     
-    If hBrush <> 0 Then
-        GdipFillRectangle iGraphics, hBrush, x1, y1, xWidth, yHeight
+    If (hBrush <> 0) Then
+        GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
         ReleaseGDIPlusBrush hBrush
+    Else
+        Debug.Print "WARNING!  GDIPlusFillDIBRect failed because hBrush was null."
     End If
     
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     
     GDIPlusFillDIBRect = True
 

@@ -1749,17 +1749,19 @@ Private Sub CreateSelectionMask()
     m_FinalOutlineIsReady = False
     m_OverlayIsReady = False
     
-    Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte
+    Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte, maskForeByte As Byte
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used
     If (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
         maskBackColor = RGB(255, 255, 255)
         maskBackByte = 255
         maskForeColor = RGB(0, 0, 0)
+        maskForeByte = 0
     Else
         maskBackColor = RGB(0, 0, 0)
         maskBackByte = 0
         maskForeColor = RGB(255, 255, 255)
+        maskForeByte = 0
     End If
 
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
@@ -1824,16 +1826,16 @@ Private Sub CreateSelectionMask()
                 'Interior/exterior selections, and bordered selections with too large of a width use identical rendering code.
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
                 
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, maskForeByte, GP_CM_SourceCopy
                     
                 'Border selections are a bit different; we must draw two rectangles - an exterior and an interior one.
                 Else
                 
                     'Draw the exterior rectangle
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, maskForeByte, GP_CM_SourceCopy
                     
                     'Next, draw the interior one
-                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor, maskBackByte, GP_CM_SourceCopy
                     
                 End If
             
@@ -2645,7 +2647,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Red = newR * newA
                     .Green = newG * newA
                     .Blue = newB * newA
-                    .alpha = newA * 255
+                    .Alpha = newA * 255
                 End With
                 CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
             Next i
@@ -2677,7 +2679,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Red = newR * newA
                     .Green = newG * newA
                     .Blue = newB * newA
-                    .alpha = newA * 255
+                    .Alpha = newA * 255
                 End With
                 CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
             Next i
