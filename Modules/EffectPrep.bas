@@ -597,15 +597,6 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Exit Sub
     End If
     
-    'Prepare a few image arrays (and array headers) in advance.
-    Dim wlImageData() As Byte
-    Dim wlSA As SAFEARRAY2D
-    
-    Dim selImageData() As Byte
-    Dim selSA As SAFEARRAY2D
-    
-    Dim x As Long, y As Long
-    
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
@@ -674,25 +665,29 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'Next, point three arrays at three images: the original image, the newly modified image, and the selection mask copy
         ' we just created.  (We need a copy of the original image, because selection feathering requires us to blend pixels
         ' between the original copy, and the new effect-processed copy.)
-        PrepSafeArray wlSA, workingDIB
-        CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
         
-        PrepSafeArray selSA, selMaskCopy
-        CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
+        'Prepare a few image arrays (and array headers) in advance.
+        Dim pxEffect() As Byte, saEffect As SAFEARRAY1D, ptrWD As Long, strideWD As Long
+        workingDIB.WrapArrayAroundScanline pxEffect, saEffect, 0
+        ptrWD = saEffect.pvData
+        strideWD = saEffect.cElements
         
-        Dim dstImageData() As Byte
-        Dim dstSA As SAFEARRAY2D
-        PrepSafeArray dstSA, workingDIBBackup
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        Dim pxSelection() As Byte, saSelection As SAFEARRAY1D, ptrSel As Long, strideSel As Long
+        selMaskCopy.WrapArrayAroundScanline pxSelection, saSelection, 0
+        ptrSel = saSelection.pvData
+        strideSel = saSelection.cElements
         
-        Dim i As Long, thisAlpha As Long, blendAlpha As Double
+        Dim pxDst() As Byte, saDst As SAFEARRAY1D, ptrDst As Long, strideDst As Long
+        workingDIBBackup.WrapArrayAroundScanline pxDst, saDst, 0
+        ptrDst = saDst.pvData
+        strideDst = saDst.cElements
         
-        'TODO: figure out why the selection mask is always being copied at 24-bpp
-        Dim selMaskDepth As Long
+        Dim x As Long, y As Long
+        Dim thisAlpha As Long, blendAlpha As Double
         
-        Dim dstPxWidth As Long, dstQuickX As Long, selQuickX As Long, effectX As Long
+        Dim dstPxWidth As Long, xOffsetDst As Long, effectX As Long
         dstPxWidth = workingDIBBackup.GetDIBColorDepth \ 8
-            
+        
         Dim workingDIBCD As Long
         workingDIBCD = workingDIB.GetDIBColorDepth \ 8
         
@@ -700,32 +695,36 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         Dim newR As Long, newG As Long, newB As Long, newA As Long
         Dim oldR As Long, oldG As Long, oldB As Long, oldA As Long
-        Dim newR_F As Double, newG_F As Double, newB_F As Double, newA_F As Double
         
         For y = 0 To workingDIB.GetDIBHeight - 1
+            
+            'Update all array pointers to point at the current line in each array
+            saEffect.pvData = ptrWD + strideWD * y
+            saSelection.pvData = ptrSel + strideSel * y
+            saDst.pvData = ptrDst + strideDst * y
+            
         For x = 0 To workingDIB.GetDIBWidth - 1
             
-            selQuickX = x * 4
-            dstQuickX = x * dstPxWidth
+            xOffsetDst = x * dstPxWidth
             effectX = x * workingDIBCD
             
             'Retrieve the selection mask value at this position.  Its value determines how this pixel is handled.
-            thisAlpha = selImageData(selQuickX + 3, y)
+            thisAlpha = pxSelection(x * 4)
             
             'Transparent mask pixels are completely ignored (e.g. they are not part of the selected area)
             If (thisAlpha <> 0) Then
                 
-                newB = wlImageData(effectX, y)
-                newG = wlImageData(effectX + 1, y)
-                newR = wlImageData(effectX + 2, y)
-                newA = wlImageData(effectX + 3, y)
+                newB = pxEffect(effectX)
+                newG = pxEffect(effectX + 1)
+                newR = pxEffect(effectX + 2)
+                newA = pxEffect(effectX + 3)
                 
                 'Fully selected pixels are replaced wholesale by the effect results.
                 If (thisAlpha = 255) Then
-                    dstImageData(dstQuickX, y) = newB
-                    dstImageData(dstQuickX + 1, y) = newG
-                    dstImageData(dstQuickX + 2, y) = newR
-                    dstImageData(dstQuickX + 3, y) = newA
+                    pxDst(xOffsetDst) = newB
+                    pxDst(xOffsetDst + 1) = newG
+                    pxDst(xOffsetDst + 2) = newR
+                    pxDst(xOffsetDst + 3) = newA
                     
                 'Partially selected pixels are calculated as a weighted average of the old and new pixels.
                 ' (Note that this is *not* an alpha-blend operation!  It is a weighted average between the old and
@@ -735,23 +734,18 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                     blendAlpha = thisAlpha * ONE_DIV_255
                     
                     'Retrieve the old (original, unmodified) RGB values
-                    oldB = dstImageData(dstQuickX, y)
-                    oldG = dstImageData(dstQuickX + 1, y)
-                    oldR = dstImageData(dstQuickX + 2, y)
-                    oldA = dstImageData(dstQuickX + 3, y)
+                    oldB = pxDst(xOffsetDst)
+                    oldG = pxDst(xOffsetDst + 1)
+                    oldR = pxDst(xOffsetDst + 2)
+                    oldA = pxDst(xOffsetDst + 3)
                     
                     'Calculate a weighted blend of the old and new pixel values.  Because they are premultiplied, we do not
                     ' need to deal with the effect this has on alpha values.
-                    newB = (blendAlpha * newB) + oldB * (1# - blendAlpha)
-                    newG = (blendAlpha * newG) + oldG * (1# - blendAlpha)
-                    newR = (blendAlpha * newR) + oldR * (1# - blendAlpha)
-                    newA = (blendAlpha * newA) + oldA * (1# - blendAlpha)
+                    pxDst(xOffsetDst) = (blendAlpha * newB) + oldB * (1# - blendAlpha)
+                    pxDst(xOffsetDst + 1) = (blendAlpha * newG) + oldG * (1# - blendAlpha)
+                    pxDst(xOffsetDst + 2) = (blendAlpha * newR) + oldR * (1# - blendAlpha)
+                    pxDst(xOffsetDst + 3) = (blendAlpha * newA) + oldA * (1# - blendAlpha)
                     
-                    dstImageData(dstQuickX, y) = newB
-                    dstImageData(dstQuickX + 1, y) = newG
-                    dstImageData(dstQuickX + 2, y) = newR
-                    dstImageData(dstQuickX + 3, y) = newA
-                
                 End If
                     
             End If
@@ -760,9 +754,9 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Next y
         
         'Safely deallocate all image arrays
-        CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
+        workingDIB.UnwrapArrayFromDIB pxEffect
+        selMaskCopy.UnwrapArrayFromDIB pxSelection
+        workingDIBBackup.UnwrapArrayFromDIB pxDst
             
     End If
         
