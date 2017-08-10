@@ -82,7 +82,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     Else
     
         'Create a new font object as necessary
-        If m_FontCollection(m_FontPointer) Is Nothing Then
+        If (m_FontCollection(m_FontPointer) Is Nothing) Then
             Set m_FontCollection(m_FontPointer) = New pdFont
         Else
             m_FontCollection(m_FontPointer).DeleteCurrentFont
@@ -108,7 +108,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         
         'Increment the font pointer, and cycle back to zero as necessary
         m_FontPointer = m_FontPointer + 1
-        If m_FontPointer >= UBound(m_FontCollection) Then m_FontPointer = 0
+        If (m_FontPointer >= UBound(m_FontCollection)) Then m_FontPointer = 0
         
     End If
 
@@ -128,7 +128,7 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
     Dim i As Long
     For i = 0 To m_CacheSize - 1
     
-        If Not (m_FontCollection(i) Is Nothing) Then
+        If (Not m_FontCollection(i) Is Nothing) Then
             
             With m_FontCollection(i)
             
@@ -136,7 +136,7 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
                 Select Case m_CurrentCacheMode
                 
                     Case FCM_NameOnly
-                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
                             DoesFontExist = i
                             Exit For
                         End If
@@ -148,7 +148,7 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
                         End If
                     
                     Case FCM_NameAndSize
-                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
                             If (FontSize = m_FontCollection(i).GetFontSize) Then
                                 DoesFontExist = i
                                 Exit For
@@ -168,7 +168,7 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
                         End If
                         
                     Case FCM_NameAndSizeAndStyle
-                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
                             If (FontSize = m_FontCollection(i).GetFontSize) Then
                                 If (isBold = .GetFontBold) Then
                                     If (isItalic = .GetFontItalic) Then

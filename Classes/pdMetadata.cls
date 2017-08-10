@@ -163,7 +163,7 @@ Private Function DoesTagExist(ByVal tagName As String, Optional ByRef tagIndex A
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long
     For i = 0 To m_NumOfTags - 1
-        If StrComp(m_Tags(i).tagName, tagName, searchMode) = 0 Then
+        If Strings.StringsEqual(m_Tags(i).tagName, tagName, (searchMode = vbTextCompare)) Then
             DoesTagExist = True
             tagIndex = i
             Exit For
@@ -186,7 +186,7 @@ Public Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional B
     For i = 0 To m_NumOfTags - 1
     
         'Tag name found!  Mark the index and exit.
-        If StrComp(m_Tags(i).TagGroupAndName, tagNameAndGroup, searchMode) = 0 Then
+        If Strings.StringsEqual(m_Tags(i).TagGroupAndName, tagNameAndGroup, (searchMode = vbTextCompare)) Then
             DoesTagExistFullName = True
             tagIndex = i
             Exit For
@@ -411,14 +411,14 @@ Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
             
             'Next, look for GPS coordinate tags.  If found, we can enable some fun bonus metadata options (like pulling up Google Maps
             ' with the photo's location already helpfully tagged).
-            If (StrComp(m_Tags(i).tagName, "GPSPosition", vbBinaryCompare) = 0) Then
+            If Strings.StringsEqual(m_Tags(i).tagName, "GPSPosition", vbBinaryCompare) Then
                 m_HasGPSCoordinates = True
                 Interface.SyncInterfaceToCurrentImage
             End If
             
             'Next, we want to mark any tags that are not relevant to the user.  We will still preserve these tags internally,
             ' but they will be forcibly hidden on the editor screen.
-            If StrComp(m_Tags(i).TagGroup, "ExifTool") = 0 Then m_Tags(i).InternalUseOnly = True
+            If Strings.StringsEqual(m_Tags(i).TagGroup, "ExifTool") Then m_Tags(i).InternalUseOnly = True
             
             'Next, we want to improve the grouping of tags.  ExifTool's grouping is somewhat erratic; for example, all software
             ' treats ICC profiles as single, contiguous units, but ExifTool tends to group ICC properties into a bunch of
@@ -459,7 +459,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     
     'Next, ExifTool provides "Composite" tags - basically, tags that do not exist in the file, but whose value can be inferred
     ' from other pieces of information.  As "Composite" doesn't make much sense, we use "Inferred" instead.
-    If StrComp(groupNameCheck, "COMPOSITE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Inferred")
+    If Strings.StringsEqual(groupNameCheck, "COMPOSITE", False) Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Inferred")
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
     ' (For TIFFs, which may have multiple pages, we handle this differently.)
@@ -495,7 +495,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
         ' so we only search up to its *current* position.)
         If (tagIndex > 0) Then
             For i = 0 To tagIndex - 1
-                If StrComp(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, vbBinaryCompare) = 0 Then
+                If Strings.StringsEqual(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, False) Then
                     dstMetadata.TagGroupFriendly = "JFIF (thumbnail)"
                     Exit For
                 End If
@@ -955,8 +955,8 @@ Private Function PARSE_AdvanceToFirstMeaningfulLine(ByRef xmlLines() As String, 
 End Function
 
 Private Function PARSE_IsLinePotentialTag(ByRef srcXMLLine As String) As Boolean
-    If StrComp(Left$(srcXMLLine, 2), LEFT_TAG_TEST, vbBinaryCompare) = 0 Then
-        If StrComp(Right$(srcXMLLine, 1), RIGHT_TAG_TEST, vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(Left$(srcXMLLine, 2), LEFT_TAG_TEST, False) Then
+        If Strings.StringsEqual(Right$(srcXMLLine, 1), RIGHT_TAG_TEST, False) Then
             PARSE_IsLinePotentialTag = True
         End If
     End If
@@ -1131,7 +1131,7 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
     Dim finalValueLine As Long, fullTagValue As String
     
     'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
-    If StrComp(Trim$(xmlLines(tagStartLine + 3)), "<et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 3)), "<et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", False) Then
         
         'This is a binary tag.  *STARTING WITH THE NEXT LINE*, everything that follows is part of the tag, until the closing
         ' </et:val> tag is reached.  (Note that we will need to strip a trailing CrLf from the value.)
@@ -1139,7 +1139,7 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
         
         'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
         For i = (tagEndLine - 1) To tagStartLine Step -1
-            If StrComp(Trim$(xmlLines(i)), "</et:prt>", vbBinaryCompare) = 0 Then Exit For
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:prt>", False) Then Exit For
         Next i
         
         If (i > tagStartLine) Then
@@ -1166,7 +1166,7 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
         
         'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
         For i = (tagEndLine - 1) To tagStartLine Step -1
-            If StrComp(Trim$(xmlLines(i)), "</et:prt>", vbBinaryCompare) = 0 Then Exit For
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:prt>", False) Then Exit For
         Next i
         
         If (i >= tagStartLine) Then
@@ -1209,7 +1209,7 @@ Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagSta
 '    </IPTC:CodedCharacterSet>
     
     'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
-    If StrComp(Trim$(xmlLines(tagStartLine + 4)), "<et:val rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 4)), "<et:val rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", False) Then
         
         'This is a binary tag.  *STARTING WITH THE NEXT LINE*, everything that follows is part of the tag, until the closing
         ' </et:val> tag is reached.  (Note that we will need to strip a trailing CrLf from the value.)
@@ -1218,7 +1218,7 @@ Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagSta
         'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:val> tag.
         Dim i As Long
         For i = (tagEndLine - 1) To tagStartLine Step -1
-            If StrComp(Trim$(xmlLines(i)), "</et:val>", vbBinaryCompare) = 0 Then Exit For
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:val>", False) Then Exit For
         Next i
         
         If (i > tagStartLine) Then
@@ -1277,10 +1277,10 @@ Private Function PARSE_RDFBagCheck(ByRef xmlLines() As String, ByRef tagStartLin
     'ExifTool's output is consistent, so we can use line separators to quickly check for such tags.
     
     'Start by looking for a bare <et:val> tag on the (startLine + 4) line
-    If StrComp(Trim$(xmlLines(tagStartLine + 4)), "<et:val>", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 4)), "<et:val>", False) Then
         
         'Check the next line for a bare <rdf:Bag> tag
-        If StrComp(Trim$(xmlLines(tagStartLine + 5)), "<rdf:Bag>", vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 5)), "<rdf:Bag>", False) Then
             
             'This is a list.  We could manually parse the list, but for now, just use the semicolon-delimited version from the
             ' <et:prt> tag.

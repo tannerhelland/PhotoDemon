@@ -690,9 +690,6 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_Metafile = False
     
-    'Raw retrieval storage variables
-    Dim rawClipboardData() As Byte
-    
     'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
     Dim tmpClipboardFile As String
     
@@ -790,7 +787,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
             Dim testURL As String
             testURL = Trim$(clipText)
         
-            If (StrComp(UCase$(Left$(testURL, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(testURL, 3)), "FTP", vbBinaryCompare) = 0) Then
+            If Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True) Then
             
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Possible image URL found.  Attempting to retrieve data..."
@@ -1579,7 +1576,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
         Dim testURL As String
         testURL = Trim$(dragText)
     
-        If (StrComp(UCase$(Left$(testURL, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(testURL, 3)), "FTP", vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Possible image URL found in dragged text contents.  Attempting to retrieve data..."

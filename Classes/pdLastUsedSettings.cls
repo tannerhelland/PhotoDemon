@@ -49,7 +49,6 @@ Private m_ParentID As String
 Private m_numUserPresets As Long
 Private m_userPresetNames() As String
 Private m_userPresetData() As String
-Private m_curPreset As String
 
 Private m_ParentForm As Object
 

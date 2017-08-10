@@ -164,11 +164,6 @@ Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
 ' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
 Private m_LayerHoverRect As RECT, m_VisibilityRect As RECT, m_NameRect As RECT, m_NameEditRect As RECT
 
-'Sometimes we need to make changes that will raise redraw-causing events.  (For example, we'll raise events that
-' require external UI objects to re-sync against new settings.)  This value is set to TRUE when you know redraw
-' events are coming, but we want to ignore them because we're about to redraw ourselves anyway.
-Private m_DisableRedraws As Boolean
-
 'While in OLE drag/drop mode (e.g. dragging files from Explorer), ignore any mouse actions on the main layer box
 Private m_InOLEDragDropMode As Boolean
 
@@ -677,10 +672,6 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()

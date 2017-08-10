@@ -292,7 +292,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
         If (m_NumOfScripts > 0) Then
             
             For i = 0 To m_NumOfScripts - 1
-                If (StrComp(srcFontName, m_ScriptFontNames(i), vbBinaryCompare) = 0) Then
+                If Strings.StringsEqual(srcFontName, m_ScriptFontNames(i), False) Then
                     dstFontProperty = m_ScriptCache(i)
                     GetScriptsSupportedByFont = dstFontProperty.numSupportedScripts
                     Exit Function

@@ -2458,7 +2458,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End If
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncClsID As clsID, tmpClsID As clsID
+    Dim uEncClsID As clsID
     Dim uEncParams As GP_EncoderParameters
     Dim aEncParams() As Byte
 
@@ -4710,7 +4710,7 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
                 If (GdipGetImageEncoders(numOfEncoders, sizeOfEncoders, VarPtr(encoderBuffer(0))) = GP_OK) Then
                 
                     'Iterate through the encoder list, searching for a match
-                    Dim i As Long, strLength As Long, tmpMimeType As String
+                    Dim i As Long
                     For i = 0 To numOfEncoders - 1
                     
                         'Extract this codec

@@ -264,10 +264,10 @@ Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
         For i = lngGap + iMin To iMax
             varSwap = m_Strings(i)
             lngHold = i
-            Do While StrComp(m_Strings(lngHold - lngGap), varSwap) > 0
+            Do While (StrComp(m_Strings(lngHold - lngGap), varSwap) > 0)
                 m_Strings(lngHold) = m_Strings(lngHold - lngGap)
                 lngHold = lngHold - lngGap
-                If lngHold < iMin + lngGap Then Exit Do
+                If (lngHold < iMin + lngGap) Then Exit Do
             Loop
             m_Strings(lngHold) = varSwap
         Next i
@@ -290,7 +290,7 @@ Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
             If i = itemCount - itemsRemoved Then Exit For
             
             'If this string and the string above it match, shift everything above it downward
-            If StrComp(m_Strings(i), m_Strings(i + 1), vbBinaryCompare) = 0 Then
+            If Strings.StringsEqual(m_Strings(i), m_Strings(i + 1), False) Then
                 
                 #If DEBUGMODE = 1 Then
                     Debug.Print "Duplicate string found: " & m_Strings(i)

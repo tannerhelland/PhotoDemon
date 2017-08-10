@@ -737,9 +737,6 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
     
-    'Selection tools all use the same variable for tracking POIs
-    Dim sCheck As Long
-    
     'Check mouse button use
     If (Button = vbLeftButton) Then
         

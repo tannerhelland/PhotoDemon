@@ -47,6 +47,14 @@ Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMono
 ' To improve performance, a dedicated XML parser is always created alongside this class.
 Private m_XML As pdXML
 
+'When loading image resources during startup, 99% of resources will be an identical size.  To cut down on the amount
+' of memory we need to allocate, we try to reuse the same image buffer over and over again.
+Private m_Palette() As RGBQUAD, m_numOfPaletteEntries As Long
+Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
+
+'Similarly, a persistent load buffer is also used when copying raw bytes out of individual resource blocks
+Private m_Buffer() As Byte
+
 'Called early in PD's startup, this function checks to see if we've already extracted PD's resource file to a
 ' separate working folder.  If we have, grab the data from there instead of from the .exe.  (This is helpful
 ' during debugging.)
@@ -202,12 +210,12 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
         If (nodeIndex >= 0) Then
             
             'Retrieve the header XML packet for this node
-            Dim retBytes() As Byte, retString As String, retSize As Long
-            If m_Resources.GetNodeDataByIndex(nodeIndex, True, retBytes, False, retSize) Then
+            Dim retString As String, retSize As Long
+            If m_Resources.GetNodeDataByIndex(nodeIndex, True, m_Buffer, False, retSize) Then
                 
                 'Copy the received bytes into a string, then initialize an XML object from it
                 retString = Space$(retSize \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(m_Buffer(0)), retSize
                 
                 If m_XML.LoadXMLFromString(retString) Then
                 
@@ -237,10 +245,17 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     ' 2) Pull the DIB's alpha channel only out of the file.  If this image *does* support
                     '    run-time coloration, there will not be any color data inside the file.
                     If m_XML.GetUniqueTag_Boolean("rt-clr") Then
-                        Dim srcBytes() As Byte
-                        ReDim srcBytes(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
-                        LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(srcBytes(0, 0)))
-                        If LoadImageResource Then LoadImageResource = DIBs.ApplyTransparencyTable(m_tmpDIB, srcBytes)
+                        
+                        'Reuse the same module-level pixel array, to try and reduce unnecessary allocations
+                        If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
+                            m_ResWidth = imgWidth
+                            m_ResHeight = imgHeight
+                            ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
+                        End If
+                        
+                        LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(m_Pixels(0, 0)))
+                        If LoadImageResource Then LoadImageResource = DIBs.ApplyTransparencyTable(m_tmpDIB, m_Pixels)
+                        
                     Else
                         
                         'See if the DIB was stored using a palette system
@@ -252,19 +267,29 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                             
                             If (numColors > 0) Then
                                 
-                                Dim tmpPalette() As RGBQUAD, tmpPixels() As Byte
-                                ReDim tmpPalette(0 To numColors - 1) As RGBQUAD
-                                ReDim tmpPixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
+                                'Private m_Palette() As RGBQUAD, m_numOfPaletteEntries As Long
+                        'Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
                                 
-                                Dim origData() As Byte
-                                If m_Resources.GetNodeDataByIndex(nodeIndex, False, origData, False) Then
+                                'Reuse the same module-level arrays, to try and reduce unnecessary allocations
+                                If (m_numOfPaletteEntries < numColors) Then
+                                    m_numOfPaletteEntries = numColors
+                                    ReDim m_Palette(0 To numColors - 1) As RGBQUAD
+                                End If
+                                
+                                If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
+                                    m_ResWidth = imgWidth
+                                    m_ResHeight = imgHeight
+                                    ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
+                                End If
+                                
+                                If m_Resources.GetNodeDataByIndex(nodeIndex, False, m_Buffer, False) Then
                                     
                                     'Copy the palette and pixel data into place
-                                    CopyMemory ByVal VarPtr(tmpPalette(0)), ByVal VarPtr(origData(0)), numColors * 4
-                                    CopyMemory ByVal VarPtr(tmpPixels(0, 0)), ByVal VarPtr(origData(numColors * 4)), imgWidth * imgHeight
+                                    CopyMemory ByVal VarPtr(m_Palette(0)), ByVal VarPtr(m_Buffer(0)), numColors * 4
+                                    CopyMemory ByVal VarPtr(m_Pixels(0, 0)), ByVal VarPtr(m_Buffer(numColors * 4)), imgWidth * imgHeight
                                     
                                     'Build a matching 32-bpp DIB from the palette and pixel data
-                                    LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, tmpPalette, tmpPixels)
+                                    LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, m_Palette, m_Pixels)
                                 
                                 End If
                                 

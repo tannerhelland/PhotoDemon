@@ -534,8 +534,7 @@ Private Sub ScrollStripByWheel(ByVal scrollAmount As Single, ByVal x As Long, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -562,7 +561,9 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
         End If
     End If
     
-    UpdateControlLayout
+    'Normally we would want to update the control's layout here, but ucSupport will automatically raise
+    ' a redraw request of its own (making this one redundant!)
+    'UpdateControlLayout
     
 End Sub
 

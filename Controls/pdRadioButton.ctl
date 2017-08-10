@@ -287,12 +287,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -371,7 +366,7 @@ Private Sub UpdateControlLayout()
     If ucSupport.IsCaptionActive Then
         
         'Start by making sure the control is tall enough to fit the caption.  (Control height is auto-controlled at present.)
-        If ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2 <> bHeight Then
+        If (ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2 <> bHeight) Then
             bHeight = ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2
             ucSupport.RequestNewSize bWidth, bHeight, False
         End If
@@ -385,7 +380,7 @@ Private Sub UpdateControlLayout()
     tmpFont.SetTextAlignment vbLeftJustify
     
     'Retrieve the height of the current caption, or if no caption exists, a placeholder
-    Dim captionWidth As Long, captionHeight As Long
+    Dim captionHeight As Long
     If ucSupport.IsCaptionActive Then
         captionHeight = tmpFont.GetHeightOfString(ucSupport.GetCaptionTextTranslated)
     Else
@@ -417,7 +412,7 @@ Private Sub UpdateControlLayout()
         .Left = captionLeft
         .Top = (bHeight - ucSupport.GetCaptionHeight(True)) / 2
         .Width = ucSupport.GetCaptionWidth(True) + 1
-        If .Left + .Width > bWidth Then .Width = (bWidth - .Left)
+        If (.Left + .Width > bWidth) Then .Width = (bWidth - .Left)
         .Height = ucSupport.GetCaptionHeight(True) + 1
     End With
     
@@ -427,11 +422,7 @@ Private Sub UpdateControlLayout()
     'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
     ' size, but the caption was *still* too long), set a module-level failure state to TRUE.  This notifies the renderer
     ' that ellipses must be forcibly appended to the caption.
-    If ucSupport.GetCaptionWidth(True) > bWidth - m_CaptionRect.Left Then
-        m_FitFailure = True
-    Else
-        m_FitFailure = False
-    End If
+    m_FitFailure = (ucSupport.GetCaptionWidth(True) > bWidth - m_CaptionRect.Left)
     
     RedrawBackBuffer
             
@@ -501,7 +492,6 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        UpdateControlLayout
     End If
 End Sub
 

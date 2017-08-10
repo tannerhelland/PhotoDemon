@@ -368,7 +368,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
         
         'Do a quick failsafe check to make sure the passed string differs from our current settings.  If it doesn't,
         ' we can fully skip this step.
-        If (StrComp(srcXML, Me.GetSelectionAsXML, vbBinaryCompare) <> 0) Then
+        If Strings.StringsNotEqual(srcXML, Me.GetSelectionAsXML, False) Then
             
             Dim cParams As pdParamXML
             Set cParams = New pdParamXML
@@ -2632,7 +2632,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         Dim tmpRGBA As RGBQUAD, i As Long
         Dim newR As Long, newG As Long, newB As Long, newA As Single
-        Dim defaultFillColor As Long, defaultFillOpacity As Single
+        Dim defaultFillColor As Long
             
         'The constructed lookup table varies by overlay type
         If (renderType = PDSR_Highlight) Then
@@ -3086,8 +3086,6 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
         'First, note that our mask is not yet ready.  (Masks are generated on-demand, unless this is a raster selection,
         ' in which case we'll load the actual mask straight from the file.)
         m_IsMaskReady = False
-        
-        Dim dibLoadedSuccessfully As Boolean: dibLoadedSuccessfully = False
         
         'Retrieve the file-specific header from the package.  This contains details like selection format version, which we need
         ' before we proceed with full parsing.

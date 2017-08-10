@@ -358,7 +358,7 @@ Public Sub SetAllSettings(ByVal newSettings As String)
 End Sub
 
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
-    ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
+    ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function
 
 'To support high-DPI settings properly, we expose specialized move+size functions
@@ -443,12 +443,7 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Public Property Get hWnd() As Long

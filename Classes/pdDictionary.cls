@@ -107,7 +107,7 @@ Friend Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         For i = 0 To m_NumOfEntries - 1
             
             'Compare the requested key with this one.
-            If (StrComp(entryKey, m_DictEntries(i).dKey, vbBinaryCompare) = 0) Then
+            If Strings.StringsEqual(entryKey, m_DictEntries(i).dKey, False) Then
                 
                 'It's a match!  If this key was scheduled for deletion, un-schedule it prior to returning.
                 If m_DictEntries(i).wasDeleted Then m_DictEntries(i).wasDeleted = False
@@ -321,7 +321,7 @@ Private Function GetIndexOfEntry(ByRef entryKey As String) As Long
     Dim i As Long
     For i = 0 To m_NumOfEntries - 1
         
-        If (StrComp(entryKey, m_DictEntries(i).dKey, vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(entryKey, m_DictEntries(i).dKey, False) Then
             
             'If we find a match, make sure this entry isn't scheduled for deletion
             If (Not m_DictEntries(i).wasDeleted) Then

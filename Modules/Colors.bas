@@ -749,7 +749,7 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     Dim testString As String, validChars As String
     
     'Hex validation is fairly easy: is the string prepended with a hash?
-    If (StrComp(Left$(srcString, 1), "#", vbBinaryCompare) = 0) Then
+    If Strings.StringsEqual(Left$(srcString, 1), "#", False) Then
         
         dstColorType = ColorHex
         

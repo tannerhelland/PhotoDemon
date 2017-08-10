@@ -193,7 +193,7 @@ Private m_MouseDown As Boolean
 Private m_selectedNode As Long
 
 'Current mouse position
-Private m_mouseX As Single, m_mouseY As Single
+Private m_MouseX As Single, m_MouseY As Single
 
 'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
 Private m_curChannel As Long
@@ -233,8 +233,8 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     
     'Reset the selected node and mouse position
     m_selectedNode = -1
-    m_mouseX = -1
-    m_mouseY = -1
+    m_MouseX = -1
+    m_MouseY = -1
     
     'Redraw the current preview (and curve interaction box)
     UpdatePreview
@@ -741,7 +741,7 @@ SkipHistogramRender:
     
     'Finally, display a live coordinate overlay for the current mouse position.  If a node is selected, the coordinate display
     ' will reflect that node; otherwise, it will display the interpolated value of the curve at the current mouse position.
-    If (m_selectedNode > 0) Or ((m_mouseX > PREVIEW_BORDER_PX) And (m_mouseX < picDraw.ScaleWidth - PREVIEW_BORDER_PX) And (m_mouseY > PREVIEW_BORDER_PX) And (m_mouseY < picDraw.ScaleHeight - PREVIEW_BORDER_PX)) Then
+    If (m_selectedNode > 0) Or ((m_MouseX > PREVIEW_BORDER_PX) And (m_MouseX < picDraw.ScaleWidth - PREVIEW_BORDER_PX) And (m_MouseY > PREVIEW_BORDER_PX) And (m_MouseY < picDraw.ScaleHeight - PREVIEW_BORDER_PX)) Then
     
         'Generate input and output node coordinate strings first; we do these separately, because we want to calculate
         ' width independently for each string, and use the larger of the two as our bounding rect for the coordinate overlay.
@@ -756,8 +756,8 @@ SkipHistogramRender:
             coordActualX = m_curveNodes(m_curChannel, m_selectedNode).pX
             coordActualY = m_curveNodes(m_curChannel, m_selectedNode).pY
         Else
-            coordActualX = m_mouseX
-            coordActualY = m_CurveResults(m_curChannel, m_mouseX)
+            coordActualX = m_MouseX
+            coordActualY = m_CurveResults(m_curChannel, m_MouseX)
         End If
         
         'Draw lines at the current curve position, to help orient the user
@@ -948,8 +948,8 @@ End Sub
 Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Store the current mouse position in module-level variables.  The render function may use these to display a coordinate overlay.
-    m_mouseX = x
-    m_mouseY = y
+    m_MouseX = x
+    m_MouseY = y
 
     'If the mouse is *not* down, indicate to the user that points can be moved
     If (Not m_MouseDown) Then

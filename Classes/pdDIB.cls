@@ -348,16 +348,19 @@ Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
         If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             'Loop through the image and force each alpha value to the user's specified value
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
-            Me.WrapArrayAroundDIB iData, tmpSA
+            Dim iData() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            Me.WrapArrayAroundScanline iData, tmpSA, 0
+            dibPtr = tmpSA.pvData
+            dibStride = tmpSA.cElements
             
             Dim x As Long, y As Long, finalX As Long
             finalX = (m_dibWidth - 1) * 4
                 
             'Loop through the image, checking alphas as we go
             For y = 0 To m_dibHeight - 1
+                tmpSA.pvData = dibPtr + dibStride * y
             For x = 0 To finalX Step 4
-                iData(x + 3, y) = newAlpha
+                iData(x + 3) = newAlpha
             Next x
             Next y
             

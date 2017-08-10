@@ -691,10 +691,7 @@ Public Sub InvertCurrentSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim xStride As Long
-    
-    Dim selMaskData() As Long
-    Dim selMaskSA As SAFEARRAY1D
+    Dim selMaskData() As Long, selMaskSA As SAFEARRAY1D
     
     Dim maskWidth As Long, maskHeight As Long
     maskWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1

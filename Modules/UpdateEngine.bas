@@ -218,7 +218,7 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                     langRevision = xmlEngine.GetUniqueTag_String("revision", , , "language", "updateID", langList(i))
                     
                     'If the version matches this .exe version, this language file is a candidate for updating.
-                    If StrComp(currentPDVersion, langVersion, vbBinaryCompare) = 0 Then
+                    If Strings.StringsEqual(currentPDVersion, langVersion, False) Then
                     
                         'Next, we need to compare the versions of the update language file and the installed language file.
                         
@@ -229,7 +229,7 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                         If g_Language.GetPDLanguageFileObject(tmpLanguage, langID) Then
                         
                             'A matching language file was found.  Compare version numbers.
-                            If StrComp(langVersion, RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion), vbBinaryCompare) = 0 Then
+                            If Strings.StringsEqual(langVersion, RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion), False) Then
                             
                                 'The major/minor version of this language file matches the current language.  Compare revisions.
                                 If langRevision > RetrieveVersionRevisionAsLong(tmpLanguage.langVersion) Then
@@ -293,7 +293,7 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                         
                         'Construct a matching URL
                         langURL = "http://photodemon.org/downloads/languages/"
-                        If StrComp(UCase(langLocation), "STABLE", vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(langLocation, "STABLE", True) Then
                             langURL = langURL & "stable/"
                         Else
                             langURL = langURL & "nightly/"
@@ -897,10 +897,10 @@ Public Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As 
     'Parse the version string, which is currently on the form Major.Minor.Build.Revision
     Dim verStrings() As String
     verStrings = Split(m_UpdateVersion, ".")
-    If UBound(verStrings) < 2 Then verStrings = Split(m_UpdateVersion, ",")
+    If (UBound(verStrings) < 2) Then verStrings = Split(m_UpdateVersion, ",")
     
     'We always want major and minor version numbers
-    If UBound(verStrings) >= 1 Then
+    If (UBound(verStrings) >= 1) Then
         
         GetUpdateVersion_Literal = verStrings(0) & "." & verStrings(1)
         
@@ -908,8 +908,8 @@ Public Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As 
         If (UBound(verStrings) >= 3) Or forceRevisionDisplay Then
             
             'If the revision number exists, use it
-            If UBound(verStrings) >= 3 Then
-                If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then GetUpdateVersion_Literal = GetUpdateVersion_Literal & "." & verStrings(3)
+            If (UBound(verStrings) >= 3) Then
+                If Strings.StringsNotEqual(verStrings(3), "0", False) Then GetUpdateVersion_Literal = GetUpdateVersion_Literal & "." & verStrings(3)
             
             'If the revision number does not exist, append 0 in its place
             Else
@@ -975,7 +975,7 @@ End Function
 
 'Retrieve PD's current name and version, modified against "beta" labels, etc
 Public Function GetPhotoDemonNameAndVersion() As String
-    GetPhotoDemonNameAndVersion = App.Title & " " & GetPhotoDemonVersion
+    GetPhotoDemonNameAndVersion = App.Title & " " & Updates.GetPhotoDemonVersion()
 End Function
 
 'Retrieve PD's current version, modified against "beta" labels, etc
@@ -995,21 +995,21 @@ Public Function GetPhotoDemonVersion() As String
         Select Case PD_BUILD_QUALITY
         
             Case PD_PRE_ALPHA
-                If g_Language Is Nothing Then
+                If (g_Language Is Nothing) Then
                     buildStateString = "pre-alpha"
                 Else
                     buildStateString = g_Language.TranslateMessage("pre-alpha")
                 End If
             
             Case PD_ALPHA
-                If g_Language Is Nothing Then
+                If (g_Language Is Nothing) Then
                     buildStateString = "alpha"
                 Else
                     buildStateString = g_Language.TranslateMessage("alpha")
                 End If
             
             Case PD_BETA
-                If g_Language Is Nothing Then
+                If (g_Language Is Nothing) Then
                     buildStateString = "beta"
                 Else
                     buildStateString = g_Language.TranslateMessage("beta")
@@ -1019,7 +1019,7 @@ Public Function GetPhotoDemonVersion() As String
         
         'Assemble a full title string, while handling the special case of .9 version numbers, which serve as production
         ' builds for the next .0 release.
-        If App.Minor = 9 Then
+        If (App.Minor = 9) Then
             GetPhotoDemonVersion = CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
         Else
             GetPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
@@ -1102,7 +1102,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     If InStr(1, newVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(newVersion, ",", ".")
     
     'If the string representations are identical, we can exit now
-    If (StrComp(oldVersion, newVersion, vbBinaryCompare) = 0) Then
+    If Strings.StringsEqual(oldVersion, newVersion, False) Then
         IsNewVersionHigher = False
         
     'If the strings are not equal, a more detailed comparison is required.

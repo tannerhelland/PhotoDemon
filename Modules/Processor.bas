@@ -140,8 +140,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     Set cXMLParams = New pdParamXML
     If (Len(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
     
-    Dim i As Long
-    
     'Next, we need to check for actions that may require us to rasterize one or more vector layers before proceeding.
     ' The process for checking this is rather involved, so we offload it to a separate function.
     '

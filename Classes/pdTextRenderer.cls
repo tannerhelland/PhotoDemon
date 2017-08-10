@@ -802,7 +802,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
     Select Case desiredProperty
         
         Case ptp_Text
-            If StrComp(m_CurrentText, newValue, vbBinaryCompare) <> 0 Then
+            If Strings.StringsNotEqual(m_CurrentText, CStr(newValue), False) Then
                 m_CurrentText = newValue
                 SetGenericTextProperty = True
             End If
@@ -816,7 +816,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
         'TODO: consider raising some kind of error or message if the listed font is not available.  This is a possibility for PDI images
         ' traded between PCs.
         Case ptp_FontFace
-            If StrComp(m_FontFace, newValue, vbBinaryCompare) <> 0 Then
+            If Strings.StringsNotEqual(m_FontFace, CStr(newValue), True) Then
                 m_FontFace = newValue
                 m_FontCacheClean = False
                 m_CurrentBackend = fb_UNKNOWN
@@ -1062,7 +1062,7 @@ End Function
 Public Sub SetFontFace(ByVal fontName As String)
     
     'If this font face has already been set, ignore this request
-    If (StrComp(fontName, m_FontFace, vbBinaryCompare) <> 0) Then
+    If Strings.StringsNotEqual(fontName, m_FontFace, False) Then
         m_FontFace = fontName
         m_FontCacheClean = False
         m_CurrentBackend = fb_UNKNOWN
@@ -1882,9 +1882,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Build RGB lookup tables for premultiplied alpha.  Note that we must also calculate an alpha lookup table, so we can manually implement
     ' GDI+-specific features like "text clarity".
-    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte, aLookup() As Byte
+    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte, aLookup() As Byte
     ReDim rLookup(0 To 255) As Byte
-    ReDim gLookUp(0 To 255) As Byte
+    ReDim gLookup(0 To 255) As Byte
     ReDim bLookup(0 To 255) As Byte
     ReDim aLookup(0 To 255) As Byte
     
@@ -1947,7 +1947,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         preMultiplicationFactor = a / 255
         
         rLookup(x) = r * preMultiplicationFactor
-        gLookUp(x) = g * preMultiplicationFactor
+        gLookup(x) = g * preMultiplicationFactor
         bLookup(x) = b * preMultiplicationFactor
         aLookup(x) = a
         
@@ -2031,7 +2031,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             
             'Populate the destination pixel at this point with our lookup table values.
             dstImageData(xStrideDst, y + yOffset) = bLookup(g)
-            dstImageData(xStrideDst + 1, y + yOffset) = gLookUp(g)
+            dstImageData(xStrideDst + 1, y + yOffset) = gLookup(g)
             dstImageData(xStrideDst + 2, y + yOffset) = rLookup(g)
             dstImageData(xStrideDst + 3, y + yOffset) = aLookup(g)
         

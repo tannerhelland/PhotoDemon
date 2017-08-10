@@ -554,7 +554,7 @@ Private Function PopPluginLabel(ByVal pluginID As CORE_PLUGINS) As Boolean
         If m_PluginEnabled(pluginID) Then
             
             'If this plugin is present and enabled, does its version match what we expect?
-            If StrComp(m_PluginVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), vbBinaryCompare) = 0 Then
+            If Strings.StringsEqual(m_PluginVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), False) Then
                 lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed and up to date")
                 lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
                 PopPluginLabel = True
@@ -615,7 +615,7 @@ Private Sub PluginChanged()
         
         If PluginManager.IsPluginCurrentlyInstalled(pluginIndex) Then
             lblPluginVersion.Caption = m_PluginVersion(pluginIndex)
-            If StrComp(m_PluginVersion(pluginIndex), PluginManager.ExpectedPluginVersion(pluginIndex), vbBinaryCompare) = 0 Then
+            If Strings.StringsEqual(m_PluginVersion(pluginIndex), PluginManager.ExpectedPluginVersion(pluginIndex), False) Then
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
             Else
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)

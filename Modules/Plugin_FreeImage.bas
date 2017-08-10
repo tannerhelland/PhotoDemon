@@ -320,7 +320,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     multiDibIsDetached = False
     
     'Intermediate FreeImage objects may also be required during the transform process
-    Dim new_hDIB As Long, fi_hasTransparency As Boolean
+    Dim new_hDIB As Long
     
     
     '****************************************************************************
@@ -1322,7 +1322,7 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
         iHeight = FreeImage_GetHeight(srcFIHandle) - 1
         iScanWidth = FreeImage_GetPitch(srcFIHandle)
         
-        Dim x As Long, y As Long, quickX As Long
+        Dim x As Long, y As Long
         Dim tmpInt As Integer, tmpByte As Byte
         Dim cmBytes() As Byte
         

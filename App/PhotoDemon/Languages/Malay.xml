@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2989</langversion>
+<langversion>6.8.2990</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -579,21 +579,7 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <translation>Mengira warna imej</translation>
 </phrase>
 
-<phrase>
-<original>This menu item only appears in the Visual Basic IDE.
-
-You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
-<translation>Ini perkara menu hanya muncul dalam Visual Basic IDE.
-
-You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk menguji penapis anda sendiri. Saya biasanya melakukan ini, kemudian sekali penapis berfungsi dengan betul, saya memberikan subrutin yang tersendiri.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Pro Tip</original>
-<translation>PhotoDemon Pro Petua</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -8293,6 +8279,11 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 </phrase>
 
 <phrase>
+<original>normalize</original>
+<translation>menormalkan</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>keamatan</translation>
 </phrase>
@@ -8310,21 +8301,6 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <phrase>
 <original>white point</original>
 <translation>titik putih</translation>
-</phrase>
-
-<phrase>
-<original>normalize</original>
-<translation>menormalkan</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>spektrum dilihat</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>spektrum penuh</translation>
 </phrase>
 
 <phrase>
@@ -8360,6 +8336,16 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <phrase>
 <original>Reinhard</original>
 <translation>Reinhard</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>spektrum dilihat</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>spektrum penuh</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -14991,10 +14977,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4502 phrases. -->
-<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12225 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12179 total words. -->
 
 </pdData>

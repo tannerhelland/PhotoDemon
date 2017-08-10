@@ -301,23 +301,23 @@ Private Sub m_EditBox_TabPress(ByVal focusDirectionForward As Boolean)
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If Not (m_EditBox Is Nothing) Then
+    
+    If (Not m_EditBox Is Nothing) Then
         
         'If we haven't created the edit box yet, now is a great time to do it!
-        If m_EditBox.hWnd = 0 Then CreateEditBoxAPIWindow
+        If (m_EditBox.hWnd = 0) Then CreateEditBoxAPIWindow
         
         m_EditBox.Visible = newVisibility
         
     End If
+    
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If (Not m_InternalResizeState) Then UpdateControlLayout
     RaiseEvent Resize
 End Sub
 
@@ -604,8 +604,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        ucSupport.UpdateAgainstThemeAndLanguage
-        If MainModule.IsProgramRunning() Then UpdateControlLayout
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

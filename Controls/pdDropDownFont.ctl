@@ -157,10 +157,6 @@ Private m_Text_CJK As String
 Private m_Text_Arabic As String
 Private m_Text_Hebrew As String
 
-'Because the listbox portion fo this control is owner-drawn, we must perform our own item height measurements.  These are
-' calculated against a test string when creating the list; the result is stored to this variable.
-Private m_ItemHeight As Long
-
 'DrawText functions
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -654,8 +650,7 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
@@ -664,10 +659,6 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     Else
         If m_PopUpVisible Then HideListBox
     End If
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()

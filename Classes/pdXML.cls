@@ -69,7 +69,7 @@ End Sub
 'PhotoDemon-specific XML files are required to encode a data type (filter, macro, etc).  This function can be used to quickly
 ' retrieve that type, allowing the calling function to determine if a proper filetype has been loaded for their operation.
 Public Function IsPDDataType(ByVal expectedType As String) As Boolean
-    IsPDDataType = (StrComp(GetTextBetweenTags("pdDataType"), expectedType, m_TextCompareMode) = 0)
+    IsPDDataType = Strings.StringsEqual(GetTextBetweenTags("pdDataType"), expectedType, (m_TextCompareMode = vbTextCompare))
 End Function
 
 'Write a blank line into the XML file.  This has no practical purpose, but I like pretty XML output, so PD occasionally uses

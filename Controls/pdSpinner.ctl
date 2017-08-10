@@ -305,8 +305,8 @@ Public Property Let Value(ByVal newValue As Double)
                     RedrawBackBuffer
                 End If
             Else
-                If Len(m_EditBox.Text) > 0 Then
-                    If StrComp(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), vbBinaryCompare) <> 0 Then m_EditBox.Text = GetFormattedStringValue(m_Value)
+                If (Len(m_EditBox.Text) > 0) Then
+                    If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
                 End If
             End If
             
@@ -580,16 +580,14 @@ Private Sub m_EditBox_Resize()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If (Not (m_EditBox Is Nothing)) Then m_EditBox.Visible = newVisibility
+    If (Not m_EditBox Is Nothing) Then m_EditBox.Visible = newVisibility
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If (Not m_InternalResizeState) Then UpdateControlLayout
     RaiseEvent Resize
 End Sub
 
@@ -1111,7 +1109,6 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        If MainModule.IsProgramRunning() Then UpdateControlLayout
     End If
 End Sub
 

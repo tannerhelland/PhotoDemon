@@ -77,9 +77,6 @@ Private m_TotalHeight As Long
 'Divider height is calculated as a fraction of the default line height.  This makes things like DPI handling much simpler.
 Private Const SEPARATOR_LINE_HEIGHT As Single = 0.55
 
-'Font size is used to determine default line height.  You can ignore it if the box will be fully custom-drawn.
-Private m_FontSize As Single
-
 'This class will track .ListIndex for you.  It needs to know that value to auto-suggest things like scroll bar position
 ' after a keypress.
 Private m_ListIndex As Long
@@ -441,7 +438,7 @@ Public Function ListIndexByString(ByRef srcString As String, Optional ByVal comp
         
         Dim i As Long
         For i = 0 To m_NumOfItems - 1
-            If (StrComp(srcString, m_Items(i).textEn, compareMode) = 0) Then
+            If Strings.StringsEqual(srcString, m_Items(i).textEn, (compareMode = vbTextCompare)) Then
                 newIndex = i
                 Exit For
             End If
@@ -523,7 +520,7 @@ Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String)
 
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         
-        If (StrComp(newItemText, m_Items(itemIndex).textEn, vbBinaryCompare) <> 0) Then
+        If Strings.StringsNotEqual(newItemText, m_Items(itemIndex).textEn, vbBinaryCompare) Then
         
             m_Items(itemIndex).textEn = newItemText
             
@@ -1009,7 +1006,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     If (Not g_Language Is Nothing) Then
         
-        If (m_NumOfItems > 0) And (StrComp(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, vbBinaryCompare) <> 0) Then
+        If (m_NumOfItems > 0) And Strings.StringsNotEqual(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, False) Then
             
             m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
             

@@ -325,12 +325,11 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    Dim x As Long, y As Long
     
     'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single
+    Dim topA As Single, topAInt As Byte
+    Dim bottomA As Single, bottomAInt As Byte
     
     For y = initY To finalY
         
@@ -340,10 +339,8 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
         
     For x = initX To finalX Step 4
         
-        'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
-        'NOTE: this was changed to check color on 09 August 2017.  Exterior and bordered selections
-        ' were not working correctly, and this fixes it; I don't know if it was future repercussions.
-        topAInt = topPixels(x)  'topPixels(x + 3)
+        'Retrieve mask layer value.  (We don't care about mask layer colors at present.)
+        topAInt = topPixels(x)
         
         'Ignore opaque mask pixels
         If (topAInt <> 255) Then
@@ -352,7 +349,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
             bottomAInt = bottomPixels(x + 3)
             
             'If the target pixel is transparent, ignore it
-            If (bottomAInt <> 0#) Then
+            If (bottomAInt <> 0) Then
                 
                 'The destination pixel is *not* transparent, meaning we must process it
                 topA = intToFloat(topAInt)

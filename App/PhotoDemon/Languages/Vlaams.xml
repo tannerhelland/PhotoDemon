@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.275</langversion>
+<langversion>6.7.276</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -579,21 +579,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <translation>Tellen kleuren van de afbeelding</translation>
 </phrase>
 
-<phrase>
-<original>This menu item only appears in the Visual Basic IDE.
-
-You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
-<translation>Dit menu-item verschijnt alleen in de Visual Basic IDE.
-
-Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om uw eigen filters te testen. Ik doe dit meestal eerst, zodra de filter goed werkt, geef ik het een subroutine van zijn eigen.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Pro Tip</original>
-<translation>PhotoDemon Pro Tip</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -8282,6 +8268,11 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>normalize</original>
+<translation>normaliseer</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>intensiteit</translation>
 </phrase>
@@ -8299,21 +8290,6 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <phrase>
 <original>white point</original>
 <translation>wit punt</translation>
-</phrase>
-
-<phrase>
-<original>normalize</original>
-<translation>normaliseer</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>zichtbaar spectrum</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>volledig spectrum</translation>
 </phrase>
 
 <phrase>
@@ -8349,6 +8325,16 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <phrase>
 <original>Reinhard</original>
 <translation>Reinhard</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>zichtbaar spectrum</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>volledig spectrum</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -14976,10 +14962,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4502 phrases. -->
-<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12225 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12179 total words. -->
 
 </pdData>

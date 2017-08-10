@@ -469,7 +469,7 @@ Public Function StringRemap(ByRef srcString As String, ByVal remapType As PD_STR
 End Function
 
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
-Public Function StringsEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
+Public Function StringsEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
     'Cheat and compare length first
     If (Len(firstString) <> Len(secondString)) Then
@@ -489,7 +489,7 @@ Public Function StringsEqual(ByVal firstString As String, ByVal secondString As 
 End Function
 
 'Convenience not-wrapper to StringsEqual, above
-Public Function StringsNotEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
+Public Function StringsNotEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     StringsNotEqual = Not StringsEqual(firstString, secondString, ignoreCase)
 End Function
 

@@ -574,7 +574,7 @@ Public Function DoesKeyExist(ByVal downloadKey As String) As Long
         
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
-            If StrComp(downloadKey, m_DownloadList(i).Key, vbBinaryCompare) = 0 Then
+            If Strings.StringsEqual(downloadKey, m_DownloadList(i).Key, False) Then
                 DoesKeyExist = i
                 Exit Function
             End If

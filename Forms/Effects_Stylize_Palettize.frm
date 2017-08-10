@@ -355,9 +355,9 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     cParams.SetParamString toolParams
     
     Dim quantMethod As PD_COLOR_QUANTIZE
-    If (StrComp(LCase$(cParams.GetString("method", "mediancut")), "neuquant", vbBinaryCompare) = 0) Then
+    If Strings.StringsEqual(cParams.GetString("method", "mediancut"), "neuquant", True) Then
         quantMethod = PDCQ_Neuquant
-    ElseIf (StrComp(LCase$(cParams.GetString("method", "mediancut")), "wu", vbBinaryCompare) = 0) Then
+    ElseIf Strings.StringsEqual(cParams.GetString("method", "mediancut"), "wu", True) Then
         quantMethod = PDCQ_Wu
     Else
         quantMethod = PDCQ_MedianCut
@@ -379,9 +379,9 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
     
     Dim outputAlphaMode As PD_ALPHA_STATUS
-    If (StrComp(LCase$(cParams.GetString("alphamode", "full")), "full", vbBinaryCompare) = 0) Then
+    If Strings.StringsEqual(cParams.GetString("alphamode", "full"), "full", True) Then
         outputAlphaMode = PDAS_ComplicatedAlpha
-    ElseIf (StrComp(LCase$(cParams.GetString("alphamode", "full")), "binary", vbBinaryCompare) = 0) Then
+    ElseIf Strings.StringsEqual(cParams.GetString("alphamode", "full"), "binary", True) Then
         outputAlphaMode = PDAS_BinaryAlpha
     Else
         outputAlphaMode = PDAS_NoAlpha

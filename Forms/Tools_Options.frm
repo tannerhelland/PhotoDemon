@@ -970,7 +970,7 @@ Private Sub cboMonitors_Click()
     
     'If the returned value is "(none)", translate that into the user's language before displaying; otherwise, display
     ' whatever path we retrieved.
-    If (StrComp(profilePath, "(none)", vbBinaryCompare) = 0) Then
+    If Strings.StringsEqual(profilePath, "(none)", False) Then
         txtColorProfilePath.Text = g_Language.TranslateMessage("(none)")
     Else
         txtColorProfilePath.Text = profilePath

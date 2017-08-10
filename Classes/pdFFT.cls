@@ -315,9 +315,8 @@ Public Sub TestFFT()
     ReDim testReal(0 To testSize) As Single
     ReDim testImag(0 To testSize) As Single
     
-    Dim i As Long, j As Long
-    
     'Use this loop to populate the initial data, if desired
+    'Dim i As Long
     'For i = 0 To testSize
     '    testReal(i) = i
     '    testImag(i) = testSize - i
@@ -329,6 +328,7 @@ Public Sub TestFFT()
     
     Me.PrepFFT testSize + 1, True
     
+    Dim j As Long
     For j = 0 To 2047
         Me.FFT_1D_Radix2_NoTrig testSize + 1, testReal, testImag, True
         Me.FFT_1D_Radix2_NoTrig testSize + 1, testReal, testImag, False

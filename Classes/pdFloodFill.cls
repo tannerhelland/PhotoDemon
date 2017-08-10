@@ -271,7 +271,7 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
     Dim copySize As Long
     copySize = m_BoundsX + 1
 
-    Dim x As Long, y As Long
+    Dim y As Long
     For y = 0 To m_BoundsY
         CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), copySize
     Next y
@@ -305,7 +305,7 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB) As Boolean
     'Populate the initial stack point
     PushOntoStack m_InitPoint.x, m_InitPoint.y
     
-    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
@@ -457,7 +457,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     'Populate the initial stack point
     PushOntoStack m_InitPoint.x, m_InitPoint.y
     
-    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
@@ -798,7 +798,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     yBound = srcDIB.GetDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, srcSA As SAFEARRAY2D

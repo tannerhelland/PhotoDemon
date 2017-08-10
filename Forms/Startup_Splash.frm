@@ -97,7 +97,7 @@ Public Sub PrepareRestOfSplash()
     
     If m_dibsLoadedSuccessfully Then
     
-        'Use the getDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
+        'Use the GetDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
         Dim captureRect As RECTL
         GetWindowRect Me.hWnd, captureRect

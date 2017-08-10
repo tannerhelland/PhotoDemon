@@ -236,7 +236,8 @@ Private m_HasFocus As Boolean
 ' Our hook proc will capture the Tab key that causes focus to enter the control, and mistakenly assume it is a Tab keypress from
 ' *within* the control.  To prevent this from happening, we enforce a slight time delay from when our hook procedure begins, to when
 ' we capture Tab keypresses.  This prevents faulty Tab-key handling.
-Private m_TimeAtFocusEnter As Long
+' 10/Aug/2017: disabled pending further testing; our new hook solution may not require this trickery
+' Private m_TimeAtFocusEnter As Long
 
 'The system handles drawing of the edit box.  These persistent brush and font handles are passed to the relevant
 ' window messages, and WAPI uses them when rendering the edit box and associated text.

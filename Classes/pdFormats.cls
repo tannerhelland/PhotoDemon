@@ -127,7 +127,7 @@ Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = "
     ' as such, it already contains a full list of valid extensions.
     GetListOfInputFormats = inputExtensions(0)
     
-    If (StrComp(listDelimiter, ";", vbBinaryCompare) <> 0) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, ";", listDelimiter)
+    If Strings.StringsNotEqual(listDelimiter, ";", False) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, ";", listDelimiter)
     If (Not includeStarDot) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, "*.", "")
     
 End Function

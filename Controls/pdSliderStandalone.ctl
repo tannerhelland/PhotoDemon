@@ -634,15 +634,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then
-        UpdateControlLayout
-    Else
-        RedrawBackBuffer
-    End If
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -1474,7 +1466,6 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        UpdateControlLayout
     End If
 End Sub
 

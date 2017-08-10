@@ -255,7 +255,7 @@ Private m_retShiftConstants As ShiftConstants, m_retMouseButton As PDMouseButton
 Private m_scrollDelta As Long, m_finalScrollAmount As Double
 Private m_commandID As Long, m_msgTimestamp As Long
 Private m_MouseX As Long, m_MouseY As Long
-Private m_mouseXInt As Integer, m_mouseYInt As Integer
+Private m_MouseXInt As Integer, m_MouseYInt As Integer
 
 'In some rare cases, we still want to allow the default mouse handler to "do its thing" after PD performs any specialized handling.
 ' If this rare case is active, this will be set to TRUE.
@@ -786,8 +786,8 @@ Private Sub UpdateMouseModifiers(Optional ByVal lParam As Long = 0)
     'As a failsafe, crucial mouse events (button down and up, particularly) can never afford to be delayed.  We must retrieve
     ' their values at *exactly* the moment the message arrives.  To that end, we always store copies of these integer-only values,
     ' using the values passed in the message parameters.
-    m_mouseXInt = GetLoWord(lParam)
-    m_mouseYInt = GetHiWord(lParam)
+    m_MouseXInt = GetLoWord(lParam)
+    m_MouseYInt = GetHiWord(lParam)
     
 End Sub
 
@@ -915,7 +915,7 @@ Private Function HandleMouseDown(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal 
         
     End If
     
-    RaiseEvent MouseDownCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, m_msgTimestamp)
+    RaiseEvent MouseDownCustom(m_retMouseButton, m_retShiftConstants, m_MouseXInt, m_MouseYInt, m_msgTimestamp)
                 
 End Function
 
@@ -985,12 +985,12 @@ Private Function HandleMouseUp(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wP
     ' either way, and if a Click event is also being raised, we warn the user in the MouseUp event.
     ' This way, they can choose to abandon MouseUp processing if the _Click event is implemented.)
     If (m_MouseMoveCount < 3) Then
-        RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, True, m_msgTimestamp)
-        RaiseEvent ClickCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt)
+        RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_MouseXInt, m_MouseYInt, True, m_msgTimestamp)
+        RaiseEvent ClickCustom(m_retMouseButton, m_retShiftConstants, m_MouseXInt, m_MouseYInt)
     
     'The mouse has moved too much, so a Click event will not be raised.  Only raise a MouseUp event.
     Else
-        RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, False, m_msgTimestamp)
+        RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_MouseXInt, m_MouseYInt, False, m_msgTimestamp)
     End If
 
 End Function

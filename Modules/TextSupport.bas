@@ -168,7 +168,7 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
     Dim numToAppend As Long
     
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-    If StrComp(Right$(srcString, 1), ")", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(Right$(srcString, 1), ")", False) Then
     
         Dim i As Long
         For i = Len(srcString) - 2 To 1 Step -1
@@ -178,7 +178,7 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
                 
                 'If it is a parentheses, then this string already has a "(#)" appended to it.  Figure out what
                 ' the number inside the parentheses is, and strip that entire block from the string.
-                If StrComp(Mid$(srcString, i, 1), "(", vbBinaryCompare) = 0 Then
+                If Strings.StringsEqual(Mid$(srcString, i, 1), "(", False) Then
                 
                     numToAppend = CLng(Mid$(srcString, i + 1, Len(srcString) - i - 1))
                     srcString = Left$(srcString, i - 2)

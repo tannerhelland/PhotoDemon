@@ -370,7 +370,6 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
     Dim rDist As Long, gDist As Long, bDist As Long
     Dim numOfColors As Long
     numOfColors = UBound(srcPalette)
-    Dim missCount As Long
     
     'Start by sorting the palette by each color's distance from black.  A specially designed QuickSort
     ' function is used for the sort.
@@ -397,6 +396,7 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
     Dim bucketSize As Long
     numOfBuckets = (numOfColors + 1) \ numOfBuckets - 1
     bucketSize = (numOfColors + 1) \ (numOfBuckets + 1)
+    
     Dim bucketList() As Single, bucketCount() As Long
     ReDim bucketList(0 To numOfBuckets) As Single
     ReDim bucketCount(0 To numOfBuckets) As Long
@@ -747,8 +747,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     
     'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
     ' searching for contiguous matching colors.
-    Dim lastColor As Long: lastColor = -1
-    Dim minIndex As Long, lastPaletteColor As Long
+    Dim minIndex As Long
     Dim r As Long, g As Long, b As Long
     
     Dim tmpPalette As GDI_LOGPALETTE256
@@ -964,8 +963,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         ReDim gErrors(0 To xWidth, 0 To yDown) As Single
         ReDim bErrors(0 To xWidth, 0 To yDown) As Single
         
-        Dim xNonStride As Long
-        Dim xQuickInner As Long, yQuick As Long
+        Dim xNonStride As Long, xQuickInner As Long
         Dim newR As Long, newG As Long, newB As Long
         
         'Start calculating pixels.
@@ -977,7 +975,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             r = srcPixels(x + 2, y)
             
             'Add our running errors to the original colors
-            xNonStride = x \ 4
+            xNonStride = x * 0.25
             newR = r + rErrors(xNonStride, 0)
             newG = g + gErrors(xNonStride, 0)
             newB = b + bErrors(xNonStride, 0)

@@ -323,7 +323,7 @@ Private m_ProgramFontCollection As pdFontCollection
 Public Function FindFontSizeSingleLine(ByRef srcString As String, ByVal pxWidth As Long, ByVal initialFontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False, Optional ByVal cacheIfNovel As Boolean = True) As Single
     
     'Inside the designer, we need to make sure the font collection exists
-    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
+    If (m_ProgramFontCollection Is Nothing) Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection
     Dim fontIndex As Long
@@ -494,18 +494,18 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     
     'If this font face is identical to the previous font face, do not add it
     Dim fontUsable As Boolean
-    fontUsable = CBool(StrComp(thisFontFace, m_LastFontAdded, vbBinaryCompare) <> 0)
+    fontUsable = Strings.StringsNotEqual(thisFontFace, m_LastFontAdded, False)
     
     'We also want to ignore fonts with @ in front of their name, as these are merely duplicates of existing fonts.
     ' (The @ signifies improved support for vertical text, which may someday be useful... but right now I have enough
     '  on my plate without worrying about that.)
     If fontUsable Then
-        fontUsable = CBool(StrComp(Left$(thisFontFace, 1), "@", vbBinaryCompare) <> 0)
+        fontUsable = Strings.StringsNotEqual(Left$(thisFontFace, 1), "@", False)
     End If
     
     'For now, we are also ignoring raster fonts, as they create unwanted complications
     If fontUsable Then
-        fontUsable = CBool(CLng(srcFontType And RASTER_FONTTYPE) = 0)
+        fontUsable = (CLng(srcFontType And RASTER_FONTTYPE) = 0)
     End If
     
     'If this font is a worthy addition, add it now

@@ -230,8 +230,8 @@ Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
     
     Dim stringChanged As Boolean, fontOrDCChanged As Boolean
     
-    stringChanged = CBool(StrComp(srcString, m_LastString, vbBinaryCompare) <> 0)
-    fontOrDCChanged = CBool(m_LastFont <> m_GDIFont) Or CBool(m_tmpDIB.GetDIBDC <> m_LastDC)
+    stringChanged = Strings.StringsNotEqual(srcString, m_LastString, vbBinaryCompare)
+    fontOrDCChanged = (m_LastFont <> m_GDIFont) Or (m_tmpDIB.GetDIBDC <> m_LastDC)
     
     'If the string has changed since the last call, we must re-itemize it.
     If stringChanged Then
@@ -676,7 +676,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
             'Seeding the random number generator is a little tricky.  We need it to be deterministic, so the layer's appearance
             ' doesn't change between save/load, but we also need it to vary by changes to jitter.
             Set cRandom = New pdRandomize
-            cRandom.setSeed_Int m_CharJitterX * 100 + m_CharJitterY * 10000
+            cRandom.SetSeed_Int m_CharJitterX * 100 + m_CharJitterY * 10000
             
             maxJitterX = m_TextMetrics.tmAveCharWidth * (m_CharJitterX / 100)
             halfJitterX = maxJitterX / 2
@@ -744,7 +744,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                     With m_Glyphs(curGlyph)
                                             
                         If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
-                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_VB * maxJitterY) - halfJitterY)
+                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.GetRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.GetRandomFloat_VB * maxJitterY) - halfJitterY)
                         Else
                             dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
                         End If

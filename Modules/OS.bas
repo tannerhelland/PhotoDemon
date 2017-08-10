@@ -994,17 +994,19 @@ End Function
 Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_") As String
     
     Dim tmpFolder As String
-    Dim sTmpName As String * 576
-    Dim nRet As Long
-
+    
     'Use the current program-level temp folder as the destination for this file.  (And because we're thorough,
     ' use the system temp folder as a failsafe.)
     If (Not g_UserPreferences Is Nothing) Then
         tmpFolder = g_UserPreferences.GetTempPath()
     Else
+        
         tmpFolder = String$(512, 0)
+        
+        Dim nRet As Long
         nRet = GetTempPathW(512, StrPtr(tmpFolder))
         If (nRet > 0 And nRet < 262) Then tmpFolder = Strings.TrimNull(tmpFolder)
+    
     End If
     
     If (Len(tmpFolder) <> 0) Then

@@ -433,10 +433,7 @@ Private Sub tudPrimary_Resize()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If (Not MainModule.IsProgramRunning()) Then
-        If updateLayoutToo Then UpdateControlLayout
-        ucSupport.RequestRepaint True
-    End If
+    If updateLayoutToo Then UpdateControlLayout Else ucSupport.RequestRepaint True
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -554,9 +551,7 @@ Private Sub UpdateControlLayout()
     
     'To avoid long-running redraw operations, we only want to apply new positions and sizes as necessary (e.g. if they don't match
     ' existing values)
-    Dim newLeft_TUD As Long, newLeft_Slider As Long
-    Dim newTop_TUD As Long, newTop_Slider As Long
-    Dim newWidth_Slider As Long, newHeight As Long
+    Dim newLeft_TUD As Long, newTop_TUD As Long, newTop_Slider As Long, newWidth_Slider As Long
     Dim newControlHeight As Long
     
     'NB: order of operations is important in this function.  We first calculate all new size/position values.  When all new values
@@ -617,7 +612,7 @@ Private Sub UpdateControlLayout()
         bufferDC = ucSupport.GetBackBufferDC(True)
     End If
     
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint True
     m_InternalResizeActive = False
     
 End Sub
@@ -649,7 +644,6 @@ Public Sub UpdateAgainstCurrentTheme()
         pdssPrimary.UpdateAgainstCurrentTheme
         tudPrimary.UpdateAgainstCurrentTheme
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        UpdateControlLayout
     End If
 End Sub
 
