@@ -201,14 +201,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If newVisibility Then UpdateControlLayout
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     If (lbView.ScrollValue <> vScroll.Value) Then lbView.ScrollValue = vScroll.Value
 End Sub

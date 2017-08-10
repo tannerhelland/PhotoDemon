@@ -197,21 +197,21 @@ Friend Sub LoadDefaultPDTheme()
         
         'Note that the accent filename is not automatically mapped to an internal "accent value";
         ' we must handle this manually.
-        If (StrComp(LCase$(accentName), "blue", vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(accentName, "blue", True) Then
             m_ThemeAccent = PDTA_Blue
-        ElseIf (StrComp(LCase$(accentName), "brown", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "brown", True) Then
             m_ThemeAccent = PDTA_Brown
-        ElseIf (StrComp(LCase$(accentName), "green", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "green", True) Then
             m_ThemeAccent = PDTA_Green
-        ElseIf (StrComp(LCase$(accentName), "orange", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "orange", True) Then
             m_ThemeAccent = PDTA_Orange
-        ElseIf (StrComp(LCase$(accentName), "pink", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "pink", True) Then
             m_ThemeAccent = PDTA_Pink
-        ElseIf (StrComp(LCase$(accentName), "purple", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "purple", True) Then
             m_ThemeAccent = PDTA_Purple
-        ElseIf (StrComp(LCase$(accentName), "red", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "red", True) Then
             m_ThemeAccent = PDTA_Red
-        ElseIf (StrComp(LCase$(accentName), "teal", vbBinaryCompare) = 0) Then
+        ElseIf Strings.StringsEqual(accentName, "teal", True) Then
             m_ThemeAccent = PDTA_Teal
         Else
             m_ThemeAccent = PDTA_Undefined
@@ -682,7 +682,7 @@ Friend Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         'If we used a custom object name, but no color is defined for that value, try a new retrieval from
         ' the "Default" namespace.  (Empty colors are still valid, as long as their Default variant is defined.)
         Else
-            If (StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0) Then
+            If Strings.StringsNotEqual(objectName, DEFAULT_NAMESPACE, False) Then
                 objectName = DEFAULT_NAMESPACE
                 If m_XML.DoesTagExist(objectName, , , objPosition) Then
                     colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName, , , , objPosition)
@@ -760,8 +760,8 @@ Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef colorNa
     
     Dim i As Long
     For i = 0 To m_NumColorsCached - 1
-        If (StrComp(objectName, m_ColorCache(i).OrigObjectName, vbBinaryCompare) = 0) Then
-            If (StrComp(colorName, m_ColorCache(i).OrigColorName, vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(objectName, m_ColorCache(i).OrigObjectName, False) Then
+            If Strings.StringsEqual(colorName, m_ColorCache(i).OrigColorName, False) Then
                 RetrieveColorFromCache = True
                 dstColorEntry = m_ColorCache(i).OrigColorValues
                 Exit For

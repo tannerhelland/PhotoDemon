@@ -249,8 +249,7 @@ Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 'hWnds aren't exposed by default
@@ -263,10 +262,6 @@ End Property
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
 
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long

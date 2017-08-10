@@ -337,7 +337,7 @@ Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As
         'If this color has zero saturation (meaning it's a gray pixel), do not change the current hue
         Dim tmpHue As Double
         Colors.RGBtoHSV m_Red, m_Green, m_Blue, tmpHue, m_Saturation, m_Value
-        If (m_Saturation <> 0) Then m_Hue = tmpHue
+        If (m_Saturation <> 0#) Then m_Hue = tmpHue
         
         'Redraw any necessary interface elements
         SyncInterfaceToCurrentColor

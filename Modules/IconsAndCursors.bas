@@ -686,7 +686,7 @@ Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVa
     
         For i = 0 To numOfCustomCursors - 1
         
-            If (StrComp(customCursorNames(i), resCursorName, vbBinaryCompare) = 0) Then
+            If Strings.StringsEqual(customCursorNames(i), resCursorName, False) Then
                 cursorAlreadyLoaded = True
                 cursorLocation = i
                 Exit For

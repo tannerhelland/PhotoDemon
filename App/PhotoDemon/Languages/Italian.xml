@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.275</langversion>
+<langversion>6.7.276</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -579,21 +579,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation>Conteggio dei colori nell'immagine</translation>
 </phrase>
 
-<phrase>
-<original>This menu item only appears in the Visual Basic IDE.
-
-You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
-<translation>Questo elemento del menù appare solamente nell'IDE di Visual Basic.
-
-Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi filtri.  Io generalmente faccio prima così, poi quando un filtro lavora bene, gli assegno una subroutine propria.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Pro Tip</original>
-<translation>Suggerimenti di PhotoDemon Pro</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -8281,6 +8267,11 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>normalize</original>
+<translation>normalizza</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>intensità</translation>
 </phrase>
@@ -8298,21 +8289,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <phrase>
 <original>white point</original>
 <translation>punto di bianco</translation>
-</phrase>
-
-<phrase>
-<original>normalize</original>
-<translation>normalizza</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>spettro visibile</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>spettro completo</translation>
 </phrase>
 
 <phrase>
@@ -8348,6 +8324,16 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <phrase>
 <original>Reinhard</original>
 <translation>Reinhard</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>spettro visibile</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>spettro completo</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -14975,10 +14961,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4502 phrases. -->
-<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12225 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12179 total words. -->
 
 </pdData>

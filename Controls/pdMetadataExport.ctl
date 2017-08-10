@@ -416,7 +416,6 @@ End Sub
 'Show/hide the bottom label and hyperlink, contingent on the presence of metadata in the target image
 Private Sub UpdateMainComponentVisibility()
 
-    Dim imgHasMetadata As Boolean: imgHasMetadata = False
     If Not (m_ImageCopy Is Nothing) Then
         lblTitle.Visible = True
         hplReviewMetadata.Visible = True

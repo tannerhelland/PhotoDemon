@@ -203,10 +203,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 Private Sub RaiseGradientDialog()
 
     isDialogLive = True
@@ -352,7 +348,7 @@ Private Sub RedrawBackBuffer()
         ucSupport.RequestBufferColorManagement VarPtr(m_GradientRect)
         
         'Draw borders around the brush results.
-        Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
+        Dim outlineColor As Long, outlineWidth As Long
         outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect)
         If m_MouseInsideGradientRect Then outlineWidth = 3 Else outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter

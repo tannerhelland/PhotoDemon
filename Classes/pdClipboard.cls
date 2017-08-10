@@ -296,7 +296,7 @@ Public Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Bo
         'Search for the given name
         Dim i As Long
         For i = 0 To m_NumOfClipboardFormats - 1
-            If StrComp(m_ClipboardNames(i), srcFormatName, vbTextCompare) = 0 Then
+            If Strings.StringsEqual(m_ClipboardNames(i), srcFormatName, True) Then
                 DoesClipboardHaveFormatName = True
                 Exit For
             End If

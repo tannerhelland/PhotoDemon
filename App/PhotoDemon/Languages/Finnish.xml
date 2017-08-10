@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2989</langversion>
+<langversion>6.8.2990</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -578,21 +578,7 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 <translation>Count kuvan värien</translation>
 </phrase>
 
-<phrase>
-<original>This menu item only appears in the Visual Basic IDE.
-
-You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
-<translation>Tämä valikkokohta näkyy ainoastaan Visual Basic IDE.
-
-You voivat käyttää MenuTest () osa on Filters_Miscellaneous moduuli testata omia suodattimia. En yleensä tee tätä ensin, sitten kun suodatin toimii oikein, annan sen aliohjelman omaa.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Pro Tip</original>
-<translation>PhotoDemon Pro Tip</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -8287,6 +8273,11 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
+<original>normalize</original>
+<translation>normalisoitua</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>intensiteetti</translation>
 </phrase>
@@ -8304,21 +8295,6 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <phrase>
 <original>white point</original>
 <translation>valkoinen piste</translation>
-</phrase>
-
-<phrase>
-<original>normalize</original>
-<translation>normalisoitua</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>näkyvän spektrin</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>koko kirjon</translation>
 </phrase>
 
 <phrase>
@@ -8354,6 +8330,16 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <phrase>
 <original>Reinhard</original>
 <translation>Reinhardt</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>näkyvän spektrin</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>koko kirjon</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -14985,10 +14971,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4502 phrases. -->
-<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12225 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12179 total words. -->
 
 </pdData>

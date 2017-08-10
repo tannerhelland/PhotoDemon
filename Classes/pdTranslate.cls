@@ -193,7 +193,7 @@ Friend Sub NotifyHotPatchingComplete()
             Dim newLanguageVersion As String
             newLanguageVersion = tmpXML.GetUniqueTag_String("langversion")
             
-            If (StrComp(curLangVersion, newLanguageVersion, vbBinaryCompare) <> 0) Then
+            If Strings.StringsNotEqual(curLangVersion, newLanguageVersion, vbBinaryCompare) Then
             
                 'The version numbers do not match.  Set a module-level refresh flag; PD's internal processor will a refresh function the next time a
                 ' user-initiated action completes, and that function will check this module-level value to see if a refresh is required.
@@ -284,11 +284,11 @@ Friend Sub DetermineLanguage()
 End Sub
 
 'Given a language filename, return the index in the m_availableLanguages() array
-Private Function GetLangIndexFromFile(ByVal srcFile As String) As Long
+Private Function GetLangIndexFromFile(ByRef srcFile As String) As Long
     
     Dim i As Long
     For i = 0 To m_numOfLanguages - 1
-        If (StrComp(m_AvailableLanguages(i).FileName, srcFile, vbTextCompare) = 0) Then
+        If Strings.StringsEqual(m_AvailableLanguages(i).FileName, srcFile, True) Then
             GetLangIndexFromFile = i
             Exit Function
         End If
@@ -306,7 +306,7 @@ Private Function IsApproximateLanguageMatch(ByRef srcLangID As String)
     ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
     For i = m_numOfLanguages - 1 To 0 Step -1
-        If (StrComp(LCase$(Left$(srcLangID, 2)), LCase$(Left$(m_AvailableLanguages(i).langID, 2)), vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(Left$(srcLangID, 2), Left$(m_AvailableLanguages(i).langID, 2), True) Then
             IsApproximateLanguageMatch = i
             Exit Function
         End If
@@ -323,7 +323,7 @@ Private Function IsExactLanguageMatch(ByRef srcLangID As String)
     ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
     For i = m_numOfLanguages - 1 To 0 Step -1
-        If (StrComp(LCase$(srcLangID), LCase$(m_AvailableLanguages(i).langID), vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(srcLangID, m_AvailableLanguages(i).langID, True) Then
             IsExactLanguageMatch = i
             Exit Function
         End If
@@ -405,7 +405,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
     
     'If this is the official language folder, we will mark those entries specially, as they are the only ones PD is allowed to auto-update.
     Dim isOfficialFolder As Boolean
-    isOfficialFolder = (StrComp(UCase(langTypeForThisFolder), "OFFICIAL", vbBinaryCompare) = 0)
+    isOfficialFolder = Strings.StringsEqual(langTypeForThisFolder, "OFFICIAL", True)
     
     'An XML class will be used to parse and validate language files, as needed.  (This class may not be instantiated
     ' if the current language file list matches the list at last-run, because language values are cached.  Plan accordingly.)
@@ -438,7 +438,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             If (Len(chkCachedValue) <> 0) Then
             
                 'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
-                fileValidationRequired = Not (StrComp(chkCachedValue, GetLangFileChecksum(chkFile), vbBinaryCompare) = 0)
+                fileValidationRequired = Strings.StringsNotEqual(chkCachedValue, GetLangFileChecksum(chkFile), False)
                 
                 #If DEBUGMODE = 1 Then
                     If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
@@ -593,7 +593,7 @@ Friend Sub CheckAvailableLanguages()
     'Mark the location in the array of the default language, as other functions may need to know it
     Dim i As Long
     For i = 0 To m_numOfLanguages - 1
-        If (StrComp(LCase$(m_AvailableLanguages(i).LangName), "english (us)", vbBinaryCompare) = 0) Then
+        If Strings.StringsEqual(m_AvailableLanguages(i).LangName, "english (us)", True) Then
             m_defaultLanguage = i
             Exit For
         End If
@@ -694,7 +694,7 @@ Private Sub SortLanguageData()
         For j = 0 To m_numOfLanguages - 1
             
             'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
-            If (StrComp(m_AvailableLanguages(i).LangName, m_AvailableLanguages(j).LangName, vbTextCompare) = -1) Then
+            If (StrComp(m_AvailableLanguages(i).LangName, m_AvailableLanguages(j).LangName, vbTextCompare) < 0) Then
                 langTmp = m_AvailableLanguages(i)
                 m_AvailableLanguages(i) = m_AvailableLanguages(j)
                 m_AvailableLanguages(j) = langTmp
@@ -718,7 +718,7 @@ Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As PDLanguag
     
         If m_AvailableLanguages(i).IsOfficial Then
             
-            If (StrComp(languageID, Trim$(UCase(m_AvailableLanguages(i).langID)), vbBinaryCompare) = 0) Then
+            If Strings.StringsEqual(languageID, Trim$(UCase(m_AvailableLanguages(i).langID)), False) Then
                 
                 'It's a match!  Fill the target object and exit
                 dstLanguageFileObject = m_AvailableLanguages(i)
@@ -852,11 +852,9 @@ End Function
 Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
     Dim searchString As String, newString As String
-    If TranslationActive Then
+    If Me.TranslationActive() Then
         searchString = srcMessage
         newString = GetTranslationTagFromCaption(searchString)
-    Else
-        newString = srcMessage
     End If
     
     'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
@@ -864,7 +862,7 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     If (Len(newString) = 0) Then
         
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If TranslationActive And (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
+        If (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
             
             newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
             
@@ -880,7 +878,10 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         Else
             newString = srcMessage
         End If
-        
+    
+    'If translations are not active, just use the existing string "as-is"
+    Else
+        newString = srcMessage
     End If
     
     'newString now contains the translated message (or the original text, if no translation was found).
@@ -1013,7 +1014,7 @@ Friend Sub UndoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As
     'Start by returning the form's original caption
     RestoreFormCaption srcForm
     
-    Dim i As Long, strPos As Long
+    Dim strPos As Long
     Dim tmpString As String
     
     'Iterate through every control on the form, and restore original captions as necessary
@@ -1051,7 +1052,7 @@ Friend Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
     TranslateFormCaption srcForm
 
     'Iterate through every control on the form, and restore original captions as necessary
-    Dim i As Long, strPos As Long
+    Dim strPos As Long
     Dim tmpString As String
     Dim eControl As Control
     

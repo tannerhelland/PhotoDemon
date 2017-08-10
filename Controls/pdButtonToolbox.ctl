@@ -298,8 +298,7 @@ Private Sub GenerateVariantButtonImages()
     Next x
     
     'Grab direct access to the spritesheet's bytes
-    Dim srcPixels() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
     PrepSafeArray tmpSA, m_ButtonImages
     CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
     
@@ -312,8 +311,7 @@ Private Sub GenerateVariantButtonImages()
     initX = 0
     finalX = (m_ButtonWidth - 1) * 4
     
-    Dim r As Long, g As Long, b As Long, gray As Long, a As Long
-    Dim tmpY As Long
+    Dim a As Long, tmpY As Long
     
     'Paint the hovered segment of the sprite strip
     For y = initY To finalY
@@ -542,11 +540,6 @@ End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
     RedrawBackBuffer
 End Sub
 

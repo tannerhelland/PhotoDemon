@@ -98,10 +98,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 Private Sub Form_Load()
     
     Drawing2D.QuickCreatePainter m_Painter

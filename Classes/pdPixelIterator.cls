@@ -954,7 +954,7 @@ End Function
 Friend Function MoveXRight_Byte() As Long
     
     Dim yTop As Long, yBottom As Long, y As Long
-    Dim xLeft As Long, xRight As Long, x As Long
+    Dim xLeft As Long, xRight As Long
     Dim v As Long
     
     'Move our target pixel coordinate to the right

@@ -76,8 +76,8 @@ Private Type tagWINDOWPOS
     cy As Long
     wFlags As Long
 End Type
-Private Const SWP_HIDEWINDOW As Long = &H80&
-Private Const SWP_SHOWWINDOW As Long = &H40&
+Private Const SWP_HIDEWINDOW As Long = &H80
+Private Const SWP_SHOWWINDOW As Long = &H40
 
 Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
@@ -651,7 +651,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     Dim bufferWasResized As Boolean
     bufferWasResized = False
     
-    If ((m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height)) Then
+    If (m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height) Then
         m_BackBuffer.CreateBlank m_Width, m_Height, 32, , 255
         bufferWasResized = True
     End If
@@ -818,10 +818,10 @@ End Sub
 
 Private Sub m_MoveSize_WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
     
-    'Let the caller know about the change, but note that this behavior can be deliberately suspended
-    If Not m_ResizeEventsSuspended Then
-        RaiseEvent WindowMove(newLeft, newTop)
-    End If
+    'Let the caller know about the change, but note that this behavior can be deliberately suspended.
+    ' (We typically suspend events when the caller requests a resize event - they know what's happening,
+    '  so they don't need to be double- or triple-notified.)
+    If (Not m_ResizeEventsSuspended) Then RaiseEvent WindowMove(newLeft, newTop)
     
 End Sub
 
@@ -838,12 +838,14 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
         
         'Let the caller know about the change
         If (Not m_ResizeEventsSuspended) Then
-        
+            
+            'Some controls may respond to the window resize event in special ways; most do not.  This is primarily
+            ' provided as an "FYI" event, and it *should not* be used to initiate redraws (as we're going to raise
+            ' an event for that specific purpose momentarily).
             RaiseEvent WindowResize(newWidth, newHeight)
         
-            'Request a repaint to match.  Normally we would notify the caller that a layout update is also required,
-            ' but since we just raised a resize event (which would trigger the same thing), it's redundant to do it here.
-            AskForARepaint False
+            'Request a repaint, and notify the caller that a layout update is also required.
+            AskForARepaint True
             
         End If
         
@@ -1224,7 +1226,7 @@ Friend Function ThemeUpdateRequired() As Boolean
     If (Len(m_LastThemeID) = 0) Then
         ThemeUpdateRequired = True
     Else
-        ThemeUpdateRequired = CBool(StrComp(m_LastThemeID, Interface.GetCurrentInterfaceID, vbBinaryCompare) <> 0)
+        ThemeUpdateRequired = Strings.StringsNotEqual(m_LastThemeID, Interface.GetCurrentInterfaceID, False)
     End If
 End Function
 
@@ -1372,11 +1374,11 @@ Private Function HandleWM_ShowWindow(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
     ' one before the control is actually shown.)
-    If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+    If m_Visibility And (Not initVisibility) And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
     
     'Finally, notify the parent of the pending visibility change
     If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
-                
+    
 End Function
 
 'Note that most (all?) of the messages subclassed by this class are "notification"-style only.  Default wndprocs are still called

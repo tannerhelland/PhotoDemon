@@ -499,7 +499,7 @@ Private Sub EnableLossyOptimizationOptions()
 End Sub
 
 Private Sub UpdatePreviewButtonText()
-    If (StrComp(cmdUpdateLossyPreview.Caption, g_Language.TranslateMessage("click to generate a new preview image"), vbBinaryCompare) <> 0) Then
+    If Strings.StringsNotEqual(cmdUpdateLossyPreview.Caption, g_Language.TranslateMessage("click to generate a new preview image"), False) Then
         cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("click to generate a new preview image")
     End If
 End Sub
@@ -867,7 +867,7 @@ Private Sub UpdatePreviewSource()
 End Sub
 
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
-    ParamsEqual = CBool(StrComp(param1, param2, vbTextCompare) = 0)
+    ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function
 
 Private Sub UpdatePreview()

@@ -207,10 +207,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 Private Sub RaisePenDialog()
 
     m_IsDialogLive = True
@@ -367,7 +363,7 @@ Private Sub RedrawBackBuffer()
         ucSupport.RequestBufferColorManagement VarPtr(m_PenRect)
         
         'Draw borders around the brush results.
-        Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
+        Dim outlineColor As Long, outlineWidth As Long
         outlineColor = m_Colors.RetrieveColor(PDPS_Border, Me.Enabled, m_MouseDownPenRect, m_MouseInsidePenRect)
         If m_MouseInsidePenRect Then outlineWidth = 3 Else outlineWidth = 1
         

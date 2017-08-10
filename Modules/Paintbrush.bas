@@ -437,7 +437,7 @@ Private Sub CreateSoftBrushReference_MyPaint()
     ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
     ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
     ' setting each byte individually.
-    Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
+    Dim tmpR As Long, tmpG As Long, tmpB As Long
     tmpR = Colors.ExtractRed(m_BrushSourceColor)
     tmpG = Colors.ExtractGreen(m_BrushSourceColor)
     tmpB = Colors.ExtractBlue(m_BrushSourceColor)
@@ -474,13 +474,13 @@ Private Sub CreateSoftBrushReference_MyPaint()
     brushAngle = 0#         '[0, 180] in degrees
     
     Dim refCos As Single, refSin As Single
-    refCos = Cos(brushAngle / 360 * 2 * PI)
-    refSin = Sin(brushAngle / 360 * 2 * PI)
+    refCos = Cos(brushAngle / 360# * 2# * PI)
+    refSin = Sin(brushAngle / 360# * 2# * PI)
     
     Dim dx As Single, dy As Single
     Dim dXr As Single, dYr As Single
     Dim brushRadius As Single, brushRadiusSquare As Single
-    brushRadius = (m_BrushSize - 1) / 2
+    brushRadius = (m_BrushSize - 1#) / 2#
     brushRadiusSquare = brushRadius * brushRadius
     
     Dim dd As Single, pxOpacity As Single
@@ -542,7 +542,7 @@ Private Sub CreateSoftBrushReference_PD()
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
         Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor, m_BrushFlow
-        m_Painter.FillCircleF cSurface, cBrush, m_BrushSize / 2, m_BrushSize / 2, m_BrushSize / 2
+        m_Painter.FillCircleF cSurface, cBrush, m_BrushSize * 0.5, m_BrushSize * 0.5, m_BrushSize * 0.5
         
         Set cBrush = Nothing: Set cSurface = Nothing
     
@@ -553,7 +553,7 @@ Private Sub CreateSoftBrushReference_PD()
         ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
         ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
         ' setting each byte individually.
-        Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
+        Dim tmpR As Long, tmpG As Long, tmpB As Long
         tmpR = Colors.ExtractRed(m_BrushSourceColor)
         tmpG = Colors.ExtractGreen(m_BrushSourceColor)
         tmpB = Colors.ExtractBlue(m_BrushSourceColor)
@@ -563,8 +563,8 @@ Private Sub CreateSoftBrushReference_PD()
         
         'Calculate brush flow (which controls the opacity of individual dabs)
         Dim normMult As Single, flowMult As Single
-        flowMult = (m_BrushFlow / 100)
-        normMult = (1# / 255) * flowMult
+        flowMult = m_BrushFlow * 0.01
+        normMult = (1# / 255#) * flowMult
         
         Dim x As Long, y As Long, tmpMult As Single
         For x = 0 To 255
@@ -620,9 +620,9 @@ Private Sub CreateSoftBrushReference_PD()
         ' - BETWEEN the exterior and interior radii will be feathered accordingly
         Dim brushRadius As Single, brushRadiusSquare As Single
         If tmpBrushRequired Then
-            brushRadius = CSng(BRUSH_SIZE_MIN_CUTOFF) / 2
+            brushRadius = CSng(BRUSH_SIZE_MIN_CUTOFF) * 0.5
         Else
-            brushRadius = m_BrushSize / 2
+            brushRadius = m_BrushSize * 0.5
         End If
         brushRadiusSquare = brushRadius * brushRadius
         
@@ -639,9 +639,9 @@ Private Sub CreateSoftBrushReference_PD()
         Dim pxDistance As Single, pxOpacity As Single
         
         'Loop through each pixel in the image, calculating per-pixel brush values as we go
-        For x = initX To finalX
         For y = initY To finalY
-            
+        For x = initX To finalX
+        
             'Calculate distance between this point and the idealized "center" of the brush
             cx = x - brushRadius
             cy = y - brushRadius
@@ -666,14 +666,14 @@ Private Sub CreateSoftBrushReference_PD()
                     pxOpacity = pxOpacity * pxOpacity * pxOpacity
                     
                     'Pull the matching result from our lookup table
-                    dstImageData(x, y) = cLookup(pxOpacity * 255)
+                    dstImageData(x, y) = cLookup(pxOpacity * 255#)
                     
                 End If
                 
             End If
-            
-        Next y
+        
         Next x
+        Next y
         
         'Safely deallocate imageData()
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -1048,11 +1048,11 @@ Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single
     
     'Calculate deltas and termination conditions.  Note that these are all floating-point values, so we could
     ' theoretically support sub-pixel traversal conditions.  (At present, we only traverse full pixels.)
-    Dim dx As Single, tDeltaX As Single, tMaxX As Single
+    Dim tDeltaX As Single, tMaxX As Single
     If (stepX <> 0) Then tDeltaX = PDMath.Min2Float_Single(CSng(stepX) / (srcX - m_MouseX), 10000000#) Else tDeltaX = 10000000#
     If (stepX > 0) Then tMaxX = tDeltaX * (1 - m_MouseX + Int(m_MouseX)) Else tMaxX = tDeltaX * (m_MouseX - Int(m_MouseX))
     
-    Dim dy As Single, tDeltaY As Single, tMaxY As Single
+    Dim tDeltaY As Single, tMaxY As Single
     If (stepY <> 0) Then tDeltaY = PDMath.Min2Float_Single(CSng(stepY) / (srcY - m_MouseY), 10000000#) Else tDeltaY = 10000000#
     If (stepY > 0) Then tMaxY = tDeltaY * (1 - m_MouseY + Int(m_MouseY)) Else tMaxY = tDeltaY * (m_MouseY - Int(m_MouseY))
     

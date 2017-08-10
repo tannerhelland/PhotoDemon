@@ -130,7 +130,6 @@ Private m_CurrentSystemDPI As Single
 'Syncing the entire program's UI to current image settings is a time-consuming process.  To try and shortcut it whenever possible,
 ' we track the last sync operation we performed.  If we receive a duplicate sync request, we can safely ignore it.
 Private m_LastUISync_HadNoImages As PD_BOOL, m_LastUISync_HadNoLayers As PD_BOOL, m_LastUISync_HadMultipleLayers As PD_BOOL
-Private m_LastUILimitingSize_Small As Single, m_LastUILimitingSize_Large As Single
 
 'Popup dialogs present problems on non-Aero window managers, as VB's iconless approach results in the program "disappearing"
 ' from places like the Alt+Tab menu.  As of v7.0, we now track nested popup windows and manually handle their icon updates.
@@ -549,7 +548,7 @@ Private Sub SetUIMode_NoImages()
     'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
     ' previously visible.
     FormMain.mainCanvas(0).ClearCanvas
-        
+    
     'Restore the default taskbar and titlebar icons and clear the custom icon cache
     IconsAndCursors.ResetAppIcons
     IconsAndCursors.DestroyAllIcons
@@ -1499,8 +1498,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'If this is the main form, we need to reassign any menu icons, because they are reset whenever their associated
     ' menu captions change.
-    If (StrComp(dstForm.Name, "FormMain", vbBinaryCompare) = 0) Then
-        If (Not suspendMainFormIconCheck) And FormMain.Visible Then ApplyAllMenuIcons
+    If Strings.StringsEqual(dstForm.Name, "FormMain", False) Then
+        If (Not suspendMainFormIconCheck) And FormMain.Visible Then IconsAndCursors.ApplyAllMenuIcons
     End If
     
 End Sub
@@ -1682,7 +1681,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     If UBound(ExtraText) >= LBound(ExtraText) Then
         
         For i = LBound(ExtraText) To UBound(ExtraText)
-            If StrComp(UCase$(ExtraText(i)), "DONOTLOG", vbBinaryCompare) <> 0 Then
+            If Strings.StringsNotEqual(CStr(ExtraText(i)), "DONOTLOG", True) Then
                 tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & CStr(i + 1), CStr(ExtraText(i)))
             End If
         Next i
@@ -1691,7 +1690,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     
     'If the message request is for a novel string (e.g. one that differs from the previous message request), display it.
     ' Otherwise, exit now.
-    If StrComp(m_PrevMessage, tmpDupeCheckString, vbBinaryCompare) <> 0 Then
+    If Strings.StringsNotEqual(m_PrevMessage, tmpDupeCheckString, False) Then
         
         'In debug mode, mirror the message output to PD's central Debugger.  Note that this behavior can be overridden by
         ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
@@ -1702,7 +1701,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             
                 'Check the last param passed.  If it's the string "DONOTLOG", do not log this entry.  (PD sometimes uses this
                 ' to avoid logging useless data, like layer hover events or download updates.)
-                If StrComp(UCase$(CStr(ExtraText(UBound(ExtraText)))), "DONOTLOG", vbBinaryCompare) <> 0 Then
+                If Strings.StringsNotEqual(CStr(ExtraText(UBound(ExtraText))), "DONOTLOG", False) Then
                     pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
                 End If
             

@@ -1524,7 +1524,7 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
         
         Dim i As Long
         For i = 0 To m_NumGroupsInCache - 1
-            If StrComp(srcTableName, m_GroupCache(i).GroupName) = 0 Then
+            If Strings.StringsEqual(srcTableName, m_GroupCache(i).GroupName, False) Then
                 tableStart = m_GroupCache(i).GroupStart
                 tableEnd = m_GroupCache(i).GroupEnd
                 GetTagGroup = True
@@ -1613,7 +1613,7 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         ' description line using identical code.  (Also, note that we used the "id" and "name" values to locate this tag
         ' line in the first place, so those entries do not need to be parsed.  Instead, we want to get the "type" and
         ' "writable" values (which should always be present), and if they are available, any "count" or "flags" values.
-        dstMetadata.DB_IsWritable = (StrComp(GetXMLAttribute(xmlLines(0), "writable"), "true", vbBinaryCompare) = 0)
+        dstMetadata.DB_IsWritable = Strings.StringsEqual(GetXMLAttribute(xmlLines(0), "writable"), "true", False)
         dstMetadata.DB_DataType = GetXMLAttribute(xmlLines(0), "type")
         dstMetadata.DB_DataTypeStrict = GetStrictMDDatatype(dstMetadata.DB_DataType)
         
@@ -1698,7 +1698,7 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         
         'First, we want to mark some tags as "Protected", even though they are technically not (e.g. JPEG Orientation, which we
         ' overwrite automatically in order to produce valid files).  ExifTool lets the user mess with these tags, but we don't.
-        If StrComp(dstMetadata.TagNameFriendly, "Orientation") = 0 Then dstMetadata.DBF_IsProtected = True
+        If Strings.StringsEqual(dstMetadata.TagNameFriendly, "Orientation", False) Then dstMetadata.DBF_IsProtected = True
         
         ParseTagDatabaseEntry = True
     
@@ -1849,9 +1849,9 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     sCategoryName = UCase$(srcTag.TagGroupFriendly)
     
     Dim groupSkippable As Boolean: groupSkippable = False
-    If StrComp(sCategoryName, "SYSTEM", vbBinaryCompare) = 0 Then groupSkippable = True
-    If StrComp(sCategoryName, "FILE", vbBinaryCompare) = 0 Then groupSkippable = True
-    If StrComp(sCategoryName, "ICC PROFILE", vbBinaryCompare) = 0 Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "SYSTEM", False) Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "FILE", False) Then groupSkippable = True
+    If Strings.StringsEqual(sCategoryName, "ICC PROFILE", False) Then groupSkippable = True
     
     'Technically, we should be able to get away with not checking inferred tags (called "Composite" by ExifTool), per this link:
     ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Composite.html

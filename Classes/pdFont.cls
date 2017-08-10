@@ -493,7 +493,7 @@ End Sub
 
 'Return the width (and below, height) of a string, in pixels.  This action REQUIRES that a DC be currently set for this
 ' object, as the DC's font settings are used to determine the string's dimensions.
-Public Function GetWidthOfString(ByVal srcString As String) As Long
+Public Function GetWidthOfString(ByRef srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
@@ -521,7 +521,7 @@ End Function
 
 'With the current font settings, find the height of either a single-line string, or a word-wrapped string.
 ' For convenience, I've separated these into separate functions, as the underlying logic is actually quite different.
-Public Function GetHeightOfString(ByVal srcString As String) As Long
+Public Function GetHeightOfString(ByRef srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
@@ -547,7 +547,7 @@ Public Function GetHeightOfString(ByVal srcString As String) As Long
     
 End Function
 
-Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWidth As Long) As Long
+Public Function GetHeightOfWordwrapString(ByRef srcString As String, ByVal strWidth As Long) As Long
 
     Dim tmpRect As RECT
     tmpRect.Left = 0
@@ -731,7 +731,7 @@ Public Function DoesFontExist(ByVal fontNameToCheck As String, Optional ByRef fo
     tmpFont.Size = nearestFontSize
     
     'See if the font object has the same name.  Windows will automatically substitute a new font if the requested one can't be found.
-    DoesFontExist = CBool(StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0)
+    DoesFontExist = Strings.StringsEqual(fontNameToCheck, tmpFont.Name, True)
     
     'Not sure if helpful, but return the replacement font name and nearest supported size
     fontSubstitute = tmpFont.Name
@@ -743,7 +743,7 @@ End Function
 ' Word-wrapping is not used, by design, as it's assumed the caller already tried word-wrapping as a solution.
 '
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
-Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
+Public Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
     'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long
@@ -820,7 +820,7 @@ End Function
 ' that rect.  Word-wrapping will be used.
 '
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
-Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
+Public Function GetMaxFontSizeToFitWordWrap(ByRef srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
     'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long

@@ -267,12 +267,7 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 'Display the current mouse coordinates
@@ -762,7 +757,7 @@ Public Sub UpdateAgainstCurrentTheme()
         cmbZoom.UpdateAgainstCurrentTheme
         cmbSizeUnit.UpdateAgainstCurrentTheme
         
-        ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
         cmbZoom.Top = (UserControl.ScaleHeight - cmbZoom.GetHeight) \ 2
@@ -773,7 +768,7 @@ Public Sub UpdateAgainstCurrentTheme()
         cmbSizeUnit.ListIndex = backupSizeIndex
         
         'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-        If g_OpenImageCount > 0 Then
+        If (g_OpenImageCount > 0) Then
             DisplayImageSize pdImages(g_CurrentImage), False
         Else
             DisplayImageSize Nothing, True

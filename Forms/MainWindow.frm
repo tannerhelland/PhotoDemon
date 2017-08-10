@@ -2967,7 +2967,7 @@ Private Sub Form_Unload(Cancel As Integer)
     For Each tmpForm In Forms
 
         'Note that there is no need to unload FormMain, as we're about to unload it anyway!
-        If (StrComp(LCase$(tmpForm.Name), "formmain", vbBinaryCompare) <> 0) Then
+        If Strings.StringsNotEqual(tmpForm.Name, "FormMain", True) Then
             Debug.Print "Forcibly unloading " & tmpForm.Name
             Unload tmpForm
             Set tmpForm = Nothing
@@ -4165,50 +4165,8 @@ Private Sub MnuStylize_Click(Index As Integer)
 End Sub
 
 Private Sub MnuTest_Click()
-    
-    Dim i As Long
-    Dim cRandom As pdRandomize
-    Set cRandom = New pdRandomize
-    cRandom.SetSeed_AutomaticAndRandom
-    
-    For i = 0 To 9
-        Debug.Print cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(), cRandom.GetGaussianFloat_WH(); cRandom.GetGaussianFloat_WH()
-    Next i
-    
-    
-'    'Want to test a new dialog?  Call it here:
-'    showPDDialog vbModal, FormToTest
-    
-    'A longer, more dedicated test function can be accessed in the MenuTest() sub.  It also contains rudimentary code for modifying
-    ' an image's pixel data, if you want to test any pixel-based code.
-    'MenuTest
-    
-    'Filters_Miscellaneous.MenuApplyTestPalette
-    
-'    'Current Gaussian Blur IIR tests:
-'    Dim tmpDIB As pdDIB
-'    Set tmpDIB = New pdDIB
-'    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
-'
-'    Dim startTime1 As Single, startTime2 As Single
-'    startTime1 = Timer
-'    Filters_Layers.CreateApproximateGaussianBlurDIB 500, pdImages(g_CurrentImage).getActiveDIB, tmpDIB, 3, True
-'    startTime1 = Timer - startTime1
-'
-'    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
-'
-'    startTime2 = Timer
-'    Filters_Area.GaussianBlur_IIRImplementation tmpDIB, 500, 2, True
-'    startTime2 = Timer - startTime2
-'
-'    MsgBox "Box blur approximation: " & startTime1 & vbCrLf & "IIR approach: " & startTime2
-
-'    'FFT tests
-'    Dim cFFT As pdFFT
-'    Set cFFT = New pdFFT
-'
-'    cFFT.testFFT
-    
+    'Want to test a new dialog?  Call it here, using a line like the following:
+    'showPDDialog vbModal, FormToTest
 End Sub
 
 'All tool menu items are launched from here

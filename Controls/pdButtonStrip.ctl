@@ -401,13 +401,7 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -1051,14 +1045,11 @@ Public Sub UpdateAgainstCurrentTheme()
             
         End If
         
-        'Update all text managed by the support class (e.g. tooltips)
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList
         
-        'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
-        UpdateControlLayout
+        'Update all text managed by the support class (e.g. tooltips)
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If
     

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2989</langversion>
+<langversion>6.8.2990</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -578,21 +578,7 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 <translation>Gróf kép színei</translation>
 </phrase>
 
-<phrase>
-<original>This menu item only appears in the Visual Basic IDE.
-
-You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
-<translation>Ez a menüpont csak akkor jelenik meg a Visual Basic IDE.
-
-You használhatja MenuTest () al a Filters_Miscellaneous modul, hogy tesztelje a saját szűrőket. Én általában nem ez az első, majd, ha a szűrőt megfelelően működik, adok neki szubrutin saját.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Pro Tip</original>
-<translation>PhotoDemon Pro Tip</translation>
-</phrase>
-
-<!-- Filters_Misc.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -8276,6 +8262,11 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
+<original>normalize</original>
+<translation>szabványosít</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>intenzitás</translation>
 </phrase>
@@ -8293,21 +8284,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <phrase>
 <original>white point</original>
 <translation>fehér pont</translation>
-</phrase>
-
-<phrase>
-<original>normalize</original>
-<translation>szabványosít</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>látható spektrum</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>teljes spektrumú</translation>
 </phrase>
 
 <phrase>
@@ -8343,6 +8319,16 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <phrase>
 <original>Reinhard</original>
 <translation>Reinhardt</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>látható spektrum</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>teljes spektrumú</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -14968,10 +14954,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4502 phrases. -->
-<!-- 1981 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12225 total words. -->
+<!-- As of this build, PhotoDemon contains 4500 phrases. -->
+<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12179 total words. -->
 
 </pdData>

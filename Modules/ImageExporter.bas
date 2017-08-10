@@ -2186,5 +2186,5 @@ End Function
 
 'Basic case-insensitive string comparison function
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
-    ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
+    ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function

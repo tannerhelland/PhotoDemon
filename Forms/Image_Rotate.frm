@@ -147,11 +147,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     rotationAngle = -1# * cParams.GetDouble("angle", 0#)
     
     Dim resizeToFit As Boolean
-    If (StrComp(LCase$(cParams.GetString("style", "enlarge")), "enlarge", vbBinaryCompare) = 0) Then
-        resizeToFit = True
-    Else
-        resizeToFit = False
-    End If
+    resizeToFit = Strings.StringsEqual(cParams.GetString("style", "enlarge"), "enlarge", True)
     
     Dim rotationQuality As Long
     rotationQuality = cParams.GetLong("quality", 2)

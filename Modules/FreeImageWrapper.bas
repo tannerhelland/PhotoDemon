@@ -6432,7 +6432,7 @@ Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Mess
         
         Dim i As Long
         For i = 0 To UBound(g_FreeImageErrorMessages)
-            If StrComp(g_FreeImageErrorMessages(i), strErrorMessage, vbTextCompare) = 0 Then
+            If Strings.StringsEqual(g_FreeImageErrorMessages(i), strErrorMessage, True) Then
                 errorFound = True
                 Exit For
             End If

@@ -468,11 +468,11 @@ Private Sub cmdBarMini_OKClick()
             curMetadata = m_AllTags(i, j)
             
             'Find the matching tag entry in the parent image's metadata collection
-            For k = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
-                targetMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(k)
-                If StrComp(m_MDCategories(i).Name, targetMetadata.TagGroupFriendly, vbBinaryCompare) = 0 Then
-                    If StrComp(curMetadata.TagNameFriendly, targetMetadata.TagNameFriendly, vbBinaryCompare) = 0 Then
-                        pdImages(g_CurrentImage).imgMetadata.SetMetadataEntryByIndex k, curMetadata
+            For k = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
+                targetMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(k)
+                If Strings.StringsEqual(m_MDCategories(i).Name, targetMetadata.TagGroupFriendly, False) Then
+                    If Strings.StringsEqual(curMetadata.TagNameFriendly, targetMetadata.TagNameFriendly, False) Then
+                        pdImages(g_CurrentImage).ImgMetadata.SetMetadataEntryByIndex k, curMetadata
                         Exit For
                     End If
                 End If
@@ -540,19 +540,19 @@ Private Sub Form_Load()
     Dim categoryFound As Boolean
     
     Dim i As Long, j As Long
-    For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
     
         categoryFound = False
     
         'Retrieve the next metadata entry
-        curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
         
         If (Not curMetadata.InternalUseOnly) Then
         
             'Search the current list of known categories for this metadata object's category
             For j = 0 To m_NumOfCategories - 1
-                If StrComp(m_MDCategories(j).Name, chkGroup, vbBinaryCompare) = 0 Then
+                If Strings.StringsEqual(m_MDCategories(j).Name, chkGroup, False) Then
                     categoryFound = True
                     m_MDCategories(j).Count = m_MDCategories(j).Count + 1
                     Exit For
@@ -593,11 +593,11 @@ Private Sub Form_Load()
     Dim curTagCount() As Long
     ReDim curTagCount(0 To m_NumOfCategories - 1) As Long
     
-    For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
         
         'As above, retrieve the next metadata entry, and this time, reset any per-session trackers
         curMetadata.UserModifiedThisSession = False
-        curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
         
         'By default, PD only grabs as much metadata information as it needs to successfully write the metadata out to file.
@@ -607,7 +607,7 @@ Private Sub Form_Load()
         
         'Find the matching group in the Group array, then insert this tag into place
         For j = 0 To m_NumOfCategories - 1
-            If StrComp(m_MDCategories(j).Name, chkGroup) = 0 Then
+            If Strings.StringsEqual(m_MDCategories(j).Name, chkGroup, False) Then
                 m_AllTags(j, curTagCount(j)) = curMetadata
                 curTagCount(j) = curTagCount(j) + 1
                 Exit For
@@ -652,7 +652,7 @@ Private Sub Form_Load()
     btnGroupOptions(MDTB_Reset).AssignTooltip "Reset entire group to its original values"
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
-    If Len(pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
+    If Len(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
         lblTechnicalReport.Visible = True
         cmdTechnicalReport.Visible = True
     Else

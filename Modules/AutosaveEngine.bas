@@ -345,7 +345,7 @@ Public Sub AlignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
             
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
-                If StrComp(srcPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk"), m_XmlEntries(i).xmlPath, vbTextCompare) = 0 Then
+                If Strings.StringsEqual(srcPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk"), m_XmlEntries(i).xmlPath, True) Then
                     srcPDImage.ReadExternalData m_XmlEntries(i).xmlPath
                     Exit For
                 End If

@@ -146,12 +146,12 @@ Public Property Let Color(ByVal newColor As Long)
     
     If ((tmpHue <> m_Hue) Or (tmpSaturation <> m_Saturation) Or (tmpValue <> m_Value)) Then
     
-        If (tmpSaturation <> 0) Then m_Hue = tmpHue
-        m_Saturation = tmpSaturation
+        If (tmpSaturation <> 0#) Then m_Hue = tmpHue
+        If (tmpValue <> 0#) Then m_Saturation = tmpSaturation
         m_Value = tmpValue
         
         CreateSVSquare
-        RedrawBackBuffer True
+        If ucSupport.AmIVisible() Then RedrawBackBuffer True
         
         'Raise a matching event, and note that the source was external
         RaiseEvent ColorChanged(newColor, False)
@@ -407,17 +407,17 @@ Private Function IsMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Option
         
         'In the current design, X controls saturation while Y controls value.  The values are also reversed in the
         ' on-screen display, so that the color itself sits closest to the canvas.
-        dstSaturation = 1 - ((x - m_SVRectF.Left) / m_SVRectF.Width)
-        dstValue = 1 - ((y - m_SVRectF.Top) / m_SVRectF.Height)
+        dstSaturation = 1# - ((x - m_SVRectF.Left) / m_SVRectF.Width)
+        dstValue = 1# - ((y - m_SVRectF.Top) / m_SVRectF.Height)
         
         'To prevent errors, clamp saturation and value now
-        If dstSaturation < 0 Then dstSaturation = 0
-        If dstSaturation > 1 Then dstSaturation = 1
-        If dstValue < 0 Then dstValue = 0
-        If dstValue > 1 Then dstValue = 1
+        If (dstSaturation < 0#) Then dstSaturation = 0#
+        If (dstSaturation > 1#) Then dstSaturation = 1#
+        If (dstValue < 0#) Then dstValue = 0#
+        If (dstValue > 1#) Then dstValue = 1#
         
         'The y-value is squared during rendering, to decrease the amount of space taken up by extremely dark color variants
-        If dstValue > 0 Then dstValue = Sqr(dstValue)
+        If (dstValue > 0#) Then dstValue = Sqr(dstValue)
         
     End If
     
@@ -454,12 +454,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -632,9 +627,9 @@ Private Sub CreateColorWheel()
             b = b * aFloat
             
             'Store the new color values
-            hPixels(x, y) = b * 255
-            hPixels(x + 1, y) = g * 255
-            hPixels(x + 2, y) = r * 255
+            hPixels(x, y) = b * 255#
+            hPixels(x + 1, y) = g * 255#
+            hPixels(x + 2, y) = r * 255#
             hPixels(x + 3, y) = a
             
         End If
@@ -659,7 +654,7 @@ Private Sub CreateSVSquare()
     
     'The SV square is a square that fits (inclusively) within the color wheel.  Basic geometry tells us that one side of the square
     ' is equal to hypotenuse * sin(45), and we know the hypotenuse already because it's the inner radius of the hue wheel.
-    m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI / 4): m_SVRectF.Height = m_SVRectF.Width
+    m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI * 0.25): m_SVRectF.Height = m_SVRectF.Width
     
     If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
     If (m_SquareBuffer.GetDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.GetDIBHeight <> CLng(m_SVRectF.Height)) Then
@@ -714,7 +709,7 @@ Private Sub CreateSVSquare()
         
         'The x-axis position determines saturation (1 -> 0)
         'The y-axis position determines value (1 -> 0)
-        HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
+        Colors.HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
         
         svPixels(x, y) = b
         svPixels(x + 1, y) = g
@@ -729,7 +724,7 @@ Private Sub CreateSVSquare()
     'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
     ' rendering function.
     Dim tmpX As Double, tmpY As Double
-    PDMath.ConvertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
+    PDMath.ConvertPolarToCartesian -0.75 * PI, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
     m_SVRectF.Left = tmpX
     m_SVRectF.Top = tmpY
     
@@ -956,7 +951,6 @@ Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        UpdateControlLayout
     End If
 End Sub
 

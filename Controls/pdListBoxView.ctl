@@ -260,10 +260,6 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     If newVisibility Then listSupport.SetAutomaticRedraws True, True
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
 ' raise redraw requests as relevant.
 Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)

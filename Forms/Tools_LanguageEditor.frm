@@ -1429,19 +1429,19 @@ Private Sub PopulateAvailableLanguages()
     For i = 0 To UBound(m_ListOfLanguages)
     
         'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If StrComp(UCase$(m_ListOfLanguages(i).LangType), "DEFAULT", vbBinaryCompare) <> 0 Then
+        If Strings.StringsNotEqual(m_ListOfLanguages(i).LangType, "DEFAULT", True) Then
             Dim listEntry As String
             listEntry = m_ListOfLanguages(i).LangName
             
             'For official translations, an author name will always be provided.  Include the author's name in the list.
-            If m_ListOfLanguages(i).LangType = "Official" Then
+            If (m_ListOfLanguages(i).LangType = "Official") Then
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("official translation by")
                 listEntry = listEntry & " " & m_ListOfLanguages(i).Author
                 listEntry = listEntry & ")"
             
             'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
-            ElseIf m_ListOfLanguages(i).LangType = "Unofficial" Then
+            ElseIf (m_ListOfLanguages(i).LangType = "Unofficial") Then
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "

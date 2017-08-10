@@ -113,9 +113,9 @@ End Function
 ' a redraw.  (Previously, I would raise an event when a redraw was required, but that burdens the caller even more because
 ' a lot of redraw events are raised during initialization, which we don't really want.)  Anyway, the take-home message is that
 ' the caller needs to check the return of this function, and handle redraws accordingly.
-Friend Function SetCaption(ByVal newCaption As String) As Boolean
+Friend Function SetCaption(ByRef newCaption As String) As Boolean
 
-    If (StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0) Then
+    If Strings.StringsNotEqual(newCaption, m_CaptionEn, False) Then
         
         'Whenever the caption changes, we need to double-check that the caption + fontsize combination fits inside the control.
         m_FontSizeVerified = False
@@ -226,7 +226,7 @@ End Function
 ' the caller needs to check the return of this function, and handle redraws accordingly.
 Friend Function SetFontSize(ByVal newSize As Single) As Boolean
     
-    If newSize <> m_FontSizeCaption Then
+    If (newSize <> m_FontSizeCaption) Then
         m_FontSizeCaption = newSize
         m_FontSizeCaptionFit = m_FontSizeCaption
         m_FontSizeVerified = False
@@ -580,7 +580,7 @@ Friend Sub UpdateAgainstCurrentTheme()
     End If
     
     'If our translated caption has changed, the new text may overflow its container, so we need to run size heuristics.
-    If (StrComp(oldTranslatedText, m_CaptionTranslated, vbBinaryCompare) <> 0) Then m_FontSizeVerified = False
+    If Strings.StringsNotEqual(oldTranslatedText, m_CaptionTranslated, False) Then m_FontSizeVerified = False
     
     'Theme changes may also affect caption coloring; update the relevant color now
     m_CaptionColor = -1

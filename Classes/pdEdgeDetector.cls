@@ -50,9 +50,6 @@ Private m_StackPosition As Long
 Private m_StackHeight As Long
 Private Const INITIAL_STACK_HEIGHT As Long = 4096
 
-'Obviously the function needs a starting x/y position
-Private m_InitPoint As POINTAPI
-
 'Marching squares uses predefined direction descriptors.  See https://en.wikipedia.org/wiki/Marching_squares
 ' These descriptors are populated in Class_Initialize().
 Private m_XDirs() As Long, m_YDirs() As Long
@@ -251,10 +248,9 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     
     'Index into our precalculated direction arrays.
     Dim i As Long, j As Long, n As Long
-    Dim intBounds As RECTL
     Dim intInitX As Long, intInitY As Long, intFinalX As Long, intFinalY As Long
     Dim numOfRects As Long
-    Dim tmpGdipHandle As Long, tmpResult As Long
+    Dim tmpGdipHandle As Long
     
     'To improve performance, we're going to point a transient 1D array at certain rows during processing.
     ' This requires unsafe array manipulation, but it can be meaningfully faster than 2D array accesses.
@@ -511,7 +507,7 @@ Friend Sub MakeArrayEdgeSafe(ByRef srcArray() As Byte, ByRef dstArray() As Byte,
     
     'Next, we need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
     ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
-    Dim x As Long, y As Long
+    Dim y As Long
     For y = 0 To srcYBound
         CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
     Next y

@@ -386,12 +386,7 @@ Public Sub ContinueLoadingProgram()
     
     'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
     ' (which some dialogs use to slightly modify their layout for better alignments).
-    If tmpFontCheck.DoesFontExist("Segoe UI") Then
-        g_InterfaceFont = "Segoe UI"
-    Else
-        g_InterfaceFont = "Tahoma"
-    End If
-    
+    If tmpFontCheck.DoesFontExist("Segoe UI") Then g_InterfaceFont = "Segoe UI" Else g_InterfaceFont = "Tahoma"
     Set tmpFontCheck = Nothing
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
@@ -675,7 +670,7 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
     
     

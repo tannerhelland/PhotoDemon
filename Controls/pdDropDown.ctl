@@ -445,8 +445,7 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
@@ -455,10 +454,6 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     Else
         If m_PopUpVisible Then HideListBox
     End If
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()

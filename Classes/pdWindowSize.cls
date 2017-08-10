@@ -168,28 +168,30 @@ End Sub
 'Update the module-level copy of the attached hWnd's rect, automatically translated into our parent's coordinate space.
 Private Sub UpdateWinRect()
     
-    If (m_hWnd = 0) Then Exit Sub
+    If (m_hWnd <> 0) Then
     
-    'Retrieve a copy of the window rect *in screen coordinates*
-    GetWindowRect m_hWnd, m_WindowRect
-    
-    'Find the difference between *the screen coordinate space* and *the parent's coordinate space*
-    Dim tmpPoint As POINTAPI
-    tmpPoint.x = m_WindowRect.x1
-    tmpPoint.y = m_WindowRect.y1
-    MapWindowPoints 0&, GetParent(m_hWnd), tmpPoint, 1&
-    
-    'Translate the window rect into our parent's coordinate space, which greatly simplifies subsequent property requests
-    Dim xDiff As Long, yDiff As Long
-    xDiff = tmpPoint.x - m_WindowRect.x1
-    yDiff = tmpPoint.y - m_WindowRect.y1
-    
-    With m_WindowRect
-        .x1 = .x1 + xDiff
-        .x2 = .x2 + xDiff
-        .y1 = .y1 + yDiff
-        .y2 = .y2 + yDiff
-    End With
+        'Retrieve a copy of the window rect *in screen coordinates*
+        GetWindowRect m_hWnd, m_WindowRect
+        
+        'Find the difference between *the screen coordinate space* and *the parent's coordinate space*
+        Dim tmpPoint As POINTAPI
+        tmpPoint.x = m_WindowRect.x1
+        tmpPoint.y = m_WindowRect.y1
+        MapWindowPoints 0&, GetParent(m_hWnd), tmpPoint, 1&
+        
+        'Translate the window rect into our parent's coordinate space, which greatly simplifies subsequent property requests
+        Dim xDiff As Long, yDiff As Long
+        xDiff = tmpPoint.x - m_WindowRect.x1
+        yDiff = tmpPoint.y - m_WindowRect.y1
+        
+        With m_WindowRect
+            .x1 = .x1 + xDiff
+            .x2 = .x2 + xDiff
+            .y1 = .y1 + yDiff
+            .y2 = .y2 + yDiff
+        End With
+        
+    End If
     
 End Sub
 

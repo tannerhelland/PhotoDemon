@@ -233,10 +233,6 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     If (Not newVisibility) Then EffectPrep.ResetPreviewIDs Else RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 'Use this to supply the preview with a copy of the original image's data.  The preview object can use this to display
 ' the original image when the user clicks the "show original image" link.
 Public Sub SetOriginalImage(ByRef srcDIB As pdDIB)

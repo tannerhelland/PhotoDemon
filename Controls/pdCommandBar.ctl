@@ -466,7 +466,7 @@ Private Function SavePreset() As Boolean
         'Next, set the combo box index to match the just-added preset
         Dim i As Long
         For i = 0 To cboPreset.ListCount - 1
-            If StrComp(newPresetName, Trim$(cboPreset.List(i)), vbTextCompare) = 0 Then
+            If Strings.StringsEqual(newPresetName, Trim$(cboPreset.List(i)), True) Then
                 cboPreset.ListIndex = i
                 Exit For
             End If
@@ -690,10 +690,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
-End Sub
-
 Private Sub UserControl_Initialize()
 
     'Disable certain actions until the control is fully prepped and ready
@@ -840,7 +836,6 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
     m_Presets.BeginPresetWrite presetName
     
     Dim controlName As String, controlType As String, controlValue As String
-    Dim controlIndex As Long
     
     'Next, we're going to iterate through each control on the form.  For each control, we're going to assemble two things:
     ' a name (basically, the control name plus its index, if any), and its value.  These are forwarded to the preset manager,
@@ -992,7 +987,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
         Dim originalEnglishName As String
         originalEnglishName = g_Language.RestoreMessage(presetName)
         
-        If StrComp(presetName, originalEnglishName, vbBinaryCompare) <> 0 Then
+        If Strings.StringsNotEqual(presetName, originalEnglishName, False) Then
             presetName = originalEnglishName
             presetExists = m_Presets.DoesPresetExist(presetName)
         End If

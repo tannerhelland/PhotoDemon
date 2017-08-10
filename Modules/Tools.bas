@@ -202,7 +202,6 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
     ' and disallow anything that results in invalid coordinates or sizes.
     Dim newLeft As Double, newTop As Double, newRight As Double, newBottom As Double
-    Dim newX As Double, newY As Double, newWidth As Double, newHeight As Double
     
     'The way we assign new offsets and/or sizes to the layer depends on the POI (point of interest) the user is interacting with.
     ' Layers currently support nine points of interest: each of their 4 corners, 4 rotational points (lying on the center of

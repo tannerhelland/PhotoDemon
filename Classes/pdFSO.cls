@@ -773,8 +773,6 @@ Friend Function FileGetTimeAsCurrency(ByRef srcFile As String, Optional ByVal ty
     Dim hFile As Long
     If FileCreateHandle(srcFile, hFile, True) Then
         
-        Dim apiReturn As Long
-        
         Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
         If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
         
