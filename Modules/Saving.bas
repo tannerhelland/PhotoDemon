@@ -70,7 +70,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     'The first major task this function deals with is save prompts.  The formula for showing these is hierarchical:
     
     ' 0) SPECIAL STEP: if we are in the midst of a batch process, *never* display a dialog.
-    ' 1) If the caller has forcibly requested an options dialog (as "Save As" does), display a dialog.
+    ' 1) If the caller has forcibly requested an options dialog (e.g. "Save As"), display a dialog.
     ' 2) If the caller hasn't forcibly requested a dialog...
         '3) See if this output format even supports dialogs.  If it doesn't, proceed with saving.
         '4) If this output format does support a dialog...

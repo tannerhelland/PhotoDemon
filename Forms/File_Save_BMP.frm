@@ -29,7 +29,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Left            =   6000
       TabIndex        =   6
-      Top             =   4200
+      Top             =   3120
       Width           =   6975
       _ExtentX        =   7858
       _ExtentY        =   661
@@ -40,7 +40,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   975
       Left            =   5880
       TabIndex        =   9
-      Top             =   1860
+      Top             =   4200
       Width           =   7095
       _ExtentX        =   15690
       _ExtentY        =   1720
@@ -50,7 +50,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Index           =   0
       Left            =   9360
-      Top             =   4740
+      Top             =   3660
       Width           =   3615
       _ExtentX        =   9340
       _ExtentY        =   661
@@ -60,7 +60,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Left            =   6240
       TabIndex        =   7
-      Top             =   4680
+      Top             =   3600
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   661
@@ -74,7 +74,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   1095
       Left            =   5880
       TabIndex        =   4
-      Top             =   3000
+      Top             =   1920
       Width           =   7095
       _ExtentX        =   15690
       _ExtentY        =   1931
@@ -104,7 +104,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Left            =   6000
       TabIndex        =   0
-      Top             =   5280
+      Top             =   4200
       Width           =   6975
       _ExtentX        =   7435
       _ExtentY        =   661
@@ -156,7 +156,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Left            =   6000
       TabIndex        =   1
-      Top             =   4200
+      Top             =   3120
       Width           =   6975
       _ExtentX        =   15478
       _ExtentY        =   661
@@ -173,8 +173,9 @@ Attribute VB_Exposed = False
 'Bitmap export dialog
 'Copyright 2012-2017 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 16/March/16
-'Last update: repurpose old color-depth dialog into a BMP-specific one
+'Last updated: 11/August/17
+'Last update: dynamically reflow visible controls as panels are changed, and hide settings specific to
+'             transparent images (e.g. background color) if the current image is fully opaque.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -189,6 +190,10 @@ Private m_SrcImage As pdImage
 
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
+
+'If the source image contains transparency, this will be set to TRUE.  Various export options can be disabled
+' or hidden if we don't have to deal with transparency in the source image.
+Private m_ImageHasTransparency As Boolean
 
 'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
 ' but note that it must be regenerated whenever the preview source is regenerated.
@@ -241,9 +246,14 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
-    If Not (m_SrcImage Is Nothing) Then
+    If (Not m_SrcImage Is Nothing) Then
+        
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
+        
+        'Detect the source image's transparency state
+        m_ImageHasTransparency = DIBs.IsDIBTransparent(m_CompositedImage)
+        
     End If
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
@@ -268,9 +278,14 @@ End Sub
 
 Private Sub UpdateAllVisibility()
 
+    Dim ctlSpacing As Long
+    ctlSpacing = Interface.FixDPI(8)
+    
+    Dim curOffset As Long
+    
     Select Case btsColorModel.ListIndex
     
-        'Auto
+        'Auto color-depth detection.  Hide pretty much everything, because the program handles it.
         Case 0
             btsDepthRGB.Visible = False
             btsDepthGrayscale.Visible = False
@@ -278,72 +293,135 @@ Private Sub UpdateAllVisibility()
             clsBackground.Visible = False
             chkFlipRows.Visible = False
             
-        'RGBA
+        'Force RGBA output.  Allow the user to premultiply, and flip rows.
         Case 1
             btsDepthRGB.Visible = False
             btsDepthGrayscale.Visible = False
-            chkPremultiplyAlpha.Visible = True
             clsBackground.Visible = False
+            
+            chkFlipRows.SetTop btsColorModel.GetTop + btsColorModel.GetHeight + ctlSpacing
             chkFlipRows.Visible = True
-        
-        'RGB
+            
+            If m_ImageHasTransparency Then
+                chkPremultiplyAlpha.SetTop chkPremultiplyAlpha.GetTop + chkPremultiplyAlpha.GetHeight + ctlSpacing
+                chkPremultiplyAlpha.Visible = True
+            Else
+                chkPremultiplyAlpha.Visible = False
+            End If
+            
+        'Force RGB output.  This still allows for 32-bpp output, FYI, but with an "X-byte" (e.g. a blank
+        ' byte that exists solely to support DWORD padding).  Don't be thrown by that.
         Case 2
-            btsDepthRGB.Visible = True
             btsDepthGrayscale.Visible = False
             chkPremultiplyAlpha.Visible = False
-            clsBackground.Visible = True
+            
+            chkFlipRows.SetTop btsColorModel.GetTop + btsColorModel.GetHeight + ctlSpacing
             chkFlipRows.Visible = True
+            
+            If m_ImageHasTransparency Then
+                clsBackground.SetTop chkFlipRows.GetTop + chkFlipRows.GetHeight + ctlSpacing
+                clsBackground.Visible = True
+                curOffset = clsBackground.GetTop + clsBackground.GetHeight + ctlSpacing
+            Else
+                curOffset = chkFlipRows.GetTop + chkFlipRows.GetHeight + ctlSpacing
+                clsBackground.Visible = False
+            End If
+            
+            btsDepthRGB.SetTop curOffset
+            btsDepthRGB.Visible = True
+            
+            curOffset = btsDepthRGB.GetTop + btsDepthRGB.GetHeight + ctlSpacing
         
         'Grayscale
         Case 3
             btsDepthRGB.Visible = False
-            btsDepthGrayscale.Visible = True
             chkPremultiplyAlpha.Visible = False
-            clsBackground.Visible = True
+            
+            chkFlipRows.SetTop btsColorModel.GetTop + btsColorModel.GetHeight + ctlSpacing
             chkFlipRows.Visible = True
+            
+            If m_ImageHasTransparency Then
+                clsBackground.SetTop chkFlipRows.GetTop + chkFlipRows.GetHeight + ctlSpacing
+                clsBackground.Visible = True
+                curOffset = clsBackground.GetTop + clsBackground.GetHeight + ctlSpacing
+            Else
+                curOffset = chkFlipRows.GetTop + chkFlipRows.GetHeight + ctlSpacing
+                clsBackground.Visible = False
+            End If
+            
+            btsDepthGrayscale.SetTop curOffset
+            btsDepthGrayscale.Visible = True
+            
+            curOffset = btsDepthGrayscale.GetTop + btsDepthGrayscale.GetHeight + ctlSpacing
     
     End Select
     
-    EvaluateDepthRGBVisibility
+    EvaluateDepthRGBVisibility curOffset
 
 End Sub
 
-Private Sub EvaluateDepthRGBVisibility()
+Private Sub EvaluateDepthRGBVisibility(ByVal curOffset As Long)
+
     If (Not btsDepthRGB.Visible) Then
         chk16555.Visible = False
-        SetGroupVisibility_IndexedColor False
+        SetGroupVisibility_IndexedColor False, curOffset
     Else
         Select Case btsDepthRGB.ListIndex
         
             '32-bpp XRGB
             Case 0
                 chk16555.Visible = False
-                SetGroupVisibility_IndexedColor False
+                SetGroupVisibility_IndexedColor False, curOffset
                 
             '24-bpp
             Case 1
                 chk16555.Visible = False
-                SetGroupVisibility_IndexedColor False
+                SetGroupVisibility_IndexedColor False, curOffset
             
             '16-bpp
             Case 2
+                chk16555.SetTop curOffset
                 chk16555.Visible = True
-                SetGroupVisibility_IndexedColor False
+                SetGroupVisibility_IndexedColor False, curOffset
             
             '8-bpp
             Case 3
                 chk16555.Visible = False
-                SetGroupVisibility_IndexedColor True
+                SetGroupVisibility_IndexedColor True, curOffset
         
         End Select
     End If
+    
 End Sub
 
-Private Sub SetGroupVisibility_IndexedColor(ByVal vState As Boolean)
+Private Sub SetGroupVisibility_IndexedColor(ByVal vState As Boolean, ByVal curOffset As Long)
+    
+    Dim ctlSpacing As Long
+    ctlSpacing = Interface.FixDPI(8)
+    
+    If vState Then
+                
+        chkRLE.SetTop curOffset
+        chkRLE.Visible = vState
+        curOffset = chkRLE.GetTop + chkRLE.GetHeight + ctlSpacing
+        
+        chkColorCount.SetTop curOffset
+        chkColorCount.Visible = vState
+        curOffset = chkColorCount.GetTop + chkColorCount.GetHeight + ctlSpacing
+        
+        sldColorCount.SetTop curOffset
+        sldColorCount.Visible = vState
+        
+        lblTitle(0).SetTop curOffset + FixDPI(3)
+        lblTitle(0).Visible = vState
+    
+    End If
+    
     chkRLE.Visible = vState
     chkColorCount.Visible = vState
     sldColorCount.Visible = vState
     lblTitle(0).Visible = vState
+    
 End Sub
 
 Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
@@ -352,7 +430,7 @@ Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsDepthRGB_Click(ByVal buttonIndex As Long)
-    EvaluateDepthRGBVisibility
+    EvaluateDepthRGBVisibility btsDepthRGB.GetTop + btsDepthRGB.GetHeight + Interface.FixDPI(8)
     UpdatePreviewSource
     UpdatePreview
 End Sub
@@ -495,7 +573,7 @@ End Sub
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
 
-    If (Not (m_CompositedImage Is Nothing)) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
