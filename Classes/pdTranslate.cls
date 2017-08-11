@@ -193,7 +193,7 @@ Friend Sub NotifyHotPatchingComplete()
             Dim newLanguageVersion As String
             newLanguageVersion = tmpXML.GetUniqueTag_String("langversion")
             
-            If Strings.StringsNotEqual(curLangVersion, newLanguageVersion, vbBinaryCompare) Then
+            If Strings.StringsNotEqual(curLangVersion, newLanguageVersion, False) Then
             
                 'The version numbers do not match.  Set a module-level refresh flag; PD's internal processor will a refresh function the next time a
                 ' user-initiated action completes, and that function will check this module-level value to see if a refresh is required.
@@ -718,7 +718,7 @@ Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As PDLanguag
     
         If m_AvailableLanguages(i).IsOfficial Then
             
-            If Strings.StringsEqual(languageID, Trim$(UCase(m_AvailableLanguages(i).langID)), False) Then
+            If Strings.StringsEqual(languageID, Trim$(m_AvailableLanguages(i).langID), True) Then
                 
                 'It's a match!  Fill the target object and exit
                 dstLanguageFileObject = m_AvailableLanguages(i)
@@ -853,30 +853,32 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     Dim searchString As String, newString As String
     If Me.TranslationActive() Then
+    
         searchString = srcMessage
         newString = GetTranslationTagFromCaption(searchString)
-    End If
     
-    'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
-    ' even if translation text is missing.
-    If (Len(newString) = 0) Then
-        
-        'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
+        'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
+        ' even if translation text is missing.
+        If (Len(newString) = 0) Then
             
-            newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
-            
-            If (Len(newString) = 0) Then
-                newString = srcMessage
+            'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+            If (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
+                
+                newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
+                
+                If (Len(newString) = 0) Then
+                    newString = srcMessage
+                Else
+                
+                    'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
+                    newString = Replace$(newString, vbLf, vbCrLf, , , vbBinaryCompare)
+                
+                End If
+                
             Else
-            
-                'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
-                newString = Replace$(newString, vbLf, vbCrLf, , , vbBinaryCompare)
-            
+                newString = srcMessage
             End If
             
-        Else
-            newString = srcMessage
         End If
     
     'If translations are not active, just use the existing string "as-is"
@@ -1071,6 +1073,7 @@ Friend Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         ' at run-time.  We can detect these by checking for a vbTab character in the menu entry.  If a tab is found,
         ' strip it out before searching for a translation.
         If (TypeOf eControl Is Menu) Then
+            
             tmpString = eControl.Caption
             strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
             
