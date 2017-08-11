@@ -27,7 +27,7 @@ Begin VB.Form dialog_ExportPixmap
       Height          =   375
       Left            =   6000
       TabIndex        =   6
-      Top             =   2520
+      Top             =   1440
       Width           =   6375
       _ExtentX        =   11245
       _ExtentY        =   661
@@ -57,7 +57,7 @@ Begin VB.Form dialog_ExportPixmap
       Height          =   1095
       Left            =   5880
       TabIndex        =   2
-      Top             =   4200
+      Top             =   3120
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   1931
@@ -67,7 +67,7 @@ Begin VB.Form dialog_ExportPixmap
       Height          =   1095
       Left            =   5880
       TabIndex        =   3
-      Top             =   120
+      Top             =   4320
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   1931
@@ -77,7 +77,7 @@ Begin VB.Form dialog_ExportPixmap
       Height          =   1095
       Left            =   5880
       TabIndex        =   4
-      Top             =   3000
+      Top             =   1920
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   1931
@@ -87,7 +87,7 @@ Begin VB.Form dialog_ExportPixmap
       Height          =   1095
       Left            =   5880
       TabIndex        =   5
-      Top             =   1320
+      Top             =   240
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   1931
@@ -103,8 +103,9 @@ Attribute VB_Exposed = False
 'Portable Pixmap Export Dialog
 'Copyright 2000-2017 by Tanner Helland
 'Created: 01/May/16
-'Last updated: 01/May/17
-'Last update: construct an actual export-time dialog for users
+'Last updated: 11/August/17
+'Last update: improve flow of export dialog (by auto-hiding the background color selector when the source
+'             image doesn't contain meaningful transparency data)
 '
 'Dialog for presenting the user various options related to PBM/PGM/PPM/PFM exporting.  All features
 ' rely on FreeImage for implementation, and this format will simply not be available for export or
@@ -142,6 +143,10 @@ Private m_FormatParamString As String
 ' cannot write any pixmap-specific data.
 Private m_MetadataParamString As String
 
+'If the source image contains transparency, this will be set to TRUE.  Various export options can be disabled
+' or hidden if we don't have to deal with transparency in the source image.
+Private m_ImageHasTransparency As Boolean
+
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -173,7 +178,19 @@ Private Sub UpdateComponentVisibility()
     End If
     
     'There is no "format" option for float images
-    btsFormat.Visible = CBool(btsDepth.ListIndex <> 3)
+    btsFormat.Visible = (btsDepth.ListIndex <> 3)
+    
+    'Show/hide the background color option if the current image has meaningful transparency data
+    If m_ImageHasTransparency Then
+        If (btsDepth.ListIndex <> 3) Then
+            clsBackground.SetTop btsFormat.GetTop + btsFormat.GetHeight + Interface.FixDPI(8)
+        Else
+            clsBackground.SetTop btsFormat.GetTop
+        End If
+        clsBackground.Visible = True
+    Else
+        clsBackground.Visible = False
+    End If
     
 End Sub
 
@@ -304,8 +321,13 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     If ((m_SrcImage Is Nothing) Or (Not g_ImageFormats.FreeImageEnabled)) Then
         Interface.ShowDisabledPreviewImage pdFxPreview
     Else
+        
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
+        
+        'Detect the source image's transparency state
+        m_ImageHasTransparency = DIBs.IsDIBTransparent(m_CompositedImage)
+        
     End If
     
     'Update the preview
