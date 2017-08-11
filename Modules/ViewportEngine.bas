@@ -65,6 +65,10 @@ Private m_DisableViewportRendering As Boolean
 Private m_TimeStage2 As Currency, m_TimeStage3 As Currency, m_TimeStage4 As Currency
 Private m_TotalTime As Currency, m_TotalTimeStage2 As Currency, m_TotalTimeStage3 As Currency, m_TotalTimeStage4 As Currency
 
+'The last POI ("point of interest") passed to this class.  When a marching ant selection outline is active, we want to reuse this
+' value instead of whatever the marching ant viewport request passes in.
+Private m_LastPOI As PD_PointOfInterest
+
 'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
@@ -90,7 +94,10 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             Dim startTime As Currency
             VBHacks.GetHighResTime startTime
-                
+            
+            'If the "reuse last POI" indicator is passed, substitute our last-saved POI for the one passed in
+            If (curPOI = poi_ReuseLast) Then curPOI = m_LastPOI Else m_LastPOI = curPOI
+            
             'Flip the viewport buffer over to the canvas control.  Any additional rendering must now happen there.
             BitBlt dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
             

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Resource Manager
 'Copyright 2016-2017 by Tanner Helland
 'Created: 13/December/16
-'Last updated: 17/February/17
-'Last update: finalize support for loading custom resources directly from the .exe (instead of from a standalone file)
+'Last updated: 11/August/17
+'Last update: use class-level caches for loading resources, which should reduce memory churn
 '
 'PhotoDemon needs to include a whole swatch of custom resources.  These resources take up a lot of space,
 ' and we also need to pull different resources depending on things like screen DPI.  To simplify this process,
@@ -266,9 +266,6 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                             numColors = m_XML.GetUniqueTag_Long("palette-size")
                             
                             If (numColors > 0) Then
-                                
-                                'Private m_Palette() As RGBQUAD, m_numOfPaletteEntries As Long
-                        'Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
                                 
                                 'Reuse the same module-level arrays, to try and reduce unnecessary allocations
                                 If (m_numOfPaletteEntries < numColors) Then
