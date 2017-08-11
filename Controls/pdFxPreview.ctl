@@ -178,6 +178,43 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
 Public Property Get offsetX() As Long
     offsetX = pdPreviewBox.offsetX
@@ -313,13 +350,6 @@ Private Sub UserControl_Resize()
     If Not MainModule.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
-Private Sub UserControl_Show()
-    
-    'Ensure the control is redrawn at least once
-    UpdateControlLayout
-    
-End Sub
-
 'After a resize or paint request, update the layout of our control
 Private Sub UpdateControlLayout()
     
@@ -328,20 +358,20 @@ Private Sub UpdateControlLayout()
         'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
         Dim newPicWidth As Long, newPicHeight As Long
         newPicWidth = ucSupport.GetControlWidth
-        newPicHeight = ucSupport.GetControlHeight - (btsState.Height + FixDPI(4))
+        newPicHeight = ucSupport.GetControlHeight - (btsState.GetHeight + FixDPI(4))
         pdPreviewBox.SetPositionAndSize 0, 0, newPicWidth, newPicHeight
         
         'If zoom/pan is not allowed, hide that button entirely
-        btsZoom.Visible = AllowZoomPan
+        btsZoom.Visible = Me.AllowZoomPan
         
         'Adjust the button strips to appear just below the preview window
         Dim newButtonTop As Long, newButtonWidth As Long
-        newButtonTop = ucSupport.GetControlHeight - btsState.Height
+        newButtonTop = ucSupport.GetControlHeight - btsState.GetHeight
         
         'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
-        If btsZoom.Visible Then
+        If Me.AllowZoomPan Then
             newButtonWidth = (newPicWidth \ 2) - FixDPI(8)
-            btsZoom.SetPositionAndSize ucSupport.GetControlWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.Height
+            btsZoom.SetPositionAndSize ucSupport.GetControlWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.GetHeight
             
         'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
         Else
@@ -349,7 +379,7 @@ Private Sub UpdateControlLayout()
         End If
         
         'Move the before/after toggle into place
-        btsState.SetPositionAndSize 0, newButtonTop, newButtonWidth, btsState.Height
+        btsState.SetPositionAndSize 0, newButtonTop, newButtonWidth, btsState.GetHeight
     
     End If
                 

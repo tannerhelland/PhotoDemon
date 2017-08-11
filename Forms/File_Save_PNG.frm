@@ -844,19 +844,19 @@ Private Sub UpdatePreviewSource()
         
         If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
             desiredAlphaMode = PDAS_ComplicatedAlpha
-            If newColorDepth = 24 Then newColorDepth = 32
+            If (newColorDepth = 24) Then newColorDepth = 32
         ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
             desiredAlphaMode = PDAS_NoAlpha
-            If newColorDepth = 32 Then newColorDepth = 24
+            If (newColorDepth = 32) Then newColorDepth = 24
             desiredAlphaCutoff = 0
         ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
             desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-            If newColorDepth = 24 Then newColorDepth = 32
+            If (newColorDepth = 24) Then newColorDepth = 32
         ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
             desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
-            If newColorDepth = 24 Then newColorDepth = 32
+            If (newColorDepth = 24) Then newColorDepth = 32
         End If
         
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
@@ -879,9 +879,7 @@ Private Sub UpdatePreview()
         
         'Retrieve a PNG-saved version of the current preview image
         workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_PNG) Then
-            FinalizeNonstandardPreview pdFxPreview, True
-        End If
+        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_PNG) Then FinalizeNonstandardPreview pdFxPreview, True
         
     End If
     
