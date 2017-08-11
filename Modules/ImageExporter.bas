@@ -1766,6 +1766,10 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Set cParams = New pdParamXML
     cParams.SetParamString formatParams
     
+    Dim cParamsDepth As pdParamXML
+    Set cParamsDepth = New pdParamXML
+    cParamsDepth.SetParamString cParams.GetString("TIFFColorDepth")
+    
     'First come generic TIFF settings (compression methods, basically)
     Dim TIFFCompressionColor As String, TIFFCompressionMono As String
     TIFFCompressionColor = cParams.GetString("TIFFCompressionColor", "LZW")
@@ -1776,31 +1780,60 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
     'Next come the various color-depth and alpha modes
     Dim outputColorModel As String
-    outputColorModel = cParams.GetString("TIFFColorModel", "Auto")
+    outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
     
+    'If the output color model is "gray", note that we will apply a forcible grayscale conversion prior to export
     Dim forceGrayscale As Boolean
-    forceGrayscale = CBool(StrComp(LCase$(outputColorModel), "gray", vbBinaryCompare) = 0)
+    forceGrayscale = ParamsEqual(outputColorModel, "gray")
     
-    Dim outputColorDepth As Long, outputPaletteSize As Long
-    If forceGrayscale Then outputColorDepth = cParams.GetLong("TIFFBitDepth", 8) Else outputColorDepth = cParams.GetLong("TIFFBitDepth", 24)
-    outputPaletteSize = cParams.GetLong("TIFFPaletteSize", 256)
+    'From the color depth requests, calculate an actual, numeric color depth.
+    ' (This includes checks like -- if we are forcibly outputting a grayscale image, set the bit-depth to 8-bpp to match.)
+    Dim outputColorDepth As Long, outputPaletteSize As Long, outputColorDepthName As String
+    If forceGrayscale Then
     
+        outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
+        
+        If ParamsEqual(outputColorDepthName, "Gray_HDR") Then
+            outputColorDepth = 16
+        ElseIf ParamsEqual(outputColorDepthName, "Gray_Monochrome") Then
+            outputColorDepth = 1
+        Else
+            outputColorDepth = 8
+        End If
+        
+    Else
+    
+        outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
+        
+        If ParamsEqual(outputColorDepthName, "Color_HDR") Then
+            outputColorDepth = 48
+        ElseIf ParamsEqual(outputColorDepthName, "Color_Indexed") Then
+            outputColorDepth = 8
+        Else
+            outputColorDepth = 24
+        End If
+        
+    End If
+    
+    outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    
+    'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only 0 or 255 values),
+    ' require additional settings.  We always retrieve all values, even if we don't plan on using them.
     Dim outputAlphaModel As String
-    outputAlphaModel = cParams.GetString("TIFFAlphaModel", "Auto")
+    outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto")
     
-    Dim outputTIFFCutoff As Long, outputTIFFColor As Long
-    outputTIFFCutoff = cParams.GetLong("TIFFAlphaCutoff", 64)
-    outputTIFFColor = cParams.GetLong("TIFFAlphaColor", vbMagenta)
+    Dim outputTiffCutoff As Long, outputTiffColor As Long
+    outputTiffCutoff = cParams.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+    outputTiffColor = cParams.GetLong("ColorDepth_AlphaColor", vbMagenta)
     
     'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
-    ' color-depth and alpha-detection values for each output image (either a single page composite image,
-    ' or each layer in the image if outputting a multipage TIFF).
+    ' color-depth and alpha-detection values now.
     Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
     autoColorModeActive = ParamsEqual(outputColorModel, "auto")
     autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
     
-    'These values are used by the automatic color-depth detection tool; see below for how they are used
     Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    
     Dim TIFFflags As Long: TIFFflags = TIFF_DEFAULT
     
     'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
@@ -1852,15 +1885,15 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 'Point a DIB wrapper at the fully processed layer
                 Set tmpLayerDIB = tmpLayer.layerDIB
                 
-                'If automatic color or transparency detection is active, find the best output now
                 If autoColorModeActive Or autoTransparencyModeActive Then
                     autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpLayerDIB, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
-                    ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp and alpha state " & CStr(currentAlphaStatus) & " for layer #" & CStr(i + 1) & ", " & tmpLayer.GetLayerName
+                    ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
+                    If (currentAlphaStatus = PDAS_BinaryAlpha) Then currentAlphaStatus = PDAS_ComplicatedAlpha
                 Else
                     currentAlphaStatus = PDAS_ComplicatedAlpha
                 End If
                 
-                'From the automatic values, construct matching output values as relevant
+                'From the automatic values, construct matching output values
                 If autoColorModeActive Then
                     pageColorDepth = autoColorDepth
                     pageForceGrayscale = isGrayscale
@@ -1869,15 +1902,15 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                     pageColorDepth = outputColorDepth
                     pageForceGrayscale = forceGrayscale
                 End If
-                
+        
                 'Convert the auto-detected transparency mode to a usable string parameter.  (We need this later in the function,
                 ' so we can combine color depth and alpha depth into a single usable bit-depth.)
                 If autoTransparencyModeActive Then
                     desiredAlphaStatus = currentAlphaStatus
                     If desiredAlphaStatus = PDAS_NoAlpha Then
                         outputAlphaModel = "none"
-                    ElseIf (desiredAlphaStatus = PDAS_BinaryAlpha) Then
-                        If (outputColorDepth < 32) Then outputAlphaModel = "bycutoff" Else outputAlphaModel = "full"
+                    ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
+                        outputAlphaModel = "bycutoff"
                     ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
                         outputAlphaModel = "bycolor"
                     ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
@@ -1886,51 +1919,46 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                         outputAlphaModel = "full"
                     End If
                 End If
-                
+        
                 'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
                 ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
                 ' us to workaround some FreeImage deficiencies, so these depths may not match what TIFF formally supports.
-                
-                'Full alpha always requires an 8-bit alpha channel, even if the auto-detected color depth is <= 256 colors
-                ' (or grayscale)
                 If ParamsEqual(outputAlphaModel, "full") Then
-                    desiredAlphaStatus = PDAS_ComplicatedAlpha
-                    If (Not pageForceGrayscale) Then
-                        If pageColorDepth = 24 Then pageColorDepth = 32
-                        If pageColorDepth = 48 Then pageColorDepth = 64
-                    Else
-                        If pageColorDepth = 8 Then pageColorDepth = 32
-                        If pageColorDepth = 16 Then pageColorDepth = 64
-                        pageForceGrayscale = False
-                    End If
                 
-                'If alpha isn't desired at all, forcibly strip the alpha channel (if any) from the detected color depth
+                    desiredAlphaStatus = PDAS_ComplicatedAlpha
+                    
+                    'PNG supports 8-bpp grayscale + 8-bpp alpha as a valid channel combination.  Unfortunately, FreeImage has
+                    ' no way of generating such an image.  We must fall back to 32-bpp mode.
+                    If (Not forceGrayscale) Then
+                        If (pageColorDepth = 24) Then pageColorDepth = 32
+                        If (pageColorDepth = 48) Then pageColorDepth = 64
+                    End If
+                    
                 ElseIf ParamsEqual(outputAlphaModel, "none") Then
                     desiredAlphaStatus = PDAS_NoAlpha
                     If (Not pageForceGrayscale) Then
-                        If pageColorDepth = 64 Then pageColorDepth = 48
-                        If pageColorDepth = 32 Then pageColorDepth = 24
+                        If (pageColorDepth = 64) Then pageColorDepth = 48
+                        If (pageColorDepth = 32) Then pageColorDepth = 24
                     End If
-                    outputTIFFCutoff = 0
-                    
-                'If a binary alpha channel is desired, high bit-depths must be given a full alpha channel.  Paletted images
-                ' can support a single transparent color, so they're okay as-is.
+                    outputTiffCutoff = 0
+            
                 ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
                     desiredAlphaStatus = PDAS_BinaryAlpha
                     If (Not pageForceGrayscale) Then
-                        If pageColorDepth = 24 Then pageColorDepth = 32
-                        If pageColorDepth = 48 Then pageColorDepth = 64
+                        If (pageColorDepth = 24) Then pageColorDepth = 32
+                        If (pageColorDepth = 48) Then pageColorDepth = 64
                     End If
+                    
                 ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
                     desiredAlphaStatus = PDAS_NewAlphaFromColor
-                    outputTIFFCutoff = outputTIFFColor
+                    outputTiffCutoff = outputTiffColor
                     If (Not pageForceGrayscale) Then
-                        If pageColorDepth = 24 Then pageColorDepth = 32
-                        If pageColorDepth = 48 Then pageColorDepth = 64
+                        If (pageColorDepth = 24) Then pageColorDepth = 32
+                        If (pageColorDepth = 48) Then pageColorDepth = 64
                     End If
                 End If
-                
-                'Monochrome depths require special treatment if alpha is active.  (1-bpp never supports alpha.)
+                    
+                'Monochrome depths require special treatment if alpha is active
                 If (pageColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
                     pageColorDepth = 8
                     outputPaletteSize = 2
@@ -1939,7 +1967,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 If (pageColorDepth <> 1) Then allPagesMonochrome = False
                 
                 'We now have enough information to create a FreeImage copy of this DIB
-                fi_PageHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpLayerDIB, pageColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTIFFCutoff, TIFFBackgroundColor, pageForceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+                fi_PageHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpLayerDIB, pageColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, TIFFBackgroundColor, pageForceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
                 
                 If (fi_PageHandle <> 0) Then
                 
@@ -1983,7 +2011,6 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         Set tmpImageCopy = New pdDIB
         srcPDImage.GetCompositedImage tmpImageCopy, False
         
-        'If automatic color or transparency detection is active, find the best output now
         If autoColorModeActive Or autoTransparencyModeActive Then
             autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
             ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
@@ -1991,7 +2018,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             currentAlphaStatus = PDAS_ComplicatedAlpha
         End If
         
-        'From the automatic values, construct matching output values as relevant
+        'From the automatic values, construct matching output values
         If autoColorModeActive Then
             outputColorDepth = autoColorDepth
             forceGrayscale = isGrayscale
@@ -2019,30 +2046,35 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
         ' us to workaround some FreeImage deficiencies, so these depths may not match what TIFF formally supports.
         If ParamsEqual(outputAlphaModel, "full") Then
+        
             desiredAlphaStatus = PDAS_ComplicatedAlpha
+            
             If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then outputColorDepth = 32
+                If (outputColorDepth = 48) Then outputColorDepth = 64
             End If
+            
         ElseIf ParamsEqual(outputAlphaModel, "none") Then
             desiredAlphaStatus = PDAS_NoAlpha
             If (Not forceGrayscale) Then
-                If outputColorDepth = 64 Then outputColorDepth = 48
-                If outputColorDepth = 32 Then outputColorDepth = 24
+                If (outputColorDepth = 64) Then outputColorDepth = 48
+                If (outputColorDepth = 32) Then outputColorDepth = 24
             End If
-            outputTIFFCutoff = 0
+            outputTiffCutoff = 0
+            
         ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
             desiredAlphaStatus = PDAS_BinaryAlpha
             If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then outputColorDepth = 32
+                If (outputColorDepth = 48) Then outputColorDepth = 64
             End If
+            
         ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
             desiredAlphaStatus = PDAS_NewAlphaFromColor
-            outputTIFFCutoff = outputTIFFColor
+            outputTiffCutoff = outputTiffColor
             If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then outputColorDepth = 32
+                If (outputColorDepth = 48) Then outputColorDepth = 64
             End If
         End If
             
@@ -2057,7 +2089,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         If g_ImageFormats.FreeImageEnabled Then
             
             Dim fi_DIB As Long
-            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTIFFCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
             
             'Finally, prepare some TIFF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
             ' request RLE encoding from FreeImage.
