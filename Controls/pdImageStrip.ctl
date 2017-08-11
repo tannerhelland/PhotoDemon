@@ -1281,7 +1281,7 @@ Public Sub UpdateAgainstCurrentTheme()
         Set m_CloseIconShadow = Nothing
         Set m_ModifiedIcon = Nothing
         
-        ucSupport.UpdateAgainstThemeAndLanguage
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
     
 End Sub

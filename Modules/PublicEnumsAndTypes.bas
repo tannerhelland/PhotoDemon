@@ -618,6 +618,10 @@ Public Enum PD_PointOfInterest
     poi_EdgeS = -9
     poi_EdgeW = -10
     
+    'Special POI flag that means, "reuse the last POI, whatever it was".  We use this in the main viewport compositor
+    ' when a marching ant selection prompts a redraw, and we don't want to lose our last POI.
+    poi_ReuseLast = -11
+    
 End Enum
 
 #If False Then

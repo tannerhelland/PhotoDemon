@@ -1120,10 +1120,10 @@ End Sub
 Friend Sub RequestFullMove(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters
-    If newLeft = -100 Then newLeft = m_MoveSize.GetLeft
-    If newTop = -100 Then newTop = m_MoveSize.GetTop
-    If newWidth = 0 Then newWidth = m_MoveSize.GetWidth
-    If newHeight = 0 Then newHeight = m_MoveSize.GetHeight
+    If (newLeft = -100) Then newLeft = m_MoveSize.GetLeft
+    If (newTop = -100) Then newTop = m_MoveSize.GetTop
+    If (newWidth = 0) Then newWidth = m_MoveSize.GetWidth
+    If (newHeight = 0) Then newHeight = m_MoveSize.GetHeight
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
     m_MoveSize.SetSizeAndPosition newLeft, newTop, newWidth, newHeight
