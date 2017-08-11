@@ -13,6 +13,9 @@ Attribute VB_Name = "Loading"
 'Note that these high-level functions call into a number of lower-level functions inside the ImageImporter module, and potentially various
 ' plugin-specific interfaces (e.g. FreeImage).
 '
+'TODO list: add GDI+ support for multipage TIFF loading.  This doesn't look too hard, and given the complexity of TIFF files,
+' it'd be worthwhile to have a backup plan if FreeImage chokes on a file.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -251,6 +254,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             '*************************************************************************************************************************************
             
             If ImageImporter.ForceTo32bppMode(targetDIB) Then DoEvents
+            
+            '*************************************************************************************************************************************
+            ' If we were forced to fall back to GDI+ as our loading engine, disable any remaining load-time FreeImage features
+            '*************************************************************************************************************************************
+            
+            If (decoderUsed <> PDIDE_FREEIMAGE) Then imageHasMultiplePages = False
             
             '*************************************************************************************************************************************
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
