@@ -25,11 +25,11 @@ Begin VB.Form dialog_ExportJPEG
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsCategory 
       Height          =   615
-      Left            =   5880
+      Left            =   6000
       TabIndex        =   1
       Top             =   120
-      Width           =   7095
-      _ExtentX        =   12515
+      Width           =   6975
+      _ExtentX        =   12303
       _ExtentY        =   1085
       FontSize        =   11
    End
@@ -176,8 +176,8 @@ Attribute VB_Exposed = False
 'JPEG Export Dialog
 'Copyright 2000-2017 by Tanner Helland
 'Created: 5/8/00
-'Last updated: 06/May/16
-'Last update: finish migration to the new export engine
+'Last updated: 11/August/17
+'Last update: hide the background color selector if the current image doesn't contain transparency
 '
 'Dialog for presenting the user various options related to JPEG exporting.  The advanced features all currently
 ' rely on FreeImage for implementation, and will be disabled and/or ignored if FreeImage cannot be found.
@@ -349,17 +349,17 @@ Private Sub UpdateComboBox()
     
     Select Case sltQuality.Value
         Case 40
-            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
+            If (cboSaveQuality.ListIndex <> 4) Then cboSaveQuality.ListIndex = 4
         Case 65
-            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
+            If (cboSaveQuality.ListIndex <> 3) Then cboSaveQuality.ListIndex = 3
         Case 80
-            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
+            If (cboSaveQuality.ListIndex <> 2) Then cboSaveQuality.ListIndex = 2
         Case 92
-            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
+            If (cboSaveQuality.ListIndex <> 1) Then cboSaveQuality.ListIndex = 1
         Case 99
-            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
+            If (cboSaveQuality.ListIndex <> 0) Then cboSaveQuality.ListIndex = 0
         Case Else
-            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
+            If (cboSaveQuality.ListIndex <> 5) Then cboSaveQuality.ListIndex = 5
     End Select
     
     If (Not m_CheckBoxUpdatingDisabled) Then UpdatePreview
@@ -418,9 +418,14 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
-    If Not (m_SrcImage Is Nothing) Then
+    If (Not m_SrcImage Is Nothing) Then
+        
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
+        
+        'If the composited image doesn't contain transparency, hide the "background color" box
+        clsBackground.Visible = DIBs.IsDIBTransparent(m_CompositedImage)
+        
     End If
     
     If (Not g_ImageFormats.FreeImageEnabled) Then
