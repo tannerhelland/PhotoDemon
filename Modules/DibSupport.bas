@@ -36,21 +36,23 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
     
     'Make sure the DIB exists
     If (srcDIB Is Nothing) Then Exit Function
-
+    
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If srcDIB.GetDIBColorDepth = 32 Then
+    If (srcDIB.GetDIBColorDepth = 32) Then
 
         'Make sure this DIB isn't empty
         If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepSafeArray tmpSA, srcDIB
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-            Dim x As Long, y As Long, quickX As Long
+            Dim iData() As Byte, tmpSA As SAFEARRAY1D
+            srcDIB.WrapArrayAroundScanline iData, tmpSA, 0
+            
+            Dim dibPtr As Long, dibStride As Long
+            dibPtr = tmpSA.pvData
+            dibStride = tmpSA.cElements
+            
+            Dim x As Long, y As Long
                 
             'By default, assume that the image does not have a binary alpha channel. (This is the preferable
             ' default, as we will exit the loop IFF a non-0 or non-255 value is found.)
@@ -60,12 +62,17 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             Dim chkAlpha As Byte
                 
             'Loop through the image, checking alphas as we go
-            For x = 0 To srcDIB.GetDIBWidth - 1
-                quickX = x * 4
+            Dim finalX As Long
+            finalX = srcDIB.GetDIBWidth * 4 - 4
             For y = 0 To srcDIB.GetDIBHeight - 1
             
+                'Point our array at the current scanline
+                tmpSA.pvData = dibPtr + y * dibStride
+                
+            For x = 0 To finalX Step 4
+                
                 'Retrieve the alpha value of the current pixel
-                chkAlpha = iData(quickX + 3, y)
+                chkAlpha = iData(x + 3)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR.
                 If (chkAlpha <> 255) Then
@@ -84,12 +91,11 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
                 
                 End If
                 
-            Next y
-                If notBinary Then Exit For
             Next x
+                If notBinary Then Exit For
+            Next y
     
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            srcDIB.UnwrapArrayFromDIB iData
             
             IsDIBAlphaBinary = Not notBinary
                 
@@ -100,78 +106,110 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
 End Function
 
 'Is a given DIB grayscale?  Determination is made by scanning each pixel and comparing RGB values to see if they match.
+' (32-bpp inputs required.)
 Public Function IsDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
-    
-    'Make sure the DIB exists
-    If srcDIB Is Nothing Then Exit Function
-    
-    'Make sure this DIB isn't empty
-    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
-    
-        'Loop through the image and compare RGB values to determine grayscale or not.
-        Dim iData() As Byte
-        Dim tmpSA As SAFEARRAY2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-        
-        Dim x As Long, y As Long, quickX As Long
-        Dim r As Long, g As Long, b As Long
-        
-        Dim qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
-                        
-        'Loop through the image, checking alphas as we go
-        For x = 0 To srcDIB.GetDIBWidth - 1
-            quickX = x * qvDepth
-        For y = 0 To srcDIB.GetDIBHeight - 1
-            
-            r = iData(quickX + 2, y)
-            g = iData(quickX + 1, y)
-            b = iData(quickX, y)
-            
-            'For optimization reasons, this is stated as multiple IFs instead of an OR.
-            If r <> g Then
-                
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                Erase iData
-        
-                IsDIBGrayscale = False
-                Exit Function
-                
-            ElseIf g <> b Then
-            
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                Erase iData
-            
-                IsDIBGrayscale = False
-                Exit Function
-                
-            ElseIf r <> b Then
-            
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                Erase iData
-            
-                IsDIBGrayscale = False
-                Exit Function
-                
-            End If
-                
-        Next y
-        Next x
-    
-        'With our alpha channel complete, point iData() away from the DIB and deallocate it
-        CopyMemory ByVal VarPtrArray(iData), 0&, 4
-        Erase iData
-                        
-        'If we scanned all pixels without exiting prematurely, the DIB is grayscale
-        IsDIBGrayscale = True
-        Exit Function
-        
-    End If
     
     'If we made it to this line, the DIB is blank, so it doesn't matter what value we return
     IsDIBGrayscale = False
+    
+    'Make sure the DIB exists
+    If (Not srcDIB Is Nothing) Then
+        
+        'Make sure this DIB isn't empty
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+        
+            'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
+            ' match either of this, this is a non-binary alpha channel and it must be handled specially.
+            Dim imgPixels() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            srcDIB.WrapArrayAroundScanline imgPixels, tmpSA, 0
+            dibPtr = tmpSA.pvData
+            dibStride = tmpSA.cElements
+            
+            Dim x As Long, y As Long
+            Dim r As Long, g As Long, b As Long
+            
+            'Loop through the image, checking alphas as we go
+            Dim finalX As Long
+            finalX = srcDIB.GetDIBWidth * 4 - 4
+            
+            For y = 0 To srcDIB.GetDIBHeight - 1
+            
+                'Point our array at the current scanline
+                tmpSA.pvData = dibPtr + y * dibStride
+                
+            For x = 0 To finalX Step 4
+                
+                b = imgPixels(x)
+                g = imgPixels(x + 1)
+                r = imgPixels(x + 2)
+                
+                If (r <> g) Or (g <> b) Or (r <> b) Then
+                    srcDIB.UnwrapArrayFromDIB imgPixels
+                    IsDIBGrayscale = False
+                    Exit Function
+                End If
+                    
+            Next x
+            Next y
+        
+            'If we scanned all pixels without exiting prematurely, the DIB is grayscale
+            srcDIB.UnwrapArrayFromDIB imgPixels
+            IsDIBGrayscale = True
+            
+        End If
+            
+    End If
 
+End Function
+
+'Given a 32-bpp DIB, return TRUE if any of its alpha bytes are non-255.
+Public Function IsDIBTransparent(ByRef srcDIB As pdDIB) As Boolean
+    
+    IsDIBTransparent = False
+    
+    'Make sure the DIB exists and is 32-bpp
+    If (Not srcDIB Is Nothing) Then
+    
+        If (srcDIB.GetDIBColorDepth = 32) And (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) Then
+    
+            'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
+            ' match either of this, this is a non-binary alpha channel and it must be handled specially.
+            Dim imgPixels() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            srcDIB.WrapArrayAroundScanline imgPixels, tmpSA, 0
+            dibPtr = tmpSA.pvData
+            dibStride = tmpSA.cElements
+            
+            Dim x As Long, y As Long
+            
+            'Loop through the image, checking alphas as we go
+            Dim finalX As Long
+            finalX = srcDIB.GetDIBWidth * 4 - 4
+            
+            For y = 0 To srcDIB.GetDIBHeight - 1
+            
+                'Point our array at the current scanline
+                tmpSA.pvData = dibPtr + y * dibStride
+                
+            For x = 0 To finalX Step 4
+                
+                'Retrieve the alpha value of the current pixel
+                If (imgPixels(x + 3) <> 255) Then
+                    IsDIBTransparent = True
+                    Exit For
+                End If
+                
+            Next x
+                If IsDIBTransparent Then Exit For
+            Next y
+    
+            srcDIB.UnwrapArrayFromDIB imgPixels
+            
+        '/Is DIB 32-bpp and non-zero in size?
+        End If
+    
+    '/Does DIB exist?
+    End If
+        
 End Function
 
 'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
