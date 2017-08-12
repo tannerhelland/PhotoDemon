@@ -1944,6 +1944,7 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
         cParams.AddParam "PDMD_HasIndex", .HasIndex
         cParams.AddParam "PDMD_IsTagList", .IsTagList
         cParams.AddParam "PDMD_IsTagBinary", .IsTagBinary
+        If (Len(.TagBase64Value) <> 0) Then cParams.AddParam "PDMD_TagBase64", .TagBase64Value
         cParams.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted
         cParams.AddParam "PDMD_InternalUseOnly", .InternalUseOnly
         cParams.AddParam "PDMD_TagIndexInternal", .TagIndexInternal
@@ -2005,6 +2006,7 @@ Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMe
             .HasIndex = cParams.GetBool("PDMD_HasIndex")
             .IsTagList = cParams.GetBool("PDMD_IsTagList")
             .IsTagBinary = cParams.GetBool("PDMD_IsTagBinary")
+            .TagBase64Value = cParams.GetString("PDMD_TagBase64", vbNullString)
             .WasBinaryExtracted = cParams.GetBool("PDMD_WasBinaryExtracted")
             .InternalUseOnly = cParams.GetBool("PDMD_InternalUseOnly")
             .TagIndexInternal = cParams.GetLong("PDMD_TagIndexInternal")

@@ -404,7 +404,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
         Case PDIF_PDI
-            ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , PD_CE_Zstd, PD_CE_Zstd, False, , 5)
+            ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, False, PD_CE_Zstd, PD_CE_Zstd, False, True, 5)
                         
         Case PDIF_PNG
             ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
@@ -438,13 +438,9 @@ End Function
 '  - Figure out a good way to store metadata; the problem is not so much storing the metadata itself, but storing any user edits.
 '    I have postponed this until I get metadata editing working more fully.  (NOTE: metadata is now stored correctly, but the
 '    user edit aspect remains to be dealt with.)
-'  - User-settable options for compression.  Some users may prefer extremely tight compression, at a trade-off of slower
-'    image saves.  Similarly, compressing layers in PNG format instead of as a blind zLib stream would probably yield better
-'    results (at a trade-off to performance).  (NOTE: these features are now supported by the function, but they are not currently
-'    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal includeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -533,7 +529,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     Next i
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
-    If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.ImgMetadata Is Nothing) Then
+    If (Not writeHeaderOnlyFile) And includeMetadata And Not (srcPDImage.ImgMetadata Is Nothing) Then
     
         If srcPDImage.ImgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
