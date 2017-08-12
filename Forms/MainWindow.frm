@@ -3777,7 +3777,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
     
         'Browse metadata
         Case 0
-            ExifTool.ShowMetadataDialog pdImages(g_CurrentImage)
+            Process "Edit metadata", True
         
         'Separator
         Case 1

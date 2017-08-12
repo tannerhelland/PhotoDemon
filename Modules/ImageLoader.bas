@@ -303,7 +303,6 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String, retSize As Long
-        
         If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
         
             'Copy the received bytes into a string
