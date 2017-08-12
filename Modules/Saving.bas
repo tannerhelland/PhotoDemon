@@ -529,7 +529,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     Next i
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
-    If (Not writeHeaderOnlyFile) And includeMetadata And Not (srcPDImage.ImgMetadata Is Nothing) Then
+    If includeMetadata And (Not srcPDImage.ImgMetadata Is Nothing) Then
     
         If srcPDImage.ImgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
@@ -807,16 +807,16 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True)
             srcPDImage.MainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True)
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, , undoCmpLevel, , True)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, True, undoCmpLevel, , True)
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE

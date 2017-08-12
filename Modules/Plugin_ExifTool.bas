@@ -760,7 +760,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
 
     'Perform a failsafe check to make sure the metadata object exists.  (If ExifTool is missing, it may
     ' not be present!)
-    If Not (srcImage.ImgMetadata Is Nothing) Then
+    If (Not srcImage.ImgMetadata Is Nothing) Then
         
         'In the future, we'll allow the user to add their own metadata to the current image.  At present,
         ' however, there's not much point in displaying a dialog if the image doesn't have metadata.

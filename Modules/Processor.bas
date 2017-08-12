@@ -2094,6 +2094,12 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Flip image horizontally", True) Or Strings.StringsEqual(processID, "Flip horizontally", True) Then
         Filters_Transform.MenuMirror
         Process_ImageMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Edit metadata", True) Then
+        
+        'Note that there is no "Else" block here; the "Else" block does nothing but notify the processor to create an Undo entry
+        If raiseDialog Then ExifTool.ShowMetadataDialog pdImages(g_CurrentImage)
+        Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Count image colors", True) Then
         Filters_Miscellaneous.MenuCountColors

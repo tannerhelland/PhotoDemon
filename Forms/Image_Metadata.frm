@@ -481,6 +481,9 @@ Private Sub cmdBarMini_OKClick()
         Next j
     Next i
     
+    'With all metadata updated, notify the central processor that an Undo update is required
+    Process "Edit metadata", False, , UNDO_IMAGEHEADER
+    
 End Sub
 
 Private Sub cmdMarkPrivateTags_Click()
