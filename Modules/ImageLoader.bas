@@ -326,7 +326,8 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
         '    move it into the location specified by the PDI file.
         ' 3) Ask the layer to non-destructively overwrite its header with the header from the PDI file (e.g. don't
         '    touch its DIB or vector-specific contents).
-        
+        '
+        'Note also that header data may include image metadata; this is handled separately.
         Dim layerNodeName As String, layerNodeID As Long, layerNodeType As Long
         
         Dim i As Long
@@ -360,6 +361,32 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
             ' Continue to the next layer.
         
         Next i
+        
+        'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
+        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
+            
+            'Copy the received bytes into a string, then pass that string to the parent image's metadata handler
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+            If dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
+                
+                '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
+                ' and other changes.)
+                If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, False, retSize) Then
+                    retString = Space$(retSize \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+                    dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
+                End If
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  ImageImporter.LoadPhotoDemonImageHeaderOnly() failed to retrieve to parse this image's metadata chunk."
+                #End If
+            End If
+        
+        Else
+            Debug.Print "FYI, this PDI file does not contain metadata information."
+        End If
         
         'That's all there is to it!  Mark the load as successful and carry on.
         LoadPhotoDemonImageHeaderOnly = True
