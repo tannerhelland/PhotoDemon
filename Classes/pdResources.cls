@@ -185,9 +185,9 @@ End Function
 'When the user changes themes, the resource manager needs to be notified.  (Image resources are dynamically colored at run-time to
 ' match the current theme, so theme changes necessitate resource changes.)
 Friend Sub NotifyThemeChange()
+    m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting()
     m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
     m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
-    m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting()
 End Sub
 
 'Load an image-type resource.  Destination width and height must be manually specified.  If they are not specified, the imgae resource

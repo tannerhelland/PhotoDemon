@@ -15,24 +15,24 @@ Attribute VB_Exposed = False
 'Recent Files (MRU) handler for PD's primary image list (File > Open Recent)
 'Copyright 2005-2017 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
-'Last updated: 17/February/15
-'Last updated by: Raj
-'Last update: Corrected IMRUList_GetThumbnailPath to return String
+'Last updated: 15/August/17
+'Last update: implemented support for Unicode menu captions
 'Dependencies: - everything listed in IMRUList
-'              - pdFSO (for simpler Unicode file interactions)
+'              - Files module (for Unicode support), Crypto module (for fast hashing)
 '
-'This class is a specific implementation of the IMRUList Interface.  It works alongside pdMRUManager to manage the UI for
-' PD's primary recent file list (File > Open Recent menu).
+'This class is a specific implementation of the IMRUList Interface.  It works alongside pdMRUManager to manage
+' the UI for PD's primary recent file list (File > Open Recent menu).
 '
-'In 2015, Raj Chaudhuri kindly rewrote this class as a replacement for PD's previous pdRecentFiles class.  Data written by
-' the old class is still compatible with this implementation.  Many thanks to Raj for this great improvement!  (Thanks also
-' to Raj for rewriting this class as an implementation of IMRUList, so PD can now support recent file lists in multiple
-' places throughout the program.)
+'In 2015, Raj Chaudhuri kindly rewrote this class as a replacement for PD's previous pdRecentFiles class.
+' Data written by the old class is still compatible with this implementation.  Many thanks to Raj for this great
+' improvement!  (Thanks also to Raj for rewriting this class as an implementation of IMRUList, so PD can now
+' support recent file lists in multiple places throughout the program.)
 '
-'Thumbnails are automatically saved (in PNG format) for each entry in the recent files list.  Thumbnail filenames are
-' hashed as a privacy precaution.  PhotoDemon automatically erases unneeded thumbnail files as files are "pushed" off
-' the recent file stack, and as an extra precaution, when the program exits, it scans the thumbnail directory for any
-' orphaned thumbnails.  (Orphaned thumbnails are possible if you run multiple copies of PD in parallel.)
+'Thumbnails are automatically saved (in internal PDI format) for each entry in the recent files list.
+' Thumbnail filenames are hashed as a privacy precaution.  PhotoDemon automatically erases unneeded thumbnail files
+' as files are "pushed" off the recent file stack, and as an extra precaution, when the program exits, it scans the
+' thumbnail directory for any orphaned thumbnails.  (Orphaned thumbnails are possible if you run multiple copies of
+' PD in parallel.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -74,7 +74,7 @@ Private Function DoesMRUHashExist(ByVal filePath As String) As String
     End If
     
     'If we made it all the way here, this file does not exist in the current list.  A new hash must be generated.
-    DoesMRUHashExist = ""
+    DoesMRUHashExist = vbNullString
 
 End Function
 
@@ -167,6 +167,10 @@ Private Sub IMRUList_AfterListCleared()
         
     End If
     
+    'All icons in this menu need to be manually reset after the list is cleared; the ResetMenuIcons function
+    ' will also call the Menus.UpdateSpecialMenu_RecentFiles() function to set all captions properly.
+    IconsAndCursors.ResetMenuIcons
+    
 End Sub
 
 'After saving this master recent file list (typically done at program termination), scan the icon folder and look for orphaned
@@ -224,10 +228,6 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
         FormMain.MnuClearMRU.Visible = True
     End If
     
-    'Add the filename and corresponding accelerator (hotkey) to the base menu
-    FormMain.mnuRecDocs(0).Caption = mruCaption
-    FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+0"
-    
     'Ask the manager object how many entries it currently maintains
     Dim numEntries As Long
     numEntries = mruManager.MRU_ReturnCount()
@@ -243,13 +243,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
         
         'Next, load all relevant menus in turn
         For i = 1 To numEntries - 1
-        
             Load FormMain.mnuRecDocs(i)
-            
-            'Add the caption, and if the entry is less than #10, give it an accelerator, too
-            FormMain.mnuRecDocs(i).Caption = mruManager.GetSpecificMRUCaption(i)
-            If (i < 10) Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
-            
         Next i
         
     End If
@@ -278,11 +272,6 @@ Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As
         FormMain.mnuRecDocs(Index).Enabled = True
     End If
     
-    FormMain.mnuRecDocs(Index).Caption = mruCaption
-    
-    'For the first 10 menu entries, display a corresponding shortcut
-    If (Index < 10) Then FormMain.mnuRecDocs(Index).Caption = FormMain.mnuRecDocs(Index).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & Index
-    
 End Sub
 
 Private Sub IMRUList_AfterListLoad(ByRef mruManager As pdMRUManager)
@@ -296,11 +285,14 @@ End Sub
 
 Private Sub IMRUList_OnListIsEmpty()
     
-    FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")
     FormMain.mnuRecDocs(0).Enabled = False
     FormMain.MnuRecentSepBar1.Visible = False
     FormMain.MnuClearMRU.Visible = False
     FormMain.MnuLoadAllMRU.Visible = False
+    
+    'All icons in this menu need to be manually reset after the list is cleared; the ResetMenuIcons function
+    ' will also call the Menus.UpdateSpecialMenu_RecentFiles() function to set all captions properly.
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
 

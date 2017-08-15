@@ -15,19 +15,18 @@ Attribute VB_Exposed = False
 'Recent Files (MRU) handler for PD macros (Tools > Macros)
 'Copyright 2005-2017 by Raj Chaudhuri and Tanner Helland
 'Created: 17/February/15
-'Last updated: 18/February/15
-'Last updated by: Raj
-'Last update: finish initial build
+'Last updated: 15/August/17
+'Last update: implemented support for Unicode menu captions
 'Dependencies: - everything listed in IMRUList
-'              - pdFSO (for simpler Unicode file interactions)
+'              - Files module (for Unicode support), Crypto module (for fast hashing)
 '
-'This class is a specific implementation of the IMRUList Interface.  It works alongside pdMRUManager to manage the UI for
-' PD's macro recent file list (Tools > Macros menu).
+'This class is a specific implementation of the IMRUList Interface.  It works alongside pdMRUManager to manage
+' the UI for PD's macro recent file list (Tools > Macros menu).
 '
-'In 2015, Raj Chaudhuri kindly rewrote this class as a replacement for PD's previous pdRecentFiles class.  Data written by
-' the old class is still compatible with this implementation.  Many thanks to Raj for this great improvement!  (Thanks also
-' to Raj for rewriting this class as an implementation of IMRUList, so PD can now support recent file lists in multiple
-' places throughout the program.)
+'In 2015, Raj Chaudhuri kindly rewrote this class as a replacement for PD's previous pdRecentFiles class.
+' Data written by the old class is still compatible with this implementation.  Many thanks to Raj for this
+' great improvement!  (Thanks also to Raj for rewriting this class as an implementation of IMRUList, so PD can
+' now support recent file lists in multiple places throughout the program.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -43,7 +42,7 @@ Private Property Get IMRUList_SupportsThumbnails() As Boolean
 End Property
 
 Private Function IMRUList_GetThumbnailPath(ByRef mruManager As pdMRUManager, ByVal Index As Long) As String
-    IMRUList_GetThumbnailPath = ""
+    IMRUList_GetThumbnailPath = vbNullString
 End Function
 
 'The location of the XML file is hard-coded against the current preset path
@@ -55,17 +54,17 @@ End Property
 Private Sub IMRUList_AfterListCleared()
 
     'Unload all recent file menu entries
-    If FormMain.MnuRecentMacros.Count > 1 Then
+    If (FormMain.MnuRecentMacros.Count > 1) Then
         
         Dim i As Long
         For i = FormMain.MnuRecentMacros.Count - 1 To 1 Step -1
             Unload FormMain.MnuRecentMacros(i)
         Next i
         
-        'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
-        IconsAndCursors.ResetMenuIcons
-        
     End If
+    
+    'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
 
@@ -73,20 +72,17 @@ End Sub
 Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newFilePath As String, ByVal mruCaption As String)
     
     'Redraw the MRU menu based on the updated list
-    If Not FormMain.MnuRecentMacros(0).Enabled Then
+    If (Not FormMain.MnuRecentMacros(0).Enabled) Then
         FormMain.MnuRecentMacros(0).Enabled = True
         FormMain.mnuClearRecentMacros.Enabled = True
     End If
-    
-    'Display the caption passed to us from the mruManager
-    FormMain.MnuRecentMacros(0).Caption = mruCaption
     
     'Ask the manager object how many entries it currently maintains
     Dim numEntries As Long
     numEntries = mruManager.MRU_ReturnCount()
     
     'If there are more entries on the list besides this first one, update all corresponding menus now
-    If numEntries > 1 Then
+    If (numEntries > 1) Then
     
         'Start by unloading any/all existing menus
         Dim i As Long
@@ -97,13 +93,12 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
         'Next, load all relevant menus in turn
         For i = 1 To numEntries - 1
             Load FormMain.MnuRecentMacros(i)
-            FormMain.MnuRecentMacros(i).Caption = mruManager.GetSpecificMRUCaption(i)
         Next i
         
-        'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
-        IconsAndCursors.ResetMenuIcons
-        
     End If
+    
+    'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
 
@@ -117,9 +112,6 @@ Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As
     Else
         FormMain.MnuRecentMacros(Index).Enabled = True
     End If
-    
-    'Apply the caption we were passed
-    FormMain.MnuRecentMacros(Index).Caption = Files.FileGetName(mruCaption, True)
     
 End Sub
 
@@ -135,9 +127,14 @@ End Sub
 
 'When the list is empty, leave the first entry of the sub-menu, but disable it
 Private Sub IMRUList_OnListIsEmpty()
-    FormMain.MnuRecentMacros(0).Caption = g_Language.TranslateMessage("Empty")
+
     FormMain.MnuRecentMacros(0).Enabled = False
     FormMain.mnuClearRecentMacros.Enabled = False
+    
+    'All icons in this menu need to be manually reset after the list is cleared; the ResetMenuIcons function
+    ' will also call the Menus.UpdateSpecialMenu_RecentFiles() function to set all captions properly.
+    IconsAndCursors.ResetMenuIcons
+    
 End Sub
 
 'Unneeded interface methods are collected here

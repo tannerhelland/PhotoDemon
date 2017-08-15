@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.279</langversion>
+<langversion>6.7.280</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -879,11 +879,6 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 </phrase>
 
 <phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
 <original>Undo last action</original>
 <translation></translation>
 </phrase>
@@ -1118,7 +1113,7 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <translation></translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
+<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -1353,11 +1348,6 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Shift</original>
-<translation>cambio</translation>
-</phrase>
-
-<phrase>
 <original>Duplicating current image</original>
 <translation>Duplicación imagen actual</translation>
 </phrase>
@@ -1372,7 +1362,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Completa la duplicación de imagen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -1493,7 +1483,57 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 
 <!-- BEGIN text for Menus.bas -->
 
-<!-- Menus.bas contains 0 phrases. -->
+<phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>cambio</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>entrar</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Av Pág</translation>
+</phrase>
+
+<phrase>
+<original>Open all recent images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Clear recent image list</original>
+<translation>Borrar lista reciente imagen</translation>
+</phrase>
+
+<phrase>
+<original>Empty</original>
+<translation>vacío</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent macro list</original>
+<translation>Borrar lista macro reciente</translation>
+</phrase>
+
+<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -2960,18 +3000,13 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- BEGIN text for pdMRURecentFiles.cls -->
 
-<phrase>
-<original>Empty</original>
-<translation>vacío</translation>
-</phrase>
-
-<!-- pdMRURecentFiles.cls contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdMRURecentFiles.cls contains 0 phrases. -->
 
 <!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
-<!-- pdMRURecentMacros.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdMRURecentMacros.cls contains 0 phrases. -->
 
 <!-- END text for pdMRURecentMacros.cls-->
 
@@ -3609,27 +3644,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
-<phrase>
-<original>Alt</original>
-<translation>alt</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>entrar</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Av Pág</translation>
-</phrase>
-
-<!-- pdAccelerator.ctl contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- pdAccelerator.ctl contains 0 phrases. -->
 
 <!-- END text for pdAccelerator.ctl-->
 
@@ -4597,16 +4612,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Load all recent images</original>
-<translation>Cargar todas las imágenes recientes</translation>
-</phrase>
-
-<phrase>
-<original>Clear recent image list</original>
-<translation>Borrar lista reciente imagen</translation>
-</phrase>
-
-<phrase>
 <original>&Import</original>
 <translation>importación</translation>
 </phrase>
@@ -4684,11 +4689,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <phrase>
 <original>Undo history</original>
 <translation>deshacer historia</translation>
-</phrase>
-
-<phrase>
-<original>Repeat &last action</original>
-<translation>Repetir la última acción</translation>
 </phrase>
 
 <phrase>
@@ -5752,11 +5752,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Clear recent macro list</original>
-<translation>Borrar lista macro reciente</translation>
-</phrase>
-
-<phrase>
 <original>Options</original>
 <translation>Opciones</translation>
 </phrase>
@@ -6423,7 +6418,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12192,7 +12187,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -12552,7 +12547,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 115 phrases. 66 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -14963,10 +14958,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12179 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1959 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12176 total words. -->
 
 </pdData>
