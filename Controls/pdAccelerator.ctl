@@ -48,8 +48,8 @@ Attribute VB_Exposed = False
 'Because dynamic hooking has enormous potential for causing hard-to-replicate bugs, a ground-up rewrite seemed long
 ' overdue.  Hence this new control.
 '
-'Many, many thanks to Steve McMahon for his original implementation, which was my first introduction to hooking
-' from VB6.  It's still a fine reference for beginners, and you can find the original here (good as of November '15):
+'Many thanks to Steve McMahon for his original implementation, which was my first introduction to hooking from VB6.
+' It's still a fine reference for beginners, and you can find the original here (good as of November '15):
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -76,7 +76,7 @@ Private Type pdHotkey
     requiresOpenImage As Boolean
     showProcDialog As Boolean
     procUndo As PD_UNDO_TYPE
-    relevantMenu As Menu
+    menuNameIfAny As String
 End Type
 
 'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using built-in VB functions,
@@ -189,15 +189,8 @@ End Sub
 'Prior to shutdown, you can call this function to forcibly release as many accelerator resources as we can.  In PD,
 ' we use this to free our menu references.
 Public Sub ReleaseResources()
-    
-    Dim i As Long
-    For i = 0 To m_NumOfHotkeys - 1
-        Set m_Hotkeys(i).relevantMenu = Nothing
-    Next i
-    
     If Not (m_ReleaseTimer Is Nothing) Then Set m_ReleaseTimer = Nothing
     If Not (m_FireTimer Is Nothing) Then Set m_FireTimer = Nothing
-    
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -285,7 +278,7 @@ End Sub
 ' - "requiresOpenImage": specifies that this action *must be disallowed* unless one (or more) image(s) are loaded and active.
 ' - "showProcForm": controls the "showDialog" parameter of processor string directives.
 ' - "procUndo": controls the "createUndo" parameter of processor string directives.  Remember that UNDO_NOTHING means "do not create Undo data."
-Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As Menu = Nothing, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UNDO_TYPE = UNDO_NOTHING) As Long
+Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UNDO_TYPE = UNDO_NOTHING) As Long
     
     'Make sure this key combination doesn't already exist in the collection
     Dim failsafeCheck As Long
@@ -306,7 +299,7 @@ Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
         .vKeyCode = vKeyCode
         .shiftState = Shift
         .HotKeyName = HotKeyName
-        Set .relevantMenu = correspondingMenu
+        .menuNameIfAny = correspondingMenu
         .IsProcessorString = IsProcessorString
         .requiresOpenImage = requiresOpenImage
         .showProcDialog = showProcDialog
@@ -364,7 +357,7 @@ End Function
 
 Public Function HasMenu(ByVal hkIndex As Long) As Boolean
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        HasMenu = CBool(Not (m_Hotkeys(hkIndex).relevantMenu Is Nothing))
+        HasMenu = (Len(m_Hotkeys(hkIndex).menuNameIfAny) <> 0)
     End If
 End Function
 
@@ -374,73 +367,26 @@ Public Function HotKeyName(ByVal hkIndex As Long) As String
     End If
 End Function
 
-Public Function MenuReference(ByVal hkIndex As Long) As Menu
+Public Function GetMenuName(ByVal hkIndex As Long) As String
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        Set MenuReference = m_Hotkeys(hkIndex).relevantMenu
+        GetMenuName = m_Hotkeys(hkIndex).menuNameIfAny
+    End If
+End Function
+
+Public Function GetKeyCode(ByVal hkIndex As Long) As KeyCodeConstants
+    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
+        GetKeyCode = m_Hotkeys(hkIndex).vKeyCode
+    End If
+End Function
+
+Public Function GetShift(ByVal hkIndex As Long) As ShiftConstants
+    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
+        GetShift = m_Hotkeys(hkIndex).shiftState
     End If
 End Function
 
 Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UNDO_TYPE
     ProcUndoValue = m_Hotkeys(hkIndex).procUndo
-End Function
-
-Public Function StringRepresentation(ByVal hkIndex As Long) As String
-
-    If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-    
-        Dim tmpString As String
-        If m_Hotkeys(hkIndex).shiftState And vbCtrlMask Then tmpString = g_Language.TranslateMessage("Ctrl") & "+"
-        If m_Hotkeys(hkIndex).shiftState And vbAltMask Then tmpString = tmpString & g_Language.TranslateMessage("Alt") & "+"
-        If m_Hotkeys(hkIndex).shiftState And vbShiftMask Then tmpString = tmpString & g_Language.TranslateMessage("Shift") & "+"
-        
-        'Processing the string itself takes a bit of extra work, as some keyboard keys don't automatically map to a
-        ' string equivalent.  (Also, translations need to be considered.)
-        Select Case m_Hotkeys(hkIndex).vKeyCode
-        
-            Case vbKeyAdd
-                tmpString = tmpString & "+"
-            
-            Case vbKeySubtract
-                tmpString = tmpString & "-"
-            
-            Case vbKeyReturn
-                tmpString = tmpString & g_Language.TranslateMessage("Enter")
-            
-            Case vbKeyPageUp
-                tmpString = tmpString & g_Language.TranslateMessage("Page Up")
-            
-            Case vbKeyPageDown
-                tmpString = tmpString & g_Language.TranslateMessage("Page Down")
-                
-            Case vbKeyF1 To vbKeyF16
-                tmpString = tmpString & "F" & (CLng(m_Hotkeys(hkIndex).vKeyCode) - 111)
-            
-            'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
-            ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-            ' At the moment, however, they're implemented as magic numbers.
-            Case 188
-                tmpString = tmpString & ","
-                
-            Case 190
-                tmpString = tmpString & "."
-                
-            Case 219
-                tmpString = tmpString & "["
-                
-            Case 221
-                tmpString = tmpString & "]"
-                
-            Case Else
-                tmpString = tmpString & UCase$(ChrW$(m_Hotkeys(hkIndex).vKeyCode))
-            
-        End Select
-        
-        StringRepresentation = tmpString
-    
-    Else
-        StringRepresentation = vbNullString
-    End If
-    
 End Function
 
 'VB exposes a UserControl.EventsFrozen property to check for IDE breaks, but in my testing it isn't reliable.

@@ -172,7 +172,7 @@ Friend Function GetMonochromeIconSetting() As Boolean
 End Function
 
 Friend Sub SetMonochromeIconSetting(ByVal newSetting As Boolean)
-    If (newSetting <> m_MonochromeIcons) Then
+    If (Not g_UserPreferences Is Nothing) Then
         m_MonochromeIcons = newSetting
         g_UserPreferences.SetPref_Boolean "Themes", "MonochromeIcons", m_MonochromeIcons
     End If
@@ -505,7 +505,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             End If
             
             'Add the current "monochrome icons" setting onto the theme ID, as it also forces redraws when changed
-            m_CurrentThemeID = m_CurrentThemeID & Trim$(Str$(CLng(m_MonochromeIcons)))
+            m_CurrentThemeID = m_CurrentThemeID & "-" & Trim$(Str$(m_MonochromeIcons))
             
         Else
             RaiseThemingError "WARNING!  PD failed to load any theme whatsoever.  Catastrophic failure imminent!"

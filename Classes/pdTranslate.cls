@@ -338,6 +338,7 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If Me.TranslationActive Then
+    
         Set m_XMLEngine = New pdXML
         m_XMLEngine.LoadXMLFile m_AvailableLanguages(m_currentLanguage).FileName
         
@@ -356,7 +357,7 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     Next i
     
     'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)
-    If redrawMainUI Then Interface.RedrawEntireUI useDoEvents, True
+    If redrawMainUI Then Interface.RedrawEntireUI useDoEvents
     
 End Sub
 
@@ -616,7 +617,7 @@ Friend Sub CheckAvailableLanguages()
     
 End Sub
 
-'Populate the Tools -> Languages menu
+'Populate the Tools -> Languages menu.  Note that most of this is now handled via the Menus module (which allows us to display Unicode names).
 Private Sub PopulateLanguageMenu()
 
     'Start by unloading all current language menu entries
@@ -634,11 +635,13 @@ Private Sub PopulateLanguageMenu()
         Next i
     End If
     
-    'Assign names to all the menu entries
+    'Make sure all menus are un-checked
     For i = 0 To m_numOfLanguages - 1
-        FormMain.mnuLanguages(i).Caption = m_AvailableLanguages(i).LangName
         FormMain.mnuLanguages(i).Checked = False
     Next i
+    
+    'Use the menus module to update menu captions; this allows for Unicode text
+    Menus.UpdateSpecialMenu_Language m_numOfLanguages, m_AvailableLanguages
 
 End Sub
 
@@ -1008,7 +1011,7 @@ Friend Sub TranslateFormCaption(ByRef srcForm As Form)
 End Sub
 
 'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
-Friend Sub UndoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
+Friend Sub UndoTranslations(ByRef srcForm As Form)
 
     'This function only has to be applied if a translation is currently active.  If it isn't, simply exit.
     If (Not TranslationActive) Then Exit Sub
@@ -1016,81 +1019,16 @@ Friend Sub UndoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As
     'Start by returning the form's original caption
     RestoreFormCaption srcForm
     
-    Dim strPos As Long
-    Dim tmpString As String
-    
-    'Iterate through every control on the form, and restore original captions as necessary
-    Dim eControl As Control
-    For Each eControl In srcForm.Controls
-        
-        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
-        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
-        ' for the original text.
-        If (TypeOf eControl Is Menu) Then
-            tmpString = eControl.Caption
-            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
-            
-            'If this menu caption has a custom accelerator appended, strip it off
-            If (strPos > 0) Then tmpString = Left$(tmpString, strPos - 1)
-            eControl.Caption = RestoreMessage(tmpString)
-            
-        End If
-        
-        'Optionally, DoEvents can be called after each change.  This slows the translation process, but it allows external progress
-        ' bars to be automatically refreshed.
-        If useDoEvents Then DoEvents
-    
-    Next
-
 End Sub
 
-'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
-Friend Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
+'Apply any special handling to a given form.  At present, this only affects form captions; everything else is handled internally.
+Friend Sub ApplyTranslations(ByRef srcForm As Form)
     
     'For en-US locales, we can entirely skip this step
     If (Not TranslationActive) Then Exit Sub
     
     'Start by translating the form's caption
     TranslateFormCaption srcForm
-
-    'Iterate through every control on the form, and restore original captions as necessary
-    Dim strPos As Long
-    Dim tmpString As String
-    Dim eControl As Control
-    
-    For Each eControl In srcForm.Controls
-        
-        'PD's custom-built controls self-manage translations.  Historically, we asked them to update against the current theme here, but because
-        ' the only place this function is called is within the ApplyThemeAndTranslations function (which handles master theming/translation requests
-        ' on a per-dialog basis), it's redundant to request a second translation update!
-        '
-        'As such, PD's custom controls no longer require special attention in this function.
-        '
-        'Instead, the only controls we must deal with here are standard VB objects with non-blank, non-numeric
-        ' caption properties.  PD only has a few of these left, thankfully.
-        
-        'Menus are a special case.  PhotoDemon menus use custom accelerators (keyboard shortcuts) that are added
-        ' at run-time.  We can detect these by checking for a vbTab character in the menu entry.  If a tab is found,
-        ' strip it out before searching for a translation.
-        If (TypeOf eControl Is Menu) Then
-            
-            tmpString = eControl.Caption
-            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
-            
-            'If this menu caption has a custom accelerator appended, strip it off
-            If (strPos > 0) Then tmpString = Left$(tmpString, strPos - 1)
-            eControl.Caption = TranslateMessage(tmpString)
-            
-            'Note that we do not re-append the accelerator here.  This is handled by a subsequent function
-            ' (required because menu icons must be reapplied as well).
-            
-        End If
-        
-        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.  (We use this on the main form, while the language is being changed.)
-        If useDoEvents Then DoEvents
-        
-    Next
     
 End Sub
 

@@ -420,10 +420,10 @@ Private Sub SyncUI_CurrentImageSettings()
             
     'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
     ' by PD's Undo/Redo engine.)
-    SyncUndoRedoInterfaceElements True
+    Interface.SyncUndoRedoInterfaceElements True
     
     'Because Undo/Redo changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-    ResetMenuIcons
+    IconsAndCursors.ResetMenuIcons
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
     If (Not pdImages(g_CurrentImage).ImgMetadata Is Nothing) Then
@@ -533,10 +533,10 @@ Private Sub SetUIMode_NoImages()
     
     'Multiple edit menu items must also be disabled
     FormMain.MnuEdit(2).Enabled = False     'Undo history
-    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
-    FormMain.MnuEdit(4).Enabled = False     '"Repeat..." and "Fade..."
-    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-    FormMain.MnuEdit(5).Enabled = False
+    FormMain.MnuEdit(4).Enabled = False     'Repeat last action
+    Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat"), True
+    FormMain.MnuEdit(5).Enabled = False     'Fade last action
+    Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade..."), True
     
     'Reset the main window's caption to its default PD name and version
     If (Not g_WindowManager Is Nothing) Then
@@ -555,7 +555,7 @@ Private Sub SetUIMode_NoImages()
         
     'With all menus reset to their default values, we can now redraw all associated menu icons.
     ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
-    ResetMenuIcons
+    IconsAndCursors.ResetMenuIcons
         
     'If no images are currently open, but images were previously opened during this session, release any memory associated
     ' with those images.  This helps minimize PD's memory usage at idle.
@@ -634,20 +634,20 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
             If pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
-                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+                Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName)), True
                 FormMain.MnuEdit(5).Enabled = True
             Else
-                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+                Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade..."), True
                 FormMain.MnuEdit(5).Enabled = False
             End If
             
             'Repeat the above steps, but use the "Repeat" detection algorithm (which uses slightly different criteria;
             ' e.g. "Rotate Whole Image" cannot be faded, but it can be repeated)
             If pdImages(g_CurrentImage).UndoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
+                Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName)), True
                 FormMain.MnuEdit(4).Enabled = True
             Else
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+                Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat"), True
                 FormMain.MnuEdit(4).Enabled = False
             End If
             
@@ -706,10 +706,10 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetUndoProcessID, "Undo"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
+                Menus.RequestCaptionChange_ByName "edit_undo", g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetUndoProcessID), True
             Else
                 toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip "Undo last action"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
+                Menus.RequestCaptionChange_ByName "edit_undo", g_Language.TranslateMessage("Undo"), True
             End If
             
             'NOTE: when changing menu text, icons must be reapplied.  Make sure to call the ResetMenuIcons() function after changing
@@ -725,10 +725,10 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
                 toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetRedoProcessID, "Redo"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
+                Menus.RequestCaptionChange_ByName "edit_redo", g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetRedoProcessID), True
             Else
                 toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip "Redo previous action"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
+                Menus.RequestCaptionChange_ByName "edit_redo", g_Language.TranslateMessage("Redo"), True
             End If
             
             'NOTE: when changing menu text, icons must be reapplied.  Make sure to call the ResetMenuIcons() function after changing
@@ -1327,7 +1327,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False, Optional ByVal suspendMainFormIconCheck As Boolean = False)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not MainModule.IsProgramRunning()) Then Exit Sub
@@ -1493,14 +1493,12 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption and any menus
     ' on the form.
     If g_Language.TranslationActive Then
-        If dstForm.Enabled Then g_Language.ApplyTranslations dstForm, useDoEvents
+        If dstForm.Enabled Then g_Language.ApplyTranslations dstForm
     End If
     
-    'If this is the main form, we need to reassign any menu icons, because they are reset whenever their associated
-    ' menu captions change.
-    If Strings.StringsEqual(dstForm.Name, "FormMain", False) Then
-        If (Not suspendMainFormIconCheck) And FormMain.Visible Then IconsAndCursors.ApplyAllMenuIcons
-    End If
+    'After sending out a bazillion window messages, it can be helpful to pause while everything catches up
+    'If useDoEvents Then
+    DoEvents
     
 End Sub
 
@@ -2155,22 +2153,22 @@ End Sub
 
 'When the user's changes the UI theme, call this function to force a redraw of all visible elements.  The optional "DoEvents" parameter
 ' does what you expect; it yields for periodic refreshes, so the user can "see" the transformation as it occurs.
-Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False, Optional ByVal updateAccelerators As Boolean = False)
+Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False)
     
     If FormMain.Visible Then
     
-        FormMain.UpdateAgainstCurrentTheme useDoEvents
-        If updateAccelerators Then DrawAccelerators
-        ApplyAllMenuIcons True
+        FormMain.UpdateAgainstCurrentTheme
         
         'Resync the interface to redraw any remaining text and/or buttons
-        SyncInterfaceToCurrentImage
+        Interface.SyncInterfaceToCurrentImage
         
         'Redraw any/all toolbars as well
         toolbar_Toolbox.UpdateAgainstCurrentTheme
         toolbar_Toolbox.ResetToolButtonStates
         toolbar_Options.UpdateAgainstCurrentTheme
         toolbar_Layers.UpdateAgainstCurrentTheme
+        
+        If useDoEvents Then DoEvents
         
     End If
 

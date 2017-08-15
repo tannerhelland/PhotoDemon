@@ -510,26 +510,6 @@ Public Function PromptUITheme() As VbMsgBoxResult
         
     End If
     
-    'If a new language is in use, apply it now
-    If (PromptUITheme = vbOK) Then
-        If (newLangIndex <> backupLangIndex) Then
-            
-            'Load the old language file and undo any existing translations
-            g_Language.ActivateNewLanguage backupLangIndex
-            g_Language.ApplyLanguage False
-            
-            g_Language.UndoTranslations FormMain, True
-            g_Language.UndoTranslations toolbar_Toolbox, True
-            g_Language.UndoTranslations toolbar_Options, True
-            g_Language.UndoTranslations toolbar_Layers, True
-            
-            'Now, load the *new* language and apply it
-            g_Language.ActivateNewLanguage newLangIndex
-            g_Language.ApplyLanguage True, True
-            
-        End If
-    End If
-    
     'Four steps are required to activate a theme change:
     ' 1) Load the new theme (or accent) data from file
     ' 2) Notify the resource manager of the change (because things like UI icons may need to be redrawn)
@@ -538,13 +518,33 @@ Public Function PromptUITheme() As VbMsgBoxResult
     g_Themer.LoadDefaultPDTheme
     g_Resources.NotifyThemeChange
     
+    'If a new language is in use, apply it now
+    If (PromptUITheme = vbOK) Then
+        If (newLangIndex <> backupLangIndex) Then
+            
+            'Load the old language file and undo any existing translations
+            g_Language.ActivateNewLanguage backupLangIndex
+            g_Language.ApplyLanguage False
+            
+            g_Language.UndoTranslations FormMain
+            g_Language.UndoTranslations toolbar_Toolbox
+            g_Language.UndoTranslations toolbar_Options
+            g_Language.UndoTranslations toolbar_Layers
+            
+            'Now, load the *new* language and apply it
+            g_Language.ActivateNewLanguage newLangIndex
+            g_Language.ApplyLanguage True
+            
+        End If
+    End If
+    
     'If the theme has actually changed, apply the changes now.  (We can skip this step if the dialog was canceled,
     ' or if the user confirmed their original settings.)
     If (PromptUITheme = vbOK) Then
         If (newThemeClass <> backupThemeClass) Or (newThemeAccent <> backupThemeAccent) Or (newIconsMono <> backupIconsMono) Then
             Drawing.CacheUIPensAndBrushes
             IconsAndCursors.LoadMenuIcons False
-            Interface.RedrawEntireUI
+            Interface.RedrawEntireUI True
         End If
     End If
     

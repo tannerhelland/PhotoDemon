@@ -260,7 +260,7 @@ End Sub
 'When menu captions are changed, the associated images are lost.  This forces a reset.
 ' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
 Public Sub ResetMenuIcons()
-        
+    
     'Redraw the Undo/Redo menus
     AddMenuIcon "edit_undo", 1, 0     'Undo
     AddMenuIcon "edit_redo", 1, 1     'Redo
@@ -276,72 +276,110 @@ Public Sub ResetMenuIcons()
     AddMenuIcon "generic_previous", 9, 6       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
+    Dim numOfMRUFiles As Long
     If (Not g_RecentFiles Is Nothing) Then
-    
-        Dim numOfMRUFiles As Long
+        
+        'Start by making sure all menu captions are correct
+        Menus.UpdateSpecialMenu_RecentFiles
+        
+        'Retrieve the number of files displayed in the menu.  (Note that this is *not* the same number
+        ' as the menu count, as we add some extra options after the MRU entries themselves.)
         numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
         
-        'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
+        'Vista+ gets nice, large icons added later in the process.  On XP, however, we are stuck with
+        ' 16x16 icons managed by the standard menu editor.
         If (Not OS.IsVistaOrLater) Then
-            AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
-            AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
-        End If
         
-        'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list, because we don't have
-        ' large thumbnail images present.
-        Dim numOfMRUFiles_Macro As Long
-        numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
-        AddMenuIcon "file_close", 8, 5, numOfMRUFiles_Macro + 1
+            If (numOfMRUFiles > 0) Then
+                AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
+                AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
+            
+            'If the list is empty, do not display any icons
+            Else
+                cMRUIcons.PutImageToVBMenu -1, 0, 0, 2
+            End If
+            
+        End If
         
     End If
     
     'Clear the current MRU icon cache.
+    'TODO: figure out a more elegant way to handle this; we really shouldn't need to re-load everything
+    ' from disk!
     If (Not cMRUIcons Is Nothing) Then
         
         cMRUIcons.Clear
-        Dim tmpFilename As String
         
-        'Load a placeholder image for missing MRU entries
-        AddImageResourceToClsMenu "generic_imagemissing", cMRUIcons, m_RecentFileIconSize
+        If (numOfMRUFiles > 0) Then
         
-        'This counter will be used to track the current position of loaded thumbnail images into the icon collection
-        Dim iconLocation As Long
-        iconLocation = 0
-        
-        'Loop through the MRU list, and attempt to load thumbnail images for each entry
-        Dim i As Long
-        For i = 0 To numOfMRUFiles
-        
-            'Start by seeing if an image exists for this MRU entry
-            tmpFilename = g_RecentFiles.GetMRUThumbnailPath(i)
+            Dim tmpFilename As String
             
-            If (Len(tmpFilename) <> 0) Then
+            'Load a placeholder image for missing MRU entries
+            AddImageResourceToClsMenu "generic_imagemissing", cMRUIcons, m_RecentFileIconSize
             
-                'If the file exists, add it to the MRU icon handler
-                If Files.FileExists(tmpFilename) Then
-                    
-                    iconLocation = iconLocation + 1
-                    cMRUIcons.AddImageFromFile tmpFilename
-                    cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
+            'This counter will be used to track the current position of loaded thumbnail images into the icon collection
+            Dim iconLocation As Long
+            iconLocation = 0
+            
+            'Loop through the MRU list, and attempt to load thumbnail images for each entry
+            Dim i As Long
+            For i = 0 To numOfMRUFiles
+            
+                'Start by seeing if an image exists for this MRU entry
+                tmpFilename = g_RecentFiles.GetMRUThumbnailPath(i)
                 
-                'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
-                Else
-                    If OS.IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
+                If (Len(tmpFilename) <> 0) Then
+                
+                    'If the file exists, add it to the MRU icon handler
+                    If Files.FileExists(tmpFilename) Then
+                        
+                        iconLocation = iconLocation + 1
+                        cMRUIcons.AddImageFromFile tmpFilename
+                        cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
+                    
+                    'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
+                    Else
+                        If OS.IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
+                    End If
+                    
                 End If
                 
+            Next i
+                
+            'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
+            If OS.IsVistaOrLater Then
+                Dim largePadding As Single
+                largePadding = (m_RecentFileIconSize * 0.2)
+                AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
+                cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
+                largePadding = (m_RecentFileIconSize * 0.333)
+                AddImageResourceToClsMenu "file_close", cMRUIcons, m_RecentFileIconSize, largePadding
+                cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
             End If
-            
-        Next i
-            
-        'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
-        If OS.IsVistaOrLater Then
-            Dim largePadding As Single
-            largePadding = (m_RecentFileIconSize * 0.2)
-            AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
-            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
-            largePadding = (m_RecentFileIconSize * 0.333)
-            AddImageResourceToClsMenu "file_close", cMRUIcons, m_RecentFileIconSize, largePadding
-            cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
+        
+        'When the current list is empty, we display an icon-less "Empty" statement
+        Else
+            cMRUIcons.PutImageToVBMenu -1, 0, 0, 2
+        End If
+        
+    End If
+    
+    'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list,
+    ' because we don't display thumbnail images for macros (so just a default 16x16 icon is acceptable).
+    If (Not g_RecentMacros Is Nothing) Then
+        
+        'Again, make sure all menu captions are correct
+        Menus.UpdateSpecialMenu_RecentMacros
+        
+        Dim numOfMRUFiles_Macro As Long
+        numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
+        If (numOfMRUFiles_Macro > 0) Then
+            AddMenuIcon "file_close", 8, 7, numOfMRUFiles_Macro + 1
+        
+        'If the list is empty, do not display any icons
+        Else
+            AddMenuIcon "file_close", 8, 7, 2
+            If (Not cMRUIcons Is Nothing) Then cMRUIcons.PutImageToVBMenu -1, 0, 8, 7
         End If
         
     End If

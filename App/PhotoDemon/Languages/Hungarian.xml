@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2990</langversion>
+<langversion>6.8.2991</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -878,11 +878,6 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 </phrase>
 
 <phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
 <original>Undo last action</original>
 <translation>Utolsó művelet visszavonása</translation>
 </phrase>
@@ -1117,7 +1112,7 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 <translation>Előnézet nem érhető el</translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
+<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -1357,11 +1352,6 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Shift</original>
-<translation>Váltás</translation>
-</phrase>
-
-<phrase>
 <original>Duplicating current image</original>
 <translation>Másoló aktuális kép</translation>
 </phrase>
@@ -1376,7 +1366,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>A kép másolása befejeződött.</translation>
 </phrase>
 
-<!-- Loading.bas contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -1497,7 +1487,57 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 
 <!-- BEGIN text for Menus.bas -->
 
-<!-- Menus.bas contains 0 phrases. -->
+<phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Váltás</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>Belép</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Oldal fel</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Lapozás lefelé</translation>
+</phrase>
+
+<phrase>
+<original>Open all recent images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Clear recent image list</original>
+<translation>Tiszta elmúlt képlistában</translation>
+</phrase>
+
+<phrase>
+<original>Empty</original>
+<translation>Üres</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent macro list</original>
+<translation>Tiszta elmúlt makrólistát</translation>
+</phrase>
+
+<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -2958,18 +2998,13 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdMRURecentFiles.cls -->
 
-<phrase>
-<original>Empty</original>
-<translation>Üres</translation>
-</phrase>
-
-<!-- pdMRURecentFiles.cls contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdMRURecentFiles.cls contains 0 phrases. -->
 
 <!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
-<!-- pdMRURecentMacros.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdMRURecentMacros.cls contains 0 phrases. -->
 
 <!-- END text for pdMRURecentMacros.cls-->
 
@@ -3607,27 +3642,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
-<phrase>
-<original>Alt</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>Belép</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Oldal fel</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Lapozás lefelé</translation>
-</phrase>
-
-<!-- pdAccelerator.ctl contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- pdAccelerator.ctl contains 0 phrases. -->
 
 <!-- END text for pdAccelerator.ctl-->
 
@@ -4593,16 +4608,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Load all recent images</original>
-<translation>Betölti az összes legutóbbi képek</translation>
-</phrase>
-
-<phrase>
-<original>Clear recent image list</original>
-<translation>Tiszta elmúlt képlistában</translation>
-</phrase>
-
-<phrase>
 <original>&Import</original>
 <translation>import</translation>
 </phrase>
@@ -4680,11 +4685,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <phrase>
 <original>Undo history</original>
 <translation>Undo történelem</translation>
-</phrase>
-
-<phrase>
-<original>Repeat &last action</original>
-<translation>Ismétlés az utolsó akció</translation>
 </phrase>
 
 <phrase>
@@ -5748,11 +5748,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Clear recent macro list</original>
-<translation>Tiszta elmúlt makrólistát</translation>
-</phrase>
-
-<phrase>
 <original>Options</original>
 <translation>Lehetőségek</translation>
 </phrase>
@@ -6416,7 +6411,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 548 phrases. 180 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12186,7 +12181,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>CCITT Fax 3</translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -12546,7 +12541,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>listáját %1, soronként egy bejegyzést</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 115 phrases. 66 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -14954,10 +14949,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4500 phrases. -->
-<!-- 1981 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12179 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1959 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12176 total words. -->
 
 </pdData>

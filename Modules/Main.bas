@@ -612,10 +612,6 @@ Public Sub ContinueLoadingProgram()
     'Prep the color management pipeline
     ColorManagement.CacheDisplayCMMData
     
-    'Apply visual styles
-    FormMain.UpdateAgainstCurrentTheme False, True
-    
-    
     
     '*************************************************************************************************************************************
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.
@@ -639,11 +635,11 @@ Public Sub ContinueLoadingProgram()
     End If
     
     #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Prep accelerators"
+        perfCheck.MarkEvent "Initialize hotkey manager"
     #End If
     
-    'Create all manual shortcuts (ones VB isn't capable of generating itself)
-    LoadAccelerators
+    'In the future, hotkeys really need to become user-editable, but for now, the list is hard-coded.
+    Menus.InitializeAllHotkeys
             
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Prep MRU menus"
@@ -663,7 +659,10 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Load and draw all menu icons
-    IconsAndCursors.LoadMenuIcons
+    IconsAndCursors.LoadMenuIcons False
+    
+    'Finally, apply all of our various UI features
+    FormMain.UpdateAgainstCurrentTheme False
     
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Final interface sync"

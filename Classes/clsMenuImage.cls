@@ -345,9 +345,13 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
         '.cbSize = Len(MII)
         .fMask = MIIM_BITMAP 'Or MIIM_DATA
         
-        If imageID = -1 Then
+        If (imageID = -1) Then
             .hbmpItem = 0
-            If KeyExists(sKey) Then Call cColl.Remove(sKey)
+            
+            'Edit by Tanner: retain the key, but just remove the bitmap from the menu.  (We may decide to
+            ' reactivate this item later.)
+            'If KeyExists(sKey) Then Call cColl.Remove(sKey)
+            
         Else
             If OS.IsVistaOrLater Then
                 .hbmpItem = mDIB(imageID).hDIB

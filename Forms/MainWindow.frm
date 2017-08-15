@@ -76,7 +76,7 @@ Begin VB.Form FormMain
             Caption         =   "-"
          End
          Begin VB.Menu MnuLoadAllMRU 
-            Caption         =   "Load all recent images"
+            Caption         =   "Open all recent images"
          End
          Begin VB.Menu MnuClearMRU 
             Caption         =   "Clear recent image list"
@@ -194,7 +194,7 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Repeat &last action"
+         Caption         =   "Repeat"
          Enabled         =   0   'False
          Index           =   4
       End
@@ -2435,9 +2435,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
             
             'If this action is associated with a menu, make sure that corresponding menu is enabled
             If (.HasMenu(acceleratorIndex)) Then
-                If (Not (.MenuReference(acceleratorIndex) Is Nothing)) Then
-                    If (Not .MenuReference(acceleratorIndex).Enabled) Then Exit Sub
-                End If
+                If (Not Menus.IsMenuEnabled(.GetMenuName(acceleratorIndex))) Then Exit Sub
             End If
             
             Process .HotKeyName(acceleratorIndex), .IsDialogDisplayed(acceleratorIndex), , .ProcUndoValue(acceleratorIndex)
@@ -3705,10 +3703,10 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
     'Remove the existing translation from any visible windows
     Message "Removing existing translation..."
-    g_Language.UndoTranslations FormMain, True
-    g_Language.UndoTranslations toolbar_Toolbox, True
-    g_Language.UndoTranslations toolbar_Options, True
-    g_Language.UndoTranslations toolbar_Layers, True
+    g_Language.UndoTranslations FormMain
+    g_Language.UndoTranslations toolbar_Toolbox
+    g_Language.UndoTranslations toolbar_Options
+    g_Language.UndoTranslations toolbar_Layers
     
     'Apply the new translation
     Message "Applying new translation..."
@@ -4376,6 +4374,13 @@ End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,
 ' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
-Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False, Optional ByVal suspendIconRendering As Boolean = False)
-    ApplyThemeAndTranslations Me, useDoEvents, suspendIconRendering
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
+    
+    'Start by notifying all controls that new translations and theme settings are required
+    Interface.ApplyThemeAndTranslations Me, useDoEvents
+    
+    'Next, menus must be handled separately, because they are implemented using API menus
+    Menus.UpdateAgainstCurrentTheme
+    IconsAndCursors.ApplyAllMenuIcons
+    
 End Sub
