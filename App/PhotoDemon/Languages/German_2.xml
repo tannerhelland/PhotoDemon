@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3003</langversion>
+<langversion>6.8.3004</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -802,7 +802,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Speichern kann ohne FreeImage-Library nicht abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 46 phrases. 41 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -5708,11 +5708,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Test</original>
-<translation>Test</translation>
-</phrase>
-
-<phrase>
 <original>&Tools</original>
 <translation>&Tools</translation>
 </phrase>
@@ -5785,6 +5780,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>Build theme package</original>
 <translation>Theme-Package bilden</translation>
+</phrase>
+
+<phrase>
+<original>Test</original>
+<translation>Test</translation>
 </phrase>
 
 <phrase>
@@ -14969,12 +14969,28 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Effects_Artistic_PlasticWrap.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2520</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1959 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12176 total words. -->
+<!-- As of this build, PhotoDemon contains 4478 phrases. -->
+<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
+<!-- These 2520 phrases contain approximately 12178 total words. -->
 
 </pdData>

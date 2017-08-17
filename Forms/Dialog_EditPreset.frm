@@ -136,7 +136,7 @@ Private Sub cmdBarMini_OKClick()
         
             'This name already exists.  Ask the user if an overwrite is okay.
             Dim msgReturn As VbMsgBoxResult
-            msgReturn = PDMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
+            msgReturn = PDMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel Or vbExclamation, "Overwrite existing preset")
             
             'Based on the user's answer to the confirmation message box, continue or exit
             Select Case msgReturn
@@ -166,7 +166,7 @@ Private Sub cmdBarMini_OKClick()
         
     Else
         
-        PDMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
+        PDMsgBox "Please enter a name for this preset.", vbInformation Or vbOKOnly, "Preset name required"
         
         txtName.Text = g_Language.TranslateMessage("(enter name here)")
         txtName.SetFocus

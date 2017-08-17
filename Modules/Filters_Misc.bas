@@ -443,7 +443,7 @@ Public Sub MenuCountColors()
     
     'Show the user our final tally
     Message "Total unique colors: %1", totalCount
-    PDMsgBox "This image contains %1 unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count image colors", totalCount
+    PDMsgBox "This image contains %1 unique colors.", vbOKOnly Or vbInformation, "Count image colors", totalCount
     
 End Sub
 

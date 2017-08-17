@@ -330,13 +330,13 @@ Public Function IsValid(Optional ByVal showErrors As Boolean = True) As Boolean
     
     If (pxWidthFloat < 1) Or (pxHeightFloat < 1) Then
         IsValid = False
-        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbApplicationModal Or vbOKOnly, "Invalid measurement"
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbOKOnly, "Invalid measurement"
         Exit Function
     End If
     
     If (pxWidthFloat > 32760) Or (pxHeightFloat > 32760) Then
         IsValid = False
-        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbApplicationModal Or vbOKOnly, "Invalid measurement"
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbOKOnly, "Invalid measurement"
         Exit Function
     End If
     

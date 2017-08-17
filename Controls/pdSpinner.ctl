@@ -1041,7 +1041,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     End If
         
     If (Not IsNumeric(chkString)) Then
-        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", m_EditBox.Text
+        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text
         IsTextEntryValid = False
     Else
         
@@ -1051,7 +1051,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         If (checkVal >= m_Min) And (checkVal <= m_Max) Then
             IsTextEntryValid = True
         Else
-            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
             IsTextEntryValid = False
         End If
         

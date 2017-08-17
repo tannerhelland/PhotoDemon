@@ -296,7 +296,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
             'This function should never be passed a process ID it can't parse, but if that happens,
             ' ask the user to report the unparsed ID
-            If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
+            If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical Or vbOKOnly, "Processor Error", processID
             
         End If
         
@@ -388,20 +388,20 @@ MainErrHandler:
         On Error GoTo 0
         addInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
         Message "Out of memory.  Function canceled."
-        mType = vbExclamation + vbOKOnly + vbApplicationModal
+        mType = vbExclamation Or vbOKOnly
     
     'File not found error
     ElseIf (Err.Number = 53) Then
         On Error GoTo 0
         addInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
         Message "File not found."
-        mType = vbExclamation + vbOKOnly + vbApplicationModal
+        mType = vbExclamation Or vbOKOnly
         
     'Unknown error
     Else
         On Error GoTo 0
         addInfo = g_Language.TranslateMessage("PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)")
-        mType = vbCritical + vbYesNo + vbApplicationModal
+        mType = vbCritical Or vbYesNo
         Message "Unknown error."
     End If
     
@@ -1270,7 +1270,7 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
     'GitHub requires a login for submitting Issues; check for that first
     Dim secondaryReturn As VbMsgBoxResult
 
-    secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
+    secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbInformation Or vbYesNo, "Thanks for making PhotoDemon better")
 
     'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
     If (secondaryReturn = vbYes) Then
@@ -1279,7 +1279,7 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
         Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
         
         'Display one final message box with additional instructions
-        PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", errNumber
+        PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation Or vbOKOnly, "GitHub bug report instructions", errNumber
         
     Else
         
@@ -1287,7 +1287,7 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
         Web.OpenURL "http://photodemon.org/about/contact/"
         
         'Display one final message box with additional instructions
-        PDMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: %1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", errNumber
+        PDMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: %1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation Or vbOKOnly, "Bug report instructions", errNumber
         
     End If
     

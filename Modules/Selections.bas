@@ -149,7 +149,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
                 Process "Load selection", False, BuildParamList("selectionpath", sFile), UNDO_SELECTION
                     
             Else
-                PDMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
+                PDMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly Or vbExclamation, "Selection Error", sFile
             End If
             
             'Release the temporary selection object

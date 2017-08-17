@@ -158,7 +158,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String) As String
     hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
     
     If (hInternetSession = 0) Then
-        PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
+        PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Internet Connection Error", PROGRAMNAME
         DownloadURLToTempFile = ""
         Screen.MousePointer = 0
         Exit Function
@@ -171,7 +171,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String) As String
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If (hUrl = 0) Then
-        PDMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Online File Not Found", PROGRAMNAME
+        PDMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Online File Not Found", PROGRAMNAME
         If hInternetSession Then InternetCloseHandle hInternetSession
         DownloadURLToTempFile = ""
         Screen.MousePointer = 0
@@ -229,7 +229,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String) As String
             'If something goes horribly wrong, terminate the download
             If (Not chunkOK) Then
                 
-                PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
+                PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Internet Connection Error", PROGRAMNAME
                 
                 If Files.FileExists(tmpFile) Then
                     cFile.FileCloseHandle hFile
@@ -293,7 +293,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String) As String
         
         Dim domainName As String
         domainName = Web.GetDomainName(URL)
-        PDMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
+        PDMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbExclamation Or vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
         
         Files.FileDeleteIfExists tmpFile
         If (hUrl <> 0) Then InternetCloseHandle hUrl
@@ -326,7 +326,7 @@ Private Sub cmdBarMini_OKClick()
     fullURL = Trim$(txtURL)
     
     If (LCase(Left$(fullURL, 7)) <> "http://") And (LCase(Left$(fullURL, 8)) <> "https://") And (LCase(Left$(fullURL, 6)) <> "ftp://") Then
-        PDMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
+        PDMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbOKOnly Or vbExclamation, "Invalid URL"
         txtURL.SelectAll
         cmdBarMini.DoNotUnloadForm
         Exit Sub

@@ -227,7 +227,7 @@ End Sub
 Private Sub cmdCancel_Click()
 
     Dim msgReturn As VbMsgBoxResult
-    msgReturn = PDMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
+    msgReturn = PDMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbExclamation Or vbYesNo, "Warning: autosave data will be deleted")
     
     If (msgReturn = vbYes) Then
         userAnswer = vbNo

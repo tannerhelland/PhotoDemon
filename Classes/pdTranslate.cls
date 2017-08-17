@@ -612,7 +612,7 @@ Friend Sub CheckAvailableLanguages()
     'TESTING: display the info we retrieved
     'Dim i As Long
     'For i = 0 To m_numOfLanguages - 1
-    '    pdMsgBox m_availableLanguages(i).langID & vbCrLf & m_availableLanguages(i).langName & vbCrLf & m_availableLanguages(i).langStatus & vbCrLf & m_availableLanguages(i).langVersion
+    '    Debug.Print m_availableLanguages(i).langID & vbCrLf & m_availableLanguages(i).langName & vbCrLf & m_availableLanguages(i).langStatus & vbCrLf & m_availableLanguages(i).langVersion
     'Next i
     
 End Sub
@@ -965,11 +965,17 @@ Friend Sub RestoreObjectCaption(ByRef srcObject As Control)
 
 End Sub
 
-'Restore a form caption
-Friend Sub RestoreFormCaption(ByRef srcForm As Form)
-
+'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
+Friend Sub UndoTranslations(ByRef srcForm As Form)
+    
+    'Unicode form captions require special help; see GetWindowCaptionW for details.
     Dim searchString As String, newString As String
-    searchString = srcForm.Caption
+    If (g_WindowManager Is Nothing) Then
+        searchString = srcForm.Caption
+    Else
+        searchString = g_WindowManager.GetWindowCaptionW(srcForm.hWnd)
+    End If
+    
     newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
@@ -983,52 +989,31 @@ Friend Sub RestoreFormCaption(ByRef srcForm As Form)
     
 End Sub
 
-'Translate a form caption
-Friend Sub TranslateFormCaption(ByRef srcForm As Form)
-    
-    If (Len(srcForm.Caption) <> 0) Then
-    
-        Dim searchString As String, newString As String
-        
-        If TranslationActive Then
-            searchString = srcForm.Caption
-            newString = GetTranslationTagFromCaption(searchString)
-        Else
-            newString = srcForm.Caption
-        End If
-        
-        'If a new string was found, apply it to the object's caption
-        If (Len(newString) <> 0) Then
-            If (Not g_WindowManager Is Nothing) Then
-                g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
-            Else
-                srcForm.Caption = " " & newString
-            End If
-        End If
-        
-    End If
-    
-End Sub
-
-'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
-Friend Sub UndoTranslations(ByRef srcForm As Form)
-
-    'This function only has to be applied if a translation is currently active.  If it isn't, simply exit.
-    If (Not TranslationActive) Then Exit Sub
-
-    'Start by returning the form's original caption
-    RestoreFormCaption srcForm
-    
-End Sub
-
 'Apply any special handling to a given form.  At present, this only affects form captions; everything else is handled internally.
 Friend Sub ApplyTranslations(ByRef srcForm As Form)
     
     'For en-US locales, we can entirely skip this step
-    If (Not TranslationActive) Then Exit Sub
+    If Me.TranslationActive Then
     
-    'Start by translating the form's caption
-    TranslateFormCaption srcForm
+        'At present, all we have to do is translate the form's caption
+        If (Len(srcForm.Caption) <> 0) Then
+        
+            Dim searchString As String, newString As String
+            searchString = srcForm.Caption
+            newString = GetTranslationTagFromCaption(searchString)
+            
+            'If a new string was found, apply it to the object's caption
+            If (Len(newString) <> 0) Then
+                If (Not g_WindowManager Is Nothing) Then
+                    g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
+                Else
+                    srcForm.Caption = " " & newString
+                End If
+            End If
+            
+        End If
+        
+    End If
     
 End Sub
 

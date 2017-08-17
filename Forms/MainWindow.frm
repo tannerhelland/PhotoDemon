@@ -1318,9 +1318,6 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuCustomFilter 
          Caption         =   "Custom filter..."
       End
-      Begin VB.Menu MnuTest 
-         Caption         =   "Test"
-      End
    End
    Begin VB.Menu mnuTools 
       Caption         =   "&Tools"
@@ -1409,6 +1406,9 @@ Begin VB.Form FormMain
             Caption         =   "Build theme package..."
             Index           =   1
          End
+      End
+      Begin VB.Menu MnuTest 
+         Caption         =   "Test"
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -1655,9 +1655,9 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 DoEvents
                 
                 If updateAvailable Then
-                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 Else
-                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
@@ -3548,7 +3548,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'If this is the first time they are submitting feedback, ask them if they have a GitHub account
             Else
             
-                msgReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for fixing PhotoDemon")
+                msgReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbInformation Or vbYesNoCancel, "Thanks for fixing PhotoDemon")
                 
                 'If their answer was anything but "Cancel", store that answer to file
                 If msgReturn = vbYes Then g_UserPreferences.SetPref_Boolean "Core", "Has GitHub Account", True
@@ -3719,10 +3719,6 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
     Screen.MousePointer = vbDefault
     
-    'Added 09 January 2014.  Let the user know that some translations will not take affect until the program is restarted.
-    ' (Subsequently removed 15 Jan 2016.  TODO 6.8: consider removing permanently.)
-    'PDMsgBox "Language changed successfully!" & vbCrLf & vbCrLf & "Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.", vbApplicationModal + vbOKOnly + vbInformation, "Language changed successfully"
-    
 End Sub
 
 Private Sub MnuLighting_Click(Index As Integer)
@@ -3787,8 +3783,8 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Map photo location
         Case 3
             
-            If Not pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata Then
-                PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
+            If (Not pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata) Then
+                PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly Or vbInformation, "No GPS data found"
                 Exit Sub
             End If
             

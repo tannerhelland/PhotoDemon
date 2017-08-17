@@ -64,6 +64,10 @@ Public Event SizeChanged()
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'Unlike most other controls, callers can request special backcolors for pdContainer.  (This is sometimes helpful
+' in "panel"-type arrangements, to draw attention to a specific container.)
+Private m_UniqueBackColor As Long
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -146,6 +150,11 @@ Public Sub Refresh()
     ucSupport.RequestRepaint True
 End Sub
 
+Public Sub SetCustomBackcolor(ByVal newColor As Long, Optional ByVal repaintImmediately As Boolean = False)
+    m_UniqueBackColor = newColor
+    ucSupport.RequestRepaint repaintImmediately
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
@@ -175,6 +184,9 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDContainer", colorCount
     If (Not MainModule.IsProgramRunning()) Then UpdateColorList
     
+    'By default, assume a normal coloring scheme
+    m_UniqueBackColor = -1
+    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -196,8 +208,12 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        
+        Dim targetBackColor As Long
+        If (m_UniqueBackColor <> -1) Then targetBackColor = m_UniqueBackColor Else targetBackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        ucSupport.SetCustomBackcolor targetBackColor
+        UserControl.BackColor = targetBackColor
+        
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

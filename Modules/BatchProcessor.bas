@@ -92,7 +92,7 @@ Public Sub StopMacro()
     
         'Warn the user that this macro won't be saved unless they keep recording
         Dim msgReturn As VbMsgBoxResult
-        msgReturn = Interface.PDMsgBox("This macro does not contain any recordable actions.  Are you sure you want to stop recording?" & vbCrLf & vbCrLf & "(Press No to continue recording.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: invalid macro")
+        msgReturn = Interface.PDMsgBox("This macro does not contain any recordable actions.  Are you sure you want to stop recording?" & vbCrLf & vbCrLf & "(Press No to continue recording.)", vbExclamation Or vbYesNo, "Warning: invalid macro")
         
         If (msgReturn = vbYes) Then
             
@@ -201,7 +201,7 @@ SaveMacroAgain:
         
     Else
         
-        msgReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
+        msgReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbExclamation Or vbYesNo, "Warning: last chance to save macro")
         If (msgReturn = vbNo) Then GoTo SaveMacroAgain
         
         Message "Macro abandoned."
@@ -355,7 +355,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
         
     Else
     
-        PDMsgBox "Unfortunately, this macro file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch." & vbCrLf & vbCrLf & "(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbInformation + vbOKOnly, "Unsupported macro file"
+        PDMsgBox "Unfortunately, this macro file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch." & vbCrLf & vbCrLf & "(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbExclamation Or vbOKOnly, "Unsupported macro file"
         PlayMacroFromFile = False
         Exit Function
         

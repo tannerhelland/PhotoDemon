@@ -47,6 +47,11 @@ Private Const WM_MOVING As Long = &H216
 Private Const WM_SIZING As Long = &H214
 Private Const WM_GETMINMAXINFO As Long = &H24
 
+'Non-subclassed messages that are used to retrieve Unicode window captions
+Private Const WM_GETTEXT = &HD
+Private Const WM_GETTEXTLENGTH = &HE
+Private Const WM_SETTEXT = &HC
+
 'Constants for changing window style (including transparency)
 Private Const LWA_ALPHA As Long = &H2&
 Private Const WS_CHILD As Long = &H40000000
@@ -106,19 +111,18 @@ Private Const SM_CYCAPTION As Long = 4
 Private Const SM_CYSIZEFRAME As Long = 33
 
 'API calls for window positioning and tracking
-Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long) As Long
+Private Declare Function GetWindowTextLengthW Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef scrPoint As POINTAPI) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 
 'APIs for getting/setting Unicode window captions
 Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Const WM_GETTEXT = &HD
-Private Const WM_GETTEXTLENGTH = &HE
-Private Const WM_SETTEXT = &HC
 
 'APIs for changing window style
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
@@ -135,7 +139,7 @@ Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal h
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 
 'Misc window APIs
-Private Declare Function DwmIsCompositionEnabled Lib "dwmapi.dll" (ByRef dstEnabledBool As Long) As Long
+Private Declare Function DwmIsCompositionEnabled Lib "dwmapi" (ByRef dstEnabledBool As Long) As Long
 
 'We manually enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
@@ -200,6 +204,28 @@ Friend Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As Strin
     DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
+Friend Function GetWindowCaptionW(ByRef targetHwnd As Long) As String
+    
+    'Note that we can't use GetWindowTextW directly, because VB will intercept the message and return an
+    ' ANSI-ified string.  Instead, we have to go directly to the default wndProc handler.
+    Dim sizeString As Long
+    sizeString = DefWindowProcW(targetHwnd, WM_GETTEXTLENGTH, 0&, 0&)
+    
+    If (sizeString > 0) Then
+        
+        GetWindowCaptionW = String$(sizeString, 0)
+        
+        '+1 is required for the terminating null-char; see https://msdn.microsoft.com/en-us/library/windows/desktop/ms632627(v=vs.85).aspx
+        Dim apiReturn As Long
+        apiReturn = DefWindowProcW(targetHwnd, WM_GETTEXT, sizeString + 1, StrPtr(GetWindowCaptionW))
+        If (apiReturn <> sizeString) Then GetWindowCaptionW = Strings.TrimNull(GetWindowCaptionW)
+        
+    Else
+        GetWindowCaptionW = vbNullString
+    End If
+    
+End Function
+
 Friend Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
     GetVisibilityByHWnd = CBool(IsWindowVisible(srcHwnd) <> 0)
 End Function
@@ -221,6 +247,14 @@ Friend Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal ne
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     SetWindowPos dstHwnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+End Sub
+
+'Thin wrapper to SetWindowPos, which means left/top coordinates are in *client coordinates*.
+Friend Sub SetSizeAndPositioByHWnd(ByVal dstHwnd As Long, ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+    Dim swpFlags As Long
+    swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    SetWindowPos dstHwnd, 0&, newLeft, newTop, newWidth, newHeight, swpFlags
 End Sub
 
 Friend Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
@@ -251,6 +285,10 @@ Friend Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Lon
     SetWindowLongWrapper = curStyle
     
 End Function
+
+Friend Sub GetWindowRect_API(ByVal srcHwnd As Long, ByRef dstRect As winRect)
+    GetWindowRect srcHwnd, dstRect
+End Sub
 
 Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetClientRect srcHwnd, dstRect
