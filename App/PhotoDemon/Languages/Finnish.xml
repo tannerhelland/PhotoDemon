@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2991</langversion>
+<langversion>6.8.2992</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -801,7 +801,7 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 <translation>Tallenna ei voida toteuttaa ilman FreeImage kirjasto.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 46 phrases. 41 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -5701,11 +5701,6 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Test</original>
-<translation>Testata</translation>
-</phrase>
-
-<phrase>
 <original>&Tools</original>
 <translation>Työkalut</translation>
 </phrase>
@@ -5778,6 +5773,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <phrase>
 <original>Build theme package</original>
 <translation>Build teema paketti</translation>
+</phrase>
+
+<phrase>
+<original>Test</original>
+<translation>Testata</translation>
 </phrase>
 
 <phrase>
@@ -14964,12 +14964,28 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Effects_Artistic_PlasticWrap.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2520</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1959 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12176 total words. -->
+<!-- As of this build, PhotoDemon contains 4478 phrases. -->
+<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
+<!-- These 2520 phrases contain approximately 12178 total words. -->
 
 </pdData>

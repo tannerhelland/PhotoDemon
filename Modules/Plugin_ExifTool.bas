@@ -806,7 +806,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
         'TODO 7.0: still raise the form, and allow the user to add their own metadata to the image
         Else
             Message "No metadata available."
-            PDMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+            PDMsgBox "This image does not contain any metadata.", vbInformation Or vbOKOnly, "No metadata available"
         End If
         
     End If

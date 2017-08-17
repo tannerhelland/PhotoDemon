@@ -689,7 +689,7 @@ ViewportPipeline_Stage1_Error:
         SetProgBarVal 0
         ReleaseProgressBar
         Message "Operation halted."
-        PDMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
+        PDMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation Or vbOKOnly, "Out of memory"
             
     'I've never experienced other errors in this function, thankfully.
     Else

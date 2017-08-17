@@ -839,8 +839,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportJP2 = False
         End If
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportJP2 = False
     End If
     
@@ -1047,8 +1046,7 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportJXR = False
         End If
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportJXR = False
     End If
     
@@ -1168,8 +1166,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         End If
         
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportHDR = False
     End If
     
@@ -1663,8 +1660,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportPSD = False
         End If
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportPSD = False
     End If
     
@@ -1741,8 +1737,7 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportTGA = False
         End If
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportTGA = False
     End If
     
@@ -2203,8 +2198,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             ExportWebP = False
         End If
     Else
-        If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
+        RaiseFreeImageWarning
         ExportWebP = False
     End If
     
@@ -2215,6 +2209,13 @@ ExportWebPError:
     ExportWebP = False
     
 End Function
+
+'Many export functions require FreeImage.  If it doesn't exist, a generic warning will be raised when the user tries to
+' export to a FreeImage-based format.  (Note that the warning is suppressed during batch processing, by design.)
+Private Sub RaiseFreeImageWarning()
+    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "FreeImage Interface Error"
+    Message "Save cannot be completed without FreeImage library."
+End Sub
 
 'Basic case-insensitive string comparison function
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean

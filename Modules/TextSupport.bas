@@ -69,7 +69,7 @@ Public Function RangeValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVa
     If (checkVal >= cMin) And (checkVal <= cMax) Then
         RangeValid = True
     Else
-        PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
+        PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", checkVal, cMin, cMax
         RangeValid = False
     End If
 End Function
@@ -77,7 +77,7 @@ End Function
 'Check a Variant-type value to see if it's numeric
 Public Function NumberValid(ByVal checkVal As Variant) As Boolean
     If (Not IsNumeric(checkVal)) Then
-        PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
+        PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", checkVal
         NumberValid = False
     Else
         NumberValid = True
@@ -87,13 +87,13 @@ End Function
 'A pleasant combination of RangeValid and NumberValid
 Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
     If Not IsNumeric(checkVal) Then
-        If displayNumError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
+        If displayNumError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", checkVal
         EntryValid = False
     Else
         If (checkVal >= cMin) And (checkVal <= cMax) Then
             EntryValid = True
         Else
-            If displayRangeError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
+            If displayRangeError Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", checkVal, cMin, cMax
             EntryValid = False
         End If
     End If

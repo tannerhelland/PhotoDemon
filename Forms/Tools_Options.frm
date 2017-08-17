@@ -1298,7 +1298,7 @@ Private Sub cmdReset_Click()
 
     'Before resetting, warn the user
     Dim confirmReset As VbMsgBoxResult
-    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset PhotoDemon")
+    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbExclamation Or vbYesNo, "Reset PhotoDemon")
 
     'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
     If (confirmReset = vbYes) Then

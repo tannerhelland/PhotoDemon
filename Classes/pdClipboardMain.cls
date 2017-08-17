@@ -425,7 +425,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     If pasteWasSuccessful Then
         If srcIsMeantAsLayer Then toolbar_Toolbox.SelectNewTool NAV_MOVE
     Else
-        PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
+        PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation Or vbOKOnly, "Windows Clipboard Error"
     End If
     
 End Sub

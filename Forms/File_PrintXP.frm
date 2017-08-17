@@ -505,7 +505,7 @@ Private Sub CmdOK_Click()
           
             'Print the image
             If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, "Printer Error", PROGRAMNAME, Printer.DeviceName
+                PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", PROGRAMNAME, Printer.DeviceName
                 Message "Print canceled."
             End If
               
@@ -825,7 +825,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         srcHeight = otherPictureSrc.GetDIBHeight
     Else
         If pdImages(g_CurrentImage).IsSelectionActive Then
-            selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+            selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
             srcWidth = selBounds.Width
             srcHeight = selBounds.Height
         Else
@@ -856,7 +856,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         
         Else
             
-            selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+            selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         
             'Copy the current selection into a temporary DIB
             Set tmpDIB = New pdDIB

@@ -3,8 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 06/March/16
-'Last update: start implementing fine-grained UI sync caching, so sync various controls only when necessary
+'Last updated: 17/August/17
+'Last update: overhaul PDMsgBox to use an internal renderer
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -1635,32 +1635,36 @@ End Sub
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
 ' in the future I may replace the dialog function with something custom.
 Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
-
+    
+    'Before passing the message (and any optional parameters) over to the message box dialog, we first need to
+    ' plug-in any dynamic elements (e.g. "%n" entries in the message with the param array contents) and apply
+    ' any active language translations.
     Dim newMessage As String, newTitle As String
     newMessage = pMessage
-    newTitle = pTitle
-
-    'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
-    If (Not (g_Language Is Nothing)) Then
-        If g_Language.ReadyToTranslate Then
-            If g_Language.TranslationActive Then
-                newMessage = g_Language.TranslateMessage(pMessage)
-                newTitle = g_Language.TranslateMessage(pTitle)
-            End If
-        End If
+    
+    If (Not g_Language Is Nothing) Then
+        If (g_Language.ReadyToTranslate And g_Language.TranslationActive) Then newMessage = g_Language.TranslateMessage(pMessage)
     End If
     
-    'Once the message is translated, we can add back in any optional parameters
-    If UBound(ExtraText) >= LBound(ExtraText) Then
-    
+    'With the message freshly translated, we can plug-in any dynamic text entries
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
             newMessage = Replace$(newMessage, "%" & i + 1, CStr(ExtraText(i)))
         Next i
-    
     End If
-
-    PDMsgBox = MsgBox(newMessage, pButtons, newTitle)
+    
+    Load dialog_MsgBox
+    If dialog_MsgBox.ShowDialog(newMessage, pButtons, pTitle) Then
+        PDMsgBox = dialog_MsgBox.DialogResult
+    
+    'If the dialog failed to load for whatever reason, fall back to a default system message box
+    Else
+        PDMsgBox = MsgBox(newMessage, pButtons, pTitle)
+    End If
+    
+    Unload dialog_MsgBox
+    Set dialog_MsgBox = Nothing
 
 End Function
 
@@ -2019,7 +2023,7 @@ Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boole
                 'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
                 If displayConfirmationPrompt Then
                     Dim msgReturn As VbMsgBoxResult
-                    msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", Processor.GetLastProcessorID)
+                    msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation Or vbYesNo, "Cancel image processing", Processor.GetLastProcessorID)
                     g_cancelCurrentAction = (msgReturn = vbYes)
                 Else
                     g_cancelCurrentAction = True

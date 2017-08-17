@@ -676,7 +676,7 @@ Private Sub cmdAutoTranslate_Click()
     
     'Because this process can take a very long time, warn the user in advance.
     Dim msgReturn As VbMsgBoxResult
-    msgReturn = PDMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
+    msgReturn = PDMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo Or vbInformation, "Automatic translation warning")
 
     If (msgReturn <> vbYes) Then Exit Sub
     
@@ -751,7 +751,7 @@ AutoTranslateFailure:
     PerformAutosave
     
     'Notify the user, then exit
-    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbApplicationModal + vbCritical + vbOKOnly, "Translations interrupted"
+    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbCritical Or vbOKOnly, "Translations interrupted"
     
 End Sub
 
@@ -773,7 +773,7 @@ Private Sub cmdDeleteLanguage_Click()
         'Make sure we have write access to this folder before attempting to delete anything
         If Files.PathExists(Files.FileGetPath(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
-            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If (msgReturn = vbYes) Then
                 Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
@@ -783,13 +783,13 @@ Private Sub cmdDeleteLanguage_Click()
         
         'Write access not available
         Else
-            PDMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly + vbInformation + vbApplicationModal, "Administrator access required"
+            PDMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly Or vbExclamation, "Administrator access required"
         End If
     
     'User-folder languages are gone forever once deleted, so change the wording of the deletion confirmation.
     Else
     
-        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo Or vbExclamation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If (msgReturn = vbYes) Then
             Files.FileDeleteIfExists m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
@@ -903,7 +903,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
             ' currently too lazy to write a more elegant warning!)
             If optBaseLanguage(1) And (lstLanguages.ListIndex = -1) Then
-                PDMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
+                PDMsgBox "Please select a language before continuing to the next step.", vbOKOnly Or vbInformation, "Please select a language"
                 Exit Sub
             End If
             
@@ -950,7 +950,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    PDMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
+                    PDMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Master language file missing"
                     Unload Me
                 End If
             
@@ -971,7 +971,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    PDMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
+                    PDMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Language file could not be loaded"
                     Unload Me
                 End If
             

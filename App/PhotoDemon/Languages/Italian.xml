@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.277</langversion>
+<langversion>6.7.278</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -802,7 +802,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 46 phrases. 41 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -5695,11 +5695,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Test</original>
-<translation>Test</translation>
-</phrase>
-
-<phrase>
 <original>&Tools</original>
 <translation>&Utilità</translation>
 </phrase>
@@ -5772,6 +5767,11 @@ o il menù File > Apri e File > Importa.</translation>
 <phrase>
 <original>Build theme package</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>Test</original>
+<translation>Test</translation>
 </phrase>
 
 <phrase>
@@ -14954,12 +14954,28 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Effects_Artistic_PlasticWrap.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2520</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1959 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12176 total words. -->
+<!-- As of this build, PhotoDemon contains 4478 phrases. -->
+<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
+<!-- These 2520 phrases contain approximately 12178 total words. -->
 
 </pdData>

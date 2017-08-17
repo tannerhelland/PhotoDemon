@@ -343,7 +343,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
-        PDMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbInformation + vbOKOnly + vbApplicationModal, "Initial save required"
+        PDMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbExclamation Or vbOKOnly, "Initial save required"
         
         'This image hasn't been saved before.  Launch the Save As... dialog, and wait for it to return.
         MenuSaveLosslessCopy = MenuSaveAs(srcImage)
@@ -375,7 +375,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     Else
     
         'If zLib doesn't exist...
-        PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
+        PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation Or vbOKOnly, " PDI Interface Error", PROGRAMNAME
         Message "No %1 encoder found. Save aborted.", "PDI"
         Saving.EndSaveProcess
         MenuSaveLosslessCopy = False
@@ -399,7 +399,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     Else
         
         Message "Save canceled."
-        PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
+        PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Image save error"
         MenuSaveLosslessCopy = False
         
     End If
@@ -596,7 +596,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         
     Else
         CreateNewImage = False
-        PDMsgBox "Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.", vbExclamation Or vbApplicationModal Or vbOKOnly, "Image too large", newWidth, newHeight
+        PDMsgBox "Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.", vbExclamation Or vbOKOnly, "Image too large", newWidth, newHeight
     End If
     
     'Re-enable the main form

@@ -223,7 +223,7 @@ Private Sub cmdBarMini_OKClick()
     
     'If the user wants a specific window captured, make sure they actually selected one from the list
     If (btsSource.ListIndex = 1) And (lstWindows.ListIndex = -1) Then
-        PDMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
+        PDMsgBox "Please select a window to capture.", vbInformation Or vbOKOnly, "Target window required"
         Exit Sub
     End If
         

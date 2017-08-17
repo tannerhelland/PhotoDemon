@@ -901,7 +901,7 @@ Private Sub cmdCancel_Click()
         If (Macros.GetMacroStatus <> MacroSTOP) Then
         
             Dim msgReturn As VbMsgBoxResult
-            msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbApplicationModal + vbYesNoCancel + vbInformation, "Cancel batch processing")
+            msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbYesNoCancel Or vbExclamation, "Cancel batch processing")
             
             If (msgReturn = vbYes) Then Macros.SetMacroStatus MacroCANCEL
             
@@ -925,7 +925,7 @@ Private Function AllowedToExit() As Boolean
         
             If (lstFiles.ListCount > 0) Then
                 Dim msgReturn As VbMsgBoxResult
-                msgReturn = PDMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbApplicationModal + vbExclamation + vbYesNoCancel, "Unsaved image list")
+                msgReturn = PDMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbExclamation Or vbYesNoCancel, "Unsaved image list")
                 
                 Select Case msgReturn
                     
@@ -1028,7 +1028,7 @@ Private Sub cmdLoadList_Click()
                     If (lstFiles.ListCount > 0) Then
                 
                     Dim msgReturn As VbMsgBoxResult
-                    msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel + vbApplicationModal + vbInformation, "Batch process notification")
+                    msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel Or vbInformation, "Batch process notification")
                     
                     If msgReturn = vbCancel Then Exit Sub
                     
@@ -1055,17 +1055,17 @@ Private Sub cmdLoadList_Click()
                 Screen.MousePointer = vbDefault
                         
                 Else
-                    PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+                    PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
                     Exit Sub
                 End If
                 
             Else
-                PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+                PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
                 Exit Sub
             End If
             
         Else
-            PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+            PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
             Exit Sub
         End If
         
@@ -1113,7 +1113,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
                 
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
                 If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (Len(txtMacro.Text) = 0)) Then
-                    PDMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
+                    PDMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation Or vbOKOnly, "No macro file selected"
                     txtMacro.SelectAll
                     Exit Sub
                 End If
@@ -1125,7 +1125,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         
             'If no images have been added to the batch list, make the user add some!
             If (moveForward And (lstFiles.ListCount = 0)) Then
-                PDMsgBox "You have not selected any images to process!  Please add one or more images to the batch list.", vbExclamation + vbOKOnly + vbApplicationModal, "No images selected"
+                PDMsgBox "You have not selected any images to process!  Please add one or more images to the batch list.", vbExclamation Or vbOKOnly, "No images selected"
                 Exit Sub
             End If
         
@@ -1139,7 +1139,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
             If (optFormat(1) And moveForward) Then
             
                 If (Not m_ExportSettingsSet) Then
-                    PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation + vbOKOnly + vbApplicationModal, "Export settings required"
+                    PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation Or vbOKOnly, "Export settings required"
                     Exit Sub
                 End If
                 
@@ -1152,7 +1152,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
             If (Not Files.PathExists(txtOutputPath)) Then
                 
                 If (Not Files.PathCreate(txtOutputPath)) Then
-                    PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
+                    PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation Or vbOKOnly, "Folder access unavailable"
                     txtOutputPath.SelectAll
                     Exit Sub
                 End If
@@ -1396,7 +1396,7 @@ Private Sub cmdSaveList_Click()
     
     'Before attempting to save, make sure at least one image has been placed in the list
     If lstFiles.ListCount = 0 Then
-        PDMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
+        PDMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation Or vbOKOnly, "Empty image list"
         Exit Sub
     End If
         

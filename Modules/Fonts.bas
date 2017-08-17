@@ -499,14 +499,10 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     'We also want to ignore fonts with @ in front of their name, as these are merely duplicates of existing fonts.
     ' (The @ signifies improved support for vertical text, which may someday be useful... but right now I have enough
     '  on my plate without worrying about that.)
-    If fontUsable Then
-        fontUsable = Strings.StringsNotEqual(Left$(thisFontFace, 1), "@", False)
-    End If
+    If fontUsable Then fontUsable = Strings.StringsNotEqual(Left$(thisFontFace, 1), "@", False)
     
     'For now, we are also ignoring raster fonts, as they create unwanted complications
-    If fontUsable Then
-        fontUsable = (CLng(srcFontType And RASTER_FONTTYPE) = 0)
-    End If
+    If fontUsable Then fontUsable = (CLng(srcFontType And RASTER_FONTTYPE) = 0)
     
     'If this font is a worthy addition, add it now
     If fontUsable Then

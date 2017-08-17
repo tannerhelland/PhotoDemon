@@ -266,7 +266,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", Files.FileGetName(pdiPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbCritical Or vbOKOnly, "zLib plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
 
@@ -1558,7 +1558,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", Files.FileGetName(pdiPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbCritical Or vbOKOnly, "zLib plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
 
