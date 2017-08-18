@@ -320,7 +320,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     'If the bottom layer is the size of the image itself, we can use its DIB as the target DIB
     ' instead of creating a temporary one.  This provides a nice performance boost.
-    bottomLayerIsFullSize = CBool(bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True)))
+    bottomLayerIsFullSize = (bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True)))
     
     If bottomLayerIsFullSize Then
         xOffset = topRect.Left
@@ -395,14 +395,14 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
                     
                     'Render the transformed DIB now.
                     With bottomLayer
-                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity * 0.01, .GetLayerResizeQuality_GDIPlus
                     End With
                 
                 End If
                 
                 'With the bottom layer successfully rendered onto the destination DIB, we can reset all non-destructive size modifiers now.
-                bottomLayer.SetLayerCanvasXModifier 1
-                bottomLayer.SetLayerCanvasYModifier 1
+                bottomLayer.SetLayerCanvasXModifier 1#
+                bottomLayer.SetLayerCanvasYModifier 1#
                 bottomLayer.SetLayerAngle 0#
                 bottomLayer.SetLayerShearX 0#
                 bottomLayer.SetLayerShearY 0#
