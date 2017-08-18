@@ -1058,16 +1058,10 @@ End Sub
 ' This is used, for example, by pdCompositor to branch across several rendering paths.
 Public Function AffineTransformsActive(Optional ByVal includeScaling As Boolean = False) As Boolean
     
-    'Most PD operations handle scaling separate from other affine operations, so we can typically skip this check
-    If includeScaling Then
-        AffineTransformsActive = (myLayerData.l_CanvasXModifier <> 1#) Or (myLayerData.l_CanvasYModifier <> 1#)
-    Else
-    
-        'Rotate and shear are the only other relevant affine transforms.  Note that we don't care about rotation center
-        ' point here; when the layer angle is 0, rotation center point is irrelevant.
-        AffineTransformsActive = (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0)
-        
-    End If
+    'Rotate and shear are the primary relevant affine transforms.  Note that we don't care about rotation center
+    ' point here; when the layer angle is 0, rotation center point is irrelevant.
+    AffineTransformsActive = (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0)
+    If includeScaling Then AffineTransformsActive = AffineTransformsActive Or (myLayerData.l_CanvasXModifier <> 1#) Or (myLayerData.l_CanvasYModifier <> 1#)
     
 End Function
 
