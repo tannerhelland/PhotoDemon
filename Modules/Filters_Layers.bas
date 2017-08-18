@@ -296,14 +296,14 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                     r = r + rValues(i)
                 Loop Until (r >= cutoffTotal)
                 r = i
-                
+
                 i = -1
                 Do
                     i = i + 1
                     g = g + gValues(i)
                 Loop Until (g >= cutoffTotal)
                 g = i
-                
+
                 i = -1
                 Do
                     i = i + 1

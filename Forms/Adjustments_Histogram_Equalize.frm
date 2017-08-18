@@ -178,7 +178,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Compute a histogram scaling factor based on the number of pixels in the image; this lets us calculate how many pixels
     ' should ideally exist in each "bin" of the histogram.
     Dim scaleFactor As Double
-    scaleFactor = 255 / (curDIBValues.Width * curDIBValues.Height)
+    scaleFactor = 255# / (curDIBValues.Width * curDIBValues.Height)
     
     'Color variables
     Dim r As Long, g As Long, b As Long, a As Long
@@ -206,7 +206,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     Dim floatLookup() As Double
     ReDim floatLookup(0 To 255) As Double
     For i = 0 To 255
-        floatLookup(i) = i / 255
+        floatLookup(i) = i / 255#
     Next i
     
     Dim directionDown As Boolean
