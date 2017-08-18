@@ -281,7 +281,7 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     
-    If (Not sltQuality.IsValid) Then Exit Sub
+    'If (Not sltQuality.IsValid) Then Exit Sub
     
     'Store all parameters inside an XML string
     Dim cParams As pdParamXML
@@ -311,7 +311,6 @@ Private Sub cmdBar_OKClick()
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
-    'Me.Hide
     Me.Visible = False
     
 End Sub
@@ -334,8 +333,6 @@ Private Sub cmdBar_ResetClick()
     btsDepth.ListIndex = 0
     
     mtdManager.Reset
-    
-    'chkThumbnail.Value = vbUnchecked
     
 End Sub
 
