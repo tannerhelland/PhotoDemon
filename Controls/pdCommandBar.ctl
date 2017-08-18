@@ -539,20 +539,17 @@ Private Sub CmdOK_Click()
     For Each eControl In Parent.Controls
         
         'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
+        ' (This is currently limited to controls that support text input; anything else is automatically protected
+        ' against bad inputs.)
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Or (TypeOf eControl Is pdResize) Then
-            
-            'Just to be safe, verify matching container hWnd properties
-            If (eControl.Container.hWnd = UserControl.ContainerHwnd) Then
                 
-                'Finally, ask the control to validate itself
-                If (Not eControl.IsValid) Then
-                    validateCheck = False
-                    Exit For
-                End If
-                
+            If (Not eControl.IsValid) Then
+                validateCheck = False
+                Exit For
             End If
             
         End If
+        
     Next eControl
         
     'Raise an extra validation process, which the parent form can use if necessary to check additional controls.
