@@ -74,7 +74,10 @@ Private m_ByteArrayPtr As Long, m_ArrayWidth As Long, m_ArrayHeight As Long
 Private m_PixelSA2D As SAFEARRAY2D, m_Pixels() As Byte
 Private m_PixelSA1D As SAFEARRAY1D, m_PixelLine() As Byte
 
-'If the function wants alpha tracked, this will be set to TRUE
+'If the function wants alpha tracked, this will be set to TRUE.
+' (NOTE: this tracker has been manually disabled, because no PD functions use it as present.  Skipping it on inner
+'        loops provides a small performance boost - so if you *do* need alpha iterated in the future, you will need
+'        to uncomment various lines where this is implemented.)
 Private m_AlphaSupport As Boolean
 
 'This class currently supports two modes of operation: RGBA, and Luminance.  While we could track both simultaneously,
@@ -157,7 +160,7 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     m_PixelWidth = m_dibColorDepth \ 8
     
     'Set alpha to a default value, based on the source image's color depth
-    m_AlphaSupport = (m_dibColorDepth = 32)
+    'm_AlphaSupport = (m_dibColorDepth = 32)
     
     InitializeIterator = True
     
@@ -225,6 +228,10 @@ End Function
 'IMPORTANT NOTE: PRIOR TO CALLING THIS FUNCTION, you must redim these arrays to range [0, 255].  Do not ReDim them until
 ' you have completed your function and freed the histograms safely (via ReleaseTargetHistograms, below).
 '
+'OTHER IMPORTANT NOTE: at present, PD does *not* make use of the dstAlpha parameter anywhere.  To improve performance,
+' I have manually disabled alpha channel support in the inner loops.  If alpha iterating becomes important in the future,
+' you will need to manually uncomment those lines of code.
+'
 'This function will return the pixel count of the first window in the image.  DO NOT PROCEED if it returns zero.
 Friend Function LockTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long, Optional ByVal calcAlpha As Boolean = True) As Long
     
@@ -237,6 +244,9 @@ Friend Function LockTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen
     Alias1DArray dstGreen, m_Green, m_GreenSA
     Alias1DArray dstBlue, m_Blue, m_BlueSA
     
+    'NOTE: see comments elsewhere on m_AlphaSupport.  It is currently disabled; you'll need to uncomment various bits
+    ' to make it work.
+    calcAlpha = False
     If calcAlpha And m_AlphaSupport Then
         Alias1DArray dstAlpha, m_Alpha, m_AlphaSA
     Else
@@ -599,10 +609,10 @@ Private Function GenerateInitialWindow_Square() As Long
             m_Green(g) = m_Green(g) + 1
             m_Red(r) = m_Red(r) + 1
             
-            If m_AlphaSupport Then
-                a = m_PixelLine(x + 3)
-                m_Alpha(a) = m_Alpha(a) + 1
-            End If
+            'If m_AlphaSupport Then
+            '    a = m_PixelLine(x + 3)
+            '    m_Alpha(a) = m_Alpha(a) + 1
+            'End If
             
         Else
             a = GetLuminanceFromRGB(r, g, b)
@@ -671,15 +681,8 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     'To improve performance, we're going to wrap 1D arrays around both the current image scanline, and the reference map.
     ' This doesn't provide a huge performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-    With m_PixelSA1D
-        .cbElements = 1
-        .cDims = 1
-        .cLocks = 1
-        .lBound = 0
-        .cElements = m_dibStride
-        .pvData = m_DibPointer
-    End With
-    
+    ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
+    '  initialize it here.)
     PutMem4 VarPtrArray(m_PixelLine()), VarPtr(m_PixelSA1D)
     
     For y = m_InitY To m_InitY + m_YBBottom
@@ -699,10 +702,10 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
                 m_Green(g) = m_Green(g) + 1
                 m_Red(r) = m_Red(r) + 1
                 
-                If m_AlphaSupport Then
-                    a = m_PixelLine(x + 3)
-                    m_Alpha(a) = m_Alpha(a) + 1
-                End If
+                'If m_AlphaSupport Then
+                '    a = m_PixelLine(x + 3)
+                '    m_Alpha(a) = m_Alpha(a) + 1
+                'End If
                             
             Else
                 a = GetLuminanceFromRGB(r, g, b)
@@ -793,12 +796,9 @@ Friend Function MoveXRight() As Long
         yBottom = m_Y + m_YBBottom
         If (yTop < m_InitY) Then yTop = m_InitY
         If (yBottom > m_FinalY) Then yBottom = m_FinalY
-        
-        'Next, figure out X bounds
-        xLeft = (m_X - m_XBLeft) - 1
-        xRight = m_X + m_XBRight
             
         'If the *left* x-bound is within bounds, remove a line of pixels from the window.
+        xLeft = (m_X - m_XBLeft) - 1
         If (xLeft >= m_InitX) Then
             
             x = xLeft * m_PixelWidth
@@ -814,23 +814,25 @@ Friend Function MoveXRight() As Long
                     m_Green(g) = m_Green(g) - 1
                     m_Red(r) = m_Red(r) - 1
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(x + 3, y)
-                        m_Alpha(a) = m_Alpha(a) - 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_Pixels(x + 3, y)
+                    '    m_Alpha(a) = m_Alpha(a) - 1
+                    'End If
                                     
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
-                m_NumOfPixels = m_NumOfPixels - 1
-                
             Next y
+            
+            'Infer the number of pixels removed from the histogram(s)
+            m_NumOfPixels = m_NumOfPixels - (yBottom - yTop + 1)
         
         End If
         
         'If the *right* x-bound is within bounds, add a new line of pixels to the window.
+        xRight = m_X + m_XBRight
         If (xRight <= m_FinalX) Then
             
             x = xRight * m_PixelWidth
@@ -846,19 +848,20 @@ Friend Function MoveXRight() As Long
                     m_Green(g) = m_Green(g) + 1
                     m_Red(r) = m_Red(r) + 1
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(x + 3, y)
-                        m_Alpha(a) = m_Alpha(a) + 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_Pixels(x + 3, y)
+                    '    m_Alpha(a) = m_Alpha(a) + 1
+                    'End If
                     
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
-                m_NumOfPixels = m_NumOfPixels + 1
-                
             Next y
+            
+            'Infer the number of pixels added to the histogram(s)
+            m_NumOfPixels = m_NumOfPixels + (yBottom - yTop) + 1
         
         End If
     
@@ -895,10 +898,10 @@ Friend Function MoveXRight() As Long
                         m_Green(g) = m_Green(g) - 1
                         m_Red(r) = m_Red(r) - 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) - 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) - 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -926,10 +929,10 @@ Friend Function MoveXRight() As Long
                         m_Green(g) = m_Green(g) + 1
                         m_Red(r) = m_Red(r) + 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) + 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) + 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -1055,24 +1058,14 @@ Friend Function MoveYDown() As Long
         xRight = m_X + m_XBRight
         If (xRight > m_FinalX) Then xRight = m_FinalX
         
-        'Next, figure out Y bounds.
-        yTop = (m_Y - m_YBTop) - 1
-        yBottom = m_Y + m_YBBottom
-        
         'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
         ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-        With m_PixelSA1D
-            .cbElements = 1
-            .cDims = 1
-            .cLocks = 1
-            .lBound = 0
-            .cElements = m_dibStride
-            .pvData = m_DibPointer
-        End With
-        
+        ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
+        '  initialize it here.)
         PutMem4 VarPtrArray(m_PixelLine()), VarPtr(m_PixelSA1D)
         
         'If the *top* y-bound is within bounds, remove a line of pixels from the window.
+        yTop = (m_Y - m_YBTop) - 1
         If (yTop >= 0) Then
             
             m_PixelSA1D.pvData = m_DibPointer + yTop * m_dibStride
@@ -1084,28 +1077,30 @@ Friend Function MoveYDown() As Long
                 r = m_PixelLine(x + 2)
                 
                 If (m_HistogramMode = PDPIM_RGBA) Then
-                
+                    
                     m_Blue(b) = m_Blue(b) - 1
                     m_Green(g) = m_Green(g) - 1
                     m_Red(r) = m_Red(r) - 1
                     
-                    If m_AlphaSupport Then
-                        a = m_PixelLine(x + 3)
-                        m_Alpha(a) = m_Alpha(a) - 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_PixelLine(x + 3)
+                    '    m_Alpha(a) = m_Alpha(a) - 1
                     
+                    'End If
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
-                m_NumOfPixels = m_NumOfPixels - 1
-                
             Next x
-        
+            
+            'Infer the number of pixels removed from the histogram(s)
+            m_NumOfPixels = m_NumOfPixels - (xRight - xLeft + 1)
+                
         End If
         
         'If the *bottom* y-bound is within bounds, add a new line of pixels to the window.
+        yBottom = m_Y + m_YBBottom
         If (yBottom <= m_FinalY) Then
             
             m_PixelSA1D.pvData = m_DibPointer + yBottom * m_dibStride
@@ -1122,22 +1117,24 @@ Friend Function MoveYDown() As Long
                     m_Green(g) = m_Green(g) + 1
                     m_Red(r) = m_Red(r) + 1
                     
-                    If m_AlphaSupport Then
-                        a = m_PixelLine(x + 3)
-                        m_Alpha(a) = m_Alpha(a) + 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_PixelLine(x + 3)
+                    '    m_Alpha(a) = m_Alpha(a) + 1
+                    'End If
                     
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
-                m_NumOfPixels = m_NumOfPixels + 1
-                
             Next x
+            
+            'Infer the number of pixels added to the histogram(s)
+            m_NumOfPixels = m_NumOfPixels + (xRight - xLeft) + 1
         
         End If
         
+        'Regardless of pixels added or removed, we need to free our array reference before exiting
         PutMem4 VarPtrArray(m_PixelLine()), 0&
         
     'Non-rectangular kernels require custom handling
@@ -1175,10 +1172,10 @@ Friend Function MoveYDown() As Long
                         m_Green(g) = m_Green(g) - 1
                         m_Red(r) = m_Red(r) - 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) - 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) - 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -1205,10 +1202,10 @@ Friend Function MoveYDown() As Long
                         m_Green(g) = m_Green(g) + 1
                         m_Red(r) = m_Red(r) + 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) + 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) + 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -1253,15 +1250,8 @@ Friend Function MoveYDown_Byte() As Long
         
         'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
         ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-        With m_BytesSA1D
-            .cbElements = 1
-            .cDims = 1
-            .cLocks = 1
-            .lBound = 0
-            .cElements = m_ArrayWidth
-            .pvData = m_ByteArrayPtr
-        End With
-        
+        ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
+        '  initialize it here.)
         PutMem4 VarPtrArray(m_ByteLine()), VarPtr(m_BytesSA1D)
         
         'If the *top* y-bound is within bounds, remove a line of pixels from the window.
@@ -1358,24 +1348,14 @@ Friend Function MoveYUp() As Long
         xRight = m_X + m_XBRight
         If (xRight > m_FinalX) Then xRight = m_FinalX
         
-        'Next, figure out Y bounds.
-        yTop = m_Y - m_YBTop
-        yBottom = m_Y + m_YBBottom + 1
-        
         'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
         ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-        With m_PixelSA1D
-            .cbElements = 1
-            .cDims = 1
-            .cLocks = 1
-            .lBound = 0
-            .cElements = m_dibStride
-            .pvData = m_DibPointer
-        End With
-        
+        ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
+        '  initialize it here.)
         PutMem4 VarPtrArray(m_PixelLine()), VarPtr(m_PixelSA1D)
             
         'If the *bottom* y-bound is within bounds, remove a new line of pixels from the window.
+        yBottom = m_Y + m_YBBottom + 1
         If (yBottom <= m_FinalY) Then
             
             m_PixelSA1D.pvData = m_DibPointer + yBottom * m_dibStride
@@ -1392,23 +1372,25 @@ Friend Function MoveYUp() As Long
                     m_Green(g) = m_Green(g) - 1
                     m_Red(r) = m_Red(r) - 1
                     
-                    If m_AlphaSupport Then
-                        a = m_PixelLine(x + 3)
-                        m_Alpha(a) = m_Alpha(a) - 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_PixelLine(x + 3)
+                    '    m_Alpha(a) = m_Alpha(a) - 1
+                    'End If
                     
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
-                m_NumOfPixels = m_NumOfPixels - 1
-                
             Next x
+            
+            'Infer the number of pixels removed from the histogram(s)
+            m_NumOfPixels = m_NumOfPixels - (xRight - xLeft + 1)
         
         End If
         
         'If the *top* y-bound is within bounds, add a line of pixels to the window.
+        yTop = m_Y - m_YBTop
         If (yTop >= 0) Then
             
             m_PixelSA1D.pvData = m_DibPointer + yTop * m_dibStride
@@ -1425,20 +1407,20 @@ Friend Function MoveYUp() As Long
                     m_Green(g) = m_Green(g) + 1
                     m_Red(r) = m_Red(r) + 1
                     
-                    If m_AlphaSupport Then
-                        a = m_PixelLine(x + 3)
-                        m_Alpha(a) = m_Alpha(a) + 1
-                    End If
+                    'If m_AlphaSupport Then
+                    '    a = m_PixelLine(x + 3)
+                    '    m_Alpha(a) = m_Alpha(a) + 1
+                    'End If
                     
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
-                
-                m_NumOfPixels = m_NumOfPixels + 1
-                
             Next x
+            
+            'Infer the number of pixels added to the histogram(s)
+            m_NumOfPixels = m_NumOfPixels + (xRight - xLeft) + 1
         
         End If
         
@@ -1479,10 +1461,10 @@ Friend Function MoveYUp() As Long
                         m_Green(g) = m_Green(g) - 1
                         m_Red(r) = m_Red(r) - 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) - 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) - 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -1509,10 +1491,10 @@ Friend Function MoveYUp() As Long
                         m_Green(g) = m_Green(g) + 1
                         m_Red(r) = m_Red(r) + 1
                         
-                        If m_AlphaSupport Then
-                            a = m_Pixels(tmpX + 3, tmpY)
-                            m_Alpha(a) = m_Alpha(a) + 1
-                        End If
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) + 1
+                        'End If
                         
                     Else
                         a = GetLuminanceFromRGB(r, g, b)
@@ -1558,15 +1540,8 @@ Friend Function MoveYUp_Byte() As Long
         
         'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
         ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-        With m_BytesSA1D
-            .cbElements = 1
-            .cDims = 1
-            .cLocks = 1
-            .lBound = 0
-            .cElements = m_ArrayWidth
-            .pvData = m_ByteArrayPtr
-        End With
-        
+        ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
+        '  initialize it here.)
         PutMem4 VarPtrArray(m_ByteLine()), VarPtr(m_BytesSA1D)
             
         'If the *bottom* y-bound is within bounds, remove a new line of pixels from the window.
