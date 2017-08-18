@@ -1117,7 +1117,7 @@ End Function
 
 'When raising nested dialogs (e.g. a modal effect dialog raises a "new preset" window), we need to dynamically assign and release
 ' icons to each popup.  This ensures that PD stays visible in places like Alt+Tab, even on pre-Win10 systems.
-Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoading As Boolean = False)
+Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoading As Boolean = False)
 
     If windowIsLoading Then
         
@@ -1132,15 +1132,15 @@ Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoadi
         
         'We don't actually need to store the target window's hWnd (at present) but we grab it "just in case" future enhancements
         ' require it.
-        m_PopupHWnds(m_NumOfPopupHWnds) = targetHwnd
+        m_PopupHWnds(m_NumOfPopupHWnds) = targetHWnd
         
         'We can't guarantee that Aero is active on Win 7 and earlier, so we must jump through some extra hoops to make
         ' sure the popup window appears inside any raised Alt+Tab dialogs
-        If (Not OS.IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHwnd, True
+        If (Not OS.IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHWnd, True
         
         'While here, cache the window's current icons.  (VB may insert its own default icons for some window types.)
         ' When the dialog is closed, we will restore these icons to avoid leaking any of PD's custom icons.
-        IconsAndCursors.MirrorCurrentIconsToWindow targetHwnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+        IconsAndCursors.MirrorCurrentIconsToWindow targetHWnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         m_NumOfPopupHWnds = m_NumOfPopupHWnds + 1
         
     Else
@@ -1348,7 +1348,10 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     
-    Dim isPDControl As Boolean, isControlEnabled As Boolean
+    'While we're here, notify the tab manager of the newly loaded form
+    Tabs.NotifyFormLoading dstForm
+    
+    Dim isPDControl As Boolean, isTabAllowed As Boolean
     
     'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
@@ -1465,13 +1468,16 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 isPDControl = True
             End If
             
-            'Disabled controls may ignore theming requests, so we manually toggle their enablement prior
-            ' to theming them.  (TODO: figure out if this is still necessary after our many 7.0 enhancements.)
             If isPDControl Then
-                isControlEnabled = eControl.Enabled
-                If (Not isControlEnabled) Then eControl.Enabled = True
+                
+                'Request an update
                 eControl.UpdateAgainstCurrentTheme
-                If (Not isControlEnabled) Then eControl.Enabled = False
+                
+                'While we're here, notify the tab manager of this control.  Anything that identifies as a PD control is also
+                ' a candidate for receiving focus on tabkey presses.
+                isTabAllowed = Not ((TypeOf eControl Is pdContainer) Or (TypeOf eControl Is pdLabel))
+                If isTabAllowed Then Tabs.NotifyControlLoad eControl
+                
             End If
             
         End If
@@ -1492,12 +1498,9 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption and any menus
     ' on the form.
-    If g_Language.TranslationActive Then
-        If dstForm.Enabled Then g_Language.ApplyTranslations dstForm
-    End If
+    If g_Language.TranslationActive And dstForm.Enabled Then g_Language.ApplyTranslations dstForm
     
-    'After sending out a bazillion window messages, it can be helpful to pause while everything catches up
-    'If useDoEvents Then
+    'After sending out a bazillion window messages, it can be helpful to yield while everything catches up
     DoEvents
     
 End Sub
@@ -1563,10 +1566,13 @@ End Sub
 
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
-Public Sub ReleaseFormTheming(ByRef tForm As Object)
+Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     
     'This function may be triggered during compilation; avoid this
-    If MainModule.IsProgramRunning() Then g_Themer.RemoveWindowPainter tForm.hWnd
+    If MainModule.IsProgramRunning() Then
+        g_Themer.RemoveWindowPainter srcForm.hWnd
+        Tabs.NotifyFormUnloading srcForm
+    End If
     
 End Sub
 
@@ -1980,19 +1986,6 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     'If the user requested any padding, apply it now
     If (dibPadding > 0) Then PadDIB GetRuntimeUIDIB, dibPadding
     
-End Function
-
-'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function APIWidth(ByVal srcHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
-    APIWidth = tmpRect.x2 - tmpRect.x1
-End Function
-
-Public Function APIHeight(ByVal srcHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
-    APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
 'Program shutting down?  Call this function to release any interface-related resources stored by this module

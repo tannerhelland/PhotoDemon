@@ -277,7 +277,7 @@ Public Function IsArrayInitialized(arr) As Boolean
     GetMem4 VarPtr(arr) + 8, saAddress
     GetMem4 saAddress, saAddress
     IsArrayInitialized = (saAddress <> 0)
-    If IsArrayInitialized Then IsArrayInitialized = UBound(arr) >= LBound(arr)
+    If IsArrayInitialized Then IsArrayInitialized = (UBound(arr) >= LBound(arr))
 End Function
 
 Public Sub EnableHighResolutionTimers()
