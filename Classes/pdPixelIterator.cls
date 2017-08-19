@@ -690,7 +690,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     For x = xStart To xFinal Step m_PixelWidth
         
         'Only calculate pixels that lie inside the reference map
-        If (m_ReferenceMap(((x \ 4) - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0) Then
+        If (m_ReferenceMap(((x * 0.25) - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0) Then
             
             b = m_PixelLine(x)
             g = m_PixelLine(x + 1)

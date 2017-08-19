@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3004</langversion>
+<langversion>6.8.3005</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14984,6 +14984,18 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
+
+<!-- BEGIN text for Tabs.bas -->
+
+<!-- Tabs.bas contains 0 phrases. -->
+
+<!-- END text for Tabs.bas-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 

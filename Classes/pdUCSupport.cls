@@ -101,11 +101,16 @@ Private WithEvents m_MoveSize As pdWindowSize
 Attribute m_MoveSize.VB_VarHelpID = -1
 Private m_Caption As pdCaption
 
-'Persistent copy of the associated user control's hWnd and DC.  (If tooltips are activated, we also cache the parent hWnd.)
-Private m_hWnd As Long, m_hDC As Long
+'Persistent copy of the associated user control's hWnd; this is arguably the most important piece of information we store,
+' as all features are tied to it.
+Private m_hWnd As Long
 
 'Size of the underlying usercontrol.  These values are retrieved via API, because VB has DPI-awareness issues.
 Private m_Width As Long, m_Height As Long
+
+'If the attached control is capable of receiving focus (e.g. not labels, panels, etc), this will be set to TRUE.
+' This is populated by the initial RegisterControl call, and cannot be changed once set.
+Private m_ControlCanGetFocus As Boolean
 
 'If the caller has registered one (or more) custom messages, this will be set to TRUE.  When the parent control is
 ' unloaded, we need to de-register the hWnd with PD's central message marshaler.
@@ -196,10 +201,9 @@ Private m_Colors As pdThemeColors
 
 'The FIRST THING a user control must do is call this sub.  This prepares the support class, applies basic subclassing,
 ' and initializes a bunch of other support modules.
-Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0, Optional ByVal noBackBufferRequired As Boolean = False)
+Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFocus As Boolean, Optional ByVal noBackBufferRequired As Boolean = False)
     
     m_hWnd = hWnd_Control
-    m_hDC = hDC_Control
     
     If (m_hWnd <> 0) Then
         
@@ -210,6 +214,9 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Synchronize initial window visiblity
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
+        
+        'Mark whether the control can receive focus; if it can, we'll start tracking Tab keypresses
+        m_ControlCanGetFocus = controlCanReceiveFocus
         
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
         
@@ -527,7 +534,7 @@ End Function
 ' an excessive amount of back-and-forth requests, the caller needs to explicitly specify a custom backcolor if it wants one.
 ' NOTE: call this function without supplying a newColor value to reset to the default program-wide window backcolor.
 ' ANOTHER NOTE: this function won't raise a redraw request, by design.
-Friend Sub SetCustomBackColor(Optional ByVal newBackColor As Long = -1&)
+Friend Sub SetCustomBackcolor(Optional ByVal newBackColor As Long = -1&)
     m_BackColor = newBackColor
 End Sub
 
@@ -858,7 +865,7 @@ End Sub
 Private Sub m_WindowPainter_EraseBkgnd()
     
     Dim targetDC As Long
-    If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+    targetDC = m_WindowPainter.GetPaintStructDC
     
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
@@ -885,7 +892,7 @@ End Sub
 Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
     Dim targetDC As Long
-    If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+    targetDC = m_WindowPainter.GetPaintStructDC
     
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
@@ -1172,7 +1179,7 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
             If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True
             
             Dim targetDC As Long
-            If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+            targetDC = m_WindowPainter.GetPaintStructDC
             BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
         End If
@@ -1194,7 +1201,7 @@ End Sub
 ' the Paint event (and we don't want to subclass inside the designer).
 Friend Sub RequestIDERepaint(ByVal targetDC As Long)
 
-    If (Not MainModule.IsProgramRunning()) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
+    If (Not MainModule.IsProgramRunning()) And (Not m_NoBackBufferMode) Then
         If (Not m_BackBuffer Is Nothing) Then
             CacheWindowDimensions
             If m_CustomCaptionPaintingActive Then

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.74</langversion>
+<langversion>1.0.75</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -14981,6 +14981,18 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
+
+<!-- BEGIN text for Tabs.bas -->
+
+<!-- Tabs.bas contains 0 phrases. -->
+
+<!-- END text for Tabs.bas-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 

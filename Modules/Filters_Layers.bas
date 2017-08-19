@@ -212,7 +212,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     
     If (mRadius < 1) Then mRadius = 1
         
-    mPercent = mPercent / 100
+    mPercent = mPercent * 0.01
     If (mPercent < 0.01) Then mPercent = 0.01
         
     'These values will help us access locations in the array more quickly.

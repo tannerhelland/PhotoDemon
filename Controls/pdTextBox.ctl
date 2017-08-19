@@ -475,7 +475,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RegisterControl UserControl.hWnd, False
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -612,8 +612,8 @@ End Sub
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     If (Not m_EditBox Is Nothing) Then
-        Dim targetHwnd As Long
-        If m_EditBox.hWnd = 0 Then targetHwnd = UserControl.hWnd Else targetHwnd = m_EditBox.hWnd
-        ucSupport.AssignTooltip targetHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+        Dim targetHWnd As Long
+        If m_EditBox.hWnd = 0 Then targetHWnd = UserControl.hWnd Else targetHWnd = m_EditBox.hWnd
+        ucSupport.AssignTooltip targetHWnd, newTooltip, newTooltipTitle, newTooltipIcon
     End If
 End Sub

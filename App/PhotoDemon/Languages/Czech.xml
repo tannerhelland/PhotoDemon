@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2992</langversion>
+<langversion>6.8.2993</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14964,6 +14964,18 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
+
+<!-- BEGIN text for Tabs.bas -->
+
+<!-- Tabs.bas contains 0 phrases. -->
+
+<!-- END text for Tabs.bas-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 
