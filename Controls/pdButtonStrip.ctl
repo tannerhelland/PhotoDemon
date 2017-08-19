@@ -570,7 +570,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RegisterControl UserControl.hWnd, True
     
     'Request some additional input functionality (custom mouse and key events)
     ucSupport.RequestExtraFunctionality True, True

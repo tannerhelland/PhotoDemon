@@ -244,7 +244,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, , True
+    ucSupport.RegisterControl UserControl.hWnd, True, True
     
 '    'I'm still debating the merits of letting the user control the outgoing metadata format.  This can be powerful for
 '     formats like JPEG (where multiple metadata formats are available, and it's hard to know what a user "wants"),
@@ -321,7 +321,7 @@ Public Sub UpdateAgainstCurrentTheme()
         
         UpdateColorList
         
-        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
+        ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
         UserControl.BackColor = m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
         
         lblTitle.UpdateAgainstCurrentTheme

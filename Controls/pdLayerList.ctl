@@ -209,7 +209,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, , True
+    ucSupport.RegisterControl UserControl.hWnd, True, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

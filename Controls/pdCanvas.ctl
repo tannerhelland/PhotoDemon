@@ -47,8 +47,8 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Visible         =   0   'False
       Width           =   990
-      _extentx        =   1746
-      _extenty        =   1746
+      _ExtentX        =   1746
+      _ExtentY        =   1746
    End
    Begin PhotoDemon.pdStatusBar StatusBar 
       Height          =   345
@@ -56,8 +56,8 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   5
       Top             =   7350
       Width           =   13290
-      _extentx        =   23442
-      _extenty        =   609
+      _ExtentX        =   23442
+      _ExtentY        =   609
    End
    Begin PhotoDemon.pdCanvasView CanvasView 
       Height          =   4935
@@ -65,8 +65,8 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   4
       Top             =   600
       Width           =   4575
-      _extentx        =   8281
-      _extenty        =   8916
+      _ExtentX        =   8281
+      _ExtentY        =   8916
    End
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
@@ -75,11 +75,11 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   450
-      autotoggle      =   -1
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1
+      _ExtentX        =   450
+      _ExtentY        =   450
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
@@ -88,10 +88,10 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
-      _extentx        =   8070
-      _extenty        =   450
-      orientationhorizontal=   -1
-      visualstyle     =   1
+      _ExtentX        =   8070
+      _ExtentY        =   450
+      OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
@@ -100,9 +100,9 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   8705
-      visualstyle     =   1
+      _ExtentX        =   450
+      _ExtentY        =   8705
+      VisualStyle     =   1
    End
    Begin VB.Menu mnuImageTabsContext 
       Caption         =   "&Image"
@@ -1312,7 +1312,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, , True
+    ucSupport.RegisterControl UserControl.hWnd, True, True
     ucSupport.RequestExtraFunctionality True
     
     'Prep the color manager and load default colors
@@ -1929,7 +1929,7 @@ Public Sub UpdateAgainstCurrentTheme()
         Me.SetRedrawSuspension True
         
         UpdateColorList
-        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme

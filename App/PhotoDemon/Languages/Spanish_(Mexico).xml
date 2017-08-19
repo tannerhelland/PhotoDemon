@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.281</langversion>
+<langversion>6.7.282</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14971,6 +14971,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
+
+<!-- BEGIN text for Tabs.bas -->
+
+<!-- Tabs.bas contains 0 phrases. -->
+
+<!-- END text for Tabs.bas-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 
