@@ -1349,7 +1349,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     dstForm.MousePointer = 0
     
     'While we're here, notify the tab manager of the newly loaded form
-    NavKey.NotifyFormLoading dstForm
+    navKey.NotifyFormLoading dstForm
     
     Dim isPDControl As Boolean, isTabAllowed As Boolean
     
@@ -1476,7 +1476,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 'While we're here, notify the tab manager of this control.  Anything that identifies as a PD control is also
                 ' a candidate for receiving focus on tabkey presses.
                 isTabAllowed = Not ((TypeOf eControl Is pdContainer) Or (TypeOf eControl Is pdLabel))
-                If isTabAllowed Then NavKey.NotifyControlLoad eControl
+                If isTabAllowed Then navKey.NotifyControlLoad eControl
                 
             End If
             
@@ -1505,7 +1505,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
 End Sub
 
-'Used to enable font smoothing if currently disabled.
+'Used to enable font smoothing if currently disabled.  PD no longer makes use of this function (it was disabled
+' in the 7.0 release), but users on XP *will* get better results if ClearType is turned ON.
 Public Sub HandleClearType(ByVal startingProgram As Boolean)
     
     'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
@@ -1518,12 +1519,12 @@ Public Sub HandleClearType(ByVal startingProgram As Boolean)
         SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
         
         'If font smoothing is disabled, mark it
-        If pv = 0 Then m_ClearTypeForciblySet = 2
+        If (pv = 0) Then m_ClearTypeForciblySet = 2
         
         'If font smoothing is enabled but set to Standard instead of ClearType, mark it
-        If pv <> 0 Then
+        If (pv <> 0) Then
             SystemParametersInfo SPI_GETFONTSMOOTHINGTYPE, 0, pv, 0
-            If pv = SmoothingStandardType Then m_ClearTypeForciblySet = 1
+            If (pv = SmoothingStandardType) Then m_ClearTypeForciblySet = 1
         End If
         
         Select Case m_ClearTypeForciblySet
@@ -1571,7 +1572,7 @@ Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     'This function may be triggered during compilation; avoid this
     If MainModule.IsProgramRunning() Then
         g_Themer.RemoveWindowPainter srcForm.hWnd
-        NavKey.NotifyFormUnloading srcForm
+        navKey.NotifyFormUnloading srcForm
     End If
     
 End Sub
