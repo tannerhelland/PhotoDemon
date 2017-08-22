@@ -373,6 +373,16 @@ Private Sub ucSupport_GotFocusAPI()
     RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    If (vkCode = vbKeyAdd) Or (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Then
+        MoveValueDown
+    ElseIf (vkCode = vbKeySubtract) Or (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then
+        MoveValueUp
+    End If
+
+End Sub
+
 Private Sub ucSupport_LostFocusAPI()
     m_FocusCount = m_FocusCount - 1
     EvaluateFocusCount
@@ -607,6 +617,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_UP, VK_RIGHT, VK_DOWN, VK_LEFT, vbKeyAdd, vbKeySubtract
     
     'Prep painting classes
     Drawing2D.QuickCreatePainter m_Painter

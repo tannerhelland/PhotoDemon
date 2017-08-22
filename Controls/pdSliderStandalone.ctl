@@ -544,8 +544,8 @@ End Sub
 
 'Up and right arrows are used to increment the slider value, while left and down arrows decrement it
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Then Value = Value + GetIncrementAmount
-    If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then Value = Value - GetIncrementAmount
+    If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Or (vkCode = vbKeyAdd) Then Value = Value + GetIncrementAmount
+    If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Or (vkCode = vbKeySubtract) Then Value = Value - GetIncrementAmount
 End Sub
 
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -643,7 +643,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_UP, VK_RIGHT, VK_DOWN, VK_LEFT
+    ucSupport.SpecifyRequiredKeys VK_UP, VK_RIGHT, VK_DOWN, VK_LEFT, vbKeyAdd, vbKeySubtract
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
