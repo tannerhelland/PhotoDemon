@@ -112,6 +112,12 @@ Private m_Width As Long, m_Height As Long
 ' This is populated by the initial RegisterControl call, and cannot be changed once set.
 Private m_ControlCanGetFocus As Boolean
 
+'If the attached control is capable of receiving focus (see m_ControlCanGetFocus, above), we will activate a keyboard
+' detector automatically.  Note that some controls also want to receive keypress data (e.g. a spinner wants +/- keys)
+' so they can perform custom handling.  When such custom handling is active, we set an additional flag telling us to
+' relay key events directly to the child control, instead of handling them ourselves.
+Private m_ControlWantsKeyData As Boolean
+
 'If the caller has registered one (or more) custom messages, this will be set to TRUE.  When the parent control is
 ' unloaded, we need to de-register the hWnd with PD's central message marshaler.
 Private m_CustomInternalMessagesActive As Boolean
@@ -215,8 +221,12 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         'Synchronize initial window visiblity
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
         
-        'Mark whether the control can receive focus; if it can, we'll start tracking Tab keypresses
+        'Mark whether the control can receive focus; if it can, we'll immediately start tracking Tab keypresses
         m_ControlCanGetFocus = controlCanReceiveFocus
+        If m_ControlCanGetFocus Then
+            Set m_KeyEvents = New pdInputKeyboard
+            If MainModule.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+        End If
         
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
         
@@ -276,8 +286,22 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         End If
         
         If customKeyEvents Then
-            Set m_KeyEvents = New pdInputKeyboard
-            If MainModule.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+            
+            m_ControlWantsKeyData = True
+            
+            'The keyboard tracker should already exist, because we now create it by default for all interactive controls
+            ' (so we can grab dialog navigation events).
+            If (m_KeyEvents Is Nothing) Then
+                
+                #If DEBUGMODE = 1 Then
+                    If m_ControlWantsKeyData Then pdDebug.LogAction "WARNING!  Why is a control requesting keyboard data, when the control itself is marked as [can't receive focus]??"
+                #End If
+                
+                Set m_KeyEvents = New pdInputKeyboard
+                If MainModule.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+            
+            End If
+            
         End If
         
     Else
@@ -290,7 +314,7 @@ End Sub
 
 Friend Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
     
-    If (Not (m_KeyEvents Is Nothing)) And (m_hWnd <> 0) Then
+    If (Not m_KeyEvents Is Nothing) And (m_hWnd <> 0) Then
         
         If MainModule.IsProgramRunning() Then
             
@@ -743,11 +767,17 @@ Private Sub m_FocusDetector_LostFocusReliable()
 End Sub
 
 Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+    
+    'If the control has specifically requested key data, pass all keypresses down the chain
+    If m_ControlWantsKeyData Then RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+    
 End Sub
 
 Private Sub m_KeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    RaiseEvent KeyUpCustom(Shift, vkCode, markEventHandled)
+    
+    'If the control has specifically requested key data, pass all keypresses down the chain
+    If m_ControlWantsKeyData Then RaiseEvent KeyUpCustom(Shift, vkCode, markEventHandled)
+    
 End Sub
 
 Private Sub m_MouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
