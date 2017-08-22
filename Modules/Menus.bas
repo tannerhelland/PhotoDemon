@@ -418,10 +418,10 @@ Public Sub InitializeMenus()
     AddMenuItem "Natural", "effects_natural", 7, 5
         AddMenuItem "Atmosphere...", "effects_atmosphere", 7, 5, 0
         AddMenuItem "Fog...", "effects_fog", 7, 5, 1
-        AddMenuItem "Freeze", "effects_freeze", 7, 5, 2
-        AddMenuItem "Ignite", "effects_ignite", 7, 5, 3
-        AddMenuItem "Lava", "effects_lava", 7, 5, 4
-        AddMenuItem "Metal...", "effects_metal", 7, 5, 5
+        AddMenuItem "Ignite...", "effects_ignite", 7, 5, 2
+        AddMenuItem "Lava", "effects_lava", 7, 5, 3
+        AddMenuItem "Metal...", "effects_metal", 7, 5, 4
+        AddMenuItem "Snow...", "effects_snow", 7, 5, 5
         AddMenuItem "Underwater", "effects_underwater", 7, 5, 6
     AddMenuItem "Noise", "effects_noise", 7, 6
         AddMenuItem "Add film grain...", "effects_filmgrain", 7, 6, 0
@@ -459,7 +459,6 @@ Public Sub InitializeMenus()
         AddMenuItem "Spherize...", "effects_spherize", 7, 10, 5
     AddMenuItem "-", "-", 7, 11
     AddMenuItem "Custom filter...", "effects_customfilter", 7, 12
-    AddMenuItem "Test (developers only)", "effects_developertest", 7, 13
     
     
     'Tools Menu
@@ -481,6 +480,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Developers", "tools_developers", 8, 12
         AddMenuItem "Theme editor...", "tools_themeeditor", 8, 12, 0
         AddMenuItem "Build theme package...", "tools_themepackage", 8, 12, 1
+    AddMenuItem "Test", "effects_developertest", 8, 13
     
     
     'Window Menu
