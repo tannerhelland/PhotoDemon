@@ -37,7 +37,8 @@ Private Const INIT_NUM_OF_CONTROLS As Long = 16
 ' it's nice to store some extra bits of information
 Private Type PD_Control
     hWnd As Long
-    Name As String
+    ctlName As String
+    ctlType As PD_ControlType
 End Type
 
 Private m_Controls() As PD_Control
@@ -49,6 +50,22 @@ End Sub
 
 Friend Function GetParentHWnd() As Long
     GetParentHWnd = m_ParentHWnd
+End Function
+
+Friend Function DoesHWndExist(ByVal srcHwnd As Long) As Boolean
+    
+    DoesHWndExist = False
+    
+    If (m_numOfControls > 0) Then
+        Dim i As Long
+        For i = 0 To m_numOfControls
+            If (m_Controls(i).hWnd = srcHwnd) Then
+                DoesHWndExist = True
+                Exit For
+            End If
+        Next i
+    End If
+    
 End Function
 
 'Load individual controls using this function; we'll retrieve whatever we need from them
@@ -63,7 +80,8 @@ Friend Sub NotifyChildControl(ByRef childControl As Control)
     
     With m_Controls(m_numOfControls)
         .hWnd = childControl.hWnd
-        .Name = childControl.Name
+        .ctlName = childControl.Name
+        .ctlType = childControl.GetControlType()
     End With
     
     m_numOfControls = m_numOfControls + 1
@@ -76,7 +94,7 @@ Friend Sub PrintDebugList()
         
         Dim i As Long
         For i = 0 To m_numOfControls - 1
-            Debug.Print m_Controls(i).Name, m_Controls(i).hWnd
+            Debug.Print m_Controls(i).ctlName, m_Controls(i).hWnd, UserControls.GetNameOfControlType(m_Controls(i).ctlType)
         Next i
         
     End If

@@ -281,6 +281,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Resize
+End Function
+
 'If the owner does not want percentage available as an option, set this property to TRUE.
 Public Property Get DisablePercentOption() As Boolean
     DisablePercentOption = m_PercentDisabled

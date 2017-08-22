@@ -147,6 +147,10 @@ Private m_Colors As pdThemeColors
 'Padding distance (in px) between the user control edges and the edit box edges
 Private Const EDITBOX_BORDER_PADDING As Long = 2&
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Spinner
+End Function
+
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
@@ -380,6 +384,12 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     ElseIf (vkCode = vbKeySubtract) Or (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then
         MoveValueUp
     End If
+
+End Sub
+
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+
+    'Enter/Esc get reported directly to the system key handler
 
 End Sub
 

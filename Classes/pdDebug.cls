@@ -362,7 +362,7 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 actionString = actionString & vbCrLf & Space$(20) & "DC: " & dcCountString
                 
                 Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long, apiWindowUsage As String
-                apiWindowsNet = UserControl_Support.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
+                apiWindowsNet = UserControls.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
                 apiWindowUsage = Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
                 actionString = actionString & " | HWND: " & apiWindowUsage
                 
@@ -384,17 +384,17 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 
                 Dim hookUsageString As String
                 Dim hooksNet As Long, hooksCreated As Long, hooksDestroyed As Long
-                hooksNet = UserControl_Support.GetHookCount(hooksCreated, hooksDestroyed)
+                hooksNet = UserControls.GetHookCount(hooksCreated, hooksDestroyed)
                 hookUsageString = Format$(hooksNet, "###,##0") & " (" & Format$(hooksCreated, "###,##0") & ":" & Format$(hooksDestroyed, "###,##0") & ")"
                 actionString = actionString & vbCrLf & Space$(20) & "HOOK: " & hookUsageString
                 
                 Dim timerUsageString As String
                 Dim timersNet As Long, timersCreated As Long, timersDestroyed As Long
-                timersNet = UserControl_Support.GetTimerCount(timersCreated, timersDestroyed)
+                timersNet = UserControls.GetTimerCount(timersCreated, timersDestroyed)
                 timerUsageString = Format$(timersNet, "###,##0") & " (" & Format$(timersCreated, "###,##0") & ":" & Format$(timersDestroyed, "###,##0") & ")"
                 actionString = actionString & " | TIMER: " & timerUsageString
                 
-                actionString = actionString & " | UC: " & Format$(UserControl_Support.GetPDControlCount(), "###,##0")
+                actionString = actionString & " | UC: " & Format$(UserControls.GetPDControlCount(), "###,##0")
                 
             Else
                 actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."

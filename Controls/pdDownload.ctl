@@ -154,6 +154,10 @@ Private m_LastErrorNumber As Long, m_LastErrorDescription As String
 ' have been released for a given array.  If they have, it knows it can safely erase the master array.
 Private m_ResetActive As Boolean
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Download
+End Function
+
 Private Sub tmrReset_Timer()
 
     On Error GoTo arrayNotReadyForRelease

@@ -628,8 +628,8 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
 End Sub
 
 Public Function ConvertToGDIFontSize(ByVal srcFontSize As Single) As Long
-    If m_LogPixelsY = 0 Then UpdateLogFontValues
-    ConvertToGDIFontSize = -1 * Internal_MulDiv(srcFontSize, m_LogPixelsY, 72#)
+    If (m_LogPixelsY = 0#) Then UpdateLogFontValues
+    ConvertToGDIFontSize = -1# * Internal_MulDiv(srcFontSize, m_LogPixelsY, 72#)
 End Function
 
 'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic

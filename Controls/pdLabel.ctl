@@ -115,6 +115,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Label
+End Function
+
 'Alignment is handled just like VB's internal label alignment property.
 Public Property Get Alignment() As AlignmentConstants
     Alignment = ucSupport.GetCaptionAlignment()

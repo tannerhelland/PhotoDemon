@@ -59,6 +59,7 @@ Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shi
 
 Public Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 Public Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+Public Event KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, ByRef markEventHandled As Boolean)
 
 Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -213,7 +214,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
     
     If (m_hWnd <> 0) Then
         
-        UserControl_Support.IncrementPDControlCount
+        UserControls.IncrementPDControlCount
         
         'Subclass the user control immediately
         If MainModule.IsProgramRunning() Then VBHacks.StartSubclassing m_hWnd, Me
@@ -225,7 +226,10 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         m_ControlCanGetFocus = controlCanReceiveFocus
         If m_ControlCanGetFocus Then
             Set m_KeyEvents = New pdInputKeyboard
-            If MainModule.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+            If MainModule.IsProgramRunning() Then
+                m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+                m_KeyEvents.RequestMoreKeys vbKeyReturn, vbKeyTab, vbKeyEscape
+            End If
         End If
         
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
@@ -575,7 +579,7 @@ Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
         
         'If the message is internal to PD, register the hWnd+message pair with PD's central marshaler
         If msgIsInternalToPD Then
-            UserControl_Support.AddMessageRecipient m_hWnd, wMsg
+            UserControls.AddMessageRecipient m_hWnd, wMsg
             m_CustomInternalMessagesActive = True
         End If
         
@@ -770,6 +774,11 @@ Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCod
     
     'If the control has specifically requested key data, pass all keypresses down the chain
     If m_ControlWantsKeyData Then RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+    
+    'Handle navigation keys separately (unless the keypress was already eaten by the attached control)
+    If (Not markEventHandled) And m_ControlCanGetFocus Then
+        If (vkCode = pdnk_Enter) Or (vkCode = pdnk_Escape) Or (vkCode = pdnk_Tab) Then RaiseEvent KeyDownSystem(Shift, vkCode, markEventHandled)
+    End If
     
 End Sub
 
@@ -988,7 +997,7 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, O
             HideTooltip True
         Else
             'If a tooltip is already active, update it immediately
-            If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+            If UserControls.IsTooltipActive(m_hWnd) Then RaiseTooltip
         End If
         
     End If
@@ -1011,7 +1020,7 @@ Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByV
         GetWindowRect m_hWnd, curControlRect
         
         'Request a tooltip, while converting the (x, y) coordinates to ratios; this simplifies positioning
-        UserControl_Support.ShowUCTooltip m_hWnd, curControlRect, m_TTX, m_TTY, m_TTCaption, m_TTTitle
+        UserControls.ShowUCTooltip m_hWnd, curControlRect, m_TTX, m_TTY, m_TTCaption, m_TTTitle
         
     End If
     
@@ -1019,9 +1028,9 @@ End Sub
 
 Private Sub HideTooltip(Optional ByVal forciblyRelease As Boolean = True)
     If forciblyRelease Then
-        UserControl_Support.HideUCTooltip
+        UserControls.HideUCTooltip
     Else
-        If (Len(m_TTCaption) <> 0) Then UserControl_Support.HideUCTooltip
+        If (Len(m_TTCaption) <> 0) Then UserControls.HideUCTooltip
     End If
 End Sub
 
@@ -1339,7 +1348,7 @@ Private Sub Class_Terminate()
         m_hWnd = 0
     End If
     
-    UserControl_Support.DecrementPDControlCount
+    UserControls.DecrementPDControlCount
     
 End Sub
 
@@ -1352,7 +1361,7 @@ Private Sub StopAllSubclassing()
     
     'If our parent control registered to receive internal PD messages, de-register it with PD's central marshaler.
     If m_CustomInternalMessagesActive Then
-        UserControl_Support.RemoveMessageRecipient m_hWnd
+        UserControls.RemoveMessageRecipient m_hWnd
         m_CustomInternalMessagesActive = False
     End If
     

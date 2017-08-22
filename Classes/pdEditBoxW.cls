@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 ' 3) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not,
 '    any parent VB window will eat control keypresses, because it doesn't know about windows created via WAPI.)
 ' 4) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  Avoid 'em.
-' 5) This class relies on a number of functions in the UserControl_Support module, such as sharing GDI brushes and
+' 5) This class relies on a number of functions in the UserControls module, such as sharing GDI brushes and
 '    fonts between all pdEditBoxW instances (to reduce GDI object count).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -187,9 +187,9 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As winRect, ByVal bErase As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As winRect, ByVal bErase As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'Message routing
 Private m_CharCache As Long
@@ -457,7 +457,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         If MainModule.IsProgramRunning() Then
             m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
                 x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
-            If (m_EditBoxHwnd <> 0) Then UserControl_Support.NotifyAPIWindowCreated
+            If (m_EditBoxHwnd <> 0) Then UserControls.NotifyAPIWindowCreated
         End If
         
         If (m_EditBoxHwnd <> 0) Then
@@ -529,7 +529,7 @@ Public Function DestroyEditBox() As Boolean
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
         
         If DestroyEditBox Then
-            UserControl_Support.NotifyAPIWindowDestroyed
+            UserControls.NotifyAPIWindowDestroyed
         Else
             #If DEBUGMODE = 1 Then
                 If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  pdEditBoxW.DestroyEditBox failed.  System edit box #" & m_EditBoxHwnd & " *was not* destroyed!  DLL error was #" & Err.LastDllError
@@ -592,15 +592,15 @@ Private Sub CreateEditBoxGDIObjects(Optional ByVal forceSync As Boolean = False)
 
     Dim RepaintRequired As Boolean
     
-    If (m_EditBoxBrush <> UserControl_Support.GetSharedGDIBrush(Me.BackColor)) Or forceSync Then
-        If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
-        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(Me.BackColor)
+    If (m_EditBoxBrush <> UserControls.GetSharedGDIBrush(Me.BackColor)) Or forceSync Then
+        If m_EditBoxBrush <> 0 Then UserControls.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+        m_EditBoxBrush = UserControls.GetSharedGDIBrush(Me.BackColor)
         RepaintRequired = True
     End If
     
-    If (m_EditBoxFont <> UserControl_Support.GetSharedGDIFont(m_FontSize)) Or RepaintRequired Or forceSync Then
-        If m_EditBoxFont <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
-        m_EditBoxFont = UserControl_Support.GetSharedGDIFont(m_FontSize)
+    If (m_EditBoxFont <> UserControls.GetSharedGDIFont(m_FontSize)) Or RepaintRequired Or forceSync Then
+        If m_EditBoxFont <> 0 Then UserControls.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        m_EditBoxFont = UserControls.GetSharedGDIFont(m_FontSize)
         If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
     End If
 
@@ -612,12 +612,12 @@ Private Sub ReleaseEditBoxGDIObjects()
 
     'Release any GDI objects associated with the edit box
     If (m_EditBoxBrush <> 0) Then
-        UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+        UserControls.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = 0
     End If
     
     If (m_EditBoxFont <> 0) Then
-        UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        UserControls.ReleaseSharedGDIFontByHandle m_EditBoxFont
         m_EditBoxFont = 0
     End If
     

@@ -182,6 +182,10 @@ Private m_MouseOverLayerBox As Boolean
 ' changes upward, and our parent control maintains the actual scroll bar object.
 Private m_ScrollValue As Long, m_ScrollMax As Long
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_LayerListInner
+End Function
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
     Enabled = UserControl.Enabled

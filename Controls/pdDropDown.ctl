@@ -161,6 +161,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_DropDown
+End Function
+
 'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
 ' while BackColor controls the actual button fill (and can be anything you want).
 Public Property Get BackgroundColor() As OLE_COLOR
@@ -735,7 +739,7 @@ Private Sub RaiseListBox()
     
     'As an additional failsafe, we also notify the master UserControl tracker that a list box is active.  If any other PD control
     ' receives focus, that tracker will automatically unload our list box as well, "just in case"
-    UserControl_Support.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, True
+    UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, True
     
     m_PopUpVisible = True
     
@@ -754,7 +758,7 @@ Private Sub HideListBox()
     If m_PopUpVisible And (m_PopUpHwnd <> 0) Then
         
         'Notify the master UserControl tracker that our list box is now inactive.
-        UserControl_Support.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False
+        UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False
         
         m_PopUpVisible = False
         SetParent m_PopUpHwnd, Me.hWnd

@@ -663,3 +663,15 @@ Public Type PD_ProcessCall
     pcRaiseDialog As Boolean
     pcRecorded As Boolean
 End Type
+
+'As of 7.0, PD automatically handles navigation keypresses for a variety of controls.  Want more keys handled?
+' Add them to this enum.
+Public Enum PD_NavigationKey
+    pdnk_Enter = vbKeyReturn
+    pdnk_Escape = vbKeyEscape
+    pdnk_Tab = vbKeyTab
+End Enum
+
+#If False Then
+    Private Const pdnk_Enter = vbKeyReturn, pdnk_Escape = vbKeyEscape, pdnk_Tab = vbKeyTab
+#End If

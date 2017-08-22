@@ -172,6 +172,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_ImageStrip
+End Function
+
 Public Property Get Alignment() As AlignConstants
     Alignment = m_Alignment
 End Property
