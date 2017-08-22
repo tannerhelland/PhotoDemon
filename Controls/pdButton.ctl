@@ -110,6 +110,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Button
+End Function
+
 'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
 ' while BackColor controls the actual button fill (and can be anything you want).
 Public Property Get BackgroundColor() As OLE_COLOR

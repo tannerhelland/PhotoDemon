@@ -125,6 +125,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_FxPreviewCtl
+End Function
+
 'At design-time, use this property to determine whether the user is allowed to select colors directly from the
 ' preview window (helpful for tools like green screen, etc).
 Public Property Get AllowColorSelection() As Boolean

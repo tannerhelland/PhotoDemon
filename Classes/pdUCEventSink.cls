@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 'Last updated: 13/October/16
 'Last update: initial build
 '
-'The UserControl_Support module handles most generic user control management tasks, but because VB modules can't
+'The UserControls module handles most generic user control management tasks, but because VB modules can't
 ' use the WithEvents keyword, this dummy class is used to manually wrap events.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -53,6 +53,6 @@ End Sub
 
 Private Sub m_TTTimer_Timer()
     If (Not m_TTTimer Is Nothing) Then
-        If m_TTTimer.IsActive Then UserControl_Support.TTTimerFired
+        If m_TTTimer.IsActive Then UserControls.TTTimerFired
     End If
 End Sub

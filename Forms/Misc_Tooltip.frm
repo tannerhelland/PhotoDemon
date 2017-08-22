@@ -90,7 +90,7 @@ End Enum
 Private m_Colors As pdThemeColors
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    UserControl_Support.HideUCTooltip True
+    UserControls.HideUCTooltip True
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -137,7 +137,7 @@ Private Sub UpdateControlLayout()
     bHeight = ucSupport.GetBackBufferHeight
     
     'At present, this control doesn't make any of its own rendering decisions.  Instead, it works with the size
-    ' of the form as set by the UserControl_Support module.
+    ' of the form as set by the UserControls module.
             
 End Sub
 

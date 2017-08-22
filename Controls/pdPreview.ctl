@@ -119,6 +119,10 @@ Private m_Colors As pdThemeColors
 Private m_PreviewAreaWidth As Long, m_PreviewAreaHeight As Long
 Private Const BORDER_PADDING As Long = 2&
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Preview
+End Function
+
 'At design-time, use this property to determine whether the user is allowed to select colors directly from the
 ' preview window (helpful for tools like green screen, etc).
 Public Property Get AllowColorSelection() As Boolean

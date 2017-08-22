@@ -1,4 +1,4 @@
-Attribute VB_Name = "UserControl_Support"
+Attribute VB_Name = "UserControls"
 '***************************************************************************
 'Helper functions for various PhotoDemon UCs
 'Copyright 2014-2017 by Tanner Helland
@@ -15,6 +15,65 @@ Attribute VB_Name = "UserControl_Support"
 '***************************************************************************
 
 Option Explicit
+
+'There are many different PhotoDemon UI controls.  New ones must be added to this enum.
+Public Enum PD_ControlType
+    pdct_Accelerator = 0
+    pdct_BrushSelector = 1
+    pdct_Button = 2
+    pdct_ButtonStrip = 3
+    pdct_ButtonStripVertical = 4
+    pdct_ButtonToolbox = 5
+    pdct_Canvas = 6
+    pdct_CanvasView = 7
+    pdct_CheckBox = 8
+    pdct_ColorDepth = 9
+    pdct_ColorSelector = 10
+    pdct_ColorVariants = 11
+    pdct_ColorWheel = 12
+    pdct_CommandBar = 13
+    pdct_CommandBarMini = 14
+    pdct_Container = 15
+    pdct_Download = 16
+    pdct_DropDown = 17
+    pdct_DropDownFont = 18
+    pdct_FxPreviewCtl = 19
+    pdct_GradientSelector = 20
+    pdct_History = 21
+    pdct_Hyperlink = 22
+    pdct_ImageStrip = 23
+    pdct_Label = 24
+    pdct_LayerList = 25
+    pdct_LayerListInner = 26
+    pdct_ListBox = 27
+    pdct_ListBoxOD = 28
+    pdct_ListBoxView = 29
+    pdct_ListBoxViewOD = 30
+    pdct_MetadataExport = 31
+    pdct_Navigator = 32
+    pdct_NavigatorInner = 33
+    pdct_NewOld = 34
+    pdct_PenSelector = 35
+    pdct_Preview = 36
+    pdct_RadioButton = 37
+    pdct_Resize = 38
+    pdct_ScrollBar = 39
+    pdct_Slider = 40
+    pdct_SliderStandalone = 41
+    pdct_Spinner = 42
+    pdct_StatusBar = 43
+    pdct_Strip = 44
+    pdct_TextBox = 45
+    pdct_Title = 46
+End Enum
+
+#If False Then
+    Private Const pdct_Accelerator = 0, pdct_BrushSelector = 1, pdct_Button = 2, pdct_ButtonStrip = 3, pdct_ButtonStripVertical = 4, pdct_ButtonToolbox = 5, pdct_Canvas = 6, pdct_CanvasView = 7, pdct_CheckBox = 8, pdct_ColorDepth = 9
+    Private Const pdct_ColorSelector = 10, pdct_ColorVariants = 11, pdct_ColorWheel = 12, pdct_CommandBar = 13, pdct_CommandBarMini = 14, pdct_Container = 15, pdct_Download = 16, pdct_DropDown = 17, pdct_DropDownFont = 18, pdct_FxPreviewCtl = 19
+    Private Const pdct_GradientSelector = 20, pdct_History = 21, pdct_Hyperlink = 22, pdct_ImageStrip = 23, pdct_Label = 24, pdct_LayerList = 25, pdct_LayerListInner = 26, pdct_ListBox = 27, pdct_ListBoxOD = 28, pdct_ListBoxView = 29
+    Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_NewOld = 34, pdct_PenSelector = 35, pdct_Preview = 36, pdct_RadioButton = 37, pdct_Resize = 38, pdct_ScrollBar = 39
+    Private Const pdct_Slider = 40, pdct_SliderStandalone = 41, pdct_Spinner = 42, pdct_StatusBar = 43, pdct_Strip = 44, pdct_TextBox = 45, pdct_Title = 46
+#End If
 
 Public Type PD_LISTITEM
     textEn As String
@@ -94,12 +153,12 @@ Private m_PDControlCount As Long
 ' and the hWnd is cached so we can kill that window as necessary.
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 
@@ -378,7 +437,7 @@ End Sub
 'Rather than blast all windows with manually raised messages, PD maintains a list of hWnds and registered message requests.
 ' Add windows and/or messages via this function, and when the messages need to be raised (via PostPDMessage(), above),
 ' the function will automatically notify all registered recipients.
-Public Sub AddMessageRecipient(ByVal targetHwnd As Long, ByVal wMsg As Long)
+Public Sub AddMessageRecipient(ByVal targetHWnd As Long, ByVal wMsg As Long)
     
     'Prep the storage structure, as necessary.
     If (m_windowMsgCount = 0) Then
@@ -389,19 +448,19 @@ Public Sub AddMessageRecipient(ByVal targetHwnd As Long, ByVal wMsg As Long)
         ReDim m_wMsgList(0 To (UBound(m_wMsgList) * 2 + 1)) As Long
     End If
     
-    m_windowList(m_windowMsgCount) = targetHwnd
+    m_windowList(m_windowMsgCount) = targetHWnd
     m_wMsgList(m_windowMsgCount) = wMsg
     
     m_windowMsgCount = m_windowMsgCount + 1
     
 End Sub
 
-Public Sub RemoveMessageRecipient(ByVal targetHwnd As Long)
+Public Sub RemoveMessageRecipient(ByVal targetHWnd As Long)
     
     'Rather then condensing the list, we simply set all corresponding window entries to zero.
     Dim i As Long
     For i = 0 To m_windowMsgCount - 1
-        If m_windowList(i) = targetHwnd Then
+        If m_windowList(i) = targetHWnd Then
             m_windowList(i) = 0
             m_wMsgList(i) = 0
         End If
@@ -510,7 +569,7 @@ Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
 
     'If the cache is empty, ignore this request
     If (m_numOfSharedBrushes = 0) Then
-        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrush() received a release request, but no shared brushes exist."
+        Debug.Print "FYI: UserControls.ReleaseSharedGDIBrush() received a release request, but no shared brushes exist."
         Exit Sub
     
     'If the cache is non-empty, find the matching brush and decrement its count.
@@ -541,7 +600,7 @@ End Sub
 Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
 
     If (m_numOfSharedBrushes = 0) Then
-        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrushByHandle() received a release request, but no shared brushes exist."
+        Debug.Print "FYI: UserControls.ReleaseSharedGDIBrushByHandle() received a release request, but no shared brushes exist."
         Exit Sub
     Else
         Dim i As Long
@@ -612,7 +671,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
         If (Not Fonts.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
+                pdDebug.LogAction "WARNING!  UserControls.GetSharedGDIFont() failed to create a new UI font handle."
             #End If
         End If
         
@@ -627,7 +686,7 @@ End Function
 Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
 
     If (m_numOfSharedFonts = 0) Then
-        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIFontByHandle() received a release request, but no shared fonts exist."
+        Debug.Print "FYI: UserControls.ReleaseSharedGDIFontByHandle() received a release request, but no shared fonts exist."
         Exit Sub
     Else
         Dim i As Long
@@ -645,6 +704,109 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
     End If
 
 End Sub
+
+Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
+    
+    Select Case ctlType
+    
+        Case pdct_Accelerator
+            GetNameOfControlType = "pdAccelerator"
+        Case pdct_BrushSelector
+            GetNameOfControlType = "pdBrushSelector"
+        Case pdct_Button
+            GetNameOfControlType = "pdButton"
+        Case pdct_ButtonStrip
+            GetNameOfControlType = "pdButtonStrip"
+        Case pdct_ButtonStripVertical
+            GetNameOfControlType = "pdButtonStripVertical"
+        Case pdct_ButtonToolbox
+            GetNameOfControlType = "pdButtonToolbox"
+        Case pdct_Canvas
+            GetNameOfControlType = "pdCanvas"
+        Case pdct_CanvasView
+            GetNameOfControlType = "pdCanvasView"
+        Case pdct_CheckBox
+            GetNameOfControlType = "pdCheckBox"
+        Case pdct_ColorDepth
+            GetNameOfControlType = "pdColorDepth"
+        Case pdct_ColorSelector
+            GetNameOfControlType = "pdColorSelector"
+        Case pdct_ColorVariants
+            GetNameOfControlType = "pdColorVariants"
+        Case pdct_ColorWheel
+            GetNameOfControlType = "pdColorWheel"
+        Case pdct_CommandBar
+            GetNameOfControlType = "pdCommandBar"
+        Case pdct_CommandBarMini
+            GetNameOfControlType = "pdCommandBarMini"
+        Case pdct_Container
+            GetNameOfControlType = "pdContainer"
+        Case pdct_Download
+            GetNameOfControlType = "pdDownload"
+        Case pdct_DropDown
+            GetNameOfControlType = "pdDropDown"
+        Case pdct_DropDownFont
+            GetNameOfControlType = "pdDropDownFont"
+        Case pdct_FxPreviewCtl
+            GetNameOfControlType = "pdFxPreviewCtl"
+        Case pdct_GradientSelector
+            GetNameOfControlType = "pdGradientSelector"
+        Case pdct_History
+            GetNameOfControlType = "pdHistory"
+        Case pdct_Hyperlink
+            GetNameOfControlType = "pdHyperlink"
+        Case pdct_ImageStrip
+            GetNameOfControlType = "pdImageStrip"
+        Case pdct_Label
+            GetNameOfControlType = "pdLabel"
+        Case pdct_LayerList
+            GetNameOfControlType = "pdLayerList"
+        Case pdct_LayerListInner
+            GetNameOfControlType = "pdLayerListInner"
+        Case pdct_ListBox
+            GetNameOfControlType = "pdListBox"
+        Case pdct_ListBoxOD
+            GetNameOfControlType = "pdListBoxOD"
+        Case pdct_ListBoxView
+            GetNameOfControlType = "pdListBoxView"
+        Case pdct_ListBoxViewOD
+            GetNameOfControlType = "pdListBoxViewOD"
+        Case pdct_MetadataExport
+            GetNameOfControlType = "pdMetadataExport"
+        Case pdct_Navigator
+            GetNameOfControlType = "pdNavigator"
+        Case pdct_NavigatorInner
+            GetNameOfControlType = "pdNavigatorInner"
+        Case pdct_NewOld
+            GetNameOfControlType = "pdNewOld"
+        Case pdct_PenSelector
+            GetNameOfControlType = "pdPenSelector"
+        Case pdct_Preview
+            GetNameOfControlType = "pdPreview"
+        Case pdct_RadioButton
+            GetNameOfControlType = "pdRadioButton"
+        Case pdct_Resize
+            GetNameOfControlType = "pdResize"
+        Case pdct_ScrollBar
+            GetNameOfControlType = "pdScrollBar"
+        Case pdct_Slider
+            GetNameOfControlType = "pdSlider"
+        Case pdct_SliderStandalone
+            GetNameOfControlType = "pdSliderStandalone"
+        Case pdct_Spinner
+            GetNameOfControlType = "pdSpinner"
+        Case pdct_StatusBar
+            GetNameOfControlType = "pdStatusBar"
+        Case pdct_Strip
+            GetNameOfControlType = "pdStrip"
+        Case pdct_TextBox
+            GetNameOfControlType = "pdTextBox"
+        Case pdct_Title
+            GetNameOfControlType = "pdTitle"
+        
+    End Select
+    
+End Function
 
 'Return a unique, non-zero control ID.  Limited to the size of a VB Long (32-bytes), so don't call more than ~4 billion times.
 Public Function GetUniqueControlID() As Long
@@ -922,7 +1084,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
 UnexpectedTTTrouble:
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  UserControl_Support.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
+        pdDebug.LogAction "WARNING!  UserControls.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
     #End If
     
 End Sub

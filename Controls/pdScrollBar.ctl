@@ -211,6 +211,10 @@ Attribute m_UpButtonTimer.VB_VarHelpID = -1
 Private WithEvents m_DownButtonTimer As pdTimer
 Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_ScrollBar
+End Function
+
 'Container hWnd must be exposed for external tooltip handling
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd

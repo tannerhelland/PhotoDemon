@@ -114,6 +114,10 @@ Attribute m_ReleaseTimer.VB_VarHelpID = -1
 Private WithEvents m_FireTimer As pdTimer
 Attribute m_FireTimer.VB_VarHelpID = -1
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_Accelerator
+End Function
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514

@@ -101,6 +101,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_ListBoxOD
+End Function
+
 Public Property Get BorderlessMode() As Boolean
     BorderlessMode = lbView.BorderlessMode
 End Property

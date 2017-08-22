@@ -107,6 +107,10 @@ Private m_Colors As pdThemeColors
 'If we were able to load previous settings from file, this will be set to TRUE
 Private m_SavedHistoryExists As Boolean
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_History
+End Function
+
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),

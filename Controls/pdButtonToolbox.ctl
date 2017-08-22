@@ -124,6 +124,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_ButtonToolbox
+End Function
+
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
 ' (e.g. the pdCanvas status bar, where some instances of this control serve as actual buttons), the AutoToggle property can

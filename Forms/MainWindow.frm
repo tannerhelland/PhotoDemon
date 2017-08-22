@@ -2685,7 +2685,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Current PD custom control count: " & UserControl_Support.GetPDControlCount
+        pdDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
     #End If
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
@@ -2852,7 +2852,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Releasing tooltip manager..."
     #End If
     
-    UserControl_Support.FinalTooltipUnload
+    UserControls.FinalTooltipUnload
     
     'Destroy all custom-created icons and cursors
     #If DEBUGMODE = 1 Then

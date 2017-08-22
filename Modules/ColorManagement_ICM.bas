@@ -686,7 +686,7 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         'Various on-screen elements are color-managed, so they need to be redrawn first.
         
         'Modern PD controls subclass color management changes, so all we need to do is post the matching message internally
-        UserControl_Support.PostPDMessage WM_PD_COLOR_MANAGEMENT_CHANGE
+        UserControls.PostPDMessage WM_PD_COLOR_MANAGEMENT_CHANGE
         
         'If no images have been loaded, exit
         If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub

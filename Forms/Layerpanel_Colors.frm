@@ -82,7 +82,7 @@ Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal
     
     'Whenever this primary color changes, we broadcast the change throughout PD, so other color selector controls
     ' know to redraw themselves accordingly.
-    UserControl_Support.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
+    UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
     
     'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
     Select Case g_CurrentTool

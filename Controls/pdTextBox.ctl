@@ -117,6 +117,10 @@ Private m_Colors As pdThemeColors
 'Padding distance (in px) between the user control edges and the edit box edges
 Private Const EDITBOX_BORDER_PADDING As Long = 2&
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_TextBox
+End Function
+
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
@@ -291,7 +295,7 @@ Private Sub m_EditBox_TabPress(ByVal focusDirectionForward As Boolean)
     If (m_TabMode = TabDefaultBehavior) Then
         
         'Immediately forward focus to the next control
-        UserControl_Support.ForwardFocusToNewControl Me, focusDirectionForward
+        UserControls.ForwardFocusToNewControl Me, focusDirectionForward
         
     'Let our owner determine how to handle the keypress
     Else

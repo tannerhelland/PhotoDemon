@@ -67,7 +67,7 @@ Private m_ExtendedProperties() As PD_FONT_PROPERTY
 'Add a font to the cache.
 ' Returns: value >= 0, indicating the index of said font in the cache.  (This index can be subsequently used to retrieve the
 '           actual handle or object.)
-Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Long
+Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Long
     
     'First, see if this font already exists in the cache
     Dim fontIndex As Long
@@ -196,7 +196,7 @@ End Function
 '
 'IMPORTANT NOTE!  This function does *not* bound check the passed fontIndex, for performance reasons.  It is impossible to pass
 ' an invalid value if you use the results of AddFontToCache, above, so please do not modify that value after it's been returned.
-Public Function GetFontHandleByPosition(ByVal fontIndex As Long) As Long
+Friend Function GetFontHandleByPosition(ByVal fontIndex As Long) As Long
     GetFontHandleByPosition = m_FontCollection(fontIndex).GetFontHandle
 End Function
 
@@ -205,7 +205,7 @@ End Function
 '
 'IMPORTANT NOTE!  This function does *not* bound check the passed fontIndex, for performance reasons.  It is impossible to pass
 ' an invalid value if you use the results of AddFontToCache, above, so please do not modify that value after it's been returned.
-Public Function GetFontObjectByPosition(ByVal fontIndex As Long) As pdFont
+Friend Function GetFontObjectByPosition(ByVal fontIndex As Long) As pdFont
     Set GetFontObjectByPosition = m_FontCollection(fontIndex)
 End Function
 
@@ -224,7 +224,7 @@ Friend Function GetFontPropertiesByPosition(ByVal fontIndex As Long, ByRef dstPr
 End Function
 
 'Manually reset the cache
-Public Sub ResetCache()
+Friend Sub ResetCache()
     
     Dim i As Long
     For i = LBound(m_FontCollection) To UBound(m_FontCollection)
@@ -237,13 +237,13 @@ Public Sub ResetCache()
     
 End Sub
 
-Public Sub SetCacheMode(Optional ByVal newMode As FONT_CACHE_MODE = FCM_NameOnly)
+Friend Sub SetCacheMode(Optional ByVal newMode As FONT_CACHE_MODE = FCM_NameOnly)
     m_CurrentCacheMode = newMode
 End Sub
 
 'This function is completely optional, but if you have a known cache requirement, feel free to use of it.
 ' (Also, note that a large size doesn't hurt you unless you actually fill the cache completely.  Fonts are only created as-needed.)
-Public Sub SetCacheSize(Optional ByVal newSize As Long = DEFAULT_CACHE_SIZE)
+Friend Sub SetCacheSize(Optional ByVal newSize As Long = DEFAULT_CACHE_SIZE)
     
     m_CacheSize = newSize
     ReDim Preserve m_FontCollection(0 To newSize - 1) As pdFont
@@ -252,7 +252,7 @@ Public Sub SetCacheSize(Optional ByVal newSize As Long = DEFAULT_CACHE_SIZE)
 End Sub
 
 'Activate (or deactivate) extended font property caching.  Returns TRUE if successful; note that the function will fail on XP.
-Public Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boolean
+Friend Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boolean
     
     'Extended properties are only available on Vista+
     m_ExtendedPropertiesActive = newSetting

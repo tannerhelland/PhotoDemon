@@ -159,16 +159,16 @@ Public Sub Shutdown()
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
     'Failsafe check for bad user behavior
     If (m_targetHwnd <> 0) Then Debug.Print "WARNING!  Keyboard tracker requested, but we're already tracking an object!"
     m_HookedControlName = nameOfTarget
     
-    If (targetHwnd <> 0) Then
+    If (targetHWnd <> 0) Then
         
         'Make a module-level note of the hWnd; this value will dictate all hooking and subclassing behavior
-        m_targetHwnd = targetHwnd
+        m_targetHwnd = targetHWnd
         
         'Attach the subclasser to this hWnd
         m_SubclassActive = VBHacks.StartSubclassing(m_targetHwnd, Me)
@@ -319,7 +319,7 @@ Private Sub InstallKeyboardHook()
         'Install a new hook for this window
         If (Not tryingToUnhook) Then
             m_HookID = VBHacks.NotifyPDIKHookNeeded(Me)
-            UserControl_Support.PDControlReceivedFocus m_targetHwnd
+            UserControls.PDControlReceivedFocus m_targetHwnd
         End If
         
     End If
@@ -336,7 +336,7 @@ Private Sub RemoveKeyboardHook()
         m_HookID = 0
         
         'Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & ":" & m_targetHwnd
-        UserControl_Support.PDControlLostFocus m_targetHwnd
+        UserControls.PDControlLostFocus m_targetHwnd
         
     End If
     

@@ -110,6 +110,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_CheckBox
+End Function
+
 'IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
 '                 but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String

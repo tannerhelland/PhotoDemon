@@ -93,6 +93,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Function GetControlType() As PD_ControlType
+    GetControlType = pdct_BrushSelector
+End Function
+
 'At present, all this control does is store a brush XML string.  This string defines all brush settings.
 Public Property Get Brush() As String
     Brush = m_curBrush

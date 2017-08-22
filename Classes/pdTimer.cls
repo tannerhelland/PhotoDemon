@@ -80,7 +80,7 @@ Public Sub StartTimer()
             m_TimerID = SetTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc)
         End If
         
-        If (m_TimerID <> 0) Then UserControl_Support.NotifyTimerCreated
+        If (m_TimerID <> 0) Then UserControls.NotifyTimerCreated
         
     Else
         Debug.Print "WARNING!  Interval values passed to pdTimer must be > zero."
@@ -97,7 +97,7 @@ Public Sub StopTimer()
         m_TimerID = 0
         
         If timerReleaseCheck Then
-            UserControl_Support.NotifyTimerDestroyed
+            UserControls.NotifyTimerDestroyed
         Else
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."

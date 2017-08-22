@@ -128,7 +128,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
             If m_HasFocus Then
                 m_HasFocus = False
-                UserControl_Support.PDControlLostFocus m_hWnd
+                UserControls.PDControlLostFocus m_hWnd
                 RaiseEvent LostFocusReliable
             End If
 
@@ -137,7 +137,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
             If (Not m_HasFocus) Then
                 m_HasFocus = True
-                UserControl_Support.PDControlReceivedFocus m_hWnd
+                UserControls.PDControlReceivedFocus m_hWnd
                 RaiseEvent GotFocusReliable
             End If
 
@@ -151,7 +151,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
         If (Not m_HasFocus) And (wParam <> 0) Then
             m_HasFocus = True
-            UserControl_Support.PDControlReceivedFocus m_hWnd
+            UserControls.PDControlReceivedFocus m_hWnd
             RaiseEvent GotFocusReliable
         End If
 
@@ -169,7 +169,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             
         If m_HasFocus Then
             m_HasFocus = False
-            UserControl_Support.PDControlLostFocus m_hWnd
+            UserControls.PDControlLostFocus m_hWnd
             RaiseEvent LostFocusReliable
         End If
         
@@ -180,7 +180,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             
         If (Not m_HasFocus) Then
             m_HasFocus = True
-            UserControl_Support.PDControlReceivedFocus m_hWnd
+            UserControls.PDControlReceivedFocus m_hWnd
             RaiseEvent GotFocusReliable
         End If
         
