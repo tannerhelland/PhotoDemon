@@ -196,11 +196,17 @@ Public Sub ContinueLoadingProgram()
     ' If the user doesn't have font smoothing enabled, enable it now.  PD's interface looks much better with some form of antialiasing.
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "ClearType check"
-    #End If
+    '***
+    ' NOTE: in the 7.0 release, XP-specific font hackery was disabled.  XP system settings are now respected
+    ' during font rendering, even if they're set badly.
     
-    HandleClearType True
+    '#If DEBUGMODE = 1 Then
+    '    perfCheck.MarkEvent "ClearType check"
+    '#End If
+    '
+    'HandleClearType True
+    
+    '***
     
     
     '*************************************************************************************************************************************
