@@ -1348,8 +1348,11 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     
-    'While we're here, notify the tab manager of the newly loaded form
-    navKey.NotifyFormLoading dstForm
+    'While we're here, notify the tab manager of the newly loaded form, and make a note of the form's hWnd so we
+    ' can relay it to various child controls.
+    Dim hostFormhWnd As Long
+    hostFormhWnd = dstForm.hWnd
+    NavKey.NotifyFormLoading dstForm
     
     Dim isPDControl As Boolean, isTabAllowed As Boolean
     
@@ -1470,13 +1473,9 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             
             If isPDControl Then
                 
-                'Request an update
-                eControl.UpdateAgainstCurrentTheme
-                
-                'While we're here, notify the tab manager of this control.  Anything that identifies as a PD control is also
-                ' a candidate for receiving focus on tabkey presses.
-                isTabAllowed = Not ((TypeOf eControl Is pdContainer) Or (TypeOf eControl Is pdLabel))
-                If isTabAllowed Then navKey.NotifyControlLoad eControl
+                'Request a theme and language update.  (As of 7.0, this function also handles registration
+                ' with the central tab key manager.)
+                eControl.UpdateAgainstCurrentTheme hostFormhWnd
                 
             End If
             
@@ -1572,7 +1571,7 @@ Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     'This function may be triggered during compilation; avoid this
     If MainModule.IsProgramRunning() Then
         g_Themer.RemoveWindowPainter srcForm.hWnd
-        navKey.NotifyFormUnloading srcForm
+        NavKey.NotifyFormUnloading srcForm
     End If
     
 End Sub

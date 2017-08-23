@@ -128,6 +128,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ButtonToolbox
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
 ' (e.g. the pdCanvas status bar, where some instances of this control serve as actual buttons), the AutoToggle property can
@@ -706,9 +710,10 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

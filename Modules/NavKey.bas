@@ -28,6 +28,10 @@ Attribute VB_Name = "NavKey"
 
 Option Explicit
 
+'Remember: when passing messages to PD controls, do not call PostMessage directly, as it sends messages to the thread's
+' message queue.  Instead, asynchronously relay messages to target windows via SendNotifyMessage.
+Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
 Private Const INIT_NUM_OF_FORMS As Long = 8
 Private m_Forms() As pdObjectList
 Private m_NumOfForms As Long, m_LastForm As Long
@@ -100,8 +104,36 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
 End Sub
 
 'After calling NotifyFormLoading(), above, you can proceed to notify us of all child controls.
-Public Sub NotifyControlLoad(ByRef childObject As Control)
-    m_Forms(m_LastForm).NotifyChildControl childObject
+Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFormhWnd As Long = 0)
+    
+    'If no parent window handle is specified, assume the last form
+    If (hostFormhWnd = 0) Then
+        m_Forms(m_LastForm).NotifyChildControl childObject
+    
+    'The caller specified a parent window handle.  Find a matching object before continuing.
+    Else
+        
+        If (m_NumOfForms > 0) Then
+        
+            If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
+                m_Forms(m_LastForm).NotifyChildControl childObject
+            Else
+            
+                Dim i As Long
+                For i = 0 To m_NumOfForms - 1
+                    If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
+                        m_Forms(i).NotifyChildControl childObject
+                        Exit For
+                    End If
+                Next i
+            
+            End If
+            
+        End If
+    
+    'TODO: figure out if we need to manually handle form hWnds here
+    End If
+    
 End Sub
 
 'Most dialogs in PD are loaded in a strictly stack-like order.  Forms loaded this way are handled automatically
@@ -116,13 +148,72 @@ End Sub
 'When a PD control receives a "navigation" keypress (Enter, Esc, Tab), relay it to this function to activate
 ' automatic handling.  (For example, Enter will trigger a command bar "OK" press, if a command bar is present
 ' on the same dialog as the child object.)
-Public Sub NotifyNavKeypress(ByRef childObject As Control, ByVal navKey As PD_NavigationKey)
-
+Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode As PD_NavigationKey) As Boolean
+    
+    NotifyNavKeypress = False
+    
+    Dim formIndex As Long, childHWnd As Long
+    formIndex = -1
+    childHWnd = childObject.hWnd
+    
+    Dim targetHWnd As Long
+    
     'First, search the LastForm object for a hit.  (In most cases, that form will be the currently active form,
     ' and it shortcuts the search process to go there first.)
     If (m_LastForm <> 0) Then
+        If (Not m_Forms(m_LastForm) Is Nothing) Then
+            If m_Forms(m_LastForm).DoesHWndExist(childHWnd) Then formIndex = m_LastForm
+        End If
+    End If
     
+    'If we didn't find the hWnd in our last-activated form, try other forms until we get a hit
+    If (formIndex = -1) Then
+        
+        Dim i As Long
+        For i = 0 To m_NumOfForms - 1
+            If m_Forms(i).DoesHWndExist(childHWnd) Then
+                formIndex = i
+                Exit For
+            End If
+        Next i
+        
+    End If
+    
+    'It should be physically impossible to *not* have a form index by now, but better safe than sorry.
+    If (formIndex >= 0) Then
+        
+        'For Enter and Esc keypresses, we want to see if the target form contains a command bar.  If it does,
+        ' we'll directly invoke the appropriate keypress.
+        If ((navKeyCode = pdnk_Enter) Or (navKeyCode = pdnk_Escape)) And g_ModalDialogActive Then
+            
+            'See if this form contains a command bar
+            If m_Forms(formIndex).DoesTypeOfControlExist(pdct_CommandBar) Then
+                
+                'It does!  Grab the hWnd and forward the relevant window message to it
+                targetHWnd = m_Forms(formIndex).GetFirstHWndForType(pdct_CommandBar)
+                SendNotifyMessage targetHWnd, WM_PD_DIALOG_NAVKEY, navKeyCode, 0&
+                NotifyNavKeypress = True
+            
+            'If a command bar doesn't exist, look for a "mini command bar" instead
+            ElseIf m_Forms(formIndex).DoesTypeOfControlExist(pdct_CommandBarMini) Then
+                targetHWnd = m_Forms(formIndex).GetFirstHWndForType(pdct_CommandBarMini)
+                SendNotifyMessage targetHWnd, WM_PD_DIALOG_NAVKEY, navKeyCode, 0&
+                NotifyNavKeypress = True
+                
+            'No command bar exists on this form, which is fine - this could be a toolpanel, for example.
+            ' As such, there's nothing we need to do.
+            Else
+                
+            End If
+        
+        'A modal dialog is not active; ignore this keypress
+        Else
+            NotifyNavKeypress = True
+        End If
+        
+    Else
+        Debug.Print "WARNING!  NavKey.NotifyNavKeypress couldn't find this control in its collection.  How is this possible?"
     End If
 
-End Sub
+End Function
 

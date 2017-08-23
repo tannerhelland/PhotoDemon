@@ -210,7 +210,7 @@ Private Sub Form_Load()
     m_lastUsedSettings.LoadAllControlValues
         
     'Theme everything
-    UpdateAgainstCurrentTheme True
+    Me.UpdateAgainstCurrentTheme True
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)

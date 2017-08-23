@@ -284,6 +284,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Canvas
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     StatusBar.SetNetworkState newNetworkState
@@ -1923,7 +1927,7 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         
@@ -1932,9 +1936,13 @@ Public Sub UpdateAgainstCurrentTheme()
         'Suspend redraws until all theme updates are complete
         Me.SetRedrawSuspension True
         
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        
         UpdateColorList
         ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme
         ImageStrip.UpdateAgainstCurrentTheme

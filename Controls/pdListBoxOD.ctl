@@ -105,6 +105,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ListBoxOD
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 Public Property Get BorderlessMode() As Boolean
     BorderlessMode = lbView.BorderlessMode
 End Property
@@ -447,12 +451,11 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme(Optional ByVal forceLayoutUpdate As Boolean = False)
-    
-    If forceLayoutUpdate Then UpdateControlLayout
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbView.UpdateAgainstCurrentTheme
         vScroll.UpdateAgainstCurrentTheme

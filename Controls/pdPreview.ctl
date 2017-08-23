@@ -123,6 +123,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Preview
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'At design-time, use this property to determine whether the user is allowed to select colors directly from the
 ' preview window (helpful for tools like green screen, etc).
 Public Property Get AllowColorSelection() As Boolean
@@ -784,9 +788,10 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

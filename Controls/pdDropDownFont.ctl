@@ -226,6 +226,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_DropDownFont
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'Initialize the combo box.  This must be called once, by the caller, prior to display.  The combo box will internally cache its
 ' own copy of the font list, and if for some reason the list changes, this function can be called again to reset the font list.
 Public Sub InitializeFontList()
@@ -1177,10 +1181,11 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         listSupport.UpdateAgainstCurrentTheme
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbPrimary.UpdateAgainstCurrentTheme
     End If

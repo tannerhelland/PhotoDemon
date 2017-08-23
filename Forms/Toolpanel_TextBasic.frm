@@ -841,7 +841,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Update any UI images against the current theme
     Dim buttonSize As Long
-    buttonSize = FixDPI(24)
+    buttonSize = Interface.FixDPI(24)
     
     btnFontStyles(0).AssignImage "format_bold", , buttonSize, buttonSize
     btnFontStyles(1).AssignImage "format_italic", , buttonSize, buttonSize

@@ -214,8 +214,8 @@ Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, O
     m_DisableRedraws = True
     If (g_OpenImageCount > 0) Then
         
-        If Not (pdImages(g_CurrentImage) Is Nothing) Then
-            If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
+            If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             
                 'Synchronize the opacity scroll bar to the active layer
                 sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity
@@ -358,7 +358,7 @@ Private Sub Form_Load()
     lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
+    Me.UpdateAgainstCurrentTheme
     
     m_DisableRedraws = False
     

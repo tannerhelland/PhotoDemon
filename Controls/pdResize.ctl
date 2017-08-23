@@ -285,6 +285,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Resize
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'If the owner does not want percentage available as an option, set this property to TRUE.
 Public Property Get DisablePercentOption() As Boolean
     DisablePercentOption = m_PercentDisabled
@@ -1088,7 +1092,7 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         
@@ -1101,6 +1105,7 @@ Public Sub UpdateAgainstCurrentTheme()
         End If
         
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls

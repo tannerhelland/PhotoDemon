@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.279</langversion>
+<langversion>6.7.280</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1535,6 +1535,12 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for NavKey.bas -->
+
+<!-- NavKey.bas contains 0 phrases. -->
+
+<!-- END text for NavKey.bas-->
 
 <!-- BEGIN text for OS.bas -->
 
@@ -3324,6 +3330,12 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdMetadata.cls contains 123 phrases. 62 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -8163,6 +8175,22 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- BEGIN text for Dialog_OutlineSettings.frm (dialog_OutlineSettings) -->
 
 <phrase>
@@ -8842,6 +8870,37 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
+<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
+
+<phrase>
+<original>smoothness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>thickness</original>
+<translation>spessore</translation>
+</phrase>
+
+<phrase>
+<original>light angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light intensity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Wrapping image in plastic</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Artistic_PlasticWrap.frm-->
+
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
@@ -8891,16 +8950,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- BEGIN text for Effects_Artistic_Relief.frm (FormRelief) -->
 
 <phrase>
-<original>thickness</original>
-<translation>spessore</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Immagine in rilievo Carving</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -9719,21 +9773,16 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>smoothness</original>
-<translation></translation>
+<original>Creating artificial atmosphere</original>
+<translation>Creazione di atmosfera artificiale</translation>
 </phrase>
 
-<phrase>
-<original>Pouring smoldering metal onto image</original>
-<translation></translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Metal.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9776,6 +9825,33 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
+
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+
+<phrase>
+<original>Pouring smoldering metal onto image</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Nature_Metal.frm-->
+
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
 
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
@@ -14905,82 +14981,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Creazione di atmosfera artificiale</translation>
-</phrase>
-
-<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Nature_Atmosphere.frm-->
-
-<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
-
-<phrase>
-<original>wind</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Snow.frm-->
-
-<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
-
-<phrase>
-<original>light angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>light intensity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Wrapping image in plastic</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Artistic_PlasticWrap.frm-->
-
-<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
-
-<phrase>
-<original>No</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Dialog_MsgBox.frm-->
-
-<!-- BEGIN text for Tabs.bas -->
-
-<!-- Tabs.bas contains 0 phrases. -->
-
-<!-- END text for Tabs.bas-->
-
-<!-- BEGIN text for pdObjectList.cls -->
-
-<!-- pdObjectList.cls contains 0 phrases. -->
-
-<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 

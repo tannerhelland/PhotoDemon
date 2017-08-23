@@ -119,6 +119,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Label
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'Alignment is handled just like VB's internal label alignment property.
 Public Property Get Alignment() As AlignmentConstants
     Alignment = ucSupport.GetCaptionAlignment()
@@ -553,7 +557,7 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
