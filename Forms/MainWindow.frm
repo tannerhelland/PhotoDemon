@@ -4207,11 +4207,11 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Options
         Case 9
-            If (Not FormPreferences.Visible) Then ShowPDDialog vbModal, FormPreferences
+            ShowPDDialog vbModal, FormPreferences
             
         'Plugin manager
         Case 10
-            If (Not FormPluginManager.Visible) Then ShowPDDialog vbModal, FormPluginManager
+            ShowPDDialog vbModal, FormPluginManager
             
         '(separator)
         Case 11

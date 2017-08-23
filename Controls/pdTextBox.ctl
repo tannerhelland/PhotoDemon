@@ -169,12 +169,12 @@ Public Property Get hWnd() As Long
 End Property
 
 Public Property Get Multiline() As Boolean
-    If Not (m_EditBox Is Nothing) Then Multiline = m_EditBox.Multiline
+    If (Not m_EditBox Is Nothing) Then Multiline = m_EditBox.Multiline
 End Property
 
 Public Property Let Multiline(ByVal newState As Boolean)
-    If Not (m_EditBox Is Nothing) Then
-        If newState <> m_EditBox.Multiline Then
+    If (Not m_EditBox Is Nothing) Then
+        If (newState <> m_EditBox.Multiline) Then
             m_EditBox.Multiline = newState
             PropertyChanged "Multiline"
         End If
@@ -224,16 +224,16 @@ End Sub
 
 'External functions can call this to fully select the text box's contents
 Public Sub SelectAll()
-    If Not (m_EditBox Is Nothing) Then m_EditBox.SelectAll
+    If (Not m_EditBox Is Nothing) Then m_EditBox.SelectAll
 End Sub
 
 'SelStart is used by some PD functions to control caret positioning after automatic text updates (as used in the text up/down)
 Public Property Get SelStart() As Long
-    If Not (m_EditBox Is Nothing) Then SelStart = m_EditBox.SelStart
+    If (Not m_EditBox Is Nothing) Then SelStart = m_EditBox.SelStart
 End Property
 
 Public Property Let SelStart(ByVal newPosition As Long)
-    If Not (m_EditBox Is Nothing) Then m_EditBox.SelStart = newPosition
+    If (Not m_EditBox Is Nothing) Then m_EditBox.SelStart = newPosition
 End Property
 
 'Tab handling for API windows is complicated.  This control (like most other PD controls) supports variable tab key behavior.
@@ -253,11 +253,11 @@ Public Property Get Text() As String
 Attribute Text.VB_ProcData.VB_Invoke_Property = ";Text"
 Attribute Text.VB_UserMemId = 0
 Attribute Text.VB_MemberFlags = "200"
-    If Not (m_EditBox Is Nothing) Then Text = m_EditBox.Text
+    If (Not m_EditBox Is Nothing) Then Text = m_EditBox.Text
 End Property
 
 Public Property Let Text(ByRef newString As String)
-    If Not (m_EditBox Is Nothing) Then
+    If (Not m_EditBox Is Nothing) Then
         m_EditBox.Text = newString
         If MainModule.IsProgramRunning() Then
             RaiseEvent Change

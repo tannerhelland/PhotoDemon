@@ -258,10 +258,20 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 'Space and Enter keypresses toggle control state
-Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     If Me.Enabled And ((vkCode = VK_SPACE) Or (vkCode = VK_RETURN)) Then
+        markEventHandled = True
         Me.Value = True
     End If
+End Sub
+
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click

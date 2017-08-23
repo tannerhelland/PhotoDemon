@@ -891,7 +891,6 @@ Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
         
         If (catID = buttonIndex) Then
             picContainer(catID).Visible = True
-            If Me.Visible Then picContainer(catID).SetFocus
         Else
             picContainer(catID).Visible = False
         End If
@@ -1723,7 +1722,7 @@ Private Sub Form_Load()
     btsvCategory.ListIndex = activePanel
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
     
     userInitiatedColorSelection = True
     

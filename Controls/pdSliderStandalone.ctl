@@ -552,8 +552,26 @@ End Sub
 
 'Up and right arrows are used to increment the slider value, while left and down arrows decrement it
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Or (vkCode = vbKeyAdd) Then Value = Value + GetIncrementAmount
-    If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Or (vkCode = vbKeySubtract) Then Value = Value - GetIncrementAmount
+    
+    markEventHandled = False
+    
+    If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Or (vkCode = vbKeyAdd) Then
+        Value = Value + GetIncrementAmount
+        markEventHandled = True
+    ElseIf (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Or (vkCode = vbKeySubtract) Then
+        Value = Value - GetIncrementAmount
+        markEventHandled = True
+    End If
+    
+End Sub
+
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
 End Sub
 
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)

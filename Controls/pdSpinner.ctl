@@ -368,6 +368,16 @@ Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
 End Sub
 
+'On spinner controls, edit boxes support use of "Enter" and "Esc" keys to auto-trigger "OK" and "Cancel"
+' options on an associated command bar (if any)
+Private Sub m_EditBox_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
+    
+    If (vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
+        preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey)
+    End If
+    
+End Sub
+
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If PDMath.IsPointInRectF(x, y, m_ResetRect) Then
         Me.Reset

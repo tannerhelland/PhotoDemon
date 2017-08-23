@@ -773,7 +773,11 @@ End Sub
 Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
     'If the control has specifically requested key data, pass all keypresses down the chain
-    If m_ControlWantsKeyData Then RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+    If m_ControlWantsKeyData Then
+        RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+    Else
+        markEventHandled = False
+    End If
     
     'Handle navigation keys separately (unless the keypress was already eaten by the attached control)
     If (Not markEventHandled) And m_ControlCanGetFocus Then

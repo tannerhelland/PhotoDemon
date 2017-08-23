@@ -284,6 +284,15 @@ Private Sub ucSupport_GotFocusAPI()
     
 End Sub
 
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
+End Sub
+
 'When the control loses focus, erase any focus rects it may have active
 Private Sub ucSupport_LostFocusAPI()
     
@@ -299,7 +308,9 @@ End Sub
 
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
+    
+    markEventHandled = False
+    
     If (vkCode = VK_RIGHT) Then
         
         'See if a focus rect is already active
@@ -310,10 +321,12 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         End If
         
         'Bounds-check the new m_FocusRectActive index
-        If m_FocusRectActive >= m_numOfButtons Then m_FocusRectActive = 0
+        If (m_FocusRectActive >= m_numOfButtons) Then m_FocusRectActive = 0
         
         'Redraw the button strip
         RedrawBackBuffer
+        
+        markEventHandled = True
         
     ElseIf (vkCode = VK_LEFT) Then
     
@@ -325,15 +338,20 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         End If
         
         'Bounds-check the new m_FocusRectActive index
-        If m_FocusRectActive < 0 Then m_FocusRectActive = m_numOfButtons - 1
+        If (m_FocusRectActive < 0) Then m_FocusRectActive = m_numOfButtons - 1
         
         'Redraw the button strip
         RedrawBackBuffer
         
+        markEventHandled = True
+        
     'If a focus rect is active, and space is pressed, activate the button with focus
     ElseIf (vkCode = VK_SPACE) Then
 
-        If m_FocusRectActive >= 0 Then ListIndex = m_FocusRectActive
+        If (m_FocusRectActive >= 0) Then
+            ListIndex = m_FocusRectActive
+            markEventHandled = True
+        End If
         
     End If
 

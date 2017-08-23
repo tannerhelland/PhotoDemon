@@ -273,6 +273,15 @@ Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
+End Sub
+
 'When the control loses focus, erase any focus rects it may have active
 Private Sub ucSupport_LostFocusAPI()
     MakeLostFocusUIChanges
@@ -294,6 +303,8 @@ End Sub
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
+    markEventHandled = False
+    
     'When space is pressed, raise a click event.
     If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
         
@@ -301,13 +312,16 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             m_ButtonStateDown = True
             RedrawBackBuffer
             RaiseEvent Click
+            markEventHandled = True
         End If
         
     End If
-
+    
 End Sub
 
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    markEventHandled = False
     
     'When space is released, redraw the button to match
     If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
@@ -315,6 +329,7 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
         If Me.Enabled Then
             m_ButtonStateDown = False
             RedrawBackBuffer
+            markEventHandled = True
         End If
         
     End If
