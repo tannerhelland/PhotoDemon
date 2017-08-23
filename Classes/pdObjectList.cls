@@ -68,8 +68,40 @@ Friend Function DoesHWndExist(ByVal srcHwnd As Long) As Boolean
     
 End Function
 
+Friend Function DoesTypeOfControlExist(ByVal srcType As PD_ControlType) As Boolean
+    
+    DoesTypeOfControlExist = False
+    
+    If (m_numOfControls > 0) Then
+        Dim i As Long
+        For i = 0 To m_numOfControls
+            If (m_Controls(i).ctlType = srcType) Then
+                DoesTypeOfControlExist = True
+                Exit For
+            End If
+        Next i
+    End If
+    
+End Function
+
+Friend Function GetFirstHWndForType(ByVal srcType As PD_ControlType) As Long
+
+    GetFirstHWndForType = 0
+    
+    If (m_numOfControls > 0) Then
+        Dim i As Long
+        For i = 0 To m_numOfControls
+            If (m_Controls(i).ctlType = srcType) Then
+                GetFirstHWndForType = m_Controls(i).hWnd
+                Exit For
+            End If
+        Next i
+    End If
+
+End Function
+
 'Load individual controls using this function; we'll retrieve whatever we need from them
-Friend Sub NotifyChildControl(ByRef childControl As Control)
+Friend Sub NotifyChildControl(ByRef childControl As Object)
 
     'Make sure we have room for this hWnd
     If (m_numOfControls = 0) Then
@@ -80,7 +112,7 @@ Friend Sub NotifyChildControl(ByRef childControl As Control)
     
     With m_Controls(m_numOfControls)
         .hWnd = childControl.hWnd
-        .ctlName = childControl.Name
+        .ctlName = childControl.GetControlName()
         .ctlType = childControl.GetControlType()
     End With
     

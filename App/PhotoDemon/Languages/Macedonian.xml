@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.75</langversion>
+<langversion>1.0.76</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1544,6 +1544,12 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for NavKey.bas -->
+
+<!-- NavKey.bas contains 0 phrases. -->
+
+<!-- END text for NavKey.bas-->
 
 <!-- BEGIN text for OS.bas -->
 
@@ -3334,6 +3340,12 @@ Please enter a numeric value.</original>
 <!-- pdMetadata.cls contains 123 phrases. 62 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -8173,6 +8185,22 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- BEGIN text for Dialog_OutlineSettings.frm (dialog_OutlineSettings) -->
 
 <phrase>
@@ -8852,6 +8880,37 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
+<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
+
+<phrase>
+<original>smoothness</original>
+<translation>мазност</translation>
+</phrase>
+
+<phrase>
+<original>thickness</original>
+<translation>дебелина</translation>
+</phrase>
+
+<phrase>
+<original>light angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light intensity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Wrapping image in plastic</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Artistic_PlasticWrap.frm-->
+
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
@@ -8901,16 +8960,11 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Artistic_Relief.frm (FormRelief) -->
 
 <phrase>
-<original>thickness</original>
-<translation>дебелина</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Резба релјефна претстава</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -9729,21 +9783,16 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>smoothness</original>
-<translation>мазност</translation>
+<original>Creating artificial atmosphere</original>
+<translation>Создавање вештачки атмосфера</translation>
 </phrase>
 
-<phrase>
-<original>Pouring smoldering metal onto image</original>
-<translation>Фрлаат тлее метал врз сликата</translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Metal.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9786,6 +9835,33 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
+
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+
+<phrase>
+<original>Pouring smoldering metal onto image</original>
+<translation>Фрлаат тлее метал врз сликата</translation>
+</phrase>
+
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Nature_Metal.frm-->
+
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
 
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
@@ -14917,82 +14993,6 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>Создавање вештачки атмосфера</translation>
-</phrase>
-
-<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Nature_Atmosphere.frm-->
-
-<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
-
-<phrase>
-<original>wind</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Snow.frm-->
-
-<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
-
-<phrase>
-<original>light angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>light intensity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Wrapping image in plastic</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Artistic_PlasticWrap.frm-->
-
-<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
-
-<phrase>
-<original>No</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Dialog_MsgBox.frm-->
-
-<!-- BEGIN text for Tabs.bas -->
-
-<!-- Tabs.bas contains 0 phrases. -->
-
-<!-- END text for Tabs.bas-->
-
-<!-- BEGIN text for pdObjectList.cls -->
-
-<!-- pdObjectList.cls contains 0 phrases. -->
-
-<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 

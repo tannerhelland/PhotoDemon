@@ -38,6 +38,9 @@ Attribute VB_Exposed = False
 ' Some of the specific rendering techniques (e.g. hover behavior) have also been tweaked to work better against
 ' unpredictable strip contents.
 '
+'At present, this control is only used in the Theme selection dialog, to render the accent color options
+' available to the user.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -106,6 +109,10 @@ Private m_Colors As pdThemeColors
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Strip
+End Function
+
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
 End Function
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
@@ -650,12 +657,14 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList
+        
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
         'Update all text managed by the support class (e.g. tooltips)
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage

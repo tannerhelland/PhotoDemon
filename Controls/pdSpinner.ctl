@@ -151,6 +151,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Spinner
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
@@ -381,16 +385,23 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     If (vkCode = vbKeyAdd) Or (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Then
         MoveValueDown
+        markEventHandled = True
     ElseIf (vkCode = vbKeySubtract) Or (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then
         MoveValueUp
+        markEventHandled = True
+    Else
+        markEventHandled = False
     End If
 
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
-
-    'Enter/Esc get reported directly to the system key handler
-
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
@@ -1126,9 +1137,10 @@ Private Sub RelayUpdatedColorsToEditBox()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

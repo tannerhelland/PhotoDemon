@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3012</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1539,6 +1539,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for NavKey.bas -->
+
+<!-- NavKey.bas contains 0 phrases. -->
+
+<!-- END text for NavKey.bas-->
 
 <!-- BEGIN text for OS.bas -->
 
@@ -3328,6 +3334,12 @@ Please enter a numeric value.</original>
 <!-- pdMetadata.cls contains 123 phrases. 62 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
+
+<!-- BEGIN text for pdObjectList.cls -->
+
+<!-- pdObjectList.cls contains 0 phrases. -->
+
+<!-- END text for pdObjectList.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -8164,6 +8176,22 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
+<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Dialog_MsgBox.frm-->
+
 <!-- BEGIN text for Dialog_OutlineSettings.frm (dialog_OutlineSettings) -->
 
 <phrase>
@@ -8844,6 +8872,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
+<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
+
+<phrase>
+<original>smoothness</original>
+<translation>平滑</translation>
+</phrase>
+
+<phrase>
+<original>thickness</original>
+<translation>厚度</translation>
+</phrase>
+
+<phrase>
+<original>light angle</original>
+<translation>光角度</translation>
+</phrase>
+
+<phrase>
+<original>light intensity</original>
+<translation>光强度</translation>
+</phrase>
+
+<phrase>
+<original>Wrapping image in plastic</original>
+<translation>塑料包装图像</translation>
+</phrase>
+
+<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Artistic_PlasticWrap.frm-->
+
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
@@ -8893,16 +8952,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_Relief.frm (FormRelief) -->
 
 <phrase>
-<original>thickness</original>
-<translation>厚度</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>雕刻图像浮雕</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -9721,21 +9775,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
-<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
 
 <phrase>
-<original>smoothness</original>
-<translation>平滑</translation>
+<original>Creating artificial atmosphere</original>
+<translation>营造人工气氛</translation>
 </phrase>
 
-<phrase>
-<original>Pouring smoldering metal onto image</original>
-<translation>浇上冒烟的金属图像</translation>
-</phrase>
+<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Effects_Nature_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Metal.frm-->
+<!-- END text for Effects_Nature_Atmosphere.frm-->
 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
@@ -9778,6 +9827,33 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
+
+<!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
+
+<phrase>
+<original>Pouring smoldering metal onto image</original>
+<translation>浇上冒烟的金属图像</translation>
+</phrase>
+
+<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Nature_Metal.frm-->
+
+<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
+
+<phrase>
+<original>wind</original>
+<translation>风</translation>
+</phrase>
+
+<phrase>
+<original>Let it snow, let it snow, let it snow</original>
+<translation>让它下雪，下雪吧，下雪吧</translation>
+</phrase>
+
+<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Snow.frm-->
 
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
@@ -14904,82 +14980,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Effects_Nature_Atmosphere.frm (FormAtmosphere) -->
-
-<phrase>
-<original>Creating artificial atmosphere</original>
-<translation>营造人工气氛</translation>
-</phrase>
-
-<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Nature_Atmosphere.frm-->
-
-<!-- BEGIN text for Effects_Nature_Snow.frm (FormSnow) -->
-
-<phrase>
-<original>wind</original>
-<translation>风</translation>
-</phrase>
-
-<phrase>
-<original>Let it snow, let it snow, let it snow</original>
-<translation>让它下雪，下雪吧，下雪吧</translation>
-</phrase>
-
-<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Nature_Snow.frm-->
-
-<!-- BEGIN text for Effects_Artistic_PlasticWrap.frm (FormPlasticWrap) -->
-
-<phrase>
-<original>light angle</original>
-<translation>光角度</translation>
-</phrase>
-
-<phrase>
-<original>light intensity</original>
-<translation>光强度</translation>
-</phrase>
-
-<phrase>
-<original>Wrapping image in plastic</original>
-<translation>塑料包装图像</translation>
-</phrase>
-
-<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Artistic_PlasticWrap.frm-->
-
-<!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
-
-<phrase>
-<original>No</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Dialog_MsgBox.frm-->
-
-<!-- BEGIN text for Tabs.bas -->
-
-<!-- Tabs.bas contains 0 phrases. -->
-
-<!-- END text for Tabs.bas-->
-
-<!-- BEGIN text for pdObjectList.cls -->
-
-<!-- pdObjectList.cls contains 0 phrases. -->
-
-<!-- END text for pdObjectList.cls-->
 
 <!-- Automatic text extraction complete. -->
 

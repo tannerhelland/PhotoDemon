@@ -100,8 +100,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2017 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 16/February/16
-'Last update: implement theming and migrate to ucSupport so we can finally handle high-DPI displays correctly
+'Last updated: 23/August/17
+'Last update: add automatic handling for Enter/Esc keypresses from child controls
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -247,6 +247,10 @@ Private m_Colors As pdThemeColors
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_CommandBar
+End Function
+
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
 End Function
 
 'The command bar is set to auto-unload its parent object when OK or CANCEL is pressed.  In some instances (e.g. forms prefaced with
@@ -512,6 +516,10 @@ End Sub
 
 'CANCEL button
 Private Sub cmdCancel_Click()
+    HandleCancelButton
+End Sub
+
+Private Sub HandleCancelButton()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -532,7 +540,11 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    
+    HandleOKButton
+End Sub
+
+Private Sub HandleOKButton()
+
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.
     Dim validateCheck As Boolean
@@ -678,6 +690,29 @@ Private Sub ResetSettings()
     
 End Sub
 
+'This control subclasses some internal PD messages, which is how we support "OK" and "Cancel" shortcuts via
+' "Enter" and "Esc" keypresses
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+
+    If (wMsg = WM_PD_DIALOG_NAVKEY) Then
+    
+        'This is a relevant navigation key!
+        
+        'Interpret Enter as OK...
+        If (wParam = pdnk_Enter) Then
+            HandleOKButton
+            bHandled = True
+            
+        '...and Esc as CANCEL.
+        ElseIf (wParam = pdnk_Escape) Then
+            HandleCancelButton
+            bHandled = True
+        End If
+        
+    End If
+
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
@@ -715,6 +750,9 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
+    
+    'This control can automatically handle "Enter" and "Esc" keypresses coming from its child form.
+    ucSupport.SubclassCustomMessage WM_PD_DIALOG_NAVKEY, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -1228,7 +1266,7 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
     
@@ -1251,6 +1289,7 @@ Public Sub UpdateAgainstCurrentTheme()
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
         ' colors are loaded FIRST
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim cbBackgroundColor As Long

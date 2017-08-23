@@ -158,6 +158,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Download
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 Private Sub tmrReset_Timer()
 
     On Error GoTo arrayNotReadyForRelease

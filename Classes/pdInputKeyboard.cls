@@ -375,13 +375,19 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
             
                 'This is a key we are supposed to be tracking.  Check its state by using isVirtualKeyDown.
                 If IsVirtualKeyDown(wParam) Then
-                
-                    msgEaten = True
-                
-                    'This key is being pressed.  Raise the associated event.
-                    RaiseEvent KeyDownCustom(retShiftConstants, wParam, msgEaten)
-                    Exit For
-                
+                    
+                    'At present, we ignore messages raised by PeekMessage()
+                    Const HC_NOREMOVE As Long = 3
+                    If (nCode <> HC_NOREMOVE) Then
+                    
+                        msgEaten = True
+                    
+                        'This key is being pressed.  Raise the associated event.
+                        RaiseEvent KeyDownCustom(retShiftConstants, wParam, msgEaten)
+                        Exit For
+                        
+                    End If
+                    
                 'The key has just been released.
                 Else
                 

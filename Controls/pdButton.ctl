@@ -114,6 +114,10 @@ Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Button
 End Function
 
+Public Function GetControlName() As String
+    GetControlName = UserControl.Extender.Name
+End Function
+
 'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
 ' while BackColor controls the actual button fill (and can be anything you want).
 Public Property Get BackgroundColor() As OLE_COLOR
@@ -648,9 +652,10 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
