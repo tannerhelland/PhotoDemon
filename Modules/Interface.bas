@@ -1495,8 +1495,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
 '        firstCheck = 1
 '    End If
     
-    'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption and any menus
-    ' on the form.
+    'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption;
+    ' everything else is handled internally.
     If g_Language.TranslationActive And dstForm.Enabled Then g_Language.ApplyTranslations dstForm
     
     'After sending out a bazillion window messages, it can be helpful to yield while everything catches up
@@ -1582,23 +1582,23 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     Dim captionBase As String
     Dim appendFileFormat As Boolean: appendFileFormat = False
     
-    If (Not (srcImage Is Nothing)) Then
+    If (Not srcImage Is Nothing) Then
     
         'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
         ' but better safe than sorry!
-        If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
+        If (Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0) Then
         
             'This image has a filename!  Next, check the user's preference for long or short window captions
             
             'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
-            If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
+            If (g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0) Then
                 captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                 appendFileFormat = True
             Else
             
                 'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
                 ' and use just the filename.
-                If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+                If (Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
                     captionBase = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
                 Else
                     captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
@@ -1686,7 +1686,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     Dim tmpDupeCheckString As String
     tmpDupeCheckString = mString
     
-    If UBound(ExtraText) >= LBound(ExtraText) Then
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then
         
         For i = LBound(ExtraText) To UBound(ExtraText)
             If Strings.StringsNotEqual(CStr(ExtraText(i)), "DONOTLOG", True) Then

@@ -230,6 +230,15 @@ Public Sub DisplayColorSelection()
     
 End Sub
 
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
+End Sub
+
 'Primary color area raises a dialog; secondary color area copies the color from the main screen
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If IsMouseInPrimaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection

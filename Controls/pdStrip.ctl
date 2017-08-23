@@ -213,7 +213,9 @@ End Sub
 
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
+    
+    markEventHandled = False
+    
     If (vkCode = VK_RIGHT) Then
         
         'See if a focus rect is already active
@@ -228,6 +230,8 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         
         'Redraw the button strip
         RedrawBackBuffer
+        
+        markEventHandled = True
         
     ElseIf (vkCode = VK_LEFT) Then
     
@@ -244,13 +248,27 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         'Redraw the button strip
         RedrawBackBuffer
         
+        markEventHandled = True
+        
     'If a focus rect is active, and space is pressed, activate the button with focus
     ElseIf (vkCode = VK_SPACE) Then
 
-        If (m_FocusRectActive >= 0) Then ListIndex = m_FocusRectActive
+        If (m_FocusRectActive >= 0) Then
+            ListIndex = m_FocusRectActive
+            markEventHandled = True
+        End If
         
     End If
 
+End Sub
+
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click

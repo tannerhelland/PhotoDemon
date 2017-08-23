@@ -679,10 +679,17 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     Dim r As Long, g As Long, b As Long, a As Long
     
-    'To improve performance, we're going to wrap 1D arrays around both the current image scanline, and the reference map.
-    ' This doesn't provide a huge performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-    ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
-    '  initialize it here.)
+    'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
+    ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
+    With m_PixelSA1D
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = m_dibStride
+        .pvData = m_DibPointer
+    End With
+    
     PutMem4 VarPtrArray(m_PixelLine()), VarPtr(m_PixelSA1D)
     
     For y = m_InitY To m_InitY + m_YBBottom

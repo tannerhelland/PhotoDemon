@@ -597,7 +597,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'Return only matters for listboxes embedded inside combo boxes.
         Case VK_RETURN, VK_SPACE
-            If m_ListMode = PDLM_LB_INSIDE_CB Then
+            If (m_ListMode = PDLM_LB_INSIDE_CB) Then
                 RaiseEvent Click
                 Exit Sub
             Else
@@ -616,13 +616,13 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     If m_NumOfItems = 0 Then
         newListIndex = -1
     Else
-        If newListIndex < 0 Then newListIndex = 0
-        If newListIndex > m_NumOfItems - 1 Then newListIndex = m_NumOfItems - 1
+        If (newListIndex < 0) Then newListIndex = 0
+        If (newListIndex > m_NumOfItems - 1) Then newListIndex = m_NumOfItems - 1
     End If
     
     'Listboxes dynamically raised by combo boxes should not raise Click() events on keypresses.  This will erroneously cause
     ' the list box to close.  Instead, they simply reassign their .ListIndex and redraw themselves immediately.
-    If m_ListMode = PDLM_LB_INSIDE_CB Then
+    If (m_ListMode = PDLM_LB_INSIDE_CB) Then
         
         m_ListIndex = newListIndex
         

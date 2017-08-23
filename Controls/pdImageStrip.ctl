@@ -337,6 +337,15 @@ Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
+End Sub
+
 Private Sub ucSupport_LostFocusAPI()
     RedrawBackBuffer
     RaiseEvent LostFocusAPI

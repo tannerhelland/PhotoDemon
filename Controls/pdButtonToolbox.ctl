@@ -444,10 +444,14 @@ End Sub
 
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-        
+    
+    markEventHandled = False
+    
     'If space is pressed, and our value is not true, raise a click event.
     If (vkCode = VK_SPACE) Then
-
+        
+        markEventHandled = True
+        
         If ucSupport.DoIHaveFocus And Me.Enabled Then
         
             'Sticky toggle mode causes the button to toggle between true/false
@@ -479,6 +483,15 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         
     End If
 
+End Sub
+
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+    
+    'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
+    ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
+    ' accepted the keypress, meaning we should forward the event down the line.)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    
 End Sub
 
 'If space was pressed, and AutoToggle is active, remove the button state and redraw it

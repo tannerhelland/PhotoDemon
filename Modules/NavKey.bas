@@ -74,10 +74,8 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
             If (Not m_Forms(i) Is Nothing) Then
                 If (m_Forms(i).GetParentHWnd = targetHWnd) Then
                     
-                    
-                    'DEBUG ONLY!
-                    m_Forms(i).PrintDebugList
-                    
+                    'Want to know what this collection tracked?  Use the helpful "PrintDebugList()" function.
+                    'm_Forms(i).PrintDebugList
                     
                     Set m_Forms(i) = Nothing
                     indexOfForm = i
@@ -152,9 +150,9 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
     
     NotifyNavKeypress = False
     
-    Dim formIndex As Long, childHWnd As Long
+    Dim formIndex As Long, childHwnd As Long
     formIndex = -1
-    childHWnd = childObject.hWnd
+    childHwnd = childObject.hWnd
     
     Dim targetHWnd As Long
     
@@ -162,7 +160,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
     ' and it shortcuts the search process to go there first.)
     If (m_LastForm <> 0) Then
         If (Not m_Forms(m_LastForm) Is Nothing) Then
-            If m_Forms(m_LastForm).DoesHWndExist(childHWnd) Then formIndex = m_LastForm
+            If m_Forms(m_LastForm).DoesHWndExist(childHwnd) Then formIndex = m_LastForm
         End If
     End If
     
@@ -171,7 +169,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         
         Dim i As Long
         For i = 0 To m_NumOfForms - 1
-            If m_Forms(i).DoesHWndExist(childHWnd) Then
+            If m_Forms(i).DoesHWndExist(childHwnd) Then
                 formIndex = i
                 Exit For
             End If
