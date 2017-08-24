@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.283</langversion>
+<langversion>6.7.284</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13258,7 +13258,12 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<phrase>
+<original>Eraser</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14984,12 +14989,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Eraser.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2520</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
-<!-- These 2520 phrases contain approximately 12178 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12179 total words. -->
 
 </pdData>

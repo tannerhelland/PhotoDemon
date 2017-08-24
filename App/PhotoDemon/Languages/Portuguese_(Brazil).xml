@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.2994</langversion>
+<langversion>6.8.2995</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -13269,7 +13269,12 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>Pincel (escova de ponta macia)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<phrase>
+<original>Eraser</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14997,12 +15002,18 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Eraser.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2520</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
-<!-- These 2520 phrases contain approximately 12178 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12179 total words. -->
 
 </pdData>

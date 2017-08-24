@@ -550,7 +550,7 @@ End Function
 Public Sub InitializeToolsDependentOnImage()
     
     If (g_OpenImageCount > 0) Then
-        If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Then
+        If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
             
             'A couple things require us to reset the scratch layer...
             ' 1) If it hasn't been initialized at all
