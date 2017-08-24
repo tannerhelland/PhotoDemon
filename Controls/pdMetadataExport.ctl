@@ -252,7 +252,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True, True
+    ucSupport.RegisterControl UserControl.hWnd, False, True
     
 '    'I'm still debating the merits of letting the user control the outgoing metadata format.  This can be powerful for
 '     formats like JPEG (where multiple metadata formats are available, and it's hard to know what a user "wants"),
@@ -314,40 +314,6 @@ Private Sub UpdateControlLayout()
         lblInfo(i).SetWidth (bWidth - (lblInfo(i).GetLeft * 2))
     Next i
                 
-End Sub
-
-'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
-' step must also be called if/when PD's visual theme settings change.
-Private Sub UpdateColorList()
-    m_Colors.LoadThemeColor PDME_Background, "Background", IDE_WHITE
-End Sub
-
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
-    
-    If ucSupport.ThemeUpdateRequired Then
-        
-        UpdateColorList
-        
-        ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
-        UserControl.BackColor = m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
-        
-        lblTitle.UpdateAgainstCurrentTheme
-        chkMetadata.UpdateAgainstCurrentTheme
-        chkAnonymize.UpdateAgainstCurrentTheme
-        hplReviewMetadata.UpdateAgainstCurrentTheme
-        chkThumbnail.UpdateAgainstCurrentTheme
-        
-        Dim i As Long
-        For i = lblInfo.lBound To lblInfo.UBound
-            lblInfo(i).UpdateAgainstCurrentTheme
-        Next i
-        
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
-        
-    End If
-    
 End Sub
 
 'Retrieve the current metadata settings in XML format
@@ -466,6 +432,39 @@ Private Function IsThumbnailSupported() As Boolean
     End Select
     
 End Function
+
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDME_Background, "Background", IDE_WHITE
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+    
+    If ucSupport.ThemeUpdateRequired Then
+        
+        UpdateColorList
+        
+        ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
+        UserControl.BackColor = m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
+        
+        lblTitle.UpdateAgainstCurrentTheme
+        chkMetadata.UpdateAgainstCurrentTheme
+        chkAnonymize.UpdateAgainstCurrentTheme
+        hplReviewMetadata.UpdateAgainstCurrentTheme
+        chkThumbnail.UpdateAgainstCurrentTheme
+        
+        Dim i As Long
+        For i = lblInfo.lBound To lblInfo.UBound
+            lblInfo(i).UpdateAgainstCurrentTheme
+        Next i
+        
+        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+    End If
+    
+End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)

@@ -217,7 +217,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True, True
+    ucSupport.RegisterControl UserControl.hWnd, False, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -306,7 +306,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbView.UpdateAgainstCurrentTheme
         vScroll.UpdateAgainstCurrentTheme

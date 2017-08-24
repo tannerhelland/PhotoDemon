@@ -243,7 +243,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True
+    ucSupport.RegisterControl UserControl.hWnd, False
     
     'This control can automatically handle "Enter" and "Esc" keypresses coming from its child form.
     ucSupport.SubclassCustomMessage WM_PD_DIALOG_NAVKEY, True
@@ -369,7 +369,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
         ' colors are loaded FIRST
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim cbBackgroundColor As Long

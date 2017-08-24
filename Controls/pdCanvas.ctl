@@ -1320,7 +1320,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True, True
+    ucSupport.RegisterControl UserControl.hWnd, False, True
     ucSupport.RequestExtraFunctionality True
     
     'Prep the color manager and load default colors
@@ -1935,8 +1935,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         'Suspend redraws until all theme updates are complete
         Me.SetRedrawSuspension True
-        
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
         UpdateColorList
         ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)

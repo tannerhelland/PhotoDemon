@@ -463,7 +463,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True
+    ucSupport.RegisterControl UserControl.hWnd, False
     
     'Color model and color depth are closely related; populate all button strips, then show/hide the relevant pairings
     cboColorModel.AddItem "auto", 0
@@ -697,7 +697,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
