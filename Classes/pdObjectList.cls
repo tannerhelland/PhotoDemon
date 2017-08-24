@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PD Object List Manager
 'Copyright 2017-2017 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 18/August/17
-'Last update: initial build
+'Last updated: 24/August/17
+'Last update: finish work on automatic tab-order sorting
 '
 'This class is exclusively used by the Tabs module.  Look there for implementation details.
 '
@@ -26,6 +26,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 
 'The hWnd of the parent (the form hosting this collection)
 Private m_ParentHWnd As Long
@@ -44,6 +47,18 @@ End Type
 Private m_Controls() As PD_Control
 Private m_numOfControls As Long
 
+'When tab is pressed, we sort the current control list according to each control's top-left position.
+' This sorted list can then be used to easily determine the next/prev control in order.
+Private Type PD_ControlSort
+    hWnd As Long
+    sortKey As Long
+    x As Long
+    y As Long
+End Type
+
+Private m_ControlsSort() As PD_ControlSort
+Private m_numOfControlsSort As Long
+
 Friend Sub SetParentHWnd(ByVal hWnd As Long)
     m_ParentHWnd = hWnd
 End Sub
@@ -58,7 +73,7 @@ Friend Function DoesHWndExist(ByVal srcHwnd As Long) As Boolean
     
     If (m_numOfControls > 0) Then
         Dim i As Long
-        For i = 0 To m_numOfControls
+        For i = 0 To m_numOfControls - 1
             If (m_Controls(i).hWnd = srcHwnd) Then
                 DoesHWndExist = True
                 Exit For
@@ -74,7 +89,7 @@ Friend Function DoesTypeOfControlExist(ByVal srcType As PD_ControlType) As Boole
     
     If (m_numOfControls > 0) Then
         Dim i As Long
-        For i = 0 To m_numOfControls
+        For i = 0 To m_numOfControls - 1
             If (m_Controls(i).ctlType = srcType) Then
                 DoesTypeOfControlExist = True
                 Exit For
@@ -90,7 +105,7 @@ Friend Function GetFirstHWndForType(ByVal srcType As PD_ControlType) As Long
     
     If (m_numOfControls > 0) Then
         Dim i As Long
-        For i = 0 To m_numOfControls
+        For i = 0 To m_numOfControls - 1
             If (m_Controls(i).ctlType = srcType) Then
                 GetFirstHWndForType = m_Controls(i).hWnd
                 Exit For
@@ -119,6 +134,186 @@ Friend Sub NotifyChildControl(ByRef childControl As Object)
     m_numOfControls = m_numOfControls + 1
     
 End Sub
+
+'Tab keypresses only require an incoming hWnd; we'll figure out the rest.
+Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
+    
+    'First thing we need to do is make a list of all visible/enabled controls on the form.
+    ' (Invisible/disabled controls can't receive focus, obviously!)
+    ReDim m_ControlsSort(0 To m_numOfControls) As PD_ControlSort
+    m_numOfControlsSort = 0
+    
+    'We also need the width of the current screen, so we can sort coordinates one-dimensionally.
+    Dim screenWidth As Long
+    screenWidth = g_Displays.GetDesktopWidth()
+    
+    Dim currentControlIndex As Long
+    currentControlIndex = -1
+    
+    Dim i As Long, tmpRect As winRect
+    For i = 0 To m_numOfControls - 1
+        If (IsWindowVisible(m_Controls(i).hWnd) <> 0) And (IsWindowEnabled(m_Controls(i).hWnd)) Then
+            
+            'This control is visible and enabled, making it a candidate for receiving focus.  Retrieve its coordinates.
+            g_WindowManager.GetWindowRect_API m_Controls(i).hWnd, tmpRect
+            
+            'I haven't decided if it is worthwhile to map coordinates to a new coordinate space prior to
+            ' determining order.  (I don't think it matters, but it's possible I haven't fully considered the math!)
+            
+            'For now, convert the top-left corner of the rect into a single-dimension variable
+            With m_ControlsSort(m_numOfControlsSort)
+                .hWnd = m_Controls(i).hWnd
+                .x = tmpRect.x1
+                .y = tmpRect.y1
+                .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
+            End With
+            
+            'If this control is the one that supplied the tabkey, note it now
+            If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
+            
+            m_numOfControlsSort = m_numOfControlsSort + 1
+            
+        End If
+    Next i
+    
+    'We now have a list of all valid tab recipients on this form.  Hopefully our source control was included;
+    ' if it wasn't (for whatever reason), retrieve its last-known position and use that instead.
+    If (currentControlIndex = -1) Then
+        
+        g_WindowManager.GetWindowRect_API srcHwnd, tmpRect
+        
+        With m_ControlsSort(m_numOfControlsSort)
+            .hWnd = srcHwnd
+            .x = tmpRect.x1
+            .y = tmpRect.y1
+            .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
+        End With
+        
+        m_numOfControlsSort = m_numOfControlsSort + 1
+        
+    End If
+    
+    'Our list of "valid" window targets is now guaranteed to include the source window that triggered this tab press
+    ' in the first place!  (We need it in the list, obviously, so we know which control(s) surround it in the tab order.)
+    
+    'Next, we need to sort the list by its sortKey property.  This list is guaranteed to be small, so we shouldn't
+    ' need a fancy sort.  An in-place insertion sort (as used elsewhere in the project) should be more than sufficient.
+    If (m_numOfControlsSort > 1) Then
+    
+        Dim j As Long, loopBound As Long, tmpRef As PD_ControlSort
+        loopBound = m_numOfControlsSort - 1
+        
+        'Loop through all entries in the stack, sorting them as we go
+        For i = 0 To loopBound
+            For j = 0 To loopBound
+                If (m_ControlsSort(i).sortKey < m_ControlsSort(j).sortKey) Then
+                    tmpRef = m_ControlsSort(i)
+                    m_ControlsSort(i) = m_ControlsSort(j)
+                    m_ControlsSort(j) = tmpRef
+                End If
+            Next j
+        Next i
+        
+    'If there is only one (or zero) valid tab key recipient(s) on this dialog, skip the sort step, obviously.
+    Else
+    
+    End If
+    
+    'Now that our list is sorted, we need to once again find the source window's hWnd.
+    For i = 0 To m_numOfControlsSort - 1
+        If (m_ControlsSort(i).hWnd = srcHwnd) Then
+            currentControlIndex = i
+            Exit For
+        End If
+    Next i
+    
+    'With a sorted list of controls, finding the next/previous control is easy!
+    Dim targetIndex As Long
+    
+    If shiftTabPressed Then
+        targetIndex = currentControlIndex - 1
+        If (targetIndex < 0) Then targetIndex = m_numOfControlsSort - 1
+    Else
+        targetIndex = currentControlIndex + 1
+        If (targetIndex >= m_numOfControlsSort) Then targetIndex = 0
+    End If
+    
+'    'During debug sessions, it can be helpful to print window details to the immediate window
+'    Debug.Print "---------"
+'    For i = 0 To m_numOfControlsSort - 1
+'        If (i = targetIndex) Then
+'            Debug.Print "> " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+'        ElseIf (i = currentControlIndex) Then
+'            Debug.Print "* " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+'        Else
+'            Debug.Print GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+'        End If
+'    Next i
+'    Debug.Print "FYI, target control is " & GetControlNameFromHWnd(m_ControlsSort(targetIndex).hWnd)
+    
+    'Finally, apply the focus change!
+    g_WindowManager.SetFocusAPI m_ControlsSort(targetIndex).hWnd
+
+End Sub
+
+'Return a sort key for a given control's window rectangle (e.g. the control's coordinates and dimensions,
+' in screen coordinate space).  This function will convert those four parameters into a single, easily
+' sortable key.
+Private Function GetSortKeyFromRect(ByRef srcRect As winRect, ByVal screenWidth As Long) As Long
+    
+    'On-screen controls can be complicated to sort, because their positions are often "nudged" a few pixels
+    ' in any given direction to make things "look nice".  (Typically, this is done to keep elements
+    ' center-aligned vertically along a shared horizontal axis, like the buttons and dropdowns on a
+    ' command bar.)
+    
+    'To make sure we intelligently sort controls, we have to modify their rect in various ways.  I'll try to
+    ' explain the settings as we go.
+    
+    'First, let's deal with "normal-sized" on-screen elements.  90+% of PD controls fit into this class.
+    ' These controls are typically less than 80 pixels in height (multiplied by the current system DPI).
+    ' These controls are the most likely ones to be "nudged" into aesthetically pleasing positions
+    ' relative to neighboring controls.  When sorting them, we sort them along their centerline instead
+    ' of by their top-left corner.
+    Const CONTROL_MAX_HEIGHT As Long = 80
+    
+    Dim sortX As Long, sortY As Long
+    If ((srcRect.y2 - srcRect.y1) <= CONTROL_MAX_HEIGHT) Then
+        
+        sortX = srcRect.x1
+        sortY = srcRect.y1 + ((srcRect.y2 - srcRect.y1) \ 2)
+        
+    'If this control is taller than 80 pixels, it is probably a very large element like a preview box
+    ' or a custom-built control (like the Curves dialog).  Sort it by its top-left corner only.
+    Else
+    
+        sortX = srcRect.x1
+        sortY = srcRect.y1
+    
+    End If
+    
+    'When sorting on-screen elements, we clamp y-coordinates to their nearest multiple of 8.  This helps
+    ' address the case where nearby elements vary in top-position by only a few pixels, as is necessary
+    ' to maintain an appearance of center-line alignment (e.g. again refer to command bars, where the
+    ' "preset names" dropdown sits just slightly below the neighboring buttons, because it is slightly
+    ' shorter vertically than the button images).  To ensure such controls are still sorted in normal
+    ' LTR order, instead of being treated as "on the next line", we clamp their controls to a fixed
+    ' multiple of 8.
+    Const MAX_VERTICAL_DISTANCE As Long = 8
+    GetSortKeyFromRect = sortX + (Int((sortY + (MAX_VERTICAL_DISTANCE \ 2)) \ MAX_VERTICAL_DISTANCE) * MAX_VERTICAL_DISTANCE * screenWidth)
+    
+End Function
+
+Private Function GetControlNameFromHWnd(ByVal srcHwnd As Long) As String
+
+    Dim i As Long
+    For i = 0 To m_numOfControls - 1
+        If (srcHwnd = m_Controls(i).hWnd) Then
+            GetControlNameFromHWnd = m_Controls(i).ctlName & " (" & m_Controls(i).ctlType & ")"
+            Exit For
+        End If
+    Next i
+
+End Function
 
 Friend Sub PrintDebugList()
     

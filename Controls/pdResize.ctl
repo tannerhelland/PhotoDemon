@@ -370,7 +370,7 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
     ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
     ' accepted the keypress, meaning we should forward the event down the line.)
-    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
 End Sub
 
@@ -732,7 +732,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True
+    ucSupport.RegisterControl UserControl.hWnd, False
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -1114,7 +1114,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         End If
         
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls

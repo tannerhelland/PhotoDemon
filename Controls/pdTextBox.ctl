@@ -275,7 +275,7 @@ Private Sub m_EditBox_GotFocusAPI()
     ComponentGotFocus
 End Sub
 
-Private Sub m_EditBox_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
+Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     RaiseEvent KeyPress(vKey, preventFurtherHandling)
 End Sub
 

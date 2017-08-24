@@ -370,10 +370,10 @@ End Sub
 
 'On spinner controls, edit boxes support use of "Enter" and "Esc" keys to auto-trigger "OK" and "Cancel"
 ' options on an associated command bar (if any)
-Private Sub m_EditBox_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
+Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     If (vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
-        preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey)
+        preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
     End If
     
 End Sub
@@ -410,7 +410,7 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
     ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
     ' accepted the keypress, meaning we should forward the event down the line.)
-    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
 End Sub
 

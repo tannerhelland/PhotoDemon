@@ -562,6 +562,8 @@ End Sub
 ' directly correlates to the on-screen size of the listbox's constraining rect.
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
+    markEventHandled = False
+    
     'All these keys set a new .ListIndex property.  We'll calculate a theoretical new ListIndex, then apply a universal
     ' bounds-check at the end.
     Dim newListIndex As Long
@@ -571,9 +573,11 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         
         Case VK_DOWN
             newListIndex = newListIndex + 1
+            markEventHandled = True
             
         Case VK_UP
             newListIndex = newListIndex - 1
+            markEventHandled = True
             
         Case VK_PAGEDOWN
             If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
@@ -581,6 +585,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             Else
                 newListIndex = newListIndex + 1
             End If
+            markEventHandled = True
             
         Case VK_PAGEUP
             If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
@@ -588,32 +593,37 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             Else
                 newListIndex = newListIndex - 1
             End If
+            markEventHandled = True
             
         Case VK_HOME
             newListIndex = 0
+            markEventHandled = True
             
         Case VK_END
             newListIndex = m_NumOfItems - 1
+            markEventHandled = True
             
         'Return only matters for listboxes embedded inside combo boxes.
         Case VK_RETURN, VK_SPACE
             If (m_ListMode = PDLM_LB_INSIDE_CB) Then
+                markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
             Else
                 markEventHandled = False
             End If
             
-        'For listboxes embedded inside combo boxes, the escape key can clear the combo box.  Raise a Click() event to mimic this.
+        'For listboxes embedded inside combo boxes, the escape key can hide the dropdown.  Raise a Click() event to mimic this.
         Case VK_ESCAPE
-            If m_ListMode = PDLM_LB_INSIDE_CB Then
+            If (m_ListMode = PDLM_LB_INSIDE_CB) Then
+                markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
             End If
             
     End Select
     
-    If m_NumOfItems = 0 Then
+    If (m_NumOfItems = 0) Then
         newListIndex = -1
     Else
         If (newListIndex < 0) Then newListIndex = 0

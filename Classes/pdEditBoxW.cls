@@ -47,7 +47,7 @@ Public Event CreateTextBoxNow()
 
 'By design, PD textboxes raises fewer events than standard text boxes
 Public Event Change()
-Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
@@ -195,6 +195,14 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As
 Private m_CharCache As Long
 Private Const PM_NOREMOVE As Long = &H0
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lpMsg As TagMSG, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+
+'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+
+'Virtual key-codes currently supported by pdInput
+Private Const VK_SHIFT As Long = &H10
+Private Const VK_CONTROL As Long = &H11
+Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
 
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
@@ -418,6 +426,11 @@ Public Property Let Visible(ByVal newVisibility As Boolean)
         If (m_EditBoxHwnd <> 0) Then ShowWindow m_EditBoxHwnd, SW_HIDE
     End If
 End Property
+
+'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+End Function
 
 'In order to give our owner some control over when the edit box is actually created, they are required to call the
 ' CreateEditBox function at least once.  (The Show() event is a decent place, for example.)  After the edit box has
@@ -711,9 +724,15 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     ' would be used for menu shortcuts, among other things).  So a child window can't avoid its parent window being involved in
     ' key event handling.
     '
-    'Anyway, the moral of the story is that we have to do a shitload of extra work to bypass the default message translator.
-    ' Without this, IME entry methods (easily tested via the Windows on-screen keyboard and some non-Latin language) result in
-    ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
+    'Anyway, the moral of the story is that we have to do extra work to bypass the default message translator. Without this,
+    ' IME entry methods (easily tested via the Windows on-screen keyboard and some non-Latin language) result in ???? chars,
+    ' despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
+    
+    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+    Dim retShiftConstants As ShiftConstants
+    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
     
     If (uiMsg = WM_CHAR) Then
         
@@ -724,7 +743,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             If ((wParam = VK_RETURN) Or (wParam = VK_TAB)) Then
                 HandleEditBoxMsgs = 0
                 msgEaten = True
-                RaiseEvent KeyPress(wParam, msgEaten)
+                RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
             End If
         End If
         

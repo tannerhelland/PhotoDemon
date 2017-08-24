@@ -460,7 +460,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True
+    ucSupport.RegisterControl UserControl.hWnd, False
     ucSupport.RequestExtraFunctionality True
     If MainModule.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
     
@@ -765,7 +765,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.UpdateAgainstCurrentTheme
         cmbSizeUnit.UpdateAgainstCurrentTheme
         
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)

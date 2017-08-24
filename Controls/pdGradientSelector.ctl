@@ -170,7 +170,7 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
     ' means the key was successfully forwarded to the relevant handler.  (If FALSE is returned, no control
     ' accepted the keypress, meaning we should forward the event down the line.)
-    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey)
+    markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
 End Sub
 

@@ -43,10 +43,10 @@ Private Const INIT_STACK_SIZE = 16
 
 'Add a string to the stack.  Return value is the index of the added location (which can be used to infer the number of strings
 ' in the stack, obviously).
-Public Function AddString(ByRef srcString As String) As Long
+Friend Function AddString(ByRef srcString As String) As Long
 
     'Resize the stack as necessary
-    If m_NumOfStrings > UBound(m_Strings) Then ReDim Preserve m_Strings(0 To m_NumOfStrings * 2 - 1) As String
+    If (m_NumOfStrings > UBound(m_Strings)) Then ReDim Preserve m_Strings(0 To m_NumOfStrings * 2 - 1) As String
     
     'Add the string
     m_Strings(m_NumOfStrings) = srcString
@@ -62,9 +62,9 @@ End Function
 'The function was designed to make popping the entire stack convenient (e.g. Do While strStack.PopString(tmpString)...)
 '
 'Note that this function DOES NOT shrink the string array to match.  This is by design.  If you want to resize the string array
-' after a pop, manually call trimStack().  (But seriously - don't do this unless you really need to, as the performance
+' after a pop, manually call TrimStack().  (But seriously - don't do this unless you really need to, as the performance
 ' implications are severe.)
-Public Function PopString(ByRef dstString As String) As Boolean
+Friend Function PopString(ByRef dstString As String) As Boolean
     
     If (m_NumOfStrings > 0) Then
         m_NumOfStrings = m_NumOfStrings - 1
@@ -77,18 +77,18 @@ Public Function PopString(ByRef dstString As String) As Boolean
 End Function
 
 'Return the size of the stack
-Public Function GetNumOfStrings() As Long
+Friend Function GetNumOfStrings() As Long
     GetNumOfStrings = m_NumOfStrings
 End Function
 
 'Trim the stack to its exact size.  IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
-Public Sub TrimStack()
+Friend Sub TrimStack()
     ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
 End Sub
 
 'Retrieve a string from the stack, with optional support for locale invariant conversions (when the caller expects the string
 ' to represent a number of some sort)
-Public Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
+Friend Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
 
     If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
         
@@ -120,7 +120,7 @@ Public Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInv
 End Function
 
 'Retrieve a string pointer from the stack; helpful for API interactions
-Public Function GetStringPointer(ByVal strIndex As Long) As Long
+Friend Function GetStringPointer(ByVal strIndex As Long) As Long
 
     If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
         GetStringPointer = StrPtr(m_Strings(strIndex))
@@ -174,16 +174,18 @@ Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
     
 End Function
 
-'This function may seem like a ridiculous addition, but it's actually very helpful in PD.  pdStringStack is used by pdFSO when retrieving all subfolders
-' inside some base folder.  When performing something like a tree copy, I like to pre-sort the subfolder list by length.  This greatly simplifies the
-' code required to create the new folder tree prior to performing the copy; creating the folders in advance greatly accelerates the copy operation, as we
-' don't have to perform "do my folders exist?" checks on every damn file.
-Public Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
+'This function may seem like a ridiculous addition, but it's actually very helpful in PD.  pdStringStack is used by pdFSO
+' when retrieving all subfolders inside some base folder.  When performing something like a tree copy, I like to pre-sort
+' the subfolder list by length.  This greatly simplifies the code required to create the new folder tree prior to performing
+' the copy; creating the folders in advance greatly accelerates the copy operation, as we don't have to perform "do my
+' folders exist?" checks on every damn file.
+Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 
-    If m_NumOfStrings > 1 Then
+    If (m_NumOfStrings > 1) Then
     
-        'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order is typically pretty close to sorted.  This saves us
-        ' from needing an elaborate search algorithm; instead, a simple in-place insertion sort performs very well.
+        'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order is typically pretty close
+        ' to sorted.  This saves us from needing an elaborate search algorithm; instead, a simple in-place insertion sort
+        ' performs very well.
         Dim i As Long, j As Long, loopBound As Long
         loopBound = m_NumOfStrings - 1
         
@@ -208,7 +210,7 @@ Public Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 End Sub
 
 'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
-Public Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
+Friend Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     Dim tmpString As String
     tmpString = m_Strings(strIndex1)
     m_Strings(strIndex1) = m_Strings(strIndex2)
@@ -217,7 +219,7 @@ End Sub
 
 'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings
 ' in the list to match.  Obviously there are performance issues with this, so use it sparingly!
-Public Sub MoveStringToNewPosition(ByVal srcStringIndex As Long, ByVal dstStringIndex As Long)
+Friend Sub MoveStringToNewPosition(ByVal srcStringIndex As Long, ByVal dstStringIndex As Long)
     
     If (srcStringIndex >= 0) And (srcStringIndex < m_NumOfStrings) And (dstStringIndex >= 0) And (dstStringIndex < m_NumOfStrings) And (srcStringIndex <> dstStringIndex) Then
     
@@ -242,23 +244,22 @@ End Sub
 
 'Modified ShellSort function based off an original implementation by Ellis Dee.  Original source here:
 ' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-(sort-array-sorting-arrays)&p=2933102&viewfull=1#post2933102
-Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
+Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
     
     If (m_NumOfStrings <= 1) Then Exit Sub
     
-    Dim lngHold As Long
-    Dim lngGap As Long
-    Dim i As Long
-    Dim iMin As Long
-    Dim iMax As Long
+    Dim lngHold As Long, lngGap As Long
+    Dim i As Long, iMin As Long, iMax As Long
     Dim varSwap As String
     
     iMin = 0
     iMax = m_NumOfStrings - 1
     lngGap = iMin
+    
     Do
         lngGap = 3 * lngGap + 1
     Loop Until lngGap > iMax
+    
     Do
         lngGap = lngGap \ 3
         For i = lngGap + iMin To iMax
@@ -287,7 +288,7 @@ Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
         For i = 0 To itemCount
             
             'If we've reached the point where the array ends due to shifting, exit now
-            If i = itemCount - itemsRemoved Then Exit For
+            If (i = itemCount - itemsRemoved) Then Exit For
             
             'If this string and the string above it match, shift everything above it downward
             If Strings.StringsEqual(m_Strings(i), m_Strings(i + 1), False) Then
@@ -307,14 +308,14 @@ Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
         Next i
         
         'If one or more items were removed, mark the new array size accordingly
-        If itemsRemoved > 0 Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
+        If (itemsRemoved > 0) Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
         
     End If
     
 End Sub
 
 'Clone another string stack
-Public Sub CloneStack(ByRef stackToClone As pdStringStack)
+Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
     
     'Initialize this stack to the size of the target
     Me.ResetStack stackToClone.GetNumOfStrings
@@ -328,7 +329,7 @@ Public Sub CloneStack(ByRef stackToClone As pdStringStack)
 End Sub
 
 'Return our list of strings as a bare string array
-Public Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
+Friend Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
     ReDim dstStringArray(0 To m_NumOfStrings - 1) As String
     Dim i As Long
     For i = 0 To m_NumOfStrings - 1
@@ -337,7 +338,7 @@ Public Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
 End Sub
 
 'Fill this stack with the contents of a bare string array.  Do not pass an uninitialized array.
-Public Sub CreateFromStringArray(ByRef srcStringArray() As String)
+Friend Sub CreateFromStringArray(ByRef srcStringArray() As String)
     Dim i As Long
     For i = LBound(srcStringArray) To UBound(srcStringArray)
         Me.AddString srcStringArray(i)
@@ -345,7 +346,7 @@ Public Sub CreateFromStringArray(ByRef srcStringArray() As String)
 End Sub
 
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
-Public Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
+Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     
     On Error GoTo FailsafeReset
     
@@ -369,7 +370,7 @@ FailsafeReset:
     
 End Sub
 
-Public Function SerializeStackToSingleString() As String
+Friend Function SerializeStackToSingleString() As String
 
     If m_NumOfStrings > 0 Then
         
@@ -393,7 +394,7 @@ Public Function SerializeStackToSingleString() As String
     
 End Function
 
-Public Function RecreateStackFromSerializedString(ByRef srcString As String) As Boolean
+Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As Boolean
     
     On Error GoTo RecreateFailure
     
@@ -445,7 +446,7 @@ End Sub
 
 'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.
 ' I also append "--" to the start and end of the string, to help me see if extra whitespace chars are present.
-Public Sub DEBUG_dumpResultsToImmediateWindow()
+Friend Sub DEBUG_dumpResultsToImmediateWindow()
     
     If m_NumOfStrings > 0 Then
         Dim i As Long
