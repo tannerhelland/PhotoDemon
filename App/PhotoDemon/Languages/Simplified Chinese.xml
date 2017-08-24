@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3012</langversion>
+<langversion>6.8.3013</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13257,7 +13257,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>画笔（软刷）</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<phrase>
+<original>Eraser</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14981,12 +14986,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Eraser.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2520</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1958 are duplicates, so only 2520 unique phrases have been written to file. -->
-<!-- These 2520 phrases contain approximately 12178 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12179 total words. -->
 
 </pdData>

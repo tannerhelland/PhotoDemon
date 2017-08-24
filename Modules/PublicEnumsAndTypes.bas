@@ -26,14 +26,14 @@ Public Enum PDTools
     VECTOR_FANCYTEXT = 10
     PAINT_BASICBRUSH = 11
     PAINT_SOFTBRUSH = 12
+    PAINT_ERASER = 13
 End Enum
 
 #If False Then
     Private Const NAV_DRAG = 0, NAV_MOVE = 1, QUICK_FIX_LIGHTING = 2
-    Private Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5
-    Private Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
+    Private Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5, SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
     Private Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
-    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12
+    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12, PAINT_ERASER = 13
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
@@ -107,7 +107,7 @@ Public Enum PD_SAVE_EVENT
 End Enum
 
 #If False Then
-    Const pdSE_AnySave = 0, pdSE_SavePDI = 1, pdSE_SaveFlat = 2
+    Private Const pdSE_AnySave = 0, pdSE_SavePDI = 1, pdSE_SaveFlat = 2
 #End If
 
 'Edge-handling methods for distort-style filters
@@ -120,7 +120,7 @@ Public Enum EDGE_OPERATOR
 End Enum
 
 #If False Then
-    Const EDGE_CLAMP = 0, EDGE_REFLECT = 1, EDGE_WRAP = 2, EDGE_ERASE = 3, EDGE_ORIGINAL = 4
+    Private Const EDGE_CLAMP = 0, EDGE_REFLECT = 1, EDGE_WRAP = 2, EDGE_ERASE = 3, EDGE_ORIGINAL = 4
 #End If
 
 'Orientation (used in a whole bunch of different situations)
@@ -131,7 +131,7 @@ Public Enum PD_ORIENTATION
 End Enum
 
 #If False Then
-    Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
+    Private Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
 #End If
 
 'Some PhotoDemon actions can operate on the whole image, or on just a specific layer (e.g. resize).  When initiating
@@ -142,7 +142,7 @@ Public Enum PD_ACTION_TARGET
 End Enum
 
 #If False Then
-    Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
+    Private Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
 #End If
 
 'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
@@ -160,57 +160,57 @@ Public Enum PD_UNDO_TYPE
 End Enum
 
 #If False Then
-    Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGE_VECTORSAFE = 2, UNDO_IMAGEHEADER = 3
-    Const UNDO_LAYER = 4, UNDO_LAYER_VECTORSAFE = 5, UNDO_LAYERHEADER = 5, UNDO_SELECTION = 7
+    Private Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGE_VECTORSAFE = 2, UNDO_IMAGEHEADER = 3
+    Private Const UNDO_LAYER = 4, UNDO_LAYER_VECTORSAFE = 5, UNDO_LAYERHEADER = 5, UNDO_SELECTION = 7
 #End If
 
 'Enums for App Command messages, which are (optionally) returned by the pdInput class
 Public Enum AppCommandConstants
-   AC_BROWSER_BACKWARD = 1
-   AC_BROWSER_FORWARD = 2
-   AC_BROWSER_REFRESH = 3
-   AC_BROWSER_STOP = 4
-   AC_BROWSER_SEARCH = 5
-   AC_BROWSER_FAVORITES = 6
-   AC_BROWSER_HOME = 7
-   AC_VOLUME_MUTE = 8
-   AC_VOLUME_DOWN = 9
-   AC_VOLUME_UP = 10
-   AC_MEDIA_NEXTTRACK = 11
-   AC_MEDIA_PREVIOUSTRACK = 12
-   AC_MEDIA_STOP = 13
-   AC_MEDIA_PLAY_PAUSE = 14
-   AC_LAUNCH_MAIL = 15
-   AC_LAUNCH_MEDIA_SELECT = 16
-   AC_LAUNCH_APP1 = 17
-   AC_LAUNCH_APP2 = 18
-   AC_BASS_DOWN = 19
-   AC_BASS_BOOST = 20
-   AC_BASS_UP = 21
-   AC_TREBLE_DOWN = 22
-   AC_TREBLE_UP = 23
-   AC_MICROPHONE_VOLUME_MUTE = 24
-   AC_MICROPHONE_VOLUME_DOWN = 25
-   AC_MICROPHONE_VOLUME_UP = 26
-   AC_HELP = 27
-   AC_FIND = 28
-   AC_NEW = 29
-   AC_OPEN = 30
-   AC_CLOSE = 31
-   AC_SAVE = 32
-   AC_PRINT = 33
-   AC_UNDO = 34
-   AC_REDO = 35
-   AC_COPY = 36
-   AC_CUT = 37
-   AC_PASTE = 38
-   AC_REPLY_TO_MAIL = 39
-   AC_FORWARD_MAIL = 40
-   AC_SEND_MAIL = 41
-   AC_SPELL_CHECK = 42
-   AC_DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43
-   AC_MIC_ON_OFF_TOGGLE = 44
-   AC_CORRECTION_LIST = 45
+    AC_BROWSER_BACKWARD = 1
+    AC_BROWSER_FORWARD = 2
+    AC_BROWSER_REFRESH = 3
+    AC_BROWSER_STOP = 4
+    AC_BROWSER_SEARCH = 5
+    AC_BROWSER_FAVORITES = 6
+    AC_BROWSER_HOME = 7
+    AC_VOLUME_MUTE = 8
+    AC_VOLUME_DOWN = 9
+    AC_VOLUME_UP = 10
+    AC_MEDIA_NEXTTRACK = 11
+    AC_MEDIA_PREVIOUSTRACK = 12
+    AC_MEDIA_STOP = 13
+    AC_MEDIA_PLAY_PAUSE = 14
+    AC_LAUNCH_MAIL = 15
+    AC_LAUNCH_MEDIA_SELECT = 16
+    AC_LAUNCH_APP1 = 17
+    AC_LAUNCH_APP2 = 18
+    AC_BASS_DOWN = 19
+    AC_BASS_BOOST = 20
+    AC_BASS_UP = 21
+    AC_TREBLE_DOWN = 22
+    AC_TREBLE_UP = 23
+    AC_MICROPHONE_VOLUME_MUTE = 24
+    AC_MICROPHONE_VOLUME_DOWN = 25
+    AC_MICROPHONE_VOLUME_UP = 26
+    AC_HELP = 27
+    AC_FIND = 28
+    AC_NEW = 29
+    AC_OPEN = 30
+    AC_CLOSE = 31
+    AC_SAVE = 32
+    AC_PRINT = 33
+    AC_UNDO = 34
+    AC_REDO = 35
+    AC_COPY = 36
+    AC_CUT = 37
+    AC_PASTE = 38
+    AC_REPLY_TO_MAIL = 39
+    AC_FORWARD_MAIL = 40
+    AC_SEND_MAIL = 41
+    AC_SPELL_CHECK = 42
+    AC_DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43
+    AC_MIC_ON_OFF_TOGGLE = 44
+    AC_CORRECTION_LIST = 45
 End Enum
 
 #If False Then

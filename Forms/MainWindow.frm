@@ -2932,6 +2932,10 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
         Unload toolpanel_Paintbrush
         Set toolpanel_Paintbrush = Nothing
+    ElseIf (g_CurrentTool = PAINT_ERASER) Then
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Eraser.hWnd
+        Unload toolpanel_Eraser
+        Set toolpanel_Eraser = Nothing
     End If
     
     'With all tool panels unloaded, unload all toolboxes as well
