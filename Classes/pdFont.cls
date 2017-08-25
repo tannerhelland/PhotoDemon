@@ -388,7 +388,7 @@ End Sub
 
 'If we want to detach this font from its current DC, use this call
 Friend Sub ReleaseFromDC()
-    If curDC <> 0 Then
+    If (curDC <> 0) Then
         SelectObject curDC, oldFont
         curDC = 0
     End If
