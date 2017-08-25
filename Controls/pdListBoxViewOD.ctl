@@ -205,7 +205,7 @@ End Sub
 'When the list manager detects that an action requires the list to be redrawn (like adding a new item), it will raise
 ' this event.  Whether or not we respond depends on whether the user control is currently visible.
 Private Sub listSupport_RedrawNeeded()
-    If ucSupport.AmIVisible Then RedrawBackBuffer
+    If ucSupport.AmIVisible Then RedrawBackBuffer True
 End Sub
 
 Private Sub listSupport_ScrollMaxChanged()
