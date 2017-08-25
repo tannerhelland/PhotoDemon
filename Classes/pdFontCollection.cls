@@ -89,14 +89,8 @@ Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         End If
         
         'Initialize all the required font properties
-        With m_FontCollection(m_FontPointer)
-            .SetFontFace fontName
-            .SetFontSize FontSize
-            .SetFontBold isBold
-            .SetFontItalic isItalic
-            .SetFontUnderline isUnderline
-        End With
-    
+        m_FontCollection(m_FontPointer).SetFontPropsAllAtOnce fontName, FontSize, isBold, isItalic, isUnderline
+        
         'Create the font object
         m_FontCollection(m_FontPointer).CreateFontObject
         

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Font Renderer
 'Copyright 2013-2017 by Tanner Helland
 'Created: 31/May/13
-'Last updated: 29/October/14
-'Last update: many small improvements to make this class work better with the new pdLabel control.
+'Last updated: 25/August/17
+'Last update: improve font creation performance
 '
 'While VB6 actually provides pretty good font support, PhotoDemon has some unique needs (as usual).  Chief among these
 ' are detailed handling over font positioning, rendering to arbitrary DCs, and managing fonts in a more speed-friendly
@@ -54,7 +54,7 @@ Private Type LOGFONT
     lfClipPrecision As Byte
     lfQuality As Byte
     lfPitchAndFamily As Byte
-    lfFaceName As String * 32
+    lfFaceName(0 To 63) As Byte
 End Type
 
 'Previously we only suppored an ANSI charset, but now we want to default to the system value
@@ -140,23 +140,22 @@ Private Const DT_MODIFYSTRING = &H10000
 Private Const DT_RTLREADING = &H20000
 Private Const DT_WORD_ELLIPSIS = &H40000
 
-Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (ByRef lpLogFont As LOGFONT) As Long
-Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
-
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByVal ptrToLogFont As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-
-Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
-
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-
-'Used to measure the expected length of a string (single line only; line breaks do not work)
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
+Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
+
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+
+Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
 
 'Used to track the created font
 Private curFont As Long, oldFont As Long
@@ -399,12 +398,11 @@ End Sub
 Friend Function CreateFontObject() As Boolean
 
     'If a font has already been created, delete it now
-    If curDC <> 0 Then ReleaseFromDC
-    If curFont <> 0 Then DeleteCurrentFont
+    If (curDC <> 0) Then Me.ReleaseFromDC
+    If (curFont <> 0) Then Me.DeleteCurrentFont
     
-    curFont = CreateFontIndirect(m_currentLogFont)
-    
-    CreateFontObject = CBool(curFont <> 0)
+    curFont = CreateFontIndirect(VarPtr(m_currentLogFont))
+    CreateFontObject = (curFont <> 0)
     
     'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
     #If DEBUGMODE = 1 Then
@@ -412,6 +410,32 @@ Friend Function CreateFontObject() As Boolean
     #End If
 
 End Function
+
+'Shortcut function to set all font properties at once
+Friend Sub SetFontPropsAllAtOnce(ByRef newFace As String, ByVal newFontSize As Single, ByVal newBold As Boolean, ByVal newItalic As Boolean, ByVal newUnderline As Boolean)
+    
+    'First, cache all persistent settings
+    m_origFontFace = newFace
+    m_origFontSize = newFontSize
+    m_origFontBold = newBold
+    m_origFontItalic = newItalic
+    
+    'Next, translate these into actual LOGFONT properties
+    
+    'Make sure we have a trailing null char before copying the font name into place
+    If (Len(newFace) < 32) Then
+        FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), Len(newFace) * 2
+    Else
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), 64
+    End If
+    
+    m_currentLogFont.lfHeight = Fonts.ConvertToGDIFontSize(newFontSize)
+    If newBold Then m_currentLogFont.lfWeight = FW_BOLD Else m_currentLogFont.lfWeight = FW_NORMAL
+    m_currentLogFont.lfItalic = -1 * newItalic
+    m_currentLogFont.lfUnderline = -1 * newUnderline
+    
+End Sub
 
 Friend Function GetFontBold() As Boolean
     GetFontBold = m_origFontBold
@@ -440,8 +464,17 @@ Friend Function GetFontFace() As String
 End Function
 
 Friend Sub SetFontFace(ByRef newFace As String)
+    
     m_origFontFace = newFace
-    m_currentLogFont.lfFaceName = newFace & Chr(0)
+    
+    'Make sure we have a trailing null char before copying the font name into place
+    If (Len(newFace) < 32) Then
+        FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), Len(newFace) * 2
+    Else
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), 64
+    End If
+    
 End Sub
 
 Friend Function GetFontItalic() As Boolean
@@ -654,7 +687,15 @@ Private Sub Class_Initialize()
         Else
             m_origFontFace = "Tahoma"
         End If
-        .lfFaceName = m_origFontFace & Chr(0)
+        
+        'Make sure we have a trailing null char before copying the font name into place
+        If (Len(m_origFontFace) < 32) Then
+            FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
+            CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(m_origFontFace), Len(m_origFontFace) * 2
+        Else
+            CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(m_origFontFace), 64
+        End If
+        
     End With
     
     curFont = 0
@@ -691,16 +732,16 @@ End Function
 Friend Sub DeleteCurrentFont()
     
     'If a font was created, delete it now
-    If curFont <> 0 Then
+    If (curFont <> 0) Then
         
         'If the font is inside a DC, remove it (otherwise we can't delete it)
-        If curDC <> 0 Then
+        If (curDC <> 0) Then
             Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
             ReleaseFromDC
         End If
         
         #If DEBUGMODE = 1 Then
-            If DeleteObject(curFont) = 0 Then
+            If (DeleteObject(curFont) = 0) Then
                 Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
             Else
                 g_FontsDestroyed = g_FontsDestroyed + 1

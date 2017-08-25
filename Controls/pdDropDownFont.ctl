@@ -466,7 +466,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     'Paint the fill and border
-    GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor
+    GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor, 255, GP_CM_SourceCopy
     GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRectF, itemFillBorderColor, , , , GP_LJ_Miter
     
     'Paint the font name in the default UI font
@@ -514,7 +514,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
         ' 2) the halfway point in the drop-down area
         Dim calcLeft As Long, calcLeftAlternate As Long
         calcLeft = tmpRectF.Left + 4 + fontNameWidth + FixDPI(32)
-        calcLeftAlternate = tmpRectF.Left + 4 + ((tmpRectF.Left + tmpRectF.Width) - tmpRectF.Left - 8) \ 2
+        calcLeftAlternate = tmpRectF.Left + 4 + ((tmpRectF.Left + tmpRectF.Width) - tmpRectF.Left - 8) * 0.5
         
         If calcLeft > calcLeftAlternate Then
             .Left = calcLeftAlternate

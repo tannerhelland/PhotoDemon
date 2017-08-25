@@ -27,7 +27,7 @@ Option Explicit
 '****************************************************************************************
 'Note: these types are used in the callback function for EnumFontFamiliesEx; as such, I have to declare them as public.
 
-Public Const LF_FACESIZEW = 64
+Private Const LF_FACESIZEW = 64
 
 Public Type LOGFONTW
     lfHeight As Long
@@ -635,7 +635,7 @@ End Function
 'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
 ' MulDiv's rounding behavior as well.
 Private Function Internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
-    Internal_MulDiv = CLng((srcNumber * srcNumerator) / srcDenominator)
+    Internal_MulDiv = Int((srcNumber * srcNumerator) / srcDenominator)
 End Function
 
 'Once I have a better idea of what I can do with font quality, I'll be switching the fontQuality Enum to something internal to PD.
