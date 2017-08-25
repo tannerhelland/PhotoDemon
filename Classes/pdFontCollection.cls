@@ -56,8 +56,16 @@ Private m_CacheSize As Long
 'Pointer to the current font index.  This will rotate around to 0 after the cache is filled.
 Private m_FontPointer As Long
 
+'Once the cache has been completely filled, this will be set to TRUE.  A full cache will start using font access times
+' to determine which fonts are dumped from the cache.
+Private m_CacheIsFull As Boolean
+
 'Actual collection
 Private m_FontCollection() As pdFont
+
+'List of font creation times.  If/when the font collection hits its maximum size, we'll start clearing out the oldest
+' fonts first
+Private m_FontAccessTimes() As Currency
 
 'This class can (optionally) manage extended font properties as well, like which scripts are supported by a given font.
 ' To activate this behavior, pass TRUE to the setExtendedPropertyCaching sub.
@@ -77,10 +85,39 @@ Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to fontname matches only.
     '                  Call SetCacheMode() if you want to match fonts by alternate criteria.
     If (fontIndex >= 0) Then
+    
         AddFontToCache = fontIndex
         
+        'Also, update the font's access time.  (Oldest fonts are dumped from the cache first, on the assumption that
+        ' they are needed less than new fonts.)
+        m_FontAccessTimes(fontIndex) = OS.GetSystemTimeAsCurrency()
+        
     Else
-    
+        
+        'This font does not already exist, meaning we need to create it anew.
+        
+        'If the cache is full, we need to figure out which font to erase.
+        If m_CacheIsFull Then
+            
+            'Search the font collection and look for the largest delta between the current time, and each font's creation time.
+            Dim curTime As Currency, thisDelta As Currency, maxDelta As Currency, maxIndex As Long
+            curTime = OS.GetSystemTimeAsCurrency()
+            
+            Dim i As Long
+            For i = 0 To m_CacheSize - 1
+                thisDelta = curTime - m_FontAccessTimes(i)
+                If (thisDelta > maxDelta) Then
+                    maxIndex = i
+                    maxDelta = thisDelta
+                End If
+            Next i
+            
+            'Kill the oldest font
+            m_FontPointer = maxIndex
+        
+        'If the cache is not yet full, the font index pointer will already point at the best available spot.
+        End If
+        
         'Create a new font object as necessary
         If (m_FontCollection(m_FontPointer) Is Nothing) Then
             Set m_FontCollection(m_FontPointer) = New pdFont
@@ -97,12 +134,20 @@ Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         'If extended font caching is active, retrieve those values now
         If m_ExtendedPropertiesActive Then Uniscribe.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
         
+        'Update this font's access time
+        m_FontAccessTimes(m_FontPointer) = OS.GetSystemTimeAsCurrency()
+        
         'Return this index
         AddFontToCache = m_FontPointer
         
         'Increment the font pointer, and cycle back to zero as necessary
-        m_FontPointer = m_FontPointer + 1
-        If (m_FontPointer >= UBound(m_FontCollection)) Then m_FontPointer = 0
+        If (Not m_CacheIsFull) Then
+            m_FontPointer = m_FontPointer + 1
+            If (m_FontPointer >= UBound(m_FontCollection)) Then
+                m_FontPointer = 0
+                m_CacheIsFull = True
+            End If
+        End If
         
     End If
 
@@ -222,12 +267,15 @@ Friend Sub ResetCache()
     
     Dim i As Long
     For i = LBound(m_FontCollection) To UBound(m_FontCollection)
-        If Not (m_FontCollection(i) Is Nothing) Then m_FontCollection(i).DeleteCurrentFont
+        If (Not m_FontCollection(i) Is Nothing) Then m_FontCollection(i).DeleteCurrentFont
     Next i
     
     m_FontPointer = 0
     ReDim m_FontCollection(0 To m_CacheSize - 1) As pdFont
     ReDim m_ExtendedProperties(0 To m_CacheSize - 1) As PD_FONT_PROPERTY
+    ReDim m_FontAccessTimes(0 To m_CacheSize - 1) As Currency
+    
+    m_CacheIsFull = False
     
 End Sub
 
@@ -242,6 +290,7 @@ Friend Sub SetCacheSize(Optional ByVal newSize As Long = DEFAULT_CACHE_SIZE)
     m_CacheSize = newSize
     ReDim Preserve m_FontCollection(0 To newSize - 1) As pdFont
     ReDim Preserve m_ExtendedProperties(0 To newSize - 1) As PD_FONT_PROPERTY
+    ReDim Preserve m_FontAccessTimes(0 To newSize - 1) As Currency
     
 End Sub
 
@@ -274,13 +323,16 @@ End Function
 Private Sub Class_Initialize()
     
     'Initialize a default cache
-    SetCacheSize
+    Me.SetCacheSize
     
     'By default, extended properties are not available
     m_ExtendedPropertiesActive = False
     
     'By default, fonts are matched only by name (and not by size or style)
     m_CurrentCacheMode = FCM_NameOnly
+    
+    'By default, the cache is not full (obviously!)
+    m_CacheIsFull = False
     
 End Sub
 

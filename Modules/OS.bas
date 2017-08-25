@@ -263,6 +263,17 @@ Private Type OS_SystemInfo
     wProcessorRevision            As Integer
 End Type
 
+Private Type OS_SystemTime
+    wYear As Integer
+    wMonth As Integer
+    wDayOfWeek As Integer
+    wDay As Integer
+    wHour As Integer
+    wMinute As Integer
+    wSecond As Integer
+    wMilliseconds As Integer
+End Type
+    
 Private Type OS_VersionInfo
     dwOSVersionInfoSize As Long
     dwMajorVersion As Long
@@ -292,6 +303,8 @@ Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags A
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
 Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As OS_SystemInfo)
+Private Declare Sub GetSystemTime Lib "kernel32" (ByRef lpSystemTime As OS_SystemTime)
+Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (ByRef dstTime As Currency)
 Private Declare Function GetTempPathW Lib "kernel32" (ByVal nBufferLength As Long, ByVal lpStrBuffer As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExW" (ByVal lpVersionInformation As Long) As Long
 Private Declare Function GlobalMemoryStatusEx Lib "kernel32" (ByRef lpBuffer As OS_MemoryStatusEx) As Long
@@ -669,6 +682,12 @@ Public Function GetArbitraryGUID(Optional ByVal stripNonHexCharacters As Boolean
     
     GetArbitraryGUID = guidString
 
+End Function
+
+'Want to retrieve the current system time, using APIs, while auto-translating it from the (terrible) SystemTime
+' struct to a more usable longlong?  Use this function.
+Public Function GetSystemTimeAsCurrency() As Currency
+    GetSystemTimeAsFileTime GetSystemTimeAsCurrency
 End Function
 
 'Is this program instance compiled, or running from the IDE?
