@@ -134,15 +134,6 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
     
 End Sub
 
-'Most dialogs in PD are loaded in a strictly stack-like order.  Forms loaded this way are handled automatically
-' (with the assumption that a just-loaded form is also the active form - in 99% of cases, this is a valid assumption.)
-' The exception to this rule are toolbars and their associated panels, which are simultaneously active and frequently
-' switched-between.  To improve key-matching, you can manually notify this manager of form activation...
-' (IS THIS EVEN NECESSARY??)
-Public Sub NotifyFormActivation(ByRef srcForm As Form)
-
-End Sub
-
 'When a PD control receives a "navigation" keypress (Enter, Esc, Tab), relay it to this function to activate
 ' automatic handling.  (For example, Enter will trigger a command bar "OK" press, if a command bar is present
 ' on the same dialog as the child object.)
@@ -169,10 +160,20 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         
         Dim i As Long
         For i = 0 To m_NumOfForms - 1
-            If m_Forms(i).DoesHWndExist(childHwnd) Then
-                formIndex = i
-                Exit For
+        
+            'Normally, we would never expect to encounter a null entry here, but as a failsafe against forms
+            ' unloading incorrectly (especially if we ever implement plugins), check for null objects
+            If (Not m_Forms(i) Is Nothing) Then
+            
+                'While we're here, update m_LastForm to match - it may improve performance on subsequent matches
+                If m_Forms(i).DoesHWndExist(childHwnd) Then
+                    formIndex = i
+                    m_LastForm = formIndex
+                    Exit For
+                End If
+                
             End If
+            
         Next i
         
     End If
@@ -204,9 +205,9 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
                 ' As such, there's nothing we need to do.
                 End If
             
-            'If a modal dialog is *not* active, ignore all Enter/Esc presses
+            'If a modal dialog is *not* active, let the caller handle Enter/Esc presses on their own
             Else
-                NotifyNavKeypress = True
+                NotifyNavKeypress = False
             End If
         
         'The only other supported key (at this point) is TAB.  Tab keypresses are handled by the object list;

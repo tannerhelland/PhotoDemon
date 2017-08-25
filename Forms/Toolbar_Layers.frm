@@ -256,6 +256,11 @@ Private Sub Form_Unload(Cancel As Integer)
         Unload layerpanel_Colors
         Unload layerpanel_Layers
         
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  toolbar_Layers was unloaded prematurely - why??"
+        #End If
+        Cancel = True
     End If
     
 End Sub

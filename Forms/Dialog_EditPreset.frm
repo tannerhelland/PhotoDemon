@@ -186,5 +186,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Release our hold on the parent command bar
     Set m_Presets = Nothing
+    Interface.ReleaseFormTheming Me
     
 End Sub

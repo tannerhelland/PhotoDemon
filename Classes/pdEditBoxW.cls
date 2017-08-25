@@ -740,11 +740,20 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         ' To prevent this, we capture return presses and forcibly terminate them.  If the user wants to do something with
         ' Enter keypresses on these controls, they will have already handled the key event in the hook proc.
         If (Not m_Multiline) Then
-            If ((wParam = VK_RETURN) Or (wParam = VK_TAB)) Then
+            
+            If ((wParam = VK_RETURN) Or (wParam = VK_TAB) Or (wParam = VK_ESCAPE)) Then
                 HandleEditBoxMsgs = 0
                 msgEaten = True
-                RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
             End If
+            
+            'Notify our owner of this message.  (FYI, I realize this is all sorts of messed up - we're reporting a
+            ' char code instead of a key code, contrary to the way the event is defined.  This mimics the way VB6 does it,
+            ' and because we don't actually rely on virtual key IDs at present, it doesn't matter.  But keep this in mind
+            ' if you decide to actually handle and respond to these events.)
+            RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
+            
+        Else
+            RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
         End If
         
         'If we previously cached a Unicode character in WM_KEYDOWN, cast it back to wParam now.

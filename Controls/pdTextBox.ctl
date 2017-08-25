@@ -276,7 +276,14 @@ Private Sub m_EditBox_GotFocusAPI()
 End Sub
 
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
-    RaiseEvent KeyPress(vKey, preventFurtherHandling)
+    
+    'Before raising an "Enter" keypress, check for an OK/Cancel button on this form
+    If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape)) And (Not m_EditBox.Multiline) Then
+        If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
+    Else
+        RaiseEvent KeyPress(vKey, preventFurtherHandling)
+    End If
+    
 End Sub
 
 Private Sub m_EditBox_LostFocusAPI()

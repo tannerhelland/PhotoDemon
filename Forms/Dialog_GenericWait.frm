@@ -108,11 +108,15 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    If Not (m_ModalUnloadCheck Is Nothing) Then
+    
+    If (Not m_ModalUnloadCheck Is Nothing) Then
         m_ModalUnloadCheck.StopTimer
         Set m_ModalUnloadCheck = Nothing
     End If
     tmrProgBar.Enabled = False
+    
+    Interface.ReleaseFormTheming Me
+    
 End Sub
 
 Private Sub m_ModalUnloadCheck_Timer()

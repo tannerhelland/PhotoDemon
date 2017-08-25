@@ -1353,7 +1353,7 @@ Public Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         'These backends have no reason to render if text isn't present
         If (Len(m_CurrentText) <> 0) Then
         
-                'We should now know whether GDI or GDI+ is required for this combination of settings.
+            'We should now know whether GDI or GDI+ is required for this combination of settings.
             Select Case m_CurrentBackend
                 
                 'GDI+ is sufficient

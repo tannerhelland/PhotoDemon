@@ -191,24 +191,6 @@ Public Sub ContinueLoadingProgram()
     If OS.IsWin7OrLater Then OS.StartWin7PlusFeatures
     
     
-    
-    '*************************************************************************************************************************************
-    ' If the user doesn't have font smoothing enabled, enable it now.  PD's interface looks much better with some form of antialiasing.
-    '*************************************************************************************************************************************
-    
-    '***
-    ' NOTE: in the 7.0 release, XP-specific font hackery was disabled.  XP system settings are now respected
-    ' during font rendering, even if they're set badly.
-    
-    '#If DEBUGMODE = 1 Then
-    '    perfCheck.MarkEvent "ClearType check"
-    '#End If
-    '
-    'HandleClearType True
-    
-    '***
-    
-    
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
