@@ -28,17 +28,8 @@ Public Const VISIBILITY_TOGGLE As Long = 0
 Public Const VISIBILITY_FORCEDISPLAY As Long = 1
 Public Const VISIBILITY_FORCEHIDE As Long = 2
 
-'These values are used to remember the user's current font smoothing setting.  We try to be polite and restore
-' the original setting when the application terminates.
+'System keyboard repeat settings are mimicked by internal PD controls
 Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoW" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
-
-Private Const SPI_GETFONTSMOOTHING As Long = &H4A
-Private Const SPI_SETFONTSMOOTHING As Long = &H4B
-Private Const SPI_GETFONTSMOOTHINGTYPE As Long = &H200A
-Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
-Private Const SmoothingClearType As Long = &H2
-Private Const SmoothingStandardType As Long = &H1
-Private Const SmoothingNone As Long = &H0
 Private Const SPI_GETKEYBOARDDELAY As Long = &H16
 Private Const SPI_GETKEYBOARDSPEED As Long = &HA
 
@@ -1501,66 +1492,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'After sending out a bazillion window messages, it can be helpful to yield while everything catches up
     DoEvents
-    
-End Sub
-
-'Used to enable font smoothing if currently disabled.  PD no longer makes use of this function (it was disabled
-' in the 7.0 release), but users on XP *will* get better results if ClearType is turned ON.
-Public Sub HandleClearType(ByVal startingProgram As Boolean)
-    
-    'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
-    If startingProgram Then
-    
-        m_ClearTypeForciblySet = 0
-    
-        'Get current font smoothing setting
-        Dim pv As Long
-        SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
-        
-        'If font smoothing is disabled, mark it
-        If (pv = 0) Then m_ClearTypeForciblySet = 2
-        
-        'If font smoothing is enabled but set to Standard instead of ClearType, mark it
-        If (pv <> 0) Then
-            SystemParametersInfo SPI_GETFONTSMOOTHINGTYPE, 0, pv, 0
-            If (pv = SmoothingStandardType) Then m_ClearTypeForciblySet = 1
-        End If
-        
-        Select Case m_ClearTypeForciblySet
-        
-            'ClearType is enabled, no changes necessary
-            Case 0
-            
-            'Standard smoothing is enabled; switch it to ClearType for the duration of the program
-            Case 1
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
-                
-            'No smoothing is enabled; turn it on and activate ClearType for the duration of the program
-            Case 2
-                SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
-            
-        End Select
-    
-    Else
-        
-        Select Case m_ClearTypeForciblySet
-        
-            'ClearType was enabled, no action necessary
-            Case 0
-            
-            'Standard smoothing was enabled; restore it now
-            Case 1
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingStandardType, 0
-                
-            'No smoothing was enabled; restore that setting now
-            Case 2
-                SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingNone, 0
-        
-        End Select
-    
-    End If
     
 End Sub
 

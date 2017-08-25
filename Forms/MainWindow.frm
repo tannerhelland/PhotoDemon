@@ -2879,16 +2879,6 @@ Private Sub Form_Unload(Cancel As Integer)
     g_RecentFiles.MRU_SaveToFile
     g_RecentMacros.MRU_SaveToFile
     
-    '***
-    ' NOTE: as of 7.0, XP-specific font hackery has been disabled.
-    'Restore the user's font smoothing setting as necessary.  (Only relevant on XP.)
-    '#If DEBUGMODE = 1 Then
-    '    pdDebug.LogAction "Performing any XP-specific shutdown tasks..."
-    '#End If
-    '
-    'HandleClearType False
-    '***
-    
     'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing custom Windows 7+ features..."
@@ -2961,6 +2951,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutting down window manager..."
     #End If
     
+    Interface.ReleaseFormTheming Me
     g_WindowManager.UnregisterMainForm Me
     
     'As a final failsafe, forcibly unload any remaining forms

@@ -727,9 +727,16 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    Set m_MouseEvents = Nothing
-    g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
-    If g_ProgramShuttingDown Then ReleaseFormTheming Me
+    If g_ProgramShuttingDown Then
+        ReleaseFormTheming Me
+        Set m_MouseEvents = Nothing
+        g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
+        #End If
+        Cancel = True
+    End If
 End Sub
 
 'When a new tool is selected, we may need to initialize certain values.

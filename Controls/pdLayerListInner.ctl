@@ -289,6 +289,14 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         'Transfer focus back to the layer box itself (instead of letting Windows forward it somewhere random)
         g_WindowManager.SetFocusAPI Me.hWnd
         
+    ElseIf (vKey = VK_ESCAPE) Then
+        preventFurtherHandling = True
+        
+        If txtLayerName.Visible Then txtLayerName.Visible = False
+        txtLayerName.Text = ""
+        g_WindowManager.SetFocusAPI Me.hWnd
+        m_LayerNameEditMode = False
+        
     Else
         preventFurtherHandling = False
     End If
