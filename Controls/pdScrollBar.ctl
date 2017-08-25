@@ -341,7 +341,7 @@ End Property
 Public Property Let Value(ByVal newValue As Double)
     
     'For integer-only scroll bars, clamp values to their integer range
-    If m_SignificantDigits = 0 Then newValue = Int(newValue)
+    If (m_SignificantDigits = 0) Then newValue = Int(newValue)
     
     'Don't make any changes unless the new value deviates from the existing one
     If (newValue <> m_Value) Then
@@ -353,12 +353,12 @@ Public Property Let Value(ByVal newValue As Double)
         If MainModule.IsProgramRunning() Then
             
             'To prevent RTEs, perform an additional bounds check.  Clamp the value if it lies outside control boundaries.
-            If m_Value < m_Min Then m_Value = m_Min
-            If m_Value > m_Max Then m_Value = m_Max
+            If (m_Value < m_Min) Then m_Value = m_Min
+            If (m_Value > m_Max) Then m_Value = m_Max
             
         End If
         
-        'Recalculate the current thumb position, then redraw the button
+        'Recalculate the current thumb position, then redraw the button (and force an immediate refresh)
         DetermineThumbSize
         RedrawBackBuffer True
         
@@ -377,7 +377,7 @@ End Property
 
 Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
     
-    If newStyle <> m_VisualStyle Then
+    If (newStyle <> m_VisualStyle) Then
         m_VisualStyle = newStyle
         UpdateColorList
         RedrawBackBuffer
@@ -466,7 +466,7 @@ End Sub
 Private Sub ucSupport_GotFocusAPI()
     
     'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
+    If (Not m_MouseInsideUC) Then
         m_FocusRectActive = True
         RedrawBackBuffer
     End If
@@ -664,7 +664,7 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Reset mouse capture behavior; this greatly simplifies parts of the drawing function
-    If Not m_MouseInsideUC Then m_MouseInsideUC = True
+    If (Not m_MouseInsideUC) Then m_MouseInsideUC = True
     
     'If the user is click-dragging the thumb, we give that preferential treatment
     If m_MouseDownThumb Then
@@ -677,7 +677,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         valDiff = curValue - m_initMouseValue
         
         'Set the actual control value to match; this assignment will handle redraws as necessary
-        Value = m_initValue + valDiff
+        Me.Value = m_initValue + valDiff
         
     Else
     
@@ -1099,7 +1099,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint redrawImmediately
     
 End Sub
 
@@ -1118,7 +1118,7 @@ Private Sub DetermineThumbSize()
     End If
     
     'If the max size is less than zero, force it to zero and exit
-    If maxThumbSize <= 0 Then
+    If (maxThumbSize <= 0) Then
         m_ThumbSize = 0
         
     'If the max size is larger than zero, figure out how many discrete, pixel-sized increments there are between
@@ -1128,22 +1128,23 @@ Private Sub DetermineThumbSize()
         Dim totalIncrements As Single
         totalIncrements = Abs(m_Max - m_Min) + 1
         
-        If totalIncrements <> 0 Then
+        If (totalIncrements <> 0) Then
+        
             m_ThumbSize = maxThumbSize / totalIncrements
             
             'Unlike Windows, we enforce a minimum Thumb size of twice the button size.  This makes the scroll bar a bit
             ' easier to work with, especially on images where the ranges of the scrollbars tend to be *enormous*.
             If m_OrientationHorizontal Then
-                If m_ThumbSize < trackRect.Bottom * 2 Then m_ThumbSize = trackRect.Bottom * 2
+                If (m_ThumbSize < trackRect.Bottom * 2) Then m_ThumbSize = trackRect.Bottom * 2
             Else
-                If m_ThumbSize < trackRect.Right * 2 Then m_ThumbSize = trackRect.Right * 2
+                If (m_ThumbSize < trackRect.Right * 2) Then m_ThumbSize = trackRect.Right * 2
             End If
             
             'Also, don't let the size exceed the trackbar area
             If m_OrientationHorizontal Then
-                If m_ThumbSize > trackRect.Right - trackRect.Left Then m_ThumbSize = trackRect.Right - trackRect.Left
+                If (m_ThumbSize > trackRect.Right - trackRect.Left) Then m_ThumbSize = trackRect.Right - trackRect.Left
             Else
-                If m_ThumbSize > trackRect.Bottom - trackRect.Top Then m_ThumbSize = trackRect.Bottom - trackRect.Top
+                If (m_ThumbSize > trackRect.Bottom - trackRect.Top) Then m_ThumbSize = trackRect.Bottom - trackRect.Top
             End If
             
         Else
@@ -1170,7 +1171,7 @@ Private Sub DetermineThumbRect()
     End If
     
     'Next, let's calculate a few special circumstances: max and min values, specifically.
-    If m_Value <= m_Min Then
+    If (m_Value <= m_Min) Then
         
         If m_OrientationHorizontal Then
             thumbRect.Left = trackRect.Left
@@ -1178,7 +1179,7 @@ Private Sub DetermineThumbRect()
             thumbRect.Top = trackRect.Top
         End If
     
-    ElseIf m_Value >= m_Max Then
+    ElseIf (m_Value >= m_Max) Then
         
         If m_OrientationHorizontal Then
             thumbRect.Left = trackRect.Right - m_ThumbSize
@@ -1201,10 +1202,10 @@ Private Sub DetermineThumbRect()
         'Figure out the ratio between the current value and the max/min range
         Dim curPositionRatio As Double
         
-        If m_Max <> m_Min Then
+        If (m_Max <> m_Min) Then
             curPositionRatio = (m_Value - m_Min) / (m_Max - m_Min)
         Else
-            curPositionRatio = 0
+            curPositionRatio = 0#
         End If
         
         If m_OrientationHorizontal Then

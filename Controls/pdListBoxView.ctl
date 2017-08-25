@@ -190,7 +190,7 @@ End Sub
 'When the list manager detects that an action requires the list to be redrawn (like adding a new item), it will raise
 ' this event.  Whether or not we respond depends on whether the user control is currently visible.
 Private Sub listSupport_RedrawNeeded()
-    If ucSupport.AmIVisible Then RedrawBackBuffer
+    If ucSupport.AmIVisible Then RedrawBackBuffer True
 End Sub
 
 Private Sub listSupport_ScrollMaxChanged()
@@ -569,7 +569,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
         
-        If Not listHasFocus Then
+        If (Not listHasFocus) Then
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
         End If
         
