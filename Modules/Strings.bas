@@ -510,12 +510,11 @@ Public Function TrimNull(ByRef origString As String) As String
 End Function
 
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
-Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
+Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, Optional ByRef lenUTF8 As Long) As Boolean
     
     UTF8FromString = False
     
     'Use WideCharToMultiByte() to calculate the required size of the final UTF-8 array.
-    Dim lenUTF8 As Long
     lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), 0, 0, 0, 0)
     
     'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
