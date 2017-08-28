@@ -296,6 +296,16 @@ Begin VB.Form FormThemeEditor
       Caption         =   "custom menu color"
       FontSize        =   10
    End
+   Begin PhotoDemon.pdCheckBox chkCompressHS 
+      Height          =   375
+      Left            =   4200
+      TabIndex        =   20
+      Top             =   7920
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   661
+      Caption         =   "use LZ4 compression"
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -306,8 +316,8 @@ Attribute VB_Exposed = False
 'Resource editor dialog
 'Copyright 2016-2017 by Tanner Helland
 'Created: 22/August/16
-'Last updated: 31/January/17
-'Last update: added option to sort resources during a forced save
+'Last updated: 28/August/17
+'Last update: added option to compress individual resources using the faster (but lower-compression) LZ4HC algorithm
 '
 'As of v7.0, PD finally supports visual themes using its internal theming engine.  As part of supporting
 ' visual themes, various PD controls need access to image resources at a size and color scheme appropriate
@@ -338,12 +348,13 @@ Private Type PD_Resource
     ResourceName As String
     ResFileLocation As String
     ResType As PD_Resource_Type
-    ResSupportsColoration As Boolean
-    ResCustomMenuColor As Boolean
     ResColorLight As Long
     ResColorDark As Long
     ResColorMenu As Long
+    ResSupportsColoration As Boolean
+    ResCustomMenuColor As Boolean
     MarkedForDeletion As Boolean    'Resource deletion is very primitive at present; it may not work as expected
+    UseHighSpeedCompression As Boolean
 End Type
 
 Private m_NumOfResources As Long
@@ -425,11 +436,12 @@ Private Sub cmdExport_Click()
         Set cPackage = New pdPackager
         cPackage.PrepareNewPackage lstResources.ListCount, PD_RES_IDENTIFIER, , PD_SM_FileBacked, targetResFile
         
-        'Compression settings are still being tested.  Fast decompression time is important, but zstd yields
-        ' significantly better compression ratios, so I'm currently leaning toward using it over something
-        ' like lz4hc.
+        'By default, zstd is used for compression, as it yields the best compression ratios.  However, large resources
+        ' (or resources used in performance-sensitive scenarios) can manually specify LZ4HC compression instead.
         Dim resCompressionEngine As PD_COMPRESSION_ENGINES
         resCompressionEngine = PD_CE_Zstd
+        
+        Dim thisNodeCompression As PD_COMPRESSION_ENGINES
         
         'We're also going to use a quick trick to significantly reduce file size of bitmap data.
         ' In our icons, we force all transparency values to be a multiple of 5.  This reduces net entropy
@@ -509,8 +521,11 @@ Private Sub cmdExport_Click()
                         
                     End If
                     
-                    'Write this data to the first half of the node
+                    'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
                     cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                    
+                    'Figure out what compression engine to use for the bitmap data itself
+                    If m_Resources(i).UseHighSpeedCompression Then thisNodeCompression = PD_CE_Lz4HC Else thisNodeCompression = resCompressionEngine
                     
                     'Write the actual bitmap data to the second half of the node.  Note that we use two
                     ' different strategies here.
@@ -529,7 +544,7 @@ Private Sub cmdExport_Click()
                             Next x
                             Next y
                             
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                             
                         End If
                     
@@ -544,11 +559,14 @@ Private Sub cmdExport_Click()
                             ReDim totalData(0 To totalDataSize - 1) As Byte
                             CopyMemory ByVal VarPtr(totalData(0)), ByVal VarPtr(testPalette(0)), 4 * cCount
                             CopyMemory ByVal VarPtr(totalData(4 * cCount)), ByVal VarPtr(testPixels(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         
                         Else
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
+                            #End If
                             tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         End If
                         
                     End If
@@ -657,6 +675,7 @@ Private Sub SaveWorkingFile()
             tmpResources(i) = m_Resources(i)
         Next i
         
+        'If requested, sort the resources prior to writing them
         If CBool(chkSort.Value) Then
         
             Dim tmpSort As PD_Resource
@@ -691,6 +710,7 @@ Private Sub SaveWorkingFile()
                     End If
                     cXML.WriteTag "SupportsCustomMenuColor", .ResCustomMenuColor
                     If .ResCustomMenuColor Then cXML.WriteTag "ColorMenu", .ResColorMenu
+                    If .UseHighSpeedCompression Then cXML.WriteTag "UseLZ4Compression", "True" Else cXML.WriteTag "UseLZ4Compression", "False"
                 End With
                 
                 cXML.CloseTag CStr(numResourcesWritten + 1)
@@ -822,6 +842,7 @@ Private Sub LoadResourceFromFile()
                             .ResCustomMenuColor = cXML.GetUniqueTag_Boolean("SupportsCustomMenuColor", False, tagPos)
                             If .ResCustomMenuColor Then .ResColorMenu = cXML.GetUniqueTag_Long("ColorMenu", 0, tagPos)
                             .MarkedForDeletion = False
+                            If Strings.StringsEqual(cXML.GetUniqueTag_String("UseLZ4Compression", "False", tagPos), "True") Then .UseHighSpeedCompression = True
                         End With
                         
                         lstResources.AddItem m_Resources(i).ResourceName
@@ -862,6 +883,8 @@ Private Sub SyncResourceAgainstCurrentUI()
             If (.ResType = PDRT_Image) Then .ResCustomMenuColor = CBool(chkCustomMenuColor.Value)
             If .ResCustomMenuColor Then .ResColorMenu = csMenu.Color
             
+            .UseHighSpeedCompression = CBool(chkCompressHS.Value)
+            
             'To delete a resource, you have to click the delete button, save the resource file,
             ' then exit and re-enter the dialog.  (Sorry; deletion is not really meant to be used often.)
             .MarkedForDeletion = CBool(chkDelete.Value)
@@ -898,6 +921,7 @@ Private Sub SyncUIAgainstCurrentResource()
                 chkCustomMenuColor.Value = vbUnchecked
             End If
             
+            If .UseHighSpeedCompression Then chkCompressHS.Value = vbChecked Else chkCompressHS.Value = vbUnchecked
             If .MarkedForDeletion Then chkDelete.Value = vbChecked Else chkDelete.Value = vbUnchecked
             
             m_SuspendUpdates = False
