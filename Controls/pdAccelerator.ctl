@@ -102,7 +102,7 @@ Private m_InHookNow As Boolean
 ' limitation, these module-level variables are set by the accelerator hook control any time a potential accelerator is intercepted.  The hook then
 ' initiates the tmrAccelerator timer and immediately exits, which allows the hookproc to safely exit.  After the timer enforces a slight delay,
 ' it then performs the actual accelerator evaluation.
-Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
+Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Currency
 
 'This control may be problematic on systems with system-wide custom key handlers (like some Intel systems, argh).
 ' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
@@ -139,7 +139,7 @@ Private Sub m_FireTimer_Timer()
     If (Not m_InHookNow) Then
         
         'To prevent multiple events from firing too closely together, enforce a slight action delay before processing
-        If Abs(Timer - m_TimerAtAcceleratorPress) > 0.016 Then
+        If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) > 0.016) Then
         
             'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
             ' current sub will still complete its actions.
@@ -147,9 +147,14 @@ Private Sub m_FireTimer_Timer()
             
             'If the accelerator index is valid, raise a corresponding event, then reset the accelerator index
             If (m_AcceleratorIndex <> -1) Then
-                Debug.Print "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ")"
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ", " & HotKeyName(m_AcceleratorIndex) & ")"
+                #End If
+                
                 RaiseEvent Accelerator(m_AcceleratorIndex)
                 m_AcceleratorIndex = -1
+                
             End If
             
         End If
@@ -173,7 +178,7 @@ Private Sub SafelyReleaseHook()
     
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
-        If (Not (m_ReleaseTimer Is Nothing)) Then
+        If (Not m_ReleaseTimer Is Nothing) Then
             If (Not m_ReleaseTimer.IsActive) Then m_ReleaseTimer.StartTimer
         End If
         
@@ -441,7 +446,7 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
         
         'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
         ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-        If (Abs(Timer - m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
+        If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
         
         'If the accelerator timer is already waiting to process an existing accelerator, exit
         If (m_FireTimer Is Nothing) Then
@@ -484,7 +489,7 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
                     'We have a match!  Cache the index of the accelerator, note the current time,
                     ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
                     m_AcceleratorIndex = i
-                    m_TimerAtAcceleratorPress = Timer
+                    VBHacks.GetHighResTime m_TimerAtAcceleratorPress
                     
                     If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
                     

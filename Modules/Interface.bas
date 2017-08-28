@@ -1753,6 +1753,10 @@ Public Sub EnableUserInput()
         If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
     End If
     
+    'Immediately prior to re-enabling the main form, flush the input buffer queue.  (This prevents any stray
+    ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
+    DoEvents
+    
     'Re-enable the main form
     FormMain.Enabled = True
 
