@@ -6,40 +6,34 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdProfiler"
+Attribute VB_Name = "pdProfilerLT"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Performance Profiler
+'PhotoDemon Performance Profiler - Long-term Tracking
 'Copyright 2014-2017 by Tanner Helland
 'Created: 19/June/14
-'Last updated: 21/July/14
-'Last update: add support for timing databases, so we can track performance (and associated metrics, like stddevs)
-'              across multiple sessions
+'Last updated: 28/August/17
+'Last update: code clean-up in preparation for splitting some functionality into a short-term class
 '
 'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
 ' performance is a tough thing to track using default VB code, which is why it became necessary to write a custom
 ' profiler better tailored to the kind of complex performance analysis PD needs.
 '
-'pdProfile aims to make profiling complex functions simpler, by allowing the user to break a profiling session into
-' discrete "events", each of which gets its own timing report.  When profiling terminates, this class will automatically
-' sort each discrete event by time taken, giving me an easy way to know where I can focus my optimization efforts.  As of
-' July '14, the class also supports measuring performance across multiple sessions, via use of the "useDatabase" parameter
-' in the initial startProfiling function.  If set to TRUE, this class will automatically write an XML database of its timing
-' findings, and on subsequent runs, the latest data will be added to the running total.  This allows for tracking historic
-' mean timings, standard variation, and coefficient of variation (e.g. how much does timing deviate) for all individual
-' events within a single report.
+'pdProfilerLT aims to solve a specific profiling problem: tracking single-occurrence events across multiple sessions,
+' and calculating things like average time taken, standard deviations, and coefficients of variation.  At present, I use
+' this to track performance of PD's startup process(es), and the profiler results have been incredibly helpful at
+' helping me has isolate and solve a number of perf issues during program initialization.
 '
 'Many thanks to Karl Petersen's "Measuring Optimizations for Classic VB" article (http://vb.mvps.org/articles/vsm20100518.pdf)
 ' and accompanying "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which served as my inspiration for this project.
 '
-'Because this class is meant to be as simple to use as possible *from within PD* (because it's often added for a single
-' debugging session, then removed once a problematic area is found), I've added a number of PD-specific bits to it, like
-' automatically using the program's known Debug folder for file output, and automatically generating filenames from report
-' titles.  These PD-specific instances should be easy to strip out, but as with any class containing a "pd" prefix, I haven't
-' gone out of my way to make everything in here project-agnostic.  NB: Use at your own risk!
+'Because this class is meant to be as simple to use as possible *from within PD*, I've added a number of PD-specific bits
+' to it, like automatically using the program's known Debug folder for file output, and automatically generating filenames
+' from report titles.  These PD-specific instances should be easy to strip out, but as with any class containing a "pd"
+' prefix, I haven't gone out of my way to make everything in here project-agnostic.  NB: Use at your own risk!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -48,63 +42,44 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-
 'The profiler supports sorting by several different criteria.  In addition to single-run timing values, we can also sort data
 ' by historical mean, standard deviation, and CV (to see which times are most variable).
-Private Enum PD_PROFILE_SORT_CRITERIA
-    PDPSORT_SESSION_TIME = 0
-    PDPSORT_MEAN = 1
-    PDPSORT_STDDEV = 2
-    PDPSORT_CV = 3
+Private Enum PD_ProfilerSort
+    pdps_SessionTime = 0
+    pdps_Mean = 1
+    pdps_StdDev = 2
+    pdps_CV = 3
 End Enum
 
 #If False Then
-    Private Const PDPSORT_SESSION_TIME = 0, PDPSORT_MEAN = 1, PDPSORT_STDDEV = 2, PDPSORT_CV = 3
+    Private Const pdps_SessionTime = 0, pdps_Mean = 1, pdps_StdDev = 2, pdps_CV = 3
 #End If
-
-'TIMECAPS is used to retrieve the best available resolution (wPeriodMin) for the current system timer.
-Private Type TIMECAPS
-   wPeriodMin As Long
-   wPeriodMax As Long
-End Type
-
-'WinMM.dll provides all the interesting features we need for timing
-Private Declare Function timeBeginPeriod Lib "winmm" (ByVal uPeriod As Long) As Long
-Private Declare Function timeEndPeriod Lib "winmm" (ByVal uPeriod As Long) As Long
-Private Declare Function timeGetTime Lib "winmm" () As Long
-Private Declare Function timeGetDevCaps Lib "winmm" (lpTimeCaps As TIMECAPS, ByVal uSize As Long) As Long
 
 'When timing is active, this will be set to TRUE
 Private m_TimingActive As Boolean
 
-'Minimum available resolution for the requested timer.  Note that timing reports CANNOT be more accurate than this amount.
-Private m_MinResolution As Long
-
 'As a convenience, this class allows you to track up to 64 consecutive events within a single timer schedule.  (The allowed event
 ' count could be handled dynamically, but that would introduce variability into timing, so I avoid it.)  Those events are stored
 ' in this array, as they are added to the profiler.
-Private Type PD_TIMER_EVENT
+Private Type PD_TimedEvent
     Name As String
     Index As Long
-    StartTick As Long
-    EndTick As Long
-    ElapsedTime As Long
-    HistoricalMean As Double        'NOTE: this value is only used if database support is active
-    HistoricalStdDev As Double      'NOTE: this value is only used if database support is active
-    CoefficientVariation As Double  'NOTE: this value is only used if database support is active
-    NumHistoricalEntries As Long    'NOTE: this value is only used if database support is active
+    StartTick As Currency
+    EndTick As Currency
+    ElapsedTime As Double
+    
+    'The following four values are only filled/used if database support is active
+    NumHistoricalEntries As Long
+    HistoricalMean As Double
+    HistoricalStdDev As Double
+    CoefficientVariation As Double
 End Type
 
 Private Const NUM_OF_TIMER_EVENTS As Long = 64
-Private m_Events() As PD_TIMER_EVENT
+Private m_Events() As PD_TimedEvent
 
 'Current event index; starts at 0 and moves up from there.
 Private m_CurrentEventIndex As Long
-
-'I don't know if this variable will actually matter, but I'm curious to track it anyway... basically, when this class has some data
-' it needs to crunch, it makes a note of the tick count before crunching, and a note after, and adds the difference to this variable.
-' This count can then be removed from the final report total.
-Private m_TimeSpentProfiling As Long
 
 'Name of the report.  To simplify the saving process, this will automatically be used as the report's name, saving the user from having
 ' to specify a report title.
@@ -119,11 +94,6 @@ Private Sub Class_Initialize()
 
     'Reset all timing variables
     m_TimingActive = False
-    
-    'Retrieve the current system limit for timer resolution, and store it at module-level
-    Dim tmpTimeCaps As TIMECAPS
-    timeGetDevCaps tmpTimeCaps, Len(tmpTimeCaps)
-    m_MinResolution = tmpTimeCaps.wPeriodMin
             
 End Sub
 
@@ -131,7 +101,7 @@ End Sub
 ' Inputs:
 ' 1) reportName - String that defines the purpose of the report.  Note that it will also be used as the filename of the report.
 ' 2) useDatabase - Store timing data between runs, and report means, std devs, and CVs in addition to per-session values.
-Public Sub StartProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal useDatabase As Boolean = False)
+Friend Sub StartProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal useDatabase As Boolean = False)
 
     'Note the use of a database.  (We won't actually do anything with this value until the log session ends, FYI.)
     m_UseDatabase = useDatabase
@@ -142,29 +112,17 @@ Public Sub StartProfiling(Optional ByVal reportName As String = "Generic report"
     'Note that profiling has begun
     m_TimingActive = True
     
-    'Reset the current event index, time profiling count, and anything else relevant to a single profile run
+    'Reset the current event index and anything else relevant to a single profile run
     m_CurrentEventIndex = 0
-    m_TimeSpentProfiling = 0
     
     'Reset the event tracker array
-    ReDim m_Events(0 To NUM_OF_TIMER_EVENTS - 1) As PD_TIMER_EVENT
-        
-    'Set the timer to its minimum available resolution (presumably 1ms on any modern system).
-    timeBeginPeriod m_MinResolution
-    
-    'Given the timer a moment to accept the new resolution
-    Dim checkTime1 As Long, checkTime2 As Long
-    Do
-        checkTime2 = timeGetTime()
-        If (checkTime2 - checkTime1) = m_MinResolution Then Exit Do
-        checkTime1 = checkTime2
-    Loop
+    ReDim m_Events(0 To NUM_OF_TIMER_EVENTS - 1) As PD_TimedEvent
     
     'Make a note of the starting time
     With m_Events(m_CurrentEventIndex)
         .Index = 0
         .Name = reportName
-        .StartTick = timeGetTime()
+        VBHacks.GetHighResTime .StartTick
     End With
     
     'Note that EndTick and ElapsedTime are not calculated until all profiling is complete
@@ -175,11 +133,11 @@ Public Sub StartProfiling(Optional ByVal reportName As String = "Generic report"
 End Sub
 
 'Use this function to add a new event to the profiler.
-Public Sub MarkEvent(ByRef eventName As String)
+Friend Sub MarkEvent(ByRef eventName As String)
 
     'Retrieve the current tick count
-    Dim curTick As Long
-    curTick = timeGetTime()
+    Dim curTick As Currency
+    VBHacks.GetHighResTime curTick
     
     'Fill in this time as the END of the previous tracked event
     m_Events(m_CurrentEventIndex - 1).EndTick = curTick
@@ -188,11 +146,8 @@ Public Sub MarkEvent(ByRef eventName As String)
     With m_Events(m_CurrentEventIndex)
         .Index = m_CurrentEventIndex
         .Name = eventName
-        .StartTick = timeGetTime()
+        VBHacks.GetHighResTime .StartTick
     End With
-    
-    'Make a note of how much time we wasted in this function, which we can then subtract from the final timing report
-    m_TimeSpentProfiling = m_TimeSpentProfiling + (timeGetTime() - curTick)
     
     'Advance the event index
     m_CurrentEventIndex = m_CurrentEventIndex + 1
@@ -201,27 +156,24 @@ End Sub
 
 'Call this function to STOP profile recording.  If the class is terminated before this function is called, no worries - PD will still
 ' clean everything up just fine, but you (obviously) won't get your timing report.
-Public Sub StopProfiling()
+Friend Sub StopProfiling()
     
     'Fill in the final tick count for the last profile entry
-    m_Events(m_CurrentEventIndex - 1).EndTick = timeGetTime()
+    VBHacks.GetHighResTime m_Events(m_CurrentEventIndex - 1).EndTick
     
     'Note that profiling has ended
     m_TimingActive = False
     
-    'Allow the timer to return to its default resolution
-    timeEndPeriod m_MinResolution
-    
     'Calculate the elapsed time for each individual entry in the profiler array
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
-        m_Events(i).ElapsedTime = m_Events(i).EndTick - m_Events(i).StartTick
+        m_Events(i).ElapsedTime = VBHacks.GetTimerDifference(m_Events(i).StartTick, m_Events(i).EndTick) * 1000#
     Next i
     
 End Sub
 
 'Generate a report on this profile instance.  Optional parameters may be added in the future to make the data easier to use.
-Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
+Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
     
     'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
     Dim reportString As String
@@ -234,17 +186,17 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     reportString = reportString & "(Report updated at " & Format$(Now, "h:mm:ss AM/PM") & " on " & Format$(Now, "d-mmmm-yy") & ")" & vbCrLf & vbCrLf
     
     'Note the number of events tracked and total time
-    Dim totalTime As Long
-    totalTime = (m_Events(m_CurrentEventIndex - 1).EndTick - m_Events(0).StartTick) - m_TimeSpentProfiling
+    Dim totalTime As Double
+    totalTime = VBHacks.GetTimerDifference(m_Events(0).StartTick, m_Events(m_CurrentEventIndex - 1).EndTick) * 1000#
     
     reportString = reportString & "Number of events tracked: " & m_CurrentEventIndex & vbCrLf
-    reportString = reportString & "Total time taken (this session): " & FormatNumber(totalTime / 1000, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf
+    reportString = reportString & "Total time taken (this session): " & FormatNumber(CDbl(totalTime) / 1000#, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf
     reportString = reportString & "Program compiled: " & OS.IsProgramCompiled() & vbCrLf & vbCrLf
     
     'Next, report each event individually, but sorted from longest to shortest
     reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
     
-    SortProfileEntries PDPSORT_SESSION_TIME
+    SortProfileEntries pdps_SessionTime
     
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
@@ -261,7 +213,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         'Display results by their historical mean time taken
         reportString = reportString & vbCrLf & "Mean time across ALL RECORDED SESSIONS, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
         
-        SortProfileEntries PDPSORT_MEAN
+        SortProfileEntries pdps_Mean
         
         Dim uncertaintyValue As Double
         
@@ -281,7 +233,7 @@ Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         ' This tells us which timing values are most variable.
         reportString = reportString & vbCrLf & "Coefficient of variation across ALL RECORDED SESSIONS, with events sorted from highest to lowest magnitude:" & vbCrLf & vbCrLf
         
-        SortProfileEntries PDPSORT_CV
+        SortProfileEntries pdps_CV
         
         For i = 0 To m_CurrentEventIndex - 1
             reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
@@ -323,7 +275,7 @@ Private Sub RetrieveDatabase()
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon XML file
     If xmlEngine.IsPDDataType("Timing Database") And xmlEngine.ValidateLoadedXMLData("reportName") Then
     
-        Dim oldMean As Double, oldStdDev As Double
+        Dim oldMean As Currency, oldStdDev As Double
     
         'Next, loop through all entries in the current timing database.  For each one, try to find a match
         ' in the XML database.
@@ -334,7 +286,7 @@ Private Sub RetrieveDatabase()
             tagPosition = xmlEngine.GetLocationOfTagPlusAttribute("profileEvent", "name", Replace(m_Events(i).Name, " ", "_"))
             
             'If an entry was found, retrieve it
-            If tagPosition > 0 Then
+            If (tagPosition > 0) Then
             
                 m_Events(i).NumHistoricalEntries = xmlEngine.GetUniqueTag_Long("numRecordedEntries", m_Events(i).NumHistoricalEntries, tagPosition)
                 oldMean = xmlEngine.GetUniqueTag_Double("eventMean", m_Events(i).HistoricalMean, tagPosition)
@@ -350,7 +302,7 @@ Private Sub RetrieveDatabase()
                 m_Events(i).HistoricalStdDev = (oldStdDev + (m_Events(i).ElapsedTime - oldMean) * (m_Events(i).ElapsedTime - m_Events(i).HistoricalMean))
                 
                 'Calculate a coefficient of variation for the new values
-                If m_Events(i).HistoricalMean > 0 Then
+                If (m_Events(i).HistoricalMean > 0) Then
                     m_Events(i).CoefficientVariation = Sqr(Abs(m_Events(i).HistoricalStdDev)) / m_Events(i).HistoricalMean
                 Else
                     m_Events(i).CoefficientVariation = 0
@@ -401,7 +353,7 @@ Private Sub WriteUpdatedDatabase()
         
         'Before writing anything, if this is the first time writing the database, update each entry's historical values
         ' to match the current entry.
-        If m_Events(i).NumHistoricalEntries = 0 Then
+        If (m_Events(i).NumHistoricalEntries = 0) Then
             m_Events(i).NumHistoricalEntries = 1
             m_Events(i).HistoricalMean = m_Events(i).ElapsedTime
             m_Events(i).HistoricalStdDev = 0
@@ -439,11 +391,8 @@ Private Function GetReportFilename()
     dstFilename = dstFilename & ".log"
     
     'Make sure the report name can be used as a valid filename
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
-    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace(dstFilename, " ", "_")
+    dstFilename = Files.FileMakeNameValid(dstFilename)
+    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace$(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
@@ -463,11 +412,8 @@ Private Function GetDatabaseFilename()
     dstFilename = dstFilename & ".xml"
     
     'Make sure the report name can be used as a valid filename
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
-    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace(dstFilename, " ", "_")
+    dstFilename = Files.FileMakeNameValid(dstFilename)
+    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace$(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
@@ -476,7 +422,7 @@ Private Function GetDatabaseFilename()
 End Function
 
 'Sort the profile entries from longest to shortest time taken
-Private Sub SortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CRITERIA = PDPSORT_SESSION_TIME)
+Private Sub SortProfileEntries(Optional ByVal sortCriteria As PD_ProfilerSort = pdps_SessionTime)
 
     Dim i As Long, j As Long
     
@@ -487,17 +433,17 @@ Private Sub SortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CR
             'Compare two profiled events using the supplied criteria; if one entry exceeds the other, swap 'em
             Select Case sortCriteria
                 
-                Case PDPSORT_SESSION_TIME
-                    If m_Events(i).ElapsedTime > m_Events(j).ElapsedTime Then SwapEventData m_Events(i), m_Events(j)
+                Case pdps_SessionTime
+                    If (m_Events(i).ElapsedTime > m_Events(j).ElapsedTime) Then SwapEventData m_Events(i), m_Events(j)
                 
-                Case PDPSORT_MEAN
-                    If m_Events(i).HistoricalMean > m_Events(j).HistoricalMean Then SwapEventData m_Events(i), m_Events(j)
+                Case pdps_Mean
+                    If (m_Events(i).HistoricalMean > m_Events(j).HistoricalMean) Then SwapEventData m_Events(i), m_Events(j)
                 
-                Case PDPSORT_STDDEV
-                    If m_Events(i).HistoricalStdDev > m_Events(j).HistoricalStdDev Then SwapEventData m_Events(i), m_Events(j)
+                Case pdps_StdDev
+                    If (m_Events(i).HistoricalStdDev > m_Events(j).HistoricalStdDev) Then SwapEventData m_Events(i), m_Events(j)
                     
-                Case PDPSORT_CV
-                    If m_Events(i).CoefficientVariation > m_Events(j).CoefficientVariation Then SwapEventData m_Events(i), m_Events(j)
+                Case pdps_CV
+                    If (m_Events(i).CoefficientVariation > m_Events(j).CoefficientVariation) Then SwapEventData m_Events(i), m_Events(j)
                 
             End Select
             
@@ -507,8 +453,8 @@ Private Sub SortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CR
 End Sub
 
 'Swap the values of two event profile entries
-Private Sub SwapEventData(ByRef profileOne As PD_TIMER_EVENT, ByRef profileTwo As PD_TIMER_EVENT)
-    Dim tmpProf As PD_TIMER_EVENT
+Private Sub SwapEventData(ByRef profileOne As PD_TimedEvent, ByRef profileTwo As PD_TimedEvent)
+    Dim tmpProf As PD_TimedEvent
     tmpProf = profileOne
     profileOne = profileTwo
     profileTwo = tmpProf
@@ -519,7 +465,7 @@ Private Sub Class_Terminate()
     'Failsafe check to end profiling.
     If m_TimingActive Then
         StopProfiling
-        Debug.Print "WARNING!  Why are you terminating an active pdProfile instance?  The .StopProfiling() function exists for a reason!"
+        Debug.Print "WARNING!  Why are you terminating an active pdProfilerLT instance?  The .StopProfiling() function exists for a reason!"
     End If
 
 End Sub
