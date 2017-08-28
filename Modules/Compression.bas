@@ -428,7 +428,7 @@ Public Function GetMinCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGIN
     ElseIf (whichEngine = PD_CE_Zstd) Then
         GetMinCompressionLevel = Plugin_zstd.Zstd_GetMinCompressionLevel()
     ElseIf (whichEngine = PD_CE_Lz4) Then
-        GetMinCompressionLevel = Plugin_lz4.Lz4_GetMinAccelerationLevel()
+        GetMinCompressionLevel = Plugin_lz4.Lz4_GetMaxAccelerationLevel()
     ElseIf (whichEngine = PD_CE_Lz4HC) Then
         GetMinCompressionLevel = Plugin_lz4.Lz4HC_GetMinCompressionLevel()
     Else
@@ -443,8 +443,12 @@ Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGIN
         GetMaxCompressionLevel = Plugin_zLib.ZLib_GetMaxCompressionLevel()
     ElseIf (whichEngine = PD_CE_Zstd) Then
         GetMaxCompressionLevel = Plugin_zstd.Zstd_GetMaxCompressionLevel()
+    
+    'Remember that Lz4 does *not* expose a compression level.  Instead, it exposes an "acceleration" level,
+    ' where higher values mean faster - but worse - compression.  Because of this, the way we report
+    ' max/min values is opposite other libraries.
     ElseIf (whichEngine = PD_CE_Lz4) Then
-        GetMaxCompressionLevel = Plugin_lz4.Lz4_GetMaxAccelerationLevel()
+        GetMaxCompressionLevel = Plugin_lz4.Lz4_GetMinAccelerationLevel()
     ElseIf (whichEngine = PD_CE_Lz4HC) Then
         GetMaxCompressionLevel = Plugin_lz4.Lz4HC_GetMaxCompressionLevel()
     Else
