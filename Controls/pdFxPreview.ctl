@@ -38,7 +38,7 @@ Begin VB.UserControl pdFxPreviewCtl
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   873
-      FontSize        =   8
+      FontSize        =   9
    End
    Begin PhotoDemon.pdButtonStrip btsState 
       Height          =   495
@@ -48,7 +48,7 @@ Begin VB.UserControl pdFxPreviewCtl
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   873
-      FontSize        =   8
+      FontSize        =   9
    End
 End
 Attribute VB_Name = "pdFxPreviewCtl"

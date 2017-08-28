@@ -95,7 +95,7 @@ Begin VB.Form dialog_ColorSelector
    End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
-      Left            =   6480
+      Left            =   6600
       TabIndex        =   1
       Top             =   3735
       Width           =   1455

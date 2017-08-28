@@ -50,7 +50,7 @@ Begin VB.Form FormBoxBlur
       Height          =   330
       Left            =   6120
       TabIndex        =   2
-      Top             =   3840
+      Top             =   3960
       Width           =   5700
       _ExtentX        =   10054
       _ExtentY        =   582
