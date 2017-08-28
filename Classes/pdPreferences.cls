@@ -680,20 +680,24 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
-    strSectionHeader = Replace$(strSectionHeader, " ", "")
-    strVariableName = Replace$(strVariableName, " ", "")
+    If InStr(1, strSectionHeader, " ", vbBinaryCompare) Then strSectionHeader = Replace$(strSectionHeader, " ", "", , , vbBinaryCompare)
+    If InStr(1, strVariableName, " ", vbBinaryCompare) Then strVariableName = Replace$(strVariableName, " ", "", , , vbBinaryCompare)
     
     'Create an XML object and load the XML settings file
-    If (Not m_BatchModeActive) Then
+    Dim prefFileOK As Boolean
+    If m_BatchModeActive Then
+        prefFileOK = True
+    Else
         Set m_XMLEngine = New pdXML
         m_XMLEngine.LoadXMLFile m_PreferencesPath
+        prefFileOK = m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths")
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths") Then
+    If prefFileOK Then
         GetPreference = m_XMLEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
     Else
-        GetPreference = ""
+        GetPreference = vbNullString
     End If
     
 End Function
