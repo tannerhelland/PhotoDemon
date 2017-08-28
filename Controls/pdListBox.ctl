@@ -258,11 +258,9 @@ End Sub
 
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
-    If vScroll.Visible <> lbView.ShouldScrollBarBeVisible Then
-        vScroll.Visible = lbView.ShouldScrollBarBeVisible
-    End If
+    If (vScroll.Visible <> lbView.ShouldScrollBarBeVisible) Then vScroll.Visible = lbView.ShouldScrollBarBeVisible
     
-    If newMax >= 0 Then vScroll.Max = newMax
+    If (newMax >= 0) Then vScroll.Max = newMax
     vScroll.LargeChange = lbView.GetDefaultItemHeight
     vScroll.Value = lbView.ScrollValue
     

@@ -131,15 +131,15 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
     
     'Change the rendering mode, as necessary
-    If (CBool(itemHeight <> -1) And CBool(m_SizeMode <> PDLH_CUSTOM)) Then
+    If (itemHeight <> -1) And (m_SizeMode <> PDLH_CUSTOM) Then
         m_SizeMode = PDLH_CUSTOM
-    ElseIf (hasTrailingSeparator And CBool(m_SizeMode <> PDLH_SEPARATORS)) Then
+    ElseIf (hasTrailingSeparator And (m_SizeMode <> PDLH_SEPARATORS)) Then
         m_SizeMode = PDLH_SEPARATORS
     End If
     
     'If this item is being inserted anywhere but the end of the list, move other items around to make room.
     Dim i As Long
-    If (CBool(itemIndex <> -1) And CBool(itemIndex < m_NumOfItems)) Then
+    If (itemIndex <> -1) And (itemIndex < m_NumOfItems) Then
         
         'Migrate all objects downward in the list.
         For i = m_NumOfItems To (itemIndex + 1) Step -1
@@ -147,7 +147,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         Next i
         
     'If no insert index has been specified, assume the insertion happens at the end of the list
-    ElseIf CBool(itemIndex = -1) Then
+    ElseIf (itemIndex = -1) Then
         itemIndex = m_NumOfItems
     End If
     
@@ -157,7 +157,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         .textEn = srcItemText
         
         'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
-        If Not (g_Language Is Nothing) Then
+        If (Not g_Language Is Nothing) Then
             If g_Language.TranslationActive Then
                 .textTranslated = g_Language.TranslateMessage(srcItemText)
             Else
@@ -168,7 +168,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         End If
         
         'Calculating height is a bit more involved...
-        If CBool(itemHeight = -1) Then
+        If (itemHeight = -1) Then
             
             If .isSeparator Then
                 .itemHeight = m_DefaultHeight + (m_DefaultHeight * SEPARATOR_LINE_HEIGHT)

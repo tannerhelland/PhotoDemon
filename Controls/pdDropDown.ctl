@@ -350,6 +350,12 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     listSupport.RemoveItem itemIndex
 End Sub
 
+'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
+' once you're ready, or you'll never get rendering requests!
+Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
+    listSupport.SetAutomaticRedraws newState, raiseRedrawImmediately
+End Sub
+
 Private Sub lbPrimary_Click()
     
     'Mirror any changes to the base dropdown control, then hide the list box
