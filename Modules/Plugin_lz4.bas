@@ -46,7 +46,7 @@ Private Const LZ4_MAX_ALEVEL As Long = 1000
 'These constants were originally declared in lz4_hc.h
 Private Const LZ4HC_MIN_CLEVEL As Long = 3
 Private Const LZ4HC_DEFAULT_CLEVEL As Long = 9
-Private Const LZ4HC_MAX_CLEVEL As Long = 16
+Private Const LZ4HC_MAX_CLEVEL As Long = 12
 
 Private Declare Function LZ4_versionNumber Lib "liblz4" Alias "_LZ4_versionNumber@0" () As Long
 Private Declare Function LZ4_compress_fast Lib "liblz4" Alias "_LZ4_compress_fast@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cAccelerationLevel As Long) As Long
