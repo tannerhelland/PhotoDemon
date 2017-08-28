@@ -1,16 +1,18 @@
 VERSION 5.00
 Begin VB.Form FormSplash 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H00000000&
    BorderStyle     =   0  'None
    ClientHeight    =   3300
    ClientLeft      =   210
    ClientTop       =   1365
    ClientWidth     =   11685
+   ClipControls    =   0   'False
    ControlBox      =   0   'False
+   DrawStyle       =   5  'Transparent
+   Enabled         =   0   'False
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   0
       Weight          =   400
@@ -18,7 +20,8 @@ Begin VB.Form FormSplash
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   KeyPreview      =   -1  'True
+   FontTransparent =   0   'False
+   HasDC           =   0   'False
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -28,6 +31,7 @@ Begin VB.Form FormSplash
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
+   Visible         =   0   'False
 End
 Attribute VB_Name = "FormSplash"
 Attribute VB_GlobalNameSpace = False
@@ -55,6 +59,9 @@ Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef l
 ' has been successfully assembled.
 Private m_logoDIB As pdDIB, m_shadowDIB As pdDIB
 Private m_splashDIB As pdDIB
+
+'AutoRedraw is set to FALSE for this form; we paint it ourselves using this DIB as a backbuffer
+Private m_BackBuffer As pdDIB
 
 'We skip the entire display process if any of the DIBs can't be created
 Private m_dibsLoadedSuccessfully As Boolean
@@ -159,8 +166,12 @@ Public Sub PrepareRestOfSplash()
         End If
         
         'Copy the composite image onto the underlying form
-        BitBlt Me.hDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
-        Me.Picture = Me.Image
+        If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
+        m_BackBuffer.CreateBlank m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, 24, 0
+        BitBlt m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        
+        'Ensure the form has been painted at least once prior to display
+        Me.Refresh
         
     Else
         pdDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
@@ -194,7 +205,10 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         
         Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreatePainter cPainter
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.hDC, True
+        
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB m_BackBuffer
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
         Drawing2D.QuickCreateSolidPen cPen, lineRadius, g_Themer.GetGenericUIColor(UI_Accent), 100#, , P2_LC_Round
@@ -203,9 +217,13 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         Set cSurface = Nothing
         
         'Manually refresh the form
-        Me.Picture = Me.Image
         Me.Refresh
-    
+        
     End If
 
+End Sub
+
+'Painting is easy - just flip the backbuffer to the screen and call it a day!
+Private Sub Form_Paint()
+    BitBlt Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
 End Sub

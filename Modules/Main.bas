@@ -46,11 +46,9 @@ Private Const SEM_NOOPENFILEERRORBOX = &H8000&
 
 Private m_hShellModule As Long
 
-'These can be used to ensure that the splash shows for a minimum amount of time
-Private m_LoadTime As Double, m_StartTime As Double
-
-'This constant is the number of "discrete" loading steps involved in loading the program.  It is relevant for displaying
-'the progress bar on the initial splash screen; this value is the progress bar's maximum value.
+'This constant is the number of "discrete" loading steps involved in loading the program.
+' It is relevant for displaying the progress bar on the initial splash screen; this value is the
+' progress bar's maximum value.
 Private Const NUMBER_OF_LOADING_STEPS As Long = 18
 
 'After Main() has been invoked, this will be set to TRUE.  This is important in VB as any number of functions
@@ -126,8 +124,8 @@ Public Sub ContinueLoadingProgram()
     
     'During development, I find it helpful to profile PhotoDemon's startup process.  Timing functions like this can be commented out
     ' without harming anything.
-    Dim perfCheck As pdProfiler
-    Set perfCheck = New pdProfiler
+    Dim perfCheck As pdProfilerLT
+    Set perfCheck = New pdProfilerLT
     
     #If DEBUGMODE = 1 Then
         perfCheck.StartProfiling "PhotoDemon Startup", True
@@ -152,8 +150,6 @@ Public Sub ContinueLoadingProgram()
         perfCheck.MarkEvent "Prepare splash screen"
     #End If
     
-    m_StartTime = Timer
-    
     'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
     ' (At present, only GDI+ is used)
     Interface.InitializeInterfaceBackend
@@ -164,16 +160,9 @@ Public Sub ContinueLoadingProgram()
             Drawing2D.SetLibraryDebugMode True
         #End If
         
-        'Load FormSplash into memory, but don't make it visible.
-        FormSplash.Visible = False
+        'Load FormSplash into memory.  (Note that its .Visible property is set to FALSE, so it is not actually displayed here.)
+        Load FormSplash
         
-    End If
-        
-    'Check the runtime environment.  If inside the the IDE, the splash needs to be modified slightly.
-    If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
-        If OS.IsProgramCompiled() Then m_LoadTime = 1# Else m_LoadTime = 0.5
-    Else
-        m_LoadTime = 0#
     End If
     
     
@@ -336,7 +325,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Detect monitors"
+        perfCheck.MarkEvent "Detect displays"
     #End If
     
     LoadMessage "Analyzing current monitor setup..."
@@ -353,7 +342,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Display splash screen"
+        perfCheck.MarkEvent "Calculate splash screen coordinates"
     #End If
     
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
@@ -368,6 +357,10 @@ Public Sub ContinueLoadingProgram()
     'Center the splash screen on whichever monitor the user previously used.
     g_Displays.CenterFormViaReferenceRect FormSplash, wRect
     
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Confirm UI font exists"
+    #End If
+    
     'If Segoe UI is available, we prefer to use it instead of Tahoma.  On XP this is not guaranteed, however, so we have to check.
     Dim tmpFontCheck As pdFont
     Set tmpFontCheck = New pdFont
@@ -377,9 +370,17 @@ Public Sub ContinueLoadingProgram()
     If tmpFontCheck.DoesFontExist("Segoe UI") Then g_InterfaceFont = "Segoe UI" Else g_InterfaceFont = "Tahoma"
     Set tmpFontCheck = Nothing
     
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Retrieve splash logo"
+    #End If
+    
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     FormSplash.PrepareSplashLogo NUMBER_OF_LOADING_STEPS
     FormSplash.PrepareRestOfSplash
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Display splash screen"
+    #End If
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
@@ -390,6 +391,7 @@ Public Sub ContinueLoadingProgram()
     
     'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
     #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Initialize debugger"
         pdDebug.InitializeDebugger True
     #End If
         
@@ -670,12 +672,6 @@ Public Sub ContinueLoadingProgram()
         perfCheck.StopProfiling
         perfCheck.GenerateProfileReport True
     #End If
-    
-    'Display the splash screen for at least a second or two
-    If ((Timer - m_StartTime) < m_LoadTime) Then
-        Do While ((Timer - m_StartTime) < m_LoadTime)
-        Loop
-    End If
     
     'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.
     ' (If this is *not* the first time, the window manager will automatically restore the window's last-known position and state.)
