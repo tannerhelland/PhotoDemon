@@ -46,8 +46,14 @@ Private Const GDC_LOGPIXELSX As Long = 88
 Private Const GDC_LOGPIXELSY As Long = 90
 Private Const GDC_DESKTOPVERTRES As Long = 117
 
-'GetMonitorInfo struct
+Private Const DD_PRIMARY_DEVICE As Long = &H4
 Private Const CCHDEVICENAME As Long = 32
+
+Private Const MONITOR_DEFAULTTONULL As Long = 0
+Private Const MONITOR_DEFAULTTOPRIMARY As Long = 1
+Private Const MONITOR_DEFAULTTONEAREST As Long = 2
+
+'GetMonitorInfo struct
 Private Type MONITORINFOEX
     cbSize As Long
     rcMonitor As RECTL
@@ -67,23 +73,19 @@ Private Type DISPLAY_DEVICEW
    DeviceKey(0 To 255) As Byte
 End Type
 
-Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
-Private Const DD_PRIMARY_DEVICE As Long = &H4
-
-'Monitor interaction APIs
-Private Const MONITOR_DEFAULTTONULL As Long = 0
-Private Const MONITOR_DEFAULTTOPRIMARY As Long = 1
-Private Const MONITOR_DEFAULTTONEAREST As Long = 2
-Private Declare Function MonitorFromPoint Lib "user32" (ByVal x As Long, ByVal y As Long, ByVal dwFlags As Long) As Long
-Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RECTL, ByVal dwFlags As Long) As Long
-Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'Some display settings are stored in the registry (e.g. EDID).
 Private Declare Function RegCloseKey Lib "advapi32" (ByVal hKey As Long) As Long
 Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExW" (ByVal hKey As Long, ByVal ptrToSubKey As Long, ByVal ulOptions As Long, ByVal samDesired As Long, ByRef phkResult As Long) As Long
 Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW" (ByVal hKey As Long, ByVal lpszValueName As Long, ByVal lpReserved As Long, ByRef lpType As Long, ByVal ptrToData As Long, ByRef lpcbData As Long) As Long
+
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+
+Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
+Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
+Private Declare Function MonitorFromPoint Lib "user32" (ByVal x As Long, ByVal y As Long, ByVal dwFlags As Long) As Long
+Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RECTL, ByVal dwFlags As Long) As Long
 
 'Number of displays in our collection
 Private m_NumOfDisplays As Long
@@ -623,7 +625,7 @@ End Function
 ' a single monitor, rather than centered on the virtual display (which may lie between two monitors and thus look shitty!).
 Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef srcRect As RECTL) As Boolean
     
-    On Error GoTo couldNotCenterForm
+    On Error GoTo CouldNotCenterForm
     
     'Our goal is to fill this working rect with the working rectangle (e.g. non-chrome) of the monitor containing most of the form.
     Dim workingRect As RECTL
@@ -650,18 +652,24 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
         Me.GetVBDesktopRect workingRect, True
     End If
     
+    'Next, get the window rect of the target form
+    Dim srcWinRect As winRect, winWidth As Long, winHeight As Long
+    GetWindowRect FormToCenter.hWnd, srcWinRect
+    winWidth = srcWinRect.x2 - srcWinRect.x1
+    winHeight = srcWinRect.y2 - srcWinRect.y1
+    
     'Center the form
     Dim dWidth As Long, dHeight As Long
     With workingRect
-        dWidth = (.Right - .Left) * InternalTwipsFix
-        dHeight = (.Bottom - .Top) * InternalTwipsFix
-        FormToCenter.Move ((dWidth - FormToCenter.Width) \ 2) + .Left * InternalTwipsFix, ((dHeight - FormToCenter.Height) \ 2) + .Top * InternalTwipsFix
+        dWidth = (.Right - .Left)
+        dHeight = (.Bottom - .Top)
+        MoveWindow FormToCenter.hWnd, ((dWidth - winWidth) \ 2) + .Left, ((dHeight - winHeight) \ 2) + .Top, winWidth, winHeight, 0&
     End With
     
     CenterFormViaReferenceRect = True
     Exit Function
     
-couldNotCenterForm:
+CouldNotCenterForm:
     
     CenterFormViaReferenceRect = False
     #If DEBUGMODE = 1 Then
