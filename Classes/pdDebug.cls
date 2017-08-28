@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Custom Debug helper class
 'Copyright 2014-2017 by Tanner Helland
 'Created: 17/July/14
-'Last updated: 18/July/17
-'Last update: reworked system interactions against the new OS module (instead of the old pdSystemInfo class)
+'Last updated: 28/August/17
+'Last update: heavily optimized file writes by using pdFSO and a persistent append handle
 'Dependencies: OS module (for retrieving system-level debug data)
 '
 'As PhotoDemon has grown more complex, debugging has become correspondingly difficult.  Debugging on my local PC is fine
@@ -42,19 +42,19 @@ Option Explicit
 
 'Multiple message types can be logged by the class.  While these don't have to be used, they make it much easier to
 ' quickly scan the final text output.
-Public Enum PD_DEBUG_MESSAGES
-    PDM_NORMAL = 0
-    PDM_USER_MESSAGE = 1
-    PDM_MEM_REPORT = 2
-    PDM_HDD_REPORT = 3
-    PDM_PROCESSOR = 4
-    PDM_EXTERNAL_LIB = 5
-    PDM_STARTUP_MESSAGE = 6
-    PDM_TIMER_REPORT = 7
+Public Enum PD_DebugMessages
+    PDM_Normal = 0
+    PDM_User_Message = 1
+    PDM_Mem_Report = 2
+    PDM_HDD_Report = 3
+    PDM_Processor = 4
+    PDM_External_Lib = 5
+    PDM_Startup_Message = 6
+    PDM_Timer_Report = 7
 End Enum
 
 #If False Then
-    Private Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5, PDM_STARTUP_MESSAGE = 6, PDM_TIMER_REPORT = 7
+    Private Const PDM_Normal = 0, PDM_User_Message = 1, PDM_Mem_Report = 2, PDM_HDD_Report = 3, PDM_Processor = 4, PDM_External_Lib = 5, PDM_Startup_Message = 6, PDM_Timer_Report = 7
 #End If
 
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
@@ -80,15 +80,22 @@ Private m_NumLoggedEvents As Long
 ' until fairly late into PD's load process.  However, there are technical details that would be nice to know prior to
 ' that point.  To work around this, I allow the class to log messages prior to being formally initialized.  When it
 ' *is* finally initialized, it will dump all the cached messages to the log file, with their original timestamps.
-Private backupMessages() As String
-Private numBackupMessages As Long
+Private Const INIT_NUM_BACKUP_MESSAGES As Long = 32
+Private m_backupMessages() As String
+Private m_numBackupMessages As Long
 
 'When the user requests a RAM update, we report the delta between the current update and the previous update.
 ' This is very helpful for catching memory leaks.
 Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 
-'File I/O is handled via pdFSO
+'File I/O is handled via pdFSO.  A dedicated append handle is created when the log is first written; just to be safe,
+' please check for a null handle before subsequent writes.
 Private m_FSO As pdFSO
+Private m_LogFileHandle As Long
+
+'Because this class writes out a *ton* of strings - strings that need to be converted to UTF-8 prior to writing -
+' we reuse a UTF-8 conversion buffer between writes.  This buffer should only be size-increased if necessary.
+Private m_utf8Buffer() As Byte, m_utf8Size As Long
 
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
@@ -103,83 +110,82 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         m_logPath = g_UserPreferences.GetDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If (Not Files.PathExists(m_logPath)) Then
+        If Files.PathExists(m_logPath, True) Then
+        
+            'We now know the Debug path exists.  Retrieve a relevant ID for this file.
+            m_debuggerID = GetLogID()
             
-            Debug.Print "Log path invalid.  Debug logs not available for this session."
+            'Generate a filename for this log, using that ID.
+            m_logPath = m_logPath & "DebugReport_" & m_debuggerID & ".log"
+            
+            'If a log file already exists at that location, remove it.  (Only 10 log files are allowed, so if we reach 11,
+            ' the oldest one will be overwritten.)
+            Files.FileDeleteIfExists m_logPath
+            
+            'Assemble a basic collection of relevant debug data.
+            Dim debugHeader As String
+            
+            If writeHeaderToo Then
+            
+                debugHeader = "**********************************************" & vbCrLf & vbCrLf
+                debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "Date: " & Date & vbCrLf
+                debugHeader = debugHeader & "Time: " & Time & vbCrLf
+                debugHeader = debugHeader & "Session ID: " & OS.UniqueSessionID() & vbCrLf
+                debugHeader = debugHeader & "Compiled: " & CStr(OS.IsProgramCompiled) & vbCrLf
+                debugHeader = debugHeader & "First run: " & CStr(g_IsFirstRun) & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "OS: " & OS.OSVersionAsString & vbCrLf
+                debugHeader = debugHeader & "Processor cores (logical): " & OS.LogicalCoreCount & vbCrLf
+                debugHeader = debugHeader & "Processor features: " & OS.ProcessorFeatures & vbCrLf
+                debugHeader = debugHeader & "System RAM: " & OS.RAM_SystemTotal & vbCrLf
+                debugHeader = debugHeader & "Max memory available to PhotoDemon: " & OS.RAM_Available & vbCrLf
+                debugHeader = debugHeader & "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
+                debugHeader = debugHeader & "Translation active: " & CStr(g_Language.TranslationActive()) & vbCrLf
+                debugHeader = debugHeader & "Language in use: " & CStr(g_Language.GetCurrentLanguage()) & vbCrLf
+                debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf & vbCrLf
+                
+                debugHeader = debugHeader & "-- PLUGIN INFORMATION -- " & vbCrLf & vbCrLf
+                
+                For i = 0 To PluginManager.GetNumOfPlugins - 1
+                    debugHeader = debugHeader & PluginManager.GetPluginName(i) & ": "
+                    If PluginManager.IsPluginCurrentlyInstalled(i) Then
+                        debugHeader = debugHeader & "available"
+                    Else
+                        debugHeader = debugHeader & "MISSING"
+                    End If
+                    debugHeader = debugHeader & vbCrLf
+                Next i
+            
+            End If
+            
+            debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
+            
+            'Grab a persistent append handle to the log file
+            m_logDatatoFile = True
+            If (Not m_FSO.FileCreateAppendHandle(m_logPath, m_LogFileHandle)) Then m_LogFileHandle = 0
+            
+            'Convert the first chunk of debug text to UTF-8, then write the data to file
+            WriteDebugStringAsUTF8 debugHeader
+            
+        'File writing is requested, but the log file folder is inaccessible
+        Else
+        
+            Debug.Print "Log path invalid.  Saved debug logs not available for this session."
             
             m_debuggerActive = False
             InitializeDebugger = False
             Exit Function
             
         End If
-        
-        'We now know the Debug path exists.  Retrieve a relevant ID for this file.
-        m_debuggerID = GetLogID()
-        
-        'Generate a filename for this log, using that ID.
-        m_logPath = m_logPath & "DebugReport_" & m_debuggerID & ".log"
-        
-        'If a log file already exists at that location, remove it.  (Only 10 log files are allowed, so if we reach 11,
-        ' the oldest one will be overwritten.)
-        Dim overwroteOldLog As Boolean
-        overwroteOldLog = False
-        
-        If Files.FileExists(m_logPath) Then
-            Files.FileDelete m_logPath
-            overwroteOldLog = True
-        End If
-        
-        'Assemble a basic collection of relevant debug data.
-        Dim debugHeader As String
-        
-        If writeHeaderToo Then
-        
-            debugHeader = "**********************************************" & vbCrLf & vbCrLf
-            debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "Date: " & Date & vbCrLf
-            debugHeader = debugHeader & "Time: " & Time & vbCrLf
-            debugHeader = debugHeader & "Session ID: " & OS.UniqueSessionID() & vbCrLf
-            debugHeader = debugHeader & "Compiled: " & CStr(OS.IsProgramCompiled) & vbCrLf
-            debugHeader = debugHeader & "First run: " & CStr(g_IsFirstRun) & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "OS: " & OS.OSVersionAsString & vbCrLf
-            debugHeader = debugHeader & "Processor cores (logical): " & OS.LogicalCoreCount & vbCrLf
-            debugHeader = debugHeader & "Processor features: " & OS.ProcessorFeatures & vbCrLf
-            debugHeader = debugHeader & "System RAM: " & OS.RAM_SystemTotal & vbCrLf
-            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & OS.RAM_Available & vbCrLf
-            debugHeader = debugHeader & "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
-            debugHeader = debugHeader & "Translation active: " & CStr(g_Language.TranslationActive()) & vbCrLf
-            debugHeader = debugHeader & "Language in use: " & CStr(g_Language.GetCurrentLanguage()) & vbCrLf
-            debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf & vbCrLf
-            
-            debugHeader = debugHeader & "-- PLUGIN INFORMATION -- " & vbCrLf & vbCrLf
-            
-            For i = 0 To PluginManager.GetNumOfPlugins - 1
-                debugHeader = debugHeader & PluginManager.GetPluginName(i) & ": "
-                If PluginManager.IsPluginCurrentlyInstalled(i) Then
-                    debugHeader = debugHeader & "available"
-                Else
-                    debugHeader = debugHeader & "MISSING"
-                End If
-                debugHeader = debugHeader & vbCrLf
-            Next i
-        
-        End If
-        
-        debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
-        debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
-        
-        'Build a new log file, and dump the debug string into it
-        m_logDatatoFile = True
-        
-        If (Not Files.FileSaveAsText(debugHeader, m_logPath)) Then Debug.Print "WARNING!  Debug file could not be created!"
         
     End If
     
@@ -189,23 +195,23 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     Me.LogAction "Debugger initialized successfully"
     
     'Perform an initial memory check; this gives us a nice baseline measurement
-    Me.LogAction "", PDM_MEM_REPORT
+    Me.LogAction "", PDM_Mem_Report
     
     'If messages were logged prior to this class being formally initialized, dump them now
-    If (numBackupMessages > 0) And (writeLogDataToFile) Then
+    If (m_numBackupMessages > 0) And (writeLogDataToFile) Then
     
-        Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization.)"
+        Me.LogAction "(The following " & m_numBackupMessages & " actions were logged prior to initialization.)"
         Me.LogAction "(They are presented here with their original timestamps.)"
         
-        For i = 0 To numBackupMessages - 1
-            Me.LogAction backupMessages(i), PDM_STARTUP_MESSAGE, True
+        For i = 0 To m_numBackupMessages - 1
+            Me.LogAction m_backupMessages(i), PDM_Startup_Message, True
         Next i
         
         Me.LogAction "(End of pre-initialization data)"
         
         'We don't need the backup messages any more, so we are free to release them into the ether
-        ReDim backupMessages(0) As String
-        numBackupMessages = 0
+        ReDim m_backupMessages(0) As String
+        m_numBackupMessages = 0
         
     End If
     
@@ -279,12 +285,12 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
+Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DebugMessages = PDM_Normal, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
     
     Dim curTime As String, prefixString As String
     
     'If this message was logged at startup, skip all the usual formalities and proceed directly to writing the file.
-    If (debugMsgType <> PDM_STARTUP_MESSAGE) Then
+    If (debugMsgType <> PDM_Startup_Message) Then
         
         'Increase the event count
         m_NumLoggedEvents = m_NumLoggedEvents + 1
@@ -295,31 +301,31 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
         Select Case debugMsgType
         
-            Case PDM_NORMAL
+            Case PDM_Normal
                 prefixString = "-DBG-"
                 
-            Case PDM_USER_MESSAGE
+            Case PDM_User_Message
                 prefixString = "(USM)"
             
-            Case PDM_MEM_REPORT
+            Case PDM_Mem_Report
                 prefixString = "*RAM*"
             
-            Case PDM_HDD_REPORT
+            Case PDM_HDD_Report
                 prefixString = "^HDD^"
                 
-            Case PDM_PROCESSOR
+            Case PDM_Processor
                 prefixString = "#PRC#"
                 
-            Case PDM_EXTERNAL_LIB
+            Case PDM_External_Lib
                 prefixString = "!EXT!"
                 
-            Case PDM_TIMER_REPORT
+            Case PDM_Timer_Report
                 prefixString = "/TMR/"
         
         End Select
         
         'For special message types, populate their contents now
-        If (debugMsgType = PDM_MEM_REPORT) Then
+        If (debugMsgType = PDM_Mem_Report) Then
         
             m_lastMemCheckEventNum = m_NumLoggedEvents
         
@@ -403,44 +409,53 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             'Update the module-level last mem check value
             m_lastMemCheck = curMemUsage
         
-        ElseIf (debugMsgType = PDM_HDD_REPORT) Then
+        'In the future, it may be helpful to track how much HDD space we use.  This is not yet implemented, though.
+        ElseIf (debugMsgType = PDM_HDD_Report) Then
         
         End If
         
         'Add a timestamp
         actionString = prefixString & " " & curTime & " | " & actionString
         
-        'Mirror output to the Immediate window
+        'Mirror output to the Immediate window, then append a final vbCrLf before dumping out to file
         Debug.Print actionString
+        actionString = actionString & vbCrLf
         
     End If
     
     'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
-        If m_logDatatoFile Then m_FSO.FileAppendText actionString & vbCrLf, m_logPath
+        If m_logDatatoFile Then WriteDebugStringAsUTF8 actionString
     Else
     
         'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
         ' formally initialize this class.  When that happens, we cache the messages in a temporary array; when the class is
         ' formally initialized, we'll dump that array out to file.
-        backupMessages(numBackupMessages) = "(" & CStr(numBackupMessages + 1) & ") " & actionString
-        numBackupMessages = numBackupMessages + 1
-        If (numBackupMessages > UBound(backupMessages)) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
+        If (m_numBackupMessages > UBound(m_backupMessages)) Then ReDim Preserve m_backupMessages(0 To m_numBackupMessages * 2 - 1) As String
+        m_backupMessages(m_numBackupMessages) = "(" & CStr(m_numBackupMessages + 1) & ") " & actionString
+        m_numBackupMessages = m_numBackupMessages + 1
         
     End If
     
     'For messages that are sent en masse (e.g. when loading a new image), the caller can choose to postpone automatic memory updates,
     ' as it will likely raise its own when relevant.
-    If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_MEM_REPORT)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
+    If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_Mem_Report)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
     
     'If we've gone 25 events without a RAM check, provide one now
-    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + 25)) Then Me.LogAction "", PDM_MEM_REPORT
+    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + 25)) Then Me.LogAction "", PDM_Mem_Report
 
 End Sub
 
 'Shorcut function for logging timing results
 Friend Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
-    Me.LogAction "Timing report: " & strDescription & " - " & Format$(CStr(timeTakenRaw * 1000), "#####0") & " ms", PDM_TIMER_REPORT
+    Me.LogAction "Timing report: " & strDescription & " - " & Format$(CStr(timeTakenRaw * 1000), "#####0") & " ms", PDM_Timer_Report
+End Sub
+
+'Internal helper function that handles the "convert string to UTF-8 and append to file" part of logging
+Private Sub WriteDebugStringAsUTF8(ByRef srcString As String)
+    If Strings.UTF8FromString(srcString, m_utf8Buffer, m_utf8Size) Then
+        If (m_LogFileHandle <> 0) Then m_FSO.FileWriteData m_LogFileHandle, VarPtr(m_utf8Buffer(0)), m_utf8Size
+    End If
 End Sub
 
 Private Sub Class_Initialize()
@@ -448,8 +463,8 @@ Private Sub Class_Initialize()
     m_debuggerActive = False
     m_logDatatoFile = False
     
-    ReDim backupMessages(0 To 15) As String
-    numBackupMessages = 0
+    ReDim m_backupMessages(0 To INIT_NUM_BACKUP_MESSAGES - 1) As String
+    m_numBackupMessages = 0
     
     m_NumLoggedEvents = 0
     m_lastMemCheck = 0
@@ -461,8 +476,10 @@ End Sub
 Public Sub TerminateDebugger()
 
     'If logging is active, post a final message
-    If m_logDatatoFile Then
-        m_FSO.FileAppendText "-- END SESSION REPORT --", m_logPath
+    If m_logDatatoFile And (m_LogFileHandle <> 0) Then
+        WriteDebugStringAsUTF8 "-- END SESSION REPORT --"
+        m_FSO.FileCloseHandle m_LogFileHandle
+        m_LogFileHandle = 0
         m_logDatatoFile = False
     End If
     

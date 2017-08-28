@@ -278,6 +278,10 @@ Public Function FileLoadAsString(ByRef srcFile As String, ByRef dstString As Str
     If InitializeFSO Then FileLoadAsString = m_FSO.FileLoadAsString(srcFile, dstString, forceWindowsLineEndings)
 End Function
 
+Public Function FileMakeNameValid(ByRef srcFilename As String, Optional ByVal replacementChar As String = "_") As String
+    If InitializeFSO Then FileMakeNameValid = m_FSO.MakeValidWindowsFilename(srcFilename, replacementChar)
+End Function
+
 Public Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = vbNullString) As PD_FILE_PATCH_RESULT
     If InitializeFSO Then FileReplace = m_FSO.FileReplace(oldFile, newFile, customBackupFile)
 End Function
