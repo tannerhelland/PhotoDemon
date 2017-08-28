@@ -1765,6 +1765,8 @@ End Sub
 'Given a combo box, populate it with all currently supported blend modes
 Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
     
+    dstCombo.SetAutomaticRedraws False
+    
     dstCombo.Clear
     
     dstCombo.AddItem "Normal", 0, True
@@ -1797,10 +1799,14 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
     
     dstCombo.ListIndex = blendIndex
     
+    dstCombo.SetAutomaticRedraws True, True
+    
 End Sub
 
 'Given a combo box, populate it with all currently supported alpha modes
 Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As LAYER_ALPHAMODE = LA_NORMAL)
+    
+    dstCombo.SetAutomaticRedraws False
     
     dstCombo.Clear
     
@@ -1810,10 +1816,14 @@ Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
     
     dstCombo.ListIndex = alphaIndex
     
+    dstCombo.SetAutomaticRedraws True, True
+    
 End Sub
 
 Public Sub PopulateRenderingIntentDropDown(ByRef dstCombo As pdDropDown, Optional ByVal intentIndex As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL)
-
+    
+    dstCombo.SetAutomaticRedraws False
+    
     dstCombo.Clear
 
     dstCombo.AddItem "Perceptual", 0
@@ -1822,6 +1832,8 @@ Public Sub PopulateRenderingIntentDropDown(ByRef dstCombo As pdDropDown, Optiona
     dstCombo.AddItem "Absolute colorimetric"
     
     dstCombo.ListIndex = intentIndex
+    
+    dstCombo.SetAutomaticRedraws True, True
 
 End Sub
 

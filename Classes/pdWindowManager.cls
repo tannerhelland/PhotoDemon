@@ -125,18 +125,18 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmd
 Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'APIs for changing window style
-Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
-Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
-Private Declare Function SetActiveWindow Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function SetActiveWindow Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'Misc window APIs
 Private Declare Function DwmIsCompositionEnabled Lib "dwmapi" (ByRef dstEnabledBool As Long) As Long
@@ -200,16 +200,16 @@ Private m_tmpMinMax As MINMAXINFO
 
 'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
 ' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
-Friend Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
-    DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
+Friend Sub SetWindowCaptionW(ByRef targetHWnd As Long, ByRef newCaption As String)
+    DefWindowProcW targetHWnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
-Friend Function GetWindowCaptionW(ByRef targetHwnd As Long) As String
+Friend Function GetWindowCaptionW(ByRef targetHWnd As Long) As String
     
     'Note that we can't use GetWindowTextW directly, because VB will intercept the message and return an
     ' ANSI-ified string.  Instead, we have to go directly to the default wndProc handler.
     Dim sizeString As Long
-    sizeString = DefWindowProcW(targetHwnd, WM_GETTEXTLENGTH, 0&, 0&)
+    sizeString = DefWindowProcW(targetHWnd, WM_GETTEXTLENGTH, 0&, 0&)
     
     If (sizeString > 0) Then
         
@@ -217,7 +217,7 @@ Friend Function GetWindowCaptionW(ByRef targetHwnd As Long) As String
         
         '+1 is required for the terminating null-char; see https://msdn.microsoft.com/en-us/library/windows/desktop/ms632627(v=vs.85).aspx
         Dim apiReturn As Long
-        apiReturn = DefWindowProcW(targetHwnd, WM_GETTEXT, sizeString + 1, StrPtr(GetWindowCaptionW))
+        apiReturn = DefWindowProcW(targetHWnd, WM_GETTEXT, sizeString + 1, StrPtr(GetWindowCaptionW))
         If (apiReturn <> sizeString) Then GetWindowCaptionW = Strings.TrimNull(GetWindowCaptionW)
         
     Else
@@ -250,7 +250,7 @@ Friend Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal ne
 End Sub
 
 'Thin wrapper to SetWindowPos, which means left/top coordinates are in *client coordinates*.
-Friend Sub SetSizeAndPositioByHWnd(ByVal dstHwnd As Long, ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSizeAndPositionByHWnd(ByVal dstHwnd As Long, ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     Dim swpFlags As Long
     swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
@@ -294,27 +294,27 @@ Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetClientRect srcHwnd, dstRect
 End Sub
 
-Friend Function GetClientWidth(ByVal targetHwnd As Long) As Long
+Friend Function GetClientWidth(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
+    GetClientRect targetHWnd, tmpRect
     GetClientWidth = tmpRect.x2
 End Function
 
-Friend Function GetClientHeight(ByVal targetHwnd As Long) As Long
+Friend Function GetClientHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
+    GetClientRect targetHWnd, tmpRect
     GetClientHeight = tmpRect.y2
 End Function
 
-Private Function GetWindowWidth(ByVal targetHwnd As Long) As Long
+Private Function GetWindowWidth(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
+    GetWindowRect targetHWnd, tmpRect
     GetWindowWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Private Function GetWindowHeight(ByVal targetHwnd As Long) As Long
+Private Function GetWindowHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
+    GetWindowRect targetHWnd, tmpRect
     GetWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
@@ -410,26 +410,26 @@ Friend Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
     ' However, the caller can specify a custom hWnd if they so desire.  (PD uses this when the program is closing,
     ' so the window manager can reset all necessary window bits, allowing VB to close the window normally.)
-    Dim targetHwnd As Long
-    If (useCustomHwnd = 0) Then targetHwnd = m_CurrentToolPanelHwnd Else targetHwnd = useCustomHwnd
+    Dim targetHWnd As Long
+    If (useCustomHwnd = 0) Then targetHWnd = m_CurrentToolPanelHwnd Else targetHWnd = useCustomHwnd
     
     'Release the parent reference for the previous activated tool panel
-    If (targetHwnd <> 0) Then
+    If (targetHWnd <> 0) Then
         
         If programIsGoingDown Then
             
-            If (GetParent(targetHwnd) <> 0) Then
+            If (GetParent(targetHWnd) <> 0) Then
                 
                 'This is a dirty cheat, but basically, this function restores the initial WindowLong GWL_STYLE flags the window had
                 ' when it was first passed to the window manager.  This lets us reset the window state to whatever VB's defaults are,
                 ' which reduces the risk for error as we shut the program down.
-                SetWindowLong targetHwnd, GWL_STYLE, m_ToolPanelDictionary.GetEntry_Long(targetHwnd, GetWindowLong(targetHwnd, GWL_STYLE))
+                SetWindowLong targetHWnd, GWL_STYLE, m_ToolPanelDictionary.GetEntry_Long(targetHWnd, GetWindowLong(targetHWnd, GWL_STYLE))
                 
             End If
             
         End If
         
-        Me.SetVisibilityByHWnd targetHwnd, False
+        Me.SetVisibilityByHWnd targetHWnd, False
         
     End If
     
