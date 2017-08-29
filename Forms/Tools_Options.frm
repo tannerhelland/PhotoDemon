@@ -1207,7 +1207,7 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
-            If (LCase$(txtTempPath) <> LCase$(g_UserPreferences.GetTempPath)) Then g_UserPreferences.SetTempPath txtTempPath
+            If (LCase$(Trim$(txtTempPath)) <> LCase$(g_UserPreferences.GetTempPath)) Then g_UserPreferences.SetTempPath Trim$(txtTempPath)
     
     'END Advanced preferences
     
@@ -1735,7 +1735,7 @@ End Sub
 'If the selected temp folder doesn't have write access, warn the user
 Private Sub TxtTempPath_Change()
     
-    If (Not Files.PathExists(txtTempPath.Text, True)) Then
+    If (Not Files.PathExists(Trim$(txtTempPath.Text), True)) Then
         lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.")
     Else
         lblTempPathWarning.Caption = g_Language.TranslateMessage("This new temporary folder location will not take effect until you restart the program.")
