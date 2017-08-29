@@ -51,7 +51,6 @@ Public Event KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef p
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-Public Event TabPress(ByVal focusDirectionForward As Boolean)
 
 'While this control doesn't have any internal use for mouse events, it can relay them to its owner.  This allows PD to make
 ' UI rendering decisions based on the mouse state of the edit box (e.g. special borders on hover vs inactive).
@@ -973,6 +972,20 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
                 If (wParam = VK_LEFT) Or (wParam = VK_UP) Or (wParam = VK_RIGHT) Or (wParam = VK_DOWN) Then
                     SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
                     msgEaten = True
+                End If
+                
+                'If the edit box is *not* multiline, check for tab presses and raise them manually
+                If (wParam = VK_TAB) And (Not m_Multiline) Then
+                    
+                    'Manually pull key modifier states (shift, control, alt/menu)
+                    Dim retShiftConstants As ShiftConstants
+                    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+                    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+                    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+                    
+                    RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
+                    msgEaten = True
+                    
                 End If
             
             End If

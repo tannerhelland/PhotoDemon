@@ -27,6 +27,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'If you want to dump tab order to the debug window, set this to TRUE.
+Private Const DISPLAY_DEBUG_TABORDER_DATA As Boolean = False
+
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 
@@ -152,26 +155,36 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
     
     Dim i As Long, tmpRect As winRect
     For i = 0 To m_numOfControls - 1
+    
+        'Only visible + enabled controls are eligible for receiving focus
         If (IsWindowVisible(m_Controls(i).hWnd) <> 0) And (IsWindowEnabled(m_Controls(i).hWnd)) Then
             
-            'This control is visible and enabled, making it a candidate for receiving focus.  Retrieve its coordinates.
-            g_WindowManager.GetWindowRect_API m_Controls(i).hWnd, tmpRect
+            'The command bar (and mini command bar) are a special case.  They are managed by this class,
+            ' because we need to detect them for OK/Cancel purposes, but we don't want them receiving
+            ' focus during KeyPress events.  (Instead, focus should go to one of their child controls.)
+            If (m_Controls(i).ctlType <> pdct_CommandBar) And (m_Controls(i).ctlType <> pdct_CommandBarMini) Then
             
-            'I haven't decided if it is worthwhile to map coordinates to a new coordinate space prior to
-            ' determining order.  (I don't think it matters, but it's possible I haven't fully considered the math!)
-            
-            'For now, convert the top-left corner of the rect into a single-dimension variable
-            With m_ControlsSort(m_numOfControlsSort)
-                .hWnd = m_Controls(i).hWnd
-                .x = tmpRect.x1
-                .y = tmpRect.y1
-                .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
-            End With
-            
-            'If this control is the one that supplied the tabkey, note it now
-            If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
-            
-            m_numOfControlsSort = m_numOfControlsSort + 1
+                'This control is visible, enabled, and interactive, making it a candidate for receiving focus.
+                ' Retrieve its coordinates.
+                g_WindowManager.GetWindowRect_API m_Controls(i).hWnd, tmpRect
+                
+                'I haven't decided if it is worthwhile to map coordinates to a new coordinate space prior to
+                ' determining order.  (I don't think it matters, but it's possible I haven't fully considered the math!)
+                
+                'For now, convert the top-left corner of the rect into a single-dimension variable
+                With m_ControlsSort(m_numOfControlsSort)
+                    .hWnd = m_Controls(i).hWnd
+                    .x = tmpRect.x1
+                    .y = tmpRect.y1
+                    .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
+                End With
+                
+                'If this control is the one that supplied the tabkey, note it now
+                If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
+                
+                m_numOfControlsSort = m_numOfControlsSort + 1
+                
+            End If
             
         End If
     Next i
@@ -238,18 +251,20 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
         If (targetIndex >= m_numOfControlsSort) Then targetIndex = 0
     End If
     
-'    'During debug sessions, it can be helpful to print window details to the immediate window
-'    Debug.Print "---------"
-'    For i = 0 To m_numOfControlsSort - 1
-'        If (i = targetIndex) Then
-'            Debug.Print "> " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
-'        ElseIf (i = currentControlIndex) Then
-'            Debug.Print "* " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
-'        Else
-'            Debug.Print GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
-'        End If
-'    Next i
-'    Debug.Print "FYI, target control is " & GetControlNameFromHWnd(m_ControlsSort(targetIndex).hWnd)
+    'During debug sessions, it can be helpful to print window details to the immediate window
+    If DISPLAY_DEBUG_TABORDER_DATA Then
+        Debug.Print "---------"
+        For i = 0 To m_numOfControlsSort - 1
+            If (i = targetIndex) Then
+                Debug.Print "> " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+            ElseIf (i = currentControlIndex) Then
+                Debug.Print "* " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+            Else
+                Debug.Print GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+            End If
+        Next i
+        Debug.Print "FYI, target control is " & GetControlNameFromHWnd(m_ControlsSort(targetIndex).hWnd)
+    End If
     
     'Finally, apply the focus change!
     g_WindowManager.SetFocusAPI m_ControlsSort(targetIndex).hWnd

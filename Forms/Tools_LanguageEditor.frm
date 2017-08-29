@@ -16,7 +16,6 @@ Begin VB.Form FormLanguageEditor
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -1170,17 +1169,6 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     lblExplanation.Caption = helpText
         
-End Sub
-
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-    
-    'If the down arrow key is pressed while the user is in the phrase-editing panel, automatically save the current
-    ' phrase and move to the next one.
-    If CBool(chkShortcut) And (KeyCode = vbKeyReturn) And (m_WizardPage = 3) Then
-        cmdNextPhrase_Click
-        KeyCode = 0
-    End If
-    
 End Sub
 
 Private Sub Form_Load()
