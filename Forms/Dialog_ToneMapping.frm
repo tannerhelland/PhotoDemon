@@ -382,19 +382,21 @@ Public Sub ShowDialog()
     ' of the image in question.  Note that we do not free the source handle - we still need it for the loading process!!
     ' (Also, we should check the case of the FreeImage handle being 0, as that will cause uncatchable crashes.)
     Dim newWidth As Long, newHeight As Long
-    If src_FIHandle <> 0 Then
+    If (src_FIHandle <> 0) Then
         ConvertAspectRatio FreeImage_GetWidth(src_FIHandle), FreeImage_GetHeight(src_FIHandle), picPreview.ScaleWidth * 2, picPreview.ScaleHeight * 2, newWidth, newHeight
         mini_FIHandle = Outside_FreeImageV3.FreeImage_Rescale(src_FIHandle, newWidth, newHeight, FILTER_CATMULLROM)
     End If
     
     'Render a preview of the current settings, if any
     cmdBar.MarkPreviewStatus True
-    UpdatePreview
         
     Message "Waiting for tone mapping instructions..."
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    
+    'Generate a preview
+    UpdatePreview
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -405,7 +407,7 @@ End Sub
 Private Sub UpdatePreview()
     
     'Ignore redraws while the dialog is not visible or disabled
-    If (Not Me.Enabled) Or (Not Me.Visible) Or (Not cmdBar.PreviewsAllowed) Then Exit Sub
+    If (Not Me.Enabled) Or (Not cmdBar.PreviewsAllowed) Then Exit Sub
     
     'As a failsafe against rapid clicking by the user, disable the form prior to applying any tone-mapping operations
     Me.Enabled = False
@@ -517,7 +519,7 @@ Private Sub Form_Load()
     btsNormalize.AddItem "none", 0
     btsNormalize.AddItem "visible spectrum", 1
     btsNormalize.AddItem "full spectrum", 2
-        
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
