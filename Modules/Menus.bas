@@ -401,7 +401,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Waves...", "effects_waves", 7, 2, 9
         AddMenuItem "-", "-", 7, 2, 10
         AddMenuItem "Miscellaneous...", "effects_miscdistort", 7, 2, 11
-    AddMenuItem "Edges", "effects_edges", 7, 3
+    AddMenuItem "Edge", "effects_edges", 7, 3
         AddMenuItem "Emboss...", "effects_emboss", 7, 3, 0
         AddMenuItem "Enhance edges...", "effects_enhanceedges", 7, 3, 1
         AddMenuItem "Find edges...", "effects_findedges", 7, 3, 2

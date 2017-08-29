@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.284</langversion>
+<langversion>6.7.285</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -4159,16 +4159,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for pdImageStrip.ctl -->
 
 <phrase>
-<original>CurrentLocationOnDisk</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OriginalFileName</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
 <translation>Una vez que esta imagen se ha guardado en el disco, el nombre del archivo aparecerá aquí.</translation>
 </phrase>
@@ -4183,7 +4173,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>Coloca una miniatura de la imagen para ver su nombre y el archivo actual ubicación.</translation>
 </phrase>
 
-<!-- pdImageStrip.ctl contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdImageStrip.ctl-->
 
@@ -13267,6 +13257,27 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
+<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
+
+<phrase>
+<original>spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Eraser.frm-->
+
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
@@ -13365,22 +13376,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<phrase>
-<original>spacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>flow</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14989,18 +14985,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Eraser.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4486 phrases. -->
-<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12179 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12177 total words. -->
 
 </pdData>
