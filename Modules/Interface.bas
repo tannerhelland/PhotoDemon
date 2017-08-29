@@ -1352,8 +1352,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     For Each eControl In dstForm.Controls
         
-        VBHacks.GetHighResTime startTime
-        
         'This is a bit weird, but PD still uses generic picture boxes in various places.  Picture boxes get confused
         ' by all the weird run-time UI APIs we call, so to ensure that their cursors work properly, we use the API
         ' to reset their cursors as well.
@@ -1364,15 +1362,21 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus,
             ' but I often forget to change this at design-time.
             eControl.TabStop = False
+        
+        'Next, shortcut the only non-custom control we use.  (This accelerates the load-time of FormMain,
+        ' which has a whole bunch of menu controls.)
+        ElseIf (TypeOf eControl Is Menu) Then
+            
+            'Do nothing!
             
         Else
-            
+        
             'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates
             ' two things:
             ' 1) The control's visual appearance (to reflect any changes to visual themes)
             ' 2) Updating any translatable text against the current translation
             isPDControl = False
-            
+                
             'These controls are fully compatible with PD's theming and translation engines:
             If (TypeOf eControl Is pdLabel) Then
                 isPDControl = True
@@ -1464,16 +1468,20 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             
             If isPDControl Then
                 
+                'One of the items on my "to-do" list is to time theming calls for each type of PD control.
+                ' If there are any outliers, it would be nice to know, so I could optimize them further.
+                'VBHacks.GetHighResTime startTime
+        
                 'Request a theme and language update.  (As of 7.0, this function also handles registration
                 ' with the central tab key manager.)
                 eControl.UpdateAgainstCurrentTheme hostFormhWnd
                 
+                'Want to measure time on a per-control basis?  Use this line to do so
+                'timeDict.AddEntry eControl.Name, VBHacks.GetTimerDifferenceNow(startTime)
+        
             End If
             
         End If
-        
-        'Want to measure time on a per-control basis?  Use this line to do so
-        'timeDict.AddEntry eControl.Name, VBHacks.GetTimerDifferenceNow(startTime)
         
     Next
     
@@ -1635,13 +1643,13 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
         #If DEBUGMODE = 1 Then
             If UBound(ExtraText) < LBound(ExtraText) Then
-                pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
+                pdDebug.LogAction tmpDupeCheckString, PDM_User_Message
             Else
             
                 'Check the last param passed.  If it's the string "DONOTLOG", do not log this entry.  (PD sometimes uses this
                 ' to avoid logging useless data, like layer hover events or download updates.)
                 If Strings.StringsNotEqual(CStr(ExtraText(UBound(ExtraText))), "DONOTLOG", False) Then
-                    pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
+                    pdDebug.LogAction tmpDupeCheckString, PDM_User_Message
                 End If
             
             End If

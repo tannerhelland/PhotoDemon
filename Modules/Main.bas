@@ -651,6 +651,10 @@ Public Sub ContinueLoadingProgram()
     'Load and draw all menu icons
     IconsAndCursors.LoadMenuIcons False
     
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Apply theme/language to FormMain"
+    #End If
+    
     'Finally, apply all of our various UI features
     FormMain.UpdateAgainstCurrentTheme False
     
@@ -680,7 +684,7 @@ Public Sub ContinueLoadingProgram()
     'In debug mode, make a baseline memory reading here, before the main form is displayed.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
-        pdDebug.LogAction "", PDM_MEM_REPORT
+        pdDebug.LogAction "", PDM_Mem_Report
         pdDebug.LogAction "Proceeding to load main window..."
     #End If
     
@@ -757,7 +761,7 @@ Public Sub FinalShutdown()
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
-        pdDebug.LogAction "Final memory report", PDM_MEM_REPORT
+        pdDebug.LogAction "Final memory report", PDM_Mem_Report
         pdDebug.TerminateDebugger
         Set pdDebug = Nothing
     #End If

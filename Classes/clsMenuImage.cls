@@ -116,7 +116,7 @@ Private Type MENUITEMINFO
 End Type
 
 Private Type MEASUREITEMSTRUCT
-    CtlType As Long
+    ctlType As Long
     CtlID As Long
     itemID As Long
     itemWidth As Long
@@ -125,7 +125,7 @@ Private Type MEASUREITEMSTRUCT
 End Type
 
 Private Type DRAWITEMSTRUCT
-    CtlType As Long
+    ctlType As Long
     CtlID As Long
     itemID As Long
     itemAction As Long
@@ -279,27 +279,33 @@ Private m_ClassicThemeWorkaround As Boolean
 Implements ISubclass
 Private m_SubclassActive As Boolean
 
+'Edit by Tanner: instead of relying on UBound() for tracking the number of active DIB handles, track the
+' number internally.  (This lets us be *much* more efficient about memory allocations.)
+Private Const INITIAL_DIB_ARRAY_SIZE As Long = 32
+Private m_NumOfDIBs As Long
+
+
 Public Property Get CanWeTheme() As Boolean
     CanWeTheme = Not m_ClassicThemeWorkaround
 End Property
 
 Public Property Get ImageCount() As Long
-    ImageCount = UBound(mDIB) - 1
+    ImageCount = m_NumOfDIBs
 End Property
 
 
 Public Function RemoveImage(ByVal Index As Long) As Boolean
     
-    If Index < 0 Or Index > Me.ImageCount Then Exit Function
+    If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Function
     
     Call DeleteObject(mDIB(Index).hDIB)
         
     Dim i As Long
-    For i = Index To Me.ImageCount
+    For i = Index To m_NumOfDIBs - 2
         mDIB(i) = mDIB(i + 1)
     Next
 
-    ReDim Preserve mDIB(Me.ImageCount)
+    m_NumOfDIBs = m_NumOfDIBs - 1
     
     RemoveImage = True
     
@@ -337,38 +343,44 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
         .fMask = MIIM_ID
     End With
     
-    If GetMenuItemInfo(hSubMenu, MenuPos, True, MII) = 0 Then Exit Function
+    If (GetMenuItemInfo(hSubMenu, MenuPos, True, MII) <> 0) Then
         
-    sKey = hSubMenu & "-" & MII.wID
-
-    With MII
-        '.cbSize = Len(MII)
-        .fMask = MIIM_BITMAP 'Or MIIM_DATA
-        
-        If (imageID = -1) Then
-            .hbmpItem = 0
+        sKey = hSubMenu & "-" & MII.wID
+    
+        With MII
+            '.cbSize = Len(MII)
+            .fMask = MIIM_BITMAP 'Or MIIM_DATA
             
-            'Edit by Tanner: retain the key, but just remove the bitmap from the menu.  (We may decide to
-            ' reactivate this item later.)
-            'If KeyExists(sKey) Then Call cColl.Remove(sKey)
-            
-        Else
-            If OS.IsVistaOrLater Then
-                .hbmpItem = mDIB(imageID).hDIB
+            If (imageID = -1) Then
+                .hbmpItem = 0
+                
+                'Edit by Tanner: retain the key, but just remove the bitmap from the menu.  (We may decide to
+                ' reactivate this item later.)
+                'If KeyExists(sKey) Then Call cColl.Remove(sKey)
+                
             Else
-                .hbmpItem = HBMMENU_CALLBACK
-                If KeyExists(sKey) Then Call cColl.Remove(sKey)
-                cColl.Add imageID, sKey
+                If OS.IsVistaOrLater Then
+                    .hbmpItem = mDIB(imageID).hDIB
+                Else
+                    .hbmpItem = HBMMENU_CALLBACK
+                    
+                    'Edit by Tanner: this check is unnecessary, as we apply our own check prior to even
+                    ' calling this function.
+                    'If KeyExists(sKey) Then Call cColl.Remove(sKey)
+                    cColl.Add imageID, sKey
+                    
+                End If
             End If
-        End If
+            
+            '.dwItemData = ImageID
+            
+        End With
         
-        '.dwItemData = ImageID
+        PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
         
-    End With
+        If (hSubMenu = hMenu) Then DrawMenuBar m_hWnd
     
-    PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
-    
-    If (hSubMenu = hMenu) Then DrawMenuBar m_hWnd
+    End If
     
 End Function
 
@@ -476,8 +488,10 @@ Private Function CreateNewDib() As Long
         .biSizeImage = .biWidth * .biHeight * 4&
     End With
     
+    'Make sure we have enough room in our tracking array
+    If (m_NumOfDIBs > UBound(mDIB)) Then ReDim Preserve mDIB(0 To m_NumOfDIBs * 2 - 1)
     Dim Index As Long
-    Index = UBound(mDIB)
+    Index = m_NumOfDIBs
     
     With mDIB(Index)
     
@@ -496,7 +510,7 @@ Private Function CreateNewDib() As Long
         
     End With
 
-    ReDim Preserve mDIB(Index + 1)
+    m_NumOfDIBs = m_NumOfDIBs + 1
 
 End Function
 
@@ -504,11 +518,11 @@ Public Function Clear()
 
     Dim i As Long
     
-    For i = 0 To UBound(mDIB) - 1
-        Call DeleteObject(mDIB(i).hDIB)
+    For i = 0 To m_NumOfDIBs - 1
+        If (mDIB(i).hDIB <> 0) Then Call DeleteObject(mDIB(i).hDIB)
     Next
     
-    ReDim mDIB(0)
+    m_NumOfDIBs = 0
     
 End Function
 
@@ -520,7 +534,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     Dim tMatrixColor As COLORMATRIX
     Dim tMatrixGray As COLORMATRIX
     
-    If Index < 0 Or Index > Me.ImageCount Then Exit Sub
+    If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Sub
 
     If GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppARGB, ByVal mDIB(Index).Ptr, hImage) = 0 Then
 
@@ -661,8 +675,17 @@ Public Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
     On Local Error GoTo AddImageFromDIB_Error
     
     Dim hImage As Long
-    If (Not srcDIB Is Nothing) Then GDI_Plus.GetGdipBitmapHandleFromDIB hImage, srcDIB
-    If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
+    If (Not srcDIB Is Nothing) Then
+        
+        'Update 29 August 2017 - I've written a new, much faster function that simply clones the incoming DIB.
+        If (Not bGhosted) Then
+            AddImageFromDIB = pvAddImagen_Tanner(srcDIB)
+        Else
+            GDI_Plus.GetGdipBitmapHandleFromDIB hImage, srcDIB
+            If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
+        End If
+        
+    End If
     
 AddImageFromDIB_Error:
 
@@ -706,13 +729,23 @@ AddImageFromStream_Error:
 
 End Function
 
+Private Function pvAddImagen_Tanner(ByRef srcDIB As pdDIB) As Boolean
+    
+    If (m_NumOfDIBs > UBound(mDIB)) Then ReDim Preserve mDIB(0 To m_NumOfDIBs * 2 - 1)
+    srcDIB.TransferDIBOwnership mDIB(m_NumOfDIBs).hDIB, mDIB(m_NumOfDIBs).Ptr
+    
+    m_NumOfDIBs = m_NumOfDIBs + 1
+    pvAddImagen_Tanner = True
+    
+End Function
+
 Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean) As Boolean
     
     Dim hGraphics As Long
     Dim imgWidth As Single
     Dim imgHeight As Single
     Dim Index As Long
-    Dim oldhDib As Long
+    Dim oldHDib As Long
     
     If (hImage <> 0) Then
     
@@ -723,7 +756,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             Dim tmpDC As Long
             tmpDC = GDI.GetMemoryDC()
             
-            oldhDib = SelectObject(tmpDC, mDIB(Index).hDIB)
+            oldHDib = SelectObject(tmpDC, mDIB(Index).hDIB)
         
             GdipCreateFromHDC tmpDC, hGraphics
         
@@ -755,7 +788,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             GdipDisposeImage hImage
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(tmpDC, oldhDib)
+            Call SelectObject(tmpDC, oldHDib)
             GDI.FreeMemoryDC tmpDC
             
             pvAddImagen = True
@@ -842,7 +875,7 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
         m_lWidth = imgWidth
         m_lHeight = imgHeight
         
-        If (UBound(mDIB) > 0) Then Me.Clear
+        If (m_NumOfDIBs > 0) Then Me.Clear
         
         If (Not OS.IsVistaOrLater) Or bRaiseEvent Then
             If (m_hWnd <> 0) Then StopSubclassing
@@ -899,7 +932,8 @@ Private Sub Class_Initialize()
         CloseThemeData hTheme
     End If
     
-    ReDim mDIB(0)
+    ReDim mDIB(0 To INITIAL_DIB_ARRAY_SIZE - 1)
+    m_NumOfDIBs = 0
     
 End Sub
 
@@ -1035,7 +1069,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     Dim MIS As MEASUREITEMSTRUCT
     CopyMemory MIS, ByVal lParam, Len(MIS)
 
-    If (MIS.CtlType = ODT_MENU) Then
+    If (MIS.ctlType = ODT_MENU) Then
 
         If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
         
@@ -1071,7 +1105,7 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     
     CopyMemory DIS, ByVal lParam, Len(DIS)
 
-    If (DIS.CtlType = ODT_MENU) Then
+    If (DIS.ctlType = ODT_MENU) Then
     
         If (DIS.hWndItem <> GetMenu(hWnd)) Then
             

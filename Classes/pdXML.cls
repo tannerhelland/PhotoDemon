@@ -522,7 +522,7 @@ End Function
 Private Function VerifyXMLHeader(ByRef fileContents As String) As Boolean
         
     'Check for "<?xml" in the file.  We don't care about encoding, etc - just check "<?xml" to keep things quick.
-    VerifyXMLHeader = CBool(InStr(1, fileContents, "<?xml", m_TextCompareMode) <> 0)
+    VerifyXMLHeader = (InStr(1, fileContents, "<?xml", m_TextCompareMode) <> 0)
 
 End Function
 

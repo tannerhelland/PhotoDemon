@@ -112,6 +112,23 @@ Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByV
 Private m_Menus() As PD_MenuEntry
 Private m_NumOfMenus As Long
 
+'To improve performance when language translations are active, we cache certain common translations
+' (such as "Ctrl+" for hotkey text) to minimize how many times we have to hit the language engine.
+' (Similarly, whenever the active language changes, make sure this text gets updated!)
+Private Enum PD_CommonMenuText
+    cmt_Ctrl = 0
+    cmt_Alt = 1
+    cmt_Shift = 2
+    cmt_NumEntries = 3
+End Enum
+
+#If False Then
+    Private Const cmt_Ctrl = 0, cmt_Alt = 1, cmt_Shift = 2, cmt_NumEntries = 3
+#End If
+
+Private m_CommonMenuText() As String
+
+
 'Early in the PD load process, we initialize the default set of menus.  In the future, it may be nice to let
 ' users customize this to match their favorite software (e.g. PhotoShop), but that's a ways off as I've yet to
 ' build a menu control capable of that level of customization support.
@@ -609,9 +626,27 @@ Public Sub RequestCaptionChange_ByName(ByVal menuName As String, ByVal newCaptio
 
 End Sub
 
+'Some menu-related text is accessed very frequently (e.g. "Ctrl" for hotkey text), so when a translation
+' is active, we want to just cache the translations locally instead of regenerating them over and over.
+Private Sub CacheCommonTranslations()
+    ReDim m_CommonMenuText(0 To cmt_NumEntries - 1) As String
+    If (Not g_Language Is Nothing) Then
+        m_CommonMenuText(cmt_Ctrl) = g_Language.TranslateMessage("Ctrl")
+        m_CommonMenuText(cmt_Alt) = g_Language.TranslateMessage("Alt")
+        m_CommonMenuText(cmt_Shift) = g_Language.TranslateMessage("Shift")
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
+        #End If
+    End If
+End Sub
+
 'After the active language changes, you must call this menu to translate all menu captions.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = True)
-
+    
+    'Before proceeding, cache some common menu terms (so we don't have to keep translating them)
+    CacheCommonTranslations
+    
     Dim i As Long
     
     If g_Language.TranslationActive Then
@@ -902,6 +937,8 @@ Public Sub InitializeAllHotkeys()
     'Before exiting, notify the menu manager of all menu changes
     Dim i As Long
     
+    CacheCommonTranslations
+    
     With FormMain.pdHotkeys
         For i = 0 To .Count - 1
             If .HasMenu(i) Then Menus.NotifyMenuHotkey .GetMenuName(i), .GetKeyCode(i), .GetShift(i)
@@ -915,9 +952,9 @@ End Sub
 Private Function GetHotkeyText(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants) As String
     
     Dim tmpString As String
-    If (Shift And vbCtrlMask) Then tmpString = g_Language.TranslateMessage("Ctrl") & "+"
-    If (Shift And vbAltMask) Then tmpString = tmpString & g_Language.TranslateMessage("Alt") & "+"
-    If (Shift And vbShiftMask) Then tmpString = tmpString & g_Language.TranslateMessage("Shift") & "+"
+    If (Shift And vbCtrlMask) Then tmpString = m_CommonMenuText(cmt_Ctrl) & "+"
+    If (Shift And vbAltMask) Then tmpString = tmpString & m_CommonMenuText(cmt_Alt) & "+"
+    If (Shift And vbShiftMask) Then tmpString = tmpString & m_CommonMenuText(cmt_Shift) & "+"
     
     'Processing the string itself takes a bit of extra work, as some keyboard keys don't automatically map to a
     ' string equivalent.  (Also, translations need to be considered.)
@@ -939,7 +976,7 @@ Private Function GetHotkeyText(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
             tmpString = tmpString & g_Language.TranslateMessage("Page Down")
             
         Case vbKeyF1 To vbKeyF16
-            tmpString = tmpString & "F" & (CLng(vKeyCode) - 111)
+            tmpString = tmpString & "F" & (vKeyCode - 111)
         
         'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
         ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx

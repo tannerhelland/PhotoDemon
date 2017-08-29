@@ -802,19 +802,24 @@ Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTranspare
             
             If allowedToProceed Then
                 
-                Dim iData() As Byte, tmpSA As SAFEARRAY2D
-                srcDIB.WrapArrayAroundDIB iData, tmpSA
-                
                 Dim restorePremultiplication As Boolean: restorePremultiplication = False
                 If srcDIB.GetAlphaPremultiplication Then
                     srcDIB.SetAlphaPremultiplication False, , ptrToRectF
                     restorePremultiplication = True
                 End If
+                
+                Dim iData() As Byte, tmpSA As SAFEARRAY1D
+                srcDIB.WrapArrayAroundScanline iData, tmpSA, 0
+                
+                Dim dibPtr As Long, dibStride As Long
+                dibPtr = tmpSA.pvData
+                dibStride = tmpSA.cElements
                     
                 'Loop through the image, checking alphas as we go
                 For y = initY To finalY
+                    tmpSA.pvData = dibPtr + y * dibStride
                 For x = initX To finalX
-                    iData(x * 4 + 3, y) = srcTransparencyTable(x, y)
+                    iData(x * 4 + 3) = srcTransparencyTable(x, y)
                 Next x
                 Next y
                 
