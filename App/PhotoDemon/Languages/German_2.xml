@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3007</langversion>
+<langversion>6.8.3124</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -915,7 +915,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>wrap them around the image</original>
-<translation>Diese um das Bild herum hüllen</translation>
+<translation>Diese um das Bild herum wickeln</translation>
 </phrase>
 
 <phrase>
@@ -1526,7 +1526,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Alle kürzlich verwendeten Bilder öffnen</translation>
 </phrase>
 
 <phrase>
@@ -4170,16 +4170,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- BEGIN text for pdImageStrip.ctl -->
 
 <phrase>
-<original>CurrentLocationOnDisk</original>
-<translation>AktuellerSpeicherortAufLaufwerk</translation>
-</phrase>
-
-<phrase>
-<original>OriginalFileName</original>
-<translation>OriginalDateiName</translation>
-</phrase>
-
-<phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
 <translation>Sobald dieses Bild auf dem Laufwerk gespeichert worden ist, wird sein Dateiname hier erscheinen.</translation>
 </phrase>
@@ -4194,7 +4184,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation>Fahren Sie über ein Thumbnail (Bild), um seinen Namen und aktuellen Dateispeicherort zu sehen.</translation>
 </phrase>
 
-<!-- pdImageStrip.ctl contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdImageStrip.ctl-->
 
@@ -5341,7 +5331,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastikfolie</translation>
 </phrase>
 
 <phrase>
@@ -8192,12 +8182,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Nein</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Ja</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8897,17 +8887,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>Lichtwinkel</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>Lichtintensität</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Bild wird in Plastik eingewickelt</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9880,7 +9870,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>Verteilung</translation>
 </phrase>
 
 <phrase>
@@ -9890,7 +9880,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>Einheitlich</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10244,7 +10234,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>wrap edge values</original>
-<translation>Kantenwerte umhüllen</translation>
+<translation>Kantenwerte einwickeln</translation>
 </phrase>
 
 <phrase>
@@ -10591,7 +10581,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>Bild wird um Kugel herum gehüllt</translation>
+<translation>Bild wird um Kugel herum gewickelt</translation>
 </phrase>
 
 <phrase>
@@ -12945,7 +12935,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>blend</original>
-<translation>Füllmodus</translation>
+<translation>Blending</translation>
 </phrase>
 
 <phrase>
@@ -13271,12 +13261,33 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Radierer</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
+
+<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
+
+<phrase>
+<original>spacing</original>
+<translation>Abstand</translation>
+</phrase>
+
+<phrase>
+<original>hardness</original>
+<translation>Härte</translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation>Fluss</translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Eraser.frm-->
 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
@@ -13376,22 +13387,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<phrase>
-<original>spacing</original>
-<translation>Abstand</translation>
-</phrase>
-
-<phrase>
-<original>hardness</original>
-<translation>Härte</translation>
-</phrase>
-
-<phrase>
-<original>flow</original>
-<translation>Fluss</translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -15002,18 +14998,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Eraser.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4486 phrases. -->
-<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12179 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12177 total words. -->
 
 </pdData>
