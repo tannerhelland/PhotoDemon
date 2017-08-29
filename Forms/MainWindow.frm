@@ -2694,7 +2694,7 @@ Private Sub Form_Load()
     'In debug mode, note that we are about to turn control over to the user
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
-        pdDebug.LogAction "", PDM_MEM_REPORT
+        pdDebug.LogAction "", PDM_Mem_Report
     #End If
     
     'Finally, return focus to the main form
@@ -2787,7 +2787,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Hide the main window to make it appear as if we shut down quickly
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown initiated"
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
     #End If
     
     Me.Visible = False
@@ -2888,7 +2888,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
         pdDebug.LogAction "Unloading tool panels..."
     #End If
     
@@ -2943,7 +2943,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Set toolbar_Toolbox = Nothing
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
     #End If
     
     'Release this form from the window manager, and write out all window data to file

@@ -188,44 +188,44 @@ Private m_IsAlphaPremultiplied As Boolean
 ' labeled differently.  It is only meant to be used by DIB creation functions, where the premultiplication state is explicitly known prior
 ' to writing DIB bits.  The counterpart setAlphaPremultiplication function (which is found further down in this file) will actually
 ' modify image bits as necessary to create the desired premultiplication state.
-Public Function GetAlphaPremultiplication() As Boolean
+Friend Function GetAlphaPremultiplication() As Boolean
     GetAlphaPremultiplication = m_IsAlphaPremultiplied
 End Function
 
-Public Sub SetInitialAlphaPremultiplicationState(ByVal newState As Boolean)
+Friend Sub SetInitialAlphaPremultiplicationState(ByVal newState As Boolean)
     m_IsAlphaPremultiplied = newState
 End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
-Public Function GetOriginalColorDepth() As Long
+Friend Function GetOriginalColorDepth() As Long
     GetOriginalColorDepth = m_OriginalColorDepth
 End Function
 
-Public Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
+Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
     m_OriginalColorDepth = origColorDepth
 End Sub
 
 'Get/set original file color depth.  This is set prior to any tone-mapping or explicit FreeImage conversions.  As such, it may be quite large.
-Public Function GetOriginalFreeImageColorDepth() As Long
+Friend Function GetOriginalFreeImageColorDepth() As Long
     GetOriginalFreeImageColorDepth = m_OriginalFreeImageColorDepth
 End Function
 
-Public Sub SetOriginalFreeImageColorDepth(ByVal origFIColorDepth As Long)
+Friend Sub SetOriginalFreeImageColorDepth(ByVal origFIColorDepth As Long)
     m_OriginalFreeImageColorDepth = origFIColorDepth
 End Sub
 
 'If this DIB was created from an image file, and that file specified a preferred background color, use this
 ' function to copy the value into this DIB.
-Public Sub SetBackgroundColor(ByVal newBackColor As Long)
+Friend Sub SetBackgroundColor(ByVal newBackColor As Long)
     m_OriginalBackgroundColor = newBackColor
 End Sub
 
-Public Function GetBackgroundColor() As Long
+Friend Function GetBackgroundColor() As Long
     GetBackgroundColor = m_OriginalBackgroundColor
 End Function
 
 'Set the DPI of this DIB.  This is only relevant if this DIB has been created directly from an image file.
-Public Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
+Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
     
     'Many image types do not store resolution information; default to 96 in this case
     If xRes = 0 Then xRes = 96
@@ -250,21 +250,21 @@ Public Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sou
 End Sub
 
 'Even though we store separate x and y DPI, PD only deals in a single per-DIB DPI value
-Public Function GetDPI() As Double
+Friend Function GetDPI() As Double
     GetDPI = m_dibDPI
 End Function
 
 'Get/Set original DIB format
-Public Function GetOriginalFormat() As PD_IMAGE_FORMAT
+Friend Function GetOriginalFormat() As PD_IMAGE_FORMAT
     GetOriginalFormat = m_OriginalFIF
 End Function
 
-Public Sub SetOriginalFormat(ByVal origFIF As PD_IMAGE_FORMAT)
+Friend Sub SetOriginalFormat(ByVal origFIF As PD_IMAGE_FORMAT)
     m_OriginalFIF = origFIF
 End Sub
 
 'Return the original transparent color (set as part of the MarkAlpha routine).
-Public Function GetOriginalTransparentColor() As Long
+Friend Function GetOriginalTransparentColor() As Long
     GetOriginalTransparentColor = m_OriginalTransparentColor
 End Function
 
@@ -317,7 +317,7 @@ Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray 
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
-Public Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
+Friend Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
     CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
 
@@ -331,13 +331,13 @@ Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeAr
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
-Public Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
+Friend Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
     CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
 
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
 ' alpha accordingly, if the DIB will be rendered to the screen.
-Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
+Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
     
     ForceNewAlpha = False
     
@@ -385,7 +385,7 @@ Private Function TranslateColor(ByVal colorRef As Long) As Long
     End If
 End Function
 
-Public Sub FreeFromDC()
+Friend Sub FreeFromDC()
     If (m_dibDC <> 0) Then
         SelectObject m_dibDC, m_dibHandleOriginal
         GDI.FreeMemoryDC m_dibDC
@@ -394,38 +394,38 @@ Public Sub FreeFromDC()
 End Sub
 
 'Return this DIB's color depth
-Public Function GetDIBColorDepth() As Long
+Friend Function GetDIBColorDepth() As Long
     GetDIBColorDepth = m_dibColorDepth
 End Function
 
 'Return this DIB's array width
-Public Function GetDIBStride() As Long
+Friend Function GetDIBStride() As Long
     GetDIBStride = m_dibStride
 End Function
 
 'Return this DIB's width
-Public Function GetDIBWidth() As Long
+Friend Function GetDIBWidth() As Long
     GetDIBWidth = m_dibWidth
 End Function
 
 'Return this DIB's height
-Public Function GetDIBHeight() As Long
+Friend Function GetDIBHeight() As Long
     GetDIBHeight = m_dibHeight
 End Function
 
 'Return whether or not this DIB has image data associated with it
-Public Function HasImage() As Boolean
+Friend Function HasImage() As Boolean
     HasImage = (m_dibHandle <> 0)
 End Function
 
 'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
-Public Function IsDIBTopDown() As Boolean
+Friend Function IsDIBTopDown() As Boolean
     IsDIBTopDown = CBool(m_dibHeader.Height < 0)
 End Function
 
 'Return this DIB's hDC.  DIBs receive a DC by default, at creation-time.  However, the caller can remove the DIB from its DC by
 ' calling the FreeFromDC() sub.  If you subsequently request a DC for the DIB, one will be auto-created for you.
-Public Function GetDIBDC() As Long
+Friend Function GetDIBDC() As Long
     If (m_dibDC <> 0) Then
         GetDIBDC = m_dibDC
     Else
@@ -440,23 +440,23 @@ Public Function GetDIBDC() As Long
 End Function
 
 'Return a pointer to this DIB's actual DIB
-Public Function GetDIBHandle() As Long
+Friend Function GetDIBHandle() As Long
     GetDIBHandle = m_dibHandle
 End Function
 
 'Return a pointer to this DIB's pixel data (no header)
-Public Function GetDIBPointer() As Long
+Friend Function GetDIBPointer() As Long
     GetDIBPointer = m_dibBits
 End Function
 
 'Return a pointer to an individual scanline.  For performance reasons, this function does not perform bounds checking -
 ' so use it carefully!
-Public Function GetDIBScanline(ByVal targetScanline As Long) As Long
+Friend Function GetDIBScanline(ByVal targetScanline As Long) As Long
     GetDIBScanline = m_dibBits + (targetScanline * m_dibStride)
 End Function
 
 'Return a pointer to this DIB's header
-Public Function GetDIBHeader() As Long
+Friend Function GetDIBHeader() As Long
     GetDIBHeader = VarPtr(m_dibHeader)
 End Function
 
@@ -466,7 +466,7 @@ End Sub
 
 'Quickly create a new DIB from an arbitrary DC.  No stretching is applied, by design; StretchBlt is unpredictable with
 ' 32-bpp data, so any stretching must be applied *after* creation (when PD has full control over the image data).
-Public Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcColorDepth As Long = 32, Optional ByVal isSourcePremultiplied As Boolean = False) As Boolean
+Friend Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcColorDepth As Long = 32, Optional ByVal isSourcePremultiplied As Boolean = False) As Boolean
     
     CreateFromDC = False
     
@@ -497,7 +497,7 @@ Public Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY
 End Function
 
 'Make a copy of an existing DIB
-Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional ByVal useHQStretching As Boolean = True) As Boolean
+Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional ByVal useHQStretching As Boolean = True) As Boolean
     
     CreateFromExistingDIB = False
     
@@ -575,7 +575,7 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
 End Function
 
 'Convert this DIB to 24bpp mode
-Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
+Friend Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
     
     ConvertTo24bpp = False
     
@@ -615,7 +615,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
 End Function
 
 'Convert this DIB to 32bpp mode
-Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
+Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
     
     ConvertTo32bpp = False
     
@@ -702,7 +702,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
 End Function
 
 'Give this DIB a picture from a standard VB picture object
-Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
+Friend Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
     CreateFromPicture = False
     
@@ -760,7 +760,7 @@ End Function
 
 'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 ' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
-Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialAlpha As Long = 0) As Boolean
+Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialAlpha As Long = 0) As Boolean
     
     On Error GoTo CouldNotCreateDIB
     
@@ -916,7 +916,7 @@ CouldNotCreateDIB:
 End Function
 
 'Replace the entire DIB's contents with some solid color
-Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0#)
+Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0#)
 
     'If the DIB is 24bpp, apply the background color now
     If (m_dibColorDepth = 24) Then
@@ -976,7 +976,7 @@ Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
 End Sub
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
-Public Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
+Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
 
     'If we have image data, clear it out
     If (m_dibHandle <> 0) Then
@@ -1012,7 +1012,7 @@ Public Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
 End Sub
 
 'Maintain the DIB's dimensions, but reset all bytes to some value (typically 0).  FillMemory is used for maximum performance.
-Public Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
+Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
 
     'Retrieve a pointer to the DIB array and the array's current size
     Dim tmpDIBPointer As Long, tmpDIBSize As Long
@@ -1020,6 +1020,29 @@ Public Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
     
     'Erase everything
     If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then FillMemory tmpDIBPointer, tmpDIBSize, fillValue
+    
+End Sub
+
+'Allow some outside caller to assume ownership of our DIB handle.
+' IMPORTANT NOTE: the caller is obviously responsible of freeing the DIB after calling this function.
+Friend Sub TransferDIBOwnership(ByRef dstDIB As Long, ByRef dstPtr As Long)
+    
+    'Make sure we're not selected into a DC
+    Me.FreeFromDC
+    
+    'Transfer out the key DIB identifiers
+    dstDIB = m_dibHandle
+    dstPtr = m_dibBits
+    
+    'Treat our class as if everything has been freed - the DIB is the caller's problem now
+    m_dibHandle = 0
+    m_dibHandleOriginal = 0
+    m_dibBits = 0
+    
+    m_dibWidth = 0
+    m_dibHeight = 0
+    
+    m_IsAlphaPremultiplied = False
     
 End Sub
 
@@ -1052,7 +1075,7 @@ Private Sub Class_Terminate()
 End Sub
 
 'Draw this DIB to a picture box. The image will be automatically centered and sized to fit.
-Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
+Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
 
     'Erase any existing picture
     If dstPicture.AutoRedraw Then
@@ -1174,7 +1197,7 @@ End Sub
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
 ' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
 ' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
-Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
+Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
     
     'pdFSO is used so we can support Unicode paths
     Dim cFile As pdFSO
@@ -1317,7 +1340,7 @@ End Function
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
 ' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
-Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompressionEngine As PD_COMPRESSION_ENGINES = PD_CE_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
+Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompressionEngine As PD_COMPRESSION_ENGINES = PD_CE_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.GetDIBWidth <= 0) Or (Me.GetDIBHeight <= 0) Then
@@ -1411,7 +1434,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
 End Function
 
 'Write this class's DIB information to a valid BMP file.
-Public Sub WriteToBitmapFile(ByRef dstFilename As String)
+Friend Sub WriteToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this DIB actually contains image data
     If (Not Me.HasImage()) Then Exit Sub
@@ -1504,7 +1527,7 @@ End Sub
 
 'As a helper to external functions, this sub can be used to fill a destination array with a copy the image's current data.
 ' Note that this is raw image bytes - no header whatsoever - so it's assumed the caller knows how to deal with the data.
-Public Sub CopyImageBytesIntoStream(ByRef dstArray() As Byte)
+Friend Sub CopyImageBytesIntoStream(ByRef dstArray() As Byte)
 
     'Retrieve a pointer to the current DIB bits (in VB format).  Technically we could just use the m_dibBits pointer
     ' and calculate bounds manually, but this provides a foolproof way to do the same thing using existing code.
@@ -1525,7 +1548,7 @@ End Sub
 
 'Shortcut to copyImageBytesIntoStream; this function gives a pointer to DIB byte 0, and the size of the DIB's contents.  This can be used
 ' to mimic byte array behavior, without the overhead of actually initializing a VB array and copying the DIB into it.
-Public Sub RetrieveDIBPointerAndSize(ByRef dibPointer As Long, ByRef dibSize As Long)
+Friend Sub RetrieveDIBPointerAndSize(ByRef dibPointer As Long, ByRef dibSize As Long)
     dibPointer = m_dibBits
     dibSize = m_dibStride * m_dibHeight
 End Sub
@@ -1533,7 +1556,7 @@ End Sub
 'The counterpart to copyImageBytesIntoStream, above.  This function will blindly copy an array of bytes over the current
 ' image's data.  For it to work, the DIB must have been correctly created at the right size and color depth BEFORE CALLING
 ' THIS FUNCTION.  Otherwise, you will get errors.
-Public Sub CopyStreamOverImageArray(ByRef srcArray() As Byte)
+Friend Sub CopyStreamOverImageArray(ByRef srcArray() As Byte)
     CopyMemory ByVal m_dibBits, srcArray(0), UBound(srcArray) + 1
 End Sub
 
@@ -1613,7 +1636,7 @@ End Sub
 
 'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
-Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
+Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If (m_dibColorDepth <> 32) Then Exit Sub
@@ -1710,7 +1733,7 @@ Private Function Blend2Colors(ByVal Color1 As Long, ByVal Color2 As Long, ByRef 
 End Function
 
 'Quick and dirty function to reverse scanlines in the DIB
-Public Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = True)
+Friend Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = True)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1765,7 +1788,7 @@ End Sub
 
 'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdDIB object is
 ' THE SAME SIZE (including scanline alignment) as this DIB, or you will experience critical errors.
-Public Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binaryAlphaOnly As Boolean = False)
+Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binaryAlphaOnly As Boolean = False)
     
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If (m_dibColorDepth <> 32) Then Exit Sub
@@ -1838,7 +1861,7 @@ End Sub
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
 '
 'Optionally, you can also supply a pointer to a valid RectF struct; if present, only this region will be updated.
-Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False, Optional ByVal ptrToRectF As Long = 0)
+Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False, Optional ByVal ptrToRectF As Long = 0)
 
     'This function doesn't matter if the image isn't 32bpp
     If (m_dibColorDepth <> 32) Then Exit Sub
@@ -2007,7 +2030,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
-Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Friend Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     Dim bfParams As Long
     If (newWidth = 0) Then newWidth = m_dibWidth
@@ -2036,7 +2059,7 @@ Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
-Public Sub AlphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customAlpha As Long = 255)
+Friend Sub AlphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customAlpha As Long = 255)
     
     Dim bfParams As Long
     

@@ -237,7 +237,10 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         needToCreateDIB = True
                     End If
                     
-                    If needToCreateDIB Then m_tmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
+                    If needToCreateDIB Then
+                        m_tmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
+                        m_tmpDIB.SetInitialAlphaPremultiplicationState True
+                    End If
                     
                     'We now have to use one of two strategies to retrieve the DIB
                     ' 1) Pull the actual DIB bits out of the file.  This is only an option if the image

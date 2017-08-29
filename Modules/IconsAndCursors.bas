@@ -218,13 +218,13 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
     ' (This is necessary because some menus reuse the same icons, and it's a waste of resources to maintain
     '  two copies of said icons.)
     For i = 0 To curIcon
-    
-        If (iconNames(i) = resID) Then
+
+        If Strings.StringsEqual(iconNames(i), resID, False) Then
             iconAlreadyLoaded = True
             iconLocation = i
             Exit For
         End If
-    
+
     Next i
     
     'If the icon was not found, load it and add it to the list
@@ -820,18 +820,18 @@ End Sub
 
 'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
 ' appear in the Alt+Tab dialog of older OSes.
-Public Sub ChangeWindowIcon(ByVal targetHwnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
-    If (targetHwnd <> 0) Then
-        dstSmallIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
-        dstLargeIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
+Public Sub ChangeWindowIcon(ByVal targetHWnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
+    If (targetHWnd <> 0) Then
+        dstSmallIcon = SendMessageA(targetHWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
+        dstLargeIcon = SendMessageA(targetHWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
     End If
 End Sub
 
-Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
+Public Sub MirrorCurrentIconsToWindow(ByVal targetHWnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
     If (g_OpenImageCount > 0) Then
-        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).GetImageIcon(False)), pdImages(g_CurrentImage).GetImageIcon(True), dstSmallIcon, dstLargeIcon
+        ChangeWindowIcon targetHWnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).GetImageIcon(False)), pdImages(g_CurrentImage).GetImageIcon(True), dstSmallIcon, dstLargeIcon
     Else
-        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, m_DefaultIconSmall), m_DefaultIconLarge, dstSmallIcon, dstLargeIcon
+        ChangeWindowIcon targetHWnd, IIf(setLargeIconOnly, 0&, m_DefaultIconSmall), m_DefaultIconLarge, dstSmallIcon, dstLargeIcon
     End If
 End Sub
 
