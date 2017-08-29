@@ -69,7 +69,6 @@ Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolea
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-Public Event TabPress(ByVal focusDirectionForward As Boolean)
 
 'The actual common control edit box is handled by a dedicated class
 Private WithEvents m_EditBox As pdEditBoxW
@@ -77,9 +76,6 @@ Attribute m_EditBox.VB_VarHelpID = -1
 
 'Some mouse states relative to the edit box are tracked, so we can render custom borders around the embedded box
 Private m_MouseOverEditBox As Boolean
-
-'Like other custom PD UC's, tab behavior can be modified depending where the text box is sited
-Private m_TabMode As PDUC_TAB_BEHAVIOR
 
 'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
 ' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
@@ -236,19 +232,6 @@ Public Property Let SelStart(ByVal newPosition As Long)
     If (Not m_EditBox Is Nothing) Then m_EditBox.SelStart = newPosition
 End Property
 
-'Tab handling for API windows is complicated.  This control (like most other PD controls) supports variable tab key behavior.
-' For UC instances embedded inside other UCs, we will raise a "TabPress" event, which the UC can then handle in any way it chooses
-' (for example, forwarding focus to another control in the UC, vs forwarding focus outside the UC).  For standalone instances,
-' the default tab behavior can be specified.
-Public Property Get TabBehavior() As PDUC_TAB_BEHAVIOR
-    TabBehavior = m_TabMode
-End Property
-
-Public Property Let TabBehavior(ByVal newBehavior As PDUC_TAB_BEHAVIOR)
-    m_TabMode = newBehavior
-    PropertyChanged "TabBehavior"
-End Property
-
 Public Property Get Text() As String
 Attribute Text.VB_ProcData.VB_Invoke_Property = ";Text"
 Attribute Text.VB_UserMemId = 0
@@ -277,8 +260,8 @@ End Sub
 
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
-    'Before raising an "Enter" keypress, check for an OK/Cancel button on this form
-    If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape)) And (Not m_EditBox.Multiline) Then
+    'Enter/Esc/Tab keypresses receive special treatment
+    If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab)) And (Not m_EditBox.Multiline) Then
         If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
     Else
         RaiseEvent KeyPress(vKey, preventFurtherHandling)
@@ -298,21 +281,6 @@ End Sub
 Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseOverEditBox = False
     RedrawBackBuffer
-End Sub
-
-Private Sub m_EditBox_TabPress(ByVal focusDirectionForward As Boolean)
-
-    'We can handle this tab press one of two ways, based on the TabBehavior property
-    If (m_TabMode = TabDefaultBehavior) Then
-        
-        'Immediately forward focus to the next control
-        UserControls.ForwardFocusToNewControl Me, focusDirectionForward
-        
-    'Let our owner determine how to handle the keypress
-    Else
-        RaiseEvent TabPress(focusDirectionForward)
-    End If
-
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -379,8 +347,6 @@ Private Sub ComponentGotFocus()
     'If a component already had focus, ignore this step, as focus is just changing internally within the control
     If (Not m_ControlHasFocus) Then
         m_ControlHasFocus = True
-        RelayUpdatedColorsToEditBox
-        RedrawBackBuffer
         RaiseEvent GotFocusAPI
     End If
     
@@ -388,6 +354,10 @@ Private Sub ComponentGotFocus()
     If (Not m_EditBox Is Nothing) Then
         If (Not m_EditBox.HasFocus) Then m_EditBox.SetFocusToEditBox
     End If
+    
+    'Regardless of component state, redraw the control "just in case"
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
     
 End Sub
 
@@ -400,12 +370,14 @@ Private Sub ComponentLostFocus()
         If (Not m_EditBox Is Nothing) Then
             If (Not m_EditBox.HasFocus) Then
                 m_ControlHasFocus = False
-                RelayUpdatedColorsToEditBox
-                RedrawBackBuffer
                 RaiseEvent LostFocusAPI
             End If
         End If
     End If
+    
+    'Regardless of component state, redraw the control "just in case"
+    RelayUpdatedColorsToEditBox
+    RedrawBackBuffer
     
 End Sub
 
@@ -504,7 +476,6 @@ Private Sub UserControl_InitProperties()
     Enabled = True
     FontSize = 10
     Multiline = False
-    TabBehavior = TabDefaultBehavior
     Text = ""
 End Sub
 
@@ -518,7 +489,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         Multiline = .ReadProperty("Multiline", False)
-        TabBehavior = .ReadProperty("TabBehavior", TabDefaultBehavior)
         Text = .ReadProperty("Text", "")
     End With
 End Sub
@@ -536,7 +506,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", Me.FontSize, 10
         .WriteProperty "Multiline", Me.Multiline, False
-        .WriteProperty "TabBehavior", m_TabMode, TabDefaultBehavior
         .WriteProperty "Text", Me.Text, ""
     End With
 End Sub

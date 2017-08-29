@@ -259,10 +259,14 @@ End Sub
 
 'Space and Enter keypresses toggle control state
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    markEventHandled = False
+    
     If Me.Enabled And ((vkCode = VK_SPACE) Or (vkCode = VK_RETURN)) Then
         markEventHandled = True
         Me.Value = True
     End If
+    
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
