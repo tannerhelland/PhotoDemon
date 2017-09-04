@@ -1226,7 +1226,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             'Start with pngquant's lossy optimization, if it's enabled
             If pngLossyEnabled Then
-                If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(dstFile, pngLossyQuality, pngLossyPerformance, pngLossyDithering) Then
+                If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(dstFile, pngLossyQuality, pngLossyPerformance, pngLossyDithering, False) Then
                     ExportDebugMsg "pngquant pass successful!"
                 End If
             End If

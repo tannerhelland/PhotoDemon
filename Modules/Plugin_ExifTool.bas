@@ -1167,7 +1167,7 @@ Public Function StartExifTool() As Boolean
     m_ExifToolDataFolder = g_UserPreferences.GetDataPath() & "PluginData\"
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
-    cFSO.PathCreate m_ExifToolDataFolder
+    Files.PathCreate m_ExifToolDataFolder
     
     'Next, set a local environment variable for Perl's temp folder, matching our temp folder above.  (If we do this prior
     ' to shelling ExifTool as a child process, ExifTool will automatically pick up the environment variable.)
@@ -1201,17 +1201,23 @@ Public Function StartExifTool() As Boolean
     Select Case returnVal
     
         Case SP_SUCCESS
-            Message "ExifTool initiated successfully.  Ready to process metadata."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
+            #End If
             m_IsExifToolRunning = True
             StartExifTool = True
             
         Case SP_CREATEPIPEFAILED
-            Message "WARNING! ExifTool Input/Output pipes could not be created."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING! ExifTool Input/Output pipes could not be created."
+            #End If
             m_IsExifToolRunning = False
             StartExifTool = False
             
         Case SP_CREATEPROCFAILED
-            Message "WARNING! ExifTool.exe could not be started."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING! ExifTool.exe could not be started."
+            #End If
             m_IsExifToolRunning = False
             StartExifTool = False
     
