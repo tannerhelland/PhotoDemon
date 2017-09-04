@@ -28,7 +28,7 @@ Begin VB.Form toolpanel_Paintbrush
    Visible         =   0   'False
    Begin PhotoDemon.pdSlider sldSpacing 
       Height          =   495
-      Left            =   7800
+      Left            =   10560
       TabIndex        =   6
       Top             =   960
       Width           =   3015
@@ -44,7 +44,7 @@ Begin VB.Form toolpanel_Paintbrush
    End
    Begin PhotoDemon.pdButtonStrip btsSpacing 
       Height          =   855
-      Left            =   7800
+      Left            =   10560
       TabIndex        =   5
       Top             =   0
       Width           =   3015
@@ -56,13 +56,13 @@ Begin VB.Form toolpanel_Paintbrush
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
-      Left            =   10920
+      Left            =   4080
       TabIndex        =   2
       Top             =   0
-      Width           =   2250
-      _ExtentX        =   3969
+      Width           =   2295
+      _ExtentX        =   4048
       _ExtentY        =   1296
-      Caption         =   "blend mode"
+      Caption         =   "blend / alpha mode"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
@@ -104,22 +104,21 @@ Begin VB.Form toolpanel_Paintbrush
       DefaultValue    =   100
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   735
+      Height          =   375
       Index           =   1
-      Left            =   13200
+      Left            =   4185
       TabIndex        =   3
-      Top             =   0
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   1296
-      Caption         =   "alpha mode"
+      Top             =   900
+      Width           =   2190
+      _ExtentX        =   3863
+      _ExtentY        =   661
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
       CausesValidation=   0   'False
       Height          =   690
       Index           =   2
-      Left            =   3960
+      Left            =   6720
       TabIndex        =   4
       Top             =   0
       Width           =   3750
@@ -138,7 +137,7 @@ Begin VB.Form toolpanel_Paintbrush
       CausesValidation=   0   'False
       Height          =   690
       Index           =   3
-      Left            =   3960
+      Left            =   6720
       TabIndex        =   7
       Top             =   660
       Width           =   3750

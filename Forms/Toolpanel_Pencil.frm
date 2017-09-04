@@ -28,24 +28,24 @@ Begin VB.Form toolpanel_Pencil
    Visible         =   0   'False
    Begin PhotoDemon.pdCheckBox chkAntialiasing 
       Height          =   375
-      Left            =   4080
+      Left            =   6600
       TabIndex        =   4
-      Top             =   840
-      Width           =   2055
-      _ExtentX        =   3625
+      Top             =   360
+      Width           =   3495
+      _ExtentX        =   6165
       _ExtentY        =   661
       Caption         =   "antialiased"
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
-      Left            =   3960
+      Left            =   4080
       TabIndex        =   2
       Top             =   0
-      Width           =   2250
-      _ExtentX        =   3969
+      Width           =   2295
+      _ExtentX        =   4048
       _ExtentY        =   1296
-      Caption         =   "blend mode"
+      Caption         =   "blend / alpha mode"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
@@ -87,15 +87,14 @@ Begin VB.Form toolpanel_Pencil
       DefaultValue    =   100
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   735
+      Height          =   375
       Index           =   1
-      Left            =   6360
+      Left            =   4185
       TabIndex        =   3
-      Top             =   0
-      Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   1296
-      Caption         =   "alpha mode"
+      Top             =   900
+      Width           =   2190
+      _ExtentX        =   3863
+      _ExtentY        =   661
       FontSizeCaption =   10
    End
 End
