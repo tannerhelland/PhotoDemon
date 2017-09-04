@@ -21,7 +21,6 @@ Begin VB.Form FormSplash
       Strikethrough   =   0   'False
    EndProperty
    FontTransparent =   0   'False
-   HasDC           =   0   'False
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -42,8 +41,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Splash Screen
 'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 01/December/14
-'Last update: overhauled splash screen
+'Last updated: 02/September/17
+'Last update: handle paint messages internally, rather than leaning on AutoRedraw
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -76,6 +75,10 @@ Private m_logoAspectRatio As Double
 'The maximum progress count of the load operation is stored here.  The value is passed to the initial
 ' prepareSplashLogo function, and it is not modified once loaded.
 Private m_maxProgress As Long, m_progressAtFirstNotify As Long
+
+'To prevent flicker, we manually capture and ignore WM_ERASEBKGND messages
+Private Const WM_ERASEBKGND As Long = &H14
+Implements ISubclass
 
 'Load any logo DIBs from the .exe's resource area, and precalculate some rendering values
 Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
@@ -171,7 +174,7 @@ Public Sub PrepareRestOfSplash()
         BitBlt m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Ensure the form has been painted at least once prior to display
-        Me.Refresh
+        FlipBackBufferToScreen
         
     Else
         pdDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
@@ -217,13 +220,41 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         Set cSurface = Nothing
         
         'Manually refresh the form
-        Me.Refresh
+        FlipBackBufferToScreen
         
     End If
 
 End Sub
 
+Private Sub Form_Load()
+
+    'Unfortunately, we have to subclass to prevent obnoxious flickering when the form is first displayed
+    If MainModule.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
+    
+End Sub
+
 'Painting is easy - just flip the backbuffer to the screen and call it a day!
 Private Sub Form_Paint()
+    FlipBackBufferToScreen
+End Sub
+
+Private Sub FlipBackBufferToScreen()
     BitBlt Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+
+    If (uiMsg = WM_ERASEBKGND) Then
+         ISubclass_WindowMsg = 1
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        
+        VBHacks.StopSubclassing hWnd, Me
+        
+        'Allow VB to continue with its own internal teardown process
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    Else
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    End If
+
+End Function
