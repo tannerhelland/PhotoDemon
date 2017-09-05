@@ -1248,22 +1248,22 @@ Public Sub CommitBrushResults()
     'Reset the current mouse event counter
     m_NumOfMouseEvents = 0
     
+    'Make a local copy of the paintbrush's bounding rect, and clip it to the layer's boundaries
+    Dim tmpRectF As RECTF
+    tmpRectF = m_TotalModifiedRectF
+    
+    With tmpRectF
+        If (.Left < 0) Then .Left = 0
+        If (.Top < 0) Then .Top = 0
+        If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
+        If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
+    End With
+    
     'Committing brush results is actually pretty easy!
     
     'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
     ' layer onto it.
     If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
-        
-        Dim tmpRectF As RECTF
-        tmpRectF = m_TotalModifiedRectF
-        
-        'Clip the modified rect to the paint layer's bounds, as necessary
-        With tmpRectF
-            If (.Left < 0) Then .Left = 0
-            If (.Top < 0) Then .Top = 0
-            If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
-            If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
-        End With
         
         Dim bottomLayerFullSize As Boolean
         With pdImages(g_CurrentImage).GetActiveLayer
@@ -1281,7 +1281,18 @@ Public Sub CommitBrushResults()
     
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
     Else
-    
+        
+        'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
+        ' the paint layer against it.
+        If pdImages(g_CurrentImage).IsSelectionActive Then
+            
+            'A selection is active.  Pre-mask the paint scratch layer against it.
+            Dim cBlender As pdPixelBlender
+            Set cBlender = New pdPixelBlender
+            cBlender.ApplyMaskToTopDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, VarPtr(tmpRectF)
+            
+        End If
+        
         Dim newLayerID As Long
         newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(pdImages(g_CurrentImage).GetActiveLayerIndex)
         
