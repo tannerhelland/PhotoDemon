@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.282</langversion>
+<langversion>6.7.284</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -286,21 +286,6 @@
 </phrase>
 
 <phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>Das ExifTool wurde gestartet. Bereit zur Metadaten-Verarbeitung.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>WARNUNG! Die Ein- und Ausgabeleitung des ExifTools konnten nicht erstellt werden.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>WARNUNG! Exiftool.exe konnte nicht gestartet werden.</translation>
-</phrase>
-
-<phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
 <translation>Plugin-Dienst konnte nicht gestartet werden (konnte keine Leitung erstellen).</translation>
 </phrase>
@@ -310,7 +295,7 @@
 <translation>Plugin-Dienst konnte nicht gestartet werden (konnte den Prozess %1 nicht erzeugen).</translation>
 </phrase>
 
-<!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -422,6 +407,22 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 <!-- Files.bas contains 0 phrases. -->
 
 <!-- END text for Files.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation></translation>
+</phrase>
+
+<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1099,6 +1100,41 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 </phrase>
 
 <phrase>
+<original>color</original>
+<translation>Farbe</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>Luminanz</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Sind Sie sicher, dass Sie %1 abbrechen wollen?</translation>
 </phrase>
@@ -1113,7 +1149,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation></translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -3834,11 +3870,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>Farbe</translation>
-</phrase>
-
-<phrase>
 <original>grayscale</original>
 <translation></translation>
 </phrase>
@@ -3883,7 +3914,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>keine</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -7024,11 +7055,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
-<original>luminance</original>
-<translation>Luminanz</translation>
-</phrase>
-
-<phrase>
 <original>fill histogram curves</original>
 <translation>Histogrammkurven füllen</translation>
 </phrase>
@@ -7093,7 +7119,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Histogramm strecken</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 29 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -13252,7 +13278,12 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<phrase>
+<original>Paint bucket (fill with color)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -13276,6 +13307,77 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
+
+<!-- BEGIN text for Toolpanel_Fill.frm (toolpanel_Fill) -->
+
+<phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>area</original>
+<translation>Bereich</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>Toleranz</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>Untersuchungsbereich</translation>
+</phrase>
+
+<phrase>
+<original>blend / alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>Bild</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>Ebene</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>zusammenhängend</translation>
+</phrase>
+
+<phrase>
+<original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This option controls how pixels are analyzed when adding them to the fill.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Fill.frm-->
 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
@@ -13375,18 +13477,13 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
 
-<phrase>
-<original>antialiased</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
@@ -13421,11 +13518,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <phrase>
 <original>smoothing</original>
 <translation>Glättung</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>Bereich</translation>
 </phrase>
 
 <phrase>
@@ -13464,93 +13556,38 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>tolerance</original>
-<translation>Toleranz</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>Untersuchungsbereich</translation>
-</phrase>
-
-<phrase>
-<original>Highlight</original>
-<translation>eingefärbt</translation>
-</phrase>
-
-<phrase>
-<original>Lightbox</original>
-<translation>aufgehellt</translation>
-</phrase>
-
-<phrase>
-<original>Ants</original>
+<original>highlight</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Antialiased</original>
-<translation>mit Antialias</translation>
+<original>lightbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Feathered</original>
-<translation>mit weicher Kante</translation>
+<original>ants</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Interior</original>
-<translation>Innen</translation>
+<original>feathered</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Exterior</original>
-<translation>Außen</translation>
+<original>interior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>Bild</translation>
+<original>exterior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>layer</original>
-<translation>Ebene</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>zusammenhängend</translation>
-</phrase>
-
-<phrase>
-<original>Composite</original>
-<translation>Komposit-</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>Leuchtdichte</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>Rot</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Grün</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blau</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Alpha</translation>
+<original>border</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13618,7 +13655,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Hiermit legen Sie fest, nach welchen Regeln der Zauberstab Bildpunkte in die Auswahl aufnimmt.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14986,10 +15023,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12261 total words. -->
 
 </pdData>

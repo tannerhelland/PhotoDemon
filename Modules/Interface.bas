@@ -1771,7 +1771,7 @@ Public Sub EnableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As PD_BlendMode = BL_NORMAL)
     
     dstCombo.SetAutomaticRedraws False
     
@@ -1812,7 +1812,7 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
 End Sub
 
 'Given a combo box, populate it with all currently supported alpha modes
-Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As LAYER_ALPHAMODE = LA_NORMAL)
+Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As PD_AlphaMode = LA_NORMAL)
     
     dstCombo.SetAutomaticRedraws False
     
@@ -1840,6 +1840,26 @@ Public Sub PopulateRenderingIntentDropDown(ByRef dstCombo As pdDropDown, Optiona
     dstCombo.AddItem "Absolute colorimetric"
     
     dstCombo.ListIndex = intentIndex
+    
+    dstCombo.SetAutomaticRedraws True, True
+
+End Sub
+
+Public Sub PopulateFloodFillTypes(ByRef dstCombo As pdDropDown, Optional ByVal startingIndex As PD_FloodCompare = pdfc_Color)
+
+    dstCombo.SetAutomaticRedraws False
+    
+    dstCombo.Clear
+
+    dstCombo.AddItem " color", 0
+    dstCombo.AddItem " color and opacity", 1
+    dstCombo.AddItem " luminance", 2, True
+    dstCombo.AddItem " red only", 3
+    dstCombo.AddItem " green only", 4
+    dstCombo.AddItem " blue only", 5
+    dstCombo.AddItem " alpha only", 6
+    
+    dstCombo.ListIndex = startingIndex
     
     dstCombo.SetAutomaticRedraws True, True
 

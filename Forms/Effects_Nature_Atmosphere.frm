@@ -111,7 +111,7 @@ Public Sub ApplyAtmosphereEffect(ByVal effectParams As String, Optional ByVal to
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim atmIntensity As Double, atmStyle As Long, atmBlend As LAYER_BLENDMODE
+    Dim atmIntensity As Double, atmStyle As Long, atmBlend As PD_BlendMode
     
     With cParams
         atmBlend = .GetLong("blendmode", BL_OVERLAY)

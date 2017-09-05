@@ -51,7 +51,7 @@ Private Const ONE_DIV_255 As Double = 1# / 255#
 ' - A full blend (including alpha handling) will be applied.
 ' - The bottom DIB must already be large enough to hold the result of the composition.
 ' - The two DIBs should overlap at least partially.  If they don't, correctness of the function is not guaranteed.
-Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
+Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffsetBottom As Long, yOffsetBottom As Long
     
@@ -378,7 +378,7 @@ End Sub
 
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
 ' the actual blending code inside each blend function, because special alpha handling is never required.
-Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
+Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As PD_AlphaMode, ByVal topAlphaMode As PD_AlphaMode, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'Only some settings require us to use this function.
     Dim needToStay As Boolean
@@ -595,7 +595,7 @@ End Sub
 
 'After blending two DIBs, call this function to postprocess any alpha-specific effects (masks, inheritance, etc).  Note that
 ' not all alpha modes require this, but there is no harm in calling it regardless.
-Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
+Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As PD_AlphaMode, ByVal topAlphaMode As PD_AlphaMode, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
     
     If (bottomAlphaMode = LA_LOCKED) Then
         

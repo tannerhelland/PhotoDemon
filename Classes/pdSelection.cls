@@ -86,17 +86,6 @@ End Enum
     Private Const sa_Interior = 0, sa_Exterior = 1, sa_Border = 2
 #End If
 
-'What kind of smoothing (feathering) will be applied to this selection?
-Public Enum PD_SelectionSmoothing
-    ss_None = 0
-    ss_Antialiased = 1
-    ss_FullyFeathered = 2
-End Enum
-
-#If False Then
-    Private Const ss_None = 0, ss_Antialiased = 1, ss_FullyFeathered = 2
-#End If
-
 'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
 ' values and the dictionary itself.
 Public Enum PD_SelectionProperty
@@ -377,7 +366,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
             'All selections share a core set of universal properties
             SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
             SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
-            SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", ss_None)
+            SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", es_None)
             SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
             SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
             SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
@@ -598,7 +587,7 @@ Friend Sub SelectAll()
     SetSelectionShape ss_Rectangle
     SetSelectionProperty sp_Area, sa_Interior
     SetSelectionProperty sp_FeatheringRadius, 0
-    SetSelectionProperty sp_Smoothing, ss_Antialiased
+    SetSelectionProperty sp_Smoothing, es_Antialiased
     SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
@@ -1700,7 +1689,7 @@ Friend Sub LockIn()
         
         'If this selection has properties that are not applied during UI interactions (like feathering,
         ' which requires expensive gaussian blur operations), we need to apply them now.
-        If (Me.GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
+        If (Me.GetSelectionProperty_Long(sp_Smoothing) = es_FullyFeathered) Then
             If (Me.GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then
                 m_IsMaskReady = False
             End If
@@ -1814,7 +1803,7 @@ Private Sub CreateSelectionMask()
     surfaceOK = dstSurface.WrapSurfaceAroundPDDIB(m_SelMask)
     
     'Set some surface properties in advance, like antialiasing and compositing.
-    If (Me.GetSelectionProperty_Long(sp_Smoothing) > ss_None) Then
+    If (Me.GetSelectionProperty_Long(sp_Smoothing) > es_None) Then
         
         'Rectangle selections are an exception here; we don't want to antialias them at all, even if antialiasing is enabled.
         ' (GDI+ tends to mess up antialiasing for perfect rects.)
@@ -2093,7 +2082,7 @@ Private Sub CreateSelectionMask()
             If (m_FloodFill Is Nothing) Then Set m_FloodFill = New pdFloodFill
             
             'Set all initial parameters
-            m_FloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > ss_None)
+            m_FloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > es_None)
             m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
             m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
             m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
@@ -2136,7 +2125,7 @@ Private Sub CreateSelectionMask()
             
             'If feathering is in play, we'll account for it programmatically.
             Dim needToAddFeathering As Boolean
-            needToAddFeathering = (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered)
+            needToAddFeathering = (GetSelectionProperty_Long(sp_Smoothing) = es_FullyFeathered)
             
             'Next, we sort bound calculations by selection shape
             Select Case m_SelectionShape
@@ -2197,7 +2186,7 @@ Private Sub CreateSelectionMask()
     
     'Finally, if the selection is locked and feathering has been requested, apply it now.
     ' (We only apply feathering when locked-in, as the performance penalty is severe.)
-    If m_IsLocked And (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) And (GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then ApplyFeatheringToMask
+    If m_IsLocked And (GetSelectionProperty_Long(sp_Smoothing) = es_FullyFeathered) And (GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then ApplyFeatheringToMask
     
 End Sub
 

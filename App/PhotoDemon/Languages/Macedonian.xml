@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.78</langversion>
+<langversion>1.0.80</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -286,21 +286,6 @@
 </phrase>
 
 <phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool поставен успешно. Подгответе се за обработка на метаподатоци.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>ПРЕДУПРЕДУВАЊЕ! не може да се создаде ExifTool влез/излез.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>ПРЕДУПРЕДУВАЊЕ! ExifTool.exe не може да се стартува.</translation>
-</phrase>
-
-<phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
 <translation>Не може да се стартува сервисот за додатоцитеи (не може да се создаде конекција).</translation>
 </phrase>
@@ -310,7 +295,7 @@
 <translation>Не може да се стартува сервисот за додатоците (не може да се создаде процес: %1).</translation>
 </phrase>
 
-<!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -421,6 +406,22 @@ If проблемот продолжи, ве молиме да го пријав
 <!-- Files.bas contains 0 phrases. -->
 
 <!-- END text for Files.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation></translation>
+</phrase>
+
+<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1098,6 +1099,41 @@ To овозможи поддршка за ПИО компресирани фај
 </phrase>
 
 <phrase>
+<original>color</original>
+<translation>боја</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>светлост</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Дали сте сигурни дека сакате да го отстраните %1?</translation>
 </phrase>
@@ -1112,7 +1148,7 @@ To овозможи поддршка за ПИО компресирани фај
 <translation>преглед не се достапни</translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -3843,11 +3879,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>боја</translation>
-</phrase>
-
-<phrase>
 <original>grayscale</original>
 <translation>сиво</translation>
 </phrase>
@@ -3892,7 +3923,7 @@ or the File > Open and File > Import menus.</original>
 <translation>никој</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -7033,11 +7064,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>luminance</original>
-<translation>светлост</translation>
-</phrase>
-
-<phrase>
 <original>fill histogram curves</original>
 <translation>пополни хистограм криви</translation>
 </phrase>
@@ -7102,7 +7128,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Се протега хистограм</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 29 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -13263,7 +13289,12 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<phrase>
+<original>Paint bucket (fill with color)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -13287,6 +13318,77 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
+
+<!-- BEGIN text for Toolpanel_Fill.frm (toolpanel_Fill) -->
+
+<phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>area</original>
+<translation>област</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>толеранција</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>област за земање мостри</translation>
+</phrase>
+
+<phrase>
+<original>blend / alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>слика</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>Слој</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>соседни</translation>
+</phrase>
+
+<phrase>
+<original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This option controls how pixels are analyzed when adding them to the fill.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Fill.frm-->
 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
@@ -13386,18 +13488,13 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
 
-<phrase>
-<original>antialiased</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
@@ -13432,11 +13529,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>smoothing</original>
 <translation>мазнење</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>област</translation>
 </phrase>
 
 <phrase>
@@ -13475,93 +13567,38 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>tolerance</original>
-<translation>толеранција</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>област за земање мостри</translation>
-</phrase>
-
-<phrase>
-<original>Highlight</original>
-<translation>Нагласи</translation>
-</phrase>
-
-<phrase>
-<original>Lightbox</original>
-<translation>lightbox</translation>
-</phrase>
-
-<phrase>
-<original>Ants</original>
+<original>highlight</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Antialiased</original>
-<translation>антиалијас</translation>
+<original>lightbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Feathered</original>
-<translation>пернат</translation>
+<original>ants</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Interior</original>
-<translation>внатрешни работи</translation>
+<original>feathered</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Exterior</original>
-<translation>Екстериер</translation>
+<original>interior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>слика</translation>
+<original>exterior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>layer</original>
-<translation>Слој</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>соседни</translation>
-</phrase>
-
-<phrase>
-<original>Composite</original>
-<translation>композитен</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>светлост</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>црвена</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>зелена</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>сина</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Алфа</translation>
+<original>border</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13629,7 +13666,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Оваа опција определува кои критериуми магично стапче користи за да се утврди дали една точка треба да се додаде во тековната селекција.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14997,10 +15034,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12261 total words. -->
 
 </pdData>

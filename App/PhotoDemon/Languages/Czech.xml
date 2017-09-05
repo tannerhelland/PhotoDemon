@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.3</langversion>
+<langversion>6.8.5</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -286,21 +286,6 @@
 </phrase>
 
 <phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool úspěšně zahájen. Připraveno zpracovat metadata.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>VAROVÁNÍ! Vstup ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>VAROVÁNÍ! ExifTool.exe nelze spustit.</translation>
-</phrase>
-
-<phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
 <translation>Nepodařilo se spustit službu pluginu (nelze vytvořit potrubí).</translation>
 </phrase>
@@ -310,7 +295,7 @@
 <translation>Nepodařilo se spustit službu pluginu (nelze vytvořit proces: %1).</translation>
 </phrase>
 
-<!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -421,6 +406,22 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 <!-- Files.bas contains 0 phrases. -->
 
 <!-- END text for Files.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation></translation>
+</phrase>
+
+<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1097,6 +1098,41 @@ VBCRLPovolit podporu komprimovaných souborů PDI, klepněte na tlačítko Nápo
 </phrase>
 
 <phrase>
+<original>color</original>
+<translation>barva</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>Jas</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Opravdu chcete zrušit %1?</translation>
 </phrase>
@@ -1111,7 +1147,7 @@ VBCRLPovolit podporu komprimovaných souborů PDI, klepněte na tlačítko Nápo
 <translation>Náhled není k dispozici</translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -3840,11 +3876,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>barva</translation>
-</phrase>
-
-<phrase>
 <original>grayscale</original>
 <translation>Stupně šedi</translation>
 </phrase>
@@ -3889,7 +3920,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <translation>žádný</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -7029,11 +7060,6 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 </phrase>
 
 <phrase>
-<original>luminance</original>
-<translation>Jas</translation>
-</phrase>
-
-<phrase>
 <original>fill histogram curves</original>
 <translation>Vyplňte histogramy</translation>
 </phrase>
@@ -7098,7 +7124,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Protahování histogramu</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 29 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -13259,7 +13285,12 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Guma</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<phrase>
+<original>Paint bucket (fill with color)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -13283,6 +13314,77 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
+
+<!-- BEGIN text for Toolpanel_Fill.frm (toolpanel_Fill) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>Antialiased</translation>
+</phrase>
+
+<phrase>
+<original>area</original>
+<translation>plocha</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>tolerance</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>Vzorkovací oblast</translation>
+</phrase>
+
+<phrase>
+<original>blend / alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>obraz</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>vrstva</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>Souvislé</translation>
+</phrase>
+
+<phrase>
+<original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This option controls how pixels are analyzed when adding them to the fill.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Fill.frm-->
 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
@@ -13382,18 +13484,13 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
 
-<phrase>
-<original>antialiased</original>
-<translation>Antialiased</translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
@@ -13428,11 +13525,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <phrase>
 <original>smoothing</original>
 <translation>Vyhlazení</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>plocha</translation>
 </phrase>
 
 <phrase>
@@ -13471,93 +13563,38 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>tolerance</original>
-<translation>tolerance</translation>
+<original>highlight</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>sampling area</original>
-<translation>Vzorkovací oblast</translation>
+<original>lightbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Highlight</original>
-<translation>Zvýraznit</translation>
+<original>ants</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Lightbox</original>
-<translation>Světelný Box</translation>
+<original>feathered</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Ants</original>
-<translation>Mravenci</translation>
+<original>interior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Antialiased</original>
-<translation>Znečištěné</translation>
+<original>exterior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Feathered</original>
-<translation>Pěstec</translation>
-</phrase>
-
-<phrase>
-<original>Interior</original>
-<translation>Interiér</translation>
-</phrase>
-
-<phrase>
-<original>Exterior</original>
-<translation>Vnější</translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>obraz</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>vrstva</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>Souvislé</translation>
-</phrase>
-
-<phrase>
-<original>Composite</original>
-<translation>Kompozitní</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>Luminance</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>Červené</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Zelená</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Modrý</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Alpha</translation>
+<original>border</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13625,7 +13662,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Tato volba určuje, která kritéria používá kouzelná hůlka k určení, zda má být k aktuálnímu výběru přidán pixel.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14993,10 +15030,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12261 total words. -->
 
 </pdData>

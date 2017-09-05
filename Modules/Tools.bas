@@ -550,13 +550,13 @@ End Function
 Public Sub InitializeToolsDependentOnImage()
     
     If (g_OpenImageCount > 0) Then
-        If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
+        If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL) Then
             
             'A couple things require us to reset the scratch layer...
             ' 1) If it hasn't been initialized at all
             ' 2) If it doesn't match the current image's size
             Dim scratchLayerResetRequired As Boolean: scratchLayerResetRequired = False
-            scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer Is Nothing)
+            scratchLayerResetRequired = (pdImages(g_CurrentImage).ScratchLayer Is Nothing)
             If (Not scratchLayerResetRequired) Then
                 scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerWidth <> pdImages(g_CurrentImage).Width)
                 If (Not scratchLayerResetRequired) Then scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerHeight <> pdImages(g_CurrentImage).Height)
@@ -572,6 +572,7 @@ Public Sub InitializeToolsDependentOnImage()
             'As a failsafe, restore default mouse settings, which may have been modified by various paintbrush tools
             FormMain.mainCanvas(0).SetMouseInput_AutoDrop True
             FormMain.mainCanvas(0).SetMouseInput_HighRes False
+            
         End If
     End If
     

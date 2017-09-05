@@ -261,7 +261,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     
     Dim sunRadius As Double, numBeams As Long, baseColor As Long, colorVariance As Long
     Dim centerX As Double, centerY As Double, lengthVariance As Double, beamStrength As Double, hdrStrength As Double
-    Dim overlayBlend As LAYER_BLENDMODE
+    Dim overlayBlend As PD_BlendMode
     
     With cParams
         sunRadius = .GetDouble("radius", 100#)

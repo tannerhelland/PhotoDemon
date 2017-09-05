@@ -164,7 +164,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim fadeOpacity As Double, dstBlendMode As LAYER_BLENDMODE
+    Dim fadeOpacity As Double, dstBlendMode As PD_BlendMode
     
     With cParams
         fadeOpacity = .GetDouble("opacity", sltOpacity.Value)

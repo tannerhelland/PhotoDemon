@@ -69,33 +69,33 @@ Private m_OutlineCopy() As Byte
 Private m_Tolerance As Double
 
 'Different compare modes can be used to obtain better results.
-Public Enum PD_FLOOD_COMPARE
-    PDFC_COMPOSITE = 0
-    PDFC_COLOR = 1
-    PDFC_LUMINANCE = 2
-    PDFC_RED = 3
-    PDFC_GREEN = 4
-    PDFC_BLUE = 5
-    PDFC_ALPHA = 6
+Public Enum PD_FloodCompare
+    pdfc_Color = 0
+    pdfc_Composite = 1
+    pdfc_Luminance = 2
+    pdfc_Red = 3
+    pdfc_Green = 4
+    pdfc_Blue = 5
+    pdfc_Alpha = 6
 End Enum
 
 #If False Then
-    Private Const PDFC_COMPOSITE = 0, PDFC_COLOR = 1, PDFC_LUMINANCE = 2, PDFC_RED = 3, PDFC_GREEN = 4, PDFC_BLUE = 5, PDFC_ALPHA = 6
+    Private Const pdfc_Color = 0, pdfc_Composite = 1, pdfc_Luminance = 2, pdfc_Red = 3, pdfc_Green = 4, pdfc_Blue = 5, pdfc_Alpha = 6
 #End If
 
-Private m_CompareMode As PD_FLOOD_COMPARE
+Private m_CompareMode As PD_FloodCompare
 
 'Two search methods are supported: contiguous region based on the initial point (default behavior), or the full image
-Public Enum PD_FLOOD_SEARCH
-    PDFS_CONTIGUOUS = 0
-    PDFS_WHOLEIMAGE = 1
+Public Enum PD_FloodSearch
+    pdfs_Contiguous = 0
+    pdfs_WholeImage = 1
 End Enum
 
 #If False Then
-    Private Const PDFS_CONTIGUOUS = 0, PDFS_WHOLEIMAGE = 1
+    Private Const pdfs_Contiguous = 0, pdfs_WholeImage = 1
 #End If
 
-Private m_SearchMode As PD_FLOOD_SEARCH
+Private m_SearchMode As PD_FloodSearch
 
 'A custom antialiasing technique can be used to soften the floodfill results
 Private m_AntialiasingMode As Boolean
@@ -120,11 +120,11 @@ Public Sub SetAntialiasingMode(ByVal newAntialiasingMode As Boolean)
     m_AntialiasingMode = newAntialiasingMode
 End Sub
 
-Public Function GetCompareMode() As PD_FLOOD_COMPARE
+Public Function GetCompareMode() As PD_FloodCompare
     GetCompareMode = m_CompareMode
 End Function
 
-Public Function SetCompareMode(ByVal newCompareMode As PD_FLOOD_COMPARE)
+Public Function SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
     m_CompareMode = newCompareMode
 End Function
 
@@ -137,11 +137,11 @@ Public Sub SetInitialPoint(ByVal startX As Long, ByVal startY As Long)
     m_InitPoint.y = startY
 End Sub
 
-Public Function GetSearchMode() As PD_FLOOD_SEARCH
+Public Function GetSearchMode() As PD_FloodSearch
     GetSearchMode = m_SearchMode
 End Function
 
-Public Sub SetSearchMode(ByVal newSearchMode As PD_FLOOD_SEARCH)
+Public Sub SetSearchMode(ByVal newSearchMode As PD_FloodSearch)
     m_SearchMode = newSearchMode
 End Sub
 
@@ -198,7 +198,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     End If
     
     'Based on the specified search mode, call the appropriate flood function
-    If (m_SearchMode = PDFS_CONTIGUOUS) Then
+    If (m_SearchMode = pdfs_Contiguous) Then
         
         'Contiguous floodfills use a new scanline-based implementation.  This provides a 30-40% performance improvement
         ' over a naive implementation, although the code is quite a bit more complex.
@@ -207,7 +207,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         'For reference, you can always test the original (much-simpler) implementation via this line:
         'FloodFillContiguous srcDIB
         
-    ElseIf (m_SearchMode = PDFS_WHOLEIMAGE) Then
+    ElseIf (m_SearchMode = pdfs_WholeImage) Then
         FloodFillGlobal srcDIB
     End If
     
@@ -335,31 +335,31 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB) As Boolean
     'Calculate a reference tolerance value, which serves as the base for the flood fill
     Select Case m_CompareMode
     
-        Case PDFC_COMPOSITE
+        Case pdfc_Composite
             'Composite results do not require a base value, as they are independently processed against the reference
             ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
             ' by 4, to avoid the need for a divide function in the inner loop
             modifiedTolerance = m_Tolerance * 4
             
-        Case PDFC_COLOR
+        Case pdfc_Color
             modifiedTolerance = m_Tolerance * 3
         
-        Case PDFC_LUMINANCE
+        Case pdfc_Luminance
         
             'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
             ' tolerance range to [0, 1000] instead of [0, 255.0]
             modifiedTolerance = m_Tolerance * 1000
             
-        Case PDFC_RED
+        Case pdfc_Red
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_GREEN
+        Case pdfc_Green
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_BLUE
+        Case pdfc_Blue
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_ALPHA
+        Case pdfc_Alpha
             modifiedTolerance = m_Tolerance
     
     End Select
@@ -386,28 +386,28 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB) As Boolean
         a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
-        If (m_CompareMode = PDFC_COMPOSITE) Then
+        If (m_CompareMode = pdfc_Composite) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
             isWithinTolerance = (thisValue <= modifiedTolerance)
         
-        ElseIf (m_CompareMode = PDFC_COLOR) Then
+        ElseIf (m_CompareMode = pdfc_Color) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
             isWithinTolerance = (thisValue <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+        ElseIf (m_CompareMode = pdfc_Luminance) Then
             l = 213 * r + 715 * g + 72 * b
             isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_RED) Then
+        ElseIf (m_CompareMode = pdfc_Red) Then
             isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_GREEN) Then
+        ElseIf (m_CompareMode = pdfc_Green) Then
             isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
                 
-        ElseIf (m_CompareMode = PDFC_BLUE) Then
+        ElseIf (m_CompareMode = pdfc_Blue) Then
             isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
                 
-        ElseIf (m_CompareMode = PDFC_ALPHA) Then
+        ElseIf (m_CompareMode = pdfc_Alpha) Then
             isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
         
         End If
@@ -487,31 +487,31 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     'Calculate a reference tolerance value, which serves as the base for the flood fill
     Select Case m_CompareMode
     
-        Case PDFC_COMPOSITE
+        Case pdfc_Composite
             'Composite results do not require a base value, as they are independently processed against the reference
             ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
             ' by 4, to avoid the need for a divide function in the inner loop
             modifiedTolerance = m_Tolerance * 4
             
-        Case PDFC_COLOR
+        Case pdfc_Color
             modifiedTolerance = m_Tolerance * 3
         
-        Case PDFC_LUMINANCE
+        Case pdfc_Luminance
         
             'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
             ' tolerance range to [0, 1000] instead of [0, 255.0]
             modifiedTolerance = m_Tolerance * 1000
             
-        Case PDFC_RED
+        Case pdfc_Red
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_GREEN
+        Case pdfc_Green
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_BLUE
+        Case pdfc_Blue
             modifiedTolerance = m_Tolerance
             
-        Case PDFC_ALPHA
+        Case pdfc_Alpha
             modifiedTolerance = m_Tolerance
     
     End Select
@@ -601,22 +601,22 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         a = tmpImageLine(quickX + 3)
     
         'Compare this pixel against the reference
-        If (m_CompareMode = PDFC_COMPOSITE) Then
+        If (m_CompareMode = pdfc_Composite) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
             isWithinTolerance = (thisValue <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_COLOR) Then
+        ElseIf (m_CompareMode = pdfc_Color) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
             isWithinTolerance = (thisValue <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+        ElseIf (m_CompareMode = pdfc_Luminance) Then
             l = 213 * r + 715 * g + 72 * b
             isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_RED) Then
+        ElseIf (m_CompareMode = pdfc_Red) Then
             isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_GREEN) Then
+        ElseIf (m_CompareMode = pdfc_Green) Then
             isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_BLUE) Then
+        ElseIf (m_CompareMode = pdfc_Blue) Then
             isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-        ElseIf (m_CompareMode = PDFC_ALPHA) Then
+        ElseIf (m_CompareMode = pdfc_Alpha) Then
             isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
         End If
         
@@ -645,22 +645,22 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     a = tmpImageLine(quickX + 3)
                 
                     'Compare this pixel against the reference
-                    If (m_CompareMode = PDFC_COMPOSITE) Then
+                    If (m_CompareMode = pdfc_Composite) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_COLOR) Then
+                    ElseIf (m_CompareMode = pdfc_Color) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+                    ElseIf (m_CompareMode = pdfc_Luminance) Then
                         l = 213 * r + 715 * g + 72 * b
                         isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_RED) Then
+                    ElseIf (m_CompareMode = pdfc_Red) Then
                         isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_GREEN) Then
+                    ElseIf (m_CompareMode = pdfc_Green) Then
                         isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_BLUE) Then
+                    ElseIf (m_CompareMode = pdfc_Blue) Then
                         isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+                    ElseIf (m_CompareMode = pdfc_Alpha) Then
                         isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
                     End If
                     
@@ -695,22 +695,22 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     a = tmpImageLine(quickX + 3)
                 
                     'Compare this pixel against the reference
-                    If (m_CompareMode = PDFC_COMPOSITE) Then
+                    If (m_CompareMode = pdfc_Composite) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_COLOR) Then
+                    ElseIf (m_CompareMode = pdfc_Color) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+                    ElseIf (m_CompareMode = pdfc_Luminance) Then
                         l = 213 * r + 715 * g + 72 * b
                         isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_RED) Then
+                    ElseIf (m_CompareMode = pdfc_Red) Then
                         isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_GREEN) Then
+                    ElseIf (m_CompareMode = pdfc_Green) Then
                         isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_BLUE) Then
+                    ElseIf (m_CompareMode = pdfc_Blue) Then
                         isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+                    ElseIf (m_CompareMode = pdfc_Alpha) Then
                         isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
                     End If
                     
@@ -825,30 +825,30 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     refL = (213 * refR + 715 * refG + 72 * refB)
     
     'Calculate a reference tolerance value, which serves as the base for the flood fill
-    If (m_CompareMode = PDFC_COMPOSITE) Then
+    If (m_CompareMode = pdfc_Composite) Then
         'Composite results do not require a base value, as they are independently processed against the reference
         ' RGBA values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
         ' by 4, to avoid the need for a divide function in the inner loop
         modifiedTolerance = m_Tolerance * 4
             
-    ElseIf (m_CompareMode = PDFC_COLOR) Then
+    ElseIf (m_CompareMode = pdfc_Color) Then
         modifiedTolerance = m_Tolerance * 3
         
-    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+    ElseIf (m_CompareMode = pdfc_Luminance) Then
         'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
         ' tolerance range to [0, 1000] instead of [0, 255.0]
         modifiedTolerance = m_Tolerance * 1000
             
-    ElseIf (m_CompareMode = PDFC_RED) Then
+    ElseIf (m_CompareMode = pdfc_Red) Then
         modifiedTolerance = m_Tolerance
             
-    ElseIf (m_CompareMode = PDFC_GREEN) Then
+    ElseIf (m_CompareMode = pdfc_Green) Then
         modifiedTolerance = m_Tolerance
             
-    ElseIf (m_CompareMode = PDFC_BLUE) Then
+    ElseIf (m_CompareMode = pdfc_Blue) Then
         modifiedTolerance = m_Tolerance
             
-    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+    ElseIf (m_CompareMode = pdfc_Alpha) Then
         modifiedTolerance = m_Tolerance
     
     End If
@@ -870,28 +870,28 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
         a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
-        If (m_CompareMode = PDFC_COMPOSITE) Then
+        If (m_CompareMode = pdfc_Composite) Then
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_COLOR) Then
+        ElseIf (m_CompareMode = pdfc_Color) Then
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+        ElseIf (m_CompareMode = pdfc_Luminance) Then
                 l = 213 * r + 715 * g + 72 * b
                 isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_RED) Then
+        ElseIf (m_CompareMode = pdfc_Red) Then
                 isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = PDFC_GREEN) Then
+        ElseIf (m_CompareMode = pdfc_Green) Then
                 isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
                 
-        ElseIf (m_CompareMode = PDFC_BLUE) Then
+        ElseIf (m_CompareMode = pdfc_Blue) Then
                 isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
                 
-        ElseIf (m_CompareMode = PDFC_ALPHA) Then
+        ElseIf (m_CompareMode = pdfc_Alpha) Then
                 isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
         
         End If
@@ -974,6 +974,6 @@ Private Sub Class_Initialize()
     ReDim m_FillResults(0, 0) As Byte
     
     'Composite is the default tolerance mode
-    m_CompareMode = PDFC_COMPOSITE
+    m_CompareMode = pdfc_Composite
     
 End Sub

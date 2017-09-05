@@ -73,7 +73,7 @@ Private m_Blender As pdPixelBlender
 ' the finished top DIB over the bottom DIB to achieve full composition.
 '
 'This function is currently unused.  I cannot guarantee that it will exist in future releases.
-'Friend Sub CompositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+'Friend Sub CompositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As PD_AlphaMode = LA_NORMAL)
 '
 '    'The pixel blender class handles this for us
 '    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, 1, alphaMode, False
@@ -91,7 +91,7 @@ Private m_Blender As pdPixelBlender
 ' *will crash* if you call it directly without meeting this criteria.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
+Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'The blend class handles this for us
     m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, bottomAlphaMode, topAlphaMode, True, ptrToTopLayerAlternateRectF, topLayerMask
@@ -450,7 +450,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     Else
         
         'If *either* the paintbrush or the target layer has requested locked alpha, honor that now
-        Dim targetAlphaMode As LAYER_ALPHAMODE
+        Dim targetAlphaMode As PD_AlphaMode
         If ((paintLayer.GetLayerAlphaMode = LA_LOCKED) Or (bottomLayer.GetLayerAlphaMode = LA_LOCKED)) Then
             targetAlphaMode = LA_LOCKED
         Else
@@ -479,7 +479,7 @@ End Sub
 'IMPORTANT NOTE!  Both the top and bottom DIBs will be modified by this function, per standard merge rules.  The top DIB must be modified because it
 '                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
 '                  use temp copies of DIBs you can't afford to lose.
-Friend Sub QuickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+Friend Sub QuickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As PD_BlendMode = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL)
     Me.CompositeAndBlendDIBs topDIB, bottomDIB, blendMode, 0, 0, topLayerOpacity / 100, bottomAlphaMode, topAlphaMode
 End Sub
 
@@ -1782,7 +1782,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         If nonStandardBlendingActive Then
             
             'If *either* the paintbrush or the target layer has requested locked alpha, honor that now
-            Dim targetAlphaMode As LAYER_ALPHAMODE
+            Dim targetAlphaMode As PD_AlphaMode
             If (srcImage.ScratchLayer.GetLayerAlphaMode = LA_LOCKED) Or (srcLayer.GetLayerAlphaMode = LA_LOCKED) Then
                 targetAlphaMode = LA_LOCKED
             Else

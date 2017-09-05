@@ -411,10 +411,11 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         ' (e.g. updating thumbnails, window captions, etc)
         Interface.NotifyNewActiveImage g_CurrentImage
         
-        'Make sure any tool initializations that vary by image are up-to-date.
-        Tools.InitializeToolsDependentOnImage
-        
     End If
+    
+    'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
+    ' making sure a scratch layer exists, and that it matches the current image's size.)
+    Tools.InitializeToolsDependentOnImage
     
 End Sub
 

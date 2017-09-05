@@ -60,7 +60,7 @@ End Enum
 ' Once a layer is converted to PDL_IMAGE type, it cannot be reverted.
 Private myLayerType As LAYER_TYPE
 
-Public Enum LAYER_BLENDMODE
+Public Enum PD_BlendMode
     BL_NORMAL = 0
     BL_DARKEN = 1
     BL_MULTIPLY = 2
@@ -114,7 +114,7 @@ End Enum
 ' address masking via this property as well... I'm still deciding the best way to do it.
 '
 'Also, alpha locking is handled via mode.
-Public Enum LAYER_ALPHAMODE
+Public Enum PD_AlphaMode
     LA_NORMAL = 0
     LA_INHERIT = 1
     LA_LOCKED = 2
@@ -138,7 +138,7 @@ Private Type LayerData
     l_Name As String                    'Layer name, as entered by the user
     l_GroupID As Long                   'Layer group (0 if not assigned to a group)
     l_Opacity As Long                   'Layer opacity (defaults to 100)
-    l_BlendMode As LAYER_BLENDMODE      'Layer blend mode; defaults to BL_NORMAL
+    l_BlendMode As PD_BlendMode      'Layer blend mode; defaults to BL_NORMAL
     l_OffsetX As Double                 'X/Y offset of the layer's top-left corner
     l_OffsetY As Double
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
@@ -151,7 +151,7 @@ Private Type LayerData
     l_ResizeQuality As LAYER_RESIZE_QUALITY   'Resampling algorithm used when non-destructive resizes are active
     l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
-    l_AlphaMode As LAYER_ALPHAMODE      'Layer alpha mode; defaults to LA_NORMAL
+    l_AlphaMode As PD_AlphaMode      'Layer alpha mode; defaults to LA_NORMAL
 End Type
 
 'Local instance of layer data for this layer
@@ -429,19 +429,19 @@ Public Sub SetLayerOpacity(ByVal newLayerOpacity As Long)
 End Sub
 
 'Get/set alpha and blend modes
-Public Function GetLayerAlphaMode() As LAYER_ALPHAMODE
+Public Function GetLayerAlphaMode() As PD_AlphaMode
     GetLayerAlphaMode = myLayerData.l_AlphaMode
 End Function
 
-Public Sub SetLayerAlphaMode(ByVal newLayerAlphaMode As LAYER_ALPHAMODE)
+Public Sub SetLayerAlphaMode(ByVal newLayerAlphaMode As PD_AlphaMode)
     myLayerData.l_AlphaMode = newLayerAlphaMode
 End Sub
 
-Public Function GetLayerBlendMode() As LAYER_BLENDMODE
+Public Function GetLayerBlendMode() As PD_BlendMode
     GetLayerBlendMode = myLayerData.l_BlendMode
 End Function
 
-Public Sub SetLayerBlendMode(ByVal newLayerBlendMode As LAYER_BLENDMODE)
+Public Sub SetLayerBlendMode(ByVal newLayerBlendMode As PD_BlendMode)
     myLayerData.l_BlendMode = newLayerBlendMode
 End Sub
 

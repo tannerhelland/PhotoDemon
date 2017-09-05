@@ -197,7 +197,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
         
         'Composite our invert+blur image against the base layer (workingDIB) using the COLOR DODGE blend mode;
         ' this will emphasize areas where the layers differ, while ignoring areas where they're the same.
-        Dim dstBlendMode As LAYER_BLENDMODE
+        Dim dstBlendMode As PD_BlendMode
         Select Case glowStyle
             Case 0
                 dstBlendMode = BL_SCREEN
