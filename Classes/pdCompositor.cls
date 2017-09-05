@@ -773,10 +773,10 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
             '
             'Note that we only do this if the current layer is a raster layer.  If it is a vector layer, the paint stroke will simply
             ' be added as a new layer, so we don't need to pre-merge anything.
-            If ((paintScratchLayerIndex = i) And srcImage.GetLayerByIndex(i).IsLayerRaster) Then
+            If (paintScratchLayerIndex = i) And srcImage.GetLayerByIndex(i).IsLayerRaster Then
                     
-                'Pass this paint layer to a dedicated renderer (one specially
-                ' optimized for real-time performance, so different trade-offs are made from the standard renderer.
+                'Pass this paint layer to a dedicated renderer (one specially optimized for real-time performance,
+                ' so different trade-offs are made compared to the standard renderer).
                 GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless
                 
             'Painting is not active; apply a standard composite op
@@ -791,7 +791,14 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         ' atop it as a standalone layer.
         If (paintScratchLayerIndex = i) Then
             If (Not srcImage.GetLayerByIndex(i).IsLayerRaster) Then
-                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+                
+                'Selections require us to pre-mask our selection result
+                If srcImage.IsSelectionActive Then
+                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetMaskDIB_ViewportCopy()
+                Else
+                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+                End If
+                
             End If
         End If
         
@@ -836,7 +843,7 @@ End Sub
 ' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.  If the caches do not need to
 ' be forcibly generated, the optional levelOfDetail parameter should be correctly set, which clues the compositor into which LOD cache to use
 ' in the target layer, greatly improving performance.
-Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByRef maskInViewportSpace As pdDIB = Nothing)
     
     'This function requires two non-optional rects as parameters:
     
@@ -943,6 +950,9 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         Else
             nonStandardBlendingActive = CBool(srcLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcLayer.GetLayerAlphaMode <> LA_NORMAL)
         End If
+        
+        'If a mask was supplied, also treat this as a non-standard blend
+        If (Not nonStandardBlendingActive) Then nonStandardBlendingActive = (Not maskInViewportSpace Is Nothing)
         
         'To improve performance, this function also calculates and checks a dedicated "viewport hash" of the layer.  If the layer AND viewport
         ' have not changed since our last render, we can just grab the last temporary viewport object we generated, which makes things like
@@ -1111,7 +1121,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 If nonStandardBlendingActive Then
                     
                     'Composite and blend in one fell swoop
-                    CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.GetLayerOpacity / 100, , srcLayer.GetLayerAlphaMode
+                    CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.GetLayerOpacity / 100, , srcLayer.GetLayerAlphaMode, , maskInViewportSpace
                     
                 'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
                 ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)
