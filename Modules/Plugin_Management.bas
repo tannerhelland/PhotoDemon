@@ -50,7 +50,7 @@ Private Const EXPECTED_LZ4_VERSION As String = "10706"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.6"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
-Private Const EXPECTED_ZSTD_VERSION As String = "10105"
+Private Const EXPECTED_ZSTD_VERSION As String = "10301"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
