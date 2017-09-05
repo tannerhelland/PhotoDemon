@@ -345,6 +345,16 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   14
+      Left            =   120
+      TabIndex        =   29
+      Top             =   7080
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
    Begin VB.Line lnRightSeparator 
       X1              =   136
       X2              =   136
@@ -429,7 +439,7 @@ End Type
 
 Private m_NumOfPanels As Long
 Private m_Panels() As ToolPanelTracker
-Private Const NUM_OF_TOOL_PANELS As Long = 8
+Private Const NUM_OF_TOOL_PANELS As Long = 9
 
 'Each individual tool panel must have a unique entry inside *this* enum.  Note that a number of
 ' tools share panels, so this number has no meaningful relation to the net number of tools available.
@@ -443,11 +453,12 @@ Private Enum PD_ToolPanels
     TP_Pencil = 5
     TP_Paintbrush = 6
     TP_Eraser = 7
+    TP_Fill = 8
 End Enum
 
 #If False Then
     Private Const TP_None = -1, TP_MoveSize = 0, TP_NDFX = 1, TP_Selections = 2, TP_Text = 3, TP_Typography = 4
-    Private Const TP_Pencil = 5, TP_Paintbrush = 6, TP_Eraser = 7
+    Private Const TP_Pencil = 5, TP_Paintbrush = 6, TP_Eraser = 7, TP_Fill = 8
 #End If
 
 'The currently active tool panel will be mirrored to this value
@@ -659,7 +670,7 @@ Private Sub ReflowToolboxLayout()
     
     'Paint group
     PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
-    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_ERASER, hOffset, vOffset
+    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_FILL, hOffset, vOffset
     
     'Macro recording message
     If (vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height) Then
@@ -787,6 +798,9 @@ Private Sub NewToolSelected()
                 Paintbrush.SetBrushStyle BS_SoftBrush
             End If
             
+        Case PAINT_FILL
+            toolpanel_Fill.SyncAllFillSettingsToUI
+            
     End Select
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
@@ -894,6 +908,12 @@ Public Sub ResetToolButtonStates()
             toolpanel_Eraser.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Eraser
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Eraser.hWnd
+            
+        Case PAINT_FILL
+            Load toolpanel_Fill
+            toolpanel_Fill.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_Fill
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Fill.hWnd
         
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
@@ -1013,6 +1033,10 @@ Public Sub ResetToolButtonStates()
                     Case TP_Eraser
                         Unload toolpanel_Eraser
                         Set toolpanel_Eraser = Nothing
+                        
+                    Case TP_Fill
+                        Unload toolpanel_Fill
+                        Set toolpanel_Fill = Nothing
                         
                 End Select
                 
@@ -1173,6 +1197,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_BASICBRUSH).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_ERASER).AssignImage "paint_erase", , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_FILL).AssignImage "paint_fill", , buttonImageSize, buttonImageSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -1229,6 +1254,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_BASICBRUSH).AssignTooltip "Pencil (hard-tipped brush)"
     cmdTools(PAINT_SOFTBRUSH).AssignTooltip "Paintbrush (soft-tipped brush)"
     cmdTools(PAINT_ERASER).AssignTooltip "Eraser"
+    cmdTools(PAINT_FILL).AssignTooltip "Paint bucket (fill with color)"
     
     'The right separator line is colored according to the current shadow accent color
     If (Not g_Themer Is Nothing) Then

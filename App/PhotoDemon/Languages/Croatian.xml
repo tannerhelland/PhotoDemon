@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.2996</langversion>
+<langversion>6.8.2998</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -286,21 +286,6 @@
 </phrase>
 
 <phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool je uspješno pokrenuo. Spremno za obradu metapodataka.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>UPOZORENJE! ExifTool ulaz</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>UPOZORENJE! Nije moguće pokrenuti ExifTool.exe.</translation>
-</phrase>
-
-<phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
 <translation>Pokretanje dodatne usluge nije uspjelo (nije uspjelo izraditi cijev).</translation>
 </phrase>
@@ -310,7 +295,7 @@
 <translation>Pokretanje dodatne usluge nije uspjelo (ne može se izraditi postupak: %1).</translation>
 </phrase>
 
-<!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -421,6 +406,22 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <!-- Files.bas contains 0 phrases. -->
 
 <!-- END text for Files.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation></translation>
+</phrase>
+
+<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
 
 <!-- BEGIN text for Filters_Area.bas -->
 
@@ -1098,6 +1099,41 @@ To omogućava podršku za komprimirane PDI datoteke, kliknite Pomoć> Provjeri a
 </phrase>
 
 <phrase>
+<original>color</original>
+<translation>boja</translation>
+</phrase>
+
+<phrase>
+<original>color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>luminance</original>
+<translation>osvjetljenje</translation>
+</phrase>
+
+<phrase>
+<original>red only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>green only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blue only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Jeste li sigurni da želite poništiti %1?</translation>
 </phrase>
@@ -1112,7 +1148,7 @@ To omogućava podršku za komprimirane PDI datoteke, kliknite Pomoć> Provjeri a
 <translation>Pregled nije dostupan</translation>
 </phrase>
 
-<!-- Interface.bas contains 73 phrases. 21 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -3842,11 +3878,6 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>boja</translation>
-</phrase>
-
-<phrase>
 <original>grayscale</original>
 <translation>u sivim tonovima</translation>
 </phrase>
@@ -3891,7 +3922,7 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <translation>nijedan</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -7031,11 +7062,6 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovorite "Ne".)</tra
 </phrase>
 
 <phrase>
-<original>luminance</original>
-<translation>osvjetljenje</translation>
-</phrase>
-
-<phrase>
 <original>fill histogram curves</original>
 <translation>Ispunite krivulje histograma</translation>
 </phrase>
@@ -7100,7 +7126,7 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovorite "Ne".)</tra
 <translation>Istraživanje histograma</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 29 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -13261,7 +13287,12 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Gumica</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 11 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<phrase>
+<original>Paint bucket (fill with color)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -13285,6 +13316,77 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
+
+<!-- BEGIN text for Toolpanel_Fill.frm (toolpanel_Fill) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>antialiased</translation>
+</phrase>
+
+<phrase>
+<original>area</original>
+<translation>područje</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>tolerancija</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>Područje uzorkovanja</translation>
+</phrase>
+
+<phrase>
+<original>blend / alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>slika</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>sloj</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>granični</translation>
+</phrase>
+
+<phrase>
+<original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This option controls how pixels are analyzed when adding them to the fill.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Fill.frm-->
 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
@@ -13384,18 +13486,13 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
 
-<phrase>
-<original>antialiased</original>
-<translation>antialiased</translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
@@ -13430,11 +13527,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <phrase>
 <original>smoothing</original>
 <translation>izglađivanje</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>područje</translation>
 </phrase>
 
 <phrase>
@@ -13473,93 +13565,38 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>tolerance</original>
-<translation>tolerancija</translation>
+<original>highlight</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>sampling area</original>
-<translation>Područje uzorkovanja</translation>
+<original>lightbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Highlight</original>
-<translation>Vrhunac</translation>
+<original>ants</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Lightbox</original>
-<translation>Svjetleća Kutija</translation>
+<original>feathered</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Ants</original>
-<translation>Mravi</translation>
+<original>interior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Antialiased</original>
-<translation>Antialiased</translation>
+<original>exterior</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Feathered</original>
-<translation>Ukrašen Perjem</translation>
-</phrase>
-
-<phrase>
-<original>Interior</original>
-<translation>Unutrašnjost</translation>
-</phrase>
-
-<phrase>
-<original>Exterior</original>
-<translation>Vanjski</translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>slika</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>sloj</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>granični</translation>
-</phrase>
-
-<phrase>
-<original>Composite</original>
-<translation>Mješavina</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>Osvjetljenje</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>Crvena</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Zelena</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Plava</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Alfa</translation>
+<original>border</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13627,7 +13664,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Ova opcija kontrolira koje kriterije čarobni štapić koristi kako bi utvrdio treba li dodati pikselu trenutnom odabiru.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 19 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14997,10 +15034,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1965 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12261 total words. -->
 
 </pdData>

@@ -710,10 +710,10 @@ Private Sub Form_Load()
     
     'Selection visual styles (Highlight, Lightbox, or Outline)
     cboSelRender.Clear
-    cboSelRender.AddItem " Highlight", 0
-    cboSelRender.AddItem " Lightbox", 1
-    cboSelRender.AddItem " Ants", 2
-    cboSelRender.AddItem " Outline", 3
+    cboSelRender.AddItem " highlight", 0
+    cboSelRender.AddItem " lightbox", 1
+    cboSelRender.AddItem " ants", 2
+    cboSelRender.AddItem " outline", 3
     cboSelRender.ListIndex = 0
     
     csSelectionHighlight.Color = RGB(255, 58, 72)
@@ -721,18 +721,20 @@ Private Sub Form_Load()
     
     'Selection smoothing (currently none, antialiased, fully feathered)
     cboSelSmoothing.Clear
-    cboSelSmoothing.AddItem " None", 0
-    cboSelSmoothing.AddItem " Antialiased", 1
-    cboSelSmoothing.AddItem " Feathered", 2
+    cboSelSmoothing.AddItem " none", 0
+    cboSelSmoothing.AddItem " antialiased", 1
+    cboSelSmoothing.AddItem " feathered", 2
     cboSelSmoothing.ListIndex = 1
     
     'Selection types (currently interior, exterior, border)
     Dim i As Long
     For i = 0 To cboSelArea.Count - 1
-        cboSelArea(i).AddItem " Interior", 0
-        cboSelArea(i).AddItem " Exterior", 1
-        cboSelArea(i).AddItem " Border", 2
+        cboSelArea(i).SetAutomaticRedraws False
+        cboSelArea(i).AddItem " interior", 0
+        cboSelArea(i).AddItem " exterior", 1
+        cboSelArea(i).AddItem " border", 2
         cboSelArea(i).ListIndex = 0
+        cboSelArea(i).SetAutomaticRedraws True
     Next i
     
     'Magic wand options
@@ -744,15 +746,7 @@ Private Sub Form_Load()
     btsWandArea.AddItem "global", 1
     btsWandArea.ListIndex = 0
     
-    cboWandCompare.Clear
-    cboWandCompare.AddItem " Composite", 0
-    cboWandCompare.AddItem " Color", 1
-    cboWandCompare.AddItem " Luminance", 2, True
-    cboWandCompare.AddItem " Red", 3
-    cboWandCompare.AddItem " Green", 4
-    cboWandCompare.AddItem " Blue", 5
-    cboWandCompare.AddItem " Alpha", 6
-    cboWandCompare.ListIndex = 1
+    Interface.PopulateFloodFillTypes cboWandCompare
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -839,7 +833,7 @@ End Sub
 Public Sub UpdateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
-    sltSelectionFeathering.Visible = (cboSelSmoothing.ListIndex = ss_FullyFeathered)
+    sltSelectionFeathering.Visible = (cboSelSmoothing.ListIndex = es_FullyFeathered)
     
     'Display the border slider as necessary
     If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then

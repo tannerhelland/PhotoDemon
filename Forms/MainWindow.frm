@@ -2787,7 +2787,6 @@ Private Sub Form_Unload(Cancel As Integer)
     'Hide the main window to make it appear as if we shut down quickly
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown initiated"
-        pdDebug.LogAction vbNullString, PDM_Mem_Report
     #End If
     
     Me.Visible = False
@@ -2864,10 +2863,11 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Destroy all paint-related resources
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Destroying paintbrush resources..."
+        pdDebug.LogAction "Destroying paint tool resources..."
     #End If
     
     Paintbrush.FreeBrushResources
+    FillTool.FreeFillResources
         
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
@@ -2926,6 +2926,10 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_Eraser.hWnd
         Unload toolpanel_Eraser
         Set toolpanel_Eraser = Nothing
+    ElseIf (g_CurrentTool = PAINT_FILL) Then
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Fill.hWnd
+        Unload toolpanel_Fill
+        Set toolpanel_Fill = Nothing
     End If
     
     'With all tool panels unloaded, unload all toolboxes as well
@@ -2941,10 +2945,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
     Unload toolbar_Toolbox
     Set toolbar_Toolbox = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_Mem_Report
-    #End If
     
     'Release this form from the window manager, and write out all window data to file
     #If DEBUGMODE = 1 Then
@@ -3014,7 +3014,7 @@ Private Sub Form_Unload(Cancel As Integer)
     MainModule.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
-    'If g_UserWantsRestart Then Updates.initiateRestart
+    'If g_UserWantsRestart Then Updates.InitiateRestart
     
 End Sub
 

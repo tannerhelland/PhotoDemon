@@ -107,9 +107,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
     #If DEBUGMODE = 1 Then
         If raiseDialog Then
-            pdDebug.LogAction "Show """ & processID & """ dialog", PDM_PROCESSOR
+            pdDebug.LogAction "Show """ & processID & """ dialog", PDM_Processor
         Else
-            pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_PROCESSOR
+            pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
         End If
     #End If
     
@@ -255,9 +255,14 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If (Not processFound) Then
     
         'PAINT OPERATIONS
+        
+        'If we are in the middle of a batch operation, we may actually apply paint strokes in the future.  (This behavior is
+        ' currently disabled pending additional testing, however.)  During normal operations, however, we don't need to do
+        ' anything here - this processor call just exists to ensure Undo/Redo data was created.
         If Strings.StringsEqual(processID, "Paint stroke", True) Then
-            'If we are in the midst of a batch operation, this is where we actually apply the paint stroke.  During normal operations,
-            ' however, we don't need to do anything here.
+            processFound = True
+        
+        ElseIf Strings.StringsEqual(processID, "Fill tool", True) Then
             processFound = True
             
         'A "secret" action is used internally by PD when we need some response from the processor engine - like checking for
@@ -616,7 +621,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_PROCESSOR
+        pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     #End If
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,

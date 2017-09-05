@@ -532,6 +532,11 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Private Sub CanvasView_LostFocusAPI()
+    m_LMBDown = False
+    m_RMBDown = False
+End Sub
+
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
@@ -855,6 +860,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
+            Case PAINT_FILL
+                FillTool.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                
             'In the future, other tools can be handled here
             Case Else
             
@@ -883,7 +891,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL
             ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
     End Select
     
@@ -894,10 +902,13 @@ End Sub
 
 Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
+    m_IsMouseOverCanvas = True
+    
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     m_NumOfMouseMovements = m_NumOfMouseMovements + 1
+    m_LMBDown = ((Button And pdLeftButton) <> 0)
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Double, imgY As Double
@@ -940,6 +951,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                
+            Case PAINT_FILL
+                FillTool.NotifyMouseXY True, imgX, imgY, Me
                 
         End Select
     
@@ -999,7 +1013,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
-                ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+                
+            Case PAINT_FILL
+                FillTool.NotifyMouseXY False, imgX, imgY, Me
                 
             Case Else
             
@@ -1129,6 +1145,9 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 Paintbrush.CommitBrushResults
+                
+            Case PAINT_FILL
+                FillTool.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             Case Else
                     
@@ -1874,14 +1893,16 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 CanvasView.RequestCursor_System IDC_IBEAM
             End If
         
-        'Paint brushes are a little weird, because we custom-draw the current brush outline
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+        'Paint tools are a little weird, because we custom-draw the current brush outline - but *only*
+        ' if no mouse button is down.  (If a button *is* down, the paint operation will automatically
+        ' request a viewport refresh.)
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL
             CanvasView.RequestCursor_System IDC_ICON
-            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
-        
+            If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            
         Case Else
             CanvasView.RequestCursor_System IDC_ARROW
-                    
+            
     End Select
 
 End Sub

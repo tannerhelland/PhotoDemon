@@ -134,7 +134,12 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
             'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
             ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
-                If (Paintbrush.IsBrushActive Or FormMain.mainCanvas(0).IsMouseOverCanvas) Then Paintbrush.RenderBrushOutline dstCanvas
+                If FormMain.mainCanvas(0).IsMouseOverCanvas Then Paintbrush.RenderBrushOutline dstCanvas
+            
+            'Fill tools also render a custom cursor
+            ElseIf (g_CurrentTool = PAINT_FILL) Then
+                If FormMain.mainCanvas(0).IsMouseOverCanvas Then FillTool.RenderFillCursor dstCanvas
+                
             End If
             
             'With all rendering complete, we are finally ready to request a screen refresh

@@ -253,7 +253,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         
         'Composite our invert+blur image against the base layer (workingDIB) using the COLOR DODGE blend mode;
         ' this will emphasize areas where the layers differ, while ignoring areas where they're the same.
-        Dim topBlendMode As LAYER_BLENDMODE
+        Dim topBlendMode As PD_BlendMode
         If (pencilStyle <> 2) Then topBlendMode = BL_COLORDODGE Else topBlendMode = BL_LINEARDODGE
         cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_blurDIB, topBlendMode
         

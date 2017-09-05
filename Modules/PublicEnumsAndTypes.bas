@@ -27,13 +27,14 @@ Public Enum PDTools
     PAINT_BASICBRUSH = 11
     PAINT_SOFTBRUSH = 12
     PAINT_ERASER = 13
+    PAINT_FILL = 14
 End Enum
 
 #If False Then
     Private Const NAV_DRAG = 0, NAV_MOVE = 1, QUICK_FIX_LIGHTING = 2
     Private Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5, SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
     Private Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
-    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12, PAINT_ERASER = 13
+    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12, PAINT_ERASER = 13, PAINT_FILL = 14
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
@@ -246,7 +247,7 @@ End Enum
 #End If
 
 'PhotoDemon performance settings are generally provided in three groups: Max Quality, Balanced, and Max Performance
-Public Enum PD_PERFORMANCE_SETTING
+Public Enum PD_PerformanceSetting
     PD_PERF_BESTQUALITY = 0
     PD_PERF_BALANCED = 1
     PD_PERF_FASTEST = 2
@@ -674,4 +675,16 @@ End Enum
 
 #If False Then
     Private Const pdnk_Enter = vbKeyReturn, pdnk_Escape = vbKeyEscape, pdnk_Tab = vbKeyTab
+#End If
+
+'Prior to 7.0, only selections offered detailed control over smoothing.  However, new tools (like flood fills)
+' also need to describe smoothing features, so this enum is now used in multiple places.
+Public Enum PD_EdgeSmoothing
+    es_None = 0
+    es_Antialiased = 1
+    es_FullyFeathered = 2
+End Enum
+
+#If False Then
+    Private Const es_None = 0, es_Antialiased = 1, es_FullyFeathered = 2
 #End If

@@ -24,7 +24,7 @@ Private Const USE_PAINTBRUSH_DEBUG_QUALITIES As Boolean = False
 
 'Internally, we switch between different brush rendering engines depending on the current brush settings.
 ' The caller doesn't need to concern themselves with this; it's used only to determine internal rendering paths.
-Private Enum BRUSH_ENGINE
+Private Enum PD_BrushEngine
     BE_GDIPlus = 0
     BE_PhotoDemon = 1
 End Enum
@@ -33,7 +33,7 @@ End Enum
     Private Const BE_GDIPlus = 0, BE_PhotoDemon = 1
 #End If
 
-Public Enum BRUSH_SOURCE
+Public Enum PD_BrushSource
     BS_Color = 0
 End Enum
 
@@ -41,7 +41,7 @@ End Enum
     Private Const BS_Color = 0
 #End If
 
-Public Enum BRUSH_STYLE
+Public Enum PD_BrushStyle
     BS_Pencil = 0
     BS_SoftBrush = 1
 End Enum
@@ -50,7 +50,7 @@ End Enum
     Private Const BS_Pencil = 0, BS_SoftBrush = 1
 #End If
 
-Public Enum BRUSH_ATTRIBUTES
+Public Enum PD_BrushAttributes
     BA_Source = 0
     BA_Style = 1
     BA_Size = 2
@@ -75,24 +75,24 @@ End Enum
 'The current brush engine is stored here.  Note that this value is not correct until a call has been made to
 ' the CreateCurrentBrush() function; this function searches brush attributes and determines which brush engine
 ' to use.
-Private m_BrushEngine As BRUSH_ENGINE
+Private m_BrushEngine As PD_BrushEngine
 Private m_BrushOutlineImage As pdDIB, m_BrushOutlinePath As pd2DPath
 
 'Brush preview quality.  At present, this is directly exposed on the paintbrush toolpanel.  This may change
 ' in the future, but for now, it's very helpful for testing.
-Private m_BrushPreviewQuality As PD_PERFORMANCE_SETTING
+Private m_BrushPreviewQuality As PD_PerformanceSetting
 
 'Brush resources, used only as necessary.  Check for null values before using.
 Private m_GDIPPen As pd2DPen
 Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
 
 'Brush attributes are stored in these variables
-Private m_BrushSource As BRUSH_SOURCE
-Private m_BrushStyle As BRUSH_STYLE
+Private m_BrushSource As PD_BrushSource
+Private m_BrushStyle As PD_BrushStyle
 Private m_BrushSize As Single
 Private m_BrushOpacity As Single
-Private m_BrushBlendmode As LAYER_BLENDMODE
-Private m_BrushAlphamode As LAYER_ALPHAMODE
+Private m_BrushBlendmode As PD_BlendMode
+Private m_BrushAlphamode As PD_AlphaMode
 Private m_BrushAntialiasing As PD_2D_Antialiasing
 Private m_BrushHardness As Single
 Private m_BrushSpacing As Single
@@ -137,7 +137,7 @@ Private m_Painter As pd2DPainter, m_Surface As pd2DSurface
 ' similarly, if painting is too slow, we temporarily reduce viewport update frequency until painting "catches up."
 Private m_TimeSinceLastRender As Currency, m_NetTimeToRender As Currency, m_NumRenders As Long, m_FramesDropped As Long
 
-Public Function GetBrushPreviewQuality() As PD_PERFORMANCE_SETTING
+Public Function GetBrushPreviewQuality() As PD_PerformanceSetting
     GetBrushPreviewQuality = m_BrushPreviewQuality
 End Function
 
@@ -164,7 +164,7 @@ End Function
 'Universal brush settings, applicable for most sources.  (I say "most" because some settings can contradict each other;
 ' for example, a "locked" alpha mode + "erase" blend mode makes little sense, but it is technically possible to set
 ' those values simultaneously.)
-Public Function GetBrushAlphaMode() As LAYER_ALPHAMODE
+Public Function GetBrushAlphaMode() As PD_AlphaMode
     GetBrushAlphaMode = m_BrushAlphamode
 End Function
 
@@ -172,7 +172,7 @@ Public Function GetBrushAntialiasing() As PD_2D_Antialiasing
     GetBrushAntialiasing = m_BrushAntialiasing
 End Function
 
-Public Function GetBrushBlendMode() As LAYER_BLENDMODE
+Public Function GetBrushBlendMode() As PD_BlendMode
     GetBrushBlendMode = m_BrushBlendmode
 End Function
 
@@ -192,7 +192,7 @@ Public Function GetBrushSize() As Single
     GetBrushSize = m_BrushSize
 End Function
 
-Public Function GetBrushSource() As BRUSH_SOURCE
+Public Function GetBrushSource() As PD_BrushSource
     GetBrushSource = m_BrushSource
 End Function
 
@@ -204,13 +204,13 @@ Public Function GetBrushSpacing() As Single
     GetBrushSpacing = m_BrushSpacing
 End Function
 
-Public Function GetBrushStyle() As BRUSH_STYLE
+Public Function GetBrushStyle() As PD_BrushStyle
     GetBrushStyle = m_BrushStyle
 End Function
 
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
-Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
     If (newAlphaMode <> m_BrushAlphamode) Then
         m_BrushAlphamode = newAlphaMode
         m_BrushIsReady = False
@@ -224,7 +224,7 @@ Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialia
     End If
 End Sub
 
-Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BL_NORMAL)
     If (newBlendMode <> m_BrushBlendmode) Then
         m_BrushBlendmode = newBlendMode
         m_BrushIsReady = False
@@ -253,7 +253,7 @@ Public Sub SetBrushOpacity(ByVal newOpacity As Single)
     End If
 End Sub
 
-Public Sub SetBrushPreviewQuality(ByVal newQuality As PD_PERFORMANCE_SETTING)
+Public Sub SetBrushPreviewQuality(ByVal newQuality As PD_PerformanceSetting)
     If (newQuality <> m_BrushPreviewQuality) Then
         m_BrushPreviewQuality = newQuality
         m_BrushIsReady = False
@@ -267,7 +267,7 @@ Public Sub SetBrushSize(ByVal newSize As Single)
     End If
 End Sub
 
-Public Sub SetBrushSource(ByVal newSource As BRUSH_SOURCE)
+Public Sub SetBrushSource(ByVal newSource As PD_BrushSource)
     If (newSource <> m_BrushSource) Then
         m_BrushSource = newSource
         m_BrushIsReady = False
@@ -289,14 +289,14 @@ Public Sub SetBrushSpacing(ByVal newSpacing As Single)
     End If
 End Sub
 
-Public Sub SetBrushStyle(ByVal newStyle As BRUSH_STYLE)
+Public Sub SetBrushStyle(ByVal newStyle As PD_BrushStyle)
     If (newStyle <> m_BrushStyle) Then
         m_BrushStyle = newStyle
         m_BrushIsReady = False
     End If
 End Sub
 
-Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
+Public Function GetBrushProperty(ByVal bProperty As PD_BrushAttributes) As Variant
     
     Select Case bProperty
         Case BA_AlphaMode
@@ -325,7 +325,7 @@ Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
     
 End Function
 
-Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropValue As Variant)
+Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newPropValue As Variant)
     
     Select Case bProperty
         Case BA_AlphaMode

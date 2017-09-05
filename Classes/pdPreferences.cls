@@ -79,7 +79,7 @@ Private m_BatchModeActive As Boolean
 
 'Some preferences are used in performance-sensitive areas.  These preferences are cached internally to improve responsiveness.
 ' Outside callers can retrieve them via their dedicated functions.
-Private m_ThumbnailPerformance As PD_PERFORMANCE_SETTING, m_ThumbnailInterpolation As GP_InterpolationMode
+Private m_ThumbnailPerformance As PD_PerformanceSetting, m_ThumbnailInterpolation As GP_InterpolationMode
 
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
 ' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
@@ -91,11 +91,11 @@ Friend Function GetThumbnailInterpolationPref() As GP_InterpolationMode
     GetThumbnailInterpolationPref = m_ThumbnailInterpolation
 End Function
 
-Friend Function GetThumbnailPerformancePref() As PD_PERFORMANCE_SETTING
+Friend Function GetThumbnailPerformancePref() As PD_PerformanceSetting
     GetThumbnailPerformancePref = m_ThumbnailPerformance
 End Function
 
-Friend Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PERFORMANCE_SETTING)
+Friend Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting)
     m_ThumbnailPerformance = newSetting
     If (newSetting = PD_PERF_BESTQUALITY) Then
         m_ThumbnailInterpolation = GP_IM_HighQualityBicubic
