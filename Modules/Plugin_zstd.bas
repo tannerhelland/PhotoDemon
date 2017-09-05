@@ -28,7 +28,7 @@ Private Const ZSTD_MIN_CLEVEL As Long = 1
 Private Const ZSTD_DEFAULT_CLEVEL As Long = 1
 Private Const ZSTD_MAX_CLEVEL As Long = 22
 
-Private Declare Function ZSTD_VersionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long
+Private Declare Function ZSTD_versionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long
 Private Declare Function ZSTD_compress Lib "libzstd" Alias "_ZSTD_compress@20" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long, ByVal cCompressionLevel As Long) As Long
 Private Declare Function ZSTD_decompress Lib "libzstd" Alias "_ZSTD_decompress@16" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long) As Long
 
@@ -85,7 +85,7 @@ Public Sub ReleaseZstd()
 End Sub
 
 Public Function GetZstdVersion() As Long
-    GetZstdVersion = ZSTD_VersionNumber()
+    GetZstdVersion = ZSTD_versionNumber()
 End Function
 
 Public Function IsZstdAvailable() As Boolean
@@ -237,9 +237,9 @@ Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturn
             Dim errDescription As String
             errDescription = Strings.StringFromCharPtr(ptrChar, False, 255)
     
-            pdDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_EXTERNAL_LIB
+            pdDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_External_Lib
         Else
-            pdDebug.LogAction "zstd experienced an error: " & errString, PDM_EXTERNAL_LIB
+            pdDebug.LogAction "zstd experienced an error: " & errString, PDM_External_Lib
         End If
     #End If
 End Sub
