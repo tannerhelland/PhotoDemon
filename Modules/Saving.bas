@@ -440,7 +440,7 @@ End Function
 '    user edit aspect remains to be dealt with.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal includeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressLayers As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal includeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -559,7 +559,7 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressLayers As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDLayerError
     
@@ -782,7 +782,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     'As of v7.0, PD has multiple compression engines available.  These engines are not exposed to the user.  We use LZ4 by default,
     ' as it is far and away the fastest at both compression and decompression (while compressing at marginally worse ratios).
     ' Note that if the user selects increasingly better compression results, we will silently switch to zstd instead.
-    Dim undoCmpEngine As PD_COMPRESSION_ENGINES, undoCmpLevel As Long
+    Dim undoCmpEngine As PD_CompressionEngine, undoCmpLevel As Long
     If (g_UndoCompressionLevel = 0) Then
         undoCmpEngine = PD_CE_NoCompression
         undoCmpLevel = 0

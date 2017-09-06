@@ -1267,7 +1267,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Check compression.  As of 2016, this is no longer a true/false value - it is an enum describing a specific
     ' PD compression engine.
-    Dim useDecompressionEngine As PD_COMPRESSION_ENGINES
+    Dim useDecompressionEngine As PD_CompressionEngine
     useDecompressionEngine = PD_CE_NoCompression
     
     If (DIBVersionCheck = DIB_FILE_VERSION_2016) Then
@@ -1340,7 +1340,7 @@ End Function
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
 ' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
-Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompressionEngine As PD_COMPRESSION_ENGINES = PD_CE_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
+Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompressionEngine As PD_CompressionEngine = PD_CE_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.GetDIBWidth <= 0) Or (Me.GetDIBHeight <= 0) Then
