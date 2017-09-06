@@ -438,10 +438,10 @@ Private Sub cmdExport_Click()
         
         'By default, zstd is used for compression, as it yields the best compression ratios.  However, large resources
         ' (or resources used in performance-sensitive scenarios) can manually specify LZ4HC compression instead.
-        Dim resCompressionEngine As PD_COMPRESSION_ENGINES
+        Dim resCompressionEngine As PD_CompressionEngine
         resCompressionEngine = PD_CE_Zstd
         
-        Dim thisNodeCompression As PD_COMPRESSION_ENGINES
+        Dim thisNodeCompression As PD_CompressionEngine
         
         'We're also going to use a quick trick to significantly reduce file size of bitmap data.
         ' In our icons, we force all transparency values to be a multiple of 5.  This reduces net entropy

@@ -72,7 +72,7 @@ Option Explicit
 
 'Currently supported compression engines.  Note that you must *always* use the same engine for compression
 ' and decompression (e.g. there is no way to auto-detect the format of a previously compressed stream).
-Public Enum PD_COMPRESSION_ENGINES
+Public Enum PD_CompressionEngine
     
     'No compression just copies the source bytes to the destination bytes as-is.  It makes for a nice baseline
     ' comparison, especially when testing large data sets.
@@ -106,7 +106,7 @@ Private Declare Function CloseDecompressor Lib "cabinet" (ByVal hDecompressor As
 
 'We use an aliased name for this function so that it doesn't cause IDE case changes of the matching zLib function
 Private Declare Function MS_Compress Lib "cabinet" Alias "Compress" (ByVal hCompressor As Long, ByVal ptrToUncompressedData As Long, ByVal sizeOfUncompressedData As Long, ByVal ptrToCompressedData As Long, ByVal sizeOfCompressedBuffer As Long, ByRef finalCompressedSize As Long) As Long
-Private Declare Function Decompress Lib "cabinet" (ByVal hCompressor As Long, ByVal ptrToCompressedData As Long, ByVal sizeOfCompressedData As Long, ByVal ptrToUncompressedData As Long, ByVal sizeOfUncompressedBuffer As Long, ByRef finalUncompressedSize As Long) As Long
+Private Declare Function MS_Decompress Lib "cabinet" Alias "Decompress" (ByVal hCompressor As Long, ByVal ptrToCompressedData As Long, ByVal sizeOfCompressedData As Long, ByVal ptrToUncompressedData As Long, ByVal sizeOfUncompressedBuffer As Long, ByRef finalUncompressedSize As Long) As Long
 Private Declare Function CreateCompressor Lib "cabinet" (ByVal whichAlgorithm As Long, ByVal ptrToAllocationRoutines As Long, ByRef hCompressor As Long) As Long
 Private Declare Function CreateDecompressor Lib "cabinet" (ByVal whichAlgorithm As Long, ByVal ptrToAllocationRoutines As Long, ByRef hDecompressor As Long) As Long
 
@@ -116,7 +116,7 @@ Private m_CompressorAvailable() As Boolean
 'Initialize a given compression engine.  The path to the DLL folder *must* include a trailing slash.
 'Returns: TRUE if initialization is successful; FALSE otherwise.  FALSE typically means the path to the DLL folder
 '         is malformed, or it's correct but the program doesn't have access rights to it.
-Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES, ByRef pathToDLLFolder As String) As Boolean
+Public Function InitializeCompressionEngine(ByVal whichEngine As PD_CompressionEngine, ByRef pathToDLLFolder As String) As Boolean
     
     'Keep track of which compression engines have been initialized
     If (Not VBHacks.IsArrayInitialized(m_CompressorAvailable)) Then
@@ -150,7 +150,7 @@ End Function
 'Shut down a compression engine.  You (obviously) cannot use a compression engine once it has been shut down.
 ' You *must* call this function before your program terminates, and you must call it once for each engine that
 ' you started this session.
-Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES)
+Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_CompressionEngine)
 
     'Keep track of which compression engines have been initialized
     If VBHacks.IsArrayInitialized(m_CompressorAvailable) Then
@@ -182,7 +182,7 @@ End Sub
 
 'Want to know if a given compression engine is available?  Call this function.  It will (obviously) return FALSE for
 ' any engines that weren't initialized properly.
-Public Function IsCompressionEngineAvailable(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Boolean
+Public Function IsCompressionEngineAvailable(ByVal whichEngine As PD_CompressionEngine) As Boolean
     IsCompressionEngineAvailable = m_CompressorAvailable(whichEngine)
 End Function
 
@@ -213,7 +213,7 @@ End Function
 'Returns:
 ' - TRUE if compression was successful; FALSE otherwise.  Note that a FALSE return will still *always* copy the uncompressed
 '   source bytes into the destination array, so you can proceed with processing even if the function fails.
-Public Function CompressPtrToDstArray(ByRef dstArray() As Byte, ByRef dstCompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES, Optional ByVal compressionLevel As Long = -1, Optional ByVal dstArrayIsAlreadySized As Boolean = False, Optional ByVal trimCompressedArray As Boolean = False) As Boolean
+Public Function CompressPtrToDstArray(ByRef dstArray() As Byte, ByRef dstCompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_CompressionEngine, Optional ByVal compressionLevel As Long = -1, Optional ByVal dstArrayIsAlreadySized As Boolean = False, Optional ByVal trimCompressedArray As Boolean = False) As Boolean
 
     'If the destination array isn't allocated, forcibly initialize it now
     If (Not dstArrayIsAlreadySized) Then
@@ -234,7 +234,7 @@ End Function
 'All compression functions ultimately wrap this function.  You can also use it directly, but you *must* size your destination buffer
 ' correctly to avoid hard crashes.  Also, you *must* pass in the starting destination buffer size as dstSizeInBytes; the compressor
 ' needs to know this for security reasons.
-Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES, Optional ByVal compressionLevel As Long = -1) As Boolean
+Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal compressionEngine As PD_CompressionEngine, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     CompressPtrToPtr = False
     
@@ -304,7 +304,7 @@ End Function
 '   allows you to use the compression and decompression functions in "no compression" mode and have them behave as expected.)
 '   If FALSE occurs, however, you may need to abandon further processing, as there's currently no way to decompress the
 '   bytestream without help from the original decompression library.
-Public Function DecompressPtrToDstArray(ByRef dstArray() As Byte, ByVal dstDecompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES, Optional ByVal dstArrayIsAlreadySized As Boolean = False) As Boolean
+Public Function DecompressPtrToDstArray(ByRef dstArray() As Byte, ByVal dstDecompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_CompressionEngine, Optional ByVal dstArrayIsAlreadySized As Boolean = False) As Boolean
     
     'If the destination array isn't allocated, forcibly initialize it now
     If (Not dstArrayIsAlreadySized) Then ReDim dstArray(0 To dstDecompressedSizeInBytes - 1) As Byte
@@ -317,7 +317,7 @@ End Function
 'All decompression functions ultimately wrap this function.  You can also use it directly, but you *must* size your destination buffer
 ' correctly to avoid hard crashes.  Also, you *must* pass in the byte-accurate destination buffer size as dstSizeInBytes;
 ' most decompressors do not store this value independently.
-Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES) As Boolean
+Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal compressionEngine As PD_CompressionEngine) As Boolean
     
     DecompressPtrToPtr = False
     
@@ -340,7 +340,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
             
             'Use the decompression handle to perform decompression
             Dim outputSizeUsed As Long
-            DecompressPtrToPtr = CBool(Decompress(hDecompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
+            DecompressPtrToPtr = CBool(MS_Decompress(hDecompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
             
             'Windows decompressors must be closed when finished
             CloseDecompressor hDecompressor
@@ -363,7 +363,7 @@ End Function
 '
 'Obviously, you must pass the size of your source data, and you must also specify the desired compression engine (as they
 ' use different rules for formulating a "worst-case" size).
-Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES) As Long
+Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_CompressionEngine) As Long
     
     If (compressionEngine = PD_CE_NoCompression) Then
         GetWorstCaseSize = srcBufferSizeInBytes
@@ -405,7 +405,7 @@ End Function
 ' (Actually, this isn't *technically* true - the XPRESS and XPRESS_HUFF algorithms support levels of either
 '  "0" or "1", but I don't current implement these because the differences are small and these algorithms
 '  are terrible compared to lz4 anyway.)
-Public Function GetDefaultCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+Public Function GetDefaultCompressionLevel(ByVal whichEngine As PD_CompressionEngine) As Long
 
     If (whichEngine = PD_CE_ZLib) Then
         GetDefaultCompressionLevel = Plugin_zLib.ZLib_GetDefaultCompressionLevel()
@@ -421,7 +421,7 @@ Public Function GetDefaultCompressionLevel(ByVal whichEngine As PD_COMPRESSION_E
 
 End Function
 
-Public Function GetMinCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+Public Function GetMinCompressionLevel(ByVal whichEngine As PD_CompressionEngine) As Long
     
     If (whichEngine = PD_CE_ZLib) Then
         GetMinCompressionLevel = Plugin_zLib.ZLib_GetMinCompressionLevel()
@@ -437,7 +437,7 @@ Public Function GetMinCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGIN
     
 End Function
 
-Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_CompressionEngine) As Long
 
     If (whichEngine = PD_CE_ZLib) Then
         GetMaxCompressionLevel = Plugin_zLib.ZLib_GetMaxCompressionLevel()
@@ -458,7 +458,7 @@ Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGIN
 End Function
 
 'This function exists purely for debug purposes.  Feel free to remove it if you find it unnecessary.
-Public Function GetCompressorName(ByVal whichEngine As PD_COMPRESSION_ENGINES) As String
+Public Function GetCompressorName(ByVal whichEngine As PD_CompressionEngine) As String
     
     If (whichEngine = PD_CE_ZLib) Then
         GetCompressorName = "ZLib"
