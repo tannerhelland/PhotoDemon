@@ -14,9 +14,10 @@ Attribute VB_Exposed = False
 'This code was originally written by Leandro I. Ascierto.
 ' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
 '
-'NOTE: this file has been modified for use within PhotoDemon.  Modifications include bugfixes relating to use under non-standard
-' Windows themes (e.g. "Classic Theme" on Win 7 and earlier), a full conversion of the subclassing system to an IDE-stable alternative,
-' and rewriting the class so that persistent DCs are not required for each menu image.  (Instead, we generate them on-the-fly.)
+'NOTE: this file has been heavily modified for use within PhotoDemon.  Modifications include bugfixes relating to use
+' under non-standard Windows themes (e.g. "Classic Theme" on Win 7 and earlier), a full conversion of the subclassing
+' system to comctl32, and rewriting the class so that persistent DCs are not required for each menu image.
+' (Instead, we generate them on-the-fly.)
 '
 'These changes rely on a number of internal PhotoDemon checks, variables, and objects, so I do not recommend using PD's
 ' version of the class in your own projects.  You may download the original version of this code from the following link
@@ -79,7 +80,7 @@ Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal Bitmap As Long,
 Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef LockedBitmapData As BitmapData) As Long
 Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef Bitmap As Long) As Long
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Long, ByRef MatrixColor As COLORMATRIX, ByRef MatrixGray As Any, ByVal Flags As Long) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
 
@@ -227,6 +228,8 @@ Private Enum ColorMatrixFlags
     ColorMatrixFlagsAltGray = 2
 End Enum
 
+'Added by Tanner: GDI+ images use premultiplied alpha!
+Private Const PixelFormat32bppPARGB As Long = &HE200B
 Private Const PixelFormat32bppARGB As Long = &H26200A
 Private Const PixelFormat32bppRGB As Long = &H22009
 
@@ -536,11 +539,13 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     
     If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Sub
 
-    If GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppARGB, ByVal mDIB(Index).Ptr, hImage) = 0 Then
+    If (GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppPARGB, ByVal mDIB(Index).Ptr, hImage) = 0) Then
 
-        If GdipCreateFromHDC(DestHdc, hGraphics) = 0 Then
-        
-            GdipImageRotateFlip hImage, &H6
+        If (GdipCreateFromHDC(DestHdc, hGraphics) = 0) Then
+            
+            'Edit by Tanner: Leandro's original code flipped the DIB to make it top-down; we don't require this for DIBs
+            ' we've created and cached ourselves.
+            'GdipImageRotateFlip hImage, &H6
             
             If Disabled Then
             
@@ -560,7 +565,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
                     .m(4, 4) = 1
                 End With
                 
-                GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
+                GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, 1&, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
     
             End If
             
@@ -568,11 +573,11 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
             
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
-            GdipDeleteGraphics hGraphics
+            If (hGraphics <> 0) Then GdipDeleteGraphics hGraphics
         
         End If
         
-        GdipDisposeImage hImage
+        If (hImage <> 0) Then GdipDisposeImage hImage
     
     End If
     
@@ -1074,7 +1079,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
         
         If OS.IsVistaOrLater Then
-            If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12&
+            If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 6&
         Else
             MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&
         End If
