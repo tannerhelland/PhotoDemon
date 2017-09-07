@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.284</langversion>
+<langversion>6.7.286</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -5269,8 +5269,8 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Monochrom in Graustufen</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7280,11 +7280,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Monochrombild in Graustufen umwandeln</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>Ratschläge von Experten</translation>
 </phrase>
@@ -7304,7 +7299,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Wie alle Monochrom-nach-Graustufen-Wandler wird dieses Werkzeug ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharf maskieren" benutzen, um das zu beheben. (Die besten Ergebnisse gibt es, wenn der Radius bei "Unscharf maskieren" mindestens so groß ist wie der Radius hier.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15023,10 +15018,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormMonoToColor 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Convert Monochrome Image to Grayscale"
+   Caption         =   " Monochrome to gray"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -399,7 +399,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Monochrome to grayscale", , GetLocalParamString(), UNDO_LAYER
+    Process "Monochrome to gray", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

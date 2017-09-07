@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2998</langversion>
+<langversion>6.8.3000</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5266,8 +5266,8 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Monokróm szürkeárnyalatos</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7274,11 +7274,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Átalakítás fekete-fehér kép szürkeárnyalatos</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>tanácsot a szakértők</translation>
 </phrase>
@@ -7298,7 +7293,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Mint minden monokróm-to-szürkeárnyalatos eszközök, ez az eszköz fog egy elmosódott kép. Használhatja a Effects -> Élesítés -> Unsharp Masking eszköz segít. (A legjobb eredmény elérése érdekében használja Életlen maszk sugara legalább akkora, mint ez a sugár.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15015,10 +15010,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

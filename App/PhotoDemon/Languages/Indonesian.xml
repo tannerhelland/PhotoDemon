@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.226</langversion>
+<langversion>6.6.228</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -5275,8 +5275,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Monokrom untuk skala kelabu</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7286,11 +7286,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Tukar Imej untuk Monokrom skala kelabu</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>nasihat daripada pakar-pakar</translation>
 </phrase>
@@ -7310,7 +7305,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Seperti semua alat monokrom ke skala kelabu, alat ini akan menghasilkan satu imej kabur. Anda boleh menggunakan Kesan -> tajamkan -> alat Unsharp Masking untuk menetapkan ini. (Untuk hasil terbaik, gunakan jejari Mask Unsharp sekurang-kurangnya sebesar jejari ini.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15029,10 +15024,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

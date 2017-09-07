@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3126</langversion>
+<langversion>6.8.3158</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -412,12 +412,12 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Füllungstool</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Füllungs-Layer</translation>
 </phrase>
 
 <!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1106,7 +1106,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>Farbe und Opazität</translation>
 </phrase>
 
 <phrase>
@@ -1116,22 +1116,22 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>Nur rot</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>Nur grün</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>Nur blau</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>Nur Alpha</translation>
 </phrase>
 
 <phrase>
@@ -1713,7 +1713,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Acquiring image</original>
-<translation>Bild wird abgerufen</translation>
+<translation>Bild wird übernommen</translation>
 </phrase>
 
 <phrase>
@@ -1963,7 +1963,7 @@ Beschreibung: %2
 
 <phrase>
 <original>blend mode</original>
-<translation>Überblendungsmodus</translation>
+<translation>Blending-Modus</translation>
 </phrase>
 
 <phrase>
@@ -2435,17 +2435,17 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Feather selection</original>
-<translation>Weiche Auswahl</translation>
+<translation>Weiche Kante auswählen</translation>
 </phrase>
 
 <phrase>
 <original>Feathering selection</original>
-<translation>Auswahl mit weicher Kante</translation>
+<translation>Selektion mit weicher Auswahlkante</translation>
 </phrase>
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Weiche Auswahl fertiggestellt.</translation>
+<translation>Weiche Auswahlkante fertiggestellt.</translation>
 </phrase>
 
 <phrase>
@@ -5077,7 +5077,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Feather</original>
-<translation>Feder</translation>
+<translation>Weiche Kante</translation>
 </phrase>
 
 <phrase>
@@ -5281,8 +5281,8 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Monochrom zu Graustufen</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7292,11 +7292,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Monochromes Bild in Graustufen konvertieren</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>Rat von den Experten</translation>
 </phrase>
@@ -7316,7 +7311,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharfe Maskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -7983,7 +7978,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Fill settings</original>
-<translation>Fülleinstellungen</translation>
+<translation>Füllungseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -11633,7 +11628,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>one image spread across multiple pages (poster print)</original>
-<translation>Ein Bild über multiple Seiten verteilen (Plakatdruck)</translation>
+<translation>Ein Bild über multiple Seiten ausbreiten (Plakatdruck)</translation>
 </phrase>
 
 <phrase>
@@ -13292,7 +13287,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Farbeimer (mit Farbe füllen)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13344,7 +13339,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>Blending- / Alphamodus</translation>
 </phrase>
 
 <phrase>
@@ -13364,27 +13359,27 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Füllungen unterstützen viele verschiedene Stile. Hier klicken, um zwischen den Stilen solide Farbe, Muster und Gradient zu wechseln.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Toleranz steuert, wie ähnlich zwei Pixel sein müssen, bevor die Füllung zwischen diesen ausgebreitet wird.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normalerweise analysieren Füllungsoperationen das gesamte Bild. Sie können auch nur den aktiven Layer analysieren.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normalerweise breiten sich Füllungen ausgehend von einem Zielpixel aus, benachbarte Pixel werden Schritt für Schritt hinzugefügt. Alternativ können Sie festlegen, das gesamte Bild zu analysieren, ohne Empfehlung zur Kontinuität.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Diese Option steuert, wie Pixel analysiert werden, wenn diese der Füllung hinzugefügt werden.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -13569,37 +13564,37 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>Glanzlicht</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>Lightbox</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>Ameisen</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>Mit weicher Kante</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>Innen</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>Außen</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>Rahmung</translation>
 </phrase>
 
 <phrase>
@@ -13624,7 +13619,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Der Schieberegler "Weiche Auswahlkante" erlaubt unmittelbare Anpassungen der Kante. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere Radien verwenden Sie bitte das Menü "Auswahl > Weiche Auswahlkante".</translation>
+<translation>Dieser "Weiche Auswahlkante"-Schieberegler erlaubt unmittelbare Anpassungen der weichen Auswahlkante. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere Radien verwenden Sie bitte das Menü "Auswahl > Weiche Auswahlkante".</translation>
 </phrase>
 
 <phrase>
@@ -13654,12 +13649,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation>Der Zauberstab kann mit dem ganzen Bild oder nur mit dem aktiven Layer arbeiten.</translation>
+<translation>Der Zauberstab kann auf dem gesamten Bild agieren oder nur auf dem aktiven Layer.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Normalerweise beginnt der Zauberstab beim angeklickten Pixel und fügt der Auswahl Schritt für Schritt passende benachbarte Pixel hinzu. Alternativ können Sie festlegen, dass im ganzen Bild passende Punkte ausgewählt werden, ohne Empfehlungen zur Kontinuität.</translation>
+<translation>Normalerweise wird der Zauberstab sich ausgehend vom Zielpixel ausbreiten, der Auswahl werden Schritt für Schritt benachbarte Pixel hinzugefügt. Alternativ können Sie festlegen, im gesamten Bild zu suchen, ohne Empfehlungen zur Kontinuität.</translation>
 </phrase>
 
 <phrase>
@@ -14683,7 +14678,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Jedes Foto größer als 2 Megapixel ist zu groß, um auf einen durchschnittlichen Computermonitor zu passen. PhotoDemon kann bei großen Fotos automatisch herauszoomen/verkleinern, sodass das ganze Bild sichtbar wird.</translation>
+<translation>Jedes Foto größer als 2 Megapixel ist zu groß, um auf einen durchschnittlichen Computermonitor zu passen. PhotoDemon kann bei großen Fotos automatisch herauszoomen/verkleinern, sodass das gesamte Bild sichtbar ist.</translation>
 </phrase>
 
 <phrase>
@@ -15037,10 +15032,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

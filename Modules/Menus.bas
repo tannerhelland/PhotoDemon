@@ -311,12 +311,12 @@ Public Sub InitializeMenus()
     
     'Adjustments Menu
     AddMenuItem "&Adjustments", "adj_top", 6
-    AddMenuItem "Auto-correct", "adj_autocorrect", 6, 0
+    AddMenuItem "Auto correct", "adj_autocorrect", 6, 0
         AddMenuItem "Color", "adj_autocorrectcolor", 6, 0, 0
         AddMenuItem "Contrast", "adj_autocorrectcontrast", 6, 0, 1
         AddMenuItem "Lighting", "adj_autocorrectlighting", 6, 0, 2
         AddMenuItem "Shadows and highlights", "adj_autocorrectsandh", 6, 0, 3
-    AddMenuItem "Auto-enhance", "adj_autoenhance", 6, 1
+    AddMenuItem "Auto enhance", "adj_autoenhance", 6, 1
         AddMenuItem "Color", "adj_autoenhancecolor", 6, 1, 0
         AddMenuItem "Contrast", "adj_autoenhancecontrast", 6, 1, 1
         AddMenuItem "Lighting", "adj_autoenhancelighting", 6, 1, 2
@@ -338,8 +338,8 @@ Public Sub InitializeMenus()
         AddMenuItem "Maximum channel", "adj_maxchannel", 6, 12, 3
         AddMenuItem "Minimum channel", "adj_minchannel", 6, 12, 4
         AddMenuItem "-", "-", 6, 12, 5
-        AddMenuItem "Shift channels left", "adj_shiftchannelsleft", 6, 12, 6
-        AddMenuItem "Shift channels right", "adj_shiftchannelsright", 6, 12, 7
+        AddMenuItem "Shift left", "adj_shiftchannelsleft", 6, 12, 6
+        AddMenuItem "Shift right", "adj_shiftchannelsright", 6, 12, 7
     AddMenuItem "Color", "adj_color", 6, 13
         AddMenuItem "Color balance...", "adj_colorbalance", 6, 13, 0
         AddMenuItem "White balance...", "adj_whitebalance", 6, 13, 1
@@ -354,7 +354,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Replace color...", "adj_replacecolor", 6, 13, 10
         AddMenuItem "Sepia...", "adj_sepia", 6, 13, 11
     AddMenuItem "Histogram", "adj_histogram", 6, 14
-        AddMenuItem "Display histogram...", "adj_histogramdisplay", 6, 14, 0
+        AddMenuItem "Display...", "adj_histogramdisplay", 6, 14, 0
         AddMenuItem "-", "-", 6, 14, 1
         AddMenuItem "Equalize...", "adj_histogramequalize", 6, 14, 2
         AddMenuItem "Stretch", "adj_histogramstretch", 6, 14, 3

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.284</langversion>
+<langversion>6.7.286</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -5268,8 +5268,8 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Monocromia in Scala di grigi</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7279,11 +7279,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Converti un'immagine monocromatica in scala di grigi</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>consiglio per gli esperti</translation>
 </phrase>
@@ -7303,7 +7298,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Come tutte le utilità di conversione da monocromatica a scala di grigi, questa produrrà un'immagine sfocata.  Puoi usare l'utilità Effetti -> Affilamento -> Togli la maschera di sfumatura per fissare il problema.  (Per ottenere il miglior risultato, utilizza un raggio per la mashera di contrasto grande almeno come questo raggio.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15022,10 +15017,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

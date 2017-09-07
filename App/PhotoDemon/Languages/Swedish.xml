@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2998</langversion>
+<langversion>6.8.3000</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5276,8 +5276,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Svartvitt för att gråskala</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7287,11 +7287,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Konvertera monokrom bild till gråskala</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>råd från experter</translation>
 </phrase>
@@ -7311,7 +7306,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Liksom alla svartvit-till-gråskala verktyg, kommer detta verktyg ge en suddig bild. Du kan använda Effects -> Skärpa -> Oskarp maskering verktyg för att fixa detta. (För bästa resultat, använd en oskarp mask radie minst lika stor som denna radie.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15033,10 +15028,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>
