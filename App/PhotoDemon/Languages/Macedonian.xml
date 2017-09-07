@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.80</langversion>
+<langversion>1.0.82</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -5278,8 +5278,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Monochrome to grayscale</original>
-<translation>Црно-бело во сиви тонови</translation>
+<original>Monochrome to gray</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7289,11 +7289,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <!-- BEGIN text for Adjustments_Monochrome_MonoToGray.frm (FormMonoToColor) -->
 
 <phrase>
-<original>Convert Monochrome Image to Grayscale</original>
-<translation>Претвори монохроматски слика во сиви тонови</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>совети од експерти</translation>
 </phrase>
@@ -7313,7 +7308,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Како и сите алатки црно-на-сиви нијанси, оваа алатка ќе произведува појасна слика. Можете да ги користите ефекти -> Подигнување -> алатка Unsharp Маскирање да го надминете овој. (За најдобри резултати, користете Unsharp Mask радиус барем толку големи како оваа радиус.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -15034,10 +15029,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2523</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1975 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12261 total words. -->
+<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12256 total words. -->
 
 </pdData>

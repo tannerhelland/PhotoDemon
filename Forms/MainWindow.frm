@@ -908,7 +908,7 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuMonochrome 
-            Caption         =   "Monochrome to grayscale..."
+            Caption         =   "Monochrome to gray..."
             Index           =   1
          End
       End
@@ -3820,9 +3820,9 @@ Private Sub MnuMonochrome_Click(Index As Integer)
         Case 0
             Process "Color to monochrome", True
         
-        'Convert monochrome to grayscale
+        'Convert Monochrome to gray
         Case 1
-            Process "Monochrome to grayscale", True
+            Process "Monochrome to gray", True
         
     End Select
     

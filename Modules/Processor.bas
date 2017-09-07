@@ -1957,7 +1957,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         If raiseDialog Then ShowPDDialog vbModal, FormMonochrome Else FormMonochrome.MasterBlackWhiteConversion processParameters
         Process_AdjustmentsMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Monochrome to grayscale", True) Then
+    ElseIf Strings.StringsEqual(processID, "Monochrome to gray", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormMonoToColor Else FormMonoToColor.ConvertMonoToColor processParameters
         Process_AdjustmentsMenu = True
         
