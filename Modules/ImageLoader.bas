@@ -827,7 +827,7 @@ End Function
 'New as of 11 July '14 is the ability to specify a custom layer destination, for layer-relevant load operations.  If this value is NOTHING,
 ' the function will automatically load the data to the relevant layer in the parent pdImage object.  If this layer is supplied, however,
 ' the supplied layer reference will be used instead.
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False, Optional ByRef customLayerDestination As pdLayer = Nothing)
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False, Optional ByRef customLayerDestination As pdLayer = Nothing)
     
     'Certain load functions require access to a DIB, so declare a generic one in advance
     Dim tmpDIB As pdDIB
@@ -837,6 +837,9 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     ' the load function, and activate various selection-related items as necessary.
     Dim selectionDataLoaded As Boolean
     selectionDataLoaded = False
+    
+    'Regardless of outcome, notify the parent image of this change
+    pdImages(g_CurrentImage).NotifyImageChanged undoTypeOfAction, targetLayerID
     
     'Depending on the Undo data requested, we may end up loading one or more diff files at this location
     Select Case undoTypeOfAction

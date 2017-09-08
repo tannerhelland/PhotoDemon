@@ -248,10 +248,10 @@ Public layerDIB As pdDIB
 ' these level-of-detail DIBs can save us a ton of time during performance-crucial operations (e.g. painting).
 Private lodDIB() As pdDIB
 
-'Layer thumbnail.  This 256x256 DIB is cached locally, then passed to external functions only when necessary.  Note that requests
-' for sizes larger than 256x256 (in either dimension) will force creation of a custom thumbnail from scratch, so try to avoid that
-' if at all possible!
-Private Const LAYER_THUMB_SIZE As Long = 256
+'Layer thumbnail.  A DIB of this size is cached locally, then passed to external functions only when necessary.
+' Note that requests for sizes larger than the hard-coded thumb size (in either dimension) will force creation of a
+' custom thumbnail from scratch, so try to avoid that if at all possible!
+Private Const LAYER_THUMB_SIZE As Long = 128
 Private layerThumbnail As pdDIB
 
 'If the current thumbnail is clean or dirty.  Clean means that to the best of this class's knowledge, the current thumbnail accurately
@@ -2113,15 +2113,15 @@ End Sub
 
 'Update the internal thumbnail.  Only call this function if the current thumbnail has been marked as DIRTY; otherwise, just use the
 ' existing thumbnail as-is.
-Private Sub UpdateInternalThumbnail()
-    
-    'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
-    'Dim startTime As Double
-    'startTime = Timer
+Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'If the layer has not been instantiated properly, reject the thumbnail request
     If (layerDIB Is Nothing) Then Exit Sub
     If (layerDIB.GetDIBWidth = 0) Or (layerDIB.GetDIBHeight = 0) Then Exit Sub
+    
+    'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
+    ' and then produce smaller copies on-demand.
+    If (requiredSize < LAYER_THUMB_SIZE) Then requiredSize = LAYER_THUMB_SIZE
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -2131,31 +2131,28 @@ Private Sub UpdateInternalThumbnail()
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    ConvertAspectRatio layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
+    ConvertAspectRatio layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, requiredSize, requiredSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If (tIcoWidth > tIcoHeight) Then
         tX = 0
-        tY = (LAYER_THUMB_SIZE - tIcoHeight) / 2
+        tY = (requiredSize - tIcoHeight) * 0.5
     
     '...otherwise, center it horizontally
     Else
         tY = 0
-        tX = (LAYER_THUMB_SIZE - tIcoWidth) / 2
+        tX = (requiredSize - tIcoWidth) * 0.5
     End If
     
     'Prepare the destination DIB
-    If (layerThumbnail.GetDIBWidth <> LAYER_THUMB_SIZE) Or (layerThumbnail.GetDIBHeight <> LAYER_THUMB_SIZE) Then
-        layerThumbnail.CreateBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
+    If (layerThumbnail.GetDIBWidth <> requiredSize) Or (layerThumbnail.GetDIBHeight <> requiredSize) Then
+        layerThumbnail.CreateBlank requiredSize, requiredSize, 32, 0
     Else
         layerThumbnail.ResetDIB 0
     End If
     
     'Use GDI+ to perform a fast resize
-    GDI_Plus.GDIPlus_StretchBlt layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, 1#, g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
-    
-    'Uncomment the line below to profile different thumbnail resize strategies
-    'Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
+    GDI_Plus.GDIPlus_StretchBlt layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
     
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
@@ -2163,16 +2160,16 @@ Private Sub UpdateInternalThumbnail()
 End Sub
 
 'External functions can use this function to request a thumbnail version of the layer contents.
-Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = LAYER_THUMB_SIZE) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
-    If (Not m_IsThumbClean) Then UpdateInternalThumbnail
+    If (Not m_IsThumbClean) Or (thumbnailSize > layerThumbnail.GetDIBWidth) Then UpdateInternalThumbnail thumbnailSize
     
     'Clear the destination thumbnail
     If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
     
     'If the requested thumbnail size is identical to our cached version, simply copy it out as-is
-    If (thumbnailSize = LAYER_THUMB_SIZE) Then
+    If (thumbnailSize = layerThumbnail.GetDIBWidth) And (thumbnailSize = layerThumbnail.GetDIBHeight) Then
         dstThumbnailDIB.CreateFromExistingDIB layerThumbnail
     
     'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along

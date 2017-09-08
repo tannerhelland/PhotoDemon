@@ -148,7 +148,7 @@ End Enum
 
 'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
 ' This type is used by PD to determine the most efficient way to store/restore previous actions.
-Public Enum PD_UNDO_TYPE
+Public Enum PD_UndoType
     UNDO_NOTHING = -1
     UNDO_EVERYTHING = 0
     UNDO_IMAGE = 1
@@ -264,7 +264,7 @@ End Enum
 Public Type PD_UndoEntry
     processID As String             'Name of the associated action (e.g. "Gaussian blur")
     processParamString As String    'Processor string supplied to the action
-    undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+    undoType As PD_UndoType        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
@@ -659,7 +659,7 @@ End Enum
 Public Type PD_ProcessCall
     pcID As String
     pcParameters As String
-    pcUndoType As PD_UNDO_TYPE
+    pcUndoType As PD_UndoType
     pcTool As Long
     pcRaiseDialog As Boolean
     pcRecorded As Boolean

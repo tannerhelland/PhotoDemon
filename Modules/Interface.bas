@@ -2028,6 +2028,9 @@ End Sub
 'If the change only affects a single image or layer, pass their indices; we can use them to shortcut a number of UI syncing steps.
 Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Optional ByVal affectedLayerID As Long = -1)
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'If an image is *not* specified, assume this is in reference to the currently active image
     If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
     
@@ -2040,6 +2043,12 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Op
         FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
         
     End If
+    
+    'This function has historically been a target for hand-optimization; uncomment the code below to
+    ' report timing results.
+    '#If DEBUGMODE = 1 Then
+    '    Debug.Print "Time spent in NotifyImageChanged: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0.00") & " ms"
+    '#End If
     
 End Sub
 

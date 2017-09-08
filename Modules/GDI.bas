@@ -30,6 +30,32 @@ Public Type GDI_Bitmap
     Bits As Long
 End Type
 
+Private Type GDI_BitmapInfoHeader
+    biSize As Long
+    biWidth As Long
+    biHeight As Long
+    biPlanes As Integer
+    biBitCount As Integer
+    biCompression As Long
+    biSizeImage As Long
+    biXPelsPerMeter As Long
+    biYPelsPerMeter As Long
+    biClrUsed As Long
+    biClrImportant As Long
+End Type
+ 
+Private Type GDI_RGBQuad
+    rgbBlue As Byte
+    rgbGreen As Byte
+    rgbRed As Byte
+    rgbReserved As Byte
+End Type
+ 
+Private Type GDI_BitmapInfo
+    bmiHeader As GDI_BitmapInfoHeader
+    bmiColors(0 To 255) As GDI_RGBQuad
+End Type
+
 Private Enum GDI_PenStyle
     PS_SOLID = 0
     PS_DASH = 1
@@ -43,10 +69,13 @@ End Enum
 #End If
 
 Private Const GDI_OBJ_BITMAP As Long = 7&
+Private Const GDI_CBM_INIT As Long = &H4
+Private Const GDI_DIB_RGB_COLORS As Long = &H0
 
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateDIBitmap Lib "gdi32" (ByVal hDC As Long, ByRef lpInfoHeader As GDI_BitmapInfoHeader, ByVal dwUsage As Long, ByVal ptrToInitBits As Long, ByVal ptrToInitBitmapInfo As Long, ByVal wUsage As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As GDI_PenStyle, ByVal nWidth As Long, ByVal srcColor As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -168,6 +197,29 @@ Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     DeleteObject tmpBrush
 
 End Sub
+
+Public Function GetDDBFromDIB(ByRef srcDIB As pdDIB) As Long
+    
+    Dim tmpDC As Long
+    tmpDC = GetDC(0)
+    
+    Dim tmpBIHeader As GDI_BitmapInfoHeader
+    With tmpBIHeader
+        .biSize = LenB(tmpBIHeader)
+        .biWidth = srcDIB.GetDIBWidth
+        .biHeight = -1 * srcDIB.GetDIBHeight
+        .biBitCount = srcDIB.GetDIBColorDepth
+        .biPlanes = 1
+    End With
+    
+    Dim tmpBitmapInfo As GDI_BitmapInfo
+    CopyMemory ByVal VarPtr(tmpBitmapInfo.bmiHeader), ByVal srcDIB.GetDIBHeader, LenB(tmpBitmapInfo.bmiHeader)
+    
+    GetDDBFromDIB = CreateDIBitmap(tmpDC, tmpBIHeader, GDI_CBM_INIT, srcDIB.GetDIBPointer, VarPtr(tmpBitmapInfo), GDI_DIB_RGB_COLORS)
+    
+    ReleaseDC 0, tmpDC
+    
+End Function
 
 'Add your own error-handling behavior here, as desired
 Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)

@@ -752,7 +752,6 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         '
         'IMPORTANT NOTE: VirtualBox returns bad data via GetMouseMovePointsEx, so I now expose this setting to the user
         ' via the Tools > Options menu.  If the user disables high-res input, we will also ignore it.
-        Debug.Print Tools.GetToolSetting_HighResMouse()
         srcCanvas.SetMouseInput_HighRes Tools.GetToolSetting_HighResMouse()
         srcCanvas.SetMouseInput_AutoDrop False
         
