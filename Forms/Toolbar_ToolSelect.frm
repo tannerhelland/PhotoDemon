@@ -935,7 +935,7 @@ Public Sub ResetToolButtonStates()
         activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool
         
         For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
-            toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = CBool(i = activeSelectionSubpanel)
+            toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = (i = activeSelectionSubpanel)
         Next i
         
     End If

@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormPreferences 
+Begin VB.Form FormOptions 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Options"
@@ -43,6 +43,217 @@ Begin VB.Form FormPreferences
       Width           =   2625
       _ExtentX        =   4630
       _ExtentY        =   11774
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6660
+      Index           =   6
+      Left            =   3000
+      TabIndex        =   6
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
+         Height          =   975
+         Left            =   0
+         TabIndex        =   46
+         Top             =   1320
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   1720
+         Caption         =   "high-resolution mouse input"
+      End
+      Begin PhotoDemon.pdButton cmdReset 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   33
+         Top             =   4680
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   1058
+         Caption         =   "reset all program settings"
+      End
+      Begin PhotoDemon.pdButton cmdTmpPath 
+         Height          =   450
+         Left            =   7680
+         TabIndex        =   32
+         Top             =   435
+         Width           =   525
+         _ExtentX        =   926
+         _ExtentY        =   794
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdTextBox txtTempPath 
+         Height          =   315
+         Left            =   240
+         TabIndex        =   24
+         Top             =   510
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   556
+         Text            =   "automatically generated at run-time"
+      End
+      Begin PhotoDemon.pdLabel lblMemoryUsageMax 
+         Height          =   540
+         Left            =   240
+         Top             =   3600
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   953
+         Caption         =   "memory usage will be displayed here"
+         ForeColor       =   8405056
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
+         Height          =   540
+         Left            =   240
+         Top             =   3120
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   953
+         Caption         =   "memory usage will be displayed here"
+         ForeColor       =   8405056
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   5
+         Left            =   0
+         Top             =   2640
+         Width           =   8130
+         _ExtentX        =   14340
+         _ExtentY        =   503
+         Caption         =   "memory diagnostics"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   19
+         Left            =   0
+         Top             =   0
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "temporary file location"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTempPathWarning 
+         Height          =   480
+         Left            =   240
+         Top             =   900
+         Visible         =   0   'False
+         Width           =   8025
+         _ExtentX        =   14155
+         _ExtentY        =   847
+         ForeColor       =   255
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         Top             =   4200
+         Width           =   8130
+         _ExtentX        =   14340
+         _ExtentY        =   503
+         Caption         =   "start over"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6660
+      Index           =   5
+      Left            =   3000
+      TabIndex        =   4
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   2535
+         Left            =   240
+         Top             =   3840
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   4471
+         Caption         =   "(disclaimer populated at run-time)"
+         FontSize        =   9
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkUpdates 
+         Height          =   330
+         Index           =   0
+         Left            =   180
+         TabIndex        =   25
+         Top             =   2280
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update language files independently"
+      End
+      Begin PhotoDemon.pdDropDown cboUpdates 
+         Height          =   735
+         Index           =   0
+         Left            =   180
+         TabIndex        =   26
+         Top             =   480
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "automatically check for updates:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkUpdates 
+         Height          =   330
+         Index           =   1
+         Left            =   180
+         TabIndex        =   27
+         Top             =   2760
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update plugins independently"
+      End
+      Begin PhotoDemon.pdDropDown cboUpdates 
+         Height          =   735
+         Index           =   1
+         Left            =   180
+         TabIndex        =   28
+         Top             =   1350
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "allow updates from these tracks:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   3
+         Left            =   0
+         Top             =   0
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "update options"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdCheckBox chkUpdates 
+         Height          =   330
+         Index           =   2
+         Left            =   180
+         TabIndex        =   29
+         Top             =   3240
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "notify me when an update is ready"
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
@@ -99,7 +310,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
          Layout          =   2
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   13
          Left            =   0
@@ -111,9 +322,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   4
+         Index           =   14
          Left            =   0
          Top             =   0
          Width           =   8100
@@ -328,9 +539,9 @@ Begin VB.Form FormPreferences
          Caption         =   "when ""Save"" is used:"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   1
+         Index           =   4
          Left            =   0
          Top             =   3690
          Width           =   8265
@@ -340,9 +551,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   16
+         Index           =   6
          Left            =   0
          Top             =   885
          Width           =   8175
@@ -352,9 +563,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   11
+         Index           =   7
          Left            =   0
          Top             =   0
          Width           =   8145
@@ -364,9 +575,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   10
+         Index           =   8
          Left            =   0
          Top             =   2310
          Width           =   8205
@@ -427,9 +638,9 @@ Begin VB.Form FormPreferences
          Caption         =   "when an image is first loaded, set its viewport zoom to: "
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   3
+         Index           =   9
          Left            =   0
          Top             =   3000
          Width           =   8100
@@ -439,9 +650,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   6
+         Index           =   10
          Left            =   0
          Top             =   0
          Width           =   8115
@@ -451,9 +662,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   5
+         Index           =   11
          Left            =   0
          Top             =   3960
          Width           =   8145
@@ -463,9 +674,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   0
+         Index           =   12
          Left            =   0
          Top             =   960
          Width           =   8265
@@ -579,9 +790,9 @@ Begin VB.Form FormPreferences
          Caption         =   "when rendering the image canvas:"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdLabel lblPerformanceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   3
+         Index           =   16
          Left            =   0
          Top             =   0
          Width           =   8220
@@ -616,9 +827,9 @@ Begin VB.Form FormPreferences
          FontSize        =   8
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdLabel lblPerformanceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   2
+         Index           =   18
          Left            =   0
          Top             =   3780
          Width           =   8175
@@ -628,9 +839,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdLabel lblPerformanceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   1
+         Index           =   15
          Left            =   0
          Top             =   1260
          Width           =   8130
@@ -640,9 +851,9 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.pdLabel lblPerformanceTitle 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   0
+         Index           =   17
          Left            =   0
          Top             =   2490
          Width           =   8115
@@ -653,209 +864,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
-      Index           =   6
-      Left            =   3000
-      TabIndex        =   6
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButton cmdReset 
-         Height          =   600
-         Left            =   240
-         TabIndex        =   33
-         Top             =   3360
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   1058
-         Caption         =   "reset all program settings"
-      End
-      Begin PhotoDemon.pdButton cmdTmpPath 
-         Height          =   450
-         Left            =   7680
-         TabIndex        =   32
-         Top             =   435
-         Width           =   525
-         _ExtentX        =   926
-         _ExtentY        =   794
-         Caption         =   "..."
-      End
-      Begin PhotoDemon.pdTextBox txtTempPath 
-         Height          =   315
-         Left            =   240
-         TabIndex        =   24
-         Top             =   510
-         Width           =   7335
-         _ExtentX        =   12938
-         _ExtentY        =   556
-         Text            =   "automatically generated at run-time"
-      End
-      Begin PhotoDemon.pdLabel lblMemoryUsageMax 
-         Height          =   540
-         Left            =   240
-         Top             =   2280
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   953
-         Caption         =   "memory usage will be displayed here"
-         ForeColor       =   8405056
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
-         Height          =   540
-         Left            =   240
-         Top             =   1800
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   953
-         Caption         =   "memory usage will be displayed here"
-         ForeColor       =   8405056
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   5
-         Left            =   0
-         Top             =   1320
-         Width           =   8130
-         _ExtentX        =   14340
-         _ExtentY        =   503
-         Caption         =   "memory diagnostics"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblRuntimeSettings 
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         Top             =   0
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "temporary file location"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTempPathWarning 
-         Height          =   480
-         Left            =   240
-         Top             =   900
-         Visible         =   0   'False
-         Width           =   8025
-         _ExtentX        =   14155
-         _ExtentY        =   847
-         ForeColor       =   255
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         Top             =   2880
-         Width           =   8130
-         _ExtentX        =   14340
-         _ExtentY        =   503
-         Caption         =   "start over"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
-      Index           =   5
-      Left            =   3000
-      TabIndex        =   4
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   2535
-         Left            =   240
-         Top             =   3840
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   4471
-         Caption         =   "(disclaimer populated at run-time)"
-         FontSize        =   9
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkUpdates 
-         Height          =   330
-         Index           =   0
-         Left            =   180
-         TabIndex        =   25
-         Top             =   2280
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update language files independently"
-      End
-      Begin PhotoDemon.pdDropDown cboUpdates 
-         Height          =   735
-         Index           =   0
-         Left            =   180
-         TabIndex        =   26
-         Top             =   480
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "automatically check for updates:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdCheckBox chkUpdates 
-         Height          =   330
-         Index           =   1
-         Left            =   180
-         TabIndex        =   27
-         Top             =   2760
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update plugins independently"
-      End
-      Begin PhotoDemon.pdDropDown cboUpdates 
-         Height          =   735
-         Index           =   1
-         Left            =   180
-         TabIndex        =   28
-         Top             =   1350
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "allow updates from these tracks:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   3
-         Left            =   0
-         Top             =   0
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "update options"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdCheckBox chkUpdates 
-         Height          =   330
-         Index           =   2
-         Left            =   180
-         TabIndex        =   29
-         Top             =   3240
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "notify me when an update is ready"
-      End
-   End
 End
-Attribute VB_Name = "FormPreferences"
+Attribute VB_Name = "FormOptions"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -880,8 +890,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Used to see if the user physically clicked a combo box, or if VB selected it on its own
-Private userInitiatedColorSelection As Boolean
-Private userInitiatedAlphaSelection As Boolean
+Private m_userInitiatedColorSelection As Boolean, m_userInitiatedAlphaSelection As Boolean
 
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
 
@@ -903,9 +912,9 @@ End Sub
 Private Sub cboAlphaCheck_Click()
 
     'Only respond to user-generated events
-    If userInitiatedAlphaSelection Then
+    If m_userInitiatedAlphaSelection Then
 
-        userInitiatedAlphaSelection = False
+        m_userInitiatedAlphaSelection = False
 
         'Redraw the sample picture boxes based on the value the user has selected
         Select Case cboAlphaCheck.ListIndex
@@ -932,7 +941,7 @@ Private Sub cboAlphaCheck_Click()
             
         End Select
         
-        userInitiatedAlphaSelection = True
+        m_userInitiatedAlphaSelection = True
                 
     End If
 
@@ -984,7 +993,7 @@ Private Sub cmdBarMini_OKClick()
     validateCheck = True
     
     Dim eControl As Object
-    For Each eControl In FormPreferences.Controls
+    For Each eControl In FormOptions.Controls
         
         'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then
@@ -1207,8 +1216,12 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
-            If (LCase$(Trim$(txtTempPath)) <> LCase$(g_UserPreferences.GetTempPath)) Then g_UserPreferences.SetTempPath Trim$(txtTempPath)
-    
+            If Strings.StringsNotEqual(Trim$(txtTempPath), g_UserPreferences.GetTempPath, True) Then g_UserPreferences.SetTempPath Trim$(txtTempPath)
+        
+        'START/END high-resolution mouse input
+            If (btsMouseHighRes.ListIndex = 1) Then g_UserPreferences.SetPref_Boolean "Tools", "HighResMouseInput", True Else g_UserPreferences.SetPref_Boolean "Tools", "HighResMouseInput", False
+            Tools.SetToolSetting_HighResMouse (btsMouseHighRes.ListIndex = 1)
+        
     'END Advanced preferences
     
     '***************************************************************************
@@ -1259,7 +1272,7 @@ Private Sub cmdColorProfilePath_Click()
     Dim openDialog As pdOpenSaveDialog
     Set openDialog = New pdOpenSaveDialog
     
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".icc", FormPreferences.hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".icc", FormOptions.hWnd) Then
         
         sFile = Strings.TrimNull(sFile)
         
@@ -1362,7 +1375,7 @@ Private Sub LoadAllPreferences()
         'END MRU caption length
         
         'START alpha-channel checkerboard rendering
-            userInitiatedAlphaSelection = False
+            m_userInitiatedAlphaSelection = False
             cboAlphaCheck.Clear
             cboAlphaCheck.AddItem " Highlight checks", 0
             cboAlphaCheck.AddItem " Midtone checks", 1
@@ -1378,7 +1391,7 @@ Private Sub LoadAllPreferences()
             csAlphaOne.AssignTooltip "Click to change the first checkerboard background color for alpha channels"
             csAlphaTwo.AssignTooltip "Click to change the second checkerboard background color for alpha channels"
             
-            userInitiatedAlphaSelection = True
+            m_userInitiatedAlphaSelection = True
         'END alpha-channel checkerboard rendering
         
         'START alpha-channel checkerboard size
@@ -1634,8 +1647,15 @@ Private Sub LoadAllPreferences()
     'START Advanced preferences
             
         'Display the current temporary file path
-            txtTempPath.Text = g_UserPreferences.GetTempPath
-    
+        txtTempPath.Text = g_UserPreferences.GetTempPath
+        
+        'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
+        ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
+        btsMouseHighRes.AddItem "off", 0
+        btsMouseHighRes.AddItem "on", 1
+        btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
+        If g_UserPreferences.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
+        
         'Display what we know about PD's memory usage
             lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(OS.AppMemoryUsage()), "###,###,###,###") & " K"
             lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(OS.AppMemoryUsage(True)), "###,###,###,###") & " K"
@@ -1658,20 +1678,20 @@ End Sub
 'When new transparency checkerboard colors are selected, change the corresponding list box to match
 Private Sub csAlphaOne_ColorChanged()
     
-    If userInitiatedAlphaSelection Then
-        userInitiatedAlphaSelection = False
+    If m_userInitiatedAlphaSelection Then
+        m_userInitiatedAlphaSelection = False
         cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
-        userInitiatedAlphaSelection = True
+        m_userInitiatedAlphaSelection = True
     End If
     
 End Sub
 
 Private Sub csAlphaTwo_ColorChanged()
     
-    If userInitiatedAlphaSelection Then
-        userInitiatedAlphaSelection = False
+    If m_userInitiatedAlphaSelection Then
+        m_userInitiatedAlphaSelection = False
         cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
-        userInitiatedAlphaSelection = True
+        m_userInitiatedAlphaSelection = True
     End If
     
 End Sub
@@ -1682,7 +1702,7 @@ Private Sub Form_Load()
     Dim i As Long
     
     'Populate all controls with the corresponding values from the preferences file
-    LoadAllPreferences
+    If MainModule.IsProgramRunning() Then LoadAllPreferences
     
     'Prep the category button strip
     With btsvCategory
@@ -1724,7 +1744,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     Interface.ApplyThemeAndTranslations Me
     
-    userInitiatedColorSelection = True
+    m_userInitiatedColorSelection = True
     
 End Sub
 

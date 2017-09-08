@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.3000</langversion>
+<langversion>6.8.3001</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14255,11 +14255,76 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
-<!-- BEGIN text for Tools_Options.frm (FormPreferences) -->
+<!-- BEGIN text for Tools_Options.frm (FormOptions) -->
 
 <phrase>
 <original>PhotoDemon Options</original>
 <translation>Opcje PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Zresetować wszystkie ustawienia programu</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Wykorzystanie pamięci zostanie wyświetlona tutaj</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostyka pamięci</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>tymczasowa lokalizacja pliku</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>zacząć od nowa</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Zastrzeżenie wypełniane w czasie wykonywania)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Język Aktualizacja plików niezależnie</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatycznego sprawdzania dostępności aktualizacji</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>Aktualizacja wtyczki niezależnie</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>pozwalają aktualizacje z tymi utworami</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opcje aktualizacji</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>powiadom mnie kiedy aktualizacja jest gotowa</translation>
 </phrase>
 
 <phrase>
@@ -14455,66 +14520,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>rzutnia</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Zresetować wszystkie ustawienia programu</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Wykorzystanie pamięci zostanie wyświetlona tutaj</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostyka pamięci</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>tymczasowa lokalizacja pliku</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>zacząć od nowa</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Zastrzeżenie wypełniane w czasie wykonywania)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Język Aktualizacja plików niezależnie</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatycznego sprawdzania dostępności aktualizacji</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Aktualizacja wtyczki niezależnie</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>pozwalają aktualizacje z tymi utworami</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opcje aktualizacji</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>powiadom mnie kiedy aktualizacja jest gotowa</translation>
 </phrase>
 
 <phrase>
@@ -14836,6 +14841,11 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 </phrase>
 
 <phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>bieżące wykorzystanie pamięci PhotoDemon</translation>
 </phrase>
@@ -14895,7 +14905,7 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 <translation>Ta nowa lokalizacja folderu tymczasowego nie wejdą w życie dopiero po ponownym uruchomieniu programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 40 were duplicates of existing phrases, so only 126 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15012,10 +15022,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12256 total words. -->
+<!-- As of this build, PhotoDemon contains 4503 phrases. -->
+<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>

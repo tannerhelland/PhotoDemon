@@ -2448,8 +2448,8 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         ' - Accelerators that DO NOT require at least one loaded image
         
         If .HotKeyName(acceleratorIndex) = "Preferences" Then
-            If Not FormPreferences.Visible Then
-                ShowPDDialog vbModal, FormPreferences
+            If Not FormOptions.Visible Then
+                ShowPDDialog vbModal, FormOptions
                 Exit Sub
             End If
         End If
@@ -4202,7 +4202,7 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Options
         Case 9
-            ShowPDDialog vbModal, FormPreferences
+            ShowPDDialog vbModal, FormOptions
             
         'Plugin manager
         Case 10

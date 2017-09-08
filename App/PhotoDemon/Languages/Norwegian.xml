@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.3000</langversion>
+<langversion>6.8.3001</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14276,11 +14276,76 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
-<!-- BEGIN text for Tools_Options.frm (FormPreferences) -->
+<!-- BEGIN text for Tools_Options.frm (FormOptions) -->
 
 <phrase>
 <original>PhotoDemon Options</original>
 <translation>PhotoDemon alternativer</translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Nullstill alle programinnstillinger</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>minnebruken  vil bli vist her</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>minne diagnostikk</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>midlertidig filplassering</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>begynne på nytt</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>oppdatering språkfiler  uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>se etter oppdateringer automatisk</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>oppdatere plugins uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>tillate oppdateringer fra disse sporene</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>oppdateringsalternativer </translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>varsle meg når en oppdatering er klar</translation>
 </phrase>
 
 <phrase>
@@ -14476,66 +14541,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>view</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Nullstill alle programinnstillinger</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>minnebruken  vil bli vist her</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>minne diagnostikk</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>midlertidig filplassering</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>begynne på nytt</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>oppdatering språkfiler  uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>se etter oppdateringer automatisk</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>oppdatere plugins uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>tillate oppdateringer fra disse sporene</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>oppdateringsalternativer </translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>varsle meg når en oppdatering er klar</translation>
 </phrase>
 
 <phrase>
@@ -14857,6 +14862,11 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 </phrase>
 
 <phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>nåværende PhotoDemon minnebruk </translation>
 </phrase>
@@ -14916,7 +14926,7 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <translation>Denne nye midlertidige mappen vil ikke tre i kraft før du starter programmet.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 40 were duplicates of existing phrases, so only 126 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15033,10 +15043,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12256 total words. -->
+<!-- As of this build, PhotoDemon contains 4503 phrases. -->
+<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>

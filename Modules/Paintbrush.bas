@@ -750,8 +750,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         ' auto-dropped until the processor catches up.  We have other ways of working around that problem in the
         ' brush engine.)
         '
-        'TODO: VirtualBox returns bad data via GetMouseMovePointsEx, so this setting needs to be toggleable by the user.
-        srcCanvas.SetMouseInput_HighRes True
+        'IMPORTANT NOTE: VirtualBox returns bad data via GetMouseMovePointsEx, so I now expose this setting to the user
+        ' via the Tools > Options menu.  If the user disables high-res input, we will also ignore it.
+        Debug.Print Tools.GetToolSetting_HighResMouse()
+        srcCanvas.SetMouseInput_HighRes Tools.GetToolSetting_HighResMouse()
         srcCanvas.SetMouseInput_AutoDrop False
         
         'Reset all internal mouse events trackers
