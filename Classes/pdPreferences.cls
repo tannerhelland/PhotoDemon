@@ -343,6 +343,8 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 1)
     
+    Tools.SetToolSetting_HighResMouse g_UserPreferences.GetPref_Boolean("Tools", "HighResMouseInput", True)
+    
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
     'Terminate batch preference mode before exiting
@@ -503,6 +505,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
         m_XMLEngine.WriteTag "SelectionRenderMode", "0"
         m_XMLEngine.WriteTag "SelectionHighlightColor", "#FF3A48"
+        m_XMLEngine.WriteTag "HighResMouseInput", "True"
     m_XMLEngine.CloseTag "Tools"
     m_XMLEngine.WriteBlankLine
     

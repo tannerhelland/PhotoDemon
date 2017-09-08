@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.7</langversion>
+<langversion>6.8.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14268,11 +14268,76 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
-<!-- BEGIN text for Tools_Options.frm (FormPreferences) -->
+<!-- BEGIN text for Tools_Options.frm (FormOptions) -->
 
 <phrase>
 <original>PhotoDemon Options</original>
 <translation>Možnosti PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Obnovte všechna nastavení programu</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Využití paměti se zobrazí zde</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Diagnostika paměti</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Dočasné umístění souboru</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>začít znovu</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Zřeknutí se odpovědnosti za běhu)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Aktualizovat jazykové soubory nezávisle</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Automaticky zkontrolovat aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>Aktualizace pluginů nezávisle</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Umožňují aktualizace z těchto stop</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Možnosti aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Upozorněte mě, když je připravena aktualizace</translation>
 </phrase>
 
 <phrase>
@@ -14468,66 +14533,6 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 <phrase>
 <original>viewport</original>
 <translation>Výřez</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Obnovte všechna nastavení programu</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Využití paměti se zobrazí zde</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Diagnostika paměti</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Dočasné umístění souboru</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>začít znovu</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Zřeknutí se odpovědnosti za běhu)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Aktualizovat jazykové soubory nezávisle</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Automaticky zkontrolovat aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Aktualizace pluginů nezávisle</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Umožňují aktualizace z těchto stop</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Možnosti aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Upozorněte mě, když je připravena aktualizace</translation>
 </phrase>
 
 <phrase>
@@ -14849,6 +14854,11 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 </phrase>
 
 <phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>Aktuální využití paměti PhotoDemon</translation>
 </phrase>
@@ -14908,7 +14918,7 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <translation>Tato nová dočasná umístění složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 40 were duplicates of existing phrases, so only 126 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15025,10 +15035,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1976 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12256 total words. -->
+<!-- As of this build, PhotoDemon contains 4503 phrases. -->
+<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>

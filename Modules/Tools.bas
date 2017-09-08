@@ -54,6 +54,10 @@ Private m_ToolIsBusy As Boolean
 'IMPORTANT: after retrieval, this value is forcibly reset to zero.  Do not check it more than once without internally caching it.
 Private m_CustomToolMarker As Long
 
+'Some tool-related user preferences are cached locally, to improve performance (vs pulling them from the
+' central resource manager).
+Private m_HighResMouseInputAllowed As Boolean
+
 Public Function GetToolBusyState() As Boolean
     GetToolBusyState = m_ToolIsBusy
 End Function
@@ -852,4 +856,14 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
     
     End If
     
+End Sub
+
+'Some tool-related user preferences are cached locally, to improve performance (vs pulling them from the
+' central resource manager).  You may interact with these settings via the following safe wrapper functions.
+Public Function GetToolSetting_HighResMouse() As Boolean
+    GetToolSetting_HighResMouse = m_HighResMouseInputAllowed
+End Function
+
+Public Sub SetToolSetting_HighResMouse(ByVal newSetting As Boolean)
+    m_HighResMouseInputAllowed = newSetting
 End Sub
