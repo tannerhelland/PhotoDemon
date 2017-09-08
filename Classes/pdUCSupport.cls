@@ -181,6 +181,11 @@ Private m_TTCaption As String, m_TTTitle As String
 ' (Note that this ID describes both the current *theme* and the current *language*; a change to either initiates a redraw.)
 Private m_LastThemeID As String
 
+'Some controls (e.g. pdCanvasView) may require a lot of time to repaint their contents after something like
+' a Form_Resize event.  If they know a lengthy delay is in place, they can ask us to suspend repainting until
+' they're ready.
+Private m_SuspendAutoRepaint As Boolean
+
 'pd2DPaint classes, for generic fill/stroke capabilities
 Private m_Painter As pd2DPainter
 
@@ -537,6 +542,12 @@ Friend Function IsCaptionActive() As Boolean
         IsCaptionActive = m_Caption.IsCaptionActive()
     End If
 End Function
+
+'Manually suspend repaint events.  IMPORTANTLY, you must *re-enable* repaints after calling this function,
+' or no painting will occur.
+Friend Sub SuspendAutoRepaintBehavior(ByVal newSuspendState As Boolean)
+    m_SuspendAutoRepaint = newSuspendState
+End Sub
 
 'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution mouse input is
 ' *not* enabled for most controls.)
@@ -907,6 +918,8 @@ End Sub
 ' but because the events may be raised post-dialog-shown, we must handle them regardless to avoid flicker.)
 Private Sub m_WindowPainter_EraseBkgnd()
     
+    If m_SuspendAutoRepaint Then Exit Sub
+    
     Dim targetDC As Long
     targetDC = m_WindowPainter.GetPaintStructDC
     
@@ -933,6 +946,8 @@ End Sub
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying
 ' control's DC.
 Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    
+    If m_SuspendAutoRepaint Then Exit Sub
     
     Dim targetDC As Long
     targetDC = m_WindowPainter.GetPaintStructDC

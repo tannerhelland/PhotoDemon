@@ -406,8 +406,17 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If (g_OpenImageCount = 0) And MainModule.IsProgramRunning() Then
         Me.ClearCanvas
     Else
-        Debug.Print "Main viewport requested its own redraw, likely due to a buffer size change."
+    
+        'If we don't manually suspend repainting, we'll get *crazy* flickering because ViewportEngine
+        ' is slower than the automatic repaints requested by our parent pdUCSupport instance.  As such,
+        ' we manually disable repaints until the viewport buffer is ready.
+        ucSupport.SuspendAutoRepaintBehavior True
         ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ucSupport.SuspendAutoRepaintBehavior False
+        
+        'Because we suspended auto-repaints, we must manually request a final paint-to-screen
+        ucSupport.RequestRepaint True
+        
     End If
     
 End Sub
