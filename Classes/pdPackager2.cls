@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2017 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 09/February/17
-'Last update: rework packaging system to support different compression types for node header and data chunks
+'Last updated: 08/September/17
+'Last update: add new checks to reduce memory churn when using the same instance to read/write multiple packages in succession
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -224,6 +224,7 @@ Private Type PDP_NODE
 End Type
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
 'When writing new pdPackage files, these variables hold the package's contents as they are being assembled.  When loading a pdPackage file,
 ' these structs will be filled after the file header is successfully verified.
@@ -306,19 +307,30 @@ Friend Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
     End With
     
     'Resize the directory array to the number of supplied nodes; note that this step is optional; if no node count is supplied,
-    ' the addNode() function will automatically increment itself as necessary.
+    ' the AddNode() function will automatically increment itself as necessary.  (We also cover the case where this array already
+    ' exists from prior writes; we can skip initialization in that case, to save a bit of memory thrashing.)
+    If (m_numOfNodes > 0) Then
+        If (m_numOfNodes < numOfDataNodes) Then ReDim m_NodeDirectory(0 To numOfDataNodes) As PDP_NODE
+    Else
+        ReDim m_NodeDirectory(0 To numOfDataNodes) As PDP_NODE
+    End If
+    
     m_numOfNodes = 0
-    ReDim m_NodeDirectory(0 To numOfDataNodes) As PDP_NODE
-        
+    
     'Prepare the data buffer.  Note that chunk size is largely irrelevant for our purposes; when handed a byte array that exceeds
     ' the size of the default chunk size, the buffer class is smart enough to extend the buffer by the size of that byte array.
-    ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough that you will only
-    ' require a few ReDim Preserve statements throughout the pdPackage assembly process.
-    Set m_DataBuffer = New pdStream
+    ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough to require minimal
+    ' ReDim Preserve requests throughout the pdPackage assembly process.
+    If (m_DataBuffer Is Nothing) Then
+        Set m_DataBuffer = New pdStream
+    Else
+        If (m_StreamMode <> streamMode) Then m_DataBuffer.StopStream True
+    End If
+    
     m_StreamMode = streamMode
     
     If (streamMode = PD_SM_MemoryBacked) Then
-        m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize
+        m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize, , , True
     
     'In file-backed mode, we'll actually open the file right away, and write our nodes to it "as we go"
     ElseIf (streamMode = PD_SM_FileBacked) Then
@@ -341,10 +353,10 @@ Friend Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByV
     
     'Start by making sure our node directory is large enough to hold this new node (if the caller supplied a node count up front,
     ' this step is overkill).  If the directory is too small, enlarge it.
-    If UBound(m_NodeDirectory) < (m_numOfNodes - 1) Then
+    If (UBound(m_NodeDirectory) < (m_numOfNodes - 1)) Then
         
         'If the array has never been resized before, give it a nice starting size of 16 entries
-        If UBound(m_NodeDirectory) = 0 Then
+        If (UBound(m_NodeDirectory) = 0) Then
             ReDim Preserve m_NodeDirectory(0 To 15) As PDP_NODE
         
         'If the directory has been resized before, double its size now.  (The directory will automatically be shrunk to minimum
@@ -736,8 +748,9 @@ End Function
 '                    any way; it simply specifies hints related to file caching.
 Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
-    'Free any temporary compression buffers, as they are no longer needed
-    Erase m_CompressionBuffer
+    'If memory is tight, you may choose to free any temporary compression buffers here, as they are no longer needed.
+    ' (In PD, we keep them around as we may reuse a pdPackage instance for multiple writes.)
+    'Erase m_CompressionBuffer
     
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
     ' can't be set until all nodes have been added.
@@ -910,9 +923,9 @@ End Function
 
 'Close the current package.  Any used resources will be immediately freed, so make sure you're finished with the package data
 ' (e.g. by writing it out to file or something) before closing it!
-Friend Sub ClosePackage()
-    Erase m_CompressionBuffer
-    If (Not m_DataBuffer Is Nothing) Then m_DataBuffer.StopStream
+Friend Sub ClosePackage(Optional ByVal retainInternalBuffers As Boolean = False)
+    If (Not retainInternalBuffers) Then Erase m_CompressionBuffer
+    If (Not m_DataBuffer Is Nothing) Then m_DataBuffer.StopStream (m_StreamMode <> PD_SM_MemoryBacked) Or (Not retainInternalBuffers)
 End Sub
 
 'Load a pdPackage file into memory.
@@ -937,7 +950,9 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
 
     On Error GoTo StopPackageFileRead
     
-    Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
+    'If second-pass compression was used (e.g. the entire file was compressed *again* after all nodes were added), we need two levels
+    ' of temporary arrays to handle the decompression process.
+    Dim tmpCompressionBuffer() As Byte
     
     'Before doing anything else, make sure the file exists
     If (Not m_File.FileExists(srcFilename)) Then
@@ -994,13 +1009,17 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             End If
             
             'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received
-            ' second-pass compression, but the uncompressed result will *always* end up inside this rawBuffer() array/
-            ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
+            ' second-pass compression, but the uncompressed result will *always* end up inside this m_CompressionBuffer() array/
+            If (Not VBHacks.IsArrayInitialized(m_CompressionBuffer)) Then
+                ReDim m_CompressionBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
+            Else
+                If (UBound(m_CompressionBuffer) < m_FileHeader.DirectoryChunkSizeOriginal - 1) Then ReDim m_CompressionBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
+            End If
             
             'If no compression was applied, read the bytes directly into our buffer
             If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
                 m_File.FileMovePointer hFile, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
-                m_File.FileReadData hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                m_File.FileReadData hFile, VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             
             'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
             Else
@@ -1024,7 +1043,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
                 If Compression.IsCompressionEngineAvailable(cmpEngine) Then
                 
-                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
+                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
                 
                     'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
                     ' than the one flagged in the file.)  Try again using a different compression method.
@@ -1034,7 +1053,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                         
                         Dim i As PD_CompressionEngine
                         For i = PD_CE_ZLib To PD_CE_Lz4
-                            decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
+                            decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
                             If decompressionResult Then
                                 InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                                 Exit For
@@ -1064,12 +1083,16 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             Erase tmpCompressionBuffer
             
             'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
-            m_numOfNodes = m_FileHeader.NodeCount
-            ReDim m_NodeDirectory(0 To m_numOfNodes - 1) As PDP_NODE
-            CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+            Dim newNodeCount As Long
+            newNodeCount = m_FileHeader.NodeCount
             
-            'Free the raw directory buffer
-            Erase rawBuffer
+            If (newNodeCount > m_numOfNodes) Then ReDim m_NodeDirectory(0 To newNodeCount - 1) As PDP_NODE
+            m_numOfNodes = newNodeCount
+            CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+            
+            'If memory is tight, you might choose to free the raw directory buffer here (as it's no longer needed).  In PD,
+            ' we skip this step as we may reuse the compression buffer for future read/write operations.
+            'Erase m_CompressionBuffer
             
             'The package's directory is now available in-memory.  Before proceeding, make a note of the requested stream mode
             ' and access, which affect how we pull data out of this file.
@@ -1078,16 +1101,16 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             'Finally, retrieve the data chunk.  Note that we basically just wrap a pdStream object around the data, and it handles
             ' everything from there.
-            Set m_DataBuffer = New pdStream
+            If (m_DataBuffer Is Nothing) Then Set m_DataBuffer = New pdStream
             If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
                 
                 'For a memory-backed stream, immediately load the full data chunk into memory.
                 If (streamMode = PD_SM_MemoryBacked) Then
                     
-                    m_DataBuffer.StartStream PD_SM_MemoryBacked, streamAccess
+                    m_DataBuffer.StartStream PD_SM_MemoryBacked, streamAccess, , , , , True
                     m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
                     m_File.FileReadData hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
-                
+                    
                     'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
                     m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
                     m_DataBuffer.SetPosition 0
@@ -1284,7 +1307,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
         
         'Finally, retrieve the data chunk.  Note that we basically just wrap a pdStream object around the data, and it handles
         ' everything from there.
-        Set m_DataBuffer = New pdStream
+        If (m_DataBuffer Is Nothing) Then Set m_DataBuffer = New pdStream Else m_DataBuffer.StopStream False
         If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
             
             'For a memory-backed stream, immediately load the full data chunk into memory.
@@ -2193,6 +2216,7 @@ Private Sub Class_Terminate()
     If Not (m_DataBuffer Is Nothing) Then
         m_DataBuffer.StopStream
         Set m_DataBuffer = Nothing
+        m_numOfNodes = 0
     End If
     
     'Release our pdFSO instance

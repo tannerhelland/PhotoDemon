@@ -22,6 +22,10 @@ Attribute VB_Name = "Saving"
 
 Option Explicit
 
+'To improve Undo/Redo performance, a persistent Undo writer is used.  (To free up memory, you can release this class;
+' it will automatically be re-created, as necessary.)
+Private m_PdiWriter As pdPackager
+
 'When a Save request is invoked, call this function to determine if Save As is needed instead.  (Several factors can
 ' affect whether Save is okay; for example, if an image has never been saved before, we must raise a dialog to ask
 ' for a save location and filename.)
@@ -574,12 +578,16 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     If (Not suppressMessages) Then Message "Saving %1 layer...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
-    Dim pdiWriter As pdPackager
-    Set pdiWriter = New pdPackager
+    ' (Note that we reuse the same pdPackager instance throughout this module; this spares us from constant reallocating
+    ' memory for package assembly.)
+    If (m_PdiWriter Is Nothing) Then Set m_PdiWriter = New pdPackager
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
-    pdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.EstimateRAMUsage
+    ' (NOTE: if memory consumption ever becomes an issue, you can write Undo/Redo data as a "file-backed" package.  In that
+    '  mode, data is streamed immediately out to file, instead of coalescing the package in memory first.  This makes it
+    '  quite a bit slower, but the memory burden is significantly reduced.)
+    m_PdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.EstimateRAMUsage   ', PD_SM_FileBacked, pdiPath
     
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
@@ -588,13 +596,13 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     'Start by creating the node entry; if successful, this will return the index of the node, which we can use
     ' to supply the actual header and DIB data.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.GetLayerID))
+    nodeIndex = m_PdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.GetLayerID))
     
     'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
     Dim dataString As String
     dataString = srcLayer.GetLayerHeaderAsXML(True)
     
-    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
+    m_PdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
@@ -607,13 +615,13 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
         
             Dim layerDIBPointer As Long, layerDIBLength As Long
             srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
+            m_PdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
         
         'Text (and other vector layers) save their vector contents in XML format
         ElseIf srcLayer.IsLayerVector Then
             
             dataString = srcLayer.GetVectorDataAsXML(True)
-            pdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel
+            m_PdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel
         
         'Other layer types are not currently supported
         Else
@@ -623,7 +631,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(pdiPath, , srcIsUndo)
+    SavePhotoDemonLayer = m_PdiWriter.WritePackageToFile(pdiPath, , srcIsUndo)
     
     #If DEBUGMODE = 1 Then
         If (Not SavePhotoDemonLayer) Then
@@ -642,129 +650,6 @@ SavePDLayerError:
     SavePhotoDemonLayer = False
     
 End Function
-
-'This function takes two 24bpp DIBs and compares them, returning a single mean RMSD.
-Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As pdDIB) As Double
-
-    Dim totalRMSD As Double
-    totalRMSD = 0
-
-    Dim x As Long, y As Long, quickX As Long
-    
-    Dim r1 As Long, g1 As Long, b1 As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    
-    'Acquire pointers to both DIB arrays
-    Dim tmpSA1 As SAFEARRAY2D, tmpSA2 As SAFEARRAY2D
-    
-    Dim srcArray1() As Byte, srcArray2() As Byte
-    
-    PrepSafeArray tmpSA1, srcDib1
-    PrepSafeArray tmpSA2, srcDib2
-    
-    CopyMemory ByVal VarPtrArray(srcArray1()), VarPtr(tmpSA1), 4
-    CopyMemory ByVal VarPtrArray(srcArray2()), VarPtr(tmpSA2), 4
-    
-    Dim imgWidth As Long, imgHeight As Long
-    imgWidth = srcDib1.GetDIBWidth
-    imgHeight = srcDib2.GetDIBHeight
-    
-    For x = 0 To imgWidth - 1
-        quickX = x * 3
-    For y = 0 To imgHeight - 1
-    
-        'Retrieve both sets of L*a*b* coordinates
-        r1 = srcArray1(quickX, y)
-        g1 = srcArray1(quickX + 1, y)
-        b1 = srcArray1(quickX + 2, y)
-        
-        r2 = srcArray2(quickX, y)
-        g2 = srcArray2(quickX + 1, y)
-        b2 = srcArray2(quickX + 2, y)
-        
-        r1 = (r2 - r1) * (r2 - r1)
-        g1 = (g2 - g1) * (g2 - g1)
-        b1 = (b2 - b1) * (b2 - b1)
-        
-        'Calculate an RMSD
-        totalRMSD = totalRMSD + Sqr(r1 + g1 + b1)
-    
-    Next y
-    Next x
-    
-    'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcArray1), 0&, 4
-    CopyMemory ByVal VarPtrArray(srcArray2), 0&, 4
-    
-    'Divide the total RMSD by the number of pixels in the image, then exit
-    FindMeanRMSDForTwoDIBs = totalRMSD / (imgWidth * imgHeight)
-
-End Function
-
-'This function assumes two 24bpp DIBs have been pre-converted to Single-type L*a*b* arrays.  Use the L*a*b* data to return
-' a mean RMSD for the two images.
-Public Function FindMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcArray2() As Single, ByVal imgWidth As Long, ByVal imgHeight As Long) As Double
-
-    Dim totalRMSD As Double
-    totalRMSD = 0
-
-    Dim x As Long, y As Long, quickX As Long
-    
-    Dim LabL1 As Double, LabA1 As Double, LabB1 As Double
-    Dim labL2 As Double, labA2 As Double, labB2 As Double
-    
-    For x = 0 To imgWidth - 1
-        quickX = x * 3
-    For y = 0 To imgHeight - 1
-    
-        'Retrieve both sets of L*a*b* coordinates
-        LabL1 = srcArray1(quickX, y)
-        LabA1 = srcArray1(quickX + 1, y)
-        LabB1 = srcArray1(quickX + 2, y)
-        
-        labL2 = srcArray2(quickX, y)
-        labA2 = srcArray2(quickX + 1, y)
-        labB2 = srcArray2(quickX + 2, y)
-        
-        'Calculate an RMSD
-        totalRMSD = totalRMSD + DistanceThreeDimensions(LabL1, LabA1, LabB1, labL2, labA2, labB2)
-    
-    Next y
-    Next x
-    
-    'Divide the total RMSD by the number of pixels in the image, then exit
-    FindMeanRMSDForTwoArrays = totalRMSD / (imgWidth * imgHeight)
-
-End Function
-
-'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
-' is used to generate the live preview used in PhotoDemon's "export WebP" dialog.
-Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal webPQuality As Long)
-    
-    'Pass the DIB to FreeImage, which will make a copy for itself.
-    Dim fi_DIB As Long
-    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
-        
-    'Now comes the actual WebP conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
-    ' the image in WebP format to a byte array; we then hand that byte array back to it and request a decompression.
-    Dim webPArray() As Byte
-    Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(PDIF_WEBP, fi_DIB, webPArray, webPQuality, True)
-    
-    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , PDIF_WEBP)
-    
-    'Random fact: the WebP encoder will automatically downsample 32-bit images with pointless alpha channels to 24-bit.  This causes problems when
-    ' we try to preview WebP files prior to encoding, as it may randomly change the bit-depth on us.  Check for this case, and recreate the target
-    ' DIB as necessary.
-    If FreeImage_GetBPP(fi_DIB) <> dstDIB.GetDIBColorDepth Then dstDIB.CreateBlank dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, FreeImage_GetBPP(fi_DIB)
-        
-    'Copy the newly decompressed image into the destination pdDIB object.
-    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
-    
-    'Release the FreeImage copy of the DIB.
-    FreeImage_Unload fi_DIB
-    
-End Sub
 
 'Save a new Undo/Redo entry to file.  This function is only called by the createUndoData function in the pdUndo class.
 ' For the most part, this function simply wraps other save functions; however, certain odd types of Undo diff files (e.g. layer headers)
@@ -926,4 +811,9 @@ End Sub
 
 Public Sub EndSaveProcess()
     Processor.MarkProgramBusyState False, True
+End Sub
+
+'Want to free up memory?  Call this function to release all export caches.
+Public Sub FreeUpMemory()
+    Set m_PdiWriter = Nothing
 End Sub

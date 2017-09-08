@@ -272,7 +272,7 @@ StreamConversionFailed:
 End Function
 
 'Check array initialization.  All array types supported.  Thank you to http://stackoverflow.com/questions/183353/how-do-i-determine-if-an-array-is-initialized-in-vb6
-Public Function IsArrayInitialized(arr) As Boolean
+Public Function IsArrayInitialized(ByRef arr As Variant) As Boolean
     Dim saAddress As Long
     GetMem4 VarPtr(arr) + 8, saAddress
     GetMem4 saAddress, saAddress

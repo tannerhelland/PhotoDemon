@@ -172,7 +172,7 @@ End Enum
 ' a fixed-width array in a single pass.
 Private Type PDP_NODE
 
-    NodeName As String * 32                 'Name of the node, as a standard VB String (DBCS)
+    nodeName As String * 32                 'Name of the node, as a standard VB String (DBCS)
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be read by 32-char name or 4-byte ID.
     OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to this class.
     NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are mostly unused.
@@ -217,7 +217,7 @@ Private m_ZLibAvailable As Boolean, m_ZLibToken As Long
 'When writing new pdPackage files, these variables will hold the package's contents as they are being assembled.
 Private m_FileHeader As PDP_HEADER
 Private m_NodeDirectory() As PDP_NODE
-Private m_NumOfNodes As Long
+Private m_numOfNodes As Long
 
 'The actual data chunk of the pdPackage will be assembled using a pdStream instance.  It greatly simplifies the process of
 ' assembling a 1D byte array from discrete individual chunks.
@@ -287,7 +287,7 @@ Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
     
     'Resize the directory array to the number of supplied nodes; note that this step is optional; if no node count is supplied,
     ' the addNode() function will automatically increment itself as necessary.
-    m_NumOfNodes = 0
+    m_numOfNodes = 0
     ReDim m_NodeDirectory(0 To numOfDataNodes) As PDP_NODE
         
     'Prepare the data buffer.  Note that chunk size is largely irrelevant for our purposes; when handed a byte array that exceeds
@@ -309,11 +309,11 @@ End Sub
 Public Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
 
     'Increment our active node count
-    m_NumOfNodes = m_NumOfNodes + 1
+    m_numOfNodes = m_numOfNodes + 1
     
     'Start by making sure our node directory is large enough to hold this new node (if the caller supplied a node count up front,
     ' this step is overkill).  If the directory is too small, enlarge it.
-    If UBound(m_NodeDirectory) < (m_NumOfNodes - 1) Then
+    If UBound(m_NodeDirectory) < (m_numOfNodes - 1) Then
         
         'If the array has never been resized before, give it a nice starting size of 16 entries
         If UBound(m_NodeDirectory) = 0 Then
@@ -329,14 +329,14 @@ Public Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByV
     
     'Copy the supplied values into the node directory.  Note that all three ID types are optional, but hopefully the user has
     ' been smart enough to make use of at least one of them!
-    With m_NodeDirectory(m_NumOfNodes - 1)
-        .NodeName = thisNodeName
+    With m_NodeDirectory(m_numOfNodes - 1)
+        .nodeName = thisNodeName
         .NodeID = thisNodeID
         .OptionalNodeType = thisNodeType
     End With
     
     'Return the index of this node, which the caller will use to supply this node's data (in a separate step).
-    AddNode = m_NumOfNodes - 1
+    AddNode = m_numOfNodes - 1
     
 End Function
 
@@ -362,7 +362,7 @@ End Function
 Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
-    If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
+    If nodeIndex < 0 Or nodeIndex > m_numOfNodes - 1 Then
         Debug.Print "Node index out of range - try again with a valid node index!"
         AddNodeDataFromPointer = False
         Exit Function
@@ -717,10 +717,10 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     With m_FileHeader
     
         'Update the final node count
-        .NodeCount = m_NumOfNodes
+        .NodeCount = m_numOfNodes
                 
         'Update the size of the directory chunk
-        .DirectoryChunkSize = .NodeStructSize * m_NumOfNodes
+        .DirectoryChunkSize = .NodeStructSize * m_numOfNodes
         
         'Trim the data buffer, and update the size of the data chunk using the exact size of the final buffer.
         m_DataBuffer.TrimStream
@@ -1022,8 +1022,8 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             End If
             
             'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
-            m_NumOfNodes = m_FileHeader.NodeCount
-            ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+            m_numOfNodes = m_FileHeader.NodeCount
+            ReDim m_NodeDirectory(0 To m_numOfNodes - 1) As PDP_NODE
             CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
             
             'Now, retrieve the data chunk, and apply the same decompression test that we did for the directory chunk.
@@ -1137,8 +1137,8 @@ Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
                 If m_FileHeader.NodeStructSize = Len(tmpNode) Then
                     
                     'Use information from the file header to prepare the directory array.
-                    m_NumOfNodes = m_FileHeader.NodeCount
-                    ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+                    m_numOfNodes = m_FileHeader.NodeCount
+                    ReDim m_NodeDirectory(0 To m_numOfNodes - 1) As PDP_NODE
                     
                     'Retrieve the node directory
                     Get #fileNum, , m_NodeDirectory
@@ -1179,7 +1179,7 @@ End Function
 'Returns the current number of nodes in the package.  This is primarily designed to be used right after loading a pdPackage file;
 ' after this number is obtained, the caller can iterate through individual nodes, extracting data as they go.
 Public Function GetNumOfNodes() As Long
-    GetNumOfNodes = m_NumOfNodes
+    GetNumOfNodes = m_numOfNodes
 End Function
 
 'Given a node index, return relevant header data for that node.  This function will fail if the node index is out of bounds.
@@ -1188,7 +1188,7 @@ End Function
 Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
-    If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
+    If nodeIndex < 0 Or nodeIndex > m_numOfNodes - 1 Then
         Debug.Print "Node index out of range - try again with a valid node index!"
         GetNodeInfo = False
         Exit Function
@@ -1196,7 +1196,7 @@ Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
     
     'Fill the supplied variables with the corresponding data for this node
     With m_NodeDirectory(nodeIndex)
-        dstNodeName = .NodeName
+        dstNodeName = .nodeName
         dstNodeID = .NodeID
         dstOptionalNodeType = .OptionalNodeType
     End With
@@ -1256,10 +1256,10 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     
         'Look for two types of node names: bare filenames, and filenames with relative paths attached.
         ' (pdPackage handles both types automatically)
-        If StrComp(nodeName32_1, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+        If StrComp(nodeName32_1, m_NodeDirectory(i).nodeName, vbBinaryCompare) = 0 Then
             nodeFound = True
             thisNodeType = PDPSNT_FILENAME
-        ElseIf StrComp(nodeName32_2, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+        ElseIf StrComp(nodeName32_2, m_NodeDirectory(i).nodeName, vbBinaryCompare) = 0 Then
             nodeFound = True
             thisNodeType = PDPSNT_FILENAME_AND_RELATIVE_PATH
         Else
@@ -1452,10 +1452,10 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
     
         'Look for two types of node names: bare filenames, and filenames with relative paths attached.
         ' (pdPackage handles both types automatically)
-        If StrComp(nodeName32_1, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+        If StrComp(nodeName32_1, m_NodeDirectory(i).nodeName, vbBinaryCompare) = 0 Then
             nodeFound = True
             thisNodeType = PDPSNT_FILENAME
-        ElseIf StrComp(nodeName32_2, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+        ElseIf StrComp(nodeName32_2, m_NodeDirectory(i).nodeName, vbBinaryCompare) = 0 Then
             nodeFound = True
             thisNodeType = PDPSNT_FILENAME_AND_RELATIVE_PATH
         Else
@@ -1627,7 +1627,7 @@ Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeade
     
     For i = 0 To UBound(m_NodeDirectory)
     
-        If StrComp(nodeName32, m_NodeDirectory(i).NodeName, vbTextCompare) = 0 Then
+        If StrComp(nodeName32, m_NodeDirectory(i).nodeName, vbTextCompare) = 0 Then
         
             'This node is the one!
             nodeIndex = i
@@ -1652,7 +1652,7 @@ Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffe
     Dim i As Long, nodeIndex As Long
     nodeIndex = -1
     
-    If m_NumOfNodes > 0 Then
+    If m_numOfNodes > 0 Then
     
         For i = 0 To UBound(m_NodeDirectory)
         
@@ -1685,7 +1685,7 @@ Public Function GetNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByV
     Dim i As Long, nodeIndex As Long
     nodeIndex = -1
     
-    If m_NumOfNodes > 0 Then
+    If m_numOfNodes > 0 Then
     
         For i = 0 To UBound(m_NodeDirectory)
         
@@ -2028,7 +2028,7 @@ Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal ch
             If Not GetPackageFlag Then
             
                 Dim i As Long
-                For i = 0 To m_NumOfNodes - 1
+                For i = 0 To m_numOfNodes - 1
                     GetPackageFlag = GetPackageFlag Or GetBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
                     If GetPackageFlag Then Exit For
                 Next i
