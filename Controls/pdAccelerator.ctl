@@ -75,7 +75,7 @@ Private Type pdHotkey
     IsProcessorString As Boolean
     requiresOpenImage As Boolean
     showProcDialog As Boolean
-    procUndo As PD_UNDO_TYPE
+    procUndo As PD_UndoType
     menuNameIfAny As String
 End Type
 
@@ -291,7 +291,7 @@ End Sub
 ' - "requiresOpenImage": specifies that this action *must be disallowed* unless one (or more) image(s) are loaded and active.
 ' - "showProcForm": controls the "showDialog" parameter of processor string directives.
 ' - "procUndo": controls the "createUndo" parameter of processor string directives.  Remember that UNDO_NOTHING means "do not create Undo data."
-Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UNDO_TYPE = UNDO_NOTHING) As Long
+Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UndoType = UNDO_NOTHING) As Long
     
     'Make sure this key combination doesn't already exist in the collection
     Dim failsafeCheck As Long
@@ -398,7 +398,7 @@ Public Function GetShift(ByVal hkIndex As Long) As ShiftConstants
     End If
 End Function
 
-Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UNDO_TYPE
+Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UndoType
     ProcUndoValue = m_Hotkeys(hkIndex).procUndo
 End Function
 

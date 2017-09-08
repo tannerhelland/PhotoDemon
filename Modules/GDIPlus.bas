@@ -834,7 +834,7 @@ Private Type BITMAPINFOHEADER
     ImageSize As Long
     xPelsPerMeter As Long
     yPelsPerMeter As Long
-    Colorused As Long
+    ColorUsed As Long
     ColorImportant As Long
 End Type
 
@@ -3373,7 +3373,7 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
     
     If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction tmpString, PDM_EXTERNAL_LIB
+        pdDebug.LogAction tmpString, PDM_External_Lib
     #End If
     
 End Function

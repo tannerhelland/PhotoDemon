@@ -94,7 +94,7 @@ Private m_RedoState As Boolean
 ' Friend Type PD_UndoEntry
 '     processID As String             'Name of the associated action (e.g. "Gaussian blur")
 '     processParamString As String    'Processor string supplied to the action
-'     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+'     undoType As PD_UndoType        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
 '     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
 '     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
 '     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
@@ -117,7 +117,7 @@ Private Const PD_UNDO_VERSION_ID As Long = 64
 
 'The size of the Undo/Redo Thumbnail
 Private Const UNDO_THUMB_SMALL As Long = 48
-Private Const UNDO_THUMB_LARGE As Long = 256
+Private Const UNDO_THUMB_LARGE As Long = 128
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Friend Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
@@ -169,7 +169,7 @@ End Function
 '     previous Undo entry with this new one, if the layer ID and processID match.  The caller must have *explicit* knowledge
 '     that this behavior is appropriate, as there is no way to retrieve the overwritten Undo entry.  (PD uses this for
 '     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
-Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
+Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
     
     #If DEBUGMODE = 1 Then
         Dim timeAtUndoStart As Currency
@@ -584,7 +584,7 @@ End Sub
 
 'Given an undo Index, find the nearest Diff file that contains the information we need to reconstruct the image's state
 ' at that point in time.
-Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeCheck As PD_UNDO_TYPE, Optional ByVal relevantLayerID As Long = -1) As Long
+Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeCheck As PD_UndoType, Optional ByVal relevantLayerID As Long = -1) As Long
 
     'PD Undo files attempt to save only the minimum amount of data needed to reconstruct an image at any given point in time.
     ' I call these files "diffs" because they contain only the image information that has changed as a result of that
@@ -936,7 +936,7 @@ Friend Function GetUndoTool() As Long
 End Function
 
 'Return the process type associated with the current Undo state
-Friend Function GetUndoProcessType() As PD_UNDO_TYPE
+Friend Function GetUndoProcessType() As PD_UndoType
     If m_UndoState Then
         GetUndoProcessType = m_UndoStack(m_UndoNum - 1).undoType
     Else
@@ -945,7 +945,7 @@ Friend Function GetUndoProcessType() As PD_UNDO_TYPE
 End Function
 
 'Return the process type associated with the current Redo state
-Friend Function GetRedoProcessType() As PD_UNDO_TYPE
+Friend Function GetRedoProcessType() As PD_UndoType
     If m_RedoState Then
         GetRedoProcessType = m_UndoStack(m_UndoNum).undoType
     Else
@@ -973,7 +973,7 @@ End Function
 
 'Given a type of Undo action, find the last relevant parameter string.  This is used by PD's central processor to detect on-canvas
 ' changes to the image since the last Undo was created.
-Friend Function GetLastParamString(ByVal requestedUndoType As PD_UNDO_TYPE) As String
+Friend Function GetLastParamString(ByVal requestedUndoType As PD_UndoType) As String
 
     'If no Undos have been created, exit immediately
     If m_UndoNum = 0 Then

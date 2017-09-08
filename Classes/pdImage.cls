@@ -151,6 +151,17 @@ Private m_WorkingSpaceIndex As Long
 ' certain internal rendering tasks, like regenerating "magic wand selection" image copies.)
 Private m_TimeAtLastModify As Currency
 
+'If the current image thumbnail is clean or dirty.  Clean means that to the best of this class's knowledge, the current
+' thumbnail accurately reflects the composited image's contents.  Dirty means that we know the current thumbnail is
+' invalid, so it must be regenerated before continuing.
+Private m_IsThumbClean As Boolean
+
+'Composited image thumbnail.  A DIB of this size is cached locally, then passed to external functions only when necessary.
+' Note that requests for sizes larger than the hard-coded thumb size (in either dimension) will force creation of a
+' custom thumbnail from scratch, so try to avoid that if at all possible!
+Private Const IMAGE_THUMB_SIZE As Long = 128
+Private m_ImageThumbnail As pdDIB
+
 Friend Function GetCurrentFileFormat() As PD_IMAGE_FORMAT
     GetCurrentFileFormat = m_currentFileFormat
 End Function
@@ -290,9 +301,9 @@ End Sub
 '
 'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
 ' layer to rebuild any internal caches or buffers, like layer styles).
-Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
+Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal layerIndex As Long = -1)
     
-    'Note a new "image changed" timestamp
+    'Cache a new "image changed" timestamp
     VBHacks.GetHighResTime m_TimeAtLastModify
     
     'Separate handling by type.
@@ -306,6 +317,7 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal
     
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_EVERYTHING
             m_CompositeCacheClean = False
+            m_IsThumbClean = False
             
             'Notify all layers of potentially destructive changes
             Dim i As Long
@@ -315,21 +327,24 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal
         
         Case UNDO_IMAGEHEADER
             m_CompositeCacheClean = False
+            m_IsThumbClean = False
         
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             m_CompositeCacheClean = False
+            m_IsThumbClean = False
             
             If (layerIndex <> -1) Then
                 Me.GetLayerByIndex(layerIndex).NotifyOfDestructiveChanges
             Else
-                Debug.Print "WARNING!  Invalid params passed to pdImage.notifyImageChanged (-1 layer index for a layer action)"
+                Debug.Print "WARNING!  Invalid params passed to pdImage.NotifyImageChanged (-1 layer index for a layer action)"
             End If
         
         Case UNDO_LAYERHEADER
             m_CompositeCacheClean = False
+            m_IsThumbClean = False
         
         Case Else
-            Debug.Print "WARNING!  pdImage.notifyImageChanged received an unknown change request: " & typeOfChange
+            Debug.Print "WARNING!  pdImage.NotifyImageChanged received an unknown change request: " & typeOfChange
     
     End Select
 
@@ -899,41 +914,43 @@ Friend Sub SetWorkingSpaceIndex(ByVal newIndex As Long)
     m_WorkingSpaceIndex = newIndex
 End Sub
 
-'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
-' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
-Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+'Update the internal thumbnail.  Only call this function if the current thumbnail has been marked as DIRTY;
+' otherwise, just use the existing thumbnail as-is.
+Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
-    'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
-    'Dim startTime As Double
-    'startTime = Timer
+    'If the image has not been instantiated properly, reject the thumbnail request
+    If (Not Me.IsActive) Or (m_numOfLayers = 0) Then Exit Sub
+    
+    'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
+    ' and then produce smaller copies on-demand.
+    If (requiredSize < IMAGE_THUMB_SIZE) Then requiredSize = IMAGE_THUMB_SIZE
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
-    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Single, tY As Single
+    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    PDMath.ConvertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    ConvertAspectRatio Me.Width, Me.Height, requiredSize, requiredSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If (tIcoWidth > tIcoHeight) Then
         tX = 0
-        tY = (thumbnailSize - tIcoHeight) * 0.5
+        tY = (requiredSize - tIcoHeight) * 0.5
     
     '...otherwise, center it horizontally
     Else
         tY = 0
-        tX = (thumbnailSize - tIcoWidth) * 0.5
+        tX = (requiredSize - tIcoWidth) * 0.5
     End If
     
     'Prepare the destination DIB
-    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
-    If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
-        dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
+    If (m_ImageThumbnail.GetDIBWidth <> requiredSize) Or (m_ImageThumbnail.GetDIBHeight <> requiredSize) Then
+        m_ImageThumbnail.CreateBlank requiredSize, requiredSize, 32, 0
     Else
-        dstThumbnailDIB.ResetDIB 0
+        m_ImageThumbnail.ResetDIB 0
     End If
     
     'Retrieve a composited thumbnail.  (Note that the user's thumbnail performance setting affects the interpolation
@@ -953,10 +970,41 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         .Height = Me.Height
     End With
     
-    Me.GetCompositedRect dstThumbnailDIB, dstRectF, srcRectF, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
+    Me.GetCompositedRect m_ImageThumbnail, dstRectF, srcRectF, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
+    m_ImageThumbnail.SetInitialAlphaPremultiplicationState True
     
-    'Uncomment the line below to profile different thumbnail resize strategies
-    'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
+    'Mark the thumbnail state as clean
+    m_IsThumbClean = True
+    
+End Sub
+
+'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
+' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
+Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = IMAGE_THUMB_SIZE) As Boolean
+    
+    'Is the current thumbnail dirty?  If so, regenerate it.
+    If (Not m_IsThumbClean) Or (thumbnailSize > m_ImageThumbnail.GetDIBWidth) Then UpdateInternalThumbnail thumbnailSize
+    
+    'Clear the destination thumbnail
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+    
+    'If the requested thumbnail size is identical to our cached version, simply copy it out as-is
+    If (thumbnailSize = m_ImageThumbnail.GetDIBWidth) And (thumbnailSize = m_ImageThumbnail.GetDIBHeight) Then
+        dstThumbnailDIB.CreateFromExistingDIB m_ImageThumbnail
+    
+    'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
+    Else
+        
+        If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
+            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
+        Else
+            dstThumbnailDIB.ResetDIB 0
+        End If
+        
+        GDIPlus_StretchBlt dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, m_ImageThumbnail, 0, 0, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+        dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
+        
+    End If
     
     RequestThumbnail = True
     
@@ -1113,6 +1161,11 @@ Private Sub Class_Initialize()
     'Initialize any color management trackers
     m_WorkingSpaceIndex = -1
     
+    'Initialize the image thumbnail and note that it is not clean, which will force a regeneration when the thumbnail
+    ' is next requested.
+    Set m_ImageThumbnail = New pdDIB
+    m_IsThumbClean = False
+    
 End Sub
 
 Private Sub Class_Terminate()
@@ -1134,6 +1187,8 @@ Private Sub Class_Terminate()
     Set CanvasBuffer = Nothing
     Set CompositeBuffer = Nothing
     Set ImgStorage = Nothing
+    
+    Set m_ImageThumbnail = Nothing
     
     'Forcibly release all image layers
     Dim i As Long

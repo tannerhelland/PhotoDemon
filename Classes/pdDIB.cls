@@ -58,7 +58,7 @@ Private Type BITMAPINFOHEADER
     ImageSize As Long
     xPelsPerMeter As Long
     yPelsPerMeter As Long
-    Colorused As Long
+    ColorUsed As Long
     ColorImportant As Long
 End Type
 

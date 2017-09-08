@@ -61,11 +61,11 @@ Private Const UnitPixel As Long = &H2&
 
 'Type required to create an icon on-the-fly
 Private Type ICONINFO
-   fIcon As Boolean
-   xHotspot As Long
-   yHotspot As Long
-   hbmMask As Long
-   hbmColor As Long
+    fIcon As Boolean
+    xHotspot As Long
+    yHotspot As Long
+    hbmMask As Long
+    hbmColor As Long
 End Type
 
 'Used to apply and manage custom cursors (without subclassing)
@@ -412,91 +412,79 @@ End Sub
 '
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
-Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0, Optional ByVal flipVertically As Boolean = False) As Long
+Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
 
-    If (Not g_ImageFormats.FreeImageEnabled) Then
-        GetIconFromDIB = 0
-        Exit Function
-    End If
-    
-    Dim fi_DIB As Long
-    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, flipVertically)
-    
     'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
-    If iconSize = 0 Then
-        iconSize = srcDIB.GetDIBWidth
+    If (iconSize = 0) Then iconSize = srcDIB.GetDIBWidth
+    
+    'If the requested icon size does not match the incoming DIB's size, we need to create a temporary DIB at the correct size.
+    Dim tmpDIB As pdDIB
+    If (iconSize <> srcDIB.GetDIBWidth) Or (iconSize <> srcDIB.GetDIBHeight) Then
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank iconSize, iconSize, 32, 0, 0
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref()    ', , , , True
     Else
-        fi_DIB = FreeImage_RescaleByPixel(fi_DIB, iconSize, iconSize, True, FILTER_BILINEAR)
+        Set tmpDIB = srcDIB
     End If
     
-    If (fi_DIB <> 0) Then
+    'tmpDIB now points at a properly resized source DIB object
     
-        'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
-        ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
-        Dim monoBmp As Long
-        monoBmp = CreateBitmap(iconSize, iconSize, 1&, 1&, ByVal 0&)
-        
-        'Create a header for the icon we desire, then use CreateIconIndirect to create it.
-        Dim icoInfo As ICONINFO
-        With icoInfo
-            .fIcon = True
-            .xHotspot = iconSize
-            .yHotspot = iconSize
-            .hbmMask = monoBmp
-            .hbmColor = FreeImage_GetBitmapForDevice(fi_DIB)
-        End With
-        
-        GetIconFromDIB = CreateNewIcon(icoInfo)
-        
-        'Delete the temporary monochrome mask and DDB
-        DeleteObject monoBmp
-        DeleteObject icoInfo.hbmColor
+    'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
+    ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
+    Dim monoBmp As Long
+    monoBmp = CreateBitmap(iconSize, iconSize, 1&, 1&, ByVal 0&)
     
-    Else
-        GetIconFromDIB = 0
-    End If
+    'Create a header for the icon we desire, then use CreateIconIndirect to create it.
+    Dim icoInfo As ICONINFO
+    With icoInfo
+        .fIcon = True
+        .xHotspot = iconSize
+        .yHotspot = iconSize
+        .hbmMask = monoBmp
+        .hbmColor = GDI.GetDDBFromDIB(tmpDIB)
+    End With
+        
+    GetIconFromDIB = CreateNewIcon(icoInfo)
     
-    'Release FreeImage's copy of the source DIB
-    If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
+    'Delete the temporary monochrome mask and DDB
+    DeleteObject monoBmp
+    DeleteObject icoInfo.hbmColor
     
 End Function
 
-'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
-' Note that this function currently requires the FreeImage plugin to be present on the system.
+'Create a custom form icon for a target pdImage object
 Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
 
-    If (Not ALLOW_DYNAMIC_ICONS) Then Exit Sub
-    If (Not g_ImageFormats.FreeImageEnabled) Then Exit Sub
-    If (srcImage Is Nothing) Then Exit Sub
+    If (ALLOW_DYNAMIC_ICONS And (Not srcImage Is Nothing)) Then
     
-    Dim thumbDIB As pdDIB
+        Dim thumbDIB As pdDIB
+        
+        'Request a 32x32 thumbnail version of the current image
+        If srcImage.RequestThumbnail(thumbDIB, 32) Then
     
-    'Request a 32x32 thumbnail version of the current image
-    If srcImage.RequestThumbnail(thumbDIB, 32) Then
-
-        'Request two icon-format versions of the generated thumbnail.
-        ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
-        Dim hIcon32 As Long, hIcon16 As Long
-        hIcon32 = GetIconFromDIB(thumbDIB, , True)
-        hIcon16 = GetIconFromDIB(thumbDIB, 16, False)   'Because FreeImage is stupid, it will have vertically flipped the source
-                                                        ' thumbDIB in the previous call.  That's why this uses FALSE as the
-                                                        ' final parameter.
+            'Request two icon-format versions of the generated thumbnail.
+            ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
+            Dim hIcon32 As Long, hIcon16 As Long
+            hIcon32 = GetIconFromDIB(thumbDIB)
+            hIcon16 = GetIconFromDIB(thumbDIB, 16)
+            
+            'Each pdImage instance caches its custom icon handles, which simplifies the process of synchronizing PD's icons
+            ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
+            ' can free them after we set the new ones.
+            Dim oldIcon32 As Long, oldIcon16 As Long
+            oldIcon32 = srcImage.GetImageIcon(True)
+            oldIcon16 = srcImage.GetImageIcon(False)
+            
+            'Set the new icons, then free the old ones
+            srcImage.SetImageIcon True, hIcon32
+            srcImage.SetImageIcon False, hIcon16
+            If (oldIcon32 <> 0) Then ReleaseIcon oldIcon32
+            If (oldIcon16 <> 0) Then ReleaseIcon oldIcon16
+            
+        Else
+            Debug.Print "WARNING!  Image refused to provide a thumbnail!"
+        End If
         
-        'Each pdImage instance caches its custom icon handles, which simplifies the process of synchronizing PD's icons
-        ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
-        ' can free them after we set the new ones.
-        Dim oldIcon32 As Long, oldIcon16 As Long
-        oldIcon32 = srcImage.GetImageIcon(True)
-        oldIcon16 = srcImage.GetImageIcon(False)
-        
-        'Set the new icons, then free the old ones
-        srcImage.SetImageIcon True, hIcon32
-        srcImage.SetImageIcon False, hIcon16
-        If (oldIcon32 <> 0) Then ReleaseIcon oldIcon32
-        If (oldIcon16 <> 0) Then ReleaseIcon oldIcon16
-        
-    Else
-        Debug.Print "WARNING!  Image refused to provide a thumbnail!"
     End If
 
 End Sub
@@ -527,9 +515,7 @@ End Sub
 
 Private Sub AddIconToList(ByVal hIcon As Long)
     
-    If (m_numOfIcons > UBound(m_iconHandles)) Then
-        ReDim Preserve m_iconHandles(0 To UBound(m_iconHandles) * 2 + 1) As Long
-    End If
+    If (m_numOfIcons > UBound(m_iconHandles)) Then ReDim Preserve m_iconHandles(0 To UBound(m_iconHandles) * 2 + 1) As Long
     
     m_iconHandles(m_numOfIcons) = hIcon
     m_numOfIcons = m_numOfIcons + 1

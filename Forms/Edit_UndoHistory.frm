@@ -102,7 +102,7 @@ Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 'The size at which we render the thumbnail images
 Private Const UNDO_THUMB_SMALL As Long = 48
 
-Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional ByVal layerID As Long = 0) As String
+Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UndoType, Optional ByVal layerID As Long = 0) As String
 
     Dim newText As String
     
