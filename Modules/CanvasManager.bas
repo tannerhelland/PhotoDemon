@@ -192,6 +192,9 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
             ' images are loaded, their contents may shift.)
             Tools.SyncToolOptionsUIToCurrentLayer
             
+            'Release any cached Undo/Redo writers
+            Saving.FreeUpMemory
+            
         End If
     
     End If
@@ -371,7 +374,7 @@ Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal resyncInt
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
     If resyncInterface Then
         FormMain.mainCanvas(0).AlignCanvasView
-        SyncInterfaceToCurrentImage
+        Interface.SyncInterfaceToCurrentImage
         Message "Finished."
     End If
     

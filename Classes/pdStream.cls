@@ -169,33 +169,41 @@ End Sub
 '
 'Optionally, when creating a writable buffer, you can also specify a starting buffer size.  If you have some notion of the
 ' stream's net size in advance, an initial memory allocation that comes close to your required value can spare us intermediate
-' allocations while the stream is constructed.
+' allocations while the stream is constructed.  Similarly, if you have already been using this stream for other tasks,
+' you can mark the "reuseExistingBuffer" parameter as TRUE; this will leave the stream in its current state instead of
+' reallocating memory, potentially reducing memory thrashing.
 '
 'Returns TRUE if successful; FALSE otherwise.  FALSE should only occur if...
 ' 1) This is a file-backed stream and you supplied an invalid or inaccessible filename, or...
 ' 2) This is a memory-backed stream and the initial starting size is ridiculously huge.
 '
 'If this stream object is already open, the existing stream will be closed and a new one will be started.
-Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone, Optional ByVal reuseExistingBuffer As Boolean = False) As Boolean
     
     'If we're already open, close the current stream before starting a new one.
-    If m_Open Then Me.StopStream
+    If m_Open Then Me.StopStream (Not reuseExistingBuffer)
     
     m_StreamMode = streamType
     m_StreamAccess = streamAccess
     
     If (streamType = PD_SM_MemoryBacked) Then
     
+        'To improve performance when performing back-to-back stream read/write operations from the same instance,
+        ' we attempt to reuse existing memory as much as possible.
+        Dim needToAllocate As Boolean
+        needToAllocate = Not VBHacks.IsArrayInitialized(m_MemBuffer)
+        
         'The caller can specify a starting buffer size.  If they don't, we'll start small - just 4k.
         If (startingBufferSize <= 0) Then
-            
             Const INITIAL_BUFFER_SIZE As Long = 4096
-            ReDim m_MemBuffer(0 To INITIAL_BUFFER_SIZE - 1) As Byte
-            
-        'If the caller has some knowledge of the stream's final size, we can use their hint instead.
-        Else
-            ReDim m_MemBuffer(0 To startingBufferSize - 1) As Byte
+            startingBufferSize = INITIAL_BUFFER_SIZE
         End If
+        
+        'Allocation is performed if...
+        ' (1) we haven't allocated anything yet (checked above), or...
+        ' (2) our current allocation is smaller than the minimum initial size, or the user's required size
+        If (Not needToAllocate) Then needToAllocate = (UBound(m_MemBuffer) < startingBufferSize - 1) Or (Not reuseExistingBuffer)
+        If needToAllocate Then ReDim m_MemBuffer(0 To startingBufferSize - 1) As Byte
         
         m_Open = True
         
@@ -204,6 +212,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
         If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
         
         If m_FSO.FileCreateHandle(srcFilename, m_FileHandle, True, CBool(streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
+            
             m_Open = True
             m_FilePointerOffset = baseFilePointerOffset
             
@@ -223,15 +232,13 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
     
     StartStream = m_Open
     
-    If (Not StartStream) Then
-        InternalStreamError "Could not start stream"
-    End If
+    If (Not StartStream) Then InternalStreamError "Could not start stream"
     
 End Function
 
 'Shut down the current stream.  For file-backed streams, this closes the current file handle.  For memory streams, this just
 ' resets our internal buffers to null values.
-Friend Sub StopStream()
+Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
     
     If m_Open Then
     
@@ -240,7 +247,7 @@ Friend Sub StopStream()
         m_BufferSize = 0
         
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            Erase m_MemBuffer
+            If alsoFreeMemory Then Erase m_MemBuffer
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileCloseHandle m_FileHandle
             m_FileHandle = 0
