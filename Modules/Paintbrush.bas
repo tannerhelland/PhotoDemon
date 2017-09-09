@@ -851,8 +851,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     If isLastStroke Then
         
         Set m_Surface = Nothing
-        m_MouseX = -1000000#
-        m_MouseY = -1000000#
+        'm_MouseX = -1000000#
+        'm_MouseY = -1000000#
         
         'Reset the target canvas's mouse handling behavior
         srcCanvas.SetMouseInput_HighRes False
@@ -1379,7 +1379,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     
     Set cSurface = Nothing
     Set innerPen = Nothing: Set outerPen = Nothing
-    
+
 End Sub
 
 'A brush is considered active if the mouse state is currently DOWN, or if it is up but we are still rendering a

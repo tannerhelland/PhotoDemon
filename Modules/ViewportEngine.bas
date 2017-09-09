@@ -150,7 +150,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If fullPipelineCall Then m_TotalTimeStage4 = m_TotalTimeStage4 + m_TimeStage4
             
         End If
-        
+    
     End If
     
 End Sub

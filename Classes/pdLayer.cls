@@ -1463,7 +1463,7 @@ End Sub
 ' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
 ' Undo/Redo entries.
 Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
-
+    
     'Prepare an XML engine, which greatly simplifies the process of assembling XML data
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
@@ -1537,7 +1537,7 @@ Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     
     'The layer XML string is now complete.  Return it.
     GetLayerHeaderAsXML = xmlEngine.ReturnCurrentXMLString(avoidFluffEntries)
-
+    
 End Function
 
 'The sister function to "GetLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.

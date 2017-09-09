@@ -382,7 +382,7 @@ End Function
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
-Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True)
+Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_EVERYTHING)
 
     'If this form is already the active image, don't waste time re-activating it
     If (g_CurrentImage <> imageID) Then
@@ -405,10 +405,16 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     If (Not pdImages(g_CurrentImage) Is Nothing) And refreshScreen Then
         
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
-        
-        'Reflow any image-window-specific chrome (status bar, rulers, etc)
-        FormMain.mainCanvas(0).AlignCanvasView
+        If (associatedUndoType = UNDO_EVERYTHING) Or (associatedUndoType = UNDO_IMAGE) Or (associatedUndoType = UNDO_IMAGE_VECTORSAFE) Or (associatedUndoType = UNDO_IMAGEHEADER) Then
+            
+            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
+            
+            'Reflow any image-window-specific chrome (status bar, rulers, etc)
+            FormMain.mainCanvas(0).AlignCanvasView
+            
+        Else
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_ReuseLast
+        End If
         
         'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image
         ' (e.g. updating thumbnails, window captions, etc)

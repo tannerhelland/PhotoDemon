@@ -1774,7 +1774,7 @@ Public Sub StartInterfaceTimer()
 
     If (m_InterfaceTimer Is Nothing) Then
         Set m_InterfaceTimer = New pdTimer
-        m_InterfaceTimer.Interval = 150
+        m_InterfaceTimer.Interval = 50
     End If
     
     m_InterfaceTimer.StartTimer
@@ -1787,7 +1787,7 @@ Private Sub m_InterfaceTimer_Timer()
 
     Static intervalCount As Long
     
-    If (intervalCount > 2) Then
+    If (intervalCount >= 1) Then
         intervalCount = 0
         g_DisableUserInput = False
         m_InterfaceTimer.StopTimer
