@@ -288,6 +288,28 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
+'Helper functions to ensure ideal UI behavior
+Public Function IsScreenCoordInsideCanvasView(ByVal srcX As Long, ByVal srcY As Long) As Boolean
+
+    'Get the canvas view's window
+    Dim tmpRect As RECT
+    If (Not g_WindowManager Is Nothing) Then
+        g_WindowManager.GetWindowRect_API_Universal CanvasView.hWnd, VarPtr(tmpRect)
+        IsScreenCoordInsideCanvasView = PDMath.IsPointInRect(srcX, srcY, tmpRect)
+    Else
+        IsScreenCoordInsideCanvasView = False
+    End If
+    
+End Function
+
+Public Function GetCanvasViewHWnd() As Long
+    GetCanvasViewHWnd = CanvasView.hWnd
+End Function
+
+Public Sub ManuallyNotifyCanvasMouse(ByVal mouseX As Long, ByVal mouseY As Long)
+    CanvasView.NotifyExternalMouseMove mouseX, mouseY
+End Sub
+
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     StatusBar.SetNetworkState newNetworkState

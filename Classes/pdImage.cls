@@ -1566,4 +1566,3 @@ End Sub
 Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
     If (Not MainSelection Is Nothing) Then MainSelection.NotifyAnimationsAllowed allowedState
 End Sub
-

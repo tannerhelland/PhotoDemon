@@ -80,6 +80,11 @@ Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As Shift
 ' the canvas will be locked in an inactive state.
 Private m_SuspendRedraws As Boolean
 
+'Because PD is single-threaded, we sometimes need to notify this control of mouse events it may not have caught
+' (because something else was occurring in the background).  When manually notified, a temporary flag is set
+' until the next time an "honest" WM_MOUSEMOVE message arrives.
+Private m_ManualMouseMode As Boolean
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -174,6 +179,11 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Public Sub NotifyExternalMouseMove(ByVal srcX As Long, ByVal srcY As Long)
+    m_ManualMouseMode = True
+    RaiseEvent MouseMoveCustom(0&, 0&, srcX, srcY, 0&)
+End Sub
+
 'Erase the current canvas.  If no images are loaded (which is really the only time this function should be called,
 ' we'll render the generic "please load an image" icon onto the background.
 Public Sub ClearCanvas()
@@ -240,7 +250,7 @@ End Sub
 
 'Is the mouse over the canvas view right now?
 Public Function IsMouseOverCanvasView()
-    IsMouseOverCanvasView = ucSupport.IsMouseInside()
+    IsMouseOverCanvasView = ucSupport.IsMouseInside() Or m_ManualMouseMode
 End Function
 
 'Certain criteria prevent the user from interacting with this canvas object (e.g. no images being loaded).  External functions
@@ -256,7 +266,7 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     If (Not FormMain.Enabled) Then IsCanvasInteractionAllowed = False
         
     'If user input has been forcibly disabled by some other part of the program, exit
-    If g_DisableUserInput Then IsCanvasInteractionAllowed = False
+    If g_DisableUserInput And (Not m_ManualMouseMode) Then IsCanvasInteractionAllowed = False
     
     'If no images have been loaded, exit
     If (g_OpenImageCount = 0) Then IsCanvasInteractionAllowed = False
@@ -275,8 +285,13 @@ Public Function IsCanvasInteractionAllowed() As Boolean
         If (pdImages(g_CurrentImage).GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
     End If
     
-    'If the central processor is active, exit
-    If Processor.IsProgramBusy Then IsCanvasInteractionAllowed = False
+    'If the central processor is active, exit - but *only* if our internal notification flags have not been triggered.
+    ' (If those flags are active, it means an external caller has notified us of something it wants rendered.)
+    If m_ManualMouseMode Then
+        IsCanvasInteractionAllowed = True
+    Else
+        If Processor.IsProgramBusy Then IsCanvasInteractionAllowed = False
+    End If
     
 End Function
 
@@ -356,6 +371,7 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    m_ManualMouseMode = False
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -377,10 +393,12 @@ Private Sub ucSupport_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_ManualMouseMode = False
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    m_ManualMouseMode = False
     RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
 End Sub
 

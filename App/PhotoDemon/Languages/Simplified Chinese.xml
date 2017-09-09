@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3019</langversion>
+<langversion>6.8.3020</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3398,7 +3398,7 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
-<!-- BEGIN text for pdPackager.cls -->
+<!-- BEGIN text for pdPackagerLegacy.cls -->
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
@@ -3465,9 +3465,9 @@ Please enter a numeric value.</original>
 <translation>校验失败的节点#</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
-<!-- END text for pdPackager.cls-->
+<!-- END text for pdPackagerLegacy.cls-->
 
 <!-- BEGIN text for pdPackager2.cls -->
 

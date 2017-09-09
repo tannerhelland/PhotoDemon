@@ -113,7 +113,7 @@ Private Const SM_CYSIZEFRAME As Long = 33
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
 Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long) As Long
 Private Declare Function GetWindowTextLengthW Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
@@ -287,7 +287,11 @@ Friend Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Lon
 End Function
 
 Friend Sub GetWindowRect_API(ByVal srcHwnd As Long, ByRef dstRect As winRect)
-    GetWindowRect srcHwnd, dstRect
+    GetWindowRect srcHwnd, VarPtr(dstRect)
+End Sub
+
+Friend Sub GetWindowRect_API_Universal(ByVal srcHwnd As Long, ByVal ptrToAnyRectObject As Long)
+    GetWindowRect srcHwnd, ptrToAnyRectObject
 End Sub
 
 Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
@@ -308,13 +312,13 @@ End Function
 
 Private Function GetWindowWidth(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHWnd, tmpRect
+    GetWindowRect targetHWnd, VarPtr(tmpRect)
     GetWindowWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
 Private Function GetWindowHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHWnd, tmpRect
+    GetWindowRect targetHWnd, VarPtr(tmpRect)
     GetWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
@@ -649,7 +653,7 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
     
     'Now that the section is guaranteed to exist, generate a window rect for this window and save it accordingly
     Dim tmpRect As winRect
-    GetWindowRect frmReference.hWnd, tmpRect
+    GetWindowRect frmReference.hWnd, VarPtr(tmpRect)
     
     With m_XML
         .UpdateTag "WindowLeft", tmpRect.x1, "WindowEntry", "id", windowName

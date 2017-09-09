@@ -468,10 +468,13 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         
         Dim compressedSize As Long
         
+        'Because this code is time-sensitive in PD, I like to track and report performance
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
         If CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False) Then
-            'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
+            Debug.Print "Node data compressed in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0") & " ms; size reduction is " & Format(CStr(100# - (100# * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.0") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
         Else
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
             InternalErrorMsg "Node compression failed; writing original uncompressed data to buffer instead..."

@@ -20,8 +20,11 @@ Attribute VB_Name = "Interface"
 
 Option Explicit
 
+Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
+Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 
 'These constants are used to toggle visibility of display elements.
 Public Const VISIBILITY_TOGGLE As Long = 0
@@ -131,6 +134,11 @@ Private m_PopupIconsSmall() As Long, m_PopupIconsLarge() As Long
 'A unique string that tracks the current theme and language combination.  If either one changes, we need to redraw
 ' large swaths of the interface to match.
 Private m_CurrentInterfaceID As String
+
+Private Type FakeDWord
+    wordOne As Integer
+    wordTwo As Integer
+End Type
 
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
@@ -1751,8 +1759,14 @@ Public Sub EnableUserInput()
     ' we need a certain amount of "dead time" to elapse between double-clicks on a top-level dialog (like a common dialog)
     ' which may be incorrectly passed through to the main form.  (I know, this seems like a ridiculous solution, but I tried
     ' a thousand others before settling on this.  It's the least of many evils.)
-    FormMain.StartInterfaceTimer
+    'NOTE 08 September 2017: because we now forcibly disable the main form when activating PD's central processor,
+    ' this should no longer be required.
+    'FormMain.StartInterfaceTimer
     
+    'NOTE 08 September 2017: normally, FormMain.StartInterfaceTimer handles this input check; while that line of code, above,
+    ' is commented out, we need to restore this manually.
+    g_DisableUserInput = False
+
     'Drag/drop allowance doesn't suffer the issue described above, so we can enable it immediately
     g_AllowDragAndDrop = True
     
@@ -1761,13 +1775,32 @@ Public Sub EnableUserInput()
         If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
     End If
     
+    'Because PD is fully synchronous (yay, VB6), we now need to perform some message queue shenanigans.
+    
+    'We want to re-establish the correctness of the mouse position relative to the primary canvas, if it
+    ' still lies over the canvas.  (The likelihood of movement, especially between paint ops, is high,
+    ' and if we don't do this, the mouse cursor won't reflect any position updates that have occurred since
+    ' the last action was started.)
+    Dim tmpPoint As POINTAPI, mouseMustBeFaked As Boolean
+    If (GetCursorPos(tmpPoint) <> 0) Then mouseMustBeFaked = FormMain.mainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
+    
     'Immediately prior to re-enabling the main form, flush the input buffer queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
-    DoEvents
+    'NOTE 08 September 2017: because we now forcibly disable the main form when activating PD's central processor,
+    ' this should no longer be required.
+    'DoEvents
     
     'Re-enable the main form
     FormMain.Enabled = True
-
+    
+    'If the mouse lies over the canvas, we now want to post a "fake" mouse movement message to that window,
+    ' to ensure any custom cursors are painted correctly.
+    If mouseMustBeFaked Then
+        ScreenToClient FormMain.mainCanvas(0).GetCanvasViewHWnd, tmpPoint
+        FormMain.mainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
+        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_ReuseLast
+    End If
+    
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes

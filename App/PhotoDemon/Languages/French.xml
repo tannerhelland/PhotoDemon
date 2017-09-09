@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.287</langversion>
+<langversion>6.7.288</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3395,7 +3395,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
-<!-- BEGIN text for pdPackager.cls -->
+<!-- BEGIN text for pdPackagerLegacy.cls -->
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
@@ -3462,9 +3462,9 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Somme de contrôle n'a pas pour le noeud #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
-<!-- END text for pdPackager.cls-->
+<!-- END text for pdPackagerLegacy.cls-->
 
 <!-- BEGIN text for pdPackager2.cls -->
 
