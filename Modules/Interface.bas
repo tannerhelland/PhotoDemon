@@ -620,11 +620,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).UndoManager.GetRedoState
             
             'Undo history is enabled if either Undo or Redo is active
-            If pdImages(g_CurrentImage).UndoManager.GetUndoState Or pdImages(g_CurrentImage).UndoManager.GetRedoState Then
-                FormMain.MnuEdit(2).Enabled = True
-            Else
-                FormMain.MnuEdit(2).Enabled = False
-            End If
+            FormMain.MnuEdit(2).Enabled = (pdImages(g_CurrentImage).UndoManager.GetUndoState Or pdImages(g_CurrentImage).UndoManager.GetRedoState)
             
             '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
             ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
@@ -1784,11 +1780,9 @@ Public Sub EnableUserInput()
     Dim tmpPoint As POINTAPI, mouseMustBeFaked As Boolean
     If (GetCursorPos(tmpPoint) <> 0) Then mouseMustBeFaked = FormMain.mainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
     
-    'Immediately prior to re-enabling the main form, flush the input buffer queue.  (This prevents any stray
+    '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
-    'NOTE 08 September 2017: because we now forcibly disable the main form when activating PD's central processor,
-    ' this should no longer be required.
-    'DoEvents
+    DoEvents
     
     'Re-enable the main form
     FormMain.Enabled = True
