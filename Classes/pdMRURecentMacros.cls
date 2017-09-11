@@ -36,6 +36,7 @@ Attribute VB_Exposed = False
 Option Explicit
 Implements IMRUList
 
+
 'Macros do not currently support menu thumbnails
 Private Property Get IMRUList_SupportsThumbnails() As Boolean
     IMRUList_SupportsThumbnails = False

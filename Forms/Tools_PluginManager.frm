@@ -340,7 +340,7 @@ Private Sub cmdBarMini_OKClick()
         PluginManager.InitializePluginManager
         PluginManager.LoadPluginGroup True
         PluginManager.LoadPluginGroup False
-        ApplyAllMenuIcons
+        IconsAndCursors.ApplyAllMenuIcons
         IconsAndCursors.ResetMenuIcons
         g_ImageFormats.GenerateInputFormats
         g_ImageFormats.GenerateOutputFormats

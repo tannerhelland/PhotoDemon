@@ -201,7 +201,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
         ' only applied if we are *not* in the midst  of a batch conversion.
         If (Macros.GetMacroStatus <> MacroBATCH) Then
-            g_RecentFiles.MRU_AddNewFile dstPath, srcImage
+            g_RecentFiles.AddFileToList dstPath, srcImage
             Interface.SyncInterfaceToCurrentImage
             Interface.NotifyImageChanged g_CurrentImage
         End If

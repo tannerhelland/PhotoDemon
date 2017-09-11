@@ -95,6 +95,12 @@ Private m_LastColor As Long
 ' large batches of data after-the-fact.
 Private m_RMin As Long, m_RMax As Long, m_GMin As Long, m_GMax As Long, m_BMin As Long, m_BMax As Long
 
+'Wu Quantization We now need to factor the current timing results into the historical average.  We do this using a very cool
+' optimization from a 1962 paper by BP Welford (see http://www.johndcook.com/standard_deviation.html).
+' What makes his optimization so great is not only that it allows us to accurately compute a running standard
+' deviation without knowing all past entries, but that it allows us to do it *more accurately* when considering
+' the rounding errors introduced by silicon-based floating-point arithmetic.  Sweet!
+
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
 

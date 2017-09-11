@@ -636,9 +636,8 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
-    Set g_RecentFiles = New pdMRUManager
-    g_RecentFiles.InitList New pdMRURecentFiles
-    g_RecentFiles.MRU_LoadFromFile
+    Set g_RecentFiles = New pdRecentFiles
+    g_RecentFiles.LoadListFromFile
     
     Set g_RecentMacros = New pdMRUManager
     g_RecentMacros.InitList New pdMRURecentMacros

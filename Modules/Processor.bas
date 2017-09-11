@@ -363,7 +363,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
     
     #If DEBUGMODE = 1 Then
-        If (m_NestedProcessingCount = 0) Then pdDebug.LogAction "Net time for """ & processID & """: " & Format$(VBHacks.GetTimerDifferenceNow(procStartTime) * 1000, "0.00") & " ms"
+        If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & Format$(VBHacks.GetTimerDifferenceNow(procStartTime) * 1000, "0.00") & " ms"
     #End If
     
     Exit Sub

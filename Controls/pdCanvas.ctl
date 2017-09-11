@@ -1284,13 +1284,13 @@ Private Sub ImageStrip_ItemClosed(ByVal itemIndex As Long)
 End Sub
 
 Private Sub ImageStrip_ItemSelected(ByVal itemIndex As Long)
-    ActivatePDImage itemIndex, "user clicked image thumbnail"
+    CanvasManager.ActivatePDImage itemIndex, "user clicked image thumbnail"
 End Sub
 
 'When the image strip's position changes, we may need to move it to an entirely new position.  This also necessitates
 ' a layout adjustment of all other controls on the canvas.
 Private Sub ImageStrip_PositionChanged()
-    If Not m_InternalResize Then Me.AlignCanvasView
+    If (Not m_InternalResize) Then Me.AlignCanvasView
 End Sub
 
 'All popup menu clicks are handled here

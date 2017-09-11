@@ -126,15 +126,14 @@ Public g_AllowDragAndDrop As Boolean
 'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
 Public g_UndoRedoActive As Boolean
 
-'PhotoDemon's primary window manager.  This handles positioning, layering, and sizing of all windows in the project.
+'This window manager handles positioning, layering, and sizing of the main canvas and all toolbars
 Public g_WindowManager As pdWindowManager
 
-'PhotoDemon's visual theme engine.
+'UI theme engine.
 Public g_Themer As pdTheme
 
-'PhotoDemon's recent files and recent macros managers.
-' CHANGING: Replacing pdRecentFiles with pdMRUManager
-Public g_RecentFiles As pdMRUManager
+'"File > Open Recent" and "Tools > Recent Macros" dynamic menu managers
+Public g_RecentFiles As pdRecentFiles
 Public g_RecentMacros As pdMRUManager
 
 'Mouse accuracy for collision detection with on-screen objects.  This is typically 6 pixels, but it's re-calculated

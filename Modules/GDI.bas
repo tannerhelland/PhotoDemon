@@ -198,6 +198,8 @@ Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
 
 End Sub
 
+'Given a DIB, return a DDB.  IMPORTANT!  If the DIB is 32-bpp, you should (generally) unpremultiply alpha first.
+' Most DDB-related functions do not handle premultiplied alpha correctly.
 Public Function GetDDBFromDIB(ByRef srcDIB As pdDIB) As Long
     
     Dim tmpDC As Long
