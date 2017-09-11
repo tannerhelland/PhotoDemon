@@ -1066,7 +1066,7 @@ Private Sub cmdBarMini_OKClick()
         
         'If any MRUs need to be rebuilt, do so now
         If mruNeedsToBeRebuilt Then
-            g_RecentFiles.MRU_NotifyNewMaxLimit
+            g_RecentFiles.NotifyMaxLimitChanged
             g_RecentMacros.MRU_NotifyNewMaxLimit
         End If
         

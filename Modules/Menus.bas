@@ -1151,7 +1151,7 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             
             'Retrieve the number of MRU files currently being displayed
             Dim numOfMRUFiles As Long
-            numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
+            numOfMRUFiles = g_RecentFiles.GetNumOfItems()
             
             'It is possible for there to be "0" files, in which case a blank "empty" indicator will be shown.
             ' Note that this messes with our ordinal positioning, however, so we need to manually account for
@@ -1183,7 +1183,7 @@ Public Sub UpdateSpecialMenu_RecentFiles()
                 Dim i As Long
                 For i = 0 To numOfMRUFiles - 1
                     
-                    tmpString = g_RecentFiles.GetSpecificMRUCaption(i)
+                    tmpString = g_RecentFiles.GetMenuCaption(i)
                     
                     'Entries under "10" get a free accelerator of the form "Ctrl+i"
                     If (i < 10) Then tmpString = tmpString & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i

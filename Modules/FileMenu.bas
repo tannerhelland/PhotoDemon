@@ -391,7 +391,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     If MenuSaveLosslessCopy Then
         
         'Add this file to the MRU list
-        g_RecentFiles.MRU_AddNewFile dstFilename, srcImage
+        g_RecentFiles.AddFileToList dstFilename, srcImage
         
         'Return SUCCESS!
         MenuSaveLosslessCopy = True

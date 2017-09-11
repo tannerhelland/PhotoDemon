@@ -2573,8 +2573,7 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     
 End Sub
 
-'THE BEGINNING OF EVERYTHING
-' Actually, Sub "Main" in the module "MainModule" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
+'Note that FormMain is only loaded after MainModule.Main() has triggered.  Look there for the *true* start of the program.
 Private Sub Form_Load()
     
     On Error GoTo FormMainLoadError
@@ -2740,14 +2739,6 @@ End Sub
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
-    'Store the main window's location to file now.  We will use this in the future to determine which monitor
-    ' to display the splash screen on
-    g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
-    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
-    
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True
     
@@ -2783,6 +2774,14 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
+    
+    'Store the main window's location to file now.  We will use this in the future to determine which monitor
+    ' to display the splash screen on
+    g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
+    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
     
     'Hide the main window to make it appear as if we shut down quickly
     #If DEBUGMODE = 1 Then
@@ -2876,7 +2875,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Saving recent file list..."
     #End If
     
-    g_RecentFiles.MRU_SaveToFile
+    g_RecentFiles.WriteListToFile
     g_RecentMacros.MRU_SaveToFile
     
     'Release any Win7-specific features
@@ -3170,7 +3169,7 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
 End Sub
 
 Private Sub MnuClearMRU_Click()
-    g_RecentFiles.MRU_ClearList
+    g_RecentFiles.ClearList
 End Sub
 
 'All Color sub-menu entries are handled here.
@@ -3754,8 +3753,8 @@ Private Sub MnuLoadAllMRU_Click()
     Set listOfFiles = New pdStringStack
     
     Dim i As Long
-    For i = 0 To g_RecentFiles.MRU_ReturnCount() - 1
-        listOfFiles.AddString g_RecentFiles.GetSpecificMRU(i)
+    For i = 0 To g_RecentFiles.GetNumOfItems() - 1
+        listOfFiles.AddString g_RecentFiles.GetFullPath(i)
     Next i
     
     Loading.LoadMultipleImageFiles listOfFiles, True
@@ -3928,14 +3927,7 @@ End Sub
 Public Sub mnuRecDocs_Click(Index As Integer)
     
     'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
-    If (Len(g_RecentFiles.GetSpecificMRU(Index)) <> 0) Then
-        LoadFileAsNewImage g_RecentFiles.GetSpecificMRU(Index)
-        
-        'If the image loaded successfully, activate it and bring it to the foreground
-        ' TODO 7.0: thanks to the new window manager, this should no longer be necessary - check it!
-        If (g_OpenImageCount > 0) Then CanvasManager.ActivatePDImage g_CurrentImage, "MRU entry finished loading"
-        
-    End If
+    If (Len(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
     
 End Sub
 

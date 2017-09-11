@@ -690,9 +690,19 @@ Public Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
             If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
         End If
         
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
+        #End If
     End If
     
+    Exit Function
+    
 AddImageFromDIB_Error:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
+    #End If
 
 End Function
 

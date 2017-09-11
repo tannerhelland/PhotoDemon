@@ -3,8 +3,9 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 09/March/16
-'Last update: total refactoring to prep for paint tools
+'Last updated: 10/September/17
+'Last update: fix a potential activation issue when a paint tool is selected, and a new image is loaded, and we
+'             need to enforce that a scratch layer exists in case the user immediately operates on the image.
 '
 'This module provides high-level "load" functionality for getting image files into PD.  There are a number of different ways to do this;
 ' for example, loading a user-facing image file is a horrifically complex affair, with lots of messy work involved in metadata parsing,
@@ -66,7 +67,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
         pdDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
-        pdDebug.LogAction "", PDM_MEM_REPORT
+        pdDebug.LogAction "", PDM_Mem_Report
     #End If
     
     'Display a busy cursor
@@ -458,7 +459,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "New memory report after loading image """ & Files.FileGetName(srcFile) & """:"
-            pdDebug.LogAction "", PDM_MEM_REPORT
+            pdDebug.LogAction "", PDM_Mem_Report
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
             ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
@@ -499,12 +500,14 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     
     'Restore the screen cursor if necessary
-    If handleUIDisabling Then Processor.MarkProgramBusyState False, True, CBool(g_OpenImageCount > 1)
-        
-    'Report success/failure back to the user
-    LoadFileAsNewImage = CBool(loadSuccessful And (Not targetImage Is Nothing))
+    If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (g_OpenImageCount > 1)
     
+    'Report success/failure back to the user
+    LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
+    
+    'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
+        CanvasManager.ActivatePDImage g_CurrentImage, "MRU entry finished loading"
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
@@ -742,7 +745,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
         
     'In debug mode, mirror message output to PD's central Debugger
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction sMsg, PDM_USER_MESSAGE
+        pdDebug.LogAction sMsg, PDM_User_Message
     #End If
     
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
