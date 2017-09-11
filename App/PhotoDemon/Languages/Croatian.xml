@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3002</langversion>
+<langversion>6.8.3003</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3047,12 +3047,6 @@ Upišite numeričku vrijednost.</translation>
 <!-- pdMRUManager.cls contains 0 phrases. -->
 
 <!-- END text for pdMRUManager.cls-->
-
-<!-- BEGIN text for pdMRURecentFiles.cls -->
-
-<!-- pdMRURecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
@@ -15036,6 +15030,12 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- Automatic text extraction complete. -->
 

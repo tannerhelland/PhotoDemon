@@ -103,7 +103,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' focused object prior to disabling it.  (Note that this only triggers on top-level Process calls; nested calls will just
     ' grab the cleared value of "0", which defeats the whole point.)
     Dim procStartTime As Currency
-    If (m_NestedProcessingCount = 1) Then
+    If (Not raiseDialog) Then
         VBHacks.GetHighResTime procStartTime
         m_FocusHWnd = g_WindowManager.GetFocusAPI
     End If

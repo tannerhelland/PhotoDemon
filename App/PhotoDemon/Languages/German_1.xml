@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.288</langversion>
+<langversion>6.7.289</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3038,12 +3038,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdMRUManager.cls contains 0 phrases. -->
 
 <!-- END text for pdMRUManager.cls-->
-
-<!-- BEGIN text for pdMRURecentFiles.cls -->
-
-<!-- pdMRURecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
@@ -15025,6 +15019,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- Automatic text extraction complete. -->
 
