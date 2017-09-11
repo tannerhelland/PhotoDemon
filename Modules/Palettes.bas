@@ -84,6 +84,10 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ReDim pxStack(0 To numOfColors - 1) As pdMedianCut
     Set pxStack(0) = New pdMedianCut
     
+    'Note that PD actually supports quite a few different quantization methods.  At present, only the
+    ' highest-quality "variance + median split" algorithm is used, however.
+    pxStack(0).SetQuantizeMode pdqs_VarPlusMedian
+    
     For y = 0 To finalY
     For x = 0 To finalX Step pxSize
         pxStack(0).AddColor_RGB srcPixels(x + 2, y), srcPixels(x + 1, y), srcPixels(x, y)
@@ -98,29 +102,56 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         Dim stackCount As Long
         stackCount = 1
         
-        Dim maxVariance As Long, mvIndex As Long
+        Dim maxVariance As Single, mvIndex As Long
         Dim i As Long
         
         'With the initial stack constructed, we can now start partitioning it into smaller stacks based on variance
         Do
         
-            maxVariance = 0
-            mvIndex = 0
+            'Reset maximum variance (because we need to calculate it anew)
+            maxVariance = 0#
             
             Dim rVariance As Single, gVariance As Single, bVariance As Single, netVariance As Single
             
             'Find the largest total variance in the current stack collection
             For i = 0 To stackCount - 1
+            
                 pxStack(i).GetVariance rVariance, gVariance, bVariance
+                
+                'There are actually two ways to handle this problem.  We can find the net variance (e.g. the
+                ' block with the most varied set of colors), or we can find the block with the most varied
+                ' *channel* (e.g. if two channels are identical, but the third is hugely varied, treat that
+                ' block as the highest variance).
+                '
+                'I don't have a theoretical framework for determining the better of these two solutions,
+                ' but a large amount of trial-and-error leads me to believe that it's best to split according
+                ' to net variance.  (Note that the block will still be split along its single channel
+                ' with highest variance, regardless.)
                 netVariance = rVariance + gVariance + bVariance
                 If (netVariance > maxVariance) Then
                     mvIndex = i
                     maxVariance = netVariance
                 End If
+                
+                'Per-channel formula follows:
+                'If (rVariance > maxVariance) Then
+                '    maxVariance = rVariance
+                '    mvIndex = i
+                'End If
+                'If (gVariance > maxVariance) Then
+                '    maxVariance = gVariance
+                '    mvIndex = i
+                'End If
+                'If (bVariance > maxVariance) Then
+                '    maxVariance = bVariance
+                '    mvIndex = i
+                'End If
+                
             Next i
             
             'Ask the stack with the largest variance to split itself in half.  (Note that the stack object
-            ' itself will figure out which axis is most beneficial for splitting.)
+            ' itself will figure out which axis is most appropriate for splitting.)
+            'Debug.Print "Largest variance was " & maxVariance & ", found in stack #" & mvIndex & " (total stack count is " & stackCount & ")"
             pxStack(mvIndex).Split pxStack(stackCount)
             stackCount = stackCount + 1
         

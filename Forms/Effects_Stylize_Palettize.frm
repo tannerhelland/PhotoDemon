@@ -183,15 +183,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Color Reduction Form
+'"Palettize" (e.g. reduce image color count) Dialog
 'Copyright 2000-2017 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 14/April/14
-'Last update: rewrite function against layers; note that this will now flatten a layered image before proceeding
+'Last updated: 11/September/17
+'Last update: update default quality mode (via pdMedianCut)
 '
-'In the original incarnation of PhotoDemon, this was a central part of the project. I have since not used it much
-' (since the project is now centered around 24/32bpp imaging), but as it costs nothing to tie into FreeImage's advanced
-' color reduction routines, I figure it's worth keeping this dialog around.
+'This dialog allows the user to reduce the number of colors in the current image.  In the future, it would be nice
+' to allow palettes loaded from file or selected from an internal swatch manager (and in fact, the code is already
+' set up to handle this) but at present, only optimized palettes are supported.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -208,7 +208,7 @@ Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub UpdateTransparencyOptions()
-    sldAlphaCutoff.Visible = CBool(btsAlpha.ListIndex = 1)
+    sldAlphaCutoff.Visible = (btsAlpha.ListIndex = 1)
 End Sub
 
 Private Sub btsMethod_Click(ByVal buttonIndex As Long)

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.9</langversion>
+<langversion>6.8.10</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3045,12 +3045,6 @@ Při zadání číselné hodnoty.</translation>
 <!-- pdMRUManager.cls contains 0 phrases. -->
 
 <!-- END text for pdMRUManager.cls-->
-
-<!-- BEGIN text for pdMRURecentFiles.cls -->
-
-<!-- pdMRURecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
@@ -15032,6 +15026,12 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- Automatic text extraction complete. -->
 

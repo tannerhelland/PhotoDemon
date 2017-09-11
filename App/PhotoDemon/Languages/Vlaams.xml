@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.288</langversion>
+<langversion>6.7.289</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3049,12 +3049,6 @@ Geef een numerieke waarde.</translation>
 <!-- pdMRUManager.cls contains 0 phrases. -->
 
 <!-- END text for pdMRUManager.cls-->
-
-<!-- BEGIN text for pdMRURecentFiles.cls -->
-
-<!-- pdMRURecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
@@ -15040,6 +15034,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- Automatic text extraction complete. -->
 

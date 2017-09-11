@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.84</langversion>
+<langversion>1.0.85</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3047,12 +3047,6 @@ Please enter a numeric value.</original>
 <!-- pdMRUManager.cls contains 0 phrases. -->
 
 <!-- END text for pdMRUManager.cls-->
-
-<!-- BEGIN text for pdMRURecentFiles.cls -->
-
-<!-- pdMRURecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdMRURecentFiles.cls-->
 
 <!-- BEGIN text for pdMRURecentMacros.cls -->
 
@@ -15036,6 +15030,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- Automatic text extraction complete. -->
 
