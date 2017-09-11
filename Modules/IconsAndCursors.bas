@@ -125,10 +125,6 @@ Private cMenuImage As clsMenuImage
 'A second class is used to manage the icons for the MRU list.
 Private cMRUIcons As clsMenuImage
 
-'Some functions in this module take a long time to apply.  In order to refresh a generic progress bar on the "please wait" dialog,
-' this module-level variable can be set to TRUE.
-Private m_refreshOutsideProgressBar As Boolean
-
 'PD's default large and small application icons.  These are cached for the duration of the current session.
 Private m_DefaultIconLarge As Long, m_DefaultIconSmall As Long
 
@@ -160,7 +156,7 @@ Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
     End With
             
     'Now that all menu icons are loaded, apply them to the proper menu entires
-    If alsoApplyMenuIcons Then ApplyAllMenuIcons
+    If alsoApplyMenuIcons Then IconsAndCursors.ApplyAllMenuIcons
         
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
@@ -186,25 +182,16 @@ Public Sub FreeMenuIconCache()
 End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
-Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
-    
-    m_refreshOutsideProgressBar = useDoEvents
-
-    'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
-    
-    'I am currently in the process of migrating menu initialization to a dedicated module.  That module will
-    ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
+Public Sub ApplyAllMenuIcons()
     Menus.ApplyIconsToMenus
-    
-    'When we're done, reset the doEvents tracker
-    m_refreshOutsideProgressBar = False
-    
 End Sub
 
 'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
 ' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
 Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
+    
+    If (cMenuImage Is Nothing) Then Exit Sub
     
     On Error GoTo MenuIconNotFound
     
@@ -229,30 +216,19 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
     
     'If the icon was not found, load it and add it to the list
     If (Not iconAlreadyLoaded) Then
-        
-        If (Not cMenuImage Is Nothing) Then
-            AddImageResourceToClsMenu resID, cMenuImage
-            iconNames(curIcon) = resID
-            iconLocation = curIcon
-            curIcon = curIcon + 1
-        End If
-        
+        AddImageResourceToClsMenu resID, cMenuImage
+        iconNames(curIcon) = resID
+        iconLocation = curIcon
+        curIcon = curIcon + 1
     End If
         
     'Place the icon onto the requested menu
-    If (Not cMenuImage Is Nothing) Then
-    
-        If (subSubMenu = -1) Then
-            cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
-        Else
-            cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
-        End If
-        
+    If (subSubMenu = -1) Then
+        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
+    Else
+        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
     End If
     
-    'If an outside progress bar needs to refresh, do so now
-    If m_refreshOutsideProgressBar Then DoEvents
-
 MenuIconNotFound:
 
 End Sub
@@ -268,12 +244,9 @@ Public Sub ResetMenuIcons()
     'Redraw the Repeat and Fade menus
     AddMenuIcon "edit_repeat", 1, 4         'Repeat previous action
     
-    'NOTE! In the future, when icons are available for the Repeat and Fade menu items, we will need to add their refreshes
-    ' to this list (as their captions dynamically change at run-time).
-    
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
     AddMenuIcon "generic_next", 9, 5       'Next image
-    AddMenuIcon "generic_previous", 9, 6       'Previous image
+    AddMenuIcon "generic_previous", 9, 6   'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
@@ -284,22 +257,7 @@ Public Sub ResetMenuIcons()
         
         'Retrieve the number of files displayed in the menu.  (Note that this is *not* the same number
         ' as the menu count, as we add some extra options after the MRU entries themselves.)
-        numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
-        
-        'Vista+ gets nice, large icons added later in the process.  On XP, however, we are stuck with
-        ' 16x16 icons managed by the standard menu editor.
-        If (Not OS.IsVistaOrLater) Then
-        
-            If (numOfMRUFiles > 0) Then
-                AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
-                AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
-            
-            'If the list is empty, do not display any icons
-            Else
-                cMRUIcons.PutImageToVBMenu -1, 0, 0, 2
-            End If
-            
-        End If
+        numOfMRUFiles = g_RecentFiles.GetNumOfItems()
         
     End If
     
@@ -321,26 +279,28 @@ Public Sub ResetMenuIcons()
             Dim iconLocation As Long
             iconLocation = 0
             
+            Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
+            
             'Loop through the MRU list, and attempt to load thumbnail images for each entry
             Dim i As Long
-            For i = 0 To numOfMRUFiles
+            For i = 0 To numOfMRUFiles - 1
             
                 'Start by seeing if an image exists for this MRU entry
-                tmpFilename = g_RecentFiles.GetMRUThumbnailPath(i)
-                
-                If (Len(tmpFilename) <> 0) Then
-                
-                    'If the file exists, add it to the MRU icon handler
-                    If Files.FileExists(tmpFilename) Then
-                        
-                        iconLocation = iconLocation + 1
-                        cMRUIcons.AddImageFromFile tmpFilename
-                        cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
+                If (g_RecentFiles.GetMRUThumbnail(i) Is Nothing) Then
                     
-                    'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
-                    Else
-                        If OS.IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
-                    End If
+                    'If a thumbnail doesn't exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
+                    If OS.IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
+                
+                'A thumbnail exists.  Load it directly from the source DIB.
+                Else
+                
+                    'Note that a temporary DIB is required, because we transfer ownership of the DIB to the menu manager.
+                    ' (If we copy the existing DIB as-is, it will be removed from the MRU collection, which we definitely
+                    ' don't want as we need to write that DIB out to file when the program closes!)
+                    tmpDIB.CreateFromExistingDIB g_RecentFiles.GetMRUThumbnail(i)
+                    iconLocation = iconLocation + 1
+                    cMRUIcons.AddImageFromDIB tmpDIB
+                    cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
                     
                 End If
                 
@@ -348,6 +308,7 @@ Public Sub ResetMenuIcons()
                 
             'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
             If OS.IsVistaOrLater Then
+            
                 Dim largePadding As Single
                 largePadding = (m_RecentFileIconSize * 0.2)
                 AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
@@ -355,6 +316,11 @@ Public Sub ResetMenuIcons()
                 largePadding = (m_RecentFileIconSize * 0.333)
                 AddImageResourceToClsMenu "file_close", cMRUIcons, m_RecentFileIconSize, largePadding
                 cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
+            
+            'XP users are stuck with little 16x16 ones (to match the rest of the menu icons)
+            Else
+                AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
+                AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
             End If
         
         'When the current list is empty, we display an icon-less "Empty" statement
@@ -419,15 +385,22 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
     
     'If the requested icon size does not match the incoming DIB's size, we need to create a temporary DIB at the correct size.
     Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     If (iconSize <> srcDIB.GetDIBWidth) Or (iconSize <> srcDIB.GetDIBHeight) Then
-        Set tmpDIB = New pdDIB
+        
         tmpDIB.CreateBlank iconSize, iconSize, 32, 0, 0
-        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref()    ', , , , True
+        
+        'To improve quality at very low sizes, enforce prefiltering
+        Dim resampleMode As GP_InterpolationMode
+        If (iconSize <= 32) Then resampleMode = GP_IM_HighQualityBicubic Else resampleMode = GP_IM_HighQualityBicubic
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+        
     Else
-        Set tmpDIB = srcDIB
+        tmpDIB.CreateFromExistingDIB srcDIB
     End If
     
-    'tmpDIB now points at a properly resized source DIB object
+    'tmpDIB now points at a properly resized source DIB object.  If the DIB is 32-bpp, unpremultply the alpha now.
+    If (tmpDIB.GetDIBColorDepth = 32) And tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
     
     'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
     ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
