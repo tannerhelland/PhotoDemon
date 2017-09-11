@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Cryptography (and Hash) Helper Class
 'Copyright 2016-2017 by Tanner Helland
 'Created: 19/August/16
-'Last updated: 19/August/16
-'Last update: initial build; minimum functionality to replace the old cSHA256 class
+'Last updated: 09/September/17
+'Last update: minor code-cleanup, including removal of legacy functions
 '
 'This class provides a variety of helper functions for performing basic crypto and hashing operations.
 ' WAPI does most the heavy lifting, and if you're running on XP, SP3 is required.
@@ -110,36 +110,14 @@ Private m_HashHandle As Long
 
 'PD's default string hash function.  PD uses hashed strings for a lot of random things - session IDs, temp files, etc.
 ' By default, the first 16 characters of an SHA-256 hash is used for these purposes.
-'
-'The weird "useLegacyASCIIMethod" exists because PD's past SHA-256 algorithm only took the lower 256 bits of each
-' character in a VB string.  This raised the (admittedly astronomically small) possibility that two different Unicode
-' strings may experience hash collisions.  Do *not* set this parameter to TRUE unless absolutely necessary, as it is
-' not Unicode compatible (obviously), and it's also slower because we have to manually convert the incoming string into
-' its single-byte equivalent (to get matching behavior to the old class).
-Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLength As Long = 16, Optional ByVal useLegacyASCIIMethod As Boolean = False) As String
+Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLength As Long = 16) As String
     
     If (Len(srcString) <> 0) Then
     
         Dim i As Long
             
         'Perform a quick hash of the input string
-        Dim hashSuccess As Boolean
-        If useLegacyASCIIMethod Then
-            
-            Dim tmpBytes() As Byte
-            ReDim tmpBytes(0 To Len(srcString) - 1) As Byte
-            
-            For i = 0 To Len(srcString) - 1
-                tmpBytes(i) = AscB(Mid$(srcString, i + 1, 1))
-            Next i
-            
-            hashSuccess = QuickHash(PDCA_SHA_256, VarPtr(tmpBytes(0)), Len(srcString))
-            
-        Else
-            hashSuccess = QuickHash(PDCA_SHA_256, StrPtr(srcString), Len(srcString) * 2)
-        End If
-        
-        If hashSuccess Then
+        If QuickHash(PDCA_SHA_256, StrPtr(srcString), Len(srcString) * 2) Then
         
             'Retrieve the hashed data
             Dim hashBytes() As Byte, hashLength As Long
@@ -178,11 +156,11 @@ Friend Function QuickHash(ByVal hashAlgorithm As PD_CRYPT_ALGOS, ByVal ptrToSrcB
     
         'Next, create a matching hash object
         If (m_HashHandle <> 0) Then FreeCurrentHash
-        If CBool(CryptCreateHash(m_CryptoProviderHandle, hashAlgorithm, 0&, 0&, m_HashHandle) <> 0) Then
+        If (CryptCreateHash(m_CryptoProviderHandle, hashAlgorithm, 0&, 0&, m_HashHandle) <> 0) Then
             If (m_HashHandle <> 0) Then
             
                 'Attempt to hash the data
-                QuickHash = CBool(CryptHashData(m_HashHandle, ptrToSrcBytes, lenOfBytes, 0&) <> 0)
+                QuickHash = (CryptHashData(m_HashHandle, ptrToSrcBytes, lenOfBytes, 0&) <> 0)
                 If (Not QuickHash) Then InternalCryptError "QuickHash", "Hash creation successful, but actual hash failed."
                 
                 'Note that hashes do not return the actual data; that's maintained internally (which is nice as
