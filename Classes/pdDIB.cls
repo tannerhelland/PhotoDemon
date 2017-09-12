@@ -377,12 +377,10 @@ Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
     
 End Function
 
-'Translate an OLE color to an RGB Long
+'Translate an OLE color to an RGB Long.
+' (Note that OleTranslateColor returns -1 if it fails; if that happens, default to white)
 Private Function TranslateColor(ByVal colorRef As Long) As Long
-    'OleTranslateColor returns -1 if it fails; if that happens, default to white
-    If OleTranslateColor(colorRef, 0, TranslateColor) Then
-        TranslateColor = RGB(255, 255, 255)
-    End If
+    If OleTranslateColor(colorRef, 0, TranslateColor) Then TranslateColor = RGB(255, 255, 255)
 End Function
 
 Friend Sub FreeFromDC()

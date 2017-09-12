@@ -522,13 +522,13 @@ Public Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         
                 If applyCanvasModifier Then
                     GetLayerWidth = layerDIB.GetDIBWidth * GetLayerCanvasXModifier
-                    If (GetLayerWidth < 1) Then GetLayerWidth = 1
+                    If (GetLayerWidth < 1#) Then GetLayerWidth = 1#
                 Else
                     GetLayerWidth = layerDIB.GetDIBWidth
                 End If
                 
             Else
-                GetLayerWidth = 0
+                GetLayerWidth = 0#
             End If
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
@@ -552,13 +552,13 @@ Public Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         
                 If applyCanvasModifier Then
                     GetLayerHeight = layerDIB.GetDIBHeight * GetLayerCanvasYModifier
-                    If (GetLayerHeight < 1) Then GetLayerHeight = 1
+                    If (GetLayerHeight < 1#) Then GetLayerHeight = 1#
                 Else
                     GetLayerHeight = layerDIB.GetDIBHeight
                 End If
                 
             Else
-                GetLayerHeight = 0
+                GetLayerHeight = 0#
             End If
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
@@ -1364,10 +1364,19 @@ Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoin
     
     Dim i As Long
     For i = 2 To numOfPoints - 1
-        If (srcPoints(i).x < minX) Then minX = srcPoints(i).x
-        If (srcPoints(i).y < minY) Then minY = srcPoints(i).y
-        If (srcPoints(i).x > maxX) Then maxX = srcPoints(i).x
-        If (srcPoints(i).y > maxY) Then maxY = srcPoints(i).y
+    
+        If (srcPoints(i).x < minX) Then
+            minX = srcPoints(i).x
+        ElseIf (srcPoints(i).x > maxX) Then
+            maxX = srcPoints(i).x
+        End If
+        
+        If (srcPoints(i).y < minY) Then
+            minY = srcPoints(i).y
+        ElseIf (srcPoints(i).y > maxY) Then
+            maxY = srcPoints(i).y
+        End If
+        
     Next i
     
 End Sub
@@ -1389,7 +1398,7 @@ Private Sub Class_Initialize()
         .l_RotateCenterY = 0.5
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
-        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
+        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
         .l_AlphaMode = LA_NORMAL
@@ -2375,7 +2384,7 @@ End Sub
 'For raster DIBs, returns TRUE if the image has changed since the last viewport hash was set; FALSE otherwise.
 '
 'If the return value is TRUE, any DIBs derived from this layer (e.g. viewport ones) must be recreated
-Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic) As Boolean
+Public Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
     If (myLayerType = PDL_IMAGE) Then
@@ -2441,19 +2450,19 @@ Public Function EstimateRAMUsage() As Double
 End Function
 
 'Update the layer's current "viewport state hash".  This is used by the compositor, only.
-Public Sub SetViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE, ParamArray allParams() As Variant)
+Public Sub SetViewportHash(ByVal cacheID As PD_CompositorLOD, ParamArray allParams() As Variant)
     m_ViewportStateHashes(cacheID) = GetViewportHash_Theoretical(allParams)
     m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'If the viewport generates a hash via getViewportHash_Theoretical(), it can pass that hash directly to this function to improve performance
-Public Sub SetViewportHash_FromLong(ByVal cacheID As COMPOSITOR_LOD_CLUE, ByVal newHash As Long)
+Public Sub SetViewportHash_FromLong(ByVal cacheID As PD_CompositorLOD, ByVal newHash As Long)
     m_ViewportStateHashes(cacheID) = newHash
     m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'Retrieve the layer's current viewport hash
-Public Function GetViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE) As Long
+Public Function GetViewportHash(ByVal cacheID As PD_CompositorLOD) As Long
     GetViewportHash = m_ViewportStateHashes(cacheID)
 End Function
 
@@ -2470,17 +2479,19 @@ Public Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
-        tmpHash = tmpHash Xor (.l_ShearX * 524287) Xor (.l_ShearY * 1048575)
+        tmpHash = tmpHash Xor (.l_ShearX * 524287#) Xor (.l_ShearY * 1048575#)
         tmpHash = tmpHash Xor ((.l_BlendMode + 1) * 63) Xor ((.l_AlphaMode + 1) * 511)
-        tmpHash = tmpHash Xor ((.l_RotateCenterX + 1#) * 3730) Xor ((.l_RotateCenterY + 1# * 5850))
+        tmpHash = tmpHash Xor ((.l_RotateCenterX + 1#) * 3730#) Xor ((.l_RotateCenterY + 1# * 5850#))
     End With
     
     'Next, add any non-destructive FX parameters to the hash
-    With myNonDestructiveFX
-        tmpHash = tmpHash Xor (.fx_Clarity * 7) Xor (.fx_Contrast * 15)
-        tmpHash = tmpHash Xor (.fx_Temperature * 63) Xor (.fx_Tint * 127) Xor (.fx_Vibrance * 255)
-        tmpHash = tmpHash Xor (.fx_Exposure * 2047)
-    End With
+    If myLayerData.l_NonDestructiveFXActive Then
+        With myNonDestructiveFX
+            tmpHash = tmpHash Xor (.fx_Clarity * 7) Xor (.fx_Contrast * 15)
+            tmpHash = tmpHash Xor (.fx_Temperature * 63) Xor (.fx_Tint * 127) Xor (.fx_Vibrance * 255)
+            tmpHash = tmpHash Xor (.fx_Exposure * 2047)
+        End With
+    End If
     
     'Finally, hash any parameters we were passed.
     If (UBound(allParams) >= LBound(allParams)) Then
@@ -2497,6 +2508,6 @@ Public Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
 End Function
 
 'Access a specific level-of-detail (LOD) cache.
-Friend Function TmpLODDIB(Optional ByVal cacheID As COMPOSITOR_LOD_CLUE = CLC_Generic) As pdDIB
+Friend Function TmpLODDIB(Optional ByVal cacheID As PD_CompositorLOD = CLC_Generic) As pdDIB
     Set TmpLODDIB = lodDIB(cacheID)
 End Function

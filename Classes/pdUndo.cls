@@ -70,6 +70,9 @@ Option Explicit
 ' debug window whenever the stack changes.
 Private Const UNDO_DEBUG_MODE As Boolean = False
 
+'Similarly, detailed timing reports can also be provided
+Private Const UNDO_DETAILED_TIMING_REPORTS As Boolean = False
+
 'In the Undo/Redo stack, which entry is this image currently on?
 Private m_UndoNum As Long
 
@@ -203,10 +206,6 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     ' filetypes (which it determines based on the current processType and targetLayer)
     Saving.SaveUndoData parentPDImage, GetCurrentUndoFilename(), processType, targetLayerID
     
-    'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
-    ' display that info in the debug window.
-    'Debug.Print "Saved " & GetCurrentUndoFilename() & " as Undo file #" & m_UndoNum & "."
-    
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
     If (m_UndoNum <> UBound(m_UndoStack)) Then ReDim Preserve m_UndoStack(0 To m_UndoNum) As PD_UndoEntry
     With m_UndoStack(m_UndoNum)
@@ -259,9 +258,7 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
             
     End Select
     
-    #If DEBUGMODE = 1 Then
-        Debug.Print "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
-    #End If
+    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
     
     'Increase our Undo count
     m_UndoNum = m_UndoNum + 1
@@ -1114,10 +1111,10 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     Next i
     
-    #If DEBUGMODE = 1 Then
+    If UNDO_DETAILED_TIMING_REPORTS Then
         Debug.Print "Undo engine XML generation took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
-    #End If
+    End If
     
     'With all Undo data successfully written, close the XML data and write it out to file.
     ' (Note that a custom, high-speed approach is used for this.)
@@ -1138,10 +1135,10 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     End If
     
-    #If DEBUGMODE = 1 Then
+    If UNDO_DETAILED_TIMING_REPORTS Then
         Debug.Print "Undo engine XML file write took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
-    #End If
+    End If
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
@@ -1160,9 +1157,9 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
         End If
     End If
     
-    #If DEBUGMODE = 1 Then
+    If UNDO_DETAILED_TIMING_REPORTS Then
         Debug.Print "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    End If
     
 End Sub
 

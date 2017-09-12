@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3161</langversion>
+<langversion>6.8.3188</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1870,7 +1870,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Melden Sie dies bitte via Menü "Hilfe > Fehlerbericht eireichen".</translation>
+Melden Sie bitte diesen Fehler via Menü "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -1892,7 +1892,7 @@ Melden Sie dies bitte via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD, USB- oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
+<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
 2) der angegebene Speicherort der Datei in PhotoDemon korrekt ist.</translation>
 </phrase>
@@ -1906,7 +1906,7 @@ Melden Sie dies bitte via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann keine weiteren Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Programmfehler ist und er behoben werden muss!
+<translation>PhotoDemon kann keine weiteren Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Fehler ist und er behoben werden muss!
 
 Möchten Sie einen Fehlerbericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
@@ -2893,7 +2893,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Unknown adapter</original>
-<translation>Unebkannter Adapter</translation>
+<translation>Unbekannter Adapter</translation>
 </phrase>
 
 <phrase>
@@ -5236,7 +5236,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Display</original>
-<translation>Anzeige</translation>
+<translation>Anzeigen</translation>
 </phrase>
 
 <phrase>
@@ -5276,7 +5276,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monochrom zu grau</translation>
 </phrase>
 
 <phrase>
@@ -7122,7 +7122,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Stretching histogram</original>
-<translation>Histogramm strecken</translation>
+<translation>Histogramm wird gestreckt</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -8166,7 +8166,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Do not display this warning again</original>
-<translation>Diese Warnmeldung nicht erneut anzeigen</translation>
+<translation>Diese Warnung nicht erneut anzeigen</translation>
 </phrase>
 
 <phrase>
@@ -8319,7 +8319,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>adaptation</original>
-<translation>Anpassung</translation>
+<translation>Adaptation</translation>
 </phrase>
 
 <phrase>
@@ -11119,7 +11119,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Once the batch processor has processed several images, it will display an estimated time remaining.</original>
-<translation>Sobald der Batch-Prozessor verschiedene Bilder verarbeitet hat, wird er eine geschätzte verbleibende Zeit anzeigen.</translation>
+<translation>Sobald der Batch-Prozessor verschiedene Bilder verarbeitet hat, wird er eine geschätzt verbleibende Zeit anzeigen.</translation>
 </phrase>
 
 <phrase>
@@ -11360,7 +11360,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Download canceled.  (Remote server denied access.)</original>
-<translation>Download abgebrochen. (Remoteserver verweigert Zugriff.)</translation>
+<translation>Download abgebrochen. (Remote-Server verweigert Zugriff.)</translation>
 </phrase>
 
 <phrase>
@@ -12747,7 +12747,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem leere Rahmungen oder Zuschneidung sattdessen verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Streckung auftreten. PhotoDemon kann dies vermeiden, indem leere Rahmungen oder Zuschneidung sattdessen verwendet werden.</translation>
 </phrase>
 
 <phrase>
@@ -14278,7 +14278,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>Hochauflösende Mauseingabe</translation>
 </phrase>
 
 <phrase>
@@ -14657,7 +14657,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Monitore physikalisch anzeigen können. Vor der Darstellung solcher Bilder muss eine Tone-Mapping-Operation auf die originalen Bilddaten angewandt werden.</translation>
+<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Monitore physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die originalen Bilddaten angewandt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14772,12 +14772,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Spezifizieren Sie bitte Sie ein Farbprofil für jeden derzeit angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern der Display-Adapter des angegebenen Monitors genannt wird.</translation>
+<translation>Spezifizieren Sie bitte ein Farbprofil für jeden Monitor, der derzeit an das System angeschlossenen ist. Beachten Sie, dass der Text in Klammern die Grafikkarte ist, die den benannten Monitor ansteuert.</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klicken Sie auf diesen Button für den Dialog "Nach Farbprofil suchen".</translation>
+<translation>Klicken Sie auf diesen Button, um den Dialog "Nach Farbprofil suchen" anzuzeigen.</translation>
 </phrase>
 
 <phrase>
@@ -14849,14 +14849,14 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Fehler von Windows. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
 </phrase>
 
 <phrase>

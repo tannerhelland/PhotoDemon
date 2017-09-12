@@ -728,7 +728,7 @@ Friend Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
         Select Case m_PathBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
                 m_PathHandle = GDI_Plus.GDIPlus_PathClone(srcPath.GetHandle)
-                CloneExistingPath = CBool(m_PathHandle <> 0)
+                CloneExistingPath = (m_PathHandle <> 0)
         End Select
         
         If (CloneExistingPath And m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange m_PathBackend, True

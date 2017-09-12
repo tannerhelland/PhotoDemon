@@ -355,8 +355,11 @@ Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newProp
 End Sub
 
 Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean = True, Optional ByVal forceCreation As Boolean = False)
-    
+        
     If ((Not m_BrushIsReady) Or forceCreation Or (Not m_BrushCreatedAtLeastOnce)) Then
+    
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
     
         'At present, brush styles correspond nicely to brush engines.
         If (m_BrushStyle = BS_Pencil) Then
@@ -386,7 +389,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
                 'The "Automatic" setting (which maps to spacing = 0) automatically calculates spacing based on
                 ' the current brush size.  (Basically, we dab every 1/2pi of a radius.)
                 Dim tmpBrushSpacing As Single
-                tmpBrushSpacing = m_BrushSize / (PI_DOUBLE)
+                tmpBrushSpacing = m_BrushSize / PI_DOUBLE
                 
                 If (m_BrushSpacing > 0#) Then
                     tmpBrushSpacing = (m_BrushSpacing * tmpBrushSpacing)
@@ -418,6 +421,10 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        #End If
         
     End If
     
@@ -577,7 +584,7 @@ Private Sub CreateSoftBrushReference_PD()
         ' temporary brush, then resample it down to the target size.  This is the least of many evils.
         Dim tmpBrushRequired As Boolean, tmpDIB As pdDIB
         Const BRUSH_SIZE_MIN_CUTOFF As Long = 15
-        tmpBrushRequired = CBool(m_BrushSize < BRUSH_SIZE_MIN_CUTOFF)
+        tmpBrushRequired = (m_BrushSize < BRUSH_SIZE_MIN_CUTOFF)
         
         'Prep manual per-pixel loop variables
         Dim dstImageData() As Long
@@ -734,8 +741,8 @@ End Sub
 Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
     Dim isFirstStroke As Boolean, isLastStroke As Boolean
-    isFirstStroke = CBool((Not m_MouseDown) And mouseButtonDown)
-    isLastStroke = CBool(m_MouseDown And (Not mouseButtonDown))
+    isFirstStroke = (Not m_MouseDown) And mouseButtonDown
+    isLastStroke = m_MouseDown And (Not mouseButtonDown)
     
     'Perform a failsafe check for brush creation
     If (Not m_BrushIsReady) Then CreateCurrentBrush
@@ -903,7 +910,7 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
                 
                 'Never skip so many frames that viewport updates drop below 2 fps.  (This is absolutely a
                 ' "worst-case" scenario, and it should never be relevant except on the lowliest of PCs.)
-                updateViewportNow = CBool(VBHacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
+                updateViewportNow = (VBHacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
                 
                 'If we're somewhere between 2 and 15 fps, keep an eye on how many frames we're dropping.  If we drop
                 ' *too* many, the performance gain is outweighed by the obnoxiousness of stuttering screen renders.
@@ -1378,8 +1385,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     End If
     
     Set cSurface = Nothing
-    Set innerPen = Nothing: Set outerPen = Nothing
-
+    
 End Sub
 
 'A brush is considered active if the mouse state is currently DOWN, or if it is up but we are still rendering a

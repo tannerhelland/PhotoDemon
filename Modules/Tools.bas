@@ -562,8 +562,8 @@ Public Sub InitializeToolsDependentOnImage()
             Dim scratchLayerResetRequired As Boolean: scratchLayerResetRequired = False
             scratchLayerResetRequired = (pdImages(g_CurrentImage).ScratchLayer Is Nothing)
             If (Not scratchLayerResetRequired) Then
-                scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerWidth <> pdImages(g_CurrentImage).Width)
-                If (Not scratchLayerResetRequired) Then scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerHeight <> pdImages(g_CurrentImage).Height)
+                scratchLayerResetRequired = (pdImages(g_CurrentImage).ScratchLayer.GetLayerWidth <> pdImages(g_CurrentImage).Width)
+                If (Not scratchLayerResetRequired) Then scratchLayerResetRequired = (pdImages(g_CurrentImage).ScratchLayer.GetLayerHeight <> pdImages(g_CurrentImage).Height)
             End If
             
             If scratchLayerResetRequired Then pdImages(g_CurrentImage).ResetScratchLayer True

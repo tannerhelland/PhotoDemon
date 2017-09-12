@@ -132,9 +132,7 @@ End Function
 
 Public Sub FreeMemoryDC(ByRef srcDC As Long)
     If (srcDC <> 0) Then
-        Dim failsafeCheck As Boolean
-        failsafeCheck = CBool(DeleteDC(srcDC) <> 0)
-        If failsafeCheck Then
+        If (DeleteDC(srcDC) <> 0) Then
             g_DCsDestroyed = g_DCsDestroyed + 1
             srcDC = 0
         Else

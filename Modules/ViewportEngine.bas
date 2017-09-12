@@ -174,13 +174,19 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     
     If allowedToRender Then
         
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+            
         'If no images have been loaded, clear the canvas and exit
         If (g_OpenImageCount <= 0) Then
+            
             dstCanvas.ClearCanvas
+            
+            'Before exiting, calculate the time spent in this stage
+            m_TimeStage3 = VBHacks.GetTimerDifferenceNow(startTime)
+            If fullPipelineCall Then m_TotalTimeStage3 = m_TotalTimeStage3 + m_TimeStage3
+            
         Else
-    
-            Dim startTime As Currency
-            VBHacks.GetHighResTime startTime
             
             'Create the front buffer as necessary
             If (m_FrontBuffer Is Nothing) Then Set m_FrontBuffer = New pdDIB
@@ -387,7 +393,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         'If timing reports are enabled, we report them after the rest of the pipeline has finished.
         If g_DisplayTimingReports Then
             m_TotalTime = m_TotalTime + VBHacks.GetTimerDifferenceNow(startTime)
-            Debug.Print "Viewport render timing by stage (net, 2, 3, 4): " & VBHacks.GetTimeDiffNowAsString(startTime) & ", " & Format$(m_TimeStage2 * 1000#, "#0") & " ms, " & Format$(m_TimeStage3 * 1000#, "#0") & " ms, " & Format$(m_TimeStage4 * 1000#, "#0") & " ms"
+            'Debug.Print "Viewport render timing by stage (net, 2, 3, 4): " & VBHacks.GetTimeDiffNowAsString(startTime) & ", " & Format$(m_TimeStage2 * 1000#, "#0") & " ms, " & Format$(m_TimeStage3 * 1000#, "#0") & " ms, " & Format$(m_TimeStage4 * 1000#, "#0") & " ms"
         End If
     
     End If

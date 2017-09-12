@@ -380,7 +380,7 @@ End Enum
 'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.  Callers need to
 ' identify compositor requests with one of these IDs, which tells the compositor which cache to preferentially use.
 ' Correct LOD tags greatly improve performance, particularly on the primary canvas.
-Public Enum COMPOSITOR_LOD_CLUE
+Public Enum PD_CompositorLOD
     CLC_Generic = 0
     CLC_Viewport = 1
     CLC_Thumbnail = 2

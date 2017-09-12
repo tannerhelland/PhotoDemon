@@ -40,6 +40,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'By default, memory and object reports are generated every (n) actions.  (Some places, like program startup,
+' will also produce these messages manually.)  To reduce the frequency of memory reports, set this number
+' to a higher value.
+Private Const GAP_BETWEEN_MEMORY_REPORTS As Long = 50
+
 'Multiple message types can be logged by the class.  While these don't have to be used, they make it much easier to
 ' quickly scan the final text output.
 Public Enum PD_DebugMessages
@@ -441,8 +446,8 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     ' as it will likely raise its own when relevant.
     If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_Mem_Report)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
     
-    'If we've gone 25 events without a RAM check, provide one now
-    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + 25)) Then Me.LogAction "", PDM_Mem_Report
+    'If we've gone GAP_BETWEEN_MEMORY_REPORTS events without a RAM report, provide one now
+    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + GAP_BETWEEN_MEMORY_REPORTS)) Then Me.LogAction vbNullString, PDM_Mem_Report
 
 End Sub
 

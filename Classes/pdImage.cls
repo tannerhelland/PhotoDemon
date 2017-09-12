@@ -381,7 +381,7 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
+Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
     imgCompositor.GetCompositedRect Me, dstDIB, dstViewportRect, srcImageRect, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
 End Sub
 
@@ -922,6 +922,9 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     'If the image has not been instantiated properly, reject the thumbnail request
     If (Not Me.IsActive) Or (m_numOfLayers = 0) Then Exit Sub
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
     ' and then produce smaller copies on-demand.
     If (requiredSize < IMAGE_THUMB_SIZE) Then requiredSize = IMAGE_THUMB_SIZE
@@ -964,6 +967,10 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
     
 End Sub
 
