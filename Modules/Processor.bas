@@ -194,6 +194,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
     End If
     
+    Dim procSortStartTime As Currency
+    If (Not raiseDialog) Then VBHacks.GetHighResTime procSortStartTime
+    
     
     '******************************************************************************************************************
     '
@@ -316,13 +319,22 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' in some way, as determined by whether meaningful Undo/Redo data is created.)
     If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then ReportProcessorTimeTaken m_ProcessingTime
     
+    Dim procSortStopTime As Currency
+    If (Not raiseDialog) Then VBHacks.GetHighResTime procSortStopTime
+    
     'If the current image has been modified, notify the interface manager of the change.  It will handle things like generating
     ' new thumbnail icons.  (Note that we disable non-essential UI updates while performing batch conversions, to improve performance.)
     If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged g_CurrentImage
     
+    Dim procUndoStartTime As Currency
+    If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStartTime
+    
     'After an action completes, figure out if we need to push a new entry onto the Undo/Redo stack.  (Note that for convenience,
     ' this sub will also handle roll-back of some UI elements if the current operation was canceled prematurely.)
     FinalizeUndoRedoState processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+    
+    Dim procUndoStopTime As Currency
+    If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStopTime
     
     'From this point onward, we're only going to be finalizing UI updates.  Some of these updates will not trigger
     ' if the central processor is active (by design, to avoid excessive redraws), so to ensure that they trigger *now*,
@@ -331,7 +343,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
-        If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "processor call complete", True, createUndo
+        If (g_OpenImageCount > 0) Then CanvasManager.ActivatePDImage g_CurrentImage, "processor call complete", True, createUndo
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
     ' ActivatePDImage function, above).  If an undo-related action was *not* applied, it's harder to know if an interface
@@ -362,8 +374,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'PD periodically checks for background updates.  If one is available, and we haven't displayed a notification yet, do so now
     If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
     
+    Dim procFinalStopTime As Currency
+    If (Not raiseDialog) Then VBHacks.GetHighResTime procFinalStopTime
+    
     #If DEBUGMODE = 1 Then
-        If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & Format$(VBHacks.GetTimerDifferenceNow(procStartTime) * 1000, "0.00") & " ms"
+        If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & VBHacks.GetTimeDiffAsString(procStartTime, procFinalStopTime) & ".  (init: " & VBHacks.GetTimeDiffAsString(procStartTime, procSortStartTime) & ", sort: " & VBHacks.GetTimeDiffAsString(procSortStartTime, procSortStopTime) & ", pre-Undo: " & VBHacks.GetTimeDiffAsString(procSortStopTime, procUndoStartTime) & ", undo: " & VBHacks.GetTimeDiffAsString(procUndoStartTime, procUndoStopTime) & ", UI: " & VBHacks.GetTimeDiffAsString(procUndoStopTime, procFinalStopTime) & ")"
     #End If
     
     Exit Sub

@@ -436,8 +436,13 @@ End Sub
 'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
 ' perhaps sparing the amount of redraw work required.
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     If ttlPanel(2).Value Then layerpanel_Layers.ForceRedraw True, layerID
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
 End Sub
 
 'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel

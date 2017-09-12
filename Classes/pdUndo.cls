@@ -224,7 +224,7 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     #End If
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
-    Dim largeThumbSize As Long: largeThumbSize = FixDPI(UNDO_THUMB_LARGE)
+    Dim largeThumbSize As Long: largeThumbSize = Interface.FixDPI(UNDO_THUMB_LARGE)
     If (m_UndoStack(m_UndoNum).thumbnailLarge Is Nothing) Then Set m_UndoStack(m_UndoNum).thumbnailLarge = New pdDIB
     
     Select Case processType

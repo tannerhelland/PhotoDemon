@@ -156,11 +156,12 @@ Private m_TimeAtLastModify As Currency
 ' invalid, so it must be regenerated before continuing.
 Private m_IsThumbClean As Boolean
 
-'Composited image thumbnail.  A DIB of this size is cached locally, then passed to external functions only when necessary.
-' Note that requests for sizes larger than the hard-coded thumb size (in either dimension) will force creation of a
-' custom thumbnail from scratch, so try to avoid that if at all possible!
-Private Const IMAGE_THUMB_SIZE As Long = 128
-Private m_ImageThumbnail As pdDIB
+'Composited image thumbnail.  A DIB with maximum width/height matching this size (whatever preserves aspect ratio)
+' is cached locally, then passed to external functions only when necessary.  Note that requests for sizes larger
+' than the hard-coded thumb size (in either dimension) will force creation of a custom thumbnail from scratch,
+' so try to avoid that if at all possible!
+Private Const IMAGE_THUMB_SIZE As Long = 256
+Private m_ImageThumbnail As pdDIB, m_CurrentImageThumbSize As Long
 
 Friend Function GetCurrentFileFormat() As PD_IMAGE_FORMAT
     GetCurrentFileFormat = m_currentFileFormat
@@ -924,31 +925,15 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
     ' and then produce smaller copies on-demand.
     If (requiredSize < IMAGE_THUMB_SIZE) Then requiredSize = IMAGE_THUMB_SIZE
+    m_CurrentImageThumbSize = requiredSize
     
-    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
-    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    'Determine proper dimensions for the thumbnail image.
+    Dim newThumbWidth As Long, newThumbHeight As Long
+    PDMath.ConvertAspectRatio Me.Width, Me.Height, requiredSize, requiredSize, newThumbWidth, newThumbHeight
     
-    'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
-    ' aspect ratio and center the image on the thumbnail.
-    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
-    
-    'Start by determining proper dimensions for the resized thumbnail image.
-    ConvertAspectRatio Me.Width, Me.Height, requiredSize, requiredSize, tIcoWidth, tIcoHeight
-    
-    'If the form is wider than it is tall, center the thumbnail vertically
-    If (tIcoWidth > tIcoHeight) Then
-        tX = 0
-        tY = (requiredSize - tIcoHeight) * 0.5
-    
-    '...otherwise, center it horizontally
-    Else
-        tY = 0
-        tX = (requiredSize - tIcoWidth) * 0.5
-    End If
-    
-    'Prepare the destination DIB
-    If (m_ImageThumbnail.GetDIBWidth <> requiredSize) Or (m_ImageThumbnail.GetDIBHeight <> requiredSize) Then
-        m_ImageThumbnail.CreateBlank requiredSize, requiredSize, 32, 0
+    'Prepare the thumbnail DIB
+    If (m_ImageThumbnail.GetDIBWidth <> newThumbWidth) Or (m_ImageThumbnail.GetDIBHeight <> newThumbHeight) Then
+        m_ImageThumbnail.CreateBlank newThumbWidth, newThumbHeight, 32, 0
     Else
         m_ImageThumbnail.ResetDIB 0
     End If
@@ -957,15 +942,15 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     ' method used.)
     Dim dstRectF As RECTF, srcRectF As RECTF
     With dstRectF
-        .Left = tX
-        .Top = tY
-        .Width = tIcoWidth
-        .Height = tIcoHeight
+        .Left = 0!
+        .Top = 0!
+        .Width = newThumbWidth
+        .Height = newThumbHeight
     End With
     
     With srcRectF
-        .Left = 0#
-        .Top = 0#
+        .Left = 0!
+        .Top = 0!
         .Width = Me.Width
         .Height = Me.Height
     End With
@@ -973,39 +958,70 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     Me.GetCompositedRect m_ImageThumbnail, dstRectF, srcRectF, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
     m_ImageThumbnail.SetInitialAlphaPremultiplicationState True
     
+    'Before exiting, apply color-management.  This spares callers from needing to do it (and when wouldn't we want
+    ' a color-managed thumbnail anyway?)
+    ColorManagement.ApplyDisplayColorManagement m_ImageThumbnail, , True
+    
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
     
 End Sub
 
-'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
-' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
-Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = IMAGE_THUMB_SIZE) As Boolean
+'External functions can use this function to request a thumbnail version of the contained image.  By default,
+' the thumbnail is assumed to be square, and this function will automatically center the image inside the
+' square thumbnail.  (Optional parameters allow you to bypass this; they should be self-explanatory.)
+'
+'IMPORTANT NOTE: the returned thumbnail *has already been color-managed for the active display*.  Do not reapply
+' color-management settings.
+'
+'IMPORTANT NOTE: the full image stack must be re-composited on every request, so please call this function sparingly.
+Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = IMAGE_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
-    If (Not m_IsThumbClean) Or (thumbnailSize > m_ImageThumbnail.GetDIBWidth) Then UpdateInternalThumbnail thumbnailSize
+    If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentImageThumbSize) Then UpdateInternalThumbnail thumbnailSize
     
-    'Clear the destination thumbnail
-    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
+    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    If thumbIsSquare Then
     
-    'If the requested thumbnail size is identical to our cached version, simply copy it out as-is
-    If (thumbnailSize = m_ImageThumbnail.GetDIBWidth) And (thumbnailSize = m_ImageThumbnail.GetDIBHeight) Then
-        dstThumbnailDIB.CreateFromExistingDIB m_ImageThumbnail
-    
-    'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
-    Else
+        'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
+        ' aspect ratio and center the image on the thumbnail.
+        Dim thumbWidth As Long, thumbHeight As Long, thumbLeft As Single, thumbTop As Single
+        PDMath.ConvertAspectRatio m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, thumbnailSize, thumbnailSize, thumbWidth, thumbHeight
         
+        'If the image is wider than it is tall, center the thumbnail vertically
+        If (thumbWidth > thumbHeight) Then
+            thumbLeft = 0!
+            thumbTop = (thumbnailSize - thumbHeight) * 0.5
+        
+        '...otherwise, center it horizontally
+        Else
+            thumbTop = 0!
+            thumbLeft = (thumbnailSize - thumbWidth) * 0.5
+        End If
+        
+        'Prep the destination thumbnail
+        If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
         If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
-            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
+            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
         Else
             dstThumbnailDIB.ResetDIB 0
         End If
         
-        GDIPlus_StretchBlt dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, m_ImageThumbnail, 0, 0, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
-        dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
-        
+        'Paint the thumbnail into place
+        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+    
+    'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
+    ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
+    Else
+        Dim tmpRectF As RECTF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
     End If
     
+    dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
+    
+    'NOTE: the thumbnail *has already been color-managed*, so the caller doesn't need to manage it further.
     RequestThumbnail = True
     
 End Function

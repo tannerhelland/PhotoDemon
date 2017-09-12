@@ -137,26 +137,16 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
         If (thumbImageWidth < thumbDIB.GetDIBWidth) Then
             thumbX = (thumbDIB.GetDIBWidth - thumbImageWidth) * 0.5
         Else
-            thumbX = 0
+            thumbX = 0!
         End If
         
         If (thumbImageHeight < thumbDIB.GetDIBHeight) Then
             thumbY = (thumbDIB.GetDIBHeight - thumbImageHeight) * 0.5
         Else
-            thumbY = 0
+            thumbY = 0!
         End If
         
-        'Request the actual thumbnail now
-        Dim iQuality As GP_InterpolationMode
-        If (g_InterfacePerformance = PD_PERF_FASTEST) Then
-            iQuality = GP_IM_NearestNeighbor
-        ElseIf (g_InterfacePerformance = PD_PERF_BALANCED) Then
-            iQuality = GP_IM_Bilinear
-        ElseIf (g_InterfacePerformance = PD_PERF_BESTQUALITY) Then
-            iQuality = GP_IM_HighQualityBicubic
-        End If
-        
-        Dim dstRectF As RECTF, srcRectF As RECTF
+        Dim dstRectF As RECTF
         With dstRectF
             .Left = thumbX
             .Top = thumbY
@@ -164,21 +154,12 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
             .Height = thumbImageHeight
         End With
         
-        With srcRectF
-            .Left = 0#
-            .Top = 0#
-            .Width = pdImages(g_CurrentImage).Width
-            .Height = pdImages(g_CurrentImage).Height
-        End With
-                
-        pdImages(g_CurrentImage).GetCompositedRect thumbDIB, dstRectF, srcRectF, iQuality, , CLC_Thumbnail
-        
-        'Apply color management before exiting
-        ColorManagement.ApplyDisplayColorManagement thumbDIB
+        'Request a copy of the current image thumbnail, at the size and offset we've calculated
+        pdImages(g_CurrentImage).RequestThumbnail thumbDIB, , False, VarPtr(dstRectF)
         
     Else
-        thumbX = 0
-        thumbY = 0
+        thumbX = 0!
+        thumbY = 0!
     End If
     
 End Sub

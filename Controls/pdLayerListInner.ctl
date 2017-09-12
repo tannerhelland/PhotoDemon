@@ -804,7 +804,6 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
                         pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
-                        ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
                         m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         layerUpdateSuccessful = True
                         Exit For
@@ -829,7 +828,6 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                         If (Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing) Then
                             m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
                             pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
-                            ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
                             m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         End If
                         
@@ -993,9 +991,9 @@ Private Sub RedrawBackBuffer()
                     
                     If (Not (tmpLayerRef Is Nothing)) Then
                         
-                        layerIsHovered = CBool(layerIndex = m_CurLayerHover)
+                        layerIsHovered = (layerIndex = m_CurLayerHover)
                         If (layerIsHovered) Then layerHoverIndex = layerIndex
-                        layerIsSelected = CBool(tmpLayerRef.GetLayerID = pdImages(g_CurrentImage).GetActiveLayerID)
+                        layerIsSelected = (tmpLayerRef.GetLayerID = pdImages(g_CurrentImage).GetActiveLayerID)
                         If (layerIsSelected) Then layerSelectedIndex = layerIndex
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
