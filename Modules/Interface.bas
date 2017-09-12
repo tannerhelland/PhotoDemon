@@ -2064,7 +2064,7 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Op
     If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
     
     If (Not pdImages(affectedImageIndex) Is Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then
-    
+        
         'Generate new taskbar and titlebar icons for the affected image
         IconsAndCursors.CreateCustomFormIcons pdImages(affectedImageIndex)
         

@@ -1230,6 +1230,7 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         m_WindowPainter.RequestRepaint raiseImmediateDrawEvent
         
     Else
+    
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If (Not (m_BackBuffer Is Nothing)) And (Not m_NoBackBufferMode) Then
             

@@ -1566,8 +1566,8 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     Dim hBrush As Long
     hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
-    If hBrush <> 0 Then
-        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(hGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
+    If (hBrush <> 0) Then
+        GDIPlusFillCircleToDC = (GdipFillEllipse(hGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
         GDI_Plus.ReleaseGDIPlusBrush hBrush
     End If
     
@@ -2614,7 +2614,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         
         'Perform the encode and save
         GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
-        GDIPlusQuickSavePNG = CBool(GDIPlusReturn = GP_OK)
+        GDIPlusQuickSavePNG = (GDIPlusReturn = GP_OK)
         
         'Release the GDI+ copy of the image
         GDIPlusReturn = GdipDisposeImage(hGdipBitmap)
@@ -2786,7 +2786,7 @@ End Function
 ' 1) support fractional source/dest/width/height
 ' 2) apply variable opacity
 ' 3) control stretch mode directly inside the call
-Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False)
+Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1!, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False)
     
     If (dstDIB Is Nothing) And (useThisDestinationDCInstead = 0) Then Exit Sub
     
@@ -2826,7 +2826,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         If isZoomedIn Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
-        If (newAlpha <> 1#) Then
+        If (newAlpha < 1!) Then
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, GP_CMF_Default
         End If
@@ -2840,7 +2840,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'VBHacks.GetHighResTime resizeTime
         
         'Perform the resize
-        GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle
+        GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
         
         'Report resize time here
         'Debug.Print "GDI+ resize time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
@@ -2849,10 +2849,10 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
-        If (newAlpha <> 1#) Then m_AttributesMatrix(3, 3) = 1#
+        If (newAlpha < 1!) Then m_AttributesMatrix(3, 3) = 1!
         
         'Update premultiplication status in the target
-        If (Not (dstDIB Is Nothing)) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
+        If (Not dstDIB Is Nothing) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
         
     End If
     
@@ -3231,7 +3231,7 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
     End With
     
     'Retrieve a GDI+ token for this session
-    GDIP_StartEngine = CBool(GdiplusStartup(m_GDIPlusToken, gdiCheck, 0&) = GP_OK)
+    GDIP_StartEngine = (GdiplusStartup(m_GDIPlusToken, gdiCheck, 0&) = GP_OK)
     If GDIP_StartEngine Then
         
         'As a convenience, create a dummy graphics container.  This is useful for various GDI+ functions that require world
@@ -3257,7 +3257,7 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
         If (hMod <> 0) Then
             Dim testAddress As Long
             testAddress = GetProcAddress(hMod, "GdipDrawImageFX")
-            m_GDIPlus11Available = CBool(testAddress <> 0)
+            m_GDIPlus11Available = (testAddress <> 0)
             FreeLibrary hMod
         Else
             m_GDIPlus11Available = False
@@ -3277,7 +3277,7 @@ Public Function GDIP_StopEngine() As Boolean
     Set m_TransformDIB = Nothing
     
     'Release GDI+ using the same token we received at startup time
-    GDIP_StopEngine = CBool(GdiplusShutdown(m_GDIPlusToken) = GP_OK)
+    GDIP_StopEngine = (GdiplusShutdown(m_GDIPlusToken) = GP_OK)
     
 End Function
 
@@ -3472,7 +3472,7 @@ Public Function GetGDIPlusLinearBrushHandle(ByRef srcRect As RECTF, ByVal firstR
 End Function
 
 Public Function OverrideGDIPlusLinearGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
-    OverrideGDIPlusLinearGradient = CBool(GdipSetLinePresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
+    OverrideGDIPlusLinearGradient = (GdipSetLinePresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
 End Function
 
 Public Function GetGDIPlusPathBrushHandle(ByVal hGraphicsPath As Long) As Long
@@ -3487,11 +3487,11 @@ Public Function SetGDIPlusPathBrushCenter(ByVal hBrush As Long, ByVal centerX As
 End Function
 
 Public Function SetGDIPlusPathBrushWrap(ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As Boolean
-    SetGDIPlusPathBrushWrap = CBool(GdipSetPathGradientWrapMode(hBrush, newWrapMode) = GP_OK)
+    SetGDIPlusPathBrushWrap = (GdipSetPathGradientWrapMode(hBrush, newWrapMode) = GP_OK)
 End Function
 
 Public Function OverrideGDIPlusPathGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
-    OverrideGDIPlusPathGradient = CBool(GdipSetPathGradientPresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
+    OverrideGDIPlusPathGradient = (GdipSetPathGradientPresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
 End Function
 
 'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be
@@ -3502,7 +3502,7 @@ Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef 
     If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBColorDepth = 32) Then
-        GetGdipBitmapHandleFromDIB = CBool(GdipCreateBitmapFromScan0(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, GP_PF_32bppPARGB, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
+        GetGdipBitmapHandleFromDIB = (GdipCreateBitmapFromScan0(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, GP_PF_32bppPARGB, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
     Else
     
         'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
@@ -3514,7 +3514,7 @@ Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef 
             .Width = srcDIB.GetDIBWidth
             .Height = -srcDIB.GetDIBHeight
         End With
-        GetGdipBitmapHandleFromDIB = CBool(GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
+        GetGdipBitmapHandleFromDIB = (GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
         
     End If
 
@@ -3596,7 +3596,7 @@ End Function
 
 Public Function ReleaseGDIPlusBrush(ByVal srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
-        ReleaseGDIPlusBrush = CBool(GdipDeleteBrush(srcHandle) = GP_OK)
+        ReleaseGDIPlusBrush = (GdipDeleteBrush(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusBrush = True
     End If
@@ -3604,7 +3604,7 @@ End Function
 
 Public Function ReleaseGDIPlusGraphics(ByVal srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
-        ReleaseGDIPlusGraphics = CBool(GdipDeleteGraphics(srcHandle) = GP_OK)
+        ReleaseGDIPlusGraphics = (GdipDeleteGraphics(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusGraphics = True
     End If
@@ -3612,7 +3612,7 @@ End Function
 
 Public Function ReleaseGDIPlusImage(ByVal srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
-        ReleaseGDIPlusImage = CBool(GdipDisposeImage(srcHandle) = GP_OK)
+        ReleaseGDIPlusImage = (GdipDisposeImage(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusImage = True
     End If
@@ -3620,7 +3620,7 @@ End Function
 
 Public Function ReleaseGDIPlusPen(ByVal srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
-        ReleaseGDIPlusPen = CBool(GdipDeletePen(srcHandle) = GP_OK)
+        ReleaseGDIPlusPen = (GdipDeletePen(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusPen = True
     End If
@@ -3628,7 +3628,7 @@ End Function
 
 Public Function ReleaseGDIPlusRegion(ByVal srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
-        ReleaseGDIPlusRegion = CBool(GdipDeleteRegion(srcHandle) = GP_OK)
+        ReleaseGDIPlusRegion = (GdipDeleteRegion(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusRegion = True
     End If
@@ -3733,11 +3733,11 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 
             Case P2_BrushColor
                 tmpOpacity = GetGDIPlusBrushProperty(hBrush, P2_BrushOpacity)
-                SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
+                SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
                 
             Case P2_BrushOpacity
                 tmpColor = GetGDIPlusBrushProperty(hBrush, P2_BrushColor)
-                SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
+                SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
             Case P2_BrushPatternStyle
@@ -3780,7 +3780,7 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 SetGDIPlusBrushProperty = False
                 
             Case P2_BrushTextureWrapMode
-                SetGDIPlusBrushProperty = CBool(GdipSetTextureWrapMode(hBrush, CLng(newSetting)) = GP_OK)
+                SetGDIPlusBrushProperty = (GdipSetTextureWrapMode(hBrush, CLng(newSetting)) = GP_OK)
                 
         End Select
     
@@ -3846,25 +3846,25 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         Select Case propID
             
             Case P2_SurfaceAntialiasing
-                SetGDIPlusGraphicsProperty = CBool(GdipSetSmoothingMode(hGraphics, CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetSmoothingMode(hGraphics, CLng(newSetting)) = GP_OK)
                 
             Case P2_SurfacePixelOffset
-                SetGDIPlusGraphicsProperty = CBool(GdipSetPixelOffsetMode(hGraphics, CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetPixelOffsetMode(hGraphics, CLng(newSetting)) = GP_OK)
             
             Case P2_SurfaceRenderingOriginX
-                SetGDIPlusGraphicsProperty = CBool(GdipSetRenderingOrigin(hGraphics, CLng(newSetting), GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginY)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetRenderingOrigin(hGraphics, CLng(newSetting), GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginY)) = GP_OK)
             
             Case P2_SurfaceRenderingOriginY
-                SetGDIPlusGraphicsProperty = CBool(GdipSetRenderingOrigin(hGraphics, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginX), CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetRenderingOrigin(hGraphics, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginX), CLng(newSetting)) = GP_OK)
                 
             Case P2_SurfaceBlendUsingSRGBGamma
-                SetGDIPlusGraphicsProperty = CBool(GdipSetCompositingQuality(hGraphics, CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetCompositingQuality(hGraphics, CLng(newSetting)) = GP_OK)
                 
             Case P2_SurfaceResizeQuality
-                SetGDIPlusGraphicsProperty = CBool(GdipSetInterpolationMode(hGraphics, CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetInterpolationMode(hGraphics, CLng(newSetting)) = GP_OK)
                 
             Case P2_SurfaceCompositeMode
-                SetGDIPlusGraphicsProperty = CBool(GdipSetCompositingMode(hGraphics, CLng(newSetting)) = GP_OK)
+                SetGDIPlusGraphicsProperty = (GdipSetCompositingMode(hGraphics, CLng(newSetting)) = GP_OK)
             
         End Select
     
@@ -3950,40 +3950,40 @@ Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
         Select Case propID
             
             Case P2_PenStyle
-                SetGDIPlusPenProperty = CBool(GdipSetPenDashStyle(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenDashStyle(hPen, CLng(newSetting)) = GP_OK)
                 
             Case P2_PenColor
                 tmpOpacity = GetGDIPlusPenProperty(hPen, P2_PenOpacity)
-                SetGDIPlusPenProperty = CBool(GdipSetPenColor(hPen, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenColor(hPen, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
                 
             Case P2_PenOpacity
                 tmpColor = GetGDIPlusPenProperty(hPen, P2_PenColor)
-                SetGDIPlusPenProperty = CBool(GdipSetPenColor(hPen, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenColor(hPen, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
             Case P2_PenWidth
-                SetGDIPlusPenProperty = CBool(GdipSetPenWidth(hPen, CSng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenWidth(hPen, CSng(newSetting)) = GP_OK)
                 
             Case P2_PenLineJoin
-                SetGDIPlusPenProperty = CBool(GdipSetPenLineJoin(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenLineJoin(hPen, CLng(newSetting)) = GP_OK)
                 
             Case P2_PenLineCap
                 tmpLong = GetGDIPlusPenProperty(hPen, P2_PenDashCap)
-                SetGDIPlusPenProperty = CBool(GdipSetPenLineCap(hPen, CLng(newSetting), CLng(newSetting), tmpLong) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenLineCap(hPen, CLng(newSetting), CLng(newSetting), tmpLong) = GP_OK)
                 
             Case P2_PenDashCap
-                SetGDIPlusPenProperty = CBool(GdipSetPenDashCap(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenDashCap(hPen, CLng(newSetting)) = GP_OK)
                 
             Case P2_PenMiterLimit
-                SetGDIPlusPenProperty = CBool(GdipSetPenMiterLimit(hPen, CSng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenMiterLimit(hPen, CSng(newSetting)) = GP_OK)
                 
             Case P2_PenAlignment
-                SetGDIPlusPenProperty = CBool(GdipSetPenMode(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenMode(hPen, CLng(newSetting)) = GP_OK)
             
             Case P2_PenStartCap
-                SetGDIPlusPenProperty = CBool(GdipSetPenStartCap(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenStartCap(hPen, CLng(newSetting)) = GP_OK)
             
             Case P2_PenEndCap
-                SetGDIPlusPenProperty = CBool(GdipSetPenEndCap(hPen, CLng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = (GdipSetPenEndCap(hPen, CLng(newSetting)) = GP_OK)
                 
         End Select
     
@@ -3998,74 +3998,74 @@ End Function
 'GDI+ arcs use bounding boxes to describe their placement.  As such, we manually convert the incoming centerX/Y and radius values
 ' to bounding box coordinates.
 Public Function GDIPlus_DrawArcF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Boolean
-    GDIPlus_DrawArcF = CBool(GdipDrawArc(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
+    GDIPlus_DrawArcF = (GdipDrawArc(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawArcI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal centerX As Long, ByVal centerY As Long, ByVal arcRadius As Long, ByVal startAngle As Long, ByVal sweepAngle As Long) As Boolean
-    GDIPlus_DrawArcI = CBool(GdipDrawArcI(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
+    GDIPlus_DrawArcI = (GdipDrawArcI(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawClosedCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawClosedCurve2(dstGraphics, srcPen, ptrToPtFArray, numOfPoints, curveTension)
-    GDIPlus_DrawClosedCurveF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawClosedCurveF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawClosedCurveI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawClosedCurve2I(dstGraphics, srcPen, ptrToPtLArray, numOfPoints, curveTension)
-    GDIPlus_DrawClosedCurveI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawClosedCurveI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawCurve2(dstGraphics, srcPen, ptrToPtFArray, numOfPoints, curveTension)
-    GDIPlus_DrawCurveF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawCurveF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawCurveI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawCurve2I(dstGraphics, srcPen, ptrToPtLArray, numOfPoints, curveTension)
-    GDIPlus_DrawCurveI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawCurveI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawImageF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImage(dstGraphics, srcImage, dstX, dstY)
-    GDIPlus_DrawImageF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawImageI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImageI(dstGraphics, srcImage, dstX, dstY)
-    GDIPlus_DrawImageI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawImageRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImageRect(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight)
-    GDIPlus_DrawImageRectF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageRectF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawImageRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImageRectI(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight)
-    GDIPlus_DrawImageRectI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageRectI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
-Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal opacityModifier As Single = 1#) As Boolean
+Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal opacityModifier As Single = 1!) As Boolean
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipCreateImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = opacityModifier
         GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
@@ -4073,13 +4073,13 @@ Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcI
     
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImageRectRect(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
-    GDIPlus_DrawImageRectRectF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageRectRectF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
     'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
     If (opacityModifier <> 1#) Then
         GdipDisposeImageAttributes imgAttributesHandle
-        m_AttributesMatrix(3, 3) = 1#
+        m_AttributesMatrix(3, 3) = 1!
     End If
         
 End Function
@@ -4088,7 +4088,7 @@ Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcI
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipCreateImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = opacityModifier
         GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
@@ -4096,13 +4096,13 @@ Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcI
     
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImageRectRectI(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
-    GDIPlus_DrawImageRectRectI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImageRectRectI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
     'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
-        m_AttributesMatrix(3, 3) = 1#
+        m_AttributesMatrix(3, 3) = 1!
     End If
         
 End Function
@@ -4111,7 +4111,7 @@ Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal sr
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipCreateImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = opacityModifier
         GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
@@ -4119,13 +4119,13 @@ Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal sr
     
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImagePointsRect(dstGraphics, srcImage, VarPtr(dstPlgPoints(0)), 3, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
-    GDIPlus_DrawImagePointsRectF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImagePointsRectF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
     'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
-        m_AttributesMatrix(3, 3) = 1#
+        m_AttributesMatrix(3, 3) = 1!
     End If
         
 End Function
@@ -4134,7 +4134,7 @@ Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal sr
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipCreateImageAttributes imgAttributesHandle
         m_AttributesMatrix(3, 3) = opacityModifier
         GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
@@ -4142,119 +4142,119 @@ Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal sr
     
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawImagePointsRectI(dstGraphics, srcImage, VarPtr(dstPlgPoints(0)), 3, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
-    GDIPlus_DrawImagePointsRectI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawImagePointsRectI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
     'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
-    If (opacityModifier <> 1#) Then
+    If (opacityModifier <> 1!) Then
         GdipDisposeImageAttributes imgAttributesHandle
-        m_AttributesMatrix(3, 3) = 1#
+        m_AttributesMatrix(3, 3) = 1!
     End If
         
 End Function
 
 Public Function GDIPlus_DrawLineF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
-    GDIPlus_DrawLineF = CBool(GdipDrawLine(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
+    GDIPlus_DrawLineF = (GdipDrawLine(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawLineI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Boolean
-    GDIPlus_DrawLineI = CBool(GdipDrawLineI(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
+    GDIPlus_DrawLineI = (GdipDrawLineI(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawLinesF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawLines(dstGraphics, srcPen, ptrToPtFArray, numOfPoints)
-    GDIPlus_DrawLinesF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawLinesF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawLinesI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawLinesI(dstGraphics, srcPen, ptrToPtLArray, numOfPoints)
-    GDIPlus_DrawLinesI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawLinesI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawPath(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Boolean
-    GDIPlus_DrawPath = CBool(GdipDrawPath(dstGraphics, srcPen, srcPath) = GP_OK)
+    GDIPlus_DrawPath = (GdipDrawPath(dstGraphics, srcPen, srcPath) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawPolygonF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawPolygon(dstGraphics, srcPen, ptrToPtFArray, numOfPoints)
-    GDIPlus_DrawPolygonF = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawPolygonF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawPolygonI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDrawPolygonI(dstGraphics, srcPen, ptrToPtLArray, numOfPoints)
-    GDIPlus_DrawPolygonI = CBool(tmpReturn = GP_OK)
+    GDIPlus_DrawPolygonI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawRectF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
-    GDIPlus_DrawRectF = CBool(GdipDrawRectangle(dstGraphics, srcPen, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+    GDIPlus_DrawRectF = (GdipDrawRectangle(dstGraphics, srcPen, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawRectI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
-    GDIPlus_DrawRectI = CBool(GdipDrawRectangleI(dstGraphics, srcPen, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+    GDIPlus_DrawRectI = (GdipDrawRectangleI(dstGraphics, srcPen, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawEllipseF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
-    GDIPlus_DrawEllipseF = CBool(GdipDrawEllipse(dstGraphics, srcPen, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+    GDIPlus_DrawEllipseF = (GdipDrawEllipse(dstGraphics, srcPen, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_DrawEllipseI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
-    GDIPlus_DrawEllipseI = CBool(GdipDrawEllipseI(dstGraphics, srcPen, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+    GDIPlus_DrawEllipseI = (GdipDrawEllipseI(dstGraphics, srcPen, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillClosedCurveF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipFillClosedCurve2(dstGraphics, srcBrush, ptrToPtFArray, numOfPoints, curveTension, fillMode)
-    GDIPlus_FillClosedCurveF = CBool(tmpReturn = GP_OK)
+    GDIPlus_FillClosedCurveF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_FillClosedCurveI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipFillClosedCurve2I(dstGraphics, srcBrush, ptrToPtLArray, numOfPoints, curveTension, fillMode)
-    GDIPlus_FillClosedCurveI = CBool(tmpReturn = GP_OK)
+    GDIPlus_FillClosedCurveI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_FillPath(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Boolean
-    GDIPlus_FillPath = CBool(GdipFillPath(dstGraphics, srcBrush, srcPath) = GP_OK)
+    GDIPlus_FillPath = (GdipFillPath(dstGraphics, srcBrush, srcPath) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillEllipseF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
-    GDIPlus_FillEllipseF = CBool(GdipFillEllipse(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+    GDIPlus_FillEllipseF = (GdipFillEllipse(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillEllipseI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
-    GDIPlus_FillEllipseI = CBool(GdipFillEllipseI(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+    GDIPlus_FillEllipseI = (GdipFillEllipseI(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillPolygonF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipFillPolygon(dstGraphics, srcBrush, ptrToPtFArray, numOfPoints, fillMode)
-    GDIPlus_FillPolygonF = CBool(tmpReturn = GP_OK)
+    GDIPlus_FillPolygonF = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_FillPolygonI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipFillPolygonI(dstGraphics, srcBrush, ptrToPtLArray, numOfPoints, fillMode)
-    GDIPlus_FillPolygonI = CBool(tmpReturn = GP_OK)
+    GDIPlus_FillPolygonI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_FillRectF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
-    GDIPlus_FillRectF = CBool(GdipFillRectangle(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+    GDIPlus_FillRectF = (GdipFillRectangle(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillRectI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
-    GDIPlus_FillRectI = CBool(GdipFillRectangleI(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+    GDIPlus_FillRectI = (GdipFillRectangleI(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 'WARNING!  If a graphics object has never specified a clipping region, the default region is infinite.
@@ -4269,28 +4269,28 @@ End Function
 Public Function GDIPlus_GraphicsResetClipRegion(ByVal dstGraphics As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipResetClip(dstGraphics)
-    GDIPlus_GraphicsResetClipRegion = CBool(tmpReturn = GP_OK)
+    GDIPlus_GraphicsResetClipRegion = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_GraphicsSetClipRect(ByVal dstGraphics As Long, ByVal clipX As Single, ByVal clipY As Single, ByVal clipWidth As Single, ByVal clipHeight As Single, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetClipRect(dstGraphics, clipX, clipY, clipWidth, clipHeight, useCombineMode)
-    GDIPlus_GraphicsSetClipRect = CBool(tmpReturn = GP_OK)
+    GDIPlus_GraphicsSetClipRect = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_GraphicsSetClipRegion(ByVal dstGraphics As Long, ByVal srcRegion As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetClipRegion(dstGraphics, srcRegion, useCombineMode)
-    GDIPlus_GraphicsSetClipRegion = CBool(tmpReturn = GP_OK)
+    GDIPlus_GraphicsSetClipRegion = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_GraphicsSetCompositingMode(ByVal dstGraphics As Long, Optional ByVal newCompositeMode As GP_CompositingMode = GP_CM_SourceOver) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetCompositingMode(dstGraphics, newCompositeMode)
-    GDIPlus_GraphicsSetCompositingMode = CBool(tmpReturn = GP_OK)
+    GDIPlus_GraphicsSetCompositingMode = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4323,7 +4323,7 @@ Public Function GDIPlus_ImageCreateFromArray(ByRef srcArray() As Byte, Optional 
         If (tmpReturn = GP_OK) Then
             Dim imgType As GP_ImageType
             GdipGetImageType GDIPlus_ImageCreateFromArray, imgType
-            isImageMetafile = CBool(imgType = GP_IT_Metafile)
+            isImageMetafile = (imgType = GP_IT_Metafile)
         Else
             InternalGDIPlusError vbNullString, vbNullString, tmpReturn
         End If
@@ -4340,7 +4340,7 @@ Public Function GDIPlus_ImageCreateFromFile(ByVal srcFilename As String, Optiona
     If (tmpReturn = GP_OK) Then
         Dim imgType As GP_ImageType
         GdipGetImageType GDIPlus_ImageCreateFromFile, imgType
-        isImageMetafile = CBool(imgType = GP_IT_Metafile)
+        isImageMetafile = (imgType = GP_IT_Metafile)
     Else
         InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     End If
@@ -4350,7 +4350,7 @@ End Function
 Public Function GDIPlus_ImageForcePremultipliedAlpha(ByVal hImage As Long, ByVal imgWidth As Long, ByVal imgHeight As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipCloneBitmapAreaI(0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage)
-    GDIPlus_ImageForcePremultipliedAlpha = CBool(tmpReturn = GP_OK)
+    GDIPlus_ImageForcePremultipliedAlpha = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4363,7 +4363,7 @@ Public Function GDIPlus_ImageGetDimensions(ByVal hImage As Long, ByRef dstWidth 
     tmpReturn = GdipGetImageWidth(hImage, dstWidth)
     If (tmpReturn = GP_OK) Then
         tmpReturn = GdipGetImageHeight(hImage, dstHeight)
-        GDIPlus_ImageGetDimensions = CBool(tmpReturn = GP_OK)
+        GDIPlus_ImageGetDimensions = (tmpReturn = GP_OK)
     Else
         GDIPlus_ImageGetDimensions = False
     End If
@@ -4496,7 +4496,7 @@ Public Function GDIPlus_ImageGetResolution(ByVal hImage As Long, ByRef dstHResol
     tmpReturn = GdipGetImageHorizontalResolution(hImage, dstHResolution)
     If (tmpReturn = GP_OK) Then
         tmpReturn = GdipGetImageVerticalResolution(hImage, dstVResolution)
-        GDIPlus_ImageGetResolution = CBool(tmpReturn = GP_OK)
+        GDIPlus_ImageGetResolution = (tmpReturn = GP_OK)
     Else
         GDIPlus_ImageGetResolution = False
     End If
@@ -4505,14 +4505,14 @@ End Function
 Public Function GDIPlus_ImageLockBits(ByVal hImage As Long, ByRef srcRect As RECTL, ByRef srcCopyData As GP_BitmapData, ByVal lockFlags As GP_BitmapLockMode, ByVal dstPixelFormat As GP_PixelFormat) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipBitmapLockBits(hImage, srcRect, lockFlags, dstPixelFormat, srcCopyData)
-    GDIPlus_ImageLockBits = CBool(tmpReturn = GP_OK)
+    GDIPlus_ImageLockBits = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_ImageRotateFlip(ByVal hImage As Long, ByVal typeOfRotateFlip As GP_RotateFlip) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipImageRotateFlip(hImage, typeOfRotateFlip)
-    GDIPlus_ImageRotateFlip = CBool(tmpReturn = GP_OK)
+    GDIPlus_ImageRotateFlip = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4737,7 +4737,7 @@ End Function
 Public Function GDIPlus_ImageUnlockBits(ByVal hImage As Long, ByRef srcCopyData As GP_BitmapData) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipBitmapUnlockBits(hImage, srcCopyData)
-    GDIPlus_ImageUnlockBits = CBool(tmpReturn = GP_OK)
+    GDIPlus_ImageUnlockBits = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4777,168 +4777,168 @@ End Function
 Public Function GDIPlus_MatrixDelete(ByVal hMatrix As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDeleteMatrix(hMatrix)
-    GDIPlus_MatrixDelete = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixDelete = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixInvert(ByVal hMatrix As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipInvertMatrix(hMatrix)
-    GDIPlus_MatrixInvert = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixInvert = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixIsInvertible(ByVal hMatrix As Long) As Boolean
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsMatrixInvertible(hMatrix, tmpResult)
-    GDIPlus_MatrixIsInvertible = CBool(tmpResult <> 0)
+    GDIPlus_MatrixIsInvertible = (tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixRotate(ByVal hMatrix As Long, ByVal rotateAngle As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipRotateMatrix(hMatrix, rotateAngle, operationOrder)
-    GDIPlus_MatrixRotate = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixRotate = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixScale(ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipScaleMatrix(hMatrix, scaleX, scaleY, operationOrder)
-    GDIPlus_MatrixScale = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixScale = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixShear(ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipShearMatrix(hMatrix, shearX, shearY, operationOrder)
-    GDIPlus_MatrixShear = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixShear = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixTransformListOfPoints(ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipTransformMatrixPoints(hMatrix, ptrToFirstPointF, numOfPoints)
-    GDIPlus_MatrixTransformListOfPoints = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixTransformListOfPoints = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_MatrixTranslate(ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipTranslateMatrix(hMatrix, offsetX, offsetY, operationOrder)
-    GDIPlus_MatrixTranslate = CBool(tmpReturn = GP_OK)
+    GDIPlus_MatrixTranslate = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddArc(ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathArc(hPath, x, y, arcWidth, arcHeight, startAngle, sweepAngle)
-    GDIPlus_PathAddArc = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddArc = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddBezier(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathBezier(hPath, x1, y1, x2, y2, x3, y3, x4, y4)
-    GDIPlus_PathAddBezier = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddBezier = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddClosedCurve(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathClosedCurve2(hPath, ptrToFloatArray, numOfPoints, curveTension)
-    GDIPlus_PathAddClosedCurve = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddClosedCurve = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddClosedCurveI(ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathClosedCurve2I(hPath, ptrToLongArray, numOfPoints, curveTension)
-    GDIPlus_PathAddClosedCurveI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddClosedCurveI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddCurve(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathCurve2(hPath, ptrToFloatArray, numOfPoints, curveTension)
-    GDIPlus_PathAddCurve = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddCurve = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddCurveI(ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathCurve2I(hPath, ptrToLongArray, numOfPoints, curveTension)
-    GDIPlus_PathAddCurveI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddCurveI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddEllipse(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathEllipse(hPath, x1, y1, rectWidth, rectHeight)
-    GDIPlus_PathAddEllipse = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddEllipse = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddLine(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathLine(hPath, x1, y1, x2, y2)
-    GDIPlus_PathAddLine = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddLine = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddLineI(ByVal hPath As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathLineI(hPath, x1, y1, x2, y2)
-    GDIPlus_PathAddLineI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddLineI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddLines(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathLine2(hPath, ptrToFloatArray, numOfPoints)
-    GDIPlus_PathAddLines = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddLines = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddLinesI(ByVal hPath As Long, ByVal ptrToIntArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathLine2I(hPath, ptrToIntArray, numOfPoints)
-    GDIPlus_PathAddLinesI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddLinesI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddPath(ByVal hPath As Long, ByVal pathToAdd As Long, ByVal connectToPreviousPoint As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathPath(hPath, pathToAdd, connectToPreviousPoint)
-    GDIPlus_PathAddPath = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddPath = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddPolygon(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathPolygon(hPath, ptrToFloatArray, numOfPoints)
-    GDIPlus_PathAddPolygon = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddPolygon = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddPolygonI(ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathPolygonI(hPath, ptrToLongArray, numOfPoints)
-    GDIPlus_PathAddPolygonI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddPolygonI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddRectangle(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathRectangle(hPath, x1, y1, rectWidth, rectHeight)
-    GDIPlus_PathAddRectangle = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddRectangle = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathAddRectangleI(ByVal hPath As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipAddPathRectangleI(hPath, x1, y1, rectWidth, rectHeight)
-    GDIPlus_PathAddRectangleI = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathAddRectangleI = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4951,7 +4951,7 @@ End Function
 Public Function GDIPlus_PathCloseFigure(ByVal hPath As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipClosePathFigure(hPath)
-    GDIPlus_PathCloseFigure = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathCloseFigure = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -4964,21 +4964,21 @@ End Function
 Public Function GDIPlus_PathDelete(ByVal hPath As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipDeletePath(hPath)
-    GDIPlus_PathDelete = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathDelete = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathDoesPointTouchOutlineF(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single, ByVal hPen As Long) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long
     tmpReturn = GdipIsOutlineVisiblePathPoint(hPath, srcX, srcY, hPen, 0&, tmpResult)
-    GDIPlus_PathDoesPointTouchOutlineF = CBool(tmpResult <> 0)
+    GDIPlus_PathDoesPointTouchOutlineF = (tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathDoesPointTouchOutlineL(ByVal hPath As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal hPen As Long) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long
     tmpReturn = GdipIsOutlineVisiblePathPointI(hPath, srcX, srcY, hPen, 0&, tmpResult)
-    GDIPlus_PathDoesPointTouchOutlineL = CBool(tmpResult <> 0)
+    GDIPlus_PathDoesPointTouchOutlineL = (tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -5003,56 +5003,56 @@ End Function
 Public Function GDIPlus_PathIsPointInsideF(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long
     tmpReturn = GdipIsVisiblePathPoint(hPath, srcX, srcY, 0&, tmpResult)
-    GDIPlus_PathIsPointInsideF = CBool(tmpResult <> 0)
+    GDIPlus_PathIsPointInsideF = (tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathIsPointInsideL(ByVal hPath As Long, ByVal srcX As Long, ByVal srcY As Long) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long
     tmpReturn = GdipIsVisiblePathPointI(hPath, srcX, srcY, 0&, tmpResult)
-    GDIPlus_PathIsPointInsideL = CBool(tmpResult <> 0)
+    GDIPlus_PathIsPointInsideL = (tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathReset(ByVal hPath As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipResetPath(hPath)
-    GDIPlus_PathReset = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathReset = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathSetFillRule(ByVal hPath As Long, ByVal newFillRule As GP_FillMode) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetPathFillMode(hPath, newFillRule)
-    GDIPlus_PathSetFillRule = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathSetFillRule = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathStartFigure(ByVal hPath As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipStartPathFigure(hPath)
-    GDIPlus_PathStartFigure = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathStartFigure = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathTransform(ByVal hPath As Long, ByVal hTransformMatrix As Long) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipTransformPath(hPath, hTransformMatrix)
-    GDIPlus_PathTransform = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathTransform = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathWiden(ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipWidenPath(hPath, hPen, hTransformMatrix, allowableError)
-    GDIPlus_PathWiden = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathWiden = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_PathWindingModeOutline(ByVal hPath As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As Boolean
     Dim tmpReturn As GP_Result
     tmpReturn = GdipWindingModeOutline(hPath, hTransformMatrix, allowableError)
-    GDIPlus_PathWindingModeOutline = CBool(tmpReturn = GP_OK)
+    GDIPlus_PathWindingModeOutline = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -5063,33 +5063,33 @@ Public Function GDIPlus_PenGetDashOffset(ByVal hPen As Long) As Single
 End Function
 
 Public Function GDIPlus_PenSetDashArray(ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As Boolean
-    GDIPlus_PenSetDashArray = CBool(GdipSetPenDashArray(hPen, ptrToDashArray, numOfDashes) = GP_OK)
+    GDIPlus_PenSetDashArray = (GdipSetPenDashArray(hPen, ptrToDashArray, numOfDashes) = GP_OK)
 End Function
 
 Public Function GDIPlus_PenSetDashOffset(ByVal hPen As Long, ByVal newOffset As Single) As Boolean
-    GDIPlus_PenSetDashOffset = CBool(GdipSetPenDashOffset(hPen, newOffset) = GP_OK)
+    GDIPlus_PenSetDashOffset = (GdipSetPenDashOffset(hPen, newOffset) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddRectF(ByVal dstRegion As Long, ByRef srcRectF As RECTF, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
-    GDIPlus_RegionAddRectF = CBool(GdipCombineRegionRect(dstRegion, srcRectF, useCombineMode) = GP_OK)
+    GDIPlus_RegionAddRectF = (GdipCombineRegionRect(dstRegion, srcRectF, useCombineMode) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddRectL(ByVal dstRegion As Long, ByRef srcRectL As RECTL, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
-    GDIPlus_RegionAddRectL = CBool(GdipCombineRegionRectI(dstRegion, srcRectL, useCombineMode) = GP_OK)
+    GDIPlus_RegionAddRectL = (GdipCombineRegionRectI(dstRegion, srcRectL, useCombineMode) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddRegion(ByVal dstRegion As Long, ByVal srcRegion As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
-    GDIPlus_RegionAddRegion = CBool(GdipCombineRegionRegion(dstRegion, srcRegion, useCombineMode) = GP_OK)
+    GDIPlus_RegionAddRegion = (GdipCombineRegionRegion(dstRegion, srcRegion, useCombineMode) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddPath(ByVal dstRegion As Long, ByVal srcPath As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
-    GDIPlus_RegionAddPath = CBool(GdipCombineRegionPath(dstRegion, srcPath, useCombineMode) = GP_OK)
+    GDIPlus_RegionAddPath = (GdipCombineRegionPath(dstRegion, srcPath, useCombineMode) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionClone(ByVal srcRegion As Long, ByRef dstRegion As Long) As Boolean
     Dim tmpReturn As Long
     tmpReturn = GdipCloneRegion(srcRegion, dstRegion)
-    GDIPlus_RegionClone = CBool(tmpReturn = GP_OK)
+    GDIPlus_RegionClone = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -5109,28 +5109,28 @@ Public Function GDIPlus_RegionIsEmpty(ByVal srcRegion As Long) As Boolean
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsEmptyRegion(srcRegion, m_TransformGraphics, tmpResult)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    GDIPlus_RegionIsEmpty = CBool(tmpResult <> 0)
+    GDIPlus_RegionIsEmpty = (tmpResult <> 0)
 End Function
 
 Public Function GDIPlus_RegionIsInfinite(ByVal srcRegion As Long) As Boolean
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsInfiniteRegion(srcRegion, m_TransformGraphics, tmpResult)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    GDIPlus_RegionIsInfinite = CBool(tmpResult <> 0)
+    GDIPlus_RegionIsInfinite = (tmpResult <> 0)
 End Function
 
 Public Function GDIPlus_RegionContainsPoint(ByVal srcRegion As Long, ByVal srcX As Single, ByVal srcY As Single) As Boolean
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsVisibleRegionPoint(srcRegion, srcX, srcY, m_TransformGraphics, tmpResult)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    GDIPlus_RegionContainsPoint = CBool(tmpResult <> 0)
+    GDIPlus_RegionContainsPoint = (tmpResult <> 0)
 End Function
 
 Public Function GDIPlus_RegionContainsPointI(ByVal srcRegion As Long, ByVal srcX As Long, ByVal srcY As Long) As Boolean
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsVisibleRegionPointI(srcRegion, srcX, srcY, m_TransformGraphics, tmpResult)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    GDIPlus_RegionContainsPointI = CBool(tmpResult <> 0)
+    GDIPlus_RegionContainsPointI = (tmpResult <> 0)
 End Function
 
 Public Function GDIPlus_RegionGetHRgn(ByVal srcRegion As Long) As Long
@@ -5143,13 +5143,13 @@ Public Function GDIPlus_RegionsAreEqual(ByVal srcRegion1 As Long, ByVal srcRegio
     Dim tmpResult As Long, tmpReturn As GP_Result
     tmpReturn = GdipIsEqualRegion(srcRegion1, srcRegion2, m_TransformGraphics, tmpResult)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    GDIPlus_RegionsAreEqual = CBool(tmpResult <> 0)
+    GDIPlus_RegionsAreEqual = (tmpResult <> 0)
 End Function
 
 Public Function GDIPlus_RegionSetEmpty(ByVal dstRegion As Long) As Boolean
-    GDIPlus_RegionSetEmpty = CBool(GdipSetEmpty(dstRegion) = GP_OK)
+    GDIPlus_RegionSetEmpty = (GdipSetEmpty(dstRegion) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionSetInfinite(ByVal dstRegion As Long) As Boolean
-    GDIPlus_RegionSetInfinite = CBool(GdipSetInfinite(dstRegion) = GP_OK)
+    GDIPlus_RegionSetInfinite = (GdipSetInfinite(dstRegion) = GP_OK)
 End Function

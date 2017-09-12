@@ -111,11 +111,11 @@ Friend Function GetZoomValue(ByVal zoomIndex As Long) As Double
                 End Select
                 
             Else
-                GetZoomValue = 1
+                GetZoomValue = 1#
             End If
             
         Else
-            GetZoomValue = 1
+            GetZoomValue = 1#
         End If
         
     

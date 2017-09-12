@@ -305,10 +305,8 @@ End Sub
 
 'External functions can request an immediate redraw.  Please don't abuse this - it should really only be used when some
 ' UI element needs to be updated independent of PD's normal refresh cycles.
-' TODO: decide if we should expose the "repaint immediately" functionality... I have mixed feelings about this, and if
-' we can avoid it, so much the better.
 Public Sub RequestRedraw(Optional ByVal repaintImmediately As Boolean = False)
-    If (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint repaintImmediately
+    If (Not g_ProgramShuttingDown) Then RedrawBackBuffer repaintImmediately
 End Sub
 
 'For some tool actions, it may be helpful to move the cursor for the user.  Call this function to forcibly set a cursor position.
@@ -497,7 +495,7 @@ Private Sub UpdateControlLayout()
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
-Private Sub RedrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = False)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
@@ -506,7 +504,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
 
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint refreshImmediately
     
 End Sub
 

@@ -1073,7 +1073,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If MainModule.IsProgramRunning() And (m_NumOfThumbs > 0) Then
+    If MainModule.IsProgramRunning() And (m_NumOfThumbs > 0) And ucSupport.AmIVisible Then
         
         'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
         ' of image tabs currently visible is long enough that it needs to be scrollable).
