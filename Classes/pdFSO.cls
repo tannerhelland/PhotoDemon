@@ -429,7 +429,7 @@ End Function
 Friend Function FileCloseHandle(ByRef srcHandle As Long) As Boolean
     
     If (srcHandle <> 0) Then
-        FileCloseHandle = CBool(CloseHandle(srcHandle) <> 0)
+        FileCloseHandle = (CloseHandle(srcHandle) <> 0)
     Else
         FSOError "FileCloseHandle", "was passed an empty handle.  Ask yourself why this handle was already closed!"
     End If
@@ -1348,11 +1348,37 @@ StopFileSaveAsText:
     FileSaveAsText = False
 End Function
 
+'Fast write to an open file handle.  The passed data will be written to the beginning of the file, and the file will
+' be truncated to match the written length.  The file handle *will not* be closed after the write.
+'
+'This is helpful in limited scenarios, such as XML files that are updated frequently, using the same filename.
+' An open file handle can be cached, and the data can repeatedly be overwritten at will.
+Friend Function FileSave_FastOverwrite(ByVal hFile As Long, ByVal srcPointer As Long, ByVal srcDataLength As Long) As Boolean
+    
+    On Error GoTo FastFileSaveError
+    
+    Me.FileMovePointer hFile, 0, FILE_BEGIN
+    Me.FileWriteData hFile, srcPointer, srcDataLength
+    SetEndOfFile hFile
+    
+    FileSave_FastOverwrite = True
+    Exit Function
+    
+FastFileSaveError:
+    FSOError "FileSave_FastOverwrite", "internal error on " & hFile, Err.Number
+    FileSave_FastOverwrite = False
+End Function
+
+'Thin wrapper to SetEndOfFile API
+Friend Function FileSetEOF(ByVal hFile As Long) As Boolean
+    FileSetEOF = (SetEndOfFile(hFile) <> 0)
+End Function
+
 'Reverse function of FileLen.  Note that special considerations are required when using memory-mapped files;
 ' see MSDN for details: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365531(v=vs.85).aspx
 Friend Function FileSetLength(ByVal hFile As Long, ByVal newLength As Long) As Boolean
     If (hFile <> 0) Then
-        If Me.FileMovePointer(hFile, newLength, FILE_BEGIN) Then FileSetLength = CBool(SetEndOfFile(hFile) <> 0)
+        If Me.FileMovePointer(hFile, newLength, FILE_BEGIN) Then FileSetLength = (SetEndOfFile(hFile) <> 0)
     End If
 End Function
 

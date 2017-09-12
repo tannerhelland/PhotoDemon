@@ -588,14 +588,26 @@ End Sub
 ' This behavior can be avoided by setting the suppressIndentation param to TRUE.
 Friend Function ReturnCurrentXMLString(Optional ByVal suppressIndentation As Boolean = False) As String
 
-    'Make the XML contents pretty by providing some basic indentation
-    Dim tmpXMLCopy As String
-    tmpXMLCopy = m_xmlContents
-    
-    If (Not suppressIndentation) Then ApplyIndentation tmpXMLCopy
-    
-    ReturnCurrentXMLString = tmpXMLCopy
+    If suppressIndentation Then
+        ReturnCurrentXMLString = m_xmlContents
+    Else
+        Dim tmpXMLCopy As String
+        tmpXMLCopy = m_xmlContents
+        ApplyIndentation tmpXMLCopy
+        ReturnCurrentXMLString = tmpXMLCopy
+    End If
 
+End Function
+
+'Return a pointer to the current XML string.  All the usual caveats of pointers in VB apply, obviously.
+Friend Function GetXMLStringPtr() As Long
+    GetXMLStringPtr = StrPtr(m_xmlContents)
+End Function
+
+'Return the length of the current XML string.  It's assumed this function will be used in conjunction with
+' GetXMLStringPtr(), above.
+Friend Function GetXMLStringLen_Chars() As Long
+    GetXMLStringLen_Chars = Len(m_xmlContents)
 End Function
 
 'Write the current XML contents out to file.  By default, the output will have tabs added to it to make the output "pretty".
