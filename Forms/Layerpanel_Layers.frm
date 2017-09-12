@@ -218,11 +218,11 @@ Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, O
             If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             
                 'Synchronize the opacity scroll bar to the active layer
-                sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity
+                If (sltLayerOpacity.Value <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity) Then sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity
                 
                 'Synchronize the blend and alpha modes to the active layer
-                cboBlendMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerBlendMode
-                cboAlphaMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode
+                If (cboBlendMode.ListIndex <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerBlendMode) Then cboBlendMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerBlendMode
+                If (cboAlphaMode.ListIndex <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode) Then cboAlphaMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode
             
             End If
         End If

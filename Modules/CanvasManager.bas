@@ -384,6 +384,9 @@ End Function
 ' user control on the main form, we must activate them manually.
 Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_EVERYTHING)
 
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+
     'If this form is already the active image, don't waste time re-activating it
     If (g_CurrentImage <> imageID) Then
         
@@ -425,6 +428,10 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
     ' making sure a scratch layer exists, and that it matches the current image's size.)
     Tools.InitializeToolsDependentOnImage
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
     
 End Sub
 

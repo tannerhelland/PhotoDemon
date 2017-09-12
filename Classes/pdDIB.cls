@@ -1106,21 +1106,21 @@ Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     
     'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
-    If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
-    If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+    If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
+    If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
     
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
     ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
     If fitPrevented Then
-        previewX = (dstPicture.ScaleWidth - srcWidth) / 2
-        previewY = (dstPicture.ScaleHeight - srcHeight) / 2
+        previewX = (dstPicture.ScaleWidth - srcWidth) * 0.5
+        previewY = (dstPicture.ScaleHeight - srcHeight) * 0.5
     Else
         If (srcAspect > dstAspect) Then
-            previewY = CLng((dstHeight - dHeight) / 2)
+            previewY = CLng((dstHeight - dHeight) * 0.5)
             previewX = 0
         Else
-            previewX = CLng((dstWidth - dWidth) / 2)
+            previewX = CLng((dstWidth - dWidth) * 0.5)
             previewY = 0
         End If
     End If

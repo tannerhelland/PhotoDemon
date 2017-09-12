@@ -189,7 +189,10 @@ End Function
 '
 'TODO: look at having an optional "layerID" parameter, so we can skip certain steps if only a single layer is affected by a change.
 Public Sub SyncInterfaceToCurrentImage()
-    
+        
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+        
     'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image (e.g. Undo), and stuff that changes
     ' based on the *total* number of available images (e.g. visibility of the Effects menu).
     
@@ -230,7 +233,7 @@ Public Sub SyncInterfaceToCurrentImage()
             
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
             ' are visible, and other criteria.
-            If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+            If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
                 
                 'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
                 If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
@@ -306,7 +309,11 @@ Public Sub SyncInterfaceToCurrentImage()
         
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
-        
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Interface.SyncInterfaceToCurrentImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
+    
 End Sub
 
 'Synchronize all settings whose behavior and/or appearance depends on:
@@ -387,12 +394,7 @@ Private Sub SyncUI_CurrentLayerSettings()
     
     'First, determine if the current layer is using any form of non-destructive resizing
     Dim nonDestructiveResizeActive As Boolean
-    nonDestructiveResizeActive = False
-    If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasXModifier <> 1) Then
-        nonDestructiveResizeActive = True
-    ElseIf (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasYModifier <> 1) Then
-        nonDestructiveResizeActive = True
-    End If
+    nonDestructiveResizeActive = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasYModifier <> 1#)
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
     If (FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive) Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
@@ -407,7 +409,7 @@ Private Sub SyncUI_CurrentLayerSettings()
     
     'Layer rasterization depends on the current layer type
     FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
-    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
+    FormMain.MnuLayerRasterize(1).Enabled = (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -1230,11 +1232,11 @@ Public Function FixDPI(ByVal pxMeasurement As Long) As Long
     If (m_DPIRatio = 0#) Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        m_DPIRatio = 1440 / TwipsPerPixelXFix
+        m_DPIRatio = 1440# / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
-        m_DPIRatio = m_DPIRatio / 96
+        m_DPIRatio = m_DPIRatio * (1# / 96#)
     
     End If
     
@@ -1245,14 +1247,14 @@ End Function
 Public Function FixDPIFloat(ByVal pxMeasurement As Long) As Double
 
     'The first time this function is called, m_DPIRatio will be 0.  Calculate it.
-    If m_DPIRatio = 0# Then
+    If (m_DPIRatio = 0#) Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        m_DPIRatio = 1440 / TwipsPerPixelXFix
+        m_DPIRatio = 1440# / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
-        m_DPIRatio = m_DPIRatio / 96
+        m_DPIRatio = m_DPIRatio * (1# / 96#)
     
     End If
     

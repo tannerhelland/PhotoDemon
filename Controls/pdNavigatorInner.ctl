@@ -337,8 +337,8 @@ Private Sub RedrawBackBuffer()
             With m_ThumbRect
                 .Width = m_ImageThumbnail.GetDIBWidth
                 .Height = m_ImageThumbnail.GetDIBHeight
-                .Left = (bWidth - m_ImageThumbnail.GetDIBWidth) / 2
-                .Top = (bHeight - m_ImageThumbnail.GetDIBHeight) / 2
+                .Left = (bWidth - m_ImageThumbnail.GetDIBWidth) * 0.5
+                .Top = (bHeight - m_ImageThumbnail.GetDIBHeight) * 0.5
             End With
             
             'Offset that top-left corner by the thumbnail's position, and cache it to a module-level rect so we can use
@@ -346,8 +346,8 @@ Private Sub RedrawBackBuffer()
             With m_ImageRegion
                 .Left = m_ThumbRect.Left + m_ThumbEventX
                 .Top = m_ThumbRect.Top + m_ThumbEventY
-                .Width = m_ImageThumbnail.GetDIBWidth - (m_ThumbEventX * 2)
-                .Height = m_ImageThumbnail.GetDIBHeight - (m_ThumbEventY * 2)
+                .Width = m_ImageThumbnail.GetDIBWidth - (m_ThumbEventX * 2#)
+                .Height = m_ImageThumbnail.GetDIBHeight - (m_ThumbEventY * 2#)
             End With
             
             'Paint a checkerboard background only over the relevant image region
@@ -370,13 +370,17 @@ Private Sub RedrawBackBuffer()
             ' viewport dimensions to a 1-based system, relative to the original image's width and height.
             If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) Then
                 
+                Dim widthDivisor As Double, heightDivisor As Double
+                widthDivisor = 1# / pdImages(g_CurrentImage).Width
+                heightDivisor = 1# / pdImages(g_CurrentImage).Height
+                
                 Dim relativeRect As RECTF
                 With relativeRect
-                    .Left = viewportRect.Left / pdImages(g_CurrentImage).Width
-                    .Top = viewportRect.Top / pdImages(g_CurrentImage).Height
-                    .Width = viewportRect.Width / pdImages(g_CurrentImage).Width
-                    .Height = viewportRect.Height / pdImages(g_CurrentImage).Height
-                
+                    .Left = viewportRect.Left * widthDivisor
+                    .Top = viewportRect.Top * heightDivisor
+                    .Width = viewportRect.Width * widthDivisor
+                    .Height = viewportRect.Height * heightDivisor
+                    
                     'Next, scale those 1-based values by the navigator's current size
                     .Left = .Left * m_ImageRegion.Width
                     .Top = .Top * m_ImageRegion.Height

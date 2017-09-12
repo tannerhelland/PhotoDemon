@@ -789,9 +789,7 @@ Private Sub PreValidatePremultiplicationForSrcDIB(ByRef srcDIB As pdDIB)
     
     'If the source DIB is premultiplied, it needs to be un-premultiplied first
     m_PreAlphaManagementRequired = False
-    If (srcDIB.GetDIBColorDepth = 32) Then
-        m_PreAlphaManagementRequired = srcDIB.GetAlphaPremultiplication
-    End If
+    If (srcDIB.GetDIBColorDepth = 32) Then m_PreAlphaManagementRequired = srcDIB.GetAlphaPremultiplication
     
     If m_PreAlphaManagementRequired Then srcDIB.SetAlphaPremultiplication False
     
@@ -829,6 +827,7 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
             use32bppPath = (srcDIB.GetDIBColorDepth = 32)
         End If
         
+        'Verify the 32-bpp conversion handle
         If use32bppPath Then
         
             If (.thisWSToDisplayTransform32 = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
@@ -837,7 +836,7 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
                 .indexOfDisplayTransform = m_CurrentDisplayIndex
             End If
         
-        'Assume a 24-bpp source
+        'Verify the 24-bpp conversion handle
         Else
             If (.thisWSToDisplayTransform24 = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
                 If (.thisWSToDisplayTransform24 <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform24

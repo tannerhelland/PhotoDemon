@@ -595,9 +595,6 @@ Public Sub AddNewThumb(ByVal pdImageIndex As Long)
         pdImages(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
     End If
     
-    'If display color management is active, apply a conversion now
-    ColorManagement.ApplyDisplayColorManagement m_Thumbs(m_NumOfThumbs).thumbDIB
-    
     'Make a note of this thumbnail's index in the main pdImages array
     m_Thumbs(m_NumOfThumbs).indexInPDImages = pdImageIndex
     m_CurrentThumb = m_NumOfThumbs
@@ -808,9 +805,6 @@ Public Sub NotifyUpdatedImage(ByVal pdImageIndex As Long)
             Else
                 pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
             End If
-            
-            'If display color management is active, apply a conversion now
-            ColorManagement.ApplyDisplayColorManagement m_Thumbs(thumbIndex).thumbDIB
             
             RedrawBackBuffer
         
@@ -1053,7 +1047,6 @@ Private Sub UpdateControlLayout(Optional ByVal thumbsMustBeUpdated As Boolean = 
             Dim i As Long
             For i = 0 To m_NumOfThumbs - 1
                 pdImages(m_Thumbs(i).indexInPDImages).RequestThumbnail m_Thumbs(i).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
-                ColorManagement.ApplyDisplayColorManagement m_Thumbs(i).thumbDIB
             Next i
             
         End If
@@ -1169,8 +1162,8 @@ End Sub
 Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByRef thumbRectF As RECTF)
     
     Dim isSelected As Boolean, isHovered As Boolean, isEnabled As Boolean
-    isSelected = CBool(thumbIndex = m_CurrentThumb)
-    isHovered = CBool(thumbIndex = m_CurrentThumbHover)
+    isSelected = (thumbIndex = m_CurrentThumb)
+    isHovered = (thumbIndex = m_CurrentThumbHover)
     isEnabled = Me.Enabled
     
     Dim targetColor As Long

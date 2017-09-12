@@ -222,7 +222,7 @@ Public Sub ConvertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, B
     End If
     
     Dim aspectLarger As Boolean
-    aspectLarger = CBool(srcAspect > dstAspect)
+    aspectLarger = (srcAspect > dstAspect)
     
     'Exclusive fitting fits the opposite dimension, so simply reverse the way the dimensions are calculated
     If (Not fitInclusive) Then aspectLarger = Not aspectLarger

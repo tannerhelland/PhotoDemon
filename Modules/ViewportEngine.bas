@@ -387,7 +387,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         'If timing reports are enabled, we report them after the rest of the pipeline has finished.
         If g_DisplayTimingReports Then
             m_TotalTime = m_TotalTime + VBHacks.GetTimerDifferenceNow(startTime)
-            Debug.Print "Viewport render timing by stage (net, 2, 3, 4): " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage2 * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage3 * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage4 * 1000), "#0") & " ms"
+            Debug.Print "Viewport render timing by stage (net, 2, 3, 4): " & VBHacks.GetTimeDiffNowAsString(startTime) & ", " & Format$(m_TimeStage2 * 1000#, "#0") & " ms, " & Format$(m_TimeStage3 * 1000#, "#0") & " ms, " & Format$(m_TimeStage4 * 1000#, "#0") & " ms"
         End If
     
     End If
