@@ -1397,7 +1397,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     Dim dataWasCompressed As Boolean: dataWasCompressed = False
     If (useCompressionEngine <> PD_CE_NoCompression) Then
         
-        'Before writing anythign to file, attempt compression and make sure it works
+        'Before writing anything to file, attempt compression and make sure it works
         Dim compressedImageData() As Byte, compressedSize As Long
         dataWasCompressed = Compression.CompressPtrToDstArray(compressedImageData, compressedSize, tmpDIBPointer, tmpDIBLength, useCompressionEngine)
         
@@ -1411,9 +1411,9 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
             cFile.FileWriteData hFile, VarPtr(compressedSize), 4&
             cFile.FileWriteData hFile, VarPtr(compressedImageData(0)), compressedSize
             
-            #If DEBUGMODE = 1 Then
-                'pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
-            #End If
+            '#If DEBUGMODE = 1 Then
+            '    pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
+            '#End If
                 
         'On failure, we'll simply write out uncompressed bytes
         Else

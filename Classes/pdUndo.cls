@@ -15,11 +15,10 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 04/December/16
-'Last update: use lz4 for all Undo/Redo compression needs; this is significantly faster than zlib, with only a minor
-'             hit to compression ratio for large BMP data.  (Note that by default, PD used to write uncompressed data
-'             only, and most users would never visit the Options dialog to change this.  Thanks to LZ4, however, we can
-'             now default to compressed Undo/Redo data without worrying about performance issues.)
+'Last updated: 12/September/17
+'Last update: cache persistent file handles to the "master" Undo XML file (used by the Autosave engine to reconstruct
+'             images after a crash), and the related "Autosave" thumbnail file.  This cuts the write time of those files
+'             to sub-1.0 ms amounts on my old 7200 RPM dev drive, which is an excellent improvement.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -118,6 +117,14 @@ Private Const PD_UNDO_VERSION_ID As Long = 64
 'The size of the Undo/Redo Thumbnail
 Private Const UNDO_THUMB_SMALL As Long = 48
 Private Const UNDO_THUMB_LARGE As Long = 128
+
+'Certain parts of the Undo/Redo header are written out to persistent files.  For example, a full copy of the current
+' Undo/Redo stack is written to an XML file, and in the case of a crash, we use that file to reconstruct the active image.
+' Rather than regenerate these filenames on every call, we generate them once and cache them.  (Note that the filename,
+' by design, does not include an extension - the idea is that you append the extension you want, depending on what kind
+' of data you're writing.)
+Private m_FSO As pdFSO
+Private m_HeaderFilename As String, m_HeaderXMLHandle As Long, m_UTF8() As Byte, m_ThumbnailFileHandle As Long
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Friend Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
@@ -885,13 +892,19 @@ End Function
 ' Undo number index.  The entire stack is written out to the header file, every time.
 Private Function GenerateUndoHeaderFilename() As String
     
-    'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The clearUndos function requires this
-    ' function to generate Undo filnames.  If our parent class was terminated properly, it will have already erased
-    ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
-    ' parent reference in advance.
-    If (Not parentPDImage Is Nothing) Then
-        GenerateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
+    If (Len(m_HeaderFilename) = 0) Then
+    
+        'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The ClearUndos function requires this
+        ' function to generate Undo filenames.  If our parent class was terminated properly, it will have already erased
+        ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
+        ' parent reference in advance.
+        If (Not parentPDImage Is Nothing) Then
+            m_HeaderFilename = g_UserPreferences.GetTempPath() & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
+        End If
+        
     End If
+    
+    GenerateUndoHeaderFilename = m_HeaderFilename
     
 End Function
 
@@ -920,8 +933,11 @@ Friend Sub ClearUndos()
     Next i
     
     'Destroy the header file and preview image, if any
+    If (m_HeaderXMLHandle <> 0) Then m_FSO.FileCloseHandle m_HeaderXMLHandle
     Files.FileDeleteIfExists GenerateUndoHeaderFilename()
+    If (m_ThumbnailFileHandle <> 0) Then m_FSO.FileCloseHandle m_ThumbnailFileHandle
     Files.FileDeleteIfExists GenerateUndoHeaderFilename() & ".pdasi"
+    ReDim m_UTF8(0) As Byte
     
     'Set the current and maximum Undo number to 0
     m_UndoNum = 0
@@ -958,7 +974,7 @@ Friend Function GetUndoProcessID() As String
     If m_UndoState Then
         GetUndoProcessID = g_Language.TranslateMessage(m_UndoStack(m_UndoNum - 1).processID)
     Else
-        GetUndoProcessID = ""
+        GetUndoProcessID = vbNullString
     End If
 End Function
 
@@ -967,7 +983,7 @@ Friend Function GetRedoProcessID() As String
     If m_RedoState Then
         GetRedoProcessID = g_Language.TranslateMessage(m_UndoStack(m_UndoNum).processID)
     Else
-        GetRedoProcessID = ""
+        GetRedoProcessID = vbNullString
     End If
 End Function
 
@@ -975,12 +991,11 @@ End Function
 ' changes to the image since the last Undo was created.
 Friend Function GetLastParamString(ByVal requestedUndoType As PD_UndoType) As String
 
+    GetLastParamString = vbNullString
+    
     'If no Undos have been created, exit immediately
-    If m_UndoNum = 0 Then
-        GetLastParamString = ""
-        Exit Function
-    End If
-
+    If (m_UndoNum = 0) Then Exit Function
+    
     'Loop backward through the Undo stack, looking for a matching Undo type.  If found, return the associated
     ' param string and exit immediately.
     Dim i As Long
@@ -988,13 +1003,10 @@ Friend Function GetLastParamString(ByVal requestedUndoType As PD_UndoType) As St
     For i = m_UndoNum - 1 To 0 Step -1
         If m_UndoStack(i).undoType = requestedUndoType Then
             GetLastParamString = m_UndoStack(i).processParamString
-            Exit Function
+            Exit For
         End If
     Next i
     
-    'If we made it all the way here, no matching function was found.  Return nothing.
-    GetLastParamString = ""
-
 End Function
 
 'Undo/redo data handling is complex.  Sometimes it is helpful to see how our Undo/Redo stack looks - use this sub
@@ -1028,10 +1040,15 @@ Private Sub Class_Initialize()
     m_UndoState = False
     m_RedoState = False
     
+    Set m_FSO = New pdFSO
+    ReDim m_UTF8(0) As Byte
+    
 End Sub
 
 'When this class is unloaded, we must make sure to delete any Undo files we created
 Private Sub Class_Terminate()
+    If (m_HeaderXMLHandle <> 0) Then m_FSO.FileCloseHandle m_HeaderXMLHandle
+    If (m_ThumbnailFileHandle <> 0) Then m_FSO.FileCloseHandle m_ThumbnailFileHandle
     ClearUndos
 End Sub
 
@@ -1098,26 +1115,53 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     Next i
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine XML generation took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        Debug.Print "Undo engine XML generation took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     #End If
     
     'With all Undo data successfully written, close the XML data and write it out to file.
-    xmlEngine.WriteXMLToFile dstFilename, True
+    ' (Note that a custom, high-speed approach is used for this.)
+    If (m_HeaderXMLHandle = 0) Then m_FSO.FileCreateHandle dstFilename, m_HeaderXMLHandle, True, True, OptimizeTempFile
+    
+    If (m_HeaderXMLHandle <> 0) Then
+    
+        'Convert the source string to UTF-8, and leave three open spaces for the BOM at the front
+        Dim utf8Len As Long
+        Strings.UTF8FromStrPtr xmlEngine.GetXMLStringPtr, xmlEngine.GetXMLStringLen_Chars, m_UTF8, utf8Len, 3
+        
+        'Add the required UTF-8 BOM.  (Required by PD, anyway - it makes text file reading much faster, as we don't have to
+        ' guess at encodings.)
+        m_UTF8(0) = &HEF: m_UTF8(1) = &HBB: m_UTF8(2) = &HBF
+        
+        'Overwrite our existing XML file
+        m_FSO.FileSave_FastOverwrite m_HeaderXMLHandle, VarPtr(m_UTF8(0)), utf8Len + 3
+    
+    End If
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine XML file write took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        Debug.Print "Undo engine XML file write took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     #End If
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
     If (m_UndoNum > 0) Then
-        If (Not m_UndoStack(m_UndoNum - 1).thumbnailLarge Is Nothing) And (Not m_UndoStack(m_UndoNum - 1).undoType = UNDO_SELECTION) Then m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
+        If (Not m_UndoStack(m_UndoNum - 1).thumbnailLarge Is Nothing) And (Not m_UndoStack(m_UndoNum - 1).undoType = UNDO_SELECTION) Then
+            
+            'For performance reasons, we use a persistent file handle
+            If (m_ThumbnailFileHandle = 0) Then m_FSO.FileCreateHandle GenerateUndoHeaderFilename() & ".pdasi", m_ThumbnailFileHandle, True, True, OptimizeTempFile
+            
+            If (m_ThumbnailFileHandle <> 0) Then
+                m_FSO.FileMovePointer m_ThumbnailFileHandle, 0, FILE_BEGIN
+                m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle
+                m_FSO.FileSetEOF m_ThumbnailFileHandle
+            End If
+            
+        End If
     End If
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine thumbnail write took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        Debug.Print "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
     #End If
     
 End Sub

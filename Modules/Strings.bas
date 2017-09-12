@@ -511,15 +511,20 @@ End Function
 
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
 Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, Optional ByRef lenUTF8 As Long) As Boolean
+    UTF8FromString = Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), dstUtf8, lenUTF8)
+End Function
+
+'Given a pointer to a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
+Public Function UTF8FromStrPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long, ByRef dstUtf8() As Byte, Optional ByRef lenUTF8 As Long, Optional ByVal baseArrIndexToWrite As Long = 0) As Boolean
     
-    UTF8FromString = False
+    UTF8FromStrPtr = False
     
     'Use WideCharToMultiByte() to calculate the required size of the final UTF-8 array.
-    lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), 0, 0, 0, 0)
+    lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, 0, 0, 0, 0)
     
     'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
     If (lenUTF8 = 0) Then
-        InternalError "Strings.UTF8FromString() failed because WideCharToMultiByte did not return a valid buffer length (#" & Err.LastDllError & ")."
+        InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte did not return a valid buffer length (#" & Err.LastDllError & ")."
         
     'The returned length is non-zero.  Prep a buffer, then process the bytes.
     Else
@@ -527,18 +532,18 @@ Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byt
         'Prep a temporary byte buffer.  In some places in PD, we'll reuse the same buffer for multiple string copies,
         ' so to improve performance, only resize the destination array as necessary.
         If VBHacks.IsArrayInitialized(dstUtf8) Then
-            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1) < lenUTF8) Then ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1 + baseArrIndexToWrite) < lenUTF8) Then ReDim dstUtf8(0 To lenUTF8 - 1 + baseArrIndexToWrite) As Byte
         Else
-            ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+            ReDim dstUtf8(0 To lenUTF8 - 1 + baseArrIndexToWrite) As Byte
         End If
         
         'Use the API to perform the actual conversion
-        lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), VarPtr(dstUtf8(0)), lenUTF8, 0, 0)
+        lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, VarPtr(dstUtf8(baseArrIndexToWrite)), lenUTF8, 0, 0)
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
-        UTF8FromString = (lenUTF8 <> 0)
-        If (Not UTF8FromString) Then InternalError "Strings.UTF8FromString() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
+        UTF8FromStrPtr = (lenUTF8 <> 0)
+        If (Not UTF8FromStrPtr) Then InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
         
     End If
     
