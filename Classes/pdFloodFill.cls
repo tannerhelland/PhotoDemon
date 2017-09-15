@@ -154,8 +154,10 @@ Public Sub SetTolerance(ByVal newTolerance As Double)
 End Sub
 
 'Initiate a flood fill operation.  This class doesn't actually fill anything; what it does is fill a 32-bpp destination DIB
-' with an alpha of the flood results (black/transparent = unfilled, white/opaque = filled, gray/partially transparent = partially filled).
-' This allows the caller to use the flood results however they want, without having to modify this class to match.
+' (if supplied - you CAN pass Nothing if you only want a path) with an alpha map of the flood results, where
+' black/transparent = unfilled, white/opaque = filled, gray/partially transparent = partially filled.
+'
+'This approach lets the caller use the flood results however they want, without having to modify this class to match.
 '
 'In a change from earlier versions, the caller must also now provide a target pdPath object.  This path is filled with a
 ' vector representation of the filled area, and it is also used to produce antialiased fill results.  The caller can obviously
@@ -164,7 +166,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Make sure the passed x/y coords are valid.  If they aren't, exit now.
     If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.GetDIBWidth) Or (m_InitPoint.y >= srcDIB.GetDIBHeight) Then
-        Debug.Print "Invalid flood fill location requested.  Abandoning flood fill now."
+        Debug.Print "Invalid flood fill location requested.  Abandoning flood fill now.  (" & m_InitPoint.x & ", " & m_InitPoint.y & ")"
         InitiateFloodFill = False
         Exit Function
     End If
@@ -175,14 +177,16 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         VBHacks.GetHighResTime startTime
     #End If
     
-    'Initialize the destination DIB and the fill tracking array
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    If (dstDIB.GetDIBWidth = srcDIB.GetDIBWidth) And (dstDIB.GetDIBHeight = srcDIB.GetDIBHeight) And (dstDIB.GetDIBColorDepth = 32) Then
-        dstDIB.ResetDIB 0
-    Else
-        dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0
+    'If a destination DIB was supplied, initialize it now
+    If (Not dstDIB Is Nothing) Then
+        If (dstDIB.GetDIBWidth = srcDIB.GetDIBWidth) And (dstDIB.GetDIBHeight = srcDIB.GetDIBHeight) And (dstDIB.GetDIBColorDepth = 32) Then
+            dstDIB.ResetDIB 0
+        Else
+            dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0
+        End If
     End If
     
+    'Prep a tracking array
     Dim xBound As Long, yBound As Long
     xBound = srcDIB.GetDIBWidth - 1
     yBound = srcDIB.GetDIBHeight - 1
@@ -224,19 +228,23 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         VBHacks.GetHighResTime startTime
     #End If
     
-    'Finally, render our floodfill results onto the destination DIB
-    Dim cSurface As pd2DSurface
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
+    'Finally, render our floodfill results onto the destination DIB, if one was provided
+    If (Not dstDIB Is Nothing) Then
     
-    If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
-    If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
-    
-    m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
-    Set cSurface = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-    #End If
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
+        
+        If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
+        If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
+        
+        m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
+        Set cSurface = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        #End If
+        
+    End If
     
     InitiateFloodFill = True
 
