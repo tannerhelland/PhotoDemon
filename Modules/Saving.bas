@@ -657,7 +657,7 @@ End Function
 '
 'Note that this function interacts closely with the matching LoadUndo function in the Loading module.  Any novel Undo diff types added
 ' here must also be mirrored there.
-Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UndoType, Optional ByVal targetLayerID As Long = -1) As Boolean
+Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal compressionHint As Long = -1) As Boolean
     
     #If DEBUGMODE = 1 Then
         Dim timeAtUndoStart As Currency
@@ -676,7 +676,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     ' improve as the level goes up - the algorithm's *performance* improves as the level goes up.)
     ElseIf (g_UndoCompressionLevel = 1) Then
         undoCmpEngine = PD_CE_Lz4
-        undoCmpLevel = -1
+        undoCmpLevel = compressionHint
     
     'For all higher levels, use zstd, and reset the compression level to start at 1 (so a g_UndoCompressionLevel of 2 uses zstd at
     ' its default compression strength of level 1).
@@ -691,28 +691,28 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     Select Case processType
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
-        Case UNDO_EVERYTHING
+        Case UNDO_Everything
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True)
             srcPDImage.MainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel
             
         'A full copy of the pdImage stack
-        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
+        Case UNDO_Image, UNDO_Image_VectorSafe
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True)
         
         'A full copy of the pdImage stack, *without any layer DIB data*
-        Case UNDO_IMAGEHEADER
+        Case UNDO_ImageHeader
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, True, undoCmpLevel, , True)
         
         'Layer data only (full layer header + full layer DIB).
-        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
+        Case UNDO_Layer, UNDO_Layer_VectorSafe
             undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_Lz4, undoCmpEngine, False, undoCmpLevel, True)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
-        Case UNDO_LAYERHEADER
+        Case UNDO_LayerHeader
             undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, PD_CE_NoCompression, True, undoCmpLevel, True)
             
         'Selection data only
-        Case UNDO_SELECTION
+        Case UNDO_Selection
             undoSuccess = srcPDImage.MainSelection.WriteSelectionToFile(dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel)
             
         'Anything else (this should never happen, but good to have a failsafe)
