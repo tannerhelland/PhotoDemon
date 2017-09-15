@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   5055
@@ -36,23 +36,23 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   100
-      WaitForIdle     =   0
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0
+      pollinterval    =   100
+      waitforidle     =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1953,19 +1953,19 @@ Private Sub MnuAutoCorrect_Click(Index As Integer)
     
         'Color
         Case 0
-            Process "Auto correct color", , , UNDO_LAYER
+            Process "Auto correct color", , , UNDO_Layer
         
         'Contrast
         Case 1
-            Process "Auto correct contrast", , , UNDO_LAYER
+            Process "Auto correct contrast", , , UNDO_Layer
         
         'Lighting
         Case 2
-            Process "Auto correct lighting", , , UNDO_LAYER
+            Process "Auto correct lighting", , , UNDO_Layer
             
         'Shadows and highlights
         Case 3
-            Process "Auto correct shadows and highlights", , , UNDO_LAYER
+            Process "Auto correct shadows and highlights", , , UNDO_Layer
         
     End Select
 
@@ -1977,19 +1977,19 @@ Private Sub MnuAutoEnhance_Click(Index As Integer)
     
         'Color
         Case 0
-            Process "Auto enhance color", , , UNDO_LAYER
+            Process "Auto enhance color", , , UNDO_Layer
         
         'Contrast
         Case 1
-            Process "Auto enhance contrast", , , UNDO_LAYER
+            Process "Auto enhance contrast", , , UNDO_Layer
         
         'Lighting
         Case 2
-            Process "Auto enhance lighting", , , UNDO_LAYER
+            Process "Auto enhance lighting", , , UNDO_Layer
             
         'Shadows and highlights
         Case 3
-            Process "Auto enhance shadows and highlights", , , UNDO_LAYER
+            Process "Auto enhance shadows and highlights", , , UNDO_Layer
         
     End Select
     
@@ -2079,11 +2079,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer up", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer down", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image
         
         'Order (top-level)
         Case 5
@@ -2099,7 +2099,7 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Crop to selection
         Case 9
-            Process "Crop layer to selection", , , UNDO_LAYER
+            Process "Crop layer to selection", , , UNDO_Layer
         
         '<separator>
         Case 10
@@ -2122,7 +2122,7 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge visible layers
         Case 16
-            Process "Merge visible layers", , , UNDO_IMAGE
+            Process "Merge visible layers", , , UNDO_Image
         
     End Select
 
@@ -2135,11 +2135,11 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         'Delete all hidden layers
         Case 1
-            Process "Delete hidden layers", False, , UNDO_IMAGE_VECTORSAFE
+            Process "Delete hidden layers", False, , UNDO_Image_VectorSafe
         
     End Select
 
@@ -2156,18 +2156,18 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Blank layer
         Case 1
-            Process "Add blank layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Add blank layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         'Duplicate of current layer
         Case 2
-            Process "Duplicate Layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Duplicate Layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         '<separator>
         Case 3
         
         'Import from clipboard
         Case 4
-            Process "Paste as new layer", False, , UNDO_IMAGE_VECTORSAFE, , False
+            Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
         
         'Import from file
         Case 5
@@ -2175,7 +2175,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
             
         'Import from visible layers in current image
         Case 6
-            Process "New layer from visible layers", False, , UNDO_IMAGE_VECTORSAFE
+            Process "New layer from visible layers", False, , UNDO_Image_VectorSafe
     
     End Select
 
@@ -2188,22 +2188,22 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
         '<separator>
         Case 2
         
         'Raise to top
         Case 3
-            Process "Raise layer to top", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer to top", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
         'Lower to bottom
         Case 4
-            Process "Lower layer to bottom", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer to bottom", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
     End Select
 
@@ -2222,15 +2222,15 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
         
         'Rotate 90
         Case 2
-            Process "Rotate layer 90 clockwise", , , UNDO_LAYER
+            Process "Rotate layer 90 clockwise", , , UNDO_Layer
         
         'Rotate 270
         Case 3
-            Process "Rotate layer 90 counter-clockwise", , , UNDO_LAYER
+            Process "Rotate layer 90 counter-clockwise", , , UNDO_Layer
         
         'Rotate 180
         Case 4
-            Process "Rotate layer 180", , , UNDO_LAYER
+            Process "Rotate layer 180", , , UNDO_Layer
         
         'Rotate arbitrary
         Case 5
@@ -2241,11 +2241,11 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
         
         'Flip horizontal
         Case 7
-            Process "Flip layer horizontally", , , UNDO_LAYER
+            Process "Flip layer horizontally", , , UNDO_Layer
         
         'Flip vertical
         Case 8
-            Process "Flip layer vertically", , , UNDO_LAYER
+            Process "Flip layer vertically", , , UNDO_Layer
     
     End Select
 
@@ -2257,11 +2257,11 @@ Private Sub MnuLayerRasterize_Click(Index As Integer)
     
         'Current layer
         Case 0
-            Process "Rasterize layer", , , UNDO_LAYER
+            Process "Rasterize layer", , , UNDO_Layer
             
         'All layers
         Case 1
-            Process "Rasterize all layers", , , UNDO_IMAGE
+            Process "Rasterize all layers", , , UNDO_Image
             
     End Select
     
@@ -2273,7 +2273,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LayerHeader
         
         '<separator>
         Case 1
@@ -2375,7 +2375,7 @@ Private Sub MnuRecordMacro_Click(Index As Integer)
     
         'Start recording
         Case 0
-            Process "Start macro recording", , , UNDO_NOTHING
+            Process "Start macro recording", , , UNDO_Nothing
         
         'Stop recording
         Case 1
@@ -2534,7 +2534,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
         'Remove selection
         If .HotKeyName(acceleratorIndex) = "Remove selection" Then
-            Process "Remove selection", , , UNDO_SELECTION
+            Process "Remove selection", , , UNDO_Selection
         End If
         
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
@@ -3221,7 +3221,7 @@ Private Sub MnuColor_Click(Index As Integer)
                 
         'Sepia
         Case 11
-            Process "Sepia", , , UNDO_LAYER
+            Process "Sepia", , , UNDO_Layer
 
     End Select
 
@@ -3245,22 +3245,22 @@ Private Sub MnuColorComponents_Click(Index As Integer)
         
         'Max channel
         Case 3
-            Process "Maximum channel", , , UNDO_LAYER
+            Process "Maximum channel", , , UNDO_Layer
         
         'Min channel
         Case 4
-            Process "Minimum channel", , , UNDO_LAYER
+            Process "Minimum channel", , , UNDO_Layer
             
         '<separator>
         Case 5
         
         'Shift colors left
         Case 6
-            Process "Shift colors (left)", , , UNDO_LAYER
+            Process "Shift colors (left)", , , UNDO_Layer
             
         'Shift colors right
         Case 7
-            Process "Shift colors (right)", , , UNDO_LAYER
+            Process "Shift colors (right)", , , UNDO_Layer
         
     End Select
     
@@ -3375,7 +3375,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         'Repeat last
         Case 4
             'TODO: figure out Undo handling for "Repeat last action"
-            Process "Repeat last action", False, , UNDO_IMAGE
+            Process "Repeat last action", False, , UNDO_Image
                 
         'Fade...
         Case 5
@@ -3386,7 +3386,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
         'Cut from image
         Case 7
-            Process "Cut", False, , UNDO_IMAGE, , True
+            Process "Cut", False, , UNDO_Image, , True
             
         'Cut from layer
         Case 8
@@ -3394,33 +3394,33 @@ Private Sub MnuEdit_Click(Index As Integer)
             'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
             ' we must delete the entire layer.  That requires a backup of the full image contents.
             If pdImages(g_CurrentImage).IsSelectionActive Then
-                Process "Cut from layer", False, , UNDO_LAYER, , True
+                Process "Cut from layer", False, , UNDO_Layer, , True
             Else
-                Process "Cut from layer", False, , UNDO_IMAGE, , True
+                Process "Cut from layer", False, , UNDO_Image, , True
             End If
             
         'Copy from image
         Case 9
-            Process "Copy", False, , UNDO_NOTHING, , False
+            Process "Copy", False, , UNDO_Nothing, , False
         
         'Copy from layer
         Case 10
-            Process "Copy from layer", False, , UNDO_NOTHING, , False
+            Process "Copy from layer", False, , UNDO_Nothing, , False
         
         'Paste as new image
         Case 11
-            Process "Paste as new image", False, , UNDO_NOTHING, , False
+            Process "Paste as new image", False, , UNDO_Nothing, , False
         
         'Paste as new layer
         Case 12
-            Process "Paste as new layer", False, , UNDO_IMAGE_VECTORSAFE, , False
+            Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
         
         '<separator>
         Case 13
         
         'Empty clipboard
         Case 14
-            Process "Empty clipboard", False, , UNDO_NOTHING, , False
+            Process "Empty clipboard", False, , UNDO_Nothing, , False
                 
     
     End Select
@@ -3466,7 +3466,7 @@ Private Sub MnuFile_Click(Index As Integer)
             
         'Save copy (lossless)
         Case 9
-            Process "Save copy", , , UNDO_NOTHING
+            Process "Save copy", , , UNDO_Nothing
             
         'Save as
         Case 10
@@ -3475,7 +3475,7 @@ Private Sub MnuFile_Click(Index As Integer)
         'Revert
         Case 11
             'TODO: figure out correct Undo behavior for REVERT action
-            Process "Revert", False, , UNDO_NOTHING
+            Process "Revert", False, , UNDO_Nothing
         
         '<separator>
         Case 12
@@ -3599,7 +3599,7 @@ Private Sub MnuHistogram_Click(Index As Integer)
         
         'Stretch
         Case 3
-            Process "Stretch histogram", , , UNDO_LAYER
+            Process "Stretch histogram", , , UNDO_Layer
         
     End Select
     
@@ -3612,7 +3612,7 @@ Private Sub MnuImage_Click(Index As Integer)
     
         'Duplicate
         Case 0
-            Process "Duplicate image", , , UNDO_NOTHING
+            Process "Duplicate image", , , UNDO_Nothing
         
         '<separator>
         Case 1
@@ -3634,11 +3634,11 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Fit canvas to layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
         'Fit canvas around all layers
         Case 7
-            Process "Fit canvas to all layers", False, , UNDO_IMAGEHEADER
+            Process "Fit canvas to all layers", False, , UNDO_ImageHeader
             
         '<separator>
         Case 8
@@ -3649,7 +3649,7 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Trim empty borders
         Case 10
-            Process "Trim empty borders", , , UNDO_IMAGEHEADER
+            Process "Trim empty borders", , , UNDO_ImageHeader
         
         '<separator>
         Case 11
@@ -3659,11 +3659,11 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Flip horizontal (mirror)
         Case 13
-            Process "Flip image horizontally", , , UNDO_IMAGE
+            Process "Flip image horizontally", , , UNDO_Image
         
         'Flip vertical
         Case 14
-            Process "Flip image vertically", , , UNDO_IMAGE
+            Process "Flip image vertically", , , UNDO_Image
         
         'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
         'Isometric view
@@ -3682,7 +3682,7 @@ End Sub
 
 'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
 Private Sub MnuImportClipboard_Click()
-    Process "Paste as new image", False, , UNDO_NOTHING, , False
+    Process "Paste as new image", False, , UNDO_Nothing, , False
 End Sub
 
 'Attempt to import an image from the Internet
@@ -3845,7 +3845,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         
         'Lava
         Case 3
-            Process "Lava", , , UNDO_LAYER
+            Process "Lava", , , UNDO_Layer
         
         'Metal (formerly "steel")
         Case 4
@@ -3857,7 +3857,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
             
         'Water
         Case 6
-            Process "Water", , , UNDO_LAYER
+            Process "Water", , , UNDO_Layer
     
     End Select
 
@@ -3869,15 +3869,15 @@ Private Sub MnuInvert_Click(Index As Integer)
         
         'CMYK (film negative)
         Case 0
-            Process "Film negative", , , UNDO_LAYER
+            Process "Film negative", , , UNDO_Layer
         
         'Hue
         Case 1
-            Process "Invert hue", , , UNDO_LAYER
+            Process "Invert hue", , , UNDO_Layer
         
         'RGB (standard)
         Case 2
-            Process "Invert RGB", , , UNDO_LAYER
+            Process "Invert RGB", , , UNDO_Layer
     
     End Select
     
@@ -3945,15 +3945,15 @@ Private Sub MnuRotate_Click(Index As Integer)
         
         'Rotate 90
         Case 2
-            Process "Rotate image 90 clockwise", , , UNDO_IMAGE
+            Process "Rotate image 90 clockwise", , , UNDO_Image
         
         'Rotate 270
         Case 3
-            Process "Rotate image 90 counter-clockwise", , , UNDO_IMAGE
+            Process "Rotate image 90 counter-clockwise", , , UNDO_Image
         
         'Rotate 180
         Case 4
-            Process "Rotate image 180", , , UNDO_IMAGE
+            Process "Rotate image 180", , , UNDO_Image
         
         'Rotate arbitrary
         Case 5
@@ -3978,15 +3978,15 @@ Private Sub MnuSelect_Click(Index As Integer)
     
         'Select all.  (Note that Square Selection is passed as the relevant tool for this action.)
         Case 0
-            Process "Select all", , , UNDO_SELECTION
+            Process "Select all", , , UNDO_Selection
         
         'Select none
         Case 1
-            Process "Remove selection", , , UNDO_SELECTION
+            Process "Remove selection", , , UNDO_Selection
         
         'Invert
         Case 2
-            Process "Invert selection", , , UNDO_SELECTION
+            Process "Invert selection", , , UNDO_Selection
         
         '<separator>
         Case 3
@@ -4016,7 +4016,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Erase selected area
         Case 10
-            Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
         
         '<separator>
         Case 11
@@ -4114,7 +4114,7 @@ Private Sub MnuStylize_Click(Index As Integer)
     
         'Antique
         Case 0
-            Process "Antique", , , UNDO_LAYER
+            Process "Antique", , , UNDO_Layer
         
         'Diffuse
         Case 1
@@ -4368,5 +4368,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = Fal
     'Next, menus must be handled separately, because they are implemented using API menus
     Menus.UpdateAgainstCurrentTheme
     IconsAndCursors.ApplyAllMenuIcons
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
