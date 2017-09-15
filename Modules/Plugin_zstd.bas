@@ -25,7 +25,7 @@ Option Explicit
 
 'These constants were originally declared in zstd.h
 Private Const ZSTD_MIN_CLEVEL As Long = 1
-Private Const ZSTD_DEFAULT_CLEVEL As Long = 1
+Private Const ZSTD_DEFAULT_CLEVEL As Long = 3
 Private Const ZSTD_MAX_CLEVEL As Long = 22
 
 Private Declare Function ZSTD_versionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long

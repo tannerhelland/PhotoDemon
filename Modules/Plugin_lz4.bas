@@ -41,7 +41,7 @@ Private Const LZ4_DEFAULT_ALEVEL As Long = 1
 'This value is not declared by the lz4 library, and technically, there is no maximum value.  Compression just
 ' approaches 0% as you increase the level.  I provide a "magic number" cap simply so it supports the same
 ' default/min/max functions as the other libraries
-Private Const LZ4_MAX_ALEVEL As Long = 1000
+Private Const LZ4_MAX_ALEVEL As Long = 500
 
 'These constants were originally declared in lz4_hc.h
 Private Const LZ4HC_MIN_CLEVEL As Long = 3
@@ -270,9 +270,9 @@ End Function
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As Long = 256)
     #If DEBUGMODE = 1 Then
         If (faultyReturnCode <> 256) Then
-            pdDebug.LogAction "lz4 returned an error code: " & faultyReturnCode, PDM_EXTERNAL_LIB
+            pdDebug.LogAction "lz4 returned an error code: " & faultyReturnCode, PDM_External_Lib
         Else
-            pdDebug.LogAction "lz4 experienced an error; additional explanation may be: " & errString, PDM_EXTERNAL_LIB
+            pdDebug.LogAction "lz4 experienced an error; additional explanation may be: " & errString, PDM_External_Lib
         End If
     #End If
 End Sub

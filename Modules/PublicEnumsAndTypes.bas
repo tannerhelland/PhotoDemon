@@ -149,20 +149,20 @@ End Enum
 'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
 ' This type is used by PD to determine the most efficient way to store/restore previous actions.
 Public Enum PD_UndoType
-    UNDO_NOTHING = -1
-    UNDO_EVERYTHING = 0
-    UNDO_IMAGE = 1
-    UNDO_IMAGE_VECTORSAFE = 2
-    UNDO_IMAGEHEADER = 3
-    UNDO_LAYER = 4
-    UNDO_LAYER_VECTORSAFE = 5
-    UNDO_LAYERHEADER = 6
-    UNDO_SELECTION = 7
+    UNDO_Nothing = -1
+    UNDO_Everything = 0
+    UNDO_Image = 1
+    UNDO_Image_VectorSafe = 2
+    UNDO_ImageHeader = 3
+    UNDO_Layer = 4
+    UNDO_Layer_VectorSafe = 5
+    UNDO_LayerHeader = 6
+    UNDO_Selection = 7
 End Enum
 
 #If False Then
-    Private Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGE_VECTORSAFE = 2, UNDO_IMAGEHEADER = 3
-    Private Const UNDO_LAYER = 4, UNDO_LAYER_VECTORSAFE = 5, UNDO_LAYERHEADER = 5, UNDO_SELECTION = 7
+    Private Const UNDO_Nothing = -1, UNDO_Everything = 0, UNDO_Image = 1, UNDO_Image_VectorSafe = 2, UNDO_ImageHeader = 3
+    Private Const UNDO_Layer = 4, UNDO_Layer_VectorSafe = 5, UNDO_LayerHeader = 5, UNDO_Selection = 7
 #End If
 
 'Enums for App Command messages, which are (optionally) returned by the pdInput class

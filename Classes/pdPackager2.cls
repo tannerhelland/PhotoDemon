@@ -821,7 +821,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         If thisIsATempFile Then
-            createSuccess = m_File.FileCreateHandle(dstFilename, hFile, True, True, OptimizeTempFile)
+            createSuccess = m_File.FileCreateHandle(dstFilename, hFile, True, True, OptimizeTempFile Or OptimizeSequentialAccess)
         Else
             createSuccess = m_File.FileCreateHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
         End If
