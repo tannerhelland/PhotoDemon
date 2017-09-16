@@ -378,7 +378,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
                 If (Not bottomLayer.AffineTransformsActive(False)) Then
                 
                     With bottomLayer
-                        GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus, , , , True
+                        GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus, , , , True
                     End With
                 
                 'If rotation or other affine transforms are active, a more complicated solution is required.
@@ -395,7 +395,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
                     
                     'Render the transformed DIB now.
                     With bottomLayer
-                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity * 0.01, .GetLayerResizeQuality_GDIPlus
+                        GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), 1#, .GetLayerResizeQuality_GDIPlus
                     End With
                 
                 End If
