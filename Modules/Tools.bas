@@ -76,7 +76,7 @@ Public Sub SetCustomToolState(ByVal newState As Long)
 End Sub
 
 Public Function IsSelectionToolActive() As Boolean
-    IsSelectionToolActive = CBool((g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_WAND))
+    IsSelectionToolActive = (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_WAND)
 End Function
 
 'When a tool is finished processing, it can call this function to release all tool tracking variables
@@ -114,7 +114,7 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     
     'Cache the layer's aspect ratio.  Note that this *does not include any current non-destructive transforms*!
     ' (We will use this to handle the SHIFT key, which typically means "preserve original image aspect ratio".)
-    If (srcLayer.GetLayerHeight(False) <> 0) Then
+    If (srcLayer.GetLayerHeight(False) <> 0#) Then
         m_LayerAspectRatio = srcLayer.GetLayerWidth(False) / srcLayer.GetLayerHeight(False)
     Else
         m_LayerAspectRatio = 1#
@@ -238,9 +238,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'Set the new left/top position to match the mouse coordinates, while also accounting for the shift key
                 ' (which locks the current aspect ratio).
-                If ((newRight - curLayerX) > 1) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
                 If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
-                If ((newBottom - newTop) < 1) Then newTop = newBottom - 1
+                If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
                 
                 'Immediately relay the new coordinates to the source layer
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
@@ -254,9 +254,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newBottom = m_InitLayerCoords_Pure(2).y
                 
-                If ((curLayerX - newLeft) > 1) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
                 If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
-                If ((newBottom - newTop) < 1) Then newTop = newBottom - 1
+                If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
@@ -267,9 +267,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newRight = m_InitLayerCoords_Pure(1).x
                 newTop = m_InitLayerCoords_Pure(0).y
                 
-                If ((newRight - curLayerX) > 1) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
                 If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
-                If ((newBottom - newTop) < 1) Then newBottom = newTop + 1
+                If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
@@ -280,9 +280,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newTop = m_InitLayerCoords_Pure(0).y
                 
-                If ((curLayerX - newLeft) > 1) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
                 If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
-                If ((newBottom - newTop) < 1) Then newBottom = newTop + 1
+                If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
                 rotateCleanupRequired = True
@@ -457,7 +457,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 End With
                 
                 With srcImage.GetActiveLayer
-                    Process "Resize layer (on-canvas)", False, cParams.GetParamString(), UNDO_LAYERHEADER
+                    Process "Resize layer (on-canvas)", False, cParams.GetParamString(), UNDO_LayerHeader
                 End With
                 
             'Rotation
@@ -466,7 +466,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 cParams.AddParam "layer-angle", srcImage.GetActiveLayer.GetLayerAngle
                 
                 With srcImage.GetActiveLayer
-                    Process "Rotate layer (on-canvas)", False, cParams.GetParamString(), UNDO_LAYERHEADER
+                    Process "Rotate layer (on-canvas)", False, cParams.GetParamString(), UNDO_LayerHeader
                 End With
             
             'Move-only transformations
@@ -478,7 +478,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 End With
                 
                 With srcImage.GetActiveLayer
-                    Process "Move layer", False, cParams.GetParamString(), UNDO_LAYERHEADER
+                    Process "Move layer", False, cParams.GetParamString(), UNDO_LayerHeader
                 End With
                 
             'The caller can specify other dummy values if they don't want us to redraw the screen

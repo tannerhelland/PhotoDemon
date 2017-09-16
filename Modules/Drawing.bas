@@ -385,10 +385,57 @@ Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
     
 End Function
 
+'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.  Note that *all*
+' layer transform properties are considered (including x/y offsets, scaling, rotation, and skew).  As such, you should not
+' handle any of these properties specially.
+Public Function ConvertImageCoordsToLayerCoords_Full(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
+
+    If (srcImage Is Nothing) Then Exit Function
+    If (srcLayer Is Nothing) Then Exit Function
+    
+    'If the layer has one or more active affine transforms, this step becomes complicated.
+    If srcLayer.AffineTransformsActive(True) Then
+    
+        'Create a copy of either the layer's transformation matrix, or a custom matrix if passed in
+        Dim tmpMatrix As pd2DTransform
+        srcLayer.GetCopyOfLayerTransformationMatrix_Full tmpMatrix
+        
+        'Invert the matrix
+        If tmpMatrix.InvertTransform() Then
+            
+            'Apply the matrix to the incoming image coordinates, then return them!
+            tmpMatrix.ApplyTransformToXY imgX, imgY
+            layerX = imgX
+            layerY = imgY
+            
+            ConvertImageCoordsToLayerCoords_Full = True
+        
+        'If we can't invert the matrix, we're in trouble.  Copy out the incoming image coordinates as a failsafe.
+        Else
+            
+            layerX = imgX
+            layerY = imgY
+            
+            Debug.Print "WARNING! Transformation matrix could not be generated."
+            
+            ConvertImageCoordsToLayerCoords_Full = False
+            
+        End If
+    
+    'If the layer doesn't have affine transforms active, this step is easy.  The only "transform" we need to consider are the
+    ' layer's offsets (which may be non-zero).
+    Else
+        layerX = imgX - srcLayer.GetLayerOffsetX
+        layerY = imgY - srcLayer.GetLayerOffsetY
+        ConvertImageCoordsToLayerCoords_Full = True
+    End If
+    
+End Function
+
 'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
 Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
 
-    If srcImage.ImgViewport Is Nothing Then Exit Sub
+    If (srcImage.ImgViewport Is Nothing) Then Exit Sub
     
     'Get the current zoom value from the source image
     Dim zoomVal As Double
@@ -540,7 +587,7 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     Dim layerCorners() As POINTFLOAT
     ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    srcLayer.GetLayerCornerCoordinates layerCorners, True, False
+    srcLayer.GetLayerCornerCoordinates layerCorners
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
@@ -575,7 +622,7 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     Dim layerCorners() As POINTFLOAT
     ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    srcLayer.GetLayerCornerCoordinates layerCorners, True, False
+    srcLayer.GetLayerCornerCoordinates layerCorners
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
@@ -621,7 +668,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     Dim layerRotateNodes() As POINTFLOAT
     ReDim layerRotateNodes(0 To 4) As POINTFLOAT
     
-    srcLayer.GetLayerRotationNodeCoordinates layerRotateNodes, True
+    srcLayer.GetLayerRotationNodeCoordinates layerRotateNodes
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
     
     Dim cSurface As pd2DSurface
