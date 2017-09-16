@@ -28,7 +28,7 @@ Public Sub AddBlankLayer_XML(ByVal processParameters As String)
 End Sub
 
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
-Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As LAYER_TYPE = PDL_IMAGE)
+Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As PD_LayerType = PDL_IMAGE)
 
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
@@ -50,7 +50,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -74,7 +74,7 @@ Public Sub AddNewLayer_XML(ByVal processParameters As String)
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
+Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerType, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -198,7 +198,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     End If
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the main viewport (if requested)
     If (Not suspendRedraws) Then
@@ -232,7 +232,7 @@ Public Sub AddLayerFromVisibleLayers()
     pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -257,7 +257,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         'Retrieve a filepath
         Dim imgFilePath As String
         If FileMenu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd) Then
-            Process "New layer from file", False, imgFilePath, UNDO_IMAGE_VECTORSAFE
+            Process "New layer from file", False, imgFilePath, UNDO_Image_VectorSafe
         End If
     
     'If showDialog is FALSE, the user has already selected a file, and we just need to load it
@@ -287,11 +287,11 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).GetLayerByID(newLayerID).GetLayerName & ")"
             
             'Notify the parent image that the entire image now needs to be recomposited
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
             
             'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", "", UNDO_IMAGE_VECTORSAFE, pdImages(g_CurrentImage).GetActiveLayerID, -1
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", "", UNDO_Image_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerID, -1
             End If
             
             'Render the new image to screen
@@ -334,7 +334,7 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
         End Select
         
         'Notify the parent object of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, layerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, layerIndex
     
     End If
 
@@ -402,7 +402,7 @@ Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).SetLayerVisibility layerVisibility
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, dLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, dLayerIndex
     
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
     toolbar_Layers.NotifyLayerChange pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).GetLayerID
@@ -450,7 +450,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -484,7 +484,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 .DeleteLayerByIndex dLayerIndex
                 
                 'Notify the parent of the change
-                .NotifyImageChanged UNDO_LAYER, mergeTarget
+                .NotifyImageChanged UNDO_Layer, mergeTarget
                 
                 'Set the newly merged layer as the active layer
                 .SetActiveLayerByIndex mergeTarget
@@ -502,7 +502,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 .DeleteLayerByIndex mergeTarget
                 
                 'Notify the parent of the change
-                .NotifyImageChanged UNDO_LAYER, dLayerIndex
+                .NotifyImageChanged UNDO_Layer, dLayerIndex
                 
                 'Set the newly merged layer as the active layer
                 .SetActiveLayerByIndex dLayerIndex
@@ -606,7 +606,7 @@ Public Sub DeleteLayer(ByVal dLayerIndex As Long)
     SetActiveLayerByIndex curLayerIndex, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -657,7 +657,7 @@ Public Sub DeleteHiddenLayers()
     End If
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -681,7 +681,7 @@ Public Sub MoveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     SetActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     If updateInterface Then
         
@@ -729,7 +729,7 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     SetActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
     
     If updateInterface Then
     
@@ -787,8 +787,8 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     SetActiveLayerByIndex 0, False
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, 0
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -850,8 +850,8 @@ Public Sub MergeVisibleLayers()
     SetActiveLayerByIndex 0, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, 0
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -868,7 +868,7 @@ Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     SyncInterfaceToCurrentImage
@@ -885,7 +885,7 @@ Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).MakeCanvasTransformsPermanent
     
     'Notify the parent object of this change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, srcLayerIndex
     
     'Re-sync the interface
     SyncInterfaceToCurrentImage
@@ -901,7 +901,7 @@ Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerAngle 0
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     SyncInterfaceToCurrentImage
@@ -922,7 +922,7 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
     End If
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     SyncInterfaceToCurrentImage
@@ -958,7 +958,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     End With
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -979,7 +979,7 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     End With
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1001,7 +1001,7 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
     End With
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1040,32 +1040,21 @@ Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
 
 End Sub
 
-'Given a layer index and an x/y position (IMAGE COORDINATE SPACE - necessary because we have to adjust the coordinates if the
-' current layer has non-destructive resize modifiers applied), return an RGBQUAD for the pixel at that location.
+'Given a layer index and an x/y position (ALREADY CONVERTED TO LAYER COORDINATE SPACE!), return an RGBQUAD for the pixel
+' at that location.
 '
 'If the pixel lies outside the layer boundaries, the function will return FALSE.  Make sure to check this before evaluating
 ' the RGBQUAD.
-Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQUAD, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
+Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As Long, ByVal layerY As Long, ByRef dstQuad As RGBQUAD, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
 
     'Before doing anything else, check to see if the x/y coordinate even lies inside the image
     Dim tmpLayerRef As pdLayer
     Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
-    
-    Dim layerRect As RECT
-    FillRectForLayer tmpLayerRef, layerRect, True
-    
-    If IsPointInRect(x, y, layerRect) Then
         
+    If (layerX >= 0) And (layerY >= 0) And (layerX < tmpLayerRef.layerDIB.GetDIBWidth) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
+    
         'The point lies inside the layer, which means we need to figure out the color at this position
         GetRGBAPixelFromLayer = True
-        
-        'Re-calculate x and y to layer coordinates
-        x = x - tmpLayerRef.GetLayerOffsetX
-        y = y - tmpLayerRef.GetLayerOffsetY
-        
-        'If a non-destructive resize is active, remap the x/y coordinates to match
-        If tmpLayerRef.GetLayerCanvasXModifier <> 1 Then x = x / tmpLayerRef.GetLayerCanvasXModifier
-        If tmpLayerRef.GetLayerCanvasYModifier <> 1 Then y = y / tmpLayerRef.GetLayerCanvasYModifier
         
         'X and Y now represent the passed coordinate, but translated into the specified layer's coordinate space.
         ' Retrieve the color (and alpha, if relevant) at that point.
@@ -1075,16 +1064,16 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
         Dim quickX As Long
-        quickX = x * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
+        quickX = layerX * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (y < tmpLayerRef.layerDIB.GetDIBHeight) Then
+        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
         
             With dstQuad
-                .Red = tmpData(quickX + 2, y)
-                .Green = tmpData(quickX + 1, y)
-                .Blue = tmpData(quickX, y)
-                If tmpLayerRef.layerDIB.GetDIBColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
+                .Blue = tmpData(quickX, layerY)
+                .Green = tmpData(quickX + 1, layerY)
+                .Red = tmpData(quickX + 2, layerY)
+                If (tmpLayerRef.layerDIB.GetDIBColorDepth = 32) Then .Alpha = tmpData(quickX + 3, layerY)
             End With
             
         End If
@@ -1093,32 +1082,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
     
     'This coordinate does not lie inside the layer.
     Else
-    
-        'If the "enlarge for interaction padding" option is set, make our rect a bit larger and then check again for validity.
-        ' If this check succeeds, return TRUE, despite us not having a valid RGB coord for that location.
-        If enlargeForInteractionPadding Then
-        
-            'Calculate PD's global mouse accuracy value, per the current image's zoom
-            Dim mouseAccuracy As Double
-            mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
-            
-            'Inflate the rect we were passed
-            InflateRect layerRect, mouseAccuracy, mouseAccuracy
-            
-            'Check the point again
-            If IsPointInRect(x, y, layerRect) Then
-            
-                'Return TRUE, but the caller should know that the rgbQuad value is *not necessarily accurate*!
-                GetRGBAPixelFromLayer = True
-            
-            Else
-                GetRGBAPixelFromLayer = False
-            End If
-        
-        Else
-            GetRGBAPixelFromLayer = False
-        End If
-    
+        GetRGBAPixelFromLayer = False
     End If
 
 End Function
@@ -1143,11 +1107,11 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     If givePreferenceToCurrentLayer Then
     
         'Convert the passed image (x, y) coordinates into the active layer's coordinate space
-        Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+        Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
     
         'See if the mouse is over a POI for the current layer (which may extend outside a layer's boundaries, because the clickable
         ' nodes have a radius greater than 0).  If the mouse is over a POI, return the active layer index immediately.
-        curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+        curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
         If (curPOI <> poi_Undefined) And (curPOI <> poi_Interior) Then
@@ -1166,10 +1130,10 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
         If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
         
             'Convert the image (x, y) coordinate into the layer's coordinate space
-            Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetLayerByIndex(i), imgX, imgY, layerX, layerY
-        
+            Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetLayerByIndex(i), imgX, imgY, layerX, layerY
+            
             'Only evaluate the current layer if the mouse is over it
-            If GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
+            If Layers.GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
                 'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
                 If (Not CBool(toolpanel_MoveSize.chkIgnoreTransparent)) Then
@@ -1177,7 +1141,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
                     Exit Function
                 Else
                 
-                    If (tmpRGBA.alpha > 0) Then
+                    If (tmpRGBA.Alpha > 0) Then
                         GetLayerUnderMouse = i
                         Exit Function
                     End If
@@ -1221,7 +1185,7 @@ End Sub
 'If a function must rasterize a vector or text layer, it needs to call this function first.  This function will display a dialog
 ' asking the user for permission to rasterize the layer(s) in question.  Note that CANCEL is a valid return, so any callers need
 ' to handle that case gracefully!
-Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_TYPE = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
+Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_LayerType = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
     
     Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, dialogTitle As String
     
@@ -1274,7 +1238,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
             
                 'Rasterize this layer, and notify the parent image of the change
                 pdImages(g_CurrentImage).GetLayerByIndex(i).RasterizeVectorData
-                pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+                pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
             
             End If
         Next i
@@ -1283,7 +1247,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
         
         'Rasterize just this one layer, and notify the parent image of the change
         pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).RasterizeVectorData
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, srcLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, srcLayerIndex
         
     End If
     

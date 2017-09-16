@@ -599,11 +599,11 @@ Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shif
         
             'Back button: currently triggers Undo
             Case AC_BROWSER_BACKWARD, AC_UNDO
-                If pdImages(g_CurrentImage).UndoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
+                If pdImages(g_CurrentImage).UndoManager.GetUndoState Then Process "Undo", , , UNDO_Nothing
                 
             'Forward button: currently triggers Redo
             Case AC_BROWSER_FORWARD, AC_REDO
-                If pdImages(g_CurrentImage).UndoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
+                If pdImages(g_CurrentImage).UndoManager.GetRedoState Then Process "Redo", , , UNDO_Nothing
                 
         End Select
 
@@ -659,7 +659,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     'Delete key: delete the active layer (if allowed)
                     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
                         markEventHandled = True
-                        Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+                        Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
                     End If
                     
                     'Insert: raise Add New Layer dialog
@@ -767,7 +767,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
     Dim layerX As Single, layerY As Single
-    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
@@ -788,7 +788,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        m_CurPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+        m_CurPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -821,7 +821,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
                 
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+                Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
         
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -852,7 +852,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 If userIsEditingCurrentTextLayer Then
                     
                     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                    Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+                    Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
                     
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
@@ -940,10 +940,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't reuse image coordinates as layer coordinates!)
-    '
-    'Note also that we refresh the layer transformation matrix if the mouse is not down
     Dim layerX As Single, layerY As Single
-    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
         
     'Check the left mouse button
     If m_LMBDown Then
@@ -1017,6 +1015,13 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     ' layer even if it lies off-canvas.
                     Else
                         m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
+                        
+                        #If DEBUGMODE = 1 Then
+                            Message "Target layer: %1", g_Language.TranslateMessage("(none)"), "DONOTLOG"
+                        #Else
+                            Message "Target layer: %1", g_Language.TranslateMessage("(none)")
+                        #End If
+                        
                     End If
                 
                 'Auto-activation is disabled.  Don't bother reporting the layer beneath the mouse to the user, as actions can
@@ -1059,7 +1064,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
     Dim layerX As Single, layerY As Single
-    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
@@ -1143,7 +1148,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
                     With pdImages(g_CurrentImage).GetActiveLayer
-                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
+                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML), UNDO_Image_VectorSafe
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
@@ -1707,7 +1712,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_MOVE
             
             'When transforming layers, the cursor depends on the active POI
-            curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+            curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
             
             Select Case curPOI
             
@@ -1869,7 +1874,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 
                 'When transforming layers, the cursor depends on the active POI
-                curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+                curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
                 
                 Select Case curPOI
     

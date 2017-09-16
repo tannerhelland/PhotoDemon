@@ -602,7 +602,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                     Else
                         
                         'Retrieve the layer's destination position into our POINTFLOAT array
-                        .GetLayerCornerCoordinates m_PlgPoints, True
+                        .GetLayerCornerCoordinates m_PlgPoints
                         
                         'Apply a full parallelogram transformation
                         GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
@@ -1211,7 +1211,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' We will optimize this heavily in the future, but for now, I just want to get it working.
             
             'Start by retrieving the corner coordinates of the transformed layer.  We need these values to perform a parallelogram-style blt.
-            srcLayer.GetLayerCornerCoordinates m_PlgPoints, True
+            srcLayer.GetLayerCornerCoordinates m_PlgPoints
             
             'Next, we want to create a copy of those layer corner points, as transformed into the destination coordinate space.
             
@@ -1544,7 +1544,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Else
             
             'Start by retrieving the corner coordinates of the transformed layer.  We need these values to perform a parallelogram-style blt.
-            srcLayer.GetLayerCornerCoordinates m_PlgPoints, True
+            srcLayer.GetLayerCornerCoordinates m_PlgPoints
             
             'Next, we want to create a copy of those layer corner points, as transformed into the destination coordinate space.
             

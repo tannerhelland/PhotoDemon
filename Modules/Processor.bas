@@ -89,7 +89,7 @@ Private prevNDFXLayerID As Long, prevNDFXSetting() As Variant
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
 '                  to prevent them from being executed twice.
-Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
@@ -170,11 +170,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If a dialog is being displayed, forcibly disable Undo creation.  (This is really just a failsafe; PD's various dialog functions
     ' are smart about not requesting Undo/Redo events for dialog actions.)
-    If raiseDialog Then createUndo = UNDO_NOTHING
+    If raiseDialog Then createUndo = UNDO_Nothing
     
     'If this action requires us to create an Undo entry, do so now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
-    If (createUndo <> UNDO_NOTHING) Then
+    If (createUndo <> UNDO_Nothing) Then
         
         'Save this action's information in the m_LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
         With m_LastProcess
@@ -317,14 +317,14 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If the user wants us to time this action, display the results now.  (Note that we only do this for actions that change the image
     ' in some way, as determined by whether meaningful Undo/Redo data is created.)
-    If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then ReportProcessorTimeTaken m_ProcessingTime
+    If g_DisplayTimingReports And (createUndo <> UNDO_Nothing) Then ReportProcessorTimeTaken m_ProcessingTime
     
     Dim procSortStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procSortStopTime
     
     'If the current image has been modified, notify the interface manager of the change.  It will handle things like generating
     ' new thumbnail icons.  (Note that we disable non-essential UI updates while performing batch conversions, to improve performance.)
-    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged g_CurrentImage
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged g_CurrentImage
     
     Dim procUndoStartTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStartTime
@@ -342,7 +342,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     m_Processing = False
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
-    If (createUndo <> UNDO_NOTHING) Then
+    If (createUndo <> UNDO_Nothing) Then
         If (g_OpenImageCount > 0) Then CanvasManager.ActivatePDImage g_CurrentImage, "processor call complete", True, createUndo
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
@@ -472,7 +472,7 @@ End Sub
 
 'When a control tied to a non-destructive layer effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
-Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
     Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
     
@@ -490,7 +490,7 @@ End Sub
 '
 'If the layer ID is significant, it can also be passed.  If supplied, it will be checked against the previous layer ID, and an Undo
 ' will be generated only if the two values match.
-Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
+Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
     
     Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
     
@@ -509,7 +509,7 @@ Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PR
             .AddParam "value", layerSettingValue
         End With
         
-        MiniProcess_NDFXOnly "Modify layer", , cParams.GetParamString(), UNDO_LAYERHEADER, , , prevGenericLayerID
+        MiniProcess_NDFXOnly "Modify layer", , cParams.GetParamString(), UNDO_LayerHeader, , , prevGenericLayerID
         
     End If
     
@@ -556,7 +556,7 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
                         .AddParam "value", textSettingValue
                     End With
                     
-                    MiniProcess_NDFXOnly "Modify text layer", , cParams.GetParamString(), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
+                    MiniProcess_NDFXOnly "Modify text layer", , cParams.GetParamString(), UNDO_Layer_VectorSafe, , , prevTextLayerID
                     
                 End If
                 
@@ -567,7 +567,7 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
 End Sub
 
 'Same as above, but for actual non-destructive image processing effects
-Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As PD_LayerNonDestructiveFX, ByVal ndfxSettingValue As Variant, ByVal targetLayerID As Long)
     
     'This function is easy; just store the values we are passed
     prevNDFXSetting(ndfxSettingID) = ndfxSettingValue
@@ -577,7 +577,7 @@ Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE
     
 End Sub
 
-Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant)
+Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As PD_LayerNonDestructiveFX, ByVal ndfxSettingValue As Variant)
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
@@ -594,14 +594,14 @@ Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_F
             .AddParam "value", ndfxSettingValue
         End With
         
-        MiniProcess_NDFXOnly "Non-destructive effect", , cParams.GetParamString(), UNDO_LAYERHEADER, , , prevNDFXLayerID
+        MiniProcess_NDFXOnly "Non-destructive effect", , cParams.GetParamString(), UNDO_LayerHeader, , , prevNDFXLayerID
         
     End If
     
 End Sub
 
 'Micro processor to be used ONLY for non-destructive FX.  I have deliberately declared it as private to avoid using it elsewhere.
-Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional ByVal processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
+Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional ByVal processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
 
     'Mark the software processor as busy, but only if we're not showing a dialog.
     If (Not raiseDialog) Then m_Processing = True
@@ -613,7 +613,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     Macros.NotifyProcessorEvent processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
     'If a dialog is being displayed, forcibly disable Undo creation
-    If raiseDialog Then createUndo = UNDO_NOTHING
+    If raiseDialog Then createUndo = UNDO_Nothing
     
     'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types when it comes time to use them.
@@ -646,7 +646,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
-    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         Interface.NotifyImageChanged g_CurrentImage, targetLayerID
         IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     End If
@@ -657,7 +657,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
     ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
     '     during macro playback)
-    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
         
         'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
         ' processID requests.
@@ -705,7 +705,7 @@ Public Sub SyncAllTextLayerProperties(ByRef srcLayer As pdLayer)
     End If
 End Sub
 
-Private Function GetNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERIC_PROPERTY) As String
+Private Function GetNameOfGenericAction(ByVal genericSettingID As PD_LayerGenericProperty) As String
     
     Select Case genericSettingID
         
@@ -880,7 +880,7 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
     
 End Function
 
-Private Function GetNameOfNDFXAction(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX) As String
+Private Function GetNameOfNDFXAction(ByVal ndfxSettingID As PD_LayerNonDestructiveFX) As String
     
     Select Case ndfxSettingID
         
@@ -975,11 +975,11 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
     If (Not pdImages(g_CurrentImage) Is Nothing) Then
     
-        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
         
             'Ask the Undo engine to return the last selection param string it has on file
             Dim lastSelParamString As String
-            lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_SELECTION)
+            lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_Selection)
             
             'If such a param string exists, compare it against the current selection param string
             If (Len(lastSelParamString) <> 0) Then
@@ -987,7 +987,7 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
                 'If the last selection Undo param string does not match the current selection param string, the user has
                 ' modified the selection in some way since the last Undo was created.  Create a new entry now.
                 If Strings.StringsNotEqual(lastSelParamString, pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, True) Then
-                    pdImages(g_CurrentImage).UndoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION
+                    pdImages(g_CurrentImage).UndoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection
                 End If
             
             End If
@@ -1000,12 +1000,12 @@ End Sub
 
 'Certain processor actions (like rotating the image) require us to remove the active selection.  We could probably work around this
 ' in the future, but at present, we simply remove the selection before proceeding.
-Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     If (Not raiseDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
     
         'Only worry about this step if a selection is currently active
-        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_Selection) Then
     
             Dim removeSelectionInAdvance As Boolean
             removeSelectionInAdvance = False
@@ -1032,7 +1032,7 @@ Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raise
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Flip horizontally", processID, True)
             
             'If selection removal is required, process the removal before proceeding with the original process request
-            If removeSelectionInAdvance Then Processor.Process "Remove selection", , , UNDO_SELECTION
+            If removeSelectionInAdvance Then Processor.Process "Remove selection", , , UNDO_Selection
             
             'We also need to catch another strange occurrence here.  PD's "Crop" command forcibly clears the selection upon completion.
             ' This is done as a convenience, as post-crop, a selection is unlikely to be useful.  Unfortunately, this behavior wreaks
@@ -1061,7 +1061,7 @@ End Sub
 ' allow the user to completely cancel the current action, which means the return of this function *must* be dealt with!
 '
 'Returns: TRUE if allowed to proceed, FALSE otherwise.  If FALSE is returned, you *must* halt the current operation.
-Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True) As Boolean
+Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True) As Boolean
     
     'The vast majority of actions either...
     ' 1) Don't require forcible rasterization, or...
@@ -1098,7 +1098,7 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
         Dim rasterizeImagePromptNeeded As Boolean
         rasterizeImagePromptNeeded = (Not raiseDialog)
         rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
-        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING))
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_Image) Or (createUndo = UNDO_Everything))
         
         'If this action requires rasterization, let's now check for a few exceptions.
         ' 1) Layer merge operations require us to make a full Undo/Redo copy of the entire image stack, because layer IDs are directly
@@ -1181,7 +1181,7 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
             
             rasterizeImagePromptNeeded = (Not raiseDialog)
             rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
-            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (createUndo = UNDO_LAYER)
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (createUndo = UNDO_Layer)
             
             'As before, display a "do you want to rasterize?" prompt as necessary
             If rasterizeImagePromptNeeded Then
@@ -1208,7 +1208,7 @@ End Function
 'Processor functions that need to enable/disable various UI elements can use these simplified wrappers.
 '
 'Calls to SetProcessorUI_Busy() *MUST ALWAYS* be paired with subsequent calls to SetProcessorUI_Idle(), or the UI will remain locked.
-Private Sub SetProcessorUI_Busy(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub SetProcessorUI_Busy(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
     
     'The generic MarkProgramBusyState() function will handle most of this for us, but we first need to figure out if it's appropriate
     ' to do things like display an hourglass cursor.
@@ -1216,7 +1216,7 @@ Private Sub SetProcessorUI_Busy(ByVal processID As String, Optional raiseDialog 
     
     'If we are modifying the image in some way, and the action is likely to take awhile, display a busy cursor.
     If (Not raiseDialog) Then
-        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_IMAGE_VECTORSAFE) Or (createUndo = UNDO_LAYER) Then useBusyCursor = True
+        If (createUndo = UNDO_Everything) Or (createUndo = UNDO_Image) Or (createUndo = UNDO_Image_VectorSafe) Or (createUndo = UNDO_Layer) Then useBusyCursor = True
     End If
     
     'Note that the processor is currently running; some UI tasks use this to suspend painting ops.  (If we're just being used as
@@ -1227,7 +1227,7 @@ Private Sub SetProcessorUI_Busy(ByVal processID As String, Optional raiseDialog 
     
 End Sub
 
-Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
     
     m_Processing = False
     m_NestedProcessingCount = m_NestedProcessingCount - 1
@@ -1242,7 +1242,7 @@ Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog 
 End Sub
 
 'After a processor action completes, call this function to push a new entry onto the Undo/Redo stack (as necessary)
-Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'If the user canceled the requested action before it completed, we may need to manually roll back some processor phases
     If g_cancelCurrentAction Then
@@ -1264,7 +1264,7 @@ Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialo
         '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
         ' 3) If we are in the midst of playing back a recorded macro.  (Undo/Redo entries take time and memory to process,
         '     so we ignore them during macro playback)
-        If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And recordAction Then
+        If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And recordAction Then
             If (Not pdImages(g_CurrentImage) Is Nothing) Then
                 
                 'In most cases, the Undo/Redo engine can automatically figure out what layer is affected by the current action.
@@ -1324,7 +1324,7 @@ End Sub
 'Helper wrapper for FILE MENU operations.  (Note that FILE MENU actions are never recorded as part of macros.)
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     If Strings.StringsEqual(processID, "New image", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormNewImage Else FileMenu.CreateNewImage processParameters
@@ -1412,7 +1412,7 @@ End Function
 'Helper wrapper for EDIT MENU operations.  (Note that edit menu actions are generally not recorded as part of macros.)
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
     ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
@@ -1496,7 +1496,7 @@ End Function
 'Helper wrapper for TOOLS MENU operations.  (Note that tool menu actions are generally not recorded as part of macros.)
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     If Strings.StringsEqual(processID, "Start macro recording", True) Then
         Macros.StartMacro
@@ -1517,7 +1517,7 @@ End Function
 'Helper wrapper for EFFECTS MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     'Artistic
     If Strings.StringsEqual(processID, "Colored pencil", True) Then
@@ -1868,7 +1868,7 @@ End Function
 'Helper wrapper for ADJUSTMENTS MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
     'Auto correct functions
     If Strings.StringsEqual(processID, "Auto correct color", True) Then
@@ -2058,7 +2058,7 @@ End Function
 'Helper wrapper for IMAGE MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
     'It may seem odd, but the Duplicate function exists in the "Loading" module.  I do this because we effectively load a copy
     ' of the original image, so all loading operations (create pdImage object, catalog metadata, initialize properties) have to
@@ -2160,7 +2160,7 @@ End Function
 'Helper wrapper for LAYER MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
     'A number of layer functions pass the relevant layer index in the parameter string (as future-proofing against selecting
     ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
@@ -2360,7 +2360,7 @@ End Function
 'Helper wrapper for SELECT MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
     'A number of selection functions pass the relevant layer index in the parameter string (as future-proofing against selecting
     ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.

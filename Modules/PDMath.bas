@@ -239,12 +239,12 @@ End Sub
 
 'Return the distance between two values on the same line
 Public Function DistanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
-    DistanceOneDimension = Sqr((x1 - x2) ^ 2)
+    DistanceOneDimension = Sqr((x1 - x2) * (x1 - x2))
 End Function
 
 'Return the distance between two points
 Public Function DistanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    DistanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+    DistanceTwoPoints = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 End Function
 
 'Return the distance between two points, but ignores the square root function; if calculating something simple, like "minimum distance only",
@@ -614,7 +614,7 @@ End Function
 
 'Given an array of points (in floating-point format), find the closest one to a target location.  If none fall below a minimum distance threshold,
 ' return -1.  (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function FindClosestPointInFloatArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTFLOAT) As Long
+Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targetY As Single, ByVal minAllowedDistance As Single, ByRef poiArray() As POINTFLOAT) As Long
 
     Dim curMinDistance As Double, curMinIndex As Long
     curMinDistance = &HFFFFFFF
