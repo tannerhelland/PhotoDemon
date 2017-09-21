@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.10</langversion>
+<langversion>6.8.11</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -419,7 +419,7 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 <translation></translation>
 </phrase>
 
-<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3777,6 +3777,11 @@ Při zadání číselné hodnoty.</translation>
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(žádný)</translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(Zadejte text zde)</translation>
 </phrase>
@@ -3796,7 +3801,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>Centrování obrazu uvnitř výřezu</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14530,11 +14535,6 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(žádný)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Uložení předvoleb</translation>
 </phrase>
@@ -14912,7 +14912,7 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <translation>Tato nová dočasná umístění složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 43 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15037,8 +15037,8 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4503 phrases. -->
-<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4508 phrases. -->
+<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
 <!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>

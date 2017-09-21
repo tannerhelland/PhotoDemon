@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.292</langversion>
+<langversion>6.7.293</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -420,7 +420,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <translation></translation>
 </phrase>
 
-<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3771,6 +3771,11 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(ninguno)</translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation></translation>
 </phrase>
@@ -3790,7 +3795,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14526,11 +14531,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(ninguno)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Guardando preferencias</translation>
 </phrase>
@@ -14906,7 +14906,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 43 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15031,8 +15031,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4503 phrases. -->
-<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4508 phrases. -->
+<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
 <!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>

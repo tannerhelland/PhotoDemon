@@ -457,7 +457,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             targetAlphaMode = LA_NORMAL
         End If
             
-        CompositeAndBlendDIBs paintLayer.layerDIB, bottomLayer.layerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity * 0.01, targetAlphaMode, paintLayer.GetLayerAlphaMode, VarPtr(topRect)
+        Me.CompositeAndBlendDIBs paintLayer.layerDIB, bottomLayer.layerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity * 0.01, targetAlphaMode, paintLayer.GetLayerAlphaMode, VarPtr(topRect)
         
     End If
     
