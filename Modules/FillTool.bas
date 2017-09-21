@@ -61,157 +61,313 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         
         'Start by grabbing (or producing) the source DIB required for the fill.  (If the user wants us to
         ' sample all layers, we need to generate a composite image.)
-        Dim fillImageRefreshRequired: fillImageRefreshRequired = False
-        fillImageRefreshRequired = (m_FillImage Is Nothing)
-        If (Not fillImageRefreshRequired) Then fillImageRefreshRequired = (m_FillImageTimestamp <> pdImages(g_CurrentImage).GetTimeOfLastChange())
         
-        If fillImageRefreshRequired Then
+        'fillSrc is just a thin reference to some other DIB; it is never created as a new object
+        Dim fillSrc As pdDIB
+        
+        'Merged sampling requires us to maintain a local copy of the fully composited image stack.
+        If m_FillSampleMerged Then
+            
+            Dim fillImageRefreshRequired: fillImageRefreshRequired = False
+            fillImageRefreshRequired = (m_FillImage Is Nothing)
+            If (Not fillImageRefreshRequired) Then fillImageRefreshRequired = (m_FillImageTimestamp <> pdImages(g_CurrentImage).GetTimeOfLastChange())
             
             'A new image copy is required.  As much as possible, still try to minimize the work we do here
+            If fillImageRefreshRequired Then
+                
+                If (m_FillImage Is Nothing) Then Set m_FillImage = New pdDIB
+                If (m_FillImage.GetDIBWidth <> pdImages(g_CurrentImage).Width) Or (m_FillImage.GetDIBHeight <> pdImages(g_CurrentImage).Height) Then
+                    m_FillImage.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+                Else
+                    m_FillImage.ResetDIB 0
+                End If
+                
+                'Note the timestamp; this may allow us to skip subsequent copy requests
+                m_FillImageTimestamp = pdImages(g_CurrentImage).GetTimeOfLastChange()
+            
+            End If
+            
+            'Merged image data requires us to obtain a fully composited copy of the current image.
+            pdImages(g_CurrentImage).GetCompositedImage m_FillImage
+            
+            Set fillSrc = m_FillImage
+        
+        'If the user is only filling the current layer, we can skip the compositing step (yay!) but we also need to convert
+        ' the incoming (x, y) coordinates into layer-space coordinates.
+        Else
+            
+            Dim newX As Single, newY As Single
+            Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, srcX, srcY, newX, newY
+            srcX = newX
+            srcY = newY
+            
+            Set fillSrc = pdImages(g_CurrentImage).GetActiveLayer.layerDIB
+            
+            'To improve performance when variable fill blend and alpha modes are in place, we always render the fill to
+            ' a temporary image, then perform a standard merge of that DIB onto the target layer.  This lets the bucket
+            ' fill algorithm run at maximum speed, regardless of underlying fill settings.
+            
+            'Initialize our temporary image now, using the same m_FillImage object we use for other purposes.
             If (m_FillImage Is Nothing) Then Set m_FillImage = New pdDIB
-            If (m_FillImage.GetDIBWidth <> pdImages(g_CurrentImage).Width) Or (m_FillImage.GetDIBHeight <> pdImages(g_CurrentImage).Height) Then
-                m_FillImage.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+            If (m_FillImage.GetDIBWidth <> fillSrc.GetDIBWidth) Or (m_FillImage.GetDIBHeight <> fillSrc.GetDIBHeight) Then
+                m_FillImage.CreateBlank fillSrc.GetDIBWidth, fillSrc.GetDIBHeight, 32, 0, 0
             Else
                 m_FillImage.ResetDIB 0
             End If
             
-            'Note the timestamp; this may allow us to skip subsequent copy requests
-            m_FillImageTimestamp = pdImages(g_CurrentImage).GetTimeOfLastChange()
-            
-            'Merged image data is far more cumbersome to generate
-            If m_FillSampleMerged Then
-                pdImages(g_CurrentImage).GetCompositedImage m_FillImage
-                
-            Else
-                
-                Dim tmpLayer As pdLayer
-                Set tmpLayer = New pdLayer
-                tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
-                tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-                Set m_FillImage = tmpLayer.layerDIB
-                Set tmpLayer = Nothing
-                
-            End If
-            
         End If
         
-        'm_FloodFill should exist here, because we need to create it to set any relevant properties!
+        'Failsafe check for an active m_FloodFill instance (which should always exist here, because create while setting
+        ' all relevant fill properties)
         If (m_FloodFill Is Nothing) Then Debug.Print "WARNING!  m_FloodFill doesn't exist!"
         
         'Set the initial flood point
         m_FloodFill.SetInitialPoint srcX, srcY
         
-        'Apply the flood fill; the result we want is not the returned image, but the returned path outline
+        'Apply the flood fill.  Note that unlike other places in PD, we *do not* pass a destination DIB.  We are only
+        ' interested in the outline of the filled area, in vector form.
         If (m_FillOutline Is Nothing) Then Set m_FillOutline = New pd2DPath Else m_FillOutline.ResetPath
-        m_FloodFill.InitiateFloodFill m_FillImage, pdImages(g_CurrentImage).ScratchLayer.layerDIB, m_FillOutline
+        m_FloodFill.InitiateFloodFill fillSrc, Nothing, m_FillOutline
+        Set fillSrc = Nothing
         
         'Create a brush using the passed brush settings
         Dim tmpBrush As pd2DBrush
         Set tmpBrush = New pd2DBrush
         tmpBrush.SetBrushPropertiesFromXML m_FillBrush
         
-        'Gradient brushes require us to set a gradient rect; calculate that now, using the boundary rect of the fill outline
+        'Gradient brushes require us to set a gradient rect.  Importantly, we need to apply any relevant offsets
+        ' (e.g. the offsets required when "filling" a vector layer) to our path *before* calculating gradient boundaries.
+        ' (Remember that vector layers are treated differently - to avoid the need to rasterize them, we instead
+        ' apply the fill to a *new* layer that sits above the original one.)
+        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector And (Not m_FillSampleMerged) Then
+        
+            'Transform the fill outline by the current layer transformation, if any
+            Dim cTransform As pd2DTransform
+            pdImages(g_CurrentImage).GetActiveLayer.GetCopyOfLayerTransformationMatrix_Full cTransform
+            m_FillOutline.ApplyTransformation cTransform
+        
+        End If
+        
+        'Calculate the gradient rect, using the boundary rect of the fill outline.
         If (tmpBrush.GetBrushMode = P2_BM_Gradient) Then
             Dim FillRect As RECTF
             FillRect = m_FillOutline.GetPathBoundariesF
             tmpBrush.SetBoundaryRect FillRect
         End If
         
-        'Erase the scratch layer, because we are going to render our own fill result using the user's specified brush
-        pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
-        
-        'Render the final fill
         Dim tmpSurface As pd2DSurface
         Set tmpSurface = New pd2DSurface
-        tmpSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB
-        m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
         
-        'Free all finished pd2D objects
-        Set tmpSurface = Nothing
-        Set tmpBrush = Nothing
+        'Render the final fill.  Note that when we are just filling the current layer, we potentially render the result
+        ' differently, if the layer is smaller than the active image (or if it has non-destructive transforms active or
+        ' is a vector layer).
+        '
+        '(At present, selections don't work with this accelerated technique, but that is due to be fixed shortly.)
+        Dim useCustomDIB As Boolean
+        With pdImages(g_CurrentImage).GetActiveLayer
+            
+            useCustomDIB = (Not .IsLayerVector)
+            
+            'If the current layer is the same size as the image (very common during photo editing sessions, as the
+            ' user is probably just loading standlone JPEGs), we don't need to use a custom code path.
+            If useCustomDIB Then
+                If (.GetLayerOffsetX = 0#) And (.GetLayerOffsetY = 0#) And _
+                   (.GetLayerWidth(True) = pdImages(g_CurrentImage).Width) And _
+                   (.GetLayerHeight(True) = pdImages(g_CurrentImage).Height) And _
+                   (Not .AffineTransformsActive) Then
+                   
+                   useCustomDIB = False
+                   
+                End If
+            End If
+            
+        End With
         
-        'Relay the current blend/alpha modes to the scratch layer
-        pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_FillBlendMode
-        pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_FillAlphaMode
+        If m_FillSampleMerged Or (Not useCustomDIB) Then
         
-        'Commit the fill results
-        FillTool.CommitFillResults
+            'When filling a merged region, we render the result directly onto the current image's scratch layer.
+            ' The full scratch layer will then be merged with the layer beneath it.
+            pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
+            pdImages(g_CurrentImage).ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+            tmpSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB
+            If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
+            
+            m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
+            
+            'Free all finished pd2D objects
+            Set tmpSurface = Nothing: Set tmpBrush = Nothing
+            
+            'Relay the correct blend and alpha settings to the scratch layer, then permanently commit the results
+            pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_FillBlendMode
+            pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_FillAlphaMode
+            FillTool.CommitFillResults False
+            
+        Else
+        
+            'If we are only operating on the currently active layer, and that layer is not the same size as the image,
+            ' let's take a smarter approach.  Instead of using the full scratch layer (which is always image-sized),
+            ' we'll use a temporary DIB at the same size as the image, and paint to that instead.
+            '
+            '(Note that such a temporary DIB was already created in a previous step - see earlier in this function.)
+            tmpSurface.WrapSurfaceAroundPDDIB m_FillImage
+            If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
+            
+            m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
+            
+            'Free all finished pd2D objects
+            Set tmpSurface = Nothing: Set tmpBrush = Nothing
+            
+            'Commit the results permanently
+            m_FillImage.SetInitialAlphaPremultiplicationState True
+            FillTool.CommitFillResults True, m_FillImage
+            
+        End If
         
     End If
     
 End Sub
 
-
 'Want to commit your current fill work?  Call this function to make any pending fill results permanent.
-Public Sub CommitFillResults()
+Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillDIB As pdDIB = Nothing)
     
-    'Committing fill results is actually pretty easy!
+    Dim cBlender As pdPixelBlender
+    Set cBlender = New pdPixelBlender
+                
+    'If the caller supplied a custom DIB, skip ahead and use that.  (This provides a performance boost on single-layer
+    ' raster images, or filling a single layer in a multi-layer image when it's smaller than the composited image.)
+    If useCustomDIB Then
     
-    'Start by grabbing the boundaries of the fill area, and clipping it to the active layer's bounds, as necessary
-    Dim tmpRectF As RECTF
-    tmpRectF = m_FillOutline.GetPathBoundariesF
-    
-    With tmpRectF
-        If (.Left < 0) Then .Left = 0
-        If (.Top < 0) Then .Top = 0
-        If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
-        If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
-    End With
-    
-    'First, if the layer being filled is a raster layer, we simply want to merge the scratch layer onto it.
-    If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
-        
-        Dim bottomLayerFullSize As Boolean
-        With pdImages(g_CurrentImage).GetActiveLayer
-            bottomLayerFullSize = CBool((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height))
-        End With
-        
-        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
-        
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Fill tool", , , UNDO_LAYER, g_CurrentTool
-        
-        'Reset the scratch layer
-        pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
-    
-    'If the layer beneath this one is *not* a raster layer, let's add the fill as a new layer, instead.
-    Else
-        
-        'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
-        ' the fill layer against it.
+        'If a selection is active, we need to mask the fill by the current selection mask
         If pdImages(g_CurrentImage).IsSelectionActive Then
             
-            'A selection is active.  Pre-mask the scratch layer against it.
-            Dim cBlender As pdPixelBlender
-            Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, VarPtr(tmpRectF)
+            'Next, we need to grab a copy of the current selection mask, mirroring the area where our layer lives
+            Dim tmpSelDIB As pdDIB
+            Set tmpSelDIB = New pdDIB
+            tmpSelDIB.CreateBlank fillDIB.GetDIBWidth, fillDIB.GetDIBHeight, 32, 0, 0
+            
+            'If no weird affine transforms are active, this step is easy
+            If (Not pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then
+                GDI.BitBltWrapper tmpSelDIB.GetDIBDC, 0, 0, fillDIB.GetDIBWidth, fillDIB.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC, pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX, pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY, vbSrcCopy
+            
+            'Affine transforms make this step noticeably more unpleasant
+            Else
+            
+                'Wrap our temporary selection DIB with a pd2D surface
+                Dim cSurface As pd2DSurface
+                Set cSurface = New pd2DSurface
+                cSurface.WrapSurfaceAroundPDDIB tmpSelDIB
+                cSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
+                
+                'Create a transform matching the target layer
+                Dim cTransform As pd2DTransform
+                pdImages(g_CurrentImage).GetActiveLayer.GetCopyOfLayerTransformationMatrix_Full cTransform
+                
+                'Activate the transform for our selection mask copy
+                cTransform.InvertTransform
+                cSurface.SetSurfaceWorldTransform cTransform
+                
+                'Paint the selection mask into place, with the transform activate
+                Dim tmpSrcSurface As pd2DSurface
+                Set tmpSrcSurface = New pd2DSurface
+                tmpSrcSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).MainSelection.GetMaskDIB
+                m_Painter.DrawSurfaceF cSurface, 0, 0, tmpSrcSurface
+                
+                Set tmpSrcSurface = Nothing
+                Set cSurface = Nothing
+            
+            End If
+            
+            cBlender.ApplyMaskToTopDIB fillDIB, tmpSelDIB
+            Set tmpSelDIB = Nothing
             
         End If
         
-        Dim newLayerID As Long
-        newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(pdImages(g_CurrentImage).GetActiveLayerIndex)
+        'The fillDIB object already contains a standalone copy of the fill results.  We simply need to merge it
+        ' onto the base layer using the appropriate fill settings.
+        Dim cCompositor As pdCompositor
+        Set cCompositor = New pdCompositor
+        cCompositor.QuickMergeTwoDibsOfEqualSize pdImages(g_CurrentImage).GetActiveDIB, fillDIB, m_FillBlendMode, 100#, pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode, m_FillAlphaMode
         
-        'Point the new layer index at our scratch layer
-        pdImages(g_CurrentImage).PointLayerAtNewObject newLayerID, pdImages(g_CurrentImage).ScratchLayer
-        pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Fill layer")
-        Set pdImages(g_CurrentImage).ScratchLayer = Nothing
-        
-        'Activate the new layer
-        pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
-        
-        'Notify the parent image of the new layer
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
-        
-        'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.NotifyLayerChange
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Fill tool", , , UNDO_IMAGE_VECTORSAFE, g_CurrentTool
+        Processor.Process "Fill tool", , , UNDO_Layer, g_CurrentTool
+    
+    'If useCustomDIB is FALSE, the current scratch layer contains everything we need for the blend.
+    Else
         
-        'Create a new scratch layer
-        Tools.InitializeToolsDependentOnImage
+        'Start by grabbing the boundaries of the fill area, and clipping it to the image's bounds, as necessary
+        Dim tmpRectF As RECTF
+        tmpRectF = m_FillOutline.GetPathBoundariesF
         
+        With tmpRectF
+            If (.Left < 0) Then .Left = 0
+            If (.Top < 0) Then .Top = 0
+            If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
+            If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
+        End With
+        
+        'First, if the layer being filled is a raster layer, we simply want to merge the scratch layer onto it.
+        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
+            
+            Dim bottomLayerFullSize As Boolean
+            With pdImages(g_CurrentImage).GetActiveLayer
+                bottomLayerFullSize = ((.GetLayerOffsetX = 0!) And (.GetLayerOffsetY = 0!) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height))
+            End With
+            
+            pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True   ', VarPtr(tmpRectF)
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
+            
+            'Before proceeding, trim any empty borders in the resulting layer.  (It will always be the size of the image,
+            ' because the scratch layer is always image-sized.)
+            pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
+            
+            'Ask the central processor to create Undo/Redo data for us
+            Processor.Process "Fill tool", , , UNDO_Layer, g_CurrentTool
+            
+            'Reset the scratch layer
+            pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
+        
+        'If the layer beneath this one is *not* a raster layer, let's add the fill as a new layer, instead.
+        Else
+            
+            'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
+            ' the fill layer against it.
+            If pdImages(g_CurrentImage).IsSelectionActive Then
+                
+                'A selection is active.  Pre-mask the scratch layer against it.
+                cBlender.ApplyMaskToTopDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, VarPtr(tmpRectF)
+                
+            End If
+            
+            Dim newLayerID As Long
+            newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(pdImages(g_CurrentImage).GetActiveLayerIndex)
+            
+            'Point the new layer index at our scratch layer
+            pdImages(g_CurrentImage).PointLayerAtNewObject newLayerID, pdImages(g_CurrentImage).ScratchLayer
+            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Fill layer")
+            Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+            
+            'Activate the new layer
+            pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+            
+            'Crop any dead space from the scratch layer
+            pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
+            
+            'Notify the parent image of the new layer
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+            
+            'Redraw the layer box, and note that thumbnails need to be re-cached
+            toolbar_Layers.NotifyLayerChange
+            
+            'Ask the central processor to create Undo/Redo data for us
+            Processor.Process "Fill tool", , , UNDO_Image_VectorSafe, g_CurrentTool
+            
+            'Create a new scratch layer
+            Tools.InitializeToolsDependentOnImage
+            
+        End If
+    
     End If
     
 End Sub

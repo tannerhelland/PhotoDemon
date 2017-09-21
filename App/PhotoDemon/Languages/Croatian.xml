@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3003</langversion>
+<langversion>6.8.3004</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -419,7 +419,7 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <translation></translation>
 </phrase>
 
-<!-- FillTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3779,6 +3779,11 @@ Upišite numeričku vrijednost.</translation>
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(Nijedan)</translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(Ovdje unesite tekst)</translation>
 </phrase>
@@ -3798,7 +3803,7 @@ Upišite numeričku vrijednost.</translation>
 <translation>Centrirajte sliku unutar prozora</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14534,11 +14539,6 @@ To nastavite, preuzmite novu kopiju PhotoDemona iz photodemon.org.</translation>
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(Nijedan)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Spremanje postavki</translation>
 </phrase>
@@ -14916,7 +14916,7 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <translation>Ova nova lokacija privremene mape neće imati učinka dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 170 phrases. 42 were duplicates of existing phrases, so only 128 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 170 phrases. 43 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15041,8 +15041,8 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4503 phrases. -->
-<!-- 1978 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4508 phrases. -->
+<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
 <!-- These 2525 phrases contain approximately 12296 total words. -->
 
 </pdData>
