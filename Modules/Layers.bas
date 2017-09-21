@@ -847,7 +847,7 @@ Public Sub MergeVisibleLayers()
     Next i
     
     'Mark the new merged layer as the active one.  (This will also re-synchronize the interface against the new image.)
-    SetActiveLayerByIndex 0, False
+    Layers.SetActiveLayerByIndex 0, False
     
     'Notify the parent image that the entire image now needs to be recomposited
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
@@ -871,7 +871,7 @@ Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -888,7 +888,7 @@ Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, srcLayerIndex
     
     'Re-sync the interface
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -904,7 +904,7 @@ Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -925,7 +925,7 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

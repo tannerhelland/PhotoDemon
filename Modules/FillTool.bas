@@ -46,18 +46,56 @@ Private Function EnsureFillerExists() As Boolean
     EnsureFillerExists = True
 End Function
 
-Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single, ByVal srcY As Single, ByRef srcCanvas As pdCanvas)
+'Similar to other tools, the fill tool is notified of all mouse actions that occur while it is selected.  At present, however,
+' it only triggers a fill when the mouse is actually clicked.  (No action is taken on move events.)
+Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single, ByVal imgY As Single, ByRef srcCanvas As pdCanvas)
     
     Dim oldMouseState As Boolean
     oldMouseState = m_MouseDown
     
     'Update all internal trackers.  (Note that the passed positions are in *image* coordinates, not *screen* coordinates.)
-    m_MouseX = srcX
-    m_MouseY = srcY
+    m_MouseX = imgX
+    m_MouseY = imgY
     m_MouseDown = mouseButtonDown
+    
+    'Different fill modes use different coordinate spaces.  (For example, "sample image" and "sample layer" use different
+    ' underlying DIBs to calculate their fill, so we may want to translate the incoming coordinates - which are always in
+    ' the *image* coordinate space - to the current layer's coordinate space.)
+    Dim fillStartX As Long, fillStartY As Long
+    If m_FillSampleMerged Then
+        fillStartX = PDMath.NearestInt(imgX)
+        fillStartY = PDMath.NearestInt(imgY)
+    Else
+        
+        Dim newX As Single, newY As Single
+        Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, newX, newY
+        fillStartX = PDMath.NearestInt(newX)
+        fillStartY = PDMath.NearestInt(newY)
+        
+    End If
     
     'If this is an initial click, apply the fill.
     If mouseButtonDown And (Not oldMouseState) Then
+        
+        'Before proceeding, validate the click position.  Unlike paintbrush strokes, fill start points must lie on the
+        ' underlying image/layer (depending on the current sampling mode).
+        Dim allowedToFill As Boolean
+        If m_FillSampleMerged Then
+            allowedToFill = PDMath.IsPointInRectF(fillStartX, fillStartY, pdImages(g_CurrentImage).GetBoundaryRectF)
+        Else
+            
+            Dim tmpRectF As RECTF
+            With tmpRectF
+                .Left = 0!
+                .Top = 0!
+                .Width = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+                .Height = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+            End With
+            allowedToFill = PDMath.IsPointInRectF(fillStartX, fillStartY, tmpRectF)
+            
+        End If
+        
+        If (Not allowedToFill) Then Exit Sub
         
         'Start by grabbing (or producing) the source DIB required for the fill.  (If the user wants us to
         ' sample all layers, we need to generate a composite image.)
@@ -96,11 +134,6 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         ' the incoming (x, y) coordinates into layer-space coordinates.
         Else
             
-            Dim newX As Single, newY As Single
-            Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, srcX, srcY, newX, newY
-            srcX = newX
-            srcY = newY
-            
             Set fillSrc = pdImages(g_CurrentImage).GetActiveLayer.layerDIB
             
             'To improve performance when variable fill blend and alpha modes are in place, we always render the fill to
@@ -122,7 +155,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         If (m_FloodFill Is Nothing) Then Debug.Print "WARNING!  m_FloodFill doesn't exist!"
         
         'Set the initial flood point
-        m_FloodFill.SetInitialPoint srcX, srcY
+        m_FloodFill.SetInitialPoint fillStartX, fillStartY
         
         'Apply the flood fill.  Note that unlike other places in PD, we *do not* pass a destination DIB.  We are only
         ' interested in the outline of the filled area, in vector form.
