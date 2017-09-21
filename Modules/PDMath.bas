@@ -385,6 +385,128 @@ Public Function Acos(ByVal x As Double) As Double
     Acos = Atan2(Sqr(1# - x * x), x)
 End Function
 
+'Given a list of floating-point values, convert each to its integer equivalent *furthest* from 0.
+' Said another way, round negative numbers down, and positive numbers up.  This is often relevant in PD when performing
+' coordinate conversions that are ultimately mapped to pixel locations, and we need to bounds-check corner coordinates
+' in advance and push them away from 0, so any partially-covered pixels are converted to fully-covered ones.
+Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
+    
+    If UBound(listOfValues) >= LBound(listOfValues) Then
+        
+        Dim i As Long
+        For i = LBound(listOfValues) To UBound(listOfValues)
+            If (listOfValues(i) < 0) Then
+                listOfValues(i) = Int(listOfValues(i))
+            Else
+                If (listOfValues(i) = Int(listOfValues(i))) Then
+                    listOfValues(i) = Int(listOfValues(i))
+                Else
+                    listOfValues(i) = Int(listOfValues(i)) + 1
+                End If
+            End If
+        Next i
+        
+    Else
+        Debug.Print "No points provided - convertArbitraryFListToRoundedInt() function failed!"
+    End If
+
+End Function
+
+Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
+    dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
+    dstAngle = PDMath.Atan2_Faster((srcY - centerY), (srcX - centerX))
+End Sub
+
+Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
+
+    'Calculate the new (x, y)
+    dstX = srcRadius * Cos(srcAngle)
+    dstY = srcRadius * Sin(srcAngle)
+    
+    'Offset by the supplied center (x, y)
+    dstX = dstX + centerX
+    dstY = dstY + centerY
+
+End Sub
+
+Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius As Single, ByRef dstX As Single, ByRef dstY As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#)
+
+    'Calculate the new (x, y)
+    dstX = srcRadius * Cos(srcAngle)
+    dstY = srcRadius * Sin(srcAngle)
+    
+    'Offset by the supplied center (x, y)
+    dstX = dstX + centerX
+    dstY = dstY + centerY
+
+End Sub
+'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
+' (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
+Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
+
+    Dim curMinDistance As Double, curMinIndex As Long
+    curMinDistance = &HFFFFFFF
+    curMinIndex = -1
+    
+    Dim tmpDistance As Double
+    
+    'From the array of supplied points, find the one closest to the target point
+    Dim i As Long
+    For i = LBound(poiArray) To UBound(poiArray)
+        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        If (tmpDistance < curMinDistance) Then
+            curMinDistance = tmpDistance
+            curMinIndex = i
+        End If
+    Next i
+    
+    'If the distance of the closest point falls below the allowed threshold, return that point's index.
+    If (curMinDistance < minAllowedDistance) Then
+        FindClosestPointInArray = curMinIndex
+    Else
+        FindClosestPointInArray = -1
+    End If
+
+End Function
+
+'Given an array of points (in floating-point format), find the closest one to a target location.  If none fall below a minimum distance threshold,
+' return -1.  (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
+Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targetY As Single, ByVal minAllowedDistance As Single, ByRef poiArray() As POINTFLOAT) As Long
+
+    Dim curMinDistance As Double, curMinIndex As Long
+    curMinDistance = &HFFFFFFF
+    curMinIndex = -1
+    
+    Dim tmpDistance As Double
+    
+    'From the array of supplied points, find the one closest to the target point
+    Dim i As Long
+    For i = LBound(poiArray) To UBound(poiArray)
+        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        If (tmpDistance < curMinDistance) Then
+            curMinDistance = tmpDistance
+            curMinIndex = i
+        End If
+    Next i
+    
+    'If the distance of the closest point falls below the allowed threshold, return that point's index.
+    If (curMinDistance < minAllowedDistance) Then
+        FindClosestPointInFloatArray = curMinIndex
+    Else
+        FindClosestPointInFloatArray = -1
+    End If
+
+End Function
+
+'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
+Public Function LoWord(ByRef dw As Long) As Integer
+   If (dw And &H8000&) Then
+      LoWord = &H8000& Or (dw And &H7FFF&)
+   Else
+      LoWord = dw And &HFFFF&
+   End If
+End Function
+
 'Max/min functions
 Public Function Max2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
     If (l1 > l2) Then Max2Int = l1 Else Max2Int = l2
@@ -512,133 +634,14 @@ Public Function MinArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
         
 End Function
 
-'Given a list of floating-point values, convert each to its integer equivalent *furthest* from 0.
-' Said another way, round negative numbers down, and positive numbers up.  This is often relevant in PD when performing
-' coordinate conversions that are ultimately mapped to pixel locations, and we need to bounds-check corner coordinates
-' in advance and push them away from 0, so any partially-covered pixels are converted to fully-covered ones.
-Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
-    
-    If UBound(listOfValues) >= LBound(listOfValues) Then
-        
-        Dim i As Long
-        For i = LBound(listOfValues) To UBound(listOfValues)
-            If (listOfValues(i) < 0) Then
-                listOfValues(i) = Int(listOfValues(i))
-            Else
-                If (listOfValues(i) = Int(listOfValues(i))) Then
-                    listOfValues(i) = Int(listOfValues(i))
-                Else
-                    listOfValues(i) = Int(listOfValues(i)) + 1
-                End If
-            End If
-        Next i
-        
-    Else
-        Debug.Print "No points provided - convertArbitraryFListToRoundedInt() function failed!"
-    End If
-
-End Function
-
-Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
-    dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
-    dstAngle = PDMath.Atan2_Faster((srcY - centerY), (srcX - centerX))
-End Sub
-
-Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
-
-    'Calculate the new (x, y)
-    dstX = srcRadius * Cos(srcAngle)
-    dstY = srcRadius * Sin(srcAngle)
-    
-    'Offset by the supplied center (x, y)
-    dstX = dstX + centerX
-    dstY = dstY + centerY
-
-End Sub
-
-Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius As Single, ByRef dstX As Single, ByRef dstY As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#)
-
-    'Calculate the new (x, y)
-    dstX = srcRadius * Cos(srcAngle)
-    dstY = srcRadius * Sin(srcAngle)
-    
-    'Offset by the supplied center (x, y)
-    dstX = dstX + centerX
-    dstY = dstY + centerY
-
-End Sub
-
 'This is a modified modulo function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
     If (Modulo < 0#) Then Modulo = Modulo + Divisor
 End Function
 
-'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
-Public Function LoWord(ByRef dw As Long) As Integer
-   If (dw And &H8000&) Then
-      LoWord = &H8000& Or (dw And &H7FFF&)
-   Else
-      LoWord = dw And &HFFFF&
-   End If
-End Function
-
-'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
-' (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
-
-    Dim curMinDistance As Double, curMinIndex As Long
-    curMinDistance = &HFFFFFFF
-    curMinIndex = -1
-    
-    Dim tmpDistance As Double
-    
-    'From the array of supplied points, find the one closest to the target point
-    Dim i As Long
-    For i = LBound(poiArray) To UBound(poiArray)
-        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
-        If (tmpDistance < curMinDistance) Then
-            curMinDistance = tmpDistance
-            curMinIndex = i
-        End If
-    Next i
-    
-    'If the distance of the closest point falls below the allowed threshold, return that point's index.
-    If (curMinDistance < minAllowedDistance) Then
-        FindClosestPointInArray = curMinIndex
-    Else
-        FindClosestPointInArray = -1
-    End If
-
-End Function
-
-'Given an array of points (in floating-point format), find the closest one to a target location.  If none fall below a minimum distance threshold,
-' return -1.  (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targetY As Single, ByVal minAllowedDistance As Single, ByRef poiArray() As POINTFLOAT) As Long
-
-    Dim curMinDistance As Double, curMinIndex As Long
-    curMinDistance = &HFFFFFFF
-    curMinIndex = -1
-    
-    Dim tmpDistance As Double
-    
-    'From the array of supplied points, find the one closest to the target point
-    Dim i As Long
-    For i = LBound(poiArray) To UBound(poiArray)
-        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
-        If (tmpDistance < curMinDistance) Then
-            curMinDistance = tmpDistance
-            curMinIndex = i
-        End If
-    Next i
-    
-    'If the distance of the closest point falls below the allowed threshold, return that point's index.
-    If (curMinDistance < minAllowedDistance) Then
-        FindClosestPointInFloatArray = curMinIndex
-    Else
-        FindClosestPointInFloatArray = -1
-    End If
-
+Public Function NearestInt(ByVal srcFloat As Single) As Long
+    NearestInt = Int(srcFloat + 0.5)
 End Function
 
 'Given an array of points (in floating-point format), calculate the center point of the bounding rect.

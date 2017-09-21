@@ -316,7 +316,7 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
     
     Select Case typeOfChange
     
-        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_EVERYTHING
+        Case UNDO_Image, UNDO_Image_VectorSafe, UNDO_Everything
             m_CompositeCacheClean = False
             m_IsThumbClean = False
             
@@ -326,11 +326,11 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
                 Me.GetLayerByIndex(i).NotifyOfDestructiveChanges
             Next i
         
-        Case UNDO_IMAGEHEADER
+        Case UNDO_ImageHeader
             m_CompositeCacheClean = False
             m_IsThumbClean = False
         
-        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
+        Case UNDO_Layer, UNDO_Layer_VectorSafe
             m_CompositeCacheClean = False
             m_IsThumbClean = False
             
@@ -340,7 +340,7 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
                 Debug.Print "WARNING!  Invalid params passed to pdImage.NotifyImageChanged (-1 layer index for a layer action)"
             End If
         
-        Case UNDO_LAYERHEADER
+        Case UNDO_LayerHeader
             m_CompositeCacheClean = False
             m_IsThumbClean = False
         
@@ -817,20 +817,14 @@ End Function
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.
 Friend Function GetDPI() As Double
-    
-    If m_DPI = 0 Then
-        GetDPI = 96
-    Else
-        GetDPI = m_DPI
-    End If
-    
+    If (m_DPI = 0#) Then GetDPI = 96# Else GetDPI = m_DPI
 End Function
 
 Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
     
     'Many image types do not store resolution information; default to 96 in this case
-    If xRes = 0 Then xRes = 96
-    If yRes = 0 Then yRes = 96
+    If (xRes = 0#) Then xRes = 96
+    If (yRes = 0#) Then yRes = 96
     
     'FreeImage is pretty damn stupid when it comes to DPI.  If no DPI information is found, it will return "72" by default.
     ' If the source of this call is FreeImage, we want to replace 72 with a more modern default of 96.  Obviously this creates
@@ -838,17 +832,28 @@ Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sou
     ' or if it is the actual DPI value of the file.  If this occurs, we can use ExifTool to retrieve an actual value as
     ' stored in the file.
     If sourceIsFreeImage Then
-        If xRes = 72 Then xRes = 96
-        If yRes = 72 Then yRes = 96
+        If Int(xRes) = 72 Then xRes = 96#
+        If Int(yRes) = 72 Then yRes = 96#
     End If
     
     m_XResolution = xRes
     m_YResolution = yRes
     
     'It is extremely rare for x/y resolution to differ, but just in case, calculate an average resolution as well
-    m_DPI = (xRes + yRes) \ 2
+    m_DPI = (xRes + yRes) * 0.5
 
 End Sub
+
+'Helper function to fill a RectF with current image boundaries (as used in hit-testing).
+' Left/top will always be (0, 0).
+Friend Function GetBoundaryRectF() As RECTF
+    With GetBoundaryRectF
+        .Left = 0!
+        .Top = 0!
+        .Width = Me.Width
+        .Height = Me.Height
+    End With
+End Function
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
@@ -1122,7 +1127,7 @@ Friend Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Option
     End If
     
     'Changes to image size require a rebuild of our composited image cache
-    Me.NotifyImageChanged UNDO_IMAGE
+    Me.NotifyImageChanged UNDO_Image
     
 End Function
 
@@ -1481,7 +1486,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     imgLayers(targetLayerIndex).CropNullPaddedLayer
     
     'Notify ourselves of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, targetLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, targetLayerIndex
     
     EraseProcessedSelection = True
 
