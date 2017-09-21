@@ -98,66 +98,71 @@ Private m_SurfacePixelOffset As PD_2D_PixelOffset
 Private m_SurfaceRenderingOriginX As Single, m_SurfaceRenderingOriginY As Single
 Private m_SurfaceResizeQuality As PD_2D_ResizeQuality
 Private m_SurfaceCompositeMode As PD_2D_CompositeMode
+Private m_SurfaceWorldTransform As Long
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
-Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
+Friend Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
     GetSurfaceAntialiasing = Me.GetSurfaceProperty(P2_SurfaceAntialiasing)
 End Function
 
-Public Function GetSurfaceBlendUsingSRGBGamma() As Boolean
+Friend Function GetSurfaceBlendUsingSRGBGamma() As Boolean
     GetSurfaceBlendUsingSRGBGamma = Me.GetSurfaceProperty(P2_SurfaceBlendUsingSRGBGamma)
 End Function
 
-Public Function GetSurfaceCompositing() As PD_2D_CompositeMode
+Friend Function GetSurfaceCompositing() As PD_2D_CompositeMode
     GetSurfaceCompositing = Me.GetSurfaceProperty(P2_SurfaceCompositeMode)
 End Function
 
-Public Function GetSurfacePixelOffset() As PD_2D_PixelOffset
+Friend Function GetSurfacePixelOffset() As PD_2D_PixelOffset
     GetSurfacePixelOffset = Me.GetSurfaceProperty(P2_SurfacePixelOffset)
 End Function
 
-Public Function GetSurfaceRenderingOriginX() As Single
+Friend Function GetSurfaceRenderingOriginX() As Single
     GetSurfaceRenderingOriginX = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginX)
 End Function
 
-Public Function GetSurfaceRenderingOriginY() As Single
+Friend Function GetSurfaceRenderingOriginY() As Single
     GetSurfaceRenderingOriginY = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginY)
 End Function
 
-Public Function GetSurfaceResizeQuality() As PD_2D_ResizeQuality
+Friend Function GetSurfaceResizeQuality() As PD_2D_ResizeQuality
     GetSurfaceResizeQuality = Me.GetSurfaceProperty(P2_SurfaceResizeQuality)
 End Function
 
-Public Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
+Friend Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, newSetting
 End Sub
 
-Public Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
+Friend Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
     Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, newSetting
 End Sub
 
-Public Sub SetSurfaceCompositing(ByVal newSetting As PD_2D_CompositeMode)
+Friend Sub SetSurfaceCompositing(ByVal newSetting As PD_2D_CompositeMode)
     Me.SetSurfaceProperty P2_SurfaceCompositeMode, newSetting
 End Sub
 
-Public Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
+Friend Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
     Me.SetSurfaceProperty P2_SurfacePixelOffset, newSetting
 End Sub
 
-Public Sub SetSurfaceRenderingOriginX(ByVal newSetting As Single)
+Friend Sub SetSurfaceRenderingOriginX(ByVal newSetting As Single)
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, newSetting
 End Sub
 
-Public Sub SetSurfaceRenderingOriginY(ByVal newSetting As Single)
+Friend Sub SetSurfaceRenderingOriginY(ByVal newSetting As Single)
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, newSetting
 End Sub
 
-Public Sub SetSurfaceResizeQuality(ByVal newSetting As PD_2D_ResizeQuality)
+Friend Sub SetSurfaceResizeQuality(ByVal newSetting As PD_2D_ResizeQuality)
     Me.SetSurfaceProperty P2_SurfaceResizeQuality, newSetting
 End Sub
 
+Friend Sub SetSurfaceWorldTransform(ByRef srcTransform As pd2DTransform)
+    Me.SetSurfaceProperty P2_SurfaceWorldTransform, srcTransform.GetHandle
+End Sub
+
 'Get/set individual settings by enum type
-Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
+Friend Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
 
     Select Case propID
     
@@ -181,12 +186,12 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
             
         Case P2_SurfaceCompositeMode
             GetSurfaceProperty = m_SurfaceCompositeMode
-    
+            
     End Select
 
 End Function
 
-Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant)
+Friend Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant)
     
     Select Case propID
     
@@ -210,6 +215,11 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
             
         Case P2_SurfaceCompositeMode
             m_SurfaceCompositeMode = CLng(newSetting)
+        
+        'World transforms are not currently cached locally; instead, they are blindly forwarded to the
+        ' relevant backend.
+        Case P2_SurfaceWorldTransform
+            m_SurfaceWorldTransform = CLng(newSetting)
             
     End Select
     
@@ -222,7 +232,7 @@ End Sub
 ' be undefined, a simple rect, or a complex region, and pd2D doesn't implement all those features... yet.
 ' (GDIPlus can retrieve region data as a byte array, so we could theoretically convert that to Base64 and store it
 '  inside an XML tag... maybe someday!)
-Public Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boolean
+Friend Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
         
@@ -233,7 +243,7 @@ Public Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boole
                 Dim tmpHandle As Long
                 tmpHandle = GDI_Plus.GDIPlus_GraphicsGetClipRegion(m_SurfaceHandle)
                 dstRegion.AssignExternalHandleDirectly tmpHandle
-                GetSurfaceClippingRegion = CBool(tmpHandle <> 0)
+                GetSurfaceClippingRegion = (tmpHandle <> 0)
         End Select
         
     Else
@@ -242,7 +252,7 @@ Public Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boole
         
 End Function
 
-Public Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+Friend Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
     
@@ -284,7 +294,7 @@ Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optiona
     
 End Function
 
-Public Function SetSurfaceClip_None() As Boolean
+Friend Function SetSurfaceClip_None() As Boolean
 
     If (m_SurfaceHandle <> 0) Then
     
@@ -300,7 +310,7 @@ Public Function SetSurfaceClip_None() As Boolean
 End Function
 
 'Make an exact copy of an existing surface.
-Public Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal cloneAlphaChannelToo As Boolean = False, Optional ByVal clonePropertiesToo As Boolean = False, Optional ByVal cloneClippingToo As Boolean = False) As Boolean
+Friend Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal cloneAlphaChannelToo As Boolean = False, Optional ByVal clonePropertiesToo As Boolean = False, Optional ByVal cloneClippingToo As Boolean = False) As Boolean
 
     If (Not srcSurface Is Nothing) Then
         
@@ -340,14 +350,14 @@ End Function
 'Copy the current contents of this surface to some target DC.  (This is a nice shorthand function for flipping backbuffers, for example.)
 ' I know it's weird, but if you don't supply a destination width and height, the surface's current width/height values will be automatically
 ' plugged in.
-Public Function CopySurfaceToDC(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal dstWidth As Long = 0, Optional ByVal dstHeight As Long = 0, Optional ByVal srcX As Long = 0, Optional ByVal srcY As Long = 0)
+Friend Function CopySurfaceToDC(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal dstWidth As Long = 0, Optional ByVal dstHeight As Long = 0, Optional ByVal srcX As Long = 0, Optional ByVal srcY As Long = 0)
     If (dstWidth = 0) Then dstWidth = Me.GetSurfaceWidth
     If (dstHeight = 0) Then dstHeight = Me.GetSurfaceHeight
     CopySurfaceToDC = GDI.BitBltWrapper(dstDC, dstX, dstY, dstWidth, dstHeight, Me.GetSurfaceDC, srcX, srcY)
 End Function
 
 'Create a blank in-memory surface.  pd2DSurface will automatically manage the memory for this surface.
-Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceHasAlphaChannel As Boolean = True, Optional ByVal surfaceBackColor As Long = vbWhite, Optional ByVal surfaceOpacity As Single = 100#) As Boolean
+Friend Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceHasAlphaChannel As Boolean = True, Optional ByVal surfaceBackColor As Long = vbWhite, Optional ByVal surfaceOpacity As Single = 100#) As Boolean
     
     If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
         
@@ -401,7 +411,7 @@ End Function
 ' 1) fixJPEGOrientation: if the source file contains an orientation tag (like photos coming from smartphones), this function can
 '                        automatically rotate the image to match.  This is the default behavior, and should generally be disabled
 '                        only if the source file contains faulty EXIF data.
-Public Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
+Friend Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
@@ -625,7 +635,7 @@ End Function
 ' must contain a valid image file - not just a bare array of RGB values.
 '
 'Note also that you can free the array after calling this function; it does not need to be maintained post-load.
-Public Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
+Friend Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
@@ -660,7 +670,7 @@ End Function
 ' like fill boundaries and implicit draw operations (draw operations where the caller isn't required to pass width and height).
 ' If you don't provide width and height, pd2D will try to guess dimensions from the active object inside the DC, but this is
 ' subject to a bunch of problems and is unlikely to provide desired results.
-Public Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd As Long = 0, Optional ByVal surfaceWidth As Single = 0#, Optional ByVal surfaceHeight As Single = 0#) As Boolean
+Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd As Long = 0, Optional ByVal surfaceWidth As Single = 0#, Optional ByVal surfaceHeight As Single = 0#) As Boolean
     
     If (srcDC <> 0) Then
     
@@ -726,7 +736,7 @@ End Function
 'Note that this class may recreate the target DIB under certain circumstances (e.g. after a resize is requested),
 ' so just because a DIB was previously attached to this surface doesn't mean it is attached now.  Keep an eye
 ' out for this if you get unexpected results, and you are calling functions like in-place resizes.
-Public Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
+Friend Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
@@ -778,7 +788,7 @@ End Function
 '     all output formats.  (For example, GIFs are always 8-bpp.)  If no output depth is provided, standard GDI+ color depth rules
 '     will be obeyed.
 ' 3) jpegQuality: integer on the range [0, 100] describing the output JPEG's quality.  100 = nearly lossless, 0 = extremely lossy
-Public Function SaveSurfaceToFile(ByVal dstFilename As String, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
+Friend Function SaveSurfaceToFile(ByVal dstFilename As String, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
 
     Select Case m_SurfaceBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -812,7 +822,7 @@ End Function
 
 'Identical function to SaveSurfaceToFile, above, except the target is a VB array.  Note that this function uses streams, so the hard drive
 ' isn't touched.
-Public Function SaveSurfaceToArray(ByRef dstArray() As Byte, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
+Friend Function SaveSurfaceToArray(ByRef dstArray() As Byte, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
 
     Select Case m_SurfaceBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -844,7 +854,7 @@ Public Function SaveSurfaceToArray(ByRef dstArray() As Byte, Optional ByVal dstF
     
 End Function
 
-Public Function GetHandle() As Long
+Friend Function GetHandle() As Long
     GetHandle = m_SurfaceHandle
 End Function
 
@@ -920,7 +930,7 @@ End Function
 '
 'Anyway, I mention this here as an FYI, but tl;dr: for now, this function is safe to use, and you don't have
 ' to free the DC after an operation completes.
-Public Function GetSurfaceDC() As Long
+Friend Function GetSurfaceDC() As Long
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         GetSurfaceDC = m_SurfaceDC
     ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
@@ -930,7 +940,7 @@ Public Function GetSurfaceDC() As Long
     End If
 End Function
 
-Public Function GetSurfaceAlphaSupport() As Boolean
+Friend Function GetSurfaceAlphaSupport() As Boolean
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
         GetSurfaceAlphaSupport = CBool(m_SurfaceDCBitmap.BitsPerPixel = 32)
@@ -941,7 +951,7 @@ Public Function GetSurfaceAlphaSupport() As Boolean
     End If
 End Function
 
-Public Function GetSurfaceHeight() As Long
+Friend Function GetSurfaceHeight() As Long
     If (m_SurfaceType = P2_ST_Bitmap) Then
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceHeight = m_SurfaceDIB.GetDIBHeight
     ElseIf (m_SurfaceType = P2_ST_WrapperOnly) Then
@@ -962,7 +972,7 @@ End Function
 'Stride calculations are *not* guaranteed to be accurate for wrapped DCs, because the underlying surface format is device-dependent.
 ' 32-bpp is assumed but this is not a safe assumption pre-Vista.  (It shouldn't matter because this function is not used at present,
 ' but FYI for future use.)
-Public Function GetSurfaceStride() As Long
+Friend Function GetSurfaceStride() As Long
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
          Select Case m_SurfaceSizeMode
             Case P2_SizeFromCaller
@@ -980,7 +990,7 @@ Public Function GetSurfaceStride() As Long
     End If
 End Function
 
-Public Function GetSurfaceWidth() As Long
+Friend Function GetSurfaceWidth() As Long
     If (m_SurfaceType = P2_ST_Bitmap) Then
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceWidth = m_SurfaceDIB.GetDIBWidth
     ElseIf (m_SurfaceType = P2_ST_WrapperOnly) Then
@@ -1004,7 +1014,7 @@ Public Property Get UnderlyingDIB() As pdDIB
     Set UnderlyingDIB = m_SurfaceDIB
 End Property
 
-Public Function HasSurface() As Boolean
+Friend Function HasSurface() As Boolean
     HasSurface = CBool(m_SurfaceHandle <> 0)
 End Function
 
@@ -1019,7 +1029,7 @@ End Function
 ' color and/or alpha to use when erasing.
 '
 'Note that wrapped GDI surfaces will *not* touch alpha, by design, to avoid screwing up the target DC's behavior.
-Public Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optional ByVal newAlpha As Single = 0#)
+Friend Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optional ByVal newAlpha As Single = 0#)
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         GDI.FillRectToDC m_SurfaceDC, 0, 0, Me.GetSurfaceWidth + 1, Me.GetSurfaceHeight + 1, newColor
     ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
@@ -1027,7 +1037,7 @@ Public Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optio
     End If
 End Sub
 
-Public Function ReleaseSurface() As Boolean
+Friend Function ReleaseSurface() As Boolean
     
     'If any extra, specialized handles have been created, free them first.  (Some of these handles may wrap data
     ' we are about to free, so releasing them first prevents double-freeing crashes.)
@@ -1138,6 +1148,9 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceCompositeMode, GP_CM_SourceCopy
                         End If
                         
+                    Case P2_SurfaceWorldTransform
+                        GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceWorldTransform, m_SurfaceWorldTransform
+                        
                 End Select
                 
             'In the future, other backends can be handled here...
@@ -1149,7 +1162,7 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
     
 End Sub
 
-Public Sub ResetAllProperties()
+Friend Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, P2_AA_None
     Me.SetSurfaceProperty P2_SurfacePixelOffset, P2_PO_Normal
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, 0#
@@ -1160,7 +1173,7 @@ Public Sub ResetAllProperties()
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Public Sub SetDebugMode(ByVal newMode As Boolean)
+Friend Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 

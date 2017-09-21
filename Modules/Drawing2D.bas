@@ -123,11 +123,12 @@ Public Enum PD_2D_SURFACE_SETTINGS
     P2_SurfaceBlendUsingSRGBGamma = 4
     P2_SurfaceResizeQuality = 5
     P2_SurfaceCompositeMode = 6
-    [_P2_NumOfSurfaceSettings] = 7
+    P2_SurfaceWorldTransform = 7
+    [_P2_NumOfSurfaceSettings] = 8
 End Enum
 
 #If False Then
-    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_SurfaceResizeQuality = 5, P2_SurfaceCompositeMode = 6
+    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_SurfaceResizeQuality = 5, P2_SurfaceCompositeMode = 6, P2_SurfaceWorldTransform = 7
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of

@@ -1182,6 +1182,7 @@ Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics A
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
 Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
+Private Declare Function GdipSetWorldTransform Lib "gdiplus" (ByVal hGraphics As Long, ByVal hMatrix As Long) As GP_Result
 
 Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
 Private Declare Function GdipStartPathFigure Lib "gdiplus" (ByVal hPath As Long) As GP_Result
@@ -3865,6 +3866,9 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 
             Case P2_SurfaceCompositeMode
                 SetGDIPlusGraphicsProperty = (GdipSetCompositingMode(hGraphics, CLng(newSetting)) = GP_OK)
+                
+            Case P2_SurfaceWorldTransform
+                SetGDIPlusGraphicsProperty = (GdipSetWorldTransform(hGraphics, CLng(newSetting)) = GP_OK)
             
         End Select
     
