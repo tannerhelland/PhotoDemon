@@ -3,7 +3,7 @@ Begin VB.Form FormPrint
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print Image"
-   ClientHeight    =   6630
+   ClientHeight    =   5745
    ClientLeft      =   45
    ClientTop       =   270
    ClientWidth     =   8745
@@ -20,33 +20,41 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   442
+   ScaleHeight     =   383
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdTextBox txtCopies 
-      Height          =   390
-      Left            =   7080
-      TabIndex        =   3
-      Top             =   1560
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   688
+   Begin PhotoDemon.pdSlider sldCopies 
+      Height          =   735
+      Left            =   3960
+      TabIndex        =   9
+      Top             =   2400
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   1296
+      Caption         =   "copies"
+      Min             =   1
+      Max             =   100
+      ScaleStyle      =   1
+      Value           =   1
+      NotchPosition   =   1
+      NotchValueCustom=   1
    End
-   Begin PhotoDemon.pdDropDown cmbDPI 
-      Height          =   375
-      Left            =   4080
-      TabIndex        =   4
-      Top             =   5040
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   661
+   Begin PhotoDemon.pdCommandBarMini cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   735
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5010
+      Width           =   8745
+      _ExtentX        =   15425
+      _ExtentY        =   1296
    End
    Begin PhotoDemon.pdDropDown cbOrientation 
       Height          =   735
       Left            =   3960
-      TabIndex        =   8
-      Top             =   2280
+      TabIndex        =   4
+      Top             =   1560
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   1296
@@ -55,50 +63,22 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.pdDropDown cbQuality 
       Height          =   735
       Left            =   3960
-      TabIndex        =   9
-      Top             =   1320
-      Width           =   2775
-      _ExtentX        =   4895
+      TabIndex        =   5
+      Top             =   3240
+      Width           =   4575
+      _ExtentX        =   8070
       _ExtentY        =   1296
       Caption         =   "quality"
    End
    Begin PhotoDemon.pdDropDown cbPrinters 
       Height          =   735
       Left            =   3960
-      TabIndex        =   10
-      Top             =   360
-      Width           =   4455
+      TabIndex        =   6
+      Top             =   720
+      Width           =   4575
       _ExtentX        =   7858
       _ExtentY        =   1296
       Caption         =   "printer"
-   End
-   Begin PhotoDemon.pdCheckBox chkCenter 
-      Height          =   330
-      Left            =   4080
-      TabIndex        =   11
-      Top             =   3480
-      Width           =   4440
-      _ExtentX        =   7832
-      _ExtentY        =   582
-      Caption         =   "center on page"
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&Print"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   5760
-      TabIndex        =   0
-      Top             =   6030
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   7230
-      TabIndex        =   1
-      Top             =   6030
-      Width           =   1365
    End
    Begin VB.PictureBox picOut 
       Appearance      =   0  'Flat
@@ -111,7 +91,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   57
-      TabIndex        =   12
+      TabIndex        =   7
       Top             =   2760
       Visible         =   0   'False
       Width           =   855
@@ -126,7 +106,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -141,7 +121,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -156,7 +136,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -172,7 +152,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   258
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   218
-      TabIndex        =   2
+      TabIndex        =   0
       TabStop         =   0   'False
       Top             =   360
       Width           =   3300
@@ -187,78 +167,16 @@ Begin VB.Form FormPrint
          ForeColor       =   12582912
       End
    End
-   Begin PhotoDemon.pdCheckBox chkFit 
-      Height          =   330
-      Left            =   4080
-      TabIndex        =   13
-      Top             =   3960
-      Width           =   4440
-      _ExtentX        =   7832
-      _ExtentY        =   582
-      Caption         =   "fit on page"
-   End
-   Begin PhotoDemon.pdLabel lblBackground 
-      Height          =   855
-      Left            =   -120
-      Top             =   5880
-      Width           =   8895
-      _ExtentX        =   0
-      _ExtentY        =   0
-   End
-   Begin PhotoDemon.pdLabel lblDPIWarning 
-      Height          =   855
-      Left            =   5640
-      Top             =   4980
-      Width           =   3015
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "note: DPI is read-only when ""fit to page"" is selected."
-      FontSize        =   9
-      ForeColor       =   8388608
-      Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblDPI 
-      Height          =   285
-      Left            =   3960
-      Top             =   4560
-      Width           =   4485
-      _ExtentX        =   7911
-      _ExtentY        =   503
-      Caption         =   "dpi (print resolution)"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
    Begin PhotoDemon.pdLabel lblPaperSize 
       Height          =   375
       Left            =   240
-      Top             =   4560
+      Top             =   4440
       Width           =   3300
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   2
       Caption         =   "paper size"
       FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblLayoutOptions 
-      Height          =   285
-      Left            =   3960
-      Top             =   3120
-      Width           =   4500
-      _ExtentX        =   7938
-      _ExtentY        =   503
-      Caption         =   "layout options"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblCopies 
-      Height          =   285
-      Left            =   6840
-      Top             =   1200
-      Width           =   1680
-      _ExtentX        =   2963
-      _ExtentY        =   503
-      Caption         =   "# of copies"
       ForeColor       =   4210752
    End
 End
@@ -271,10 +189,11 @@ Attribute VB_Exposed = False
 'Printer Interface (including Print Preview)
 'Copyright 2000-2017 by Tanner Helland
 'Created: 4/April/03
-'Last updated: 26/June/12
-'Last update: redesign from the ground up.  Print previewing via FreeImage. Manual and automatic DPI calculation support.
-'              Paper size interface via PageSetupDlg.  All these calculations interact with each other, resulting in a true
-'              "print preview" - WYSIWYG when it comes to this form.
+'Last updated: 22/September/17
+'Last update: emergency fixes to restore printing support on XP.  Some features were stripped to enable compatibility
+'             with problematic recent Windows patches.  Because this is such a fringe case, better fixes are not planned
+'             until post-7.0's release.
+'
 'Still needs: Internal paper size support via EnumForms.  At present, PageSetupDlg is used to handle paper size, but it's
 '              an inelegant solution at best.  One of its biggest problems is that it doesn't restrict page sizes to ones
 '              supported by a given printer.  Lame.  The best solution would be a custom-built page-select feature that
@@ -287,9 +206,9 @@ Attribute VB_Exposed = False
 '              http://msdn.microsoft.com/en-us/library/microsoft.visualbasic.powerpacks.printing.compatibility.vb6.printer.papersize.aspx
 '              http://www.vbforums.com/showthread.php?t=451198
 '
-'Module for interfacing with the printer.  For a program that's not designed around printing, PhotoDemon's interface is
-' surprisingly robust.  All settings are handled through the default VB printer object.  A key feature of this routine
-' (PrintPictureToFitPage) is based off code first written by Waty Thierry (http://www.ppreview.net/).
+'Module for interfacing with the printer.  All settings are handled through the default VB printer object.
+' A key feature of this routine (PrintPictureToFitPage) is based off code first written by Waty Thierry
+' (http://www.ppreview.net/).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -300,97 +219,82 @@ Option Explicit
 
 'These usually exist in a common dialog object, but since we're manually handling all
 ' printer functionality we need to manually specify them
-Public Enum PrinterOrientationConstants
+Private Enum PrinterOrientationConstants
     cdlLandscape = 2
     cdlPortrait = 1
 End Enum
 
-'Base DPI defaults to the current screen DPI (VB uses this as the default when sending an image to the printer via PaintPicture.)
-' We use a variety of tricky math to adjust this, and in turn adjust the print quality of the image.
-Private baseDPI As Double, desiredDPI As Double
-
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
-    UpdatePrintPreview True
-End Sub
-
-Private Sub cbOrientation_KeyUp(KeyCode As Integer, Shift As Integer)
-    UpdatePrintPreview True
+    UpdatePrintPreview
 End Sub
 
 'Allow the user to change the target printer
 Private Sub cbPrinters_Click()
 
+    On Error GoTo PrinterNameProblem
+
     Dim Prt As Printer
     
     For Each Prt In Printers
-        If (Prt.DeviceName = cbPrinters) Then
+        If Strings.StringsEqual(Prt.DeviceName, cbPrinters.List(cbPrinters.ListIndex), True) Then
             Set Printer = Prt
+            Exit For
         End If
+        
+PrinterNameProblem:
     Next Prt
     
     UpdatePaperSize
-    UpdatePrintPreview True
+    UpdatePrintPreview
 
 End Sub
 
-Private Sub cbPrinters_KeyUp(KeyCode As Integer, Shift As Integer)
+Private Sub cmdBar_CancelClick()
+    Me.Visible = False
+End Sub
 
-    Dim Prt As Printer
-    For Each Prt In Printers
-        If (Prt.DeviceName = cbPrinters) Then
-            Set Printer = Prt
+Private Sub cmdBar_OKClick()
+
+    On Error GoTo PrintingFailed
+    
+    Message "Sending image to printer..."
+    
+    'Set the number of copies
+    Printer.Copies = sldCopies.Value
+      
+    'Assuming there have been no errors thus far (basically, assuming the user actually has a printer attatched)...
+    If (Err = 0) Then
+      
+        'Set print quality
+        Printer.PrintQuality = -(cbQuality.ListIndex + 1)
+          
+        'Assuming our quality option is valid (should be, but you never know)
+        If (Err = 0) Then
+          
+            'Print the image
+            If (Not PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1)) Then GoTo PrintingFailed
+            
         End If
-    Next Prt
-    UpdatePaperSize
-    UpdatePrintPreview
-
-End Sub
-
-'When various options are selected or de-selected, we need to update the preview to reflect it
-Private Sub chkCenter_Click()
-    UpdatePrintPreview True
-End Sub
-
-Private Sub chkCenter_KeyUp(KeyCode As Integer, Shift As Integer)
-    UpdatePrintPreview True
-End Sub
-
-Private Sub chkFit_Click()
-    UpdatePrintPreview
-    If chkFit.Value = vbUnchecked Then cmbDPI = baseDPI
-End Sub
-
-Private Sub chkFit_KeyUp(KeyCode As Integer, Shift As Integer)
-    UpdatePrintPreview
-    If chkFit.Value = vbUnchecked Then cmbDPI = baseDPI
-End Sub
-
-Private Sub cmbDPI_Click()
-    If EntryValid(cmbDPI, 1, 12000, False, False) Then
-        desiredDPI = cmbDPI
-        UpdatePrintPreview True
     End If
-End Sub
+    
+    Printer.EndDoc
+    
+    Message "Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)"
+    
+    Exit Sub
+    
+PrintingFailed:
 
-Private Sub cmbDPI_KeyUp(KeyCode As Integer, Shift As Integer)
-    If EntryValid(cmbDPI, 1, 12000, False, False) Then
-        desiredDPI = cmbDPI
-        UpdatePrintPreview True
-    End If
-End Sub
-
-Private Sub cmbDPI_Scroll()
-    If EntryValid(cmbDPI, 1, 12000, False, False) Then
-        desiredDPI = cmbDPI
-        UpdatePrintPreview True
-    End If
+    PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", PROGRAMNAME, Printer.DeviceName
+    cmdBar.DoNotUnloadForm
+    
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
 
-    UpdatePaperSize
+    On Error GoTo PrinterLoadError
     
     'Though it's not really necessary, I'm only enabling print preview if FreeImage is Enabled (we use FreeImage to perform
     ' fast, high-quality rotations of images).  I anticipate that pretty much no one will ever use this printing option, so
@@ -411,8 +315,12 @@ Private Sub Form_Load()
     Next x
 
     'Pre-select the current printer
-    cbPrinters = Printer.DeviceName
-
+    Dim printerIndex As Long
+    printerIndex = cbPrinters.ListIndexByString(Printer.DeviceName, vbTextCompare)
+    If (printerIndex < 0) Then printerIndex = 0
+    cbPrinters.ListIndex = printerIndex
+    UpdatePaperSize
+    
     'Set a default quality (high, since we're working with images)
     cbQuality.AddItem "draft", 0
     cbQuality.AddItem "low", 1
@@ -423,12 +331,13 @@ Private Sub Form_Load()
     'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
     cbOrientation.AddItem "portrait", 0
     cbOrientation.AddItem "landscape", 1
+    cbOrientation.ListIndex = 0
     
     Dim imgAspect As Double, paperAspect As Double
     imgAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
-    paperAspect = 8.5 / 11
+    paperAspect = 8.5 / 11#
     
-    If imgAspect < paperAspect Then
+    If (imgAspect < paperAspect) Then
         cbOrientation.ListIndex = 0
     Else
         cbOrientation.ListIndex = 1
@@ -444,90 +353,20 @@ Private Sub Form_Load()
     Dim tmpComposite As pdDIB
     Set tmpComposite = New pdDIB
     pdImages(g_CurrentImage).GetCompositedImage tmpComposite
-    tmpComposite.RenderToPictureBox picOut
+    tmpComposite.RenderToPictureBox picOut, , , True
     
     picOut.ScaleMode = vbTwips
     
-    'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
-    Dim pic As StdPicture
-    Set pic = New StdPicture
-    Set pic = picOut.Picture
-    
-    Dim tPrnPicWidth As Double, tPrnPicHeight As Double
-    tPrnPicWidth = Printer.scaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
-    tPrnPicHeight = Printer.scaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
-    Dim dpiX As Double, dpiY As Double
-    dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
-    dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.scaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
-    baseDPI = Int((dpiX + dpiY) / 2 + 0.5)
-    desiredDPI = baseDPI
-    
-    'Populate the DPI combo box with some suggested default values.  The user is free to provide custom values as well.
-    cmbDPI.AddItem "72"
-    cmbDPI.AddItem "144"
-    cmbDPI.AddItem "300"
-    cmbDPI.AddItem "600"
-    cmbDPI.AddItem "1200"
-    cmbDPI.AddItem "2400"
-    cmbDPI.AddItem "3600"
-    cmbDPI.AddItem "4000"
-    cmbDPI = baseDPI
+PrinterLoadError:
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
 End Sub
 
-'OK Button
-Private Sub CmdOK_Click()
-
-    On Error Resume Next
-    
-    Message "Sending image to printer..."
-    
-    'Before printing anything, check to make sure the textboxes have valid input
-    If Not (NumberValid(txtCopies.Text) And RangeValid(Val(txtCopies.Text), 1, 1000)) Then
-        'AutoSelectText txtCopies
-        Exit Sub
-    End If
-
-    'Set the number of copies
-    Printer.Copies = Val(txtCopies.Text)
-      
-    'Assuming there have been no errors thus far (basically, assuming the user actually has a printer attatched)...
-    If (Err = 0) Then
-      
-        'Set print quality
-        Printer.PrintQuality = -(cbQuality.ListIndex + 1)
-          
-        'Assuming our quality option is valid (should be, but you never know)
-        If (Err = 0) Then
-          
-            'Print the image
-            If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", PROGRAMNAME, Printer.DeviceName
-                Message "Print canceled."
-            End If
-              
-        End If
-    End If
-        
-    Printer.EndDoc
-
-    Message "Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)"
-
-    Unload Me
-
-End Sub
-
-'CANCEL button
-Private Sub cmdCancel_Click()
-    Unload Me
-End Sub
-
 'This PrintPictureToFitPage function is based off code originally written by Waty Thierry.
 ' (It has been heavily modified for use within PhotoDemon, but you may download the original at http://www.freevbcode.com/ShowCode.asp?ID=194)
-Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal iOrientation As PrinterOrientationConstants, Optional ByVal iCenter As Boolean = True, Optional ByVal iFit As Boolean = True) As Boolean
+Private Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal iOrientation As PrinterOrientationConstants) As Boolean
 
     Const vbHiMetric As Integer = 8
 
@@ -556,31 +395,20 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
     'Calculate aspect ratio for the printed page
     PrnRatio = PrnWidth / PrnHeight
     e = e Or Err
-
-    'If the user has not selected "fit image to page," calculate the printable size
-    If (Not iFit) Then
-        Dim dpiRatio As Double
-        dpiRatio = baseDPI / desiredDPI
-        PrnPicWidth = Prn.scaleX(pic.Width, vbHiMetric, Prn.ScaleMode) * dpiRatio
-        PrnPicHeight = Prn.scaleY(pic.Height, vbHiMetric, Prn.ScaleMode) * dpiRatio
     
     'Otherwise, set the printable size and image size to the same dimensions
+    If (PicRatio >= PrnRatio) Then
+        PrnPicWidth = Prn.scaleX(PrnWidth, vbHiMetric, Prn.ScaleMode)
+        PrnPicHeight = Prn.scaleY(PrnWidth / PicRatio, vbHiMetric, Prn.ScaleMode)
     Else
-        If (PicRatio >= PrnRatio) Then
-            PrnPicWidth = Prn.scaleX(PrnWidth, vbHiMetric, Prn.ScaleMode)
-            PrnPicHeight = Prn.scaleY(PrnWidth / PicRatio, vbHiMetric, Prn.ScaleMode)
-        Else
-            PrnPicHeight = Prn.scaleY(PrnHeight, vbHiMetric, Prn.ScaleMode)
-            PrnPicWidth = Prn.scaleX(PrnHeight * PicRatio, vbHiMetric, Prn.ScaleMode)
-        End If
+        PrnPicHeight = Prn.scaleY(PrnHeight, vbHiMetric, Prn.ScaleMode)
+        PrnPicWidth = Prn.scaleX(PrnHeight * PicRatio, vbHiMetric, Prn.ScaleMode)
     End If
-
+    
     'If the user has told us to center the image, calculate offsets
-    If (iCenter) Then
-        offsetX = (Prn.ScaleWidth - PrnPicWidth) \ 2
-        offsetY = (Prn.ScaleHeight - PrnPicHeight) \ 2
-    End If
-
+    offsetX = (Prn.ScaleWidth - PrnPicWidth) \ 2
+    offsetY = (Prn.ScaleHeight - PrnPicHeight) \ 2
+    
     'Print the picture using VB's PaintPicture method
     Prn.PaintPicture pic, offsetX, offsetY, PrnPicWidth, PrnPicHeight
     e = e Or Err
@@ -591,121 +419,27 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
 End Function
 
 'Redraw the Print Preview box based on the specified image orientation
-Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
+Private Sub UpdatePrintPreview()
     
-    If chkFit.Value = vbUnchecked Then
-        lblDPIWarning.Visible = False
-        cmbDPI.Enabled = True
-    Else
-        lblDPIWarning.Visible = True
-        cmbDPI.Enabled = False
-    End If
+    On Error GoTo PrintPreviewError
     
-    If g_ImageFormats.FreeImageEnabled = False Then Exit Sub
+    If (Not g_ImageFormats.FreeImageEnabled) Then Exit Sub
     
     'If the fit-to-page option is selected (which it is by default) this routine is very simple:
-    If chkFit.Value = vbChecked Then
-        If cbOrientation.ListIndex = 0 Then
-            iSrc.Picture = picThumb.Picture
-            iSrc.Refresh
-            UpdateDPI CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
-        Else
-            iSrc.Picture = picThumbFinal.Picture
-            iSrc.Refresh
-            UpdateDPI CSng(pdImages(g_CurrentImage).Height) / Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
-        End If
-        
-        Exit Sub
-        
-    End If
-    
-    'If the fit-to-page option is not selected, things get a bit hairier.
-    'Note that this code is heavily derived from the PrintPictureToFitPage routine above, by Waty Thierry.
-    Const vbHiMetric  As Integer = 8
-
-    Dim PrnWidth      As Double
-    Dim PrnHeight     As Double
-    Dim PrnPicWidth   As Double
-    Dim PrnPicHeight  As Double
-    
-    Dim offsetX       As Double
-    Dim offsetY       As Double
-
-    On Error Resume Next
-
-    Printer.Orientation = cbOrientation.ListIndex + 1
-    Printer.PrintQuality = -(cbQuality.ListIndex + 1)
-    
-    'Calculate the dimensions of the printable area in HiMetric
-    PrnWidth = Printer.scaleX(Printer.ScaleWidth, Printer.ScaleMode, vbHiMetric)
-    PrnHeight = Printer.scaleY(Printer.ScaleHeight, Printer.ScaleMode, vbHiMetric)
-
-    Dim pic As StdPicture
-    Set pic = picOut.Picture
-
-    PrnPicWidth = Printer.scaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
-    PrnPicHeight = Printer.scaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
-    
-    'Estimate DPI
-    Dim dpiRatio As Double
-    If forceDPI = False Then
-        Dim dpiX As Double, dpiY As Double
-        dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
-        dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.scaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
-        UpdateDPI ((dpiX + dpiY) / 2)
-        dpiRatio = 1
+    If (cbOrientation.ListIndex = 0) Then
+        iSrc.Picture = picThumb.Picture
+        iSrc.Refresh
     Else
-        'Calculate a DPI ratio
-        dpiRatio = baseDPI / desiredDPI
-        PrnPicWidth = PrnPicWidth * dpiRatio
-        PrnPicHeight = PrnPicHeight * dpiRatio
+        iSrc.Picture = picThumbFinal.Picture
+        iSrc.Refresh
     End If
     
-    If chkCenter.Value = vbChecked Then
-        offsetX = (Printer.ScaleWidth - PrnPicWidth) \ 2
-        offsetY = (Printer.ScaleHeight - PrnPicHeight) \ 2
-    End If
-    
-    'Now, convert the printer-specific measurements to their corresponding measurements in the preview window
-    If cbOrientation.ListIndex = 0 Then
-        offsetX = (offsetX / Printer.ScaleWidth) * iSrc.ScaleWidth
-        offsetY = (offsetY / Printer.ScaleHeight) * iSrc.ScaleHeight
-        PrnPicWidth = (PrnPicWidth / Printer.ScaleWidth) * iSrc.ScaleWidth
-        PrnPicHeight = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleHeight
-    Else
-        Dim tmpOX As Double, tmpOY As Double, tmpWidth As Double, tmpHeight As Double
-        tmpOX = (offsetY / Printer.ScaleHeight) * iSrc.ScaleWidth
-        tmpOY = (offsetX / Printer.ScaleWidth) * iSrc.ScaleHeight
-        tmpWidth = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleWidth
-        tmpHeight = (PrnPicWidth / Printer.ScaleWidth) * iSrc.ScaleHeight
-        offsetX = tmpOX
-        offsetY = tmpOY
-        PrnPicWidth = tmpWidth
-        PrnPicHeight = tmpHeight
-    End If
-    
-    'TODO!  Rewrite this whole dialog.  It needs a ton of help.
-    
-    'Draw a new preview
-    If cbOrientation.ListIndex = 0 Then
-        DrawPreviewImage picThumb, , , True
-        iSrc.Picture = LoadPicture("")
-        SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        'StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).getOldCompositedImage().previewX, pdImages(g_CurrentImage).getOldCompositedImage().previewY, pdImages(g_CurrentImage).getOldCompositedImage().previewWidth, pdImages(g_CurrentImage).getOldCompositedImage().previewHeight, vbSrcCopy
-    Else
-        DrawPreviewImage picThumb90, , , True
-        iSrc.Picture = LoadPicture("")
-        SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        'StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).getOldCompositedImage().previewY, pdImages(g_CurrentImage).getOldCompositedImage().previewX, pdImages(g_CurrentImage).getOldCompositedImage().previewHeight, pdImages(g_CurrentImage).getOldCompositedImage().previewWidth, vbSrcCopy
-    End If
-    
-    iSrc.Picture = iSrc.Image
-    iSrc.Refresh
+PrintPreviewError:
       
 End Sub
 
 'This is called whenever the dimensions of the preview window change (for example, in response to a change in paper size)
-Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
+Private Sub RebuildPreview()
     
     'FreeImage is used to rotate the image; if it's not installed, previewing is automatically disabled
     If g_ImageFormats.FreeImageEnabled Then
@@ -736,7 +470,7 @@ Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
         picThumbFinal.Refresh
         
         'Initiate a redraw of the preview according to the print settings currently specified by the user
-        UpdatePrintPreview forceDPI
+        UpdatePrintPreview
         
     End If
         
@@ -745,31 +479,34 @@ End Sub
 'Display what size of paper we expect to output the image onto
 Private Sub UpdatePaperSize()
     
+    On Error GoTo PaperSizeError
+    
+    Dim scaleActionWorked As Boolean
+    
     'Note: interacting with the printer is a messy, complex chunk of API hackery (see: http://support.microsoft.com/kb/282474/t)
     ' To that end, I've written this code to work with any paper size - all it requires is that the Printer.Width and Printer.Height
     ' values be set to whatever size the user desires.  Thus this code is abstracted away from the actual paper size selection
     ' process, and any new selection method will require zero changes here.
     Dim pWidth As Double, pHeight As Double
-    pWidth = Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
-    pHeight = Printer.scaleY(Printer.Height, Printer.ScaleMode, vbInches)
-    Dim TxtWidth As String, TxtHeight As String
-    TxtWidth = Format(pWidth, "#0.##")
-    TxtHeight = Format(pHeight, "#0.##")
-    If Right(TxtWidth, 1) = "." Then TxtWidth = Left$(TxtWidth, Len(TxtWidth) - 1)
-    If Right(TxtHeight, 1) = "." Then TxtHeight = Left$(TxtHeight, Len(TxtHeight) - 1)
+    pWidth = Me.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
+    pHeight = Me.scaleY(Printer.Height, Printer.ScaleMode, vbInches)
+    scaleActionWorked = True
     
-    lblPaperSize = g_Language.TranslateMessage("paper size") & ": " & TxtWidth & """ x  " & TxtHeight & """"
+    Dim sWidth As String, sHeight As String
+    sWidth = Format$(pWidth, "0.0#")
+    sHeight = Format(pHeight, "0.0#")
+    lblPaperSize.Caption = g_Language.TranslateMessage("paper size") & ": " & sWidth & """ x  " & sHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double
-    aspectRatio = pWidth / pHeight
+    If (pHeight <> 0#) Then aspectRatio = pWidth / pHeight Else aspectRatio = 1#
     
     'The maximum available area for the preview is 220 pixels.  The margin on both top and left is 16 pixels.
     ' This means that the full workable area is 220 + 16 * 2, or 252 in either direction.
     ' We will rebuild the preview picture box according to the new aspect ratio and these size constraints.
     
     'If width is larger than height, assign width a size of 220 pixels and adjust height accordingly
-    If aspectRatio >= 1 Then
+    If (aspectRatio >= 1) Then
         iSrc.Width = 220
         iSrc.Left = 16
         iSrc.Height = 220 * aspectRatio
@@ -782,28 +519,16 @@ Private Sub UpdatePaperSize()
     End If
     
     'Automatically initiate a rebuild of the preview picture boxes
-    If chkFit.Value = vbChecked Then RebuildPreview Else RebuildPreview True
+    RebuildPreview
     
-End Sub
+PaperSizeError:
 
-'Display the assumed DPI that results from the current print settings
-Private Sub UpdateDPI(ByVal eDPI As Double)
-    cmbDPI = Int(eDPI + 0.5)
-End Sub
-
-Private Sub cmbDPI_Change()
-    If EntryValid(cmbDPI, 1, 12000, False, False) Then
-        desiredDPI = cmbDPI
-        UpdatePrintPreview True
-    End If
+    If (Not scaleActionWorked) Then lblPaperSize.Caption = vbNullString
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub txtCopies_GotFocus()
-    'AutoSelectText txtCopies
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -820,69 +545,24 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     Dim selBounds As RECTF
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
-    If useOtherPictureSrc Then
-        srcWidth = otherPictureSrc.GetDIBWidth
-        srcHeight = otherPictureSrc.GetDIBHeight
-    Else
-        If pdImages(g_CurrentImage).IsSelectionActive Then
-            selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
-            srcWidth = selBounds.Width
-            srcHeight = selBounds.Height
-        Else
-            srcWidth = pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
-            srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
-        End If
-    End If
+    Dim srcDIB As pdDIB
+    pdImages(g_CurrentImage).GetCompositedImage srcDIB
+    srcWidth = srcDIB.GetDIBWidth
+    srcHeight = srcDIB.GetDIBHeight
             
     'Now, use that aspect ratio to determine a proper size for our temporary DIB
     Dim newWidth As Long, newHeight As Long
-    
     ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
     'Normally this will draw a preview of pdImages(g_CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
-    If Not useOtherPictureSrc Then
-        
-        'Check to see if a selection is active; if it isn't, simply render the full form
-        If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
-        
-            If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
-                Set tmpDIB = New pdDIB
-                tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB(), newWidth, newHeight, True
-                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-                tmpDIB.RenderToPictureBox dstPicture
-            Else
-                pdImages(g_CurrentImage).GetActiveDIB().RenderToPictureBox dstPicture
-            End If
-        
-        Else
-            
-            selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
-        
-            'Copy the current selection into a temporary DIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-            BitBlt tmpDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
-        
-            'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
-                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-            End If
-            
-            tmpDIB.RenderToPictureBox dstPicture
-            
-        End If
-        
+    If srcDIB.GetDIBColorDepth = 32 Then
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight, True
+        If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+        tmpDIB.RenderToPictureBox dstPicture
     Else
-    
-        If otherPictureSrc.GetDIBColorDepth = 32 Then
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateFromExistingDIB otherPictureSrc, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-            tmpDIB.RenderToPictureBox dstPicture
-        Else
-            otherPictureSrc.RenderToPictureBox dstPicture
-        End If
-        
+        srcDIB.RenderToPictureBox dstPicture
     End If
     
 End Sub
+
