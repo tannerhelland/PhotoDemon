@@ -143,7 +143,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     blurDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -224,7 +224,7 @@ Private Sub btsStyle_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Portrait glow", , GetLocalParamString(), UNDO_LAYER
+    Process "Portrait glow", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

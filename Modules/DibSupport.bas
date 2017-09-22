@@ -1312,8 +1312,6 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount A
         Dim lTable() As Long
         ReDim lTable(0 To colorCount - 1) As Long
             
-        Dim tmpA As Single, tmpQuad As RGBQUAD
-            
         For x = 0 To colorCount - 1
             GetMem4 VarPtr(srcPalette(x)), VarPtr(lTable(x))
         Next x

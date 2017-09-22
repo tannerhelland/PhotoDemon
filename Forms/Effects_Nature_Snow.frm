@@ -178,9 +178,8 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
         m_Randomize.SetSeed_Float .GetDouble("seed", m_Randomize.GetRandomFloat_VB)
     End With
     
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    'Generate a source image matching the current preview area
+    Dim tmpSA As SAFEARRAY2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , True
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -192,7 +191,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -200,10 +199,6 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     Dim progBarCheck As Long
     If (Not toPreview) Then ProgressBars.SetProgBarMax 7
     progBarCheck = ProgressBars.FindBestProgBarValue()
-    
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long, grayVal As Long
-    Dim newR As Long, newG As Long, newB As Long
     
     'We're going to render our snow into its own dedicated DIB, which will then be overlaid atop the
     ' original image as the final step.
@@ -262,7 +257,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     numOfFlakes = snowIntensity * 400#
     
     Dim centerX As Double, centerY As Double
-    Dim ptX As Single, ptY As Single, ptAngle As Single
+    Dim ptAngle As Single
     
     Dim shapeCorners() As POINTFLOAT
     ReDim shapeCorners(0 To 3) As POINTFLOAT
@@ -357,7 +352,7 @@ Private Sub chkRandomize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Snow", , GetLocalParamString(), UNDO_LAYER
+    Process "Snow", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

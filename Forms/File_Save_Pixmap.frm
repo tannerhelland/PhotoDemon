@@ -129,10 +129,6 @@ Private m_CompositedImage As pdDIB
 ' but note that it must be regenerated whenever the preview source is regenerated.
 Private m_FIHandle As Long
 
-'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
-' variable controls access to the toggle code.
-Private m_CheckBoxUpdatingDisabled As Boolean
-
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
 

@@ -176,8 +176,6 @@ End Property
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog(ByRef ownerForm As Form)
     
-    Dim i As Long
-    
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
     Dim buttonIconSize As Long
     buttonIconSize = FixDPI(26)
@@ -186,7 +184,7 @@ Public Sub ShowDialog(ByRef ownerForm As Form)
     cmdAnswer(2).AssignImage "edit_undo", , buttonIconSize, buttonIconSize
         
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-    If (Len(pdImages(imageBeingClosed).imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
+    If (Len(pdImages(imageBeingClosed).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
         cmdAnswer(0).AssignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
     Else
         cmdAnswer(0).AssignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
@@ -200,7 +198,7 @@ Public Sub ShowDialog(ByRef ownerForm As Form)
         
     'Adjust the save message to match this image's name
     Dim imageName As String
-    imageName = pdImages(imageBeingClosed).imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    imageName = pdImages(imageBeingClosed).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If (Len(Trim$(imageName)) = 0) Then imageName = g_Language.TranslateMessage("This image")
     lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", """" & imageName & """")
     lblWarning.RequestRefresh

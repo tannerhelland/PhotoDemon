@@ -355,7 +355,6 @@ Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
         
         'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
         Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         
         'Sync the interface to the new layer
@@ -382,7 +381,6 @@ Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
         
         'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
         Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         
         'Sync the interface to the new layer

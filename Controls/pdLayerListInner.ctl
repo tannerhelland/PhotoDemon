@@ -451,7 +451,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         
         'Delete key: delete the active layer (if allowed)
         If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
         End If
         
         'Insert: raise Add New Layer dialog
@@ -644,7 +644,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
             
             'If the new position differs from the layer's original position, call a dummy Processor call, which will create
             ' an Undo/Redo entry at this point.
-            If (m_InitialLayerIndex <> layerIndexUnderMouse) Then Process "Rearrange layers", False, "", UNDO_IMAGEHEADER
+            If (m_InitialLayerIndex <> layerIndexUnderMouse) Then Process "Rearrange layers", False, "", UNDO_ImageHeader
         
         End If
         
@@ -939,8 +939,8 @@ Private Sub RedrawBackBuffer()
         
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
-        If ((Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0)) Then
-            zeroLayers = (Not (pdImages(g_CurrentImage).GetNumOfLayers > 0))
+        If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
+            zeroLayers = Not (pdImages(g_CurrentImage).GetNumOfLayers > 0)
         Else
             zeroLayers = True
         End If

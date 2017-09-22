@@ -138,9 +138,6 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
@@ -358,7 +355,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Modern art", , GetLocalParamString(), UNDO_LAYER
+    Process "Modern art", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

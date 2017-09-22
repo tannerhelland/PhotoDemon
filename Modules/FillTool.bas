@@ -106,7 +106,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         'Merged sampling requires us to maintain a local copy of the fully composited image stack.
         If m_FillSampleMerged Then
             
-            Dim fillImageRefreshRequired: fillImageRefreshRequired = False
+            Dim fillImageRefreshRequired As Boolean
             fillImageRefreshRequired = (m_FillImage Is Nothing)
             If (Not fillImageRefreshRequired) Then fillImageRefreshRequired = (m_FillImageTimestamp <> pdImages(g_CurrentImage).GetTimeOfLastChange())
             

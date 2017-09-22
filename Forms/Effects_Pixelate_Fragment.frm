@@ -153,7 +153,6 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     End With
     
     'Request a working copy of the current layer
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
@@ -252,7 +251,7 @@ Private Sub ToggleOpacitySliderVisibility()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fragment", , GetLocalParamString(), UNDO_LAYER
+    Process "Fragment", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

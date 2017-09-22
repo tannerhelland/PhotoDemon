@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.290</langversion>
+<langversion>6.7.291</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2176,36 +2176,6 @@ Beschreibung: %2
 </phrase>
 
 <phrase>
-<original>exposure</original>
-<translation>Belichtung</translation>
-</phrase>
-
-<phrase>
-<original>contrast</original>
-<translation>Kontrast</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>Deutlichkeit</translation>
-</phrase>
-
-<phrase>
-<original>vibrance</original>
-<translation>Lebendigkeit</translation>
-</phrase>
-
-<phrase>
-<original>temperature</original>
-<translation>Temperatur</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>Farbton</translation>
-</phrase>
-
-<phrase>
 <original>Remove selection</original>
 <translation>Auswahl entfernen</translation>
 </phrase>
@@ -2264,7 +2234,7 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 <translation>Anweisungen zum Fehlerbericht</translation>
 </phrase>
 
-<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -3501,6 +3471,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- BEGIN text for pdRedEye.cls -->
 
@@ -6582,6 +6558,11 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
+<original>contrast</original>
+<translation>Kontrast</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting brightness and contrast</original>
 <translation></translation>
 </phrase>
@@ -6596,7 +6577,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -6885,6 +6866,11 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
+<original>temperature</original>
+<translation>Temperatur</translation>
+</phrase>
+
+<phrase>
 <original>warmer</original>
 <translation></translation>
 </phrase>
@@ -6929,29 +6915,39 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>erweiterte</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Tint.frm (FormTint) -->
 
 <phrase>
+<original>tint</original>
+<translation>Farbton</translation>
+</phrase>
+
+<phrase>
 <original>Re-tinting image</original>
 <translation>Bild neu einfärben</translation>
 </phrase>
 
-<!-- Adjustments_Color_Tint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Tint.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Vibrance.frm (FormVibrance) -->
 
 <phrase>
+<original>vibrance</original>
+<translation>Lebendigkeit</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting color vibrance</original>
 <translation>Farb-Lebendigkeit einstellen</translation>
 </phrase>
 
-<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Vibrance.frm-->
 
@@ -8306,6 +8302,11 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
+<original>exposure</original>
+<translation>Belichtung</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>Intensität</translation>
 </phrase>
@@ -8370,7 +8371,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Vollständiges Spektrum</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -13213,8 +13214,8 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>Apply non-destructive lighting adjustments</original>
-<translation>Zerstörungsfreie Belichtungskorrekturen durchführen</translation>
+<original>Select colors from the image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13280,6 +13281,12 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
+
+<!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
+
+<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+
+<!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
@@ -13481,32 +13488,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
-<!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
-
-<phrase>
-<original>all effects</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fixes permanent</original>
-<translation>Schnelle Lösung dauerhaft machen</translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Einstellung von allen schnellen Lösungen zurücksetzen</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Schnelle Lösungen dauerhaft machen (was an sich nicht notwendig ist, aber die Leistung verbessern kann, wenn viele dieser schnellen Lösungen ausgewählt wurden und Veränderungen im sichtbaren Bild nur sehr träge dargestellt werden)</translation>
-</phrase>
-
-<!-- Toolpanel_QuickFix.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_QuickFix.frm-->
-
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
@@ -13671,6 +13652,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
+<original>clarity</original>
+<translation>Deutlichkeit</translation>
+</phrase>
+
+<phrase>
 <original>alignment</original>
 <translation></translation>
 </phrase>
@@ -13700,7 +13686,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -15020,18 +15006,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdRecentFiles.cls -->
-
-<!-- pdRecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdRecentFiles.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4508 phrases. -->
-<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12261 total words. -->
 
 </pdData>

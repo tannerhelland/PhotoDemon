@@ -53,10 +53,6 @@ Private m_dstDIB As pdDIB
 ' composite passes.
 Private m_tmpDIB As pdDIB
 
-'Non-destructive effects require use of a temporary DIB.  In the event that only a single layer is being non-destructively edited, we can cache
-' the DIB at module level, and perform a simple erase instead of recreation on updates.  This improves non-destructive FX performance.
-Private m_NDFXDIB As pdDIB
-
 'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
 Private m_PlgPoints() As POINTFLOAT
@@ -115,18 +111,6 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     ' this action does nothing.)
     topLayer.SyncInternalDIB
     bottomLayer.SyncInternalDIB
-    
-    'We also need to commit any non-destructive effects; otherwise, the merged layer may look different from its on-screen representation,
-    ' as the settings of the bottom layer will be "assumed" for the merged layer as well.
-    If bottomLayer.GetLayerNonDestructiveFXState Then
-        Me.ApplyNDFXToDIB bottomLayer, bottomLayer.layerDIB
-        bottomLayer.DeactivateAllNDFX
-    End If
-    
-    If topLayer.GetLayerNonDestructiveFXState Then
-        Me.ApplyNDFXToDIB topLayer, topLayer.layerDIB
-        topLayer.DeactivateAllNDFX
-    End If
     
     'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
     Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
@@ -566,131 +550,73 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     If (srcLayerIndex = 0) Then
         standardBlendingActive = True
     Else
-        standardBlendingActive = CBool(srcLayer.GetLayerBlendMode = BL_NORMAL) And CBool(srcLayer.GetLayerAlphaMode = LA_NORMAL)
+        standardBlendingActive = (srcLayer.GetLayerBlendMode = BL_NORMAL) And (srcLayer.GetLayerAlphaMode = LA_NORMAL)
     End If
+        
+    'Next, check for custom blend modes.  These require an intermediate DIB copy of the image, because PD must internally render the
+    ' blend modes (as GDI+ can't do it for us).
+    If standardBlendingActive Then
     
-    'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
-    ' to deal with.
-    If (Not srcLayer.GetLayerNonDestructiveFXState) Then
+        'Custom blend modes are not active.  Yay!
         
-        'Non-destructive effects are not active.  Yay!
+        'Check for affine transformations.  If none are present (e.g. the layer is at its original size and orientation),
+        ' we can use GDI's AlphaBlend for a performance boost.
+        If (Not srcLayer.AffineTransformsActive(True)) Then
         
-        'Next, check for custom blend modes.  These require an intermediate DIB copy of the image, because PD must internally render the
-        ' blend modes (as GDI+ can't do it for us).
-        If standardBlendingActive Then
+            With srcLayer
+                .layerDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
+            End With
         
-            'Custom blend modes are not active.  Yay!
-            
-            'Check for affine transformations.  If none are present (e.g. the layer is at its original size and orientation),
-            ' we can use GDI's AlphaBlend for a performance boost.
-            If (Not srcLayer.AffineTransformsActive(True)) Then
-            
-                With srcLayer
-                    .layerDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
-                End With
-            
-            Else
-                
-                'One or more affine transformations are active.  GDI+ must be used to render the image.
-                With srcLayer
-                
-                    'If scaling is the only active affine transformation, we can use a special, optimized render function
-                    If (Not srcLayer.AffineTransformsActive(False)) Then
-                        GDI_Plus.GDIPlus_StretchBlt dstDIB, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
-                    
-                    'If non-scaling affine transforms are active, we must perform a full affine transformation.
-                    Else
-                        
-                        'Retrieve the layer's destination position into our POINTFLOAT array
-                        .GetLayerCornerCoordinates m_PlgPoints
-                        
-                        'Apply a full parallelogram transformation
-                        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
-                        
-                    End If
-                    
-                End With
-            
-            End If
-        
-        'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BL_NORMAL)..."
         Else
-        
-            'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
+            
+            'One or more affine transformations are active.  GDI+ must be used to render the image.
             With srcLayer
             
-                'If non-destructive transforms are NOT active, pass the source layer to the all-in-one composite + blend function
-                If (Not .AffineTransformsActive(True)) Then
+                'If scaling is the only active affine transformation, we can use a special, optimized render function
+                If (Not srcLayer.AffineTransformsActive(False)) Then
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 
-                    'Perform an all-in-one composite and blend using PD's awesome all-in-one function
-                    CompositeAndBlendDIBs .layerDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
-                
-                'One or more affine transforms are present.  We have no choice but to create a temporary intermediate DIB,
-                ' prior to full compositing.
+                'If non-scaling affine transforms are active, we must perform a full affine transformation.
                 Else
-                
-                    'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-                    layerBoundariesOkay = .GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
-                
-                    'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
-                    If layerBoundariesOkay Then CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
+                    
+                    'Retrieve the layer's destination position into our POINTFLOAT array
+                    .GetLayerCornerCoordinates m_PlgPoints
+                    
+                    'Apply a full parallelogram transformation
+                    GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                     
                 End If
                 
             End With
-            
-        End If
         
-    'Non-destructive effects are active.  This requires a fairly significant chunk of special processing (ugh).
+        End If
+    
+    'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BL_NORMAL)..."
     Else
     
-        'See if non-destructive resizing is active.  If it is, create a copy of the source DIB, *with* resizing applied.  This will be
-        ' passed to the non-destructive FX function.
+        'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
+        With srcLayer
         
-        '(Potential future TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize)
-        If (Not srcLayer.AffineTransformsActive(True)) Then
-            layerBoundariesOkay = m_tmpDIB.CreateFromExistingDIB(srcLayer.layerDIB)
-        Else
+            'If non-destructive transforms are NOT active, pass the source layer to the all-in-one composite + blend function
+            If (Not .AffineTransformsActive(True)) Then
             
-            'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-            layerBoundariesOkay = srcLayer.GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
+                'Perform an all-in-one composite and blend using PD's awesome all-in-one function
+                CompositeAndBlendDIBs .layerDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
+            
+            'One or more affine transforms are present.  We have no choice but to create a temporary intermediate DIB,
+            ' prior to full compositing.
+            Else
+            
+                'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
+                layerBoundariesOkay = .GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
+            
+                'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
+                If layerBoundariesOkay Then CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
                 
-        End If
+            End If
+            
+        End With
         
-        If layerBoundariesOkay Then
-        
-            'Apply any/all non-destructive effects to the temporary DIB
-            ApplyNDFXToDIB srcLayer, m_tmpDIB
-            
-            With srcLayer
-                
-                'Next, check the active blend and alpha modes.  NORMAL blend and NORMAL alpha mode can be handled by GDI's AlphaBlend
-                ' for a nice performance boost.
-                If standardBlendingActive Then
-                
-                    If .AffineTransformsActive(False) Then
-                        m_tmpDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
-                    Else
-                        m_tmpDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
-                    End If
-                
-                'Custom blend and/or alpha modes are active.  Perform a single pass composite + blend operation using our awesome
-                ' all-in-one function.
-                Else
-                
-                    If .AffineTransformsActive(False) Then
-                        CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
-                    Else
-                        CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, , .GetLayerAlphaMode
-                    End If
-            
-                End If
-                
-            End With
-            
-        End If
-        
-    'End NDFX branching
     End If
         
 End Sub
@@ -1016,9 +942,9 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             
             'We know affine transforms (aside from scaling) are not active.  Proceed with our highly optimized rendering chain.
             
-            'Non-destructive effects, custom blend-modes, and custom alpha-modes require creation of a temporary DIB, because we must perform
+            'Custom blend-modes and custom alpha-modes require creation of a temporary DIB, because we must perform
             ' our own compositing (as GDI/GDI+ can't do it for us).  Check for those states now.
-            If (srcLayer.GetLayerNonDestructiveFXState Or nonStandardBlendingActive) Then
+            If nonStandardBlendingActive Then
             
                 'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
                 xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
@@ -1041,9 +967,6 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                         
                         BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                         
-                        'Apply non-destructive FX now
-                        If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
-                    
                     'Zoom or non-destructive resize/rotate are active.  Extra work is required.
                     Else
                         
@@ -1051,50 +974,14 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                         ' be used regardless of the caller's requested interpolation type.)
                         If (srcImageRect.Width < dstViewportRect.Width) Then
                             
-                            'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
+                            'We are zoomed-in to the image, e.g. zoom is larger than 100%.
                             
-                            'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
-                            ' and *then* resize the data.
-                            If srcLayer.GetLayerNonDestructiveFXState Then
+                            'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
+                            ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
+                            '  the function-wide resample mode.)
+                            If (srcLayer.GetLayerCanvasXModifier <> 1#) Or (srcLayer.GetLayerCanvasYModifier <> 1#) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = GP_IM_NearestNeighbor
+                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , tmpResampleMode, , Not isBaseLayer, True, True
                             
-                                'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
-                                ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
-                                ' only rendered when the image is written to the screen or to file.
-                                
-                                'Calculate width and height values for the DIB in advance.  These calculations are complicated because floating-point
-                                ' offsets and widths (due to subpixel positioning) may cause the relevant area of the DIB to as much as 2px larger than
-                                ' its integer-truncated values.  Also, if these calculated width/height values match the size of the current NDFX DIB,
-                                ' we don't need to recreate it!
-                                dibWidthCalc = Int(srcRect.Width + (srcRect.Left - Int(srcRect.Left)) + 0.99)
-                                dibHeightCalc = Int(srcRect.Height + (srcRect.Top - Int(srcRect.Top)) + 0.99)
-                                
-                                If (m_NDFXDIB.GetDIBWidth < dibWidthCalc) Or (m_NDFXDIB.GetDIBHeight < dibHeightCalc) Then
-                                    m_NDFXDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                                    m_NDFXDIB.SetInitialAlphaPremultiplicationState True
-                                Else
-                                    m_NDFXDIB.ResetDIB
-                                End If
-                                
-                                BitBlt m_NDFXDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
-                                
-                                'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
-                                ' as we only have to process a small fraction of the pixels
-                                ApplyNDFXToDIB srcLayer, m_NDFXDIB
-                                
-                                'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
-                                GDI_Plus.GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, interpolationType, , Not isBaseLayer, True, True
-                                                                
-                            'Non-destructive FX are not active.  Resize the source rectangle immediately.
-                            Else
-                            
-                                'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                                ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
-                                '  the function-wide resample mode.)
-                                If (srcLayer.GetLayerCanvasXModifier <> 1#) Or (srcLayer.GetLayerCanvasYModifier <> 1#) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = GP_IM_NearestNeighbor
-                                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , tmpResampleMode, , Not isBaseLayer, True, True
-                                
-                            End If
-                        
                         'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
                         ' option at present.
                         Else
@@ -1104,9 +991,6 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             '  the function-wide resample mode.)
                             If (srcLayer.GetLayerCanvasXModifier <> 1#) Or (srcLayer.GetLayerCanvasYModifier <> 1#) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
                             GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , tmpResampleMode, , Not isBaseLayer, , True
-                                
-                            'Apply non-destructive FX now
-                            If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
                             
                         End If
                         
@@ -1259,8 +1143,8 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             testHash = srcLayer.GetViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, interpolationType)
             
             'This function differs from the standard pipeline because we *always* create a temporary compositing DIB.  The speed hit from
-            ' a complex affine transform is significant, especially on large images, so caching the transform (even for normal blendmode and
-            ' no NDFX) is always preferable.
+            ' a complex affine transform is significant, especially on large images, so caching the transform (even for normal blendmode)
+            ' is always preferable.
             
             'Check the viewport hash now.  Certain conditions can force us to ignore internal caches (e.g. generating thumbnails).
             If (srcLayer.GetViewportHash(levelOfDetail) = 0) Or (srcLayer.GetViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
@@ -1286,9 +1170,6 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 Else
                     GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, srcLayer.GetLayerResizeQuality_GDIPlus
                 End If
-                    
-                'If non-destructive FX are active, apply them now
-                If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
                 
                 'Update the layer hash, so we can possibly skip this work in the future
                 srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
@@ -1824,11 +1705,6 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     ' base layer AND the current paint stroke.
     Set lodDIB = srcImage.ScratchLayer.TmpLODDIB(CLC_Painting)
     
-    'Check for non-destructive layer effects, and apply them as necessary.  (Note that we are applying these to the combined
-    ' layer + paint stroke, because we want this preview to look identical to the final merge that's applied after the
-    ' user releases the mouse.)
-    If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
-    
     'Merge the final, fully blended result onto the rest of the compositor stack
     nonStandardBlendingActive = (srcLayer.GetLayerBlendMode <> BL_NORMAL) Or (srcLayer.GetLayerAlphaMode <> LA_NORMAL)
     
@@ -1839,282 +1715,6 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     Else
         lodDIB.AlphaBlendToDC m_dstDIB.GetDIBDC, srcLayer.GetLayerOpacity * 2.55, 0, 0
     End If
-    
-End Sub
-
-'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
-' the DIB.  Why supply the DIB separately?  Because during viewport composition, all layers are resized and/or cropped to their
-' size relevant to the viewport.  By doing this, we hugely decrease the performance hit from non-destructive edit calculations.
-Public Sub ApplyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
-
-    'Start by unpremultiplying the layer alpha
-    If (targetDIB.GetDIBColorDepth = 32) And targetDIB.GetAlphaPremultiplication Then targetDIB.SetAlphaPremultiplication False
-
-    'Calculate each non-destructive FX in turn
-    
-    'Brightness, contrast, and clarity are handled simultaneously, to reduce processing time
-    If (parentLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY) <> 0) Then
-        FastLayerExposureContrastClarity parentLayer, targetDIB
-    End If
-    
-    'Vibrance, temperature, tint
-    If (parentLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_TINT) <> 0) Then
-        FastLayerVibranceTemperatureTint parentLayer, targetDIB
-    End If
-    
-    'Re-premultiply alpha
-    If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
-
-End Sub
-
-'Super-fast, no-frills adjustment for Exposure, Contrast, and Clarity.
-' This function was designed for non-destructive compositing purposes, so it takes some shortcuts that PhotoDemon's dedicated functions
-' for these operations do not.  As such, do not expect it to output identical results.
-Private Sub FastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
-
-    'Create a local array and point it at the target layer's DIB
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepSafeArray tmpSA, targetDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    'Local loop variables
-    Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = targetDIB.GetDIBWidth - 1
-    finalY = targetDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = targetDIB.GetDIBColorDepth \ 8
-    
-    'Adjustment values
-    Dim exposureAdjustment As Double, contrastAdjustment As Long, clarityAdjustment As Long
-    exposureAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
-    contrastAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST)
-    clarityAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY)
-    
-    'Look-up tables are used to accelerate this function.
-    Dim eccLUT() As Byte
-    ReDim eccLUT(0 To 255) As Byte
-    Dim tmpVal As Double
-    
-    For x = 0 To 255
-        
-        'Calculate exposure
-        If exposureAdjustment <> 0 Then
-            
-            tmpVal = x / 255
-            tmpVal = tmpVal * 2 ^ (exposureAdjustment)
-            tmpVal = tmpVal * 255
-            
-            'Crop the lookup value to [0, 255] range
-            If tmpVal > 255 Then
-                tmpVal = 255
-            ElseIf tmpVal < 0 Then
-                tmpVal = 0
-            End If
-        
-        Else
-            tmpVal = x
-        End If
-                
-        'Calculate contrast
-        If contrastAdjustment <> 0 Then
-            
-            tmpVal = tmpVal + (((tmpVal - 127) * contrastAdjustment) \ 100)
-        
-            'Crop the lookup value to [0, 255] range
-            If tmpVal > 255 Then
-                tmpVal = 255
-            ElseIf tmpVal < 0 Then
-                tmpVal = 0
-            End If
-        
-        End If
-        
-        'Calculate clarity.  Clarity is simply a contrast adjustment limited to midtones.  Values at 127 are processed
-        ' most strongly, with a linear decrease as input values approach 0 or 255.  Also, I reduce the strength of the
-        ' adjustment by 20% to prevent blowout or gray-washing (for high or low adjustments, respectively).
-        If clarityAdjustment <> 0 Then
-            
-            If x < 127 Then
-                tmpVal = tmpVal + (tmpVal / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
-            Else
-                tmpVal = tmpVal + ((255 - tmpVal) / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
-            End If
-            
-            'Crop the lookup value to [0, 255] range
-            If tmpVal > 255 Then
-                tmpVal = 255
-            ElseIf tmpVal < 0 Then
-                tmpVal = 0
-            End If
-        
-        End If
-        
-        eccLUT(x) = tmpVal
-        
-    Next x
-        
-    'Now we can loop through each pixel in the image, converting values as we go
-    For x = 0 To finalX
-        quickVal = x * qvDepth
-    For y = 0 To finalY
-            
-        'Apply the changes in one fell swoop
-        imageData(quickVal, y) = eccLUT(imageData(quickVal, y))
-        imageData(quickVal + 1, y) = eccLUT(imageData(quickVal + 1, y))
-        imageData(quickVal + 2, y) = eccLUT(imageData(quickVal + 2, y))
-        
-    Next y
-    Next x
-    
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-End Sub
-
-'Super-fast, no-frills adjustments for Vibrance, Temperature, and Tint.
-' This function was designed for non-destructive compositing purposes, so it takes some shortcuts that PhotoDemon's dedicated functions
-' for these operations do not.  As such, do not expect it to output identical results.
-Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
-
-    'Create a local array and point it at the target layer's DIB
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepSafeArray tmpSA, targetDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    'Local loop variables
-    Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = targetDIB.GetDIBWidth - 1
-    finalY = targetDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = targetDIB.GetDIBColorDepth \ 8
-    
-    'Adjustment values
-    Dim vibranceAdjustment As Double, tempAdjustment As Double, tintAdjustment As Double
-    vibranceAdjustment = -0.02 * targetLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE)
-    tempAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE) / 5
-    tintAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_TINT) / 5
-    
-    'Color and related variables
-    Dim r As Long, g As Long, b As Long, maxVal As Long
-    Dim amtVal As Double, avgVal As Double
-    
-    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLUT() As Long
-    ReDim grayLUT(0 To 765) As Long
-    For x = 0 To 765
-        grayLUT(x) = x \ 3
-    Next x
-    
-    'To handle temperature and tint, we will also be preparing RGB LUT tables
-    Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
-    ReDim rLUT(0 To 255) As Byte
-    ReDim gLUT(0 To 255) As Byte
-    ReDim bLUT(0 To 255) As Byte
-    
-    'Populate the look-up table
-    For x = 0 To 255
-    
-        'Calculate temperature
-        If tempAdjustment = 0 Then
-            r = x
-            g = x
-            b = x
-        Else
-        
-            'Temperature affects the red and blue channels
-            r = x + tempAdjustment
-            g = x
-            b = x - tempAdjustment
-        
-        End If
-        
-        'Calculate tint.  Note that RGB will have been already set in the previous step, so we work from the already
-        ' calculated values (instead of x).
-        If tintAdjustment <> 0 Then
-        
-            'Tint affects the green channel
-            g = g + tintAdjustment
-        
-        End If
-        
-        'Clip RGB
-        If r < 0 Then
-            r = 0
-        ElseIf r > 255 Then
-            r = 255
-        End If
-        
-        If g < 0 Then
-            g = 0
-        ElseIf g > 255 Then
-            g = 255
-        End If
-        
-        If b < 0 Then
-            b = 0
-        ElseIf b > 255 Then
-            b = 255
-        End If
-        
-        'Fill the look-up table
-        rLUT(x) = Round(r)
-        gLUT(x) = Round(g)
-        bLUT(x) = Round(b)
-    
-    Next x
-        
-    'Now we can loop through each pixel in the image, converting values as we go
-    For x = 0 To finalX
-        quickVal = x * qvDepth
-    For y = 0 To finalY
-            
-        'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        If vibranceAdjustment <> 0 Then
-        
-            'Calculate the gray value using the look-up table
-            avgVal = grayLUT(r + g + b)
-            maxVal = Max3Int(r, g, b)
-            
-            'Get adjusted average
-            amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
-            
-            'Apply new vibrance
-            If r <> maxVal Then r = r + (maxVal - r) * amtVal
-            If g <> maxVal Then g = g + (maxVal - g) * amtVal
-            If b <> maxVal Then b = b + (maxVal - b) * amtVal
-            
-            'Clamp values to [0,255] range
-            If r < 0 Then r = 0
-            If r > 255 Then r = 255
-            If g < 0 Then g = 0
-            If g > 255 Then g = 255
-            If b < 0 Then b = 0
-            If b > 255 Then b = 255
-            
-        End If
-            
-        'Apply the new values
-        imageData(quickVal + 2, y) = rLUT(r)
-        imageData(quickVal + 1, y) = gLUT(g)
-        imageData(quickVal, y) = bLUT(b)
-        
-    Next y
-    Next x
-    
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
 End Sub
 
@@ -2172,7 +1772,6 @@ Public Sub AttemptToFreeMemory()
     'Start by clearing our own internal caches
     m_dstDIB.EraseDIB
     m_tmpDIB.EraseDIB
-    m_NDFXDIB.EraseDIB
     
     'Ask the pixel blender to release memory too, if it can
     m_Blender.AttemptToFreeMemory
@@ -2182,7 +1781,6 @@ End Sub
 Private Sub Class_Initialize()
     Set m_dstDIB = New pdDIB
     Set m_tmpDIB = New pdDIB
-    Set m_NDFXDIB = New pdDIB
     Set m_Blender = New pdPixelBlender
     
     ReDim m_PlgPoints(0 To 3) As POINTFLOAT
@@ -2192,6 +1790,5 @@ End Sub
 Private Sub Class_Terminate()
     Set m_dstDIB = Nothing
     Set m_tmpDIB = Nothing
-    Set m_NDFXDIB = Nothing
     Set m_Blender = Nothing
 End Sub

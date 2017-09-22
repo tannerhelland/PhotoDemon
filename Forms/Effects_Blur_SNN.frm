@@ -152,7 +152,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xOffset As Long, xOffsetInner1 As Long, xOffsetInner2 As Long, yOffsetInner1 As Long, yOffsetInner2 As Long
+    Dim xOffset As Long, xOffsetInner1 As Long, xOffsetInner2 As Long
     Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
@@ -356,7 +356,7 @@ Private Function BlendLongs(ByVal baseColor As Long, ByVal newColor As Long, ByR
 End Function
 
 Private Sub cmdBar_OKClick()
-    Process "Symmetric nearest-neighbor", , GetLocalParamString(), UNDO_LAYER
+    Process "Symmetric nearest-neighbor", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -111,7 +111,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to alpha", , GetLocalParamString(), UNDO_LAYER
+    Process "Color to alpha", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -208,8 +208,6 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     
     Dim labL As Double, labA As Double, labB As Double
     Dim labL2 As Double, labA2 As Double, labB2 As Double
-    
-    Dim labLf As Single, labAf As Single, labBf As Single
     Dim labL2f As Single, labA2f As Single, labB2f As Single
     
     Dim labTransform As pdLCMSTransform
@@ -310,9 +308,9 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
                 ' subtracting the target color from the original color, using the calculated threshold value; this
                 ' is the only way I know to approximate the "feathering" caused by light bleeding over object edges.
                 If (cDistance = 1) Then cDistance = 0.999999
-                r = (r - (r2 * cDistance)) / (1 - cDistance)
-                g = (g - (g2 * cDistance)) / (1 - cDistance)
-                b = (b - (b2 * cDistance)) / (1 - cDistance)
+                r = (r - (r2 * cDistance)) / (1# - cDistance)
+                g = (g - (g2 * cDistance)) / (1# - cDistance)
+                b = (b - (b2 * cDistance)) / (1# - cDistance)
                 
                 If (r > 255) Then r = 255
                 If (g > 255) Then g = 255
@@ -325,7 +323,7 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
                 imageData(x, y) = b
                 imageData(x + 1, y) = g
                 imageData(x + 2, y) = r
-                imageData(x + 3, y) = newAlpha * (a / 255)
+                imageData(x + 3, y) = newAlpha * a * (1# / 255#)
                     
             End If
             

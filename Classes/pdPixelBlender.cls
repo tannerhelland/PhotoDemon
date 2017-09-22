@@ -329,7 +329,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     
     'New and old RGB values
     Dim topA As Single, topAInt As Byte
-    Dim bottomA As Single, bottomAInt As Byte
+    Dim bottomAInt As Byte
     
     For y = initY To finalY
         

@@ -445,7 +445,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             #End If
             
-            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_Everything
             
         End If
             
@@ -491,7 +491,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Synchronize any non-destructive settings to the currently active layer
     If (handleUIDisabling And loadSuccessful) Then
         Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
     End If
     

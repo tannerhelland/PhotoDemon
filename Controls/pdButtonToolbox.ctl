@@ -242,6 +242,8 @@ End Property
 ' No preprocessing is currently applied to DIBs loaded as a resource.
 Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
+    If (Not MainModule.IsProgramRunning) Then Exit Sub
+    
     'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
     ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
     ' at multiple sizes!)
@@ -287,6 +289,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
     
     'Request a control layout update, which will also calculate a centered position for the new image
     UpdateControlLayout
+    If ucSupport.AmIVisible Then RedrawBackBuffer True, False
 
 End Sub
 

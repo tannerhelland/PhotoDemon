@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3022</langversion>
+<langversion>6.8.3023</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2179,36 +2179,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>exposure</original>
-<translation>曝光</translation>
-</phrase>
-
-<phrase>
-<original>contrast</original>
-<translation>对比</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>清晰</translation>
-</phrase>
-
-<phrase>
-<original>vibrance</original>
-<translation>光彩</translation>
-</phrase>
-
-<phrase>
-<original>temperature</original>
-<translation>温度</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>着色</translation>
-</phrase>
-
-<phrase>
 <original>Remove selection</original>
 <translation>删除选择</translation>
 </phrase>
@@ -2268,7 +2238,7 @@ When finished, click the Submit button.  Thank you!</original>
 <translation>错误报告的说明</translation>
 </phrase>
 
-<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -3504,6 +3474,12 @@ Please enter a numeric value.</original>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- BEGIN text for pdRedEye.cls -->
 
@@ -6582,6 +6558,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>contrast</original>
+<translation>对比</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting brightness and contrast</original>
 <translation>调整亮度和对比度</translation>
 </phrase>
@@ -6596,7 +6577,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>遗产</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -6885,6 +6866,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>temperature</original>
+<translation>温度</translation>
+</phrase>
+
+<phrase>
 <original>warmer</original>
 <translation>稍暖</translation>
 </phrase>
@@ -6929,29 +6915,39 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>高级</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Tint.frm (FormTint) -->
 
 <phrase>
+<original>tint</original>
+<translation>着色</translation>
+</phrase>
+
+<phrase>
 <original>Re-tinting image</original>
 <translation>重新着色图像</translation>
 </phrase>
 
-<!-- Adjustments_Color_Tint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Tint.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Vibrance.frm (FormVibrance) -->
 
 <phrase>
+<original>vibrance</original>
+<translation>光彩</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting color vibrance</original>
 <translation>调节色彩的活力</translation>
 </phrase>
 
-<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Vibrance.frm-->
 
@@ -8306,6 +8302,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>exposure</original>
+<translation>曝光</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>强度</translation>
 </phrase>
@@ -8370,7 +8371,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>全谱</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -13213,8 +13214,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Apply non-destructive lighting adjustments</original>
-<translation>锁定移动,调整光线和色温</translation>
+<original>Select colors from the image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13280,6 +13281,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
+
+<!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
+
+<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+
+<!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
@@ -13481,32 +13488,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
-<!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
-
-<phrase>
-<original>all effects</original>
-<translation>所有效果</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fixes permanent</original>
-<translation>永远快速生成</translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>重置所有快速修复调整值</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>快速调整。这个操作不是必需的，但如果视觉渲染慢，使用此操作可以提高性能。</translation>
-</phrase>
-
-<!-- Toolpanel_QuickFix.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_QuickFix.frm-->
-
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
@@ -13671,6 +13652,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>clarity</original>
+<translation>清晰</translation>
+</phrase>
+
+<phrase>
 <original>alignment</original>
 <translation>对齐</translation>
 </phrase>
@@ -13700,7 +13686,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>点击此处这层转换为基本的文本层。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -15018,18 +15004,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdRecentFiles.cls -->
-
-<!-- pdRecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdRecentFiles.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4508 phrases. -->
-<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12261 total words. -->
 
 </pdData>

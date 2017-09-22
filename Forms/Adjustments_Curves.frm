@@ -275,7 +275,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -382,8 +382,6 @@ Private Sub cmdBar_AddCustomPresetData()
     ' UPDATE 03 Dec 2013: instead of storing absolute coordinates, store relative ones per the size of the
     '                     curve box.  This fixes an extremely rare error when the user changes DPI for their
     '                     monitor while having a previously stored set of curve coordinates.
-    Dim nodeString As String
-    
     Dim nodeBoxWidth As Long, nodeBoxHeight As Long
     nodeBoxWidth = picDraw.ScaleWidth - PREVIEW_BORDER_PX * 2
     nodeBoxHeight = picDraw.ScaleHeight - PREVIEW_BORDER_PX * 2
@@ -542,7 +540,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Curves", , GetLocalParamString(), UNDO_LAYER
+    Process "Curves", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 'Reset the curve to three points in a straight line

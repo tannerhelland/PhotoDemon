@@ -223,6 +223,7 @@ Friend Sub DrawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RE
     
     Dim dtFlags As Long
     dtFlags = DT_CENTER
+    
     If centerVertically Then
         dtFlags = dtFlags Or DT_VCENTER Or DT_SINGLELINE
     Else

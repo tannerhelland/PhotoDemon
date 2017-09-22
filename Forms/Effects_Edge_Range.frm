@@ -204,7 +204,6 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     ReDim bValues(0 To 255) As Long
     ReDim aValues(0 To 255) As Long
     
-    Dim r As Long, g As Long, b As Long
     Dim lowR As Long, lowG As Long, lowB As Long
     Dim highR As Long, highG As Long, highB As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
@@ -349,7 +348,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Range filter", , GetLocalParamString(), UNDO_LAYER
+    Process "Range filter", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

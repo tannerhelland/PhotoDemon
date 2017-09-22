@@ -183,7 +183,7 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -196,8 +196,6 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     'Exposure can be easily applied using a look-up table
     Dim gLookup(0 To 255) As Byte
-    Dim tmpVal As Double
-    
     For x = 0 To 255
         gLookup(x) = GetCorrectedValue(x, 255, exposureAdjust, offsetAdjust, gammaAdjust)
     Next x
@@ -265,7 +263,7 @@ Private Function GetCorrectedValue(ByVal inputVal As Single, ByVal inputMax As S
 End Function
 
 Private Sub cmdBar_OKClick()
-    Process "Exposure", , GetLocalParamString(), UNDO_LAYER
+    Process "Exposure", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

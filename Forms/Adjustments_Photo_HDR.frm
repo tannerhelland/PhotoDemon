@@ -206,9 +206,9 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         Dim blendVal As Double
         
         'More color variables - in this case, sums for each color component
-        Dim r As Long, g As Long, b As Long, a As Long
-        Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
-        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim r As Long, g As Long, b As Long
+        Dim r2 As Long, g2 As Long, b2 As Long
+        Dim newR As Long, newG As Long, newB As Long
         Dim h As Double, s As Double, l As Double
         Dim tLumDelta As Long
         
@@ -258,17 +258,6 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
             dstImageData(quickVal, y) = newB
             dstImageData(quickVal + 1, y) = newG
             dstImageData(quickVal + 2, y) = newR
-            
-            'I'm not sure how to handle alpha in an HDR setting.  Technically, we probably shouldn't
-            ' touch it at all - but I've left this code here in case it proves helpful in the future.
-'            If (qvDepth = 4) Then
-'                a2 = srcImageData(quickVal + 3, y)
-'                a = dstImageData(quickVal + 3, y)
-'                newA = (scaleFactor * a) + (invScaleFactor * a2)
-'                If (newA > 255) Then newA = 255
-'                If (newA < 0) Then newA = 0
-'                dstImageData(quickVal + 3, y) = ((1# - blendVal) * newA) + (blendVal * a)
-'            End If
                                     
         Next y
             If (Not toPreview) Then
@@ -293,7 +282,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "HDR", , GetLocalParamString(), UNDO_LAYER
+    Process "HDR", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
