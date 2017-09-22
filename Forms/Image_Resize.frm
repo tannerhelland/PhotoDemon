@@ -279,10 +279,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , GetLocalParamString(), UNDO_IMAGE
+            Process "Resize image", , GetLocalParamString(), UNDO_Image
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , GetLocalParamString(), UNDO_LAYER
+            Process "Resize layer", , GetLocalParamString(), UNDO_Layer
     
     End Select
     
@@ -332,10 +332,10 @@ Private Sub Form_Activate()
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            Me.Caption = g_Language.TranslateMessage("Resize image")
-        
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize image")
+            
         Case PD_AT_SINGLELAYER
-            Me.Caption = g_Language.TranslateMessage("Resize layer")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize layer")
         
     End Select
 
@@ -682,7 +682,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
         
     'Move on to the next layer
     Next i

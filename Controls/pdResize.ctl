@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdResize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   2850
+   ClientHeight    =   2805
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   8280
@@ -18,7 +18,7 @@ Begin VB.UserControl pdResize
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   ScaleHeight     =   190
+   ScaleHeight     =   187
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   552
    ToolboxBitmap   =   "pdResize.ctx":0000
@@ -108,7 +108,7 @@ Begin VB.UserControl pdResize
    Begin PhotoDemon.pdLabel lblResolution 
       Height          =   285
       Left            =   0
-      Top             =   1260
+      Top             =   1230
       Width           =   1950
       _ExtentX        =   3440
       _ExtentY        =   503
@@ -121,7 +121,7 @@ Begin VB.UserControl pdResize
       Height          =   285
       Index           =   0
       Left            =   0
-      Top             =   1830
+      Top             =   1800
       Width           =   1950
       _ExtentX        =   3440
       _ExtentY        =   503
@@ -134,7 +134,7 @@ Begin VB.UserControl pdResize
       Height          =   285
       Index           =   1
       Left            =   2130
-      Top             =   1830
+      Top             =   1800
       Width           =   6060
       _ExtentX        =   10689
       _ExtentY        =   503
@@ -146,7 +146,7 @@ Begin VB.UserControl pdResize
       Height          =   285
       Index           =   1
       Left            =   2130
-      Top             =   2400
+      Top             =   2370
       Width           =   6060
       _ExtentX        =   10689
       _ExtentY        =   503
@@ -157,7 +157,7 @@ Begin VB.UserControl pdResize
    Begin PhotoDemon.pdLabel lblWidth 
       Height          =   285
       Left            =   0
-      Top             =   60
+      Top             =   30
       Width           =   1950
       _ExtentX        =   3440
       _ExtentY        =   503
@@ -169,7 +169,7 @@ Begin VB.UserControl pdResize
    Begin PhotoDemon.pdLabel lblHeight 
       Height          =   285
       Left            =   0
-      Top             =   660
+      Top             =   630
       Width           =   1950
       _ExtentX        =   3440
       _ExtentY        =   503
@@ -182,7 +182,7 @@ Begin VB.UserControl pdResize
       Height          =   285
       Index           =   0
       Left            =   0
-      Top             =   2400
+      Top             =   2370
       Width           =   1950
       _ExtentX        =   3440
       _ExtentY        =   503
