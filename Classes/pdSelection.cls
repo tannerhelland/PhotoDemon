@@ -218,7 +218,7 @@ Private m_ViewportEdges As pdEdgeDetector
 'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
 ' locally (to improve rendering time), we need to regenerate the cache whenever rendering settings change, independent of
 ' any changes to the actual underlying selection object.
-Private m_LastOutlineCache As String, m_LastOverlayCache As String
+Private m_LastOverlayCache As String
 
 'Each different selection shape has a number of properties specific to that shape.  Instead of storing these in open variables,
 ' they are stored in a dictionary, and only created/accessed as necessary.
@@ -2044,7 +2044,7 @@ Private Sub CreateSelectionMask()
         
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
             ' Note that we try to only regenerate this image as absolutely necessary.
-            Dim wandImageRefreshRequired: wandImageRefreshRequired = False
+            Dim wandImageRefreshRequired As Boolean
             wandImageRefreshRequired = (m_WandImage Is Nothing)
             If (Not wandImageRefreshRequired) Then wandImageRefreshRequired = (m_WandImageTimestamp <> m_parentPDImage.GetTimeOfLastChange())
             

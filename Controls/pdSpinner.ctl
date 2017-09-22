@@ -724,9 +724,7 @@ End Sub
 ' single-line instance; multiline boxes can be whatever vertical size we want).
 Private Sub CreateEditBox()
     
-    If (Not (m_EditBox Is Nothing)) Then
-        
-        Dim tmpRect As winRect
+    If (Not m_EditBox Is Nothing) Then
         
         'Make sure all edit box settings are up-to-date prior to creation
         m_EditBox.Enabled = Me.Enabled
@@ -744,7 +742,7 @@ Private Sub CreateEditBox()
         End With
         
         'Because control sizes may have changed, we need to repaint everything
-        RedrawBackBuffer
+        If ucSupport.AmIVisible Then RedrawBackBuffer
         
         'Creating the edit box may have caused this control to resize itself, so as a failsafe, raise a
         ' Resize() event manually

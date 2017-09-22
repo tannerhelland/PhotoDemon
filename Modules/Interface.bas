@@ -78,21 +78,13 @@ Public Enum PD_UI_Group
     PDUI_Selections = 12
     PDUI_SelectionTransforms = 13
     PDUI_LayerTools = 14
-    PDUI_NonDestructiveFX = 15
 End Enum
 
 #If False Then
     Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
     Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
-    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_NonDestructiveFX = 15
+    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14
 #End If
-
-'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
-' can contain the following values:
-' 0: did not have to change smoothing, as ClearType is already enabled
-' 1: had to change smoothing type from Standard to ClearType
-' 2: had to turn on smoothing, as it was originally turned off
-Private m_ClearTypeForciblySet As Long
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
@@ -404,9 +396,6 @@ Private Sub SyncUI_CurrentLayerSettings()
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     End If
     
-    'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
-    SetUIGroupState PDUI_NonDestructiveFX, True
-    
     'Layer rasterization depends on the current layer type
     FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
     FormMain.MnuLayerRasterize(1).Enabled = (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
@@ -504,7 +493,6 @@ Private Sub SetUIMode_NoLayers()
     FormMain.MnuLayer(13).Enabled = False
     FormMain.MnuLayer(15).Enabled = False
     FormMain.MnuLayer(16).Enabled = False
-    SetUIGroupState PDUI_NonDestructiveFX, False
     
 End Sub
 
@@ -522,7 +510,6 @@ Private Sub SetUIMode_NoImages()
     SetUIGroupState PDUI_Selections, False
     SetUIGroupState PDUI_Macros, False
     SetUIGroupState PDUI_LayerTools, False
-    SetUIGroupState PDUI_NonDestructiveFX, False
     SetUIGroupState PDUI_Undo, False
     SetUIGroupState PDUI_Redo, False
     
@@ -918,62 +905,6 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'Free the tool engine
             Tools.SetToolBusyState False
-        
-        'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
-        Case PDUI_NonDestructiveFX
-            
-            If (g_CurrentTool = QUICK_FIX_LIGHTING) Then
-                
-                'Enable/disable all non-destructive FX controls to match the new state
-                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                    toolpanel_NDFX.sltQuickFix(i).Enabled = newState
-                Next i
-                
-                'Further synching is only relevant if the panel is being *activated*
-                If newState Then
-                    
-                    'Failsafe check for layer existence.  (This check should never fail; if it does, something is horribly wrong.)
-                    If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-                        
-                        With toolpanel_NDFX
-                        
-                            .SetNDFXControlState False
-                            
-                            'Quick fix buttons (e.g. "commit fixes") are only relevant if the current layer actually has
-                            ' active non-destructive events.
-                            If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
-                                For i = 0 To .cmdQuickFix.Count - 1
-                                    .cmdQuickFix(i).Enabled = True
-                                Next i
-                            Else
-                                For i = 0 To .cmdQuickFix.Count - 1
-                                    .cmdQuickFix(i).Enabled = False
-                                Next i
-                            End If
-                            
-                            'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.
-                            ' (This is by design.)
-                            For i = 0 To .sltQuickFix.Count - 1
-                                .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
-                            Next i
-                            
-                            .SetNDFXControlState True
-                            
-                        End With
-                        
-                    Else
-                        For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                            toolpanel_NDFX.sltQuickFix(i).Value = 0
-                        Next i
-                    End If
-                    
-                Else
-                    For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
-                        If toolpanel_NDFX.cmdQuickFix(i).Enabled Then toolpanel_NDFX.cmdQuickFix(i).Enabled = False
-                    Next i
-                End If
-                
-            End If
             
     End Select
     
@@ -1338,6 +1269,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'This function can be a rather egregious time hog, so I profile it from time-to-time to check for regressions
     Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
@@ -1351,7 +1283,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     hostFormhWnd = dstForm.hWnd
     NavKey.NotifyFormLoading dstForm
     
-    Dim isPDControl As Boolean, isTabAllowed As Boolean
+    Dim isPDControl As Boolean
     
     'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
@@ -1592,9 +1524,13 @@ Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
     ' any active language translations.
     Dim newMessage As String, newTitle As String
     newMessage = pMessage
+    newTitle = pTitle
     
     If (Not g_Language Is Nothing) Then
-        If (g_Language.ReadyToTranslate And g_Language.TranslationActive) Then newMessage = g_Language.TranslateMessage(pMessage)
+        If (g_Language.ReadyToTranslate And g_Language.TranslationActive) Then
+            newMessage = g_Language.TranslateMessage(pMessage)
+            newTitle = g_Language.TranslateMessage(pTitle)
+        End If
     End If
     
     'With the message freshly translated, we can plug-in any dynamic text entries
@@ -1606,12 +1542,12 @@ Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
     End If
     
     Load dialog_MsgBox
-    If dialog_MsgBox.ShowDialog(newMessage, pButtons, pTitle) Then
+    If dialog_MsgBox.ShowDialog(newMessage, pButtons, newTitle) Then
         PDMsgBox = dialog_MsgBox.DialogResult
     
     'If the dialog failed to load for whatever reason, fall back to a default system message box
     Else
-        PDMsgBox = MsgBox(newMessage, pButtons, pTitle)
+        PDMsgBox = MsgBox(newMessage, pButtons, newTitle)
     End If
     
     Unload dialog_MsgBox

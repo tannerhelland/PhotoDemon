@@ -554,10 +554,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                 hlInitY = hlInitY - REGION_EXPANSION_RADIUS
                 hlFinalY = hlFinalY + REGION_EXPANSION_RADIUS
                 
-                If hlInitX < 0 Then hlInitX = 0
-                If hlFinalX > finalX Then hlFinalX = finalX
-                If hlInitY < 0 Then hlInitY = 0
-                If hlFinalY > finalY Then hlFinalY = finalY
+                If (hlInitX < 0) Then hlInitX = 0
+                If (hlFinalX > finalX) Then hlFinalX = finalX
+                If (hlInitY < 0) Then hlInitY = 0
+                If (hlFinalY > finalY) Then hlFinalY = finalY
                 
                 'Update the "neighboring-but-not-inside-region" pixel count
                 numNotInRegion = numNotInRegion + (hlFinalX - hlInitX) * (.RegionTop - hlInitY)
@@ -573,7 +573,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     
                     'If this pixel is NOT part of the region, perform a similarity check between it and our average
                     ' region RGB values.
-                    If regionIDs(x, y) <> regID Then
+                    If (regionIDs(x, y) <> regID) Then
                         
                         'If this pixel is highly similar to its neighboring region, add it to a running tally
                         quickX = x * qvDepth
@@ -585,9 +585,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         
                         If Abs(CDbl(r / rgbSum) - avePctR) < 0.03 Then
                             If Abs(CDbl(g / rgbSum) - avePctG) < 0.03 Then
-                                If Abs(r - aveR) < 20 Then
+                                If (Abs(r - aveR) < 20) Then
                                     numSimilar = numSimilar + 1
-                                    If numSimilar > simThreshold Then similarityThresholdReached = True
+                                    If (numSimilar > simThreshold) Then similarityThresholdReached = True
                                 End If
                             End If
                         End If
@@ -728,8 +728,8 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             ' underlying pixel; we don't want to correct pixels unless they are obviously red.  (We will
                             ' use these averages to determine how much red to strip out of the red-eye region.)
                             rgbSum = r + g + b
-                            If rgbSum = 0 Then rgbSum = 1
-                            If CDbl(r / rgbSum) > 0.35 Then
+                            If (rgbSum = 0) Then rgbSum = 1
+                            If (CDbl(r / rgbSum) > 0.35) Then
                                 aveR = aveR + r
                                 aveG = aveG + g
                                 aveB = aveB + b
@@ -741,8 +741,8 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     Next y
                     
                     'With averages successfully detected, we can now (FINALLY) apply actual red-eye correction.
-                    If numRegionTotal = 0 Then numRegionTotal = 1
-                    If numRegionRed = 0 Then numRegionRed = 1
+                    If (numRegionTotal = 0) Then numRegionTotal = 1
+                    If (numRegionRed = 0) Then numRegionRed = 1
                     
                     aveL = aveL \ numRegionTotal
                     aveR = aveR \ numRegionRed
@@ -750,10 +750,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     aveB = aveB \ numRegionRed
                     
                     'Calculate correction factors specific to this region, based on its overall "redness"
-                    If aveG > aveB Then
-                        correctionFactor = (aveR - aveG) / 255 * 3.2
+                    If (aveG > aveB) Then
+                        correctionFactor = (aveR - aveG) / 255# * 3.2
                     Else
-                        correctionFactor = (aveR - aveB) / 255 * 3.2
+                        correctionFactor = (aveR - aveB) / 255# * 3.2
                     End If
                     
                     'Loop through all pixels and apply the correction results
@@ -785,15 +785,15 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             innerFinalX = x + 1
                             innerFinalY = y + 1
                             
-                            If innerInitX < initX Then innerInitX = initX
-                            If innerInitY < initY Then innerInitY = initY
-                            If innerFinalX > finalX Then innerFinalX = finalX
-                            If innerFinalY > finalY Then innerFinalY = finalY
+                            If (innerInitX < initX) Then innerInitX = initX
+                            If (innerInitY < initY) Then innerInitY = initY
+                            If (innerFinalX > finalX) Then innerFinalX = finalX
+                            If (innerFinalY > finalY) Then innerFinalY = finalY
                             
                             For j = innerInitY To innerFinalY
                             For k = innerInitX To innerFinalX
-                                If k <> j Then
-                                    If regionIDs(k, j) <> regID Then
+                                If (k <> j) Then
+                                    If (regionIDs(k, j) <> regID) Then
                                         bSum = bSum + imageData(k * qvDepth, j)
                                         gSum = gSum + imageData(k * qvDepth + 1, j)
                                         rSum = rSum + imageData(k * qvDepth + 2, j)
@@ -804,7 +804,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             Next j
                             
                             'If at least one non-red pixel was found, use its value to soften the correction result.
-                            If numSimilar > 0 Then
+                            If (numSimilar > 0) Then
                                 r = Colors.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
                                 g = Colors.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
                                 b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
@@ -948,7 +948,7 @@ Private Sub chkSize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Red-eye removal", , GetLocalParamString(), UNDO_LAYER
+    Process "Red-eye removal", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

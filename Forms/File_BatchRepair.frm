@@ -250,20 +250,20 @@ Private Sub cmdBar_OKClick()
     Dim fileWasRepaired As Boolean
     
     'When testing broken video files, MCI command strings will be used
-    Dim tmpFilename As String, mciString As String, mciInfo As String, mciResult As Long
+    Dim tmpFilename As String, mciString As String, mciResult As Long
     
     'For improved performance, copy all user options into local variables
     Dim identifyImageFiles As Boolean
-    identifyImageFiles = CBool(chkRepairs(0).Value = vbChecked)
+    identifyImageFiles = (chkRepairs(0).Value = vbChecked)
     
     Dim identifyVideoFiles As Boolean
-    identifyVideoFiles = CBool(chkRepairs(1).Value = vbChecked)
+    identifyVideoFiles = (chkRepairs(1).Value = vbChecked)
     
     Dim eraseDestinationMatches As Boolean
-    eraseDestinationMatches = CBool(chkRepairs(2).Value = vbChecked)
+    eraseDestinationMatches = (chkRepairs(2).Value = vbChecked)
     
     Dim eraseOriginal As Boolean
-    eraseOriginal = CBool(chkRepairs(3).Value = vbChecked)
+    eraseOriginal = (chkRepairs(3).Value = vbChecked)
     
     'cFSO returns TRUE if at least one file is found; this is good enough for us to attempt repairs
     If cFSO.RetrieveAllFiles(txtSrcFolder.Text, listOfFiles, CBool(chkRecurseFolders.Value), False) Then

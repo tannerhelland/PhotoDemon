@@ -796,22 +796,22 @@ Public Sub InitializeAllHotkeys()
         .Enabled = True
     
         'File menu
-        .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyO, vbCtrlMask, "Open", "file_open", True, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", "file_close", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", "file_closeall", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyS, vbCtrlMask, "Save", "file_save", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", "file_savecopy", True, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", "file_saveas", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF12, 0, "Revert", "file_revert", True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", "file_batch_process", True, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyP, vbCtrlMask, "Print", "file_print", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", "file_quit", True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyO, vbCtrlMask, "Open", "file_open", True, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", "file_close", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", "file_closeall", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyS, vbCtrlMask, "Save", "file_save", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", "file_savecopy", True, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", "file_saveas", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyF12, 0, "Revert", "file_revert", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", "file_batch_process", True, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyP, vbCtrlMask, "Print", "file_print", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", "file_quit", True, False, True, UNDO_Nothing
         
             'File -> Import submenu
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", "file_import_scanner", True, False, True, UNDO_NOTHING
-            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", "file_import_web", True, False, True, UNDO_NOTHING
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", "file_import_screenshot", True, False, True, UNDO_NOTHING
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", "file_import_scanner", True, False, True, UNDO_Nothing
+            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", "file_import_web", True, False, True, UNDO_Nothing
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", "file_import_screenshot", True, False, True, UNDO_Nothing
         
             'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
             ' exist at run-time.  (They are dynamically created as necessary.)
@@ -827,88 +827,88 @@ Public Sub InitializeAllHotkeys()
             .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
             
         'Edit menu
-        .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyY, vbCtrlMask, "Redo", "edit_redo", True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyY, vbCtrlMask, "Redo", "edit_redo", True, True, False, UNDO_Nothing
         
-        .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_IMAGE
+        .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
         
-        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cut", True, True, False, UNDO_IMAGE
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_LAYER
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copy", True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", "edit_copylayer", True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", "edit_pasteasimage", True, False, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", "edit_pasteaslayer", True, False, False, UNDO_IMAGE_VECTORSAFE
+        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cut", True, True, False, UNDO_Image
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_Layer
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copy", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", "edit_copylayer", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", "edit_pasteaslayer", True, False, False, UNDO_Image_VectorSafe
         
         'View menu
-        .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_Nothing
         '.AddAccelerator vbKeyAdd, 0, "Zoom_In", "zoom_in", False, True, False, UNDO_NOTHING
         '.AddAccelerator VK_OEM_PLUS, 0, "Zoom_In", , False, True, False, UNDO_NOTHING
         '.AddAccelerator vbKeySubtract, 0, "Zoom_Out", "zoom_out", False, True, False, UNDO_NOTHING
         '.AddAccelerator VK_OEM_MINUS, 0, "Zoom_Out", , False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey5, 0, "Zoom_161", "zoom_16_1", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey4, 0, "Zoom_81", "zoom_8_1", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey3, 0, "Zoom_41", "zoom_4_1", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey2, 0, "Zoom_21", "zoom_2_1", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey1, 0, "Actual_Size", "zoom_actual", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKey5, 0, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey4, 0, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey3, 0, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey2, 0, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey1, 0, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, True, False, UNDO_Nothing
         
         'Image menu
-        .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_IMAGE
-        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, True, UNDO_IMAGEHEADER
+        .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_Image
+        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, True, UNDO_ImageHeader
         '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, UNDO_IMAGE
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", "image_trim", True, True, False, UNDO_IMAGEHEADER
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", "image_trim", True, True, False, UNDO_ImageHeader
         
             'Image -> Rotate submenu
-            .AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_IMAGE
-            .AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", "image_rotate270", True, True, False, UNDO_IMAGE
-            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_Image
+            .AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", "image_rotate270", True, True, False, UNDO_Image
+            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
         '(none yet)
         
         
         'Select Menu
-        .AddAccelerator vbKeyA, vbCtrlMask, "Select all", "select_all", True, True, False, UNDO_SELECTION
-        .AddAccelerator vbKeyD, vbCtrlMask, "Remove selection", "select_none", False, True, False, UNDO_SELECTION
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", "select_invert", True, True, False, UNDO_SELECTION
+        .AddAccelerator vbKeyA, vbCtrlMask, "Select all", "select_all", True, True, False, UNDO_Selection
+        .AddAccelerator vbKeyD, vbCtrlMask, "Remove selection", "select_none", False, True, False, UNDO_Selection
+        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", "select_invert", True, True, False, UNDO_Selection
         'KeyCode VK_OEM_4 = {[  (next to the letter P), VK_OEM_6 = }]
-        .AddAccelerator VK_OEM_6, vbCtrlMask Or vbAltMask, "Grow selection", "select_grow", True, True, True, UNDO_NOTHING
-        .AddAccelerator VK_OEM_4, vbCtrlMask Or vbAltMask, "Shrink selection", "select_shrink", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", "select_feather", True, True, True, UNDO_NOTHING
+        .AddAccelerator VK_OEM_6, vbCtrlMask Or vbAltMask, "Grow selection", "select_grow", True, True, True, UNDO_Nothing
+        .AddAccelerator VK_OEM_4, vbCtrlMask Or vbAltMask, "Shrink selection", "select_shrink", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", "select_feather", True, True, True, UNDO_Nothing
         
         'Adjustments Menu
         
         'Adjustments top shortcut menu
-        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", "adj_blackandwhite", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", "adj_bandc", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", "adj_curves", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", "adj_levels", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow and highlight", "adj_sandh", True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, True, UNDO_NOTHING
-        .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", "adj_blackandwhite", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", "adj_bandc", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", "adj_curves", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", "adj_levels", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow and highlight", "adj_sandh", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, True, UNDO_Nothing
+        .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_Nothing
         
             'Color adjustments
-            .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", "adj_hsl", True, True, True, UNDO_NOTHING
-            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", "adj_temperature", True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", "adj_hsl", True, True, True, UNDO_Nothing
+            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", "adj_temperature", True, True, True, UNDO_Nothing
             
             'Lighting adjustments
-            .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", "adj_gamma", True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", "adj_gamma", True, True, True, UNDO_Nothing
             
             'Adjustments -> Invert submenu
-            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", "adj_invertRGB", True, True, False, UNDO_LAYER
+            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", "adj_invertRGB", True, True, False, UNDO_Layer
             
             'Adjustments -> Monochrome submenu
-            .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", "adj_colortomonochrome", True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", "adj_colortomonochrome", True, True, True, UNDO_Nothing
             
             'Adjustments -> Photography submenu
-            .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", "adj_exposure", True, True, True, UNDO_NOTHING
-            .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", "adj_photofilters", True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", "adj_exposure", True, True, True, UNDO_Nothing
+            .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", "adj_photofilters", True, True, True, UNDO_Nothing
             
         
         'Effects Menu
@@ -919,15 +919,15 @@ Public Sub InitializeAllHotkeys()
         
         'Tools menu
         'KeyCode 190 = >.  (two keys to the right of the M letter key)
-        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, True, UNDO_NOTHING
+        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, True, UNDO_Nothing
         
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_plugins", False, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_plugins", False, False, True, UNDO_Nothing
         
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", "window_previous", False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", "window_previous", False, True, False, UNDO_Nothing
         
         'Activate hotkey detection
         .ActivateHook
@@ -1074,7 +1074,7 @@ Private Sub EraseMenu(ByVal topMenuID As Long, Optional ByVal subMenuID As Long 
     Next i
     
     'All menus to be removed have now been properly flagged.  Iterate through the list and fill all empty spots.
-    Dim moveOffset As Long, moveIndex As Long
+    Dim moveOffset As Long
     moveOffset = 0
     
     For i = 0 To m_NumOfMenus - 1

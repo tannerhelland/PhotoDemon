@@ -400,7 +400,7 @@ Private Sub UpdateVarianceTrackers()
     If (m_NumOfColors > 0) Then
     
         'Find the first unflagged entry.  (NOTE: this is no longer necessary, as flagged entries are automatically removed.)
-        Dim i As Long, j As Long
+        Dim i As Long
         
         m_OldMeanR = m_Colors(0).Red
         m_OldMeanG = m_Colors(0).Green
@@ -421,7 +421,6 @@ Private Sub UpdateVarianceTrackers()
         'Calculate all other colors in turn
         If (m_NumOfColors > 1) Then
             
-            Dim tmpDivisor As Double
             Dim tmpRed As Double, tmpGreen As Double, tmpBlue As Double
             
             Dim myCount As Double, combinedCount As Double, dPxCount As Double

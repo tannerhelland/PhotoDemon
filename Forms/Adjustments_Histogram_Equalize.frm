@@ -142,12 +142,12 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         ehRadius = ehRadius * curDIBValues.previewModifier
-        If ehRadius < 1 Then ehRadius = 1
+        If (ehRadius < 1) Then ehRadius = 1
     End If
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -166,7 +166,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     If (Not toPreview) Then
         
         'Global and local modes use different progress calculations
-        If ehMode = 0 Then
+        If (ehMode = 0) Then
             SetProgBarMax finalY * 2
             progBarCheck = ProgressBars.FindBestProgBarValue()
         Else
@@ -269,9 +269,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             
             'Clamp all lookup table values
             For i = 0 To 255
-                If rData(i) > 255 Then rData(i) = 255
-                If gData(i) > 255 Then gData(i) = 255
-                If bData(i) > 255 Then bData(i) = 255
+                If (rData(i) > 255) Then rData(i) = 255
+                If (gData(i) > 255) Then gData(i) = 255
+                If (bData(i) > 255) Then bData(i) = 255
             Next i
             
         'Luminance
@@ -507,7 +507,7 @@ Private Sub btsTarget_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Equalize", , GetLocalParamString(), UNDO_LAYER
+    Process "Equalize", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

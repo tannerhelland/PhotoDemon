@@ -71,7 +71,7 @@ Begin VB.Form FormHistogram
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   14.25
          Charset         =   0
          Weight          =   700
@@ -94,15 +94,6 @@ Begin VB.Form FormHistogram
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   120

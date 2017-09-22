@@ -377,8 +377,6 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
             Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, False, False, False)
         End If
         
-        'Offset text slightly to make it look better
-        Dim offsetY As Single, offsetX As Single
         tmpFont.AttachToDC bufferDC
         tmpFont.SetFontColor txtColor
         tmpFont.SetTextAlignment vbLeftJustify

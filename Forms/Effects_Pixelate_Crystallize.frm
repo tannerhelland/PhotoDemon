@@ -224,7 +224,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     
     'The Voronoi approach we use requires knowledge of the distance to the nearest Voronoi point, and depending on
     ' shading quality, distance to the second-nearest point as well.
-    Dim nearestPoint As Long, secondNearestPoint As Long
+    Dim nearestPoint As Long
     
     'Loop through each pixel in the image, calculating nearest Voronoi points as we go
     For x = initX To finalX
@@ -365,7 +365,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Crystallize", , GetLocalParamString(), UNDO_LAYER
+    Process "Crystallize", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

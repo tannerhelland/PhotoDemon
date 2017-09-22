@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.86</langversion>
+<langversion>1.0.87</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2184,36 +2184,6 @@ Error број %
 </phrase>
 
 <phrase>
-<original>exposure</original>
-<translation>изложеност</translation>
-</phrase>
-
-<phrase>
-<original>contrast</original>
-<translation>контраст</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>јасност</translation>
-</phrase>
-
-<phrase>
-<original>vibrance</original>
-<translation>vibrance</translation>
-</phrase>
-
-<phrase>
-<original>temperature</original>
-<translation>температура</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>боја</translation>
-</phrase>
-
-<phrase>
 <original>Remove selection</original>
 <translation>Отстрани избор</translation>
 </phrase>
@@ -2273,7 +2243,7 @@ When заврши, кликнете на копчето Submit. Ти благо�
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -3510,6 +3480,12 @@ Please enter a numeric value.</original>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRecentFiles.cls -->
+
+<!-- pdRecentFiles.cls contains 0 phrases. -->
+
+<!-- END text for pdRecentFiles.cls-->
 
 <!-- BEGIN text for pdRedEye.cls -->
 
@@ -6591,6 +6567,11 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
+<original>contrast</original>
+<translation>контраст</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting brightness and contrast</original>
 <translation>Подесување на осветленост и контраст</translation>
 </phrase>
@@ -6605,7 +6586,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>наследство</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -6894,6 +6875,11 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
+<original>temperature</original>
+<translation>температура</translation>
+</phrase>
+
+<phrase>
 <original>warmer</original>
 <translation></translation>
 </phrase>
@@ -6938,29 +6924,39 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>напредни</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Tint.frm (FormTint) -->
 
 <phrase>
+<original>tint</original>
+<translation>боја</translation>
+</phrase>
+
+<phrase>
 <original>Re-tinting image</original>
 <translation>Повторно нијансирање слика</translation>
 </phrase>
 
-<!-- Adjustments_Color_Tint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Tint.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Vibrance.frm (FormVibrance) -->
 
 <phrase>
+<original>vibrance</original>
+<translation>vibrance</translation>
+</phrase>
+
+<phrase>
 <original>Adjusting color vibrance</original>
 <translation>Прилагодување на бојата vibrance</translation>
 </phrase>
 
-<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Vibrance.frm-->
 
@@ -8315,6 +8311,11 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
+<original>exposure</original>
+<translation>изложеност</translation>
+</phrase>
+
+<phrase>
 <original>intensity</original>
 <translation>интензитетот</translation>
 </phrase>
@@ -8379,7 +8380,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>целиот спектар</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -13224,8 +13225,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Apply non-destructive lighting adjustments</original>
-<translation>Спроведување на не-деструктивни прилагодување осветлување</translation>
+<original>Select colors from the image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13291,6 +13292,12 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
+
+<!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
+
+<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+
+<!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
@@ -13492,32 +13499,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <!-- END text for Toolpanel_Pencil.frm-->
 
-<!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
-
-<phrase>
-<original>all effects</original>
-<translation>сите ефекти</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fixes permanent</original>
-<translation>Направете брзо поправки постојан</translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Ресетирање на сите вредности прилагодување за брза поправка</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Се направи корекција брзо-фикс трајна. Оваа акција не е потребно, но ако гледиштето рендерирање е слаб и многу прилагодувања за брза поправка се активни, тоа може да се подобри перформанси.</translation>
-</phrase>
-
-<!-- Toolpanel_QuickFix.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_QuickFix.frm-->
-
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
@@ -13682,6 +13663,11 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>clarity</original>
+<translation>јасност</translation>
+</phrase>
+
+<phrase>
 <original>alignment</original>
 <translation>усогласување</translation>
 </phrase>
@@ -13711,7 +13697,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Кликни тука за да се претворат овој слој на основниот текст слој.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -15031,18 +15017,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdRecentFiles.cls -->
-
-<!-- pdRecentFiles.cls contains 0 phrases. -->
-
-<!-- END text for pdRecentFiles.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4508 phrases. -->
-<!-- 1983 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4486 phrases. -->
+<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12261 total words. -->
 
 </pdData>

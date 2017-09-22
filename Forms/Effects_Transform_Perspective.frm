@@ -238,7 +238,6 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     numSamples = numSamples - 1
     
     'Additional variables are needed for supersampling handling
-    Dim j As Double, k As Double
     Dim sampleIndex As Long, numSamplesUsed As Long
     Dim superSampleVerify As Long, ssVerificationLimit As Long
     
@@ -439,10 +438,10 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
             
             'Reverse-map the coordinates back onto the original image (to allow for resampling)
             chkDenom = (hG * newX + hH * newY + hI)
-            If (chkDenom = 0#) Then chkDenom = 1E-20
+            If (chkDenom <> 0#) Then chkDenom = 1# / chkDenom
             
-            srcX = imgWidth * (hA * newX + hB * newY + hC) / chkDenom
-            srcY = imgHeight * (hD * newX + hE * newY + hF) / chkDenom
+            srcX = imgWidth * (hA * newX + hB * newY + hC) * chkDenom
+            srcY = imgHeight * (hD * newX + hE * newY + hF) * chkDenom
                 
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -474,10 +473,12 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
-        newA = newA \ numSamplesUsed
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
+            newA = newA \ numSamplesUsed
+        End If
         
         dstImageData(quickX, y) = newB
         dstImageData(quickX + 1, y) = newG
@@ -524,7 +525,7 @@ Private Sub cmdBar_AddCustomPresetData()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Perspective", , GetPerspectiveParamString, UNDO_LAYER
+    Process "Perspective", , GetPerspectiveParamString, UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RandomizeClick()

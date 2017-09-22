@@ -138,7 +138,8 @@ Private Type LayerData
     l_Name As String                    'Layer name, as entered by the user
     l_GroupID As Long                   'Layer group (0 if not assigned to a group)
     l_Opacity As Long                   'Layer opacity (defaults to 100)
-    l_BlendMode As PD_BlendMode      'Layer blend mode; defaults to BL_NORMAL
+    l_BlendMode As PD_BlendMode         'Layer blend mode; defaults to BL_NORMAL
+    l_AlphaMode As PD_AlphaMode         'Layer alpha mode; defaults to LA_NORMAL
     l_OffsetX As Double                 'X/Y offset of the layer's top-left corner
     l_OffsetY As Double
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
@@ -146,12 +147,10 @@ Private Type LayerData
     l_Angle As Double                   'Layer angle (implemented in PD 7.0)
     l_RotateCenterX As Double           'Layer rotation center point (implemented in PD 7.0)
     l_RotateCenterY As Double
-    l_Visibility As Boolean             'Layer visibility
-    l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
     l_ResizeQuality As PD_LayerResizeQuality   'Resampling algorithm used when non-destructive resizes are active
     l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
-    l_AlphaMode As PD_AlphaMode      'Layer alpha mode; defaults to LA_NORMAL
+    l_Visibility As Boolean             'Layer visibility
 End Type
 
 'Local instance of layer data for this layer
@@ -183,32 +182,6 @@ End Enum
     Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
     Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16
 #End If
-
-'Non-destructive edits currently supported by the program.
-Public Enum PD_LayerNonDestructiveFX
-    NDFX_EXPOSURE = 0
-    NDFX_CONTRAST = 1
-    NDFX_CLARITY = 2
-    NDFX_VIBRANCE = 3
-    NDFX_TEMPERATURE = 4
-    NDFX_TINT = 5
-End Enum
-
-#If False Then
-    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1, NDFX_CLARITY = 2, NDFX_VIBRANCE = 3, NDFX_TEMPERATURE = 4, NDFX_TINT = 5
-#End If
-
-'Local copy of non-destructive FX
-Private Type nonDestructiveFXSettings
-    fx_Exposure As Double
-    fx_Contrast As Long
-    fx_Clarity As Long
-    fx_Vibrance As Long
-    fx_Temperature As Long
-    fx_Tint As Long
-End Type
-
-Private myNonDestructiveFX As nonDestructiveFXSettings
 
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
 ' stored in this struct.
@@ -418,13 +391,13 @@ Friend Sub SetLayerGroup(ByVal newLayerGroup As Long)
 End Sub
 
 'Get/set opacity
-Friend Function GetLayerOpacity() As Long
+Friend Function GetLayerOpacity() As Single
     GetLayerOpacity = myLayerData.l_Opacity
 End Function
 
-Friend Sub SetLayerOpacity(ByVal newLayerOpacity As Long)
-    If (newLayerOpacity > 100) Then newLayerOpacity = 100
-    If (newLayerOpacity < 0) Then newLayerOpacity = 0
+Friend Sub SetLayerOpacity(ByVal newLayerOpacity As Single)
+    If (newLayerOpacity > 100#) Then newLayerOpacity = 100#
+    If (newLayerOpacity < 0#) Then newLayerOpacity = 0#
     myLayerData.l_Opacity = newLayerOpacity
 End Sub
 
@@ -619,7 +592,7 @@ End Function
 Friend Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
     
     'Check bounds
-    If (newXModifier <= 0) Then newXModifier = 0.00000001
+    If (newXModifier <= 0#) Then newXModifier = 0.00000001
     
     'Separate handling by layer type
     Select Case myLayerType
@@ -638,7 +611,7 @@ End Sub
 Friend Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     
     'Check bounds
-    If (newYModifier <= 0) Then newYModifier = 0.00000001
+    If (newYModifier <= 0#) Then newYModifier = 0.00000001
     
     'Separate handling by layer type
     Select Case myLayerType
@@ -661,7 +634,7 @@ Friend Function GetLayerResizeQuality() As PD_LayerResizeQuality
     GetLayerResizeQuality = myLayerData.l_ResizeQuality
 End Function
 
-Friend Function GetLayerResizeQuality_GDIPlus() As Long
+Friend Function GetLayerResizeQuality_GDIPlus() As GP_InterpolationMode
     
     Select Case myLayerData.l_ResizeQuality
         
@@ -669,7 +642,7 @@ Friend Function GetLayerResizeQuality_GDIPlus() As Long
             GetLayerResizeQuality_GDIPlus = GP_IM_NearestNeighbor
         
         Case LRQ_BILINEAR_NORMAL
-            GetLayerResizeQuality_GDIPlus = GP_IM_HighQualityBilinear
+            GetLayerResizeQuality_GDIPlus = GP_IM_Bilinear
         
         Case LRQ_BICUBIC_NORMAL
             GetLayerResizeQuality_GDIPlus = GP_IM_HighQualityBicubic
@@ -680,117 +653,6 @@ End Function
 
 Friend Sub SetLayerResizeQuality(ByVal newQuality As PD_LayerResizeQuality)
     myLayerData.l_ResizeQuality = newQuality
-End Sub
-
-'Get/set non-destructive FX status.  Note that these functions work a little differently than other get/set functions.  Get() works
-' normally, but Set() requires the user to activate or deactivate a specific
-Friend Function GetLayerNonDestructiveFXState() As Boolean
-    GetLayerNonDestructiveFXState = myLayerData.l_NonDestructiveFXActive
-End Function
-
-Friend Function GetLayerNonDestructiveFXValue(ByVal ndEffect As PD_LayerNonDestructiveFX) As Double
-    
-    'Return a new value contigent on the supplied ndEffect value
-    Select Case ndEffect
-    
-        'Exposure
-        Case NDFX_EXPOSURE
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Exposure
-            
-        'Contrast
-        Case NDFX_CONTRAST
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
-            
-        'Clarity
-        Case NDFX_CLARITY
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Clarity
-            
-        'Vibrance
-        Case NDFX_VIBRANCE
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Vibrance
-            
-        'Temperature
-        Case NDFX_TEMPERATURE
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Temperature
-            
-        'Tint
-        Case NDFX_TINT
-            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Tint
-            
-    End Select
-    
-End Function
-
-Friend Sub SetLayerNonDestructiveFXState(ByVal ndEffect As PD_LayerNonDestructiveFX, Optional ByVal newEffectValue As Double = 0#)
-    
-    'Assign the new value to the appropriate entry in this layer's non-destructive FX array
-    Select Case ndEffect
-    
-        'Exposure
-        Case NDFX_EXPOSURE
-            myNonDestructiveFX.fx_Exposure = newEffectValue
-            
-        'Contrast
-        Case NDFX_CONTRAST
-            myNonDestructiveFX.fx_Contrast = newEffectValue
-        
-        'Clarity
-        Case NDFX_CLARITY
-            myNonDestructiveFX.fx_Clarity = newEffectValue
-            
-        'Vibrance
-        Case NDFX_VIBRANCE
-            myNonDestructiveFX.fx_Vibrance = newEffectValue
-            
-        'Temperature
-        Case NDFX_TEMPERATURE
-            myNonDestructiveFX.fx_Temperature = newEffectValue
-            
-        'Tint
-        Case NDFX_TINT
-            myNonDestructiveFX.fx_Tint = newEffectValue
-            
-    End Select
-    
-    'Is the newEffectValue 0?  If it is, check to see if any other FX have non-zero values; if all values are zero, we can mark
-    ' the layer's non-destructive FX state as FALSE, but if any are non-zero, it must remain as TRUE.
-    If newEffectValue = 0 Then
-    
-        myLayerData.l_NonDestructiveFXActive = False
-        
-        'Check each entry in the local non-destructive effects cache; if any still have non-zero values, note that the layer still
-        ' has active non-destructive effects.
-        With myNonDestructiveFX
-        
-            If (.fx_Exposure <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-            If (.fx_Contrast <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-            If (.fx_Clarity <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-            If (.fx_Vibrance <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-            If (.fx_Temperature <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-            If (.fx_Tint <> 0) Then myLayerData.l_NonDestructiveFXActive = True
-        
-        End With
-    
-    Else
-        myLayerData.l_NonDestructiveFXActive = True
-    End If
-    
-End Sub
-
-'This shortcut function can be used to deactivate all NDFX settings at once
-Friend Sub DeactivateAllNDFX()
-    
-    myLayerData.l_NonDestructiveFXActive = False
-    
-    With myNonDestructiveFX
-        .fx_Clarity = 0
-        .fx_Contrast = 0
-        .fx_Exposure = 0
-        .fx_Temperature = 0
-        .fx_Tint = 0
-        .fx_Vibrance = 0
-    End With
-    
 End Sub
 
 'Generic layer properties can be get/set via these singular functions.  Note that these functions get and return Variants,
@@ -830,9 +692,6 @@ Friend Function GetGenericLayerProperty(ByVal desiredProperty As PD_LayerGeneric
             
         Case pgp_Visibility
             GetGenericLayerProperty = myLayerData.l_Visibility
-            
-        Case pgp_NonDestructiveFXActive
-            GetGenericLayerProperty = myLayerData.l_NonDestructiveFXActive
             
         Case pgp_ResizeQuality
             GetGenericLayerProperty = myLayerData.l_ResizeQuality
@@ -892,9 +751,6 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
             
         Case pgp_Visibility
             If (myLayerData.l_Visibility <> CBool(newValue)) Then myLayerData.l_Visibility = CBool(newValue)
-            
-        Case pgp_NonDestructiveFXActive
-            If (myLayerData.l_NonDestructiveFXActive <> CBool(newValue)) Then myLayerData.l_NonDestructiveFXActive = CBool(newValue)
             
         Case pgp_ResizeQuality
             If (myLayerData.l_ResizeQuality <> CLng(newValue)) Then myLayerData.l_ResizeQuality = CLng(newValue)
@@ -999,8 +855,8 @@ Friend Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
             
             'Reset the width/height modifiers for this layer
             With myLayerData
-                .l_CanvasXModifier = 1
-                .l_CanvasYModifier = 1
+                .l_CanvasXModifier = 1#
+                .l_CanvasYModifier = 1#
             End With
         
         End If
@@ -1060,7 +916,7 @@ Friend Function AffineTransformsActive(Optional ByVal includeScaling As Boolean 
     
     'Rotate and shear are the primary relevant affine transforms.  Note that we don't care about rotation center
     ' point here; when the layer angle is 0, rotation center point is irrelevant.
-    AffineTransformsActive = (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0)
+    AffineTransformsActive = (myLayerData.l_Angle <> 0#) Or (myLayerData.l_ShearX <> 0#) Or (myLayerData.l_ShearY <> 0#)
     If includeScaling Then AffineTransformsActive = AffineTransformsActive Or (myLayerData.l_CanvasXModifier <> 1#) Or (myLayerData.l_CanvasYModifier <> 1#)
     
 End Function
@@ -1082,13 +938,13 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT)
     Me.GetCopyOfLayerTransformationMatrix_Full tmpMatrix
     
     'Fill the dstPoints array with the current image corners *without* translation applied (but *with* scaling)
-    dstPoints(0).x = 0
-    dstPoints(0).y = 0
+    dstPoints(0).x = 0!
+    dstPoints(0).y = 0!
     
     dstPoints(1).x = Me.GetLayerWidth(False)
-    dstPoints(1).y = 0
+    dstPoints(1).y = 0!
     
-    dstPoints(2).x = 0
+    dstPoints(2).x = 0!
     dstPoints(2).y = Me.GetLayerHeight(False)
     
     'If the third point exists, fill it too
@@ -1155,11 +1011,7 @@ End Sub
 Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pd2DTransform, Optional ByVal ApplyTranslation As Boolean = True)
 
     'Create and/or reset the destination matrix, as necessary
-    If (dstMatrix Is Nothing) Then
-        Set dstMatrix = New pd2DTransform
-    Else
-        dstMatrix.Reset
-    End If
+    If (dstMatrix Is Nothing) Then Set dstMatrix = New pd2DTransform Else dstMatrix.Reset
     
     With myLayerData
     
@@ -1405,20 +1257,10 @@ Private Sub Class_Initialize()
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_Visibility = True
-        .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
         .l_AlphaMode = LA_NORMAL
-    End With
-    
-    With myNonDestructiveFX
-        .fx_Exposure = 0
-        .fx_Contrast = 0
-        .fx_Clarity = 0
-        .fx_Vibrance = 0
-        .fx_Temperature = 0
-        .fx_Tint = 0
     End With
     
     With myVectorData
@@ -1517,7 +1359,6 @@ Friend Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.WriteTag "RotateCenterX", .l_RotateCenterX
         xmlEngine.WriteTag "RotateCenterY", .l_RotateCenterY
         xmlEngine.WriteTag "Visibility", .l_Visibility
-        xmlEngine.WriteTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
         xmlEngine.WriteTag "ResizeQuality", .l_ResizeQuality
         xmlEngine.WriteTag "ShearX", .l_ShearX
         xmlEngine.WriteTag "ShearY", .l_ShearY
@@ -1527,16 +1368,6 @@ Friend Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     'Next, write out any relevant color management settings
     xmlEngine.WriteTag "LayerColorManagement", m_ColorManagementState
     If (m_ColorManagementState <> LCM_NoManagement) And (m_ICCProfileIndex <> -1) Then xmlEngine.WriteTag "LayerColorProfileID", ColorManagement.GetUniqueProfileDescriptor_ByIndex(m_ICCProfileIndex)
-    
-    'Next, write out any non-destructive FX parameters
-    With myNonDestructiveFX
-        xmlEngine.WriteTag "NDFX_Exposure", .fx_Exposure
-        xmlEngine.WriteTag "NDFX_Contrast", .fx_Contrast
-        xmlEngine.WriteTag "NDFX_Clarity", .fx_Clarity
-        xmlEngine.WriteTag "NDFX_Vibrance", .fx_Vibrance
-        xmlEngine.WriteTag "NDFX_Temperature", .fx_Temperature
-        xmlEngine.WriteTag "NDFX_Tint", .fx_Tint
-    End With
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
     ' in the future.
@@ -1601,21 +1432,10 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_RotateCenterX = xmlEngine.GetUniqueTag_Double("RotateCenterX", 0.5)
             .l_RotateCenterY = xmlEngine.GetUniqueTag_Double("RotateCenterY", 0.5)
             .l_Visibility = xmlEngine.GetUniqueTag_Boolean("Visibility")
-            .l_NonDestructiveFXActive = xmlEngine.GetUniqueTag_Boolean("NonDestructiveFXActive", False)
             .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
             .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
             .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
             .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", LA_NORMAL)
-        End With
-        
-        'Read in the contents of the non-destructive FX chunk
-        With myNonDestructiveFX
-            .fx_Exposure = xmlEngine.GetUniqueTag_Double("NDFX_Exposure", 0)
-            .fx_Contrast = xmlEngine.GetUniqueTag_Long("NDFX_Contrast", 0)
-            .fx_Clarity = xmlEngine.GetUniqueTag_Double("NDFX_Clarity", 0)
-            .fx_Vibrance = xmlEngine.GetUniqueTag_Long("NDFX_Vibrance", 0)
-            .fx_Temperature = xmlEngine.GetUniqueTag_Long("NDFX_Temperature", 0)
-            .fx_Tint = xmlEngine.GetUniqueTag_Long("NDFX_Tint", 0)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -1770,7 +1590,6 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
         .l_Visibility = True
-        .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_Angle = 0#
         .l_RotateCenterX = 0.5
@@ -1784,16 +1603,6 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
     ' (TODO 7.0: pull default settings from user preferences)
     m_ColorManagementState = LCM_NoManagement
     m_ICCProfileIndex = -1
-    
-    'Reset any non-destructive fx parameters
-    With myNonDestructiveFX
-        .fx_Exposure = 0
-        .fx_Contrast = 0
-        .fx_Clarity = 0
-        .fx_Vibrance = 0
-        .fx_Temperature = 0
-        .fx_Tint = 0
-    End With
     
     'Reset any vector-specific data
     With myVectorData
@@ -1844,7 +1653,6 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_RotateCenterX = srcLayer.GetLayerRotateCenterX
         .l_RotateCenterY = srcLayer.GetLayerRotateCenterY
         .l_Visibility = srcLayer.GetLayerVisibility
-        .l_NonDestructiveFXActive = srcLayer.GetLayerNonDestructiveFXState
         .l_ResizeQuality = srcLayer.GetLayerResizeQuality
         .l_ShearX = srcLayer.GetLayerShearX
         .l_ShearY = srcLayer.GetLayerShearY
@@ -1854,16 +1662,6 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     'Copy color management settings, if any
     m_ColorManagementState = srcLayer.GetColorManagementState
     m_ICCProfileIndex = srcLayer.GetColorProfileIndex
-    
-    'Next, copy any non-destructive FX parameters
-    With myNonDestructiveFX
-        .fx_Exposure = srcLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE)
-        .fx_Contrast = srcLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST)
-        .fx_Clarity = srcLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY)
-        .fx_Vibrance = srcLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE)
-        .fx_Temperature = srcLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE)
-        .fx_Tint = srcLayer.GetLayerNonDestructiveFXValue(NDFX_TINT)
-    End With
     
     'Copy the source layer's DIB, if one exists.
     If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcLayer.layerDIB
@@ -1933,7 +1731,6 @@ Friend Function CropNullPaddedLayer() As Boolean
             Exit Function
         
         End If
-        
         
         'First, scan the top of the image.
         
@@ -2363,7 +2160,6 @@ Friend Sub ResetLayerParameters()
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_Visibility = True
-        .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
@@ -2374,16 +2170,6 @@ Friend Sub ResetLayerParameters()
     ' (TODO 7.0: pull these from user preferences)
     m_ColorManagementState = LCM_NoManagement
     m_ICCProfileIndex = -1
-    
-    'Assign default values to the non-destructive FX params
-    With myNonDestructiveFX
-        .fx_Exposure = 0
-        .fx_Contrast = 0
-        .fx_Clarity = 0
-        .fx_Vibrance = 0
-        .fx_Temperature = 0
-        .fx_Tint = 0
-    End With
     
     'Assign default vector layer values
     With myVectorData
@@ -2500,15 +2286,6 @@ Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor ((.l_BlendMode + 1) * 63) Xor ((.l_AlphaMode + 1) * 511)
         tmpHash = tmpHash Xor ((.l_RotateCenterX + 1#) * 3730#) Xor ((.l_RotateCenterY + 1# * 5850#))
     End With
-    
-    'Next, add any non-destructive FX parameters to the hash
-    If myLayerData.l_NonDestructiveFXActive Then
-        With myNonDestructiveFX
-            tmpHash = tmpHash Xor (.fx_Clarity * 7) Xor (.fx_Contrast * 15)
-            tmpHash = tmpHash Xor (.fx_Temperature * 63) Xor (.fx_Tint * 127) Xor (.fx_Vibrance * 255)
-            tmpHash = tmpHash Xor (.fx_Exposure * 2047)
-        End With
-    End If
     
     'Finally, hash any parameters we were passed.
     If (UBound(allParams) >= LBound(allParams)) Then

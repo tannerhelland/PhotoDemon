@@ -270,8 +270,6 @@ Public Sub ResetMenuIcons()
         
         If (numOfMRUFiles > 0) Then
         
-            Dim tmpFilename As String
-            
             'Load a placeholder image for missing MRU entries
             AddImageResourceToClsMenu "generic_imagemissing", cMRUIcons, m_RecentFileIconSize
             

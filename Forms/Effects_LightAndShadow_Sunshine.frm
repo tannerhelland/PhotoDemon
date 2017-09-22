@@ -278,7 +278,6 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
@@ -524,7 +523,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sunshine", , GetLocalParamString(False), UNDO_LAYER
+    Process "Sunshine", , GetLocalParamString(False), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

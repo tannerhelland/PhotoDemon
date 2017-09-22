@@ -200,8 +200,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_CompositedImage As pdDIB
-
 Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
     UpdateTransparencyOptions
     UpdatePreview
@@ -245,7 +243,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Palettize", , GetToolParamString, UNDO_LAYER
+    Process "Palettize", , GetToolParamString, UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -426,7 +424,6 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     
     'Branch according to internal or plugin-based quantization methods.  Note that if the user does *NOT* want
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
-    Dim usePDToApplyPalette As Boolean: usePDToApplyPalette = True
     Dim finalPalette() As RGBQUAD, finalPaletteCount As Long
     
     If (quantMethod = PDCQ_MedianCut) Then

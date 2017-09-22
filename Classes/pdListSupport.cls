@@ -138,10 +138,10 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
     End If
     
     'If this item is being inserted anywhere but the end of the list, move other items around to make room.
-    Dim i As Long
     If (itemIndex <> -1) And (itemIndex < m_NumOfItems) Then
         
         'Migrate all objects downward in the list.
+        Dim i As Long
         For i = m_NumOfItems To (itemIndex + 1) Step -1
             m_Items(i) = m_Items(i - 1)
         Next i

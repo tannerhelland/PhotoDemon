@@ -134,9 +134,6 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
@@ -194,10 +191,6 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
     ReDim bValues(0 To 255) As Long
     ReDim aValues(0 To 255) As Long
     
-    Dim cutoffTotal As Long
-    Dim r As Long, g As Long, b As Long
-    Dim lowR As Long, lowG As Long, lowB As Long
-    Dim highR As Long, highG As Long, highB As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
     Dim directionDown As Boolean
@@ -334,7 +327,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Harmonic mean", , GetLocalParamString(), UNDO_LAYER
+    Process "Harmonic mean", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

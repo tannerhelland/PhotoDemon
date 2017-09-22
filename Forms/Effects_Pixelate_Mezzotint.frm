@@ -140,7 +140,6 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
     'The way we calculate mezzotinting varies depending on whether points or strokes are being used.
     
     'Start by prepping a workingDIB instance
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
@@ -254,7 +253,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mezzotint", , GetLocalParamString(), UNDO_LAYER
+    Process "Mezzotint", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

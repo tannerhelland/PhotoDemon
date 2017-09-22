@@ -63,9 +63,6 @@ Private prevGenericLayerID As Long, prevGenericSetting() As Variant
 Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 44
 Private prevTextLayerID As Long, prevTextSetting() As Variant
 
-Private Const NUM_OF_NDFX_PROPERTY_ENUMS As Long = 6
-Private prevNDFXLayerID As Long, prevNDFXSetting() As Variant
-
 
 'PhotoDemon's software processor.  (Almost) every action the program takes is first routed through this method.  This processor is what
 ' makes recording and playing back macros possible, as well as a host of other features.  (See comment at top of page for more details.)
@@ -295,13 +292,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                 If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
             End If
             processFound = True
-            
-        'Non-destructive "quick-fix" type effects follow the same logic as above.
-        ElseIf Strings.StringsEqual(processID, "Non-destructive effect", True) Then
-            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
-            End If
-            processFound = True
                     
         'DEBUG FAILSAFE
         Else
@@ -444,10 +434,8 @@ Public Sub InitializeProcessor()
     'Reset all non-destructive request tracking data
     prevGenericLayerID = -1
     prevTextLayerID = -1
-    prevNDFXLayerID = -1
     ReDim prevGenericSetting(NUM_OF_GENERIC_PROPERTY_ENUMS) As Variant
     ReDim prevTextSetting(NUM_OF_TEXT_PROPERTY_ENUMS) As Variant
-    ReDim prevNDFXSetting(NUM_OF_NDFX_PROPERTY_ENUMS) As Variant
     
 End Sub
 
@@ -566,40 +554,6 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
     
 End Sub
 
-'Same as above, but for actual non-destructive image processing effects
-Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As PD_LayerNonDestructiveFX, ByVal ndfxSettingValue As Variant, ByVal targetLayerID As Long)
-    
-    'This function is easy; just store the values we are passed
-    prevNDFXSetting(ndfxSettingID) = ndfxSettingValue
-    
-    'As a failsafe against layer changes occurring simultaneous with focus changes, also make a note of the current layer.
-    If (prevNDFXLayerID <> targetLayerID) Then prevNDFXLayerID = targetLayerID
-    
-End Sub
-
-Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As PD_LayerNonDestructiveFX, ByVal ndfxSettingValue As Variant)
-    
-    'Ignore all requests if no images are loaded
-    If (g_OpenImageCount = 0) Then Exit Sub
-    
-    'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
-    ' (if they're currently being recorded, obviously)
-    If Strings.StringsNotEqual(CStr(ndfxSettingValue), CStr(prevNDFXSetting(ndfxSettingID))) Then
-        
-        'Raise a generic "layer setting change" processor request
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
-        With cParams
-            .AddParam "id", ndfxSettingID
-            .AddParam "value", ndfxSettingValue
-        End With
-        
-        MiniProcess_NDFXOnly "Non-destructive effect", , cParams.GetParamString(), UNDO_LayerHeader, , , prevNDFXLayerID
-        
-    End If
-    
-End Sub
-
 'Micro processor to be used ONLY for non-destructive FX.  I have deliberately declared it as private to avoid using it elsewhere.
 Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional ByVal processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
 
@@ -630,10 +584,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
         processID = processID & " " & GetNameOfGenericAction(cParams.GetLong("id"))
         
     ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
-            processID = processID & " " & GetNameOfTextAction(cParams.GetLong("id"))
-            
-    ElseIf Strings.StringsEqual(processID, "Non-destructive effect", True) Then
-            processID = processID & " (" & GetNameOfNDFXAction(cParams.GetLong("id")) & ")"
+        processID = processID & " " & GetNameOfTextAction(cParams.GetLong("id"))
         
     Else
         Debug.Print "WARNING!  Unknown processID submitted to MiniProcess_NDFXOnly().  Fix it!"
@@ -682,15 +633,6 @@ Public Sub SyncAllGenericLayerProperties(ByRef srcLayer As pdLayer)
     Dim i As Long
     For i = 0 To NUM_OF_GENERIC_PROPERTY_ENUMS - 1
         prevGenericSetting(i) = srcLayer.GetGenericLayerProperty(i)
-    Next i
-End Sub
-
-'Want to synchronize all non-destructive effect properties for a given layer?  Use this function to do so.
-Public Sub SyncAllNDFXLayerProperties(ByRef srcLayer As pdLayer)
-    prevNDFXLayerID = srcLayer.GetLayerID
-    Dim i As Long
-    For i = 0 To NUM_OF_NDFX_PROPERTY_ENUMS - 1
-        prevNDFXSetting(i) = srcLayer.GetLayerNonDestructiveFXValue(i)
     Next i
 End Sub
 
@@ -876,35 +818,6 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
         Case Else
             GetNameOfTextAction = "WARNING!  Action name not found!"
     
-    End Select
-    
-End Function
-
-Private Function GetNameOfNDFXAction(ByVal ndfxSettingID As PD_LayerNonDestructiveFX) As String
-    
-    Select Case ndfxSettingID
-        
-        Case NDFX_EXPOSURE
-            GetNameOfNDFXAction = g_Language.TranslateMessage("exposure")
-        
-        Case NDFX_CONTRAST
-            GetNameOfNDFXAction = g_Language.TranslateMessage("contrast")
-            
-        Case NDFX_CLARITY
-            GetNameOfNDFXAction = g_Language.TranslateMessage("clarity")
-            
-        Case NDFX_VIBRANCE
-            GetNameOfNDFXAction = g_Language.TranslateMessage("vibrance")
-            
-        Case NDFX_TEMPERATURE
-            GetNameOfNDFXAction = g_Language.TranslateMessage("temperature")
-            
-        Case NDFX_TINT
-            GetNameOfNDFXAction = g_Language.TranslateMessage("tint")
-            
-        Case Else
-            GetNameOfNDFXAction = "WARNING!  Action name not found!"
-        
     End Select
     
 End Function
@@ -1486,7 +1399,6 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         
         'Synchronize any non-destructive settings to the currently active layer
         Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         
     End If
@@ -2343,10 +2255,6 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     
     ElseIf Strings.StringsEqual(processID, "Move layer", True) Then
         Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
-        Process_LayerMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Make quick-fixes permanent", True) Then
-        Tools.MakeQuickFixesPermanent
         Process_LayerMenu = True
     
     '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry

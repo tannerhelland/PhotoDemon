@@ -117,7 +117,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Replace color", , GetLocalParamString(), UNDO_LAYER
+    Process "Replace color", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -222,8 +222,6 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     
     Dim labL As Double, labA As Double, labB As Double
     Dim labL2 As Double, labA2 As Double, labB2 As Double
-    
-    Dim labLf As Single, labAf As Single, labBf As Single
     Dim labL2f As Single, labA2f As Single, labB2f As Single
     
     Dim labTransform As pdLCMSTransform
@@ -318,10 +316,10 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
                 ' color, which will have "infected" the core RGB values.  Attempt to correct this by subtracting the
                 ' target color from the original color, using the calculated threshold value; this is the only way I
                 ' know to approximate the "feathering" caused by light bleeding over object edges.
-                If cDistance = 1 Then cDistance = 0.999999
-                r = (r - (oldR * cDistance)) / (1 - cDistance)
-                g = (g - (oldG * cDistance)) / (1 - cDistance)
-                b = (b - (oldB * cDistance)) / (1 - cDistance)
+                If cDistance = 1# Then cDistance = 0.999999
+                r = (r - (oldR * cDistance)) / (1# - cDistance)
+                g = (g - (oldG * cDistance)) / (1# - cDistance)
+                b = (b - (oldB * cDistance)) / (1# - cDistance)
                 
                 If (r > 255) Then r = 255
                 If (g > 255) Then g = 255

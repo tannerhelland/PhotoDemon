@@ -161,7 +161,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xCheck As Long, pxSize As Long
+    Dim pxSize As Long
     pxSize = curDIBValues.BytesPerPixel
     
     Dim xStart As Long, xStop As Long
@@ -186,12 +186,12 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         
         'Convert the incoming brightness and contrast values to ranges appropriate for L*a*b*
         Dim tmpBright As Double, tmpContrast As Double
-        tmpBright = CDbl(newBrightness / 16)
-        tmpContrast = CDbl(newContrast / 800) + 1#
+        tmpBright = CDbl(newBrightness / 16#)
+        tmpContrast = CDbl(newContrast / 800#) + 1#
         
         'We cheat and also use contrast as saturation, to flatten colors a bit when contrast is reduced
         Dim tmpSaturation As Double
-        tmpSaturation = (newContrast / 12)
+        tmpSaturation = (newContrast / 12#)
         If (newContrast > 0) Then tmpSaturation = tmpSaturation + 1
         
         'Create an abstract LCMS transform that defines this adjustment
@@ -329,7 +329,7 @@ End Sub
 
 'OK button.  Note that the command bar class handles validation, form hiding, and form unload for us.
 Private Sub cmdBar_OKClick()
-    Process "Brightness and contrast", , GetFunctionParamString(), UNDO_LAYER
+    Process "Brightness and contrast", , GetFunctionParamString(), UNDO_Layer
 End Sub
 
 Private Function GetFunctionParamString() As String

@@ -496,24 +496,6 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     
 End Sub
 
-'Assuming the user has made one or more edits via the Quick-Fix function, permanently apply those changes to the image now.
-Public Sub MakeQuickFixesPermanent()
-
-    'Prepare a PD Compositor object, which will handle the actual compositing step
-    Dim tmpCompositor As pdCompositor
-    Set tmpCompositor = New pdCompositor
-    
-    'Apply the quick-fix adjustments
-    tmpCompositor.ApplyNDFXToDIB pdImages(g_CurrentImage).GetActiveLayer, pdImages(g_CurrentImage).GetActiveDIB
-    
-    'Reset the quick-fix settings stored inside the pdLayer object
-    Dim i As Long
-    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState i, 0
-    Next i
-    
-End Sub
-
 'Are on-canvas tools currently allowed?  This master function will evaluate all relevant program states for allowing on-canvas
 ' tool operations (e.g. "no open images", "main form locked").
 Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True, Optional ByVal checkMainWindowEnabled As Boolean = True) As Boolean
@@ -529,11 +511,7 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
             'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
             ' if they don't need it.
             If alsoCheckBusyState Then
-                If (Not Processor.IsProgramBusy) And (Not Tools.GetToolBusyState) Then
-                    CanvasToolsAllowed = True
-                Else
-                    CanvasToolsAllowed = False
-                End If
+                CanvasToolsAllowed = (Not Processor.IsProgramBusy) And (Not Tools.GetToolBusyState)
             Else
                 CanvasToolsAllowed = True
             End If
@@ -613,7 +591,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         Case NAV_MOVE
             layerToolActive = True
             
-        Case QUICK_FIX_LIGHTING
+        Case COLOR_PICKER
             layerToolActive = True
         
         'Text layers only require a sync if the current layer is a text layer.
@@ -658,13 +636,6 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
                 Tools.SetToolBusyState True
                 
-            Case QUICK_FIX_LIGHTING
-            
-                Interface.SetUIGroupState PDUI_NonDestructiveFX, True
-                
-                'Reset tool busy state (because it will be reset by the Interface module call, above)
-                Tools.SetToolBusyState True
-            
             Case VECTOR_TEXT
                 
                 With toolpanel_Text

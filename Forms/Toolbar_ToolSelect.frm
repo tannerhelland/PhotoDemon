@@ -446,7 +446,7 @@ Private Const NUM_OF_TOOL_PANELS As Long = 9
 Private Enum PD_ToolPanels
     TP_None = -1
     TP_MoveSize = 0
-    TP_NDFX = 1
+    TP_ColorPicker = 1
     TP_Selections = 2
     TP_Text = 3
     TP_Typography = 4
@@ -457,7 +457,7 @@ Private Enum PD_ToolPanels
 End Enum
 
 #If False Then
-    Private Const TP_None = -1, TP_MoveSize = 0, TP_NDFX = 1, TP_Selections = 2, TP_Text = 3, TP_Typography = 4
+    Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Selections = 2, TP_Text = 3, TP_Typography = 4
     Private Const TP_Pencil = 5, TP_Paintbrush = 6, TP_Eraser = 7, TP_Fill = 8
 #End If
 
@@ -482,19 +482,19 @@ Private Sub cmdFile_Click(Index As Integer)
             Process "Close", True
         
         Case FILE_SAVE
-            Process "Save", , , UNDO_NOTHING
+            Process "Save", , , UNDO_Nothing
         
         Case FILE_SAVEAS_LAYERS
-            Process "Save copy", , , UNDO_NOTHING
+            Process "Save copy", , , UNDO_Nothing
             
         Case FILE_SAVEAS_FLAT
-            Process "Save as", True, , UNDO_NOTHING
+            Process "Save as", True, , UNDO_Nothing
         
         Case FILE_UNDO
-            Process "Undo", , , UNDO_NOTHING
+            Process "Undo", , , UNDO_Nothing
             
         Case FILE_REDO
-            Process "Redo", , , UNDO_NOTHING
+            Process "Redo", , , UNDO_Nothing
     
     End Select
     
@@ -658,10 +658,10 @@ Private Sub ReflowToolboxLayout()
     
     'Non-destructive group
     PositionToolLabel 2, cmdFile(FILE_REDO), hOffset, vOffset
-    ReflowButtonSet 2, True, NAV_DRAG, QUICK_FIX_LIGHTING, hOffset, vOffset
+    ReflowButtonSet 2, True, NAV_DRAG, COLOR_PICKER, hOffset, vOffset
     
     'Selection group
-    PositionToolLabel 3, cmdTools(QUICK_FIX_LIGHTING), hOffset, vOffset
+    PositionToolLabel 3, cmdTools(COLOR_PICKER), hOffset, vOffset
     ReflowButtonSet 3, True, SELECT_RECT, SELECT_WAND, hOffset, vOffset
     
     'Vector group
@@ -863,12 +863,12 @@ Public Sub ResetToolButtonStates()
             m_ActiveToolPanel = TP_MoveSize
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_MoveSize.hWnd
             
-        '"Quick fix" tool(s)
-        Case QUICK_FIX_LIGHTING
-            Load toolpanel_NDFX
-            toolpanel_NDFX.UpdateAgainstCurrentTheme
-            m_ActiveToolPanel = TP_NDFX
-            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_NDFX.hWnd
+        'Color picker tool
+        Case COLOR_PICKER
+            Load toolpanel_ColorPicker
+            toolpanel_ColorPicker.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_ColorPicker
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_ColorPicker.hWnd
             
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1006,9 +1006,9 @@ Public Sub ResetToolButtonStates()
                         Unload toolpanel_MoveSize
                         Set toolpanel_MoveSize = Nothing
     
-                    Case TP_NDFX
-                        Unload toolpanel_NDFX
-                        Set toolpanel_NDFX = Nothing
+                    Case TP_ColorPicker
+                        Unload toolpanel_ColorPicker
+                        Set toolpanel_ColorPicker = Nothing
     
                     Case TP_Selections
                         Unload toolpanel_Selections
@@ -1182,7 +1182,7 @@ Public Sub UpdateAgainstCurrentTheme()
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "nd_hand", , buttonImageSize, buttonImageSize
     cmdTools(NAV_MOVE).AssignImage "nd_move", , buttonImageSize, buttonImageSize
-    cmdTools(QUICK_FIX_LIGHTING).AssignImage "nd_quickfix", , buttonImageSize, buttonImageSize
+    cmdTools(COLOR_PICKER).AssignImage "nd_quickfix", , buttonImageSize, buttonImageSize
     
     cmdTools(SELECT_RECT).AssignImage "select_rect", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_CIRC).AssignImage "select_circle", , buttonImageSize, buttonImageSize
@@ -1236,7 +1236,7 @@ Public Sub UpdateAgainstCurrentTheme()
     'Non-destructive tool buttons are next
     cmdTools(NAV_DRAG).AssignTooltip "Hand (click-and-drag image scrolling)"
     cmdTools(NAV_MOVE).AssignTooltip "Move and resize image layers"
-    cmdTools(QUICK_FIX_LIGHTING).AssignTooltip "Apply non-destructive lighting adjustments"
+    cmdTools(COLOR_PICKER).AssignTooltip "Select colors from the image"
     
     '...then selections...
     cmdTools(SELECT_RECT).AssignTooltip "Rectangular Selection"

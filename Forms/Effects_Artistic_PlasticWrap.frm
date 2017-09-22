@@ -275,8 +275,8 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Interpolation variables
     Dim xDiff As Double, yDiff As Double, topRowValue As Double, bottomRowValue As Double
-    Dim x0 As Long, x1 As Long, y0 As Long, y1 As Long, gInterp As Long, xOffset As Long
-    Dim g As Long, a As Double
+    Dim x0 As Long, x1 As Long, y0 As Long, y1 As Long, gInterp As Long
+    Dim g As Long
     Const ONE_DIV_255 As Double = 1# / 255#
     
     'To avoid new values from interfering with calculations as we go, we will place all results into
@@ -390,7 +390,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Plastic wrap", , GetLocalParamString(), UNDO_LAYER
+    Process "Plastic wrap", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
