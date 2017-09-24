@@ -26,6 +26,15 @@ Begin VB.Form toolpanel_ColorPicker
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   120
+      Top             =   120
+      Width           =   4815
+      _ExtentX        =   8493
+      _ExtentY        =   661
+      Caption         =   "(this tool is currently under construction!)"
+   End
 End
 Attribute VB_Name = "toolpanel_ColorPicker"
 Attribute VB_GlobalNameSpace = False
