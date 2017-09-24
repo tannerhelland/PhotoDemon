@@ -1182,7 +1182,7 @@ Public Sub UpdateAgainstCurrentTheme()
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "nd_hand", , buttonImageSize, buttonImageSize
     cmdTools(NAV_MOVE).AssignImage "nd_move", , buttonImageSize, buttonImageSize
-    cmdTools(COLOR_PICKER).AssignImage "nd_quickfix", , buttonImageSize, buttonImageSize
+    cmdTools(COLOR_PICKER).AssignImage "color_picker", , buttonImageSize, buttonImageSize
     
     cmdTools(SELECT_RECT).AssignImage "select_rect", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_CIRC).AssignImage "select_circle", , buttonImageSize, buttonImageSize
