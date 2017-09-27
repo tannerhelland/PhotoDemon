@@ -85,8 +85,28 @@ Public Function LoadAllControlValues() As Boolean
 End Function
 
 Public Function SaveAllControlValues() As Boolean
+    
     FillXMLSettings
-    If (Not g_UserPreferences Is Nothing) Then g_UserPreferences.SetDialogPresets m_ParentID, m_Params.GetParamString
+    
+    If (Not g_UserPreferences Is Nothing) Then
+        
+        Dim tmpString As String
+        tmpString = m_Params.GetParamString()
+        
+        'To keep the XML file looking tidy, remove any leading and trailing linebreaks
+        Do While (Left$(tmpString, 2) = vbCrLf)
+            tmpString = Right$(tmpString, Len(tmpString) - 2)
+        Loop
+        
+        Do While (Right$(tmpString, 2) = vbCrLf)
+            tmpString = Left$(tmpString, Len(tmpString) - 2)
+        Loop
+        
+        'Send the tidied-up string to the preset manager
+        g_UserPreferences.SetDialogPresets m_ParentID, vbCrLf & tmpString & vbCrLf
+        
+    End If
+    
 End Function
 
 'Fill the m_Params object with the current values of all controls on our parent form.  (Note that some objects (like labels)
@@ -152,6 +172,7 @@ Private Sub FillXMLSettings()
             Else
                 m_Params.UpdateParam controlName, controlValue
             End If
+            
         End If
         
     Next eControl
