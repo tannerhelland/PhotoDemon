@@ -102,11 +102,18 @@ IENotAvailable:
 End Sub
 
 Private Sub Class_Terminate()
+    
+    On Error GoTo IEWasntInitialized
+    
     If (Not m_IE Is Nothing) Then
         m_IE.quit
         Set m_IE = Nothing
     End If
+    
+IEWasntInitialized:
+    
     m_IEAvailable = False
+    
 End Sub
 
 'Given a string, return the Google Translate equivalent (per the set source and destination language codes).
