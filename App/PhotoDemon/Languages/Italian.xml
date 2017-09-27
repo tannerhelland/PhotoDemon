@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.291</langversion>
+<langversion>6.7.292</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -205,6 +205,12 @@
 <!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
+
+<!-- BEGIN text for ColorPicker.bas -->
+
+<!-- ColorPicker.bas contains 0 phrases. -->
+
+<!-- END text for ColorPicker.bas-->
 
 <!-- BEGIN text for Colors.bas -->
 
@@ -1590,12 +1596,6 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 
 <!-- END text for FreeImageWrapper.bas-->
 
-<!-- BEGIN text for PDMath.bas -->
-
-<!-- PDMath.bas contains 0 phrases. -->
-
-<!-- END text for PDMath.bas-->
-
 <!-- BEGIN text for Paintbrush.bas -->
 
 <phrase>
@@ -1617,6 +1617,12 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <!-- Palettes.bas contains 0 phrases. -->
 
 <!-- END text for Palettes.bas-->
+
+<!-- BEGIN text for PDMath.bas -->
+
+<!-- PDMath.bas contains 0 phrases. -->
+
+<!-- END text for PDMath.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -11685,28 +11691,28 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>center on page</original>
-<translation>Centra nella pagina</translation>
+<original>copies</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fit on page</original>
-<translation>Adatta alla pagina</translation>
+<original>Sending image to printer</original>
+<translation>Invio dell'immagine alla stampante</translation>
 </phrase>
 
 <phrase>
-<original>note: DPI is read-only when "fit to page" is selected.</original>
-<translation>nota: DPI è in sola lettura quando "adatta alla pagina" è selezionata.</translation>
+<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
+<translation>Immagine stampata con successo. (Nota: dipendentemente dalla tua stampante, un'ulteriore conferma della stampa può apparire sullo schermo.)</translation>
 </phrase>
 
 <phrase>
-<original>dpi (print resolution)</original>
-<translation>dpi (risoluzone di stampa)</translation>
+<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
+<translation>%1 non è in grado si stampare l'immagine.  Per favore assicurati che la stampante specificata (%2) sia accesa e pronta per la stampa.</translation>
 </phrase>
 
 <phrase>
-<original>layout options</original>
-<translation>opzioni d'impaginazione</translation>
+<original>Printer Error</original>
+<translation>Errore della stampante</translation>
 </phrase>
 
 <phrase>
@@ -11729,32 +11735,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>paesaggio</translation>
 </phrase>
 
-<phrase>
-<original>Sending image to printer</original>
-<translation>Invio dell'immagine alla stampante</translation>
-</phrase>
-
-<phrase>
-<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation>%1 non è in grado si stampare l'immagine.  Per favore assicurati che la stampante specificata (%2) sia accesa e pronta per la stampa.</translation>
-</phrase>
-
-<phrase>
-<original>Printer Error</original>
-<translation>Errore della stampante</translation>
-</phrase>
-
-<phrase>
-<original>Print canceled.</original>
-<translation>Stampa annullata.</translation>
-</phrase>
-
-<phrase>
-<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Immagine stampata con successo. (Nota: dipendentemente dalla tua stampante, un'ulteriore conferma della stampa può apparire sullo schermo.)</translation>
-</phrase>
-
-<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13283,7 +13264,32 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 
 <!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
 
-<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+<phrase>
+<original>sample radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>RGB %</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>HSV</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>n/a</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
@@ -15009,8 +15015,8 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4486 phrases. -->
-<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4526 phrases. -->
+<!-- 2005 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12246 total words. -->
 
 </pdData>

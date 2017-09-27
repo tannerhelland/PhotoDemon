@@ -69,7 +69,7 @@ Begin VB.Form FormTransparency_FromColor
       Value           =   15
       DefaultValue    =   15
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csSource 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
@@ -119,12 +119,12 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    colorPicker.Color = RGB(0, 192, 0)
+    csSource.Color = RGB(0, 192, 0)
     sltErase.Value = 15
     sltBlend.Value = 15
 End Sub
 
-Private Sub colorPicker_ColorChanged()
+Private Sub csSource_ColorChanged()
     UpdatePreview
 End Sub
 
@@ -141,7 +141,7 @@ End Sub
 
 'The user can select a color from the preview window; this helps green screen calculation immensely
 Private Sub pdFxPreview_ColorSelected()
-    colorPicker.Color = pdFxPreview.SelectedColor
+    csSource.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
@@ -370,7 +370,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "color", colorPicker.Color
+        .AddParam "color", csSource.Color
         .AddParam "erase-threshold", sltErase.Value
         .AddParam "edge-blending", sltBlend.Value
     End With

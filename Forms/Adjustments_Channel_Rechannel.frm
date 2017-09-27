@@ -136,7 +136,7 @@ Private Sub btsColorSpace_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rechannel", , GetLocalParamString(), UNDO_LAYER
+    Process "Rechannel", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -294,26 +294,26 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                 bK = Min3Float(cK, mK, yK)
     
-                invBK = 1 - bK
-                If invBK = 0 Then invBK = 0.0001
+                invBK = 1# - bK
+                If (invBK = 0#) Then invBK = 0.000001
                 
                 'cyan
-                If dstChannel = 0 Then
-                    cK = ((cK - bK) / invBK) * 255
+                If (dstChannel = 0) Then
+                    cK = ((cK - bK) / invBK) * 255#
                     imageData(quickVal + 2, y) = 255 - cK
                     imageData(quickVal + 1, y) = 255
                     imageData(quickVal, y) = 255
                 
                 'magenta
-                ElseIf dstChannel = 1 Then
-                    mK = ((mK - bK) / invBK) * 255
+                ElseIf (dstChannel = 1) Then
+                    mK = ((mK - bK) / invBK) * 255#
                     imageData(quickVal + 2, y) = 255
                     imageData(quickVal + 1, y) = 255 - mK
                     imageData(quickVal, y) = 255
                 
                 'yellow
-                ElseIf dstChannel = 2 Then
-                    yK = ((yK - bK) / invBK) * 255
+                ElseIf (dstChannel = 2) Then
+                    yK = ((yK - bK) / invBK) * 255#
                     imageData(quickVal + 2, y) = 255
                     imageData(quickVal + 1, y) = 255
                     imageData(quickVal, y) = 255 - yK

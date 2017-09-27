@@ -84,7 +84,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   582
       Caption         =   "custom color"
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   615
       Left            =   840
       TabIndex        =   6
@@ -162,10 +162,10 @@ Private Sub cmdBar_OKClick()
         .AddParam "HeightInPixels", ucResize.ResizeHeightInPixels
         .AddParam "DPI", ucResize.ResizeDPIAsPPI
         .AddParam "BackgroundType", backgroundType
-        .AddParam "OptionalBackcolor", colorPicker.Color
+        .AddParam "OptionalBackcolor", csBackground.Color
     End With
     
-    Processor.Process "New image", False, cParams.GetParamString(), UNDO_NOTHING
+    Processor.Process "New image", False, cParams.GetParamString(), UNDO_Nothing
     
 End Sub
 
@@ -176,7 +176,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     CalculateDefaultSize
-    colorPicker.Color = RGB(60, 160, 255)
+    csBackground.Color = RGB(60, 160, 255)
 End Sub
 
 Private Sub Form_Load()

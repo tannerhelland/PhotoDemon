@@ -112,7 +112,7 @@ Begin VB.Form FormVignette
       Value           =   100
       DefaultValue    =   100
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csVignette 
       Height          =   810
       Left            =   6000
       TabIndex        =   6
@@ -464,7 +464,7 @@ Private Sub UpdateShapeVisibility()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vignetting", , GetFunctionParams(), UNDO_LAYER
+    Process "Vignetting", , GetFunctionParams(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -472,10 +472,10 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    colorPicker.Color = RGB(0, 0, 0)
+    csVignette.Color = RGB(0, 0, 0)
 End Sub
 
-Private Sub colorPicker_ColorChanged()
+Private Sub csVignette_ColorChanged()
     UpdatePreview
 End Sub
 
@@ -500,7 +500,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_ColorSelected()
-    colorPicker.Color = pdFxPreview.SelectedColor
+    csVignette.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
@@ -554,7 +554,7 @@ Private Function GetFunctionParams() As String
         .AddParam "shape", btsShape.ListIndex
         .AddParam "centerx", sltXCenter.Value
         .AddParam "centery", sltYCenter.Value
-        .AddParam "color", colorPicker.Color
+        .AddParam "color", csVignette.Color
         .AddParam "aspectratio", sltAspectRatio.Value
         .AddParam "angle", sltAngle.Value
     End With

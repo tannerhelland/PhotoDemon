@@ -822,7 +822,11 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
                 Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
-        
+            
+            'Color picker
+            Case COLOR_PICKER
+                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+            
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionMouseDown Me, imgX, imgY
@@ -957,6 +961,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
                 Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
+            'Color picker
+            Case COLOR_PICKER
+                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+            
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
@@ -1030,6 +1038,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     Message ""
                     m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
                 End If
+            
+            'Color picker
+            Case COLOR_PICKER
+                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1087,6 +1099,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
                 'Reset the generic tool mouse tracking function
                 Tools.TerminateGenericToolTracking
+                
+            'Color picker
+            Case COLOR_PICKER
+                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             'Selection tools have their own dedicated handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND

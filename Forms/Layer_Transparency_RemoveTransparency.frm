@@ -43,7 +43,7 @@ Begin VB.Form FormConvert24bpp
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   1215
       Left            =   6000
       TabIndex        =   2
@@ -79,14 +79,14 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Remove alpha channel", , GetLocalParamString(), UNDO_LAYER
+    Process "Remove alpha channel", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub colorPicker_ColorChanged()
+Private Sub csBackground_ColorChanged()
     UpdatePreview
 End Sub
 
@@ -102,7 +102,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_ColorSelected()
-    colorPicker.Color = pdFxPreview.SelectedColor
+    csBackground.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
@@ -111,7 +111,7 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then
         Dim tmpSA As SAFEARRAY2D
         EffectPrep.PrepImageData tmpSA, True, pdFxPreview
-        workingDIB.ConvertTo24bpp colorPicker.Color
+        workingDIB.ConvertTo24bpp csBackground.Color
         
         'PD now requires 32-bpp images in all intermediary copies, so convert *back* to 32-bpp now
         workingDIB.ConvertTo32bpp
@@ -145,7 +145,7 @@ Public Sub RemoveLayerTransparency(ByVal processParameters As String)
     pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
     
     'Notify the parent of the target layer of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
     
     Message "Finished."
     
@@ -160,7 +160,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "backcolor", colorPicker.Color
+        .AddParam "backcolor", csBackground.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()

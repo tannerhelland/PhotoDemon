@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3005</langversion>
+<langversion>6.8.3006</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -205,6 +205,12 @@
 <!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
+
+<!-- BEGIN text for ColorPicker.bas -->
+
+<!-- ColorPicker.bas contains 0 phrases. -->
+
+<!-- END text for ColorPicker.bas-->
 
 <!-- BEGIN text for Colors.bas -->
 
@@ -1601,12 +1607,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 
 <!-- END text for FreeImageWrapper.bas-->
 
-<!-- BEGIN text for PDMath.bas -->
-
-<!-- PDMath.bas contains 0 phrases. -->
-
-<!-- END text for PDMath.bas-->
-
 <!-- BEGIN text for Paintbrush.bas -->
 
 <phrase>
@@ -1628,6 +1628,12 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <!-- Palettes.bas contains 0 phrases. -->
 
 <!-- END text for Palettes.bas-->
+
+<!-- BEGIN text for PDMath.bas -->
+
+<!-- PDMath.bas contains 0 phrases. -->
+
+<!-- END text for PDMath.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -11695,28 +11701,28 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>center on page</original>
-<translation>Središte na stranici</translation>
+<original>copies</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fit on page</original>
-<translation>Stane na stranicu</translation>
+<original>Sending image to printer</original>
+<translation>Slanje slike pisaču</translation>
 </phrase>
 
 <phrase>
-<original>note: DPI is read-only when "fit to page" is selected.</original>
-<translation>Napomena: DPI je samo za čitanje kada je odabrano "fit to page".</translation>
+<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
+<translation>Slika je uspješno ispisana. (Napomena: ovisno o vašem pisaču, mogu se pojaviti dodatni prozori za potvrdu ispisa.)</translation>
 </phrase>
 
 <phrase>
-<original>dpi (print resolution)</original>
-<translation>Dpi (razlučivost ispisa)</translation>
+<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
+<translation> %1 nije uspio ispisati sliku. Provjerite je li pisač ( %2) uključen i spreman za ispis.</translation>
 </phrase>
 
 <phrase>
-<original>layout options</original>
-<translation>Mogućnosti rasporeda</translation>
+<original>Printer Error</original>
+<translation>Pogreška pisača</translation>
 </phrase>
 
 <phrase>
@@ -11739,32 +11745,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>pejzaž</translation>
 </phrase>
 
-<phrase>
-<original>Sending image to printer</original>
-<translation>Slanje slike pisaču</translation>
-</phrase>
-
-<phrase>
-<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation> %1 nije uspio ispisati sliku. Provjerite je li pisač ( %2) uključen i spreman za ispis.</translation>
-</phrase>
-
-<phrase>
-<original>Printer Error</original>
-<translation>Pogreška pisača</translation>
-</phrase>
-
-<phrase>
-<original>Print canceled.</original>
-<translation>Ispis je otkazan.</translation>
-</phrase>
-
-<phrase>
-<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Slika je uspješno ispisana. (Napomena: ovisno o vašem pisaču, mogu se pojaviti dodatni prozori za potvrdu ispisa.)</translation>
-</phrase>
-
-<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13293,7 +13274,32 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 
 <!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
 
-<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+<phrase>
+<original>sample radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>RGB %</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>HSV</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>n/a</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
@@ -15021,8 +15027,8 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4486 phrases. -->
-<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4526 phrases. -->
+<!-- 2005 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12246 total words. -->
 
 </pdData>

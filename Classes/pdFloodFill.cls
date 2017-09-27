@@ -112,19 +112,19 @@ Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPo
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 
 'Get/set functions for all relevant flood fill parameters
-Public Function GetAntialiasingMode() As Boolean
+Friend Function GetAntialiasingMode() As Boolean
     GetAntialiasingMode = m_AntialiasingMode
 End Function
 
-Public Sub SetAntialiasingMode(ByVal newAntialiasingMode As Boolean)
+Friend Sub SetAntialiasingMode(ByVal newAntialiasingMode As Boolean)
     m_AntialiasingMode = newAntialiasingMode
 End Sub
 
-Public Function GetCompareMode() As PD_FloodCompare
+Friend Function GetCompareMode() As PD_FloodCompare
     GetCompareMode = m_CompareMode
 End Function
 
-Public Function SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
+Friend Function SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
     m_CompareMode = newCompareMode
 End Function
 
@@ -132,24 +132,24 @@ Friend Function GetInitialPoint() As POINTAPI
     GetInitialPoint = m_InitPoint
 End Function
 
-Public Sub SetInitialPoint(ByVal startX As Long, ByVal startY As Long)
+Friend Sub SetInitialPoint(ByVal startX As Long, ByVal startY As Long)
     m_InitPoint.x = startX
     m_InitPoint.y = startY
 End Sub
 
-Public Function GetSearchMode() As PD_FloodSearch
+Friend Function GetSearchMode() As PD_FloodSearch
     GetSearchMode = m_SearchMode
 End Function
 
-Public Sub SetSearchMode(ByVal newSearchMode As PD_FloodSearch)
+Friend Sub SetSearchMode(ByVal newSearchMode As PD_FloodSearch)
     m_SearchMode = newSearchMode
 End Sub
 
-Public Function GetTolerance() As Double
+Friend Function GetTolerance() As Double
     GetTolerance = m_Tolerance
 End Function
 
-Public Sub SetTolerance(ByVal newTolerance As Double)
+Friend Sub SetTolerance(ByVal newTolerance As Double)
     m_Tolerance = newTolerance
 End Sub
 
@@ -162,7 +162,7 @@ End Sub
 'In a change from earlier versions, the caller must also now provide a target pdPath object.  This path is filled with a
 ' vector representation of the filled area, and it is also used to produce antialiased fill results.  The caller can obviously
 ' discard this path if they don't need it, but it *will* be used regardless.
-Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef dstOutlinePath As pd2DPath) As Boolean
+Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef dstOutlinePath As pd2DPath) As Boolean
     
     'Make sure the passed x/y coords are valid.  If they aren't, exit now.
     If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.GetDIBWidth) Or (m_InitPoint.y >= srcDIB.GetDIBHeight) Then
