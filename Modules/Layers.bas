@@ -1039,7 +1039,7 @@ Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
 End Sub
 
 'Given a layer index and an x/y position (ALREADY CONVERTED TO LAYER COORDINATE SPACE!), return an RGBQUAD for the pixel
-' at that location.
+' at that location.  Note that the returned result is unprocessed; e.g. it will be in premultipled format.
 '
 'If the pixel lies outside the layer boundaries, the function will return FALSE.  Make sure to check this before evaluating
 ' the RGBQUAD.

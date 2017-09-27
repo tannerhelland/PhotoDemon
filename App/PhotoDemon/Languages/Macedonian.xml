@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.87</langversion>
+<langversion>1.0.88</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -205,6 +205,12 @@
 <!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
+
+<!-- BEGIN text for ColorPicker.bas -->
+
+<!-- ColorPicker.bas contains 0 phrases. -->
+
+<!-- END text for ColorPicker.bas-->
 
 <!-- BEGIN text for Colors.bas -->
 
@@ -1599,12 +1605,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <!-- END text for FreeImageWrapper.bas-->
 
-<!-- BEGIN text for PDMath.bas -->
-
-<!-- PDMath.bas contains 0 phrases. -->
-
-<!-- END text for PDMath.bas-->
-
 <!-- BEGIN text for Paintbrush.bas -->
 
 <phrase>
@@ -1626,6 +1626,12 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <!-- Palettes.bas contains 0 phrases. -->
 
 <!-- END text for Palettes.bas-->
+
+<!-- BEGIN text for PDMath.bas -->
+
+<!-- PDMath.bas contains 0 phrases. -->
+
+<!-- END text for PDMath.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -11697,28 +11703,28 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>center on page</original>
-<translation>центарот на страница</translation>
+<original>copies</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fit on page</original>
-<translation>одговара на страница</translation>
+<original>Sending image to printer</original>
+<translation>Испраќање слика со печатар</translation>
 </phrase>
 
 <phrase>
-<original>note: DPI is read-only when "fit to page" is selected.</original>
-<translation>Забелешка: DPI е само за читање кога "одговара на страница" е избран.</translation>
+<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
+<translation>Слика отпечатена успешно. (Забелешка: во зависност од вашиот печатач, дополнителни екрани потврда на печатење може да се појави.)</translation>
 </phrase>
 
 <phrase>
-<original>dpi (print resolution)</original>
-<translation>dpi (резолуција на печатење)</translation>
+<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
+<translation> %1 не беше во можност да ја испечатите сликата. Ве молиме бидете сигурни дека одредениот печатач ( %2) се напојува-и е подготвен за печатење.</translation>
 </phrase>
 
 <phrase>
-<original>layout options</original>
-<translation>опциите за распоред</translation>
+<original>Printer Error</original>
+<translation>печатење Грешка</translation>
 </phrase>
 
 <phrase>
@@ -11741,32 +11747,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>пејзаж</translation>
 </phrase>
 
-<phrase>
-<original>Sending image to printer</original>
-<translation>Испраќање слика со печатар</translation>
-</phrase>
-
-<phrase>
-<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation> %1 не беше во можност да ја испечатите сликата. Ве молиме бидете сигурни дека одредениот печатач ( %2) се напојува-и е подготвен за печатење.</translation>
-</phrase>
-
-<phrase>
-<original>Printer Error</original>
-<translation>печатење Грешка</translation>
-</phrase>
-
-<phrase>
-<original>Print canceled.</original>
-<translation>Печати откажани.</translation>
-</phrase>
-
-<phrase>
-<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Слика отпечатена успешно. (Забелешка: во зависност од вашиот печатач, дополнителни екрани потврда на печатење може да се појави.)</translation>
-</phrase>
-
-<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13295,7 +13276,32 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
 
-<!-- Toolpanel_ColorPicker.frm contains 0 phrases. -->
+<phrase>
+<original>sample radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>RGB %</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>HSV</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>n/a</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
@@ -15021,8 +15027,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4486 phrases. -->
-<!-- 1965 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 4526 phrases. -->
+<!-- 2005 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 12246 total words. -->
 
 </pdData>

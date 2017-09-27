@@ -103,7 +103,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   582
       Caption         =   "custom color"
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   615
       Left            =   840
       TabIndex        =   6
@@ -183,7 +183,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Add new layer", False, GetLocalParamString(), UNDO_IMAGE_VECTORSAFE
+    Process "Add new layer", False, GetLocalParamString(), UNDO_Image_VectorSafe
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -193,7 +193,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     txtLayerName.Text = g_Language.TranslateMessage("(enter name here)")
-    colorPicker.Color = RGB(60, 160, 255)
+    csBackground.Color = RGB(60, 160, 255)
 End Sub
 
 Private Sub Form_Load()
@@ -228,7 +228,7 @@ Private Function GetLocalParamString() As String
         Next i
         
         .AddParam "layersubtype", newLayerType
-        .AddParam "layercolor", colorPicker.Color
+        .AddParam "layercolor", csBackground.Color
         .AddParam "layerposition", cboPosition.ListIndex
         .AddParam "activatelayer", CBool(chkAutoSelectLayer)
         .AddParam "layername", txtLayerName

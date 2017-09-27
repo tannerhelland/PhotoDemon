@@ -78,7 +78,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csMono 
       Height          =   615
       Index           =   0
       Left            =   6120
@@ -89,7 +89,7 @@ Begin VB.Form FormMonochrome
       _ExtentY        =   1085
       curColor        =   0
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csMono 
       Height          =   615
       Index           =   1
       Left            =   9120
@@ -164,7 +164,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to monochrome", , GetFunctionParamString(), UNDO_LAYER
+    Process "Color to monochrome", , GetFunctionParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -174,8 +174,8 @@ End Sub
 'When resetting, set the color boxes to black and white, and the dithering combo box to 6 (Stucki)
 Private Sub cmdBar_ResetClick()
     
-    colorPicker(0).Color = RGB(0, 0, 0)
-    colorPicker(1).Color = RGB(255, 255, 255)
+    csMono(0).Color = RGB(0, 0, 0)
+    csMono(1).Color = RGB(255, 255, 255)
     lstDither.ListIndex = 6     'Stucki dithering
     
     'Standard threshold value
@@ -190,14 +190,14 @@ Private Function GetFunctionParamString() As String
     With cParams
         .AddParam "threshold", sltThreshold.Value
         .AddParam "dither", lstDither.ListIndex
-        .AddParam "color1", colorPicker(0).Color
-        .AddParam "color2", colorPicker(1).Color
+        .AddParam "color1", csMono(0).Color
+        .AddParam "color2", csMono(1).Color
         .AddParam "removetransparency", CBool(btsTransparency.ListIndex = 1)
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function
 
-Private Sub colorPicker_ColorChanged(Index As Integer)
+Private Sub csMono_ColorChanged(Index As Integer)
     UpdatePreview
 End Sub
 

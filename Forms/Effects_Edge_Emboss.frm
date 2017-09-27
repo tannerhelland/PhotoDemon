@@ -33,7 +33,7 @@ Begin VB.Form FormEmbossEngrave
       _ExtentX        =   21193
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csEmboss 
       Height          =   1095
       Left            =   6000
       TabIndex        =   2
@@ -122,7 +122,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Emboss", , GetLocalParamString(), UNDO_LAYER
+    Process "Emboss", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -132,10 +132,10 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltDepth.Value = 1
     sltDistance.Value = 1
-    colorPicker.Color = RGB(127, 127, 127)
+    csEmboss.Color = RGB(127, 127, 127)
 End Sub
 
-Private Sub colorPicker_ColorChanged()
+Private Sub csEmboss_ColorChanged()
     UpdatePreview
 End Sub
 
@@ -151,7 +151,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_ColorSelected()
-    colorPicker.Color = pdFxPreview.SelectedColor
+    csEmboss.Color = pdFxPreview.SelectedColor
 End Sub
 
 'Emboss an image
@@ -170,7 +170,7 @@ Public Sub ApplyEmbossEffect(ByVal effectParams As String, Optional ByVal toPrev
         eDistance = .GetDouble("distance", sltDistance.Value)
         eAngle = .GetDouble("angle", sltAngle.Value)
         eDepth = .GetDouble("depth", sltDepth.Value)
-        eColor = .GetLong("color", colorPicker.Color)
+        eColor = .GetLong("color", csEmboss.Color)
     End With
     
     'Don't allow distance to be 0
@@ -341,7 +341,7 @@ Private Function GetLocalParamString() As String
         .AddParam "distance", sltDistance.Value
         .AddParam "angle", sltAngle.Value
         .AddParam "depth", sltDepth.Value
-        .AddParam "color", colorPicker.Color
+        .AddParam "color", csEmboss.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()

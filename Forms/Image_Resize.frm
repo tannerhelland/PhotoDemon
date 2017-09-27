@@ -70,7 +70,7 @@ Begin VB.Form FormResize
       _ExtentY        =   582
       Caption         =   "show technical names"
    End
-   Begin PhotoDemon.pdColorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   495
       Left            =   840
       TabIndex        =   5
@@ -322,7 +322,7 @@ Private Sub cmdBar_ResetClick()
     cmbFit.ListIndex = 0
     
     'Make borders fill with black by default
-    colorPicker.Color = RGB(0, 0, 0)
+    csBackground.Color = RGB(0, 0, 0)
     
 End Sub
 
@@ -728,7 +728,7 @@ Private Function GetLocalParamString() As String
         .AddParam "ppi", ucResize.ResizeDPIAsPPI
         .AddParam "algorithm", resampleAlgorithm
         .AddParam "fit", cmbFit.ListIndex
-        .AddParam "fillcolor", colorPicker.Color
+        .AddParam "fillcolor", csBackground.Color
         .AddParam "target", m_ResizeTarget
     End With
     
