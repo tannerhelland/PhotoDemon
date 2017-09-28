@@ -89,6 +89,9 @@ Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal
     
         Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             Paintbrush.SetBrushSourceColor newColor
+            
+        Case PAINT_FILL
+            FillTool.SetFillBrushColor newColor
     
     End Select
     

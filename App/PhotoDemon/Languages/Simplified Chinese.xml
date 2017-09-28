@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3024</langversion>
+<langversion>6.8.3025</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13318,6 +13318,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Toolpanel_Fill.frm (toolpanel_Fill) -->
 
 <phrase>
+<original>fill source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>antialiased</original>
 <translation>反锯齿</translation>
 </phrase>
@@ -13339,6 +13344,16 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>blend / alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom brush</original>
 <translation></translation>
 </phrase>
 
@@ -13382,7 +13397,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Fill.frm-->
 
@@ -15012,10 +15027,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4526 phrases. -->
-<!-- 2005 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 12246 total words. -->
+<!-- As of this build, PhotoDemon contains 4529 phrases. -->
+<!-- 2005 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12252 total words. -->
 
 </pdData>

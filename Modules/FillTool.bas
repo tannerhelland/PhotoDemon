@@ -36,8 +36,20 @@ Private m_MouseX As Single, m_MouseY As Single
 
 'Most fill "properties" are forwarded to a pdFloodFill instance, but rendering-specific properties are actually
 ' cached internally.  (pdFloodFill just generates a flood outline - we have to do the actual filling.)
-Private m_FillBrush As String, m_FillBlendMode As PD_BlendMode, m_FillAlphaMode As PD_AlphaMode
+Private m_FillBlendMode As PD_BlendMode, m_FillAlphaMode As PD_AlphaMode
 Private m_FillSampleMerged As Boolean
+
+'Fills can be "filled" in two ways: using a standard color + opacity combo, or using a full-on custom brush.
+Public Enum PD_FillToolSource
+    fts_ColorOpacity = 0
+    fts_CustomBrush = 1
+End Enum
+
+#If False Then
+    Private Const fts_ColorOpacity = 0, fts_CustomBrush = 1
+#End If
+
+Private m_FillSource As PD_FillToolSource, m_FillBrush As String, m_FillColor As Long, m_FillOpacity As Single
 
 'Before attempting to set flood fill properties, call this sub to ensure the m_FloodFill object exists.
 ' (It returns TRUE if m_FloodFill exists.)
@@ -163,10 +175,15 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         m_FloodFill.InitiateFloodFill fillSrc, Nothing, m_FillOutline
         Set fillSrc = Nothing
         
-        'Create a brush using the passed brush settings
+        'Create a brush using the previously passed brush settings
         Dim tmpBrush As pd2DBrush
         Set tmpBrush = New pd2DBrush
-        tmpBrush.SetBrushPropertiesFromXML m_FillBrush
+        
+        If (m_FillSource = fts_ColorOpacity) Then
+            Drawing2D.QuickCreateSolidBrush tmpBrush, m_FillColor, m_FillOpacity
+        Else
+            tmpBrush.SetBrushPropertiesFromXML m_FillBrush
+        End If
         
         'Gradient brushes require us to set a gradient rect.  Importantly, we need to apply any relevant offsets
         ' (e.g. the offsets required when "filling" a vector layer) to our path *before* calculating gradient boundaries.
@@ -181,11 +198,11 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         
         End If
         
-        'Calculate the gradient rect, using the boundary rect of the fill outline.
+        'Calculate the gradient rect (if any), using the boundary rect of the fill outline.
         If (tmpBrush.GetBrushMode = P2_BM_Gradient) Then
-            Dim FillRect As RECTF
-            FillRect = m_FillOutline.GetPathBoundariesF
-            tmpBrush.SetBoundaryRect FillRect
+            Dim fillBoundaryRect As RECTF
+            fillBoundaryRect = m_FillOutline.GetPathBoundariesF
+            tmpBrush.SetBoundaryRect fillBoundaryRect
         End If
         
         Dim tmpSurface As pd2DSurface
@@ -299,7 +316,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
                 cTransform.InvertTransform
                 cSurface.SetSurfaceWorldTransform cTransform
                 
-                'Paint the selection mask into place, with the transform activate
+                'Paint the selection mask into place, with the transform active
                 Dim tmpSrcSurface As pd2DSurface
                 Set tmpSrcSurface = New pd2DSurface
                 tmpSrcSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).MainSelection.GetMaskDIB
@@ -454,6 +471,18 @@ End Sub
 
 Public Sub SetFillBrush(ByVal newBrush As String)
     m_FillBrush = newBrush
+End Sub
+
+Public Sub SetFillBrushColor(ByVal newColor As Long)
+    m_FillColor = newColor
+End Sub
+
+Public Sub SetFillBrushOpacity(ByVal newOpacity As Single)
+    m_FillOpacity = newOpacity
+End Sub
+
+Public Sub SetFillBrushSource(ByVal newBrushSource As PD_FillToolSource)
+    m_FillSource = newBrushSource
 End Sub
 
 Public Sub SetFillCompareMode(ByVal newCompareMode As PD_FloodCompare)
