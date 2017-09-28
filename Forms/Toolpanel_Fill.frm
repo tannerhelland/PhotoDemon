@@ -26,35 +26,71 @@ Begin VB.Form toolpanel_Fill
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkAntialiasing 
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
-      Left            =   165
-      TabIndex        =   7
-      Top             =   1050
+      Index           =   0
+      Left            =   0
+      Top             =   945
+      Width           =   825
+      _ExtentX        =   1455
+      _ExtentY        =   661
+      Alignment       =   1
+      Caption         =   "opacity"
+   End
+   Begin PhotoDemon.pdSlider sldOpacity 
+      Height          =   435
+      Left            =   885
+      TabIndex        =   9
+      Top             =   885
+      Width           =   2010
+      _ExtentX        =   3545
+      _ExtentY        =   767
+      FontSizeCaption =   10
+      Max             =   100
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
+   Begin PhotoDemon.pdDropDown cboSource 
+      Height          =   735
+      Left            =   60
+      TabIndex        =   8
+      Top             =   30
       Width           =   2655
       _ExtentX        =   4683
+      _ExtentY        =   1296
+      Caption         =   "fill source"
+      FontSizeCaption =   10
+   End
+   Begin PhotoDemon.pdCheckBox chkAntialiasing 
+      Height          =   375
+      Left            =   12480
+      TabIndex        =   7
+      Top             =   360
+      Width           =   2775
+      _ExtentX        =   4895
       _ExtentY        =   661
       Caption         =   "antialiased"
    End
    Begin PhotoDemon.pdBrushSelector bsFillStyle 
-      Height          =   975
-      Left            =   90
+      Height          =   495
+      Left            =   165
       TabIndex        =   4
-      Top             =   0
-      Width           =   2655
-      _ExtentX        =   4683
-      _ExtentY        =   2143
-      Caption         =   "fill"
+      Top             =   855
+      Width           =   2550
+      _ExtentX        =   4498
+      _ExtentY        =   873
       FontSize        =   10
    End
    Begin PhotoDemon.pdDropDown cboFillCompare 
-      Height          =   375
+      Height          =   450
       Left            =   5340
       TabIndex        =   0
       Top             =   870
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   794
    End
    Begin PhotoDemon.pdButtonStripVertical btsFillArea 
       Height          =   1305
@@ -107,7 +143,7 @@ Begin VB.Form toolpanel_Fill
       Height          =   450
       Left            =   2985
       TabIndex        =   6
-      Top             =   840
+      Top             =   870
       Width           =   2145
       _ExtentX        =   3784
       _ExtentY        =   794
@@ -173,6 +209,28 @@ Private Sub cboFillCompare_Click()
     
 End Sub
 
+Private Sub cboSource_Click()
+    
+    sldOpacity.Visible = (cboSource.ListIndex = 0)
+    lblTitle(0).Visible = (cboSource.ListIndex = 0)
+    bsFillStyle.Visible = (cboSource.ListIndex = 1)
+    
+    If (cboSource.ListIndex = 0) Then
+        FillTool.SetFillBrushSource fts_ColorOpacity
+        FillTool.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
+        FillTool.SetFillBrushOpacity sldOpacity.Value
+    Else
+        FillTool.SetFillBrushSource fts_CustomBrush
+        FillTool.SetFillBrush bsFillStyle.Brush
+    End If
+    
+End Sub
+
+Private Sub RelayCurrentColorToFillEngine()
+    Dim cBrush As pd2DBrush
+    Drawing2D.QuickCreateSolidBrush cBrush, layerpanel_Colors.GetCurrentColor()
+End Sub
+
 Private Sub chkAntialiasing_Click()
     FillTool.SetFillAA CBool(chkAntialiasing.Value)
 End Sub
@@ -184,6 +242,11 @@ End Sub
 Private Sub Form_Load()
     
     'Magic wand options
+    cboSource.AddItem "current color", 0
+    cboSource.AddItem "custom brush", 1
+    cboSource.ListIndex = 0
+    bsFillStyle.Visible = False
+    
     btsFillMerge.AddItem "image", 0
     btsFillMerge.AddItem "layer", 1
     btsFillMerge.ListIndex = 0
@@ -222,6 +285,8 @@ Public Sub SyncAllFillSettingsToUI()
     FillTool.SetFillAlphaMode cboFillAlphaMode.ListIndex
     FillTool.SetFillBlendMode cboFillBlendMode.ListIndex
     FillTool.SetFillBrush bsFillStyle.Brush
+    FillTool.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
+    FillTool.SetFillBrushOpacity sldOpacity.Value
     FillTool.SetFillCompareMode cboFillCompare.ListIndex
     FillTool.SetFillSampleMerged (btsFillMerge.ListIndex = 0)
     FillTool.SetFillSearchMode btsFillArea.ListIndex
@@ -240,3 +305,6 @@ Public Sub UpdateAgainstCurrentTheme()
 
 End Sub
 
+Private Sub sldOpacity_Change()
+    FillTool.SetFillBrushOpacity sldOpacity.Value
+End Sub

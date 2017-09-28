@@ -76,14 +76,13 @@ Begin VB.Form toolpanel_ColorPicker
    End
    Begin PhotoDemon.pdCheckBox chkSampleMerged 
       Height          =   375
-      Left            =   120
+      Left            =   135
       TabIndex        =   1
-      Top             =   960
+      Top             =   930
       Width           =   3135
       _ExtentX        =   5530
       _ExtentY        =   450
       Caption         =   "sample all layers"
-      Value           =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
