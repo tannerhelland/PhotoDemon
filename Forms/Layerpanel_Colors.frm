@@ -179,4 +179,5 @@ End Function
 
 Public Sub SetCurrentColor(ByVal newR As Long, ByVal newG As Long, ByVal newB As Long)
     clrVariants.Color = RGB(newR, newG, newB)
+    clrWheel.Color = RGB(newR, newG, newB)
 End Sub
