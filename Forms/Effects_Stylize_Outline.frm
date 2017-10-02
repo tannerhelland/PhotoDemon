@@ -241,7 +241,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     'Use pd2D to render the outline onto the image
     Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen
     Drawing2D.QuickCreatePainter cPainter
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, workingDIB.GetDIBDC, True
+    Drawing2D.QuickCreateSurfaceFromDIB cSurface, workingDIB, True
     
     Set cPen = New pd2DPen
     cPen.SetPenPropertiesFromXML edgeStyle
@@ -264,7 +264,7 @@ Private Sub UpdateVisibleEdgeOptions()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Outline", , GetLocalParamString(), UNDO_LAYER
+    Process "Outline", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

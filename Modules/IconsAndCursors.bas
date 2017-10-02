@@ -551,16 +551,8 @@ End Function
 'PLEASE NOTE: PD auto-caches created cursors, and retains them for the life of the program.  They should not be manually freed.
 Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
-    'If this is the first custom cursor request, cache the current system cursor size.
-    ' (This function matches those sizes automatically, and the caller does not have control over it, by design.)
-    
-    'Also, note that Windows cursors typically only use one quadrant of the current system cursor size.  This odd behavior
-    ' is why we divide the retrieved cursor size by two.
-    If (m_CursorSize = 0) Then
-        Const SM_CYCURSOR As Long = 14
-        m_CursorSize = GetSystemMetrics(SM_CYCURSOR) \ 2
-        If (m_CursorSize <= 0) Then m_CursorSize = FixDPI(16)
-    End If
+    'Ensure our cached system cursor size is up-to-date
+    GetSystemCursorSizeInPx
     
     'Start by extracting the image itself into a DIB.  Note that the image will be auto-scaled to the system
     ' cursor size calculated above.
@@ -605,6 +597,25 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
     
     Exit Function
     
+End Function
+
+'Retrieve the current system cursor size, in pixels.  Make sure to read the function details - the size returned differs
+' from what bare WAPI functions return, by design.
+Public Function GetSystemCursorSizeInPx() As Long
+
+    'If this is the first custom cursor request, cache the current system cursor size.
+    ' (This function matches those sizes automatically, and the caller does not have control over it, by design.)
+    
+    'Also, note that Windows cursors typically only use one quadrant of the current system cursor size.  This odd behavior
+    ' is why we divide the retrieved cursor size by two.
+    If (m_CursorSize = 0) Then
+        Const SM_CYCURSOR As Long = 14
+        m_CursorSize = GetSystemMetrics(SM_CYCURSOR) \ 2
+        If (m_CursorSize <= 0) Then m_CursorSize = FixDPI(16)
+    End If
+    
+    GetSystemCursorSizeInPx = m_CursorSize
+
 End Function
 
 'Load all relevant program cursors into memory

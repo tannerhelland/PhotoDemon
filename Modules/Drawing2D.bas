@@ -552,6 +552,14 @@ Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal 
     End With
 End Function
 
+Public Function QuickCreateSurfaceFromDIB(ByRef dstSurface As pd2DSurface, ByVal srcDIB As pdDIB, Optional ByVal enableAntialiasing As Boolean = False) As Boolean
+    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
+    With dstSurface
+        If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
+        QuickCreateSurfaceFromDIB = .WrapSurfaceAroundPDDIB(srcDIB)
+    End With
+End Function
+
 Public Function QuickCreateSurfaceFromFile(ByRef dstSurface As pd2DSurface, ByVal srcPath As String) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
