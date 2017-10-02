@@ -51,6 +51,9 @@ End Enum
 
 Private m_FillSource As PD_FillToolSource, m_FillBrush As String, m_FillColor As Long, m_FillOpacity As Single
 
+'Bucket cursor; this is loaded as an on-demand resource, and cached after first use.
+Private m_FillCursor As pdDIB
+
 'Before attempting to set flood fill properties, call this sub to ensure the m_FloodFill object exists.
 ' (It returns TRUE if m_FloodFill exists.)
 Private Function EnsureFillerExists() As Boolean
@@ -452,7 +455,18 @@ Public Sub RenderFillCursor(ByRef targetCanvas As pdCanvas)
     m_Painter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
     m_Painter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
     
-    Set cSurface = Nothing
+    'If we haven't loaded the fill cursor previously, do so now
+    If (m_FillCursor Is Nothing) Then
+        IconsAndCursors.LoadResourceToDIB "cursor_bucket", m_FillCursor, IconsAndCursors.GetSystemCursorSizeInPx() * 1.15, IconsAndCursors.GetSystemCursorSizeInPx() * 1.15, , , True
+    End If
+    
+    'Paint the fill icon to the bottom-right of the actual cursor, Photoshop-style
+    Dim icoSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDIB icoSurface, m_FillCursor, True
+    icoSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
+    m_Painter.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
+    
+    Set cSurface = Nothing: Set icoSurface = Nothing
     Set innerPen = Nothing: Set outerPen = Nothing
     
 End Sub
