@@ -332,13 +332,13 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Process "Add new layer", True
         
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
             
     End Select
     
@@ -430,7 +430,18 @@ Private Sub ReflowInterface()
         'Left-align the opacity, blend and alpha mode controls against their respective labels.
         sltLayerOpacity.SetLeft lblLayerSettings(0).GetLeft + lblLayerSettings(0).GetWidth + FixDPI(4)
         cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + FixDPI(12)
-        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + FixDPI(12)
+        
+        'So this is kind of funny, but in English, the "blend mode" and "alpha mode" layers are offset
+        ' by 1 px due to the different pixel lengths of the "blend" and "alpha" labels.  To make them
+        ' look a bit prettier, we manually pad the non-translated version.
+        Dim alphaOffset As Long
+        If (Not g_Language Is Nothing) Then
+            If g_Language.TranslationActive Then alphaOffset = 12 Else alphaOffset = 13
+        Else
+            alphaOffset = 13
+        End If
+        
+        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + FixDPI(13)
         
         'Horizontally stretch the opacity, blend, and alpha mode UI inputs
         sltLayerOpacity.SetWidth Me.ScaleWidth - (sltLayerOpacity.GetLeft + FixDPI(3))
