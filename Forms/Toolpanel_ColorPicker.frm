@@ -357,52 +357,59 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     
         'Grab a color from the correct source.
         If CBool(chkSampleMerged.Value) Then
-        
-            'We need to retrieve a composited rect from the image's compositor, at the size of the requested
-            ' sample radius (if any).
             
-            'First, figure out the area to sample
-            sampleLeft = Int(imgX) - sampleRadius
-            sampleTop = Int(imgY) - sampleRadius
-            If (sampleLeft < 0) Then sampleLeft = 0
-            If (sampleTop < 0) Then sampleTop = 0
+            'Before proceeding, ensure the mouse pointer lies within the image.
+            If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > pdImages(g_CurrentImage).Width) Or (m_ImgY > pdImages(g_CurrentImage).Height) Then
+                m_NoColorAvailable = True
+            Else
+                
+                'We need to retrieve a composited rect from the image's compositor, at the size of the requested
+                ' sample radius (if any).
+                
+                'First, figure out the area to sample
+                sampleLeft = Int(imgX) - sampleRadius
+                sampleTop = Int(imgY) - sampleRadius
+                If (sampleLeft < 0) Then sampleLeft = 0
+                If (sampleTop < 0) Then sampleTop = 0
+                
+                sampleRight = Int(imgX) + sampleRadius
+                sampleBottom = Int(imgY) + sampleRadius
+                If (sampleRight > pdImages(g_CurrentImage).Width) Then sampleRight = pdImages(g_CurrentImage).Width
+                If (sampleBottom > pdImages(g_CurrentImage).Height) Then sampleBottom = pdImages(g_CurrentImage).Height
+                
+                'Cover the special case of "sample radius = 0"
+                If (sampleRight < sampleLeft + 1) Then sampleRight = sampleLeft + 1
+                If (sampleBottom < sampleTop + 1) Then sampleBottom = sampleTop + 1
+                
+                sampleWidth = sampleRight - sampleLeft
+                sampleHeight = sampleBottom - sampleTop
+                        
+                'Make a local copy of the pixel data
+                If (m_SampleDIB Is Nothing) Then Set m_SampleDIB = New pdDIB
+                m_SampleDIB.CreateBlank sampleWidth, sampleHeight, 32, 0, 0
+                
+                Dim dstRectF As RECTF, srcRectF As RECTF
+                With dstRectF
+                    .Left = 0
+                    .Top = 0
+                    .Width = sampleWidth
+                    .Height = sampleHeight
+                End With
+                
+                With srcRectF
+                    .Left = sampleLeft
+                    .Top = sampleTop
+                    .Width = sampleWidth
+                    .Height = sampleHeight
+                End With
+                
+                pdImages(g_CurrentImage).GetCompositedRect m_SampleDIB, dstRectF, srcRectF, GP_IM_NearestNeighbor, False, CLC_ColorSample
+                
+                'Find an average!
+                FindAverageValues
+                
+            End If
             
-            sampleRight = Int(imgX) + sampleRadius
-            sampleBottom = Int(imgY) + sampleRadius
-            If (sampleRight > pdImages(g_CurrentImage).Width) Then sampleRight = pdImages(g_CurrentImage).Width
-            If (sampleBottom > pdImages(g_CurrentImage).Height) Then sampleBottom = pdImages(g_CurrentImage).Height
-            
-            'Cover the special case of "sample radius = 0"
-            If (sampleRight < sampleLeft + 1) Then sampleRight = sampleLeft + 1
-            If (sampleBottom < sampleTop + 1) Then sampleBottom = sampleTop + 1
-            
-            sampleWidth = sampleRight - sampleLeft
-            sampleHeight = sampleBottom - sampleTop
-                    
-            'Make a local copy of the pixel data
-            If (m_SampleDIB Is Nothing) Then Set m_SampleDIB = New pdDIB
-            m_SampleDIB.CreateBlank sampleWidth, sampleHeight, 32, 0, 0
-            
-            Dim dstRectF As RECTF, srcRectF As RECTF
-            With dstRectF
-                .Left = 0
-                .Top = 0
-                .Width = sampleWidth
-                .Height = sampleHeight
-            End With
-            
-            With srcRectF
-                .Left = sampleLeft
-                .Top = sampleTop
-                .Width = sampleWidth
-                .Height = sampleHeight
-            End With
-            
-            pdImages(g_CurrentImage).GetCompositedRect m_SampleDIB, dstRectF, srcRectF, GP_IM_NearestNeighbor, False, CLC_ColorSample
-            
-            'Find an average!
-            FindAverageValues
-        
         'Current layer only...
         Else
         
@@ -467,9 +474,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     If (mouseButtonDown And (Not m_NoColorAvailable)) Then layerpanel_Colors.SetCurrentColor m_Red, m_Green, m_Blue
     
     'Update the display as necessary
-    If (Not m_NoColorAvailable) Or (initColorAvailable <> m_NoColorAvailable) Then
-        UpdateUIText
-    End If
+    If (Not m_NoColorAvailable) Or (initColorAvailable <> m_NoColorAvailable) Then UpdateUIText
     
 End Sub
 
@@ -638,18 +643,23 @@ Private Sub UpdateUIText()
     'Checkerboard first (for the opacity region)
     GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0!, 0!, sampleWidth, sampleHeight, g_CheckerboardPattern, , True
     
-    'Opaque color next
-    Dim tmpSurface As pd2DSurface
-    Set tmpSurface = New pd2DSurface
-    tmpSurface.WrapSurfaceAroundPDDIB m_PreviewDIB
-    
-    Dim tmpBrush As pd2DBrush
-    Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), m_Alpha * (100# / 255#)
-    m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight
-    
-    '"Pure" color next
-    Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), 100#
-    m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight \ 2
+    'All subsequent renders only operate if a valid color has been selected
+    If (Not m_NoColorAvailable) Then
+        
+        'Opaque color next
+        Dim tmpSurface As pd2DSurface
+        Set tmpSurface = New pd2DSurface
+        tmpSurface.WrapSurfaceAroundPDDIB m_PreviewDIB
+        
+        Dim tmpBrush As pd2DBrush
+        Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), m_Alpha * (100# / 255#)
+        m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight
+        
+        '"Pure" color next
+        Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), 100#
+        m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight \ 2
+        
+    End If
     
     'Free our pd2D objects and flip the buffer to the screen
     Set tmpBrush = Nothing: Set tmpSurface = Nothing
