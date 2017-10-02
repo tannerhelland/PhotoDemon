@@ -227,11 +227,8 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     m_UndoMax = m_UndoNum
     
     'Next, we will store a copy of the current image thumbnail in two sizes: 256x256, and 48x48
-    
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
     Dim largeThumbSize As Long: largeThumbSize = Interface.FixDPI(UNDO_THUMB_LARGE)
@@ -1102,10 +1099,8 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     'The undo/redo engine is the source of a lot of processing time, particularly when painting.  In an attempt to
     ' better profile it, detailed timing measurements are currently reported in nightly builds.
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     'Create a pdXML class, which will help us assemble the XML file
     Dim xmlEngine As pdXML
