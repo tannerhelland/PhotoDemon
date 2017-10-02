@@ -116,7 +116,10 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
                 'Same as above, but for the current rotation node
                 If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
-                    
+            
+            ElseIf (g_CurrentTool = COLOR_PICKER) Then
+                If FormMain.mainCanvas(0).IsMouseOverCanvas Then ColorPicker.RenderColorPickerCursor dstCanvas
+            
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)

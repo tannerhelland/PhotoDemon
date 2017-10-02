@@ -1781,6 +1781,12 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
             End If
             
+        
+        'The color-picker custom-draws its own outline.
+        Case COLOR_PICKER
+            CanvasView.RequestCursor_System IDC_ICON
+            If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            
         Case SELECT_RECT, SELECT_CIRC
         
             'When transforming selections, the cursor image depends on its proximity to a point of interest.
