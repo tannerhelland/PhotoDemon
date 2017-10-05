@@ -70,7 +70,7 @@ Private m_Filler As pd2DBrush
 Private isDialogLive As Boolean
 
 'The rectangle where the brush preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_BrushRect As RECTF, m_MouseInsideBrushRect As Boolean, m_MouseDownBrushRect As Boolean
+Private m_BrushRect As RectF, m_MouseInsideBrushRect As Boolean, m_MouseDownBrushRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.

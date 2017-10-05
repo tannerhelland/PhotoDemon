@@ -25,6 +25,199 @@ Begin VB.Form dialog_GradientEditor
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.pdButtonStrip btsEdit 
+      Height          =   915
+      Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   12255
+      _ExtentX        =   21616
+      _ExtentY        =   1614
+      Caption         =   "edit mode"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdCommandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   7245
+      Width           =   12660
+      _ExtentX        =   22331
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
+      DontResetAutomatically=   -1  'True
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   5895
+      Index           =   1
+      Left            =   0
+      TabIndex        =   3
+      Top             =   1200
+      Width           =   12615
+      _ExtentX        =   22251
+      _ExtentY        =   6165
+      Begin PhotoDemon.pdButton cmdRandomize 
+         Height          =   735
+         Left            =   4320
+         TabIndex        =   16
+         Top             =   2760
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   1296
+         Caption         =   "randomize"
+         FontSize        =   12
+      End
+      Begin VB.PictureBox picAutoPreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00FFFFFF&
+         ForeColor       =   &H00000000&
+         Height          =   1950
+         Left            =   240
+         ScaleHeight     =   128
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   807
+         TabIndex        =   10
+         Top             =   480
+         Width           =   12135
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   1
+         Left            =   120
+         Top             =   120
+         Width           =   9255
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "preview"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdSlider sldOpacityAuto 
+         Height          =   825
+         Index           =   0
+         Left            =   240
+         TabIndex        =   11
+         Top             =   3600
+         Width           =   3750
+         _ExtentX        =   6615
+         _ExtentY        =   1455
+         Caption         =   "start opacity"
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdColorSelector csColorAuto 
+         Height          =   855
+         Index           =   0
+         Left            =   240
+         TabIndex        =   12
+         Top             =   2640
+         Width           =   3870
+         _ExtentX        =   6826
+         _ExtentY        =   1508
+         Caption         =   "start color"
+         curColor        =   0
+      End
+      Begin PhotoDemon.pdSlider sldOpacityAuto 
+         Height          =   825
+         Index           =   1
+         Left            =   8520
+         TabIndex        =   13
+         Top             =   3600
+         Width           =   3750
+         _ExtentX        =   6615
+         _ExtentY        =   1455
+         Caption         =   "end opacity"
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdColorSelector csColorAuto 
+         Height          =   855
+         Index           =   1
+         Left            =   8520
+         TabIndex        =   14
+         Top             =   2640
+         Width           =   3870
+         _ExtentX        =   6826
+         _ExtentY        =   1508
+         Caption         =   "end color"
+      End
+      Begin PhotoDemon.pdSlider sldDensityAuto 
+         Height          =   855
+         Left            =   4320
+         TabIndex        =   15
+         Top             =   3600
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   1508
+         Caption         =   "density"
+         Max             =   100
+         SigDigits       =   1
+         Value           =   10
+         NotchPosition   =   2
+         NotchValueCustom=   10
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   855
+         Index           =   0
+         Left            =   240
+         TabIndex        =   17
+         Top             =   4560
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1508
+         Caption         =   "vary hue"
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   855
+         Index           =   1
+         Left            =   3240
+         TabIndex        =   18
+         Top             =   4560
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1508
+         Caption         =   "vary saturation"
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   855
+         Index           =   2
+         Left            =   6240
+         TabIndex        =   19
+         Top             =   4560
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1508
+         Caption         =   "vary luminance"
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   855
+         Index           =   3
+         Left            =   9240
+         TabIndex        =   20
+         Top             =   4560
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1508
+         Caption         =   "vary alpha"
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+   End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   5895
       Index           =   0
@@ -160,40 +353,6 @@ Begin VB.Form dialog_GradientEditor
          FontSize        =   12
       End
    End
-   Begin PhotoDemon.pdButtonStrip btsEdit 
-      Height          =   915
-      Left            =   120
-      TabIndex        =   1
-      Top             =   120
-      Width           =   12255
-      _ExtentX        =   21616
-      _ExtentY        =   1614
-      Caption         =   "edit mode"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
-      Height          =   750
-      Left            =   0
-      TabIndex        =   0
-      Top             =   7245
-      Width           =   12660
-      _ExtentX        =   22331
-      _ExtentY        =   1323
-      AutoloadLastPreset=   -1  'True
-      DontAutoUnloadParent=   -1  'True
-      DontResetAutomatically=   -1  'True
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4095
-      Index           =   1
-      Left            =   0
-      TabIndex        =   3
-      Top             =   3000
-      Width           =   12615
-      _ExtentX        =   22251
-      _ExtentY        =   7223
-   End
 End
 Attribute VB_Name = "dialog_GradientEditor"
 Attribute VB_GlobalNameSpace = False
@@ -204,8 +363,8 @@ Attribute VB_Exposed = False
 'Gradient Editor Dialog
 'Copyright 2014-2017 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
-'Last updated: 23/July/15
-'Last update: initial build
+'Last updated: 05/October/17
+'Last update: add "automatic" mode for creating noisy gradients
 '
 'Comprehensive gradient editor.  This dialog is currently based around the properties of GDI+ gradient brushes, but it
 ' could easily be expanded in the future due to its modular design.
@@ -228,7 +387,7 @@ Private m_OldGradient As String
 
 'Gradient strings are generated with the help of PD's core gradient class.  Please note that within this dialog, the gradient's
 ' shape is ignored; only a linear gradient is displayed, to make editing easier.
-Private m_NodePreview As pd2DGradient
+Private m_NodePreview As pd2DGradient, m_AutoPreview As pd2DGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send gradient updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
@@ -242,10 +401,11 @@ Private m_XMLEngine As pdXML
 Private m_XMLFilename As String
 
 'Gradient preview DIB (required for color management) and interaction DIB (where all the gradient nodes are rendered)
-Private m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB
+Private m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB, m_AutoPreviewDIB As pdDIB
 
 'To prevent recursive setting changes, this value can be set to TRUE to prevent automatic UI synchronization
 Private m_SuspendUI As Boolean
+Private m_DialogIsVisible As Boolean
 
 'All mouse interactions for creating/editing gradients is handled by PD's mouse manager
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -253,7 +413,7 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 
 'This interface tracks its own collection of gradient points
 Private m_NumOfGradientPoints As Long
-Private m_GradientPoints() As GRADIENTPOINT
+Private m_GradientPoints() As GradientPoint
 
 'The current gradient point (index) selected and/or hovered by the mouse.  -1 if no point is currently selected/hovered.
 Private m_CurPoint As Long, m_CurHoverPoint As Long
@@ -266,6 +426,10 @@ Private Const GRADIENT_NODE_HEIGHT As Single = 14#
 Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 Private m_Painter As pd2DPainter
+
+'pdRandomize is used to create repeatable random patterns
+Private m_Random As pdRandomize
+Private m_RandomKey As Double
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -287,7 +451,12 @@ Private Function GetGradientAsOriginalShape() As String
     
     Dim tmpGradient As pd2DGradient
     Set tmpGradient = New pd2DGradient
-    tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
+    If (btsEdit.ListIndex = 0) Then
+        tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
+    Else
+        tmpGradient.CreateGradientFromString m_AutoPreview.GetGradientAsString
+    End If
+    
     tmpGradient.SetGradientShape initGradient.GetGradientShape
     tmpGradient.SetGradientAngle initGradient.GetGradientAngle
     tmpGradient.SetGradientWrapMode initGradient.GetGradientWrapMode
@@ -345,10 +514,47 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
 End Sub
 
 Private Sub btsEdit_Click(ByVal buttonIndex As Long)
+    
     Dim i As Long
     For i = picContainer.lBound To picContainer.UBound
-        picContainer(i).Visible = CBool(i = buttonIndex)
+        picContainer(i).Visible = (i = buttonIndex)
     Next i
+    
+    'When changing from "manual" to "auto" mode, mirror the "manual" mode settings to the "automatic" pane.
+    On Error GoTo ContinueWithPreview
+    
+    If (buttonIndex = 1) Then
+        
+        If (m_NumOfGradientPoints > 1) Then
+        
+            'Find the left-most and right-most colors in the current gradient arrangement
+            Dim minPos As Single, minPosIndex As Long, maxPos As Single, maxPosIndex As Long
+            minPos = 1#
+            maxPos = 0#
+            
+            For i = 0 To m_NumOfGradientPoints - 1
+                If (m_GradientPoints(i).PointPosition < minPos) Then
+                    minPos = m_GradientPoints(i).PointPosition
+                    minPosIndex = i
+                ElseIf (m_GradientPoints(i).PointPosition > maxPos) Then
+                    maxPos = m_GradientPoints(i).PointPosition
+                    maxPosIndex = i
+                End If
+            Next i
+            
+            csColorAuto(0).Color = m_GradientPoints(minPosIndex).PointRGB
+            sldOpacityAuto(0).Value = m_GradientPoints(minPosIndex).PointOpacity
+            csColorAuto(1).Color = m_GradientPoints(maxPosIndex).PointRGB
+            sldOpacityAuto(1).Value = m_GradientPoints(maxPosIndex).PointOpacity
+            
+        End If
+        
+    End If
+    
+ContinueWithPreview:
+    
+    UpdatePreview
+    
 End Sub
 
 Private Sub chkDistributeEvenly_Click()
@@ -407,9 +613,28 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
+    m_SuspendUI = True
+    
     'Reset our master gradient object; everything else derives from it
     Set m_NodePreview = New pd2DGradient
     m_NodePreview.CreateGradientFromString ""
+    
+    m_NumOfGradientPoints = 2
+    ReDim m_GradientPoints(0 To 1) As GradientPoint
+    
+    m_GradientPoints(0).PointOpacity = 100#
+    m_GradientPoints(0).PointPosition = 0#
+    m_GradientPoints(0).PointRGB = vbBlack
+    
+    m_GradientPoints(1).PointOpacity = 100#
+    m_GradientPoints(1).PointPosition = 1#
+    m_GradientPoints(1).PointRGB = vbWhite
+    
+    Me.csColorAuto(0).Color = vbBlack
+    
+    chkDistributeEvenly.Value = vbUnchecked
+    
+    m_SuspendUI = False
     
     'Synchronize all controls to the updated settings
     UpdateGradientObjects
@@ -418,12 +643,32 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub cmdRandomize_Click()
+    If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
+    m_Random.SetSeed_AutomaticAndRandom
+    m_RandomKey = m_Random.GetSeed()
+    UpdatePreview
+End Sub
+
+Private Sub csColorAuto_ColorChanged(Index As Integer)
+    UpdatePreview
+End Sub
+
 Private Sub csNode_ColorChanged()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
         m_GradientPoints(m_CurPoint).PointRGB = csNode.Color
         RedrawEverything
     End If
+    
+End Sub
+
+Private Sub Form_Activate()
+    
+    m_SuspendUI = False
+    m_DialogIsVisible = True
+    
+    RedrawEverything
     
 End Sub
 
@@ -495,14 +740,12 @@ Private Sub Form_Load()
                 
     End If
     
-    m_SuspendUI = False
-    
 End Sub
 
 Private Sub ResetGradientPoints()
     
     m_NumOfGradientPoints = 2
-    ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As GRADIENTPOINT
+    ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As GradientPoint
     
     With m_GradientPoints(0)
         .PointRGB = vbBlack
@@ -583,54 +826,6 @@ Private Sub UpdateGradientObjects()
 
 End Sub
 
-Private Sub UpdatePreview()
-    
-    If (Not m_SuspendUI) And (m_NodePreview.GetNumOfNodes > 0) Then
-    
-        'Make sure our gradient objects are up-to-date
-        UpdateGradientObjects
-        
-        'Next, use the current gradient nodes to paint a matching preview across the node editor window
-        Dim boundsRect As RECTF
-        
-        With boundsRect
-            .Left = 0
-            .Top = 0
-            .Width = picNodePreview.ScaleWidth
-            .Height = picNodePreview.ScaleHeight
-        End With
-        
-        If (m_NodePreviewDIB Is Nothing) Then Set m_NodePreviewDIB = New pdDIB
-        If (m_NodePreviewDIB.GetDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.GetDIBHeight <> Me.picNodePreview.ScaleHeight) Then
-            m_NodePreviewDIB.CreateBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
-        Else
-            m_NodePreviewDIB.ResetDIB
-        End If
-        
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_NodePreviewDIB.GetDIBDC, False
-        
-        Set cBrush = New pd2DBrush
-        cBrush.SetBrushMode P2_BM_Gradient
-        cBrush.SetBrushGradientAllSettings m_NodePreview.GetGradientAsString
-        cBrush.SetBoundaryRect boundsRect
-        
-        With m_NodePreviewDIB
-            cPainter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
-            cPainter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
-        End With
-        
-        Set cSurface = Nothing
-        m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
-                
-        'Notify our parent of the update
-        If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange GetGradientAsOriginalShape()
-        
-    End If
-    
-End Sub
-
 'Make all UI elements reflect the current gradient object.  This is typically done after the dialog loads, or after loading a
 ' previously created gradient.
 Private Sub SyncControlsToGradientObject()
@@ -667,7 +862,6 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         If (Button And pdLeftButton) <> 0 Then
             m_CurPoint = tmpPoint
             
-            
         ElseIf ((Button And pdRightButton) <> 0) And (m_NumOfGradientPoints > 2) Then
             
             m_NumOfGradientPoints = m_NumOfGradientPoints - 1
@@ -676,7 +870,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
             Next i
             
             'Make sure the current point index is not invalid
-            If m_CurPoint >= m_NumOfGradientPoints Then
+            If (m_CurPoint >= m_NumOfGradientPoints) Then
                 m_CurPoint = -1
                 SyncUIToActiveNode
             End If
@@ -687,14 +881,15 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     Else
     
         'Enlarge the target array as necessary
-        If m_NumOfGradientPoints >= UBound(m_GradientPoints) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GRADIENTPOINT
+        If (m_NumOfGradientPoints >= UBound(m_GradientPoints)) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GradientPoint
         
         With m_GradientPoints(m_NumOfGradientPoints)
+            
             .PointOpacity = 100
             .PointPosition = ConvertPixelCoordsToNodeCoords(x)
             
             'Preset the RGB value to match whatever the gradient already is at this point
-            Dim newRGBA As RGBQUAD
+            Dim newRGBA As RGBQuad
             m_NodePreview.GetColorAtPosition_RGBA .PointPosition, newRGBA
             .PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
             
@@ -790,15 +985,34 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
-    uiMin = scaleX(picNodePreview.Left, vbTwips, vbPixels) + 1
-    uiMax = scaleX(picNodePreview.Left, vbTwips, vbPixels) + picNodePreview.ScaleWidth
-    uiRange = uiMax - uiMin
     
+    Dim nodePreviewRect As winRect
+    If (Not g_WindowManager Is Nothing) Then
+        
+        g_WindowManager.GetWindowRect_API picNodePreview.hWnd, nodePreviewRect
+        
+        Dim tmpPoint As POINTAPI
+        tmpPoint.x = nodePreviewRect.x1
+        tmpPoint.y = nodePreviewRect.y1
+        
+        g_WindowManager.GetScreenToClient Me.hWnd, tmpPoint
+        
+        uiMin = tmpPoint.x + 1
+        uiMax = tmpPoint.x + (nodePreviewRect.x2 - nodePreviewRect.x1)
+    
+    'This branch should never trigger (as g_WindowManager will always exist), but I've left it here as a
+    ' (non-DPI friendly) failsafe.
+    Else
+        uiMin = scaleX(picNodePreview.Left, vbTwips, vbPixels) + 1
+        uiMax = scaleX(picNodePreview.Left, vbTwips, vbPixels) + picNodePreview.ScaleWidth
+    End If
+    
+    uiRange = uiMax - uiMin
     ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
     
-    If ConvertPixelCoordsToNodeCoords < 0 Then
+    If (ConvertPixelCoordsToNodeCoords < 0) Then
         ConvertPixelCoordsToNodeCoords = 0
-    ElseIf ConvertPixelCoordsToNodeCoords > 1 Then
+    ElseIf (ConvertPixelCoordsToNodeCoords > 1) Then
         ConvertPixelCoordsToNodeCoords = 1
     End If
     
@@ -946,6 +1160,18 @@ Private Sub RedrawEverything()
     UpdatePreview
 End Sub
 
+Private Sub sldDensityAuto_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sldOpacityAuto_Change(Index As Integer)
+    UpdatePreview
+End Sub
+
+Private Sub sldVaryHSV_Change(Index As Integer)
+    UpdatePreview
+End Sub
+
 Private Sub sltNodeOpacity_Change()
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
         m_GradientPoints(m_CurPoint).PointOpacity = sltNodeOpacity.Value
@@ -955,7 +1181,217 @@ End Sub
 
 Private Sub sltNodePosition_Change()
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
-        m_GradientPoints(m_CurPoint).PointPosition = sltNodePosition.Value / 100
+        m_GradientPoints(m_CurPoint).PointPosition = sltNodePosition.Value * 0.01
         RedrawEverything
     End If
+End Sub
+
+'The two different gradient panels (manual and auto) require different preview code, obviously.  Call this function
+' and it will automatically request a redraw from the active panel.
+Private Sub UpdatePreview()
+    If m_DialogIsVisible Then
+        If (btsEdit.ListIndex = 0) Then UpdatePreview_Manual Else UpdatePreview_Auto
+    End If
+End Sub
+
+Private Sub UpdatePreview_Auto()
+    
+    If m_SuspendUI Then Exit Sub
+    
+    'From our automatic gradient settings (currently a start color, end color, and "roughness" setting),
+    ' we want to create an *actual* set of gradient points.  This set will be used as the final value for
+    ' this gradient, so we need to make sure it is reproducible.  (Hence the use of pdRandomize.)
+    If (m_Random Is Nothing) Then
+        Set m_Random = New pdRandomize
+        m_Random.SetSeed_AutomaticAndRandom
+        m_RandomKey = m_Random.GetSeed()
+    Else
+        m_Random.SetSeed_Float m_RandomKey
+    End If
+    
+    Dim initColor As Long, initOpacity As Single, finalColor As Long, finalOpacity As Single
+    initColor = csColorAuto(0).Color
+    finalColor = csColorAuto(1).Color
+    initOpacity = sldOpacityAuto(0).Value
+    finalOpacity = sldOpacityAuto(1).Value
+    
+    'Our points eventually need to be assembled into a fixed array.  The size of this array varies depending on
+    ' the "density" value specified by the user.
+    Dim gradPoints() As GradientPoint
+    Dim numGradientPoints As Long
+    
+    'In the future, it would be nice to increase the supported density of gradients, but at present, the XML parsing
+    ' is just too slow.  As such, I no longer increase the incoming density by a factor of 10.
+    numGradientPoints = sldDensityAuto.Value '* 10#
+    If (numGradientPoints < 1) Then numGradientPoints = 1
+    
+    'Insert two extra points for our initial and final colors
+    ReDim gradPoints(0 To numGradientPoints + 1) As GradientPoint
+    
+    'Because the gradient class sorts colors automatically, we don't need to handle it here.  As such, we can add
+    ' our initial and final colors first.
+    Dim i As Long
+    For i = 0 To 1
+        With gradPoints(i)
+            .PointRGB = csColorAuto(i).Color
+            .PointOpacity = sldOpacityAuto(i).Value
+            .PointPosition = i
+        End With
+    Next i
+    
+    Dim r1 As Single, r2 As Single, g1 As Single, g2 As Single, b1 As Single, b2 As Single, a1 As Single, a2 As Single
+    a1 = gradPoints(0).PointOpacity
+    a2 = gradPoints(1).PointOpacity
+    
+    r1 = Colors.ExtractRed(gradPoints(0).PointRGB)
+    g1 = Colors.ExtractGreen(gradPoints(0).PointRGB)
+    b1 = Colors.ExtractBlue(gradPoints(0).PointRGB)
+    
+    r2 = Colors.ExtractRed(gradPoints(1).PointRGB)
+    g2 = Colors.ExtractGreen(gradPoints(1).PointRGB)
+    b2 = Colors.ExtractBlue(gradPoints(1).PointRGB)
+    
+    'Change the variance values from [0, 100] to [0.0, 1.0] scale.
+    Dim varyHue As Single, varySaturation As Single, varyValue As Single, varyAlpha As Single
+    varyHue = (sldVaryHSV(0).Value * 0.005)
+    varySaturation = (sldVaryHSV(1).Value * 0.005)
+    varyValue = (sldVaryHSV(2).Value * 0.005)
+    varyAlpha = (sldVaryHSV(3).Value * 0.005)
+    
+    'Next, we want to populate all intermediate points.  We generate these by first calculating what a given point's
+    ' values would be if it were non-random; then we vary the point's HSV values according to the user's settings.
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    Dim ptIndex As Double, ptRed As Double, ptGreen As Double, ptBlue As Double, ptAlpha As Double
+    Dim ptHue As Double, ptSaturation As Double, ptValue As Double
+    For i = 2 To UBound(gradPoints)
+        
+        'Retrieve a random value on the range [0.0, 1.0]
+        Do
+            ptIndex = m_Random.GetRandomFloat_WH()
+        Loop While (ptIndex = 0#) Or (ptIndex = 1#)
+        
+        'Calculate this point's theoretically "perfect" color and opacity values
+        ptRed = (r2 * ptIndex) + (r1 * (1# - ptIndex))
+        ptGreen = (g2 * ptIndex) + (g1 * (1# - ptIndex))
+        ptBlue = (b2 * ptIndex) + (b1 * (1# - ptIndex))
+        ptAlpha = (a2 * ptIndex) + (a1 * (1# - ptIndex))
+        
+        'Convert the RGB values to HSV (but leave alpha as it is!)
+        Colors.fRGBtoHSV ptRed * ONE_DIV_255, ptGreen * ONE_DIV_255, ptBlue * ONE_DIV_255, ptHue, ptSaturation, ptValue
+        
+        'Vary each point by its "variance" value (including alpha)
+        ptHue = ptHue + (varyHue * (1# - m_Random.GetRandomFloat_WH() * 2#))
+        ptSaturation = ptSaturation + (varySaturation * (1# - m_Random.GetRandomFloat_WH() * 2#))
+        ptValue = ptValue + (varyValue * (1# - m_Random.GetRandomFloat_WH() * 2#))
+        ptAlpha = ptAlpha + (varyAlpha * (100# - m_Random.GetRandomFloat_WH() * 200#))
+        
+        'Clamp accordingly
+        If (ptHue < 0#) Then ptHue = ptHue + 1# Else If (ptHue > 1#) Then ptHue = (ptHue - 1#)
+        If (ptSaturation < 0#) Then ptSaturation = -1# * ptSaturation Else If (ptSaturation > 1#) Then ptSaturation = 1# - (ptSaturation - 1#)
+        If (ptValue < 0#) Then ptValue = -1# * ptValue Else If (ptValue > 1#) Then ptValue = 1# - (ptValue - 1#)
+        If (ptAlpha < 0#) Then ptAlpha = -1# * ptAlpha Else If (ptAlpha > 100#) Then ptAlpha = 100# - (ptAlpha - 100#)
+        
+        'Convert back to RGB
+        Colors.fHSVtoRGB ptHue, ptSaturation, ptValue, ptRed, ptGreen, ptBlue
+        
+        With gradPoints(i)
+        
+            .PointPosition = ptIndex
+            .PointRGB = RGB(Int(ptRed * 255#), Int(ptGreen * 255#), Int(ptBlue * 255#))
+            
+            'Remember that the user doesn't have to vary alpha; it's available as a toggle
+            .PointOpacity = ptAlpha
+            
+        End With
+        
+    Next i
+    
+    'We now have a completed gradient array.  Construct a gradient object and pass it the array.
+    If (m_AutoPreview Is Nothing) Then Set m_AutoPreview = New pd2DGradient
+    m_AutoPreview.SetGradientShape P2_GS_Linear
+    m_AutoPreview.CreateGradientFromPointCollection numGradientPoints + 2, gradPoints
+    
+    'Render the finished gradient to the sample picture box.
+    Dim boundsRect As RectF
+    With boundsRect
+        .Left = 0
+        .Top = 0
+        .Width = picAutoPreview.ScaleWidth
+        .Height = picAutoPreview.ScaleHeight
+    End With
+    
+    If (m_AutoPreviewDIB Is Nothing) Then Set m_AutoPreviewDIB = New pdDIB
+    m_AutoPreviewDIB.CreateBlank Me.picAutoPreview.ScaleWidth, Me.picAutoPreview.ScaleHeight, 24, 0
+    
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+    Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_AutoPreviewDIB, False
+    
+    Set cBrush = New pd2DBrush
+    cBrush.SetBrushMode P2_BM_Gradient
+    cBrush.SetBrushGradientAllSettings m_AutoPreview.GetGradientAsString
+    cBrush.SetBoundaryRect boundsRect
+    
+    With m_AutoPreviewDIB
+        m_Painter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+        m_Painter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+    End With
+    
+    Set cSurface = Nothing
+    m_AutoPreviewDIB.RenderToPictureBox Me.picAutoPreview
+            
+    'Notify our parent of the update
+    If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange GetGradientAsOriginalShape()
+    
+End Sub
+
+Private Sub UpdatePreview_Manual()
+
+    If (Not m_SuspendUI) Then
+    
+        If (m_NodePreview.GetNumOfNodes > 0) Then
+        
+            'Make sure our gradient objects are up-to-date
+            UpdateGradientObjects
+            
+            'Next, use the current gradient nodes to paint a matching preview across the node editor window
+            Dim boundsRect As RectF
+            
+            With boundsRect
+                .Left = 0
+                .Top = 0
+                .Width = picNodePreview.ScaleWidth
+                .Height = picNodePreview.ScaleHeight
+            End With
+            
+            If (m_NodePreviewDIB Is Nothing) Then Set m_NodePreviewDIB = New pdDIB
+            If (m_NodePreviewDIB.GetDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.GetDIBHeight <> Me.picNodePreview.ScaleHeight) Then
+                m_NodePreviewDIB.CreateBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
+            Else
+                m_NodePreviewDIB.ResetDIB
+            End If
+            
+            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_NodePreviewDIB.GetDIBDC, False
+            
+            Set cBrush = New pd2DBrush
+            cBrush.SetBrushMode P2_BM_Gradient
+            cBrush.SetBrushGradientAllSettings m_NodePreview.GetGradientAsString
+            cBrush.SetBoundaryRect boundsRect
+            
+            With m_NodePreviewDIB
+                m_Painter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+                m_Painter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+            End With
+            
+            Set cSurface = Nothing
+            m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
+                    
+            'Notify our parent of the update
+            If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange GetGradientAsOriginalShape()
+        
+        End If
+        
+    End If
+    
 End Sub

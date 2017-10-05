@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.3007</langversion>
+<langversion>6.8.3008</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8095,6 +8095,56 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 </phrase>
 
 <phrase>
+<original>edit mode</original>
+<translation>redigeringsmodus </translation>
+</phrase>
+
+<phrase>
+<original>randomize</original>
+<translation>random</translation>
+</phrase>
+
+<phrase>
+<original>start opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary hue</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary saturation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary luminance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>automatically distribute nodes evenly</original>
 <translation>automatisk distribuere noder jevnt</translation>
 </phrase>
@@ -8125,11 +8175,6 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 </phrase>
 
 <phrase>
-<original>edit mode</original>
-<translation>redigeringsmodus </translation>
-</phrase>
-
-<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>Venstreklikk  for å legge til nye noder eller redigere eksisterende noder. Høyreklikk på en node for å fjerne den.</translation>
 </phrase>
@@ -8154,7 +8199,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>Velg en node</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -9774,11 +9819,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
-<original>randomize</original>
-<translation>random</translation>
-</phrase>
-
-<phrase>
 <original>number of rays</original>
 <translation>antall stråler</translation>
 </phrase>
@@ -9798,7 +9838,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Genererer lysstråler</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -15044,10 +15084,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4529 phrases. -->
-<!-- 2005 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12252 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

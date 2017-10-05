@@ -462,7 +462,7 @@ End Sub
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
-    Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
+    Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'This function is easy; just store the values we are passed
     prevGenericSetting(layerSettingID) = layerSettingValue
@@ -480,7 +480,7 @@ End Sub
 ' will be generated only if the two values match.
 Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
     
-    Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
+    Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
@@ -507,7 +507,7 @@ End Sub
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
     
-    Debug.Print "START tracking text properties: " & GetNameOfTextAction(textSettingID) & ": " & textSettingValue
+    Debug.Print "START tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
@@ -522,7 +522,7 @@ End Sub
 ' function will add an Undo entry and notify the macro recorder (if active).
 Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
-    Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) & ": " & textSettingValue
+    Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub

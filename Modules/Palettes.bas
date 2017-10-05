@@ -62,12 +62,12 @@ End Type
 'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
 ' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
 ' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~50,000 pixels.
-Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQUAD, Optional ByVal numOfColors As Long = 256) As Boolean
+Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
     
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long
@@ -163,7 +163,7 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         ' Generate a final palette by requesting the weighted average of each stack.
         Dim newR As Long, newG As Long, newB As Long
         
-        ReDim dstPalette(0 To numOfColors - 1) As RGBQUAD
+        ReDim dstPalette(0 To numOfColors - 1) As RGBQuad
         For i = 0 To numOfColors - 1
             pxStack(i).GetAverageColor newR, newG, newB
             dstPalette(i).Red = newR
@@ -185,7 +185,7 @@ End Function
 ' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
 ' from any source, even ones that have already contain 256 entries.)  No difference is made to the palette
 ' if it already contains black and white.
-Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQUAD, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
+Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
     
     Dim minLuminance As Long, minLuminanceIndex As Long
     Dim maxLuminance As Long, maxLuminanceIndex As Long
@@ -230,7 +230,7 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQUAD, Opti
         ' we won't worry about preserving that particular color
         If (Not srcDIB Is Nothing) Then
         
-            Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+            Dim srcPixels() As Byte, tmpSA As SafeArray2D
             srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
             
             Dim pxSize As Long
@@ -298,9 +298,9 @@ End Function
 'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
 ' Dithering is *not* used.  Colors are matched exhaustively, meaning this function is slow but produces the smallest
 ' possible RMSD result for this palette (when matching in the RGB color space, anyway).
-Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD) As Boolean
+Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
 
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long
@@ -377,9 +377,9 @@ End Function
 ' calling the lossless ApplyPaletteToImage() or ApplyPaletteToImage_SysAPI() functions, as this function won't
 ' provide much of a performance gain, and you risk potentially mismatched colors because the optimization range
 ' for the hash table is so small.
-Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD, Optional ByVal numOfBuckets As Long = 16) As Boolean
+Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal numOfBuckets As Long = 16) As Boolean
 
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long
@@ -541,7 +541,7 @@ Private Sub SortInner(ByRef srcPaletteSort() As PaletteSort, ByVal lowVal As Lon
     'Ignore the search request if the bounds are mismatched
     If (lowVal < highVal) Then
         
-        'Sort some sub-portion of the list, use the returned pivot to repeat the sort process
+        'Sort some sub-portion of the list, and use the returned pivot to repeat the sort process
         Dim j As Long
         j = SortPartition(srcPaletteSort, lowVal, highVal)
         SortInner srcPaletteSort, lowVal, j - 1
@@ -604,9 +604,9 @@ End Function
 ' into an octree, and colors are matched via that tree).  If the palette is known to be small (e.g. 32 colors or less),
 ' you'd be better off just calling the normal ApplyPaletteToImage function, as this function won't provide much of a
 ' performance gain.
-Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD) As Boolean
+Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
 
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long
@@ -624,7 +624,7 @@ Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalet
     Dim minIndex As Long, lastPaletteColor As Long
     Dim r As Long, g As Long, b As Long
     
-    Dim tmpQuad As RGBQUAD
+    Dim tmpQuad As RGBQuad
         
     'Build the initial tree
     Dim cOctree As pdColorSearch
@@ -690,9 +690,9 @@ End Function
 
 'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
 ' Dithering is *not* used.  Colors are matched using System APIs.
-Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD) As Boolean
+Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
 
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long
@@ -762,9 +762,9 @@ End Function
 
 'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
 ' Dithering *is* used.  Colors are matched using System APIs.
-Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD, Optional ByVal DitherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False) As Boolean
+Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal DitherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False) As Boolean
 
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
     Dim pxSize As Long

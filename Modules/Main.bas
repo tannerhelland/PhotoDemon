@@ -346,7 +346,7 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
-    Dim wRect As RECTL
+    Dim wRect As RectL
     With wRect
         .Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
         .Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
@@ -614,15 +614,11 @@ Public Sub ContinueLoadingProgram()
     LoadMessage "Preparing program menus..."
     
     'In debug modes, certain developer and experimental menus will be enabled.
-    If (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA) Then
-        FormMain.MnuTest.Visible = True
-        FormMain.MnuTool(11).Visible = True
-        FormMain.MnuTool(12).Visible = True
-    Else
-        FormMain.MnuTest.Visible = False
-        FormMain.MnuTool(11).Visible = False
-        FormMain.MnuTool(12).Visible = False
-    End If
+    Dim debugMenuVisibility As Boolean
+    debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
+    FormMain.MnuTest.Visible = debugMenuVisibility
+    FormMain.MnuTool(11).Visible = debugMenuVisibility
+    FormMain.MnuTool(12).Visible = debugMenuVisibility
     
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Initialize hotkey manager"

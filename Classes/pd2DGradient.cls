@@ -42,7 +42,7 @@ Private m_GradientWrapMode As PD_2D_WrapMode
 Private m_NumOfPoints As Long
 
 'Collection of individual gradient nodes; these define a color, opacity, and position for each node
-Private m_GradientPoints() As GRADIENTPOINT
+Private m_GradientPoints() As GradientPoint
 
 'Are the points currently sorted from lowest-to-highest?  If they are, this will be set to TRUE; this allows us to skip sorting
 ' prior to constructing the actual brush.
@@ -184,7 +184,7 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
             m_NumOfPoints = .GetLong("GradientPointCount", 2)
             m_IsSorted = .GetBool("GradientListAlreadySorted", False)
                 
-            ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+            ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
             
             Dim i As Long, iString As String
             For i = 0 To m_NumOfPoints - 1
@@ -222,10 +222,12 @@ End Function
 
 Public Sub CreateGradientFromString(ByVal srcString As String)
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'If the string is empty, prep a default object
     If (Len(srcString) = 0) Then
         Me.ResetAllProperties
-        
     Else
 
         With m_Serializer
@@ -248,7 +250,7 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
                 m_NumOfPoints = .GetLong("GradientPointCount", 0)
                 m_IsSorted = .GetBool("GradientListAlreadySorted", False)
             
-                ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+                ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
                 
                 Dim i As Long, iString As String
                 For i = 0 To m_NumOfPoints - 1
@@ -264,15 +266,19 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
         
     End If
     
+    'Debug.Print "Created gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
 End Sub
 
 'The gradient editor assembles its own list of nodes.  To simplify interaction with this class, it can simply pass its
 ' instances to this function.
-Friend Sub CreateGradientFromPointCollection(ByVal numOfPoints As Long, ByRef srcPoints() As GRADIENTPOINT)
+Friend Sub CreateGradientFromPointCollection(ByVal numOfPoints As Long, ByRef srcPoints() As GradientPoint)
     
     'Start by prepping our internal collections
-    m_NumOfPoints = numOfPoints
-    ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+    If (m_NumOfPoints <> numOfPoints) Then
+        m_NumOfPoints = numOfPoints
+        ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
+    End If
     
     'Copy the source array
     CopyMemoryStrict VarPtr(m_GradientPoints(0)), VarPtr(srcPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
@@ -288,7 +294,7 @@ End Sub
 Public Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#)
     
     m_NumOfPoints = 2
-    ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+    ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
     
     m_GradientPoints(0).PointPosition = 0#
     m_GradientPoints(0).PointRGB = firstColor
@@ -305,7 +311,7 @@ End Sub
 Public Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#, Optional ByVal thirdOpacity As Single = 100#, Optional ByVal secondColorPosition As Single = 0.5)
     
     m_NumOfPoints = 3
-    ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+    ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
     
     m_GradientPoints(0).PointPosition = 0#
     m_GradientPoints(0).PointRGB = firstColor
@@ -328,9 +334,9 @@ Public Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor 
     
 End Sub
 
-Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints() As GRADIENTPOINT)
+Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints() As GradientPoint)
     numOfPoints = m_NumOfPoints
-    ReDim srcPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+    ReDim srcPoints(0 To m_NumOfPoints) As GradientPoint
     CopyMemoryStrict VarPtr(srcPoints(0)), VarPtr(m_GradientPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
 End Sub
 
@@ -345,7 +351,7 @@ Public Sub ResetAllProperties()
     m_GradientWrapMode = P2_WM_Tile
     
     m_NumOfPoints = 2
-    ReDim m_GradientPoints(0 To 1) As GRADIENTPOINT
+    ReDim m_GradientPoints(0 To 1) As GradientPoint
     
     With m_GradientPoints(0)
         .PointRGB = vbBlack
@@ -378,7 +384,7 @@ Private Sub SortGradientArray()
         'Loop through all entries in the stack, sorting them as we go
         For i = 0 To loopBound
             For j = 0 To loopBound
-                If m_GradientPoints(i).PointPosition < m_GradientPoints(j).PointPosition Then SwapGradientPoints i, j
+                If (m_GradientPoints(i).PointPosition < m_GradientPoints(j).PointPosition) Then SwapGradientPoints i, j
             Next j
         Next i
         
@@ -391,7 +397,7 @@ End Sub
 
 'Helper for node sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
 Private Sub SwapGradientPoints(ByVal gIndex1 As Long, ByVal gIndex2 As Long)
-    Dim tmpPoint As GRADIENTPOINT
+    Dim tmpPoint As GradientPoint
     tmpPoint = m_GradientPoints(gIndex1)
     m_GradientPoints(gIndex1) = m_GradientPoints(gIndex2)
     m_GradientPoints(gIndex2) = tmpPoint
@@ -409,7 +415,7 @@ End Sub
 'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with this class via pd2DBrush,
 ' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
 ' correct backend-specific function!
-Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#, Optional ByVal brushBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Long
+Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#, Optional ByVal brushBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Long
     
     'Make sure a gradient has been created
     If (m_NumOfPoints <= 0) Then
@@ -529,7 +535,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal forceToLin
                 centerX = dstRect.Left + halfWidth
                 centerY = dstRect.Top + halfHeight
                 
-                Dim squareRect As RECTF, maxLength As Double, radiusRect As Double, radiusSquare As Double
+                Dim squareRect As RectF, maxLength As Double, radiusRect As Double, radiusSquare As Double
                 If dstRect.Width > dstRect.Height Then maxLength = halfWidth Else maxLength = halfHeight
                 radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
                 radiusSquare = Sqr(maxLength * maxLength + maxLength * maxLength) + 0.5
@@ -617,11 +623,11 @@ End Function
 ' (This is inefficient but it doesn't matter as it's only called a handful of times.)
 Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpacityModifier As Single = 1#) As Long
     
-    Dim dstQuad As RGBQUAD
+    Dim dstQuad As RGBQuad
     dstQuad.Red = Colors.ExtractRed(m_GradientPoints(gpIndex).PointRGB)
     dstQuad.Green = Colors.ExtractGreen(m_GradientPoints(gpIndex).PointRGB)
     dstQuad.Blue = Colors.ExtractBlue(m_GradientPoints(gpIndex).PointRGB)
-    dstQuad.alpha = (m_GradientPoints(gpIndex).PointOpacity * customOpacityModifier) * 2.55
+    dstQuad.Alpha = (m_GradientPoints(gpIndex).PointOpacity * customOpacityModifier) * 2.55
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -632,7 +638,7 @@ End Function
 
 'Given a position on the range [0, 1], return the gradient color at that position.  Note that a linear, non-reflected
 ' gradient shape is always assumed, by design.
-Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA As RGBQUAD) As Boolean
+Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA As RGBQuad) As Boolean
 
     'Make sure we have a filled, sorted input array
     If (m_NumOfPoints > 0) Then
@@ -676,7 +682,7 @@ Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA
             blendFactor = (cPosition - m_GradientPoints(i - 1).PointPosition) / (m_GradientPoints(i).PointPosition - m_GradientPoints(i - 1).PointPosition)
             
             'Retrieve the RGBA components of both colors
-            Dim tmpLow As RGBQUAD, tmpHigh As RGBQUAD
+            Dim tmpLow As RGBQuad, tmpHigh As RGBQuad
             tmpLowLong.lngResult = GetMergedRGBA(i - 1)
             tmpHighLong.lngResult = GetMergedRGBA(i)
             
@@ -687,7 +693,7 @@ Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA
             dstRGBA.Red = GetBlendedColors(tmpLow.Red, tmpHigh.Red, blendFactor)
             dstRGBA.Green = GetBlendedColors(tmpLow.Green, tmpHigh.Green, blendFactor)
             dstRGBA.Blue = GetBlendedColors(tmpLow.Blue, tmpHigh.Blue, blendFactor)
-            dstRGBA.alpha = GetBlendedColors(tmpLow.alpha, tmpHigh.alpha, blendFactor)
+            dstRGBA.Alpha = GetBlendedColors(tmpLow.Alpha, tmpHigh.Alpha, blendFactor)
         
         End If
         
