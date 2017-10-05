@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3007</langversion>
+<langversion>6.8.3008</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8088,6 +8088,56 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
+<original>edit mode</original>
+<translation>Düzenleme modu</translation>
+</phrase>
+
+<phrase>
+<original>randomize</original>
+<translation>rasgele seçmek</translation>
+</phrase>
+
+<phrase>
+<original>start opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary hue</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary saturation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary luminance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>automatically distribute nodes evenly</original>
 <translation>otomatik düğümler eşit dağıtmak</translation>
 </phrase>
@@ -8118,11 +8168,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>edit mode</original>
-<translation>Düzenleme modu</translation>
-</phrase>
-
-<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>yeni düğümler ekleyebilir veya mevcut düğümleri düzenlemek için sol tıklayın. kaldırmak için düğümünü sağ tıklatın.</translation>
 </phrase>
@@ -8147,7 +8192,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Bir düğüm seçiniz</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -9767,11 +9812,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
-<original>randomize</original>
-<translation>rasgele seçmek</translation>
-</phrase>
-
-<phrase>
 <original>number of rays</original>
 <translation>ışınlar</translation>
 </phrase>
@@ -9791,7 +9831,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation>Işık ışınları üretme</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -15031,10 +15071,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4529 phrases. -->
-<!-- 2005 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12252 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>

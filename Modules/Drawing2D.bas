@@ -403,38 +403,38 @@ End Enum
 #End If
 
 'Certain structs are immensely helpful when drawing
-Public Type RGBQUAD
+Public Type RGBQuad
     Blue As Byte
     Green As Byte
     Red As Byte
     Alpha As Byte
 End Type
 
-Public Type POINTFLOAT
+Public Type PointFloat
     x As Single
     y As Single
 End Type
 
-Public Type POINTLONG
+Public Type PointLong
     x As Long
     y As Long
 End Type
 
-Public Type RECTL
+Public Type RectL
     Left As Long
     Top As Long
     Right As Long
     Bottom As Long
 End Type
 
-Public Type RECTL_WH
+Public Type RectL_WH
     Left As Long
     Top As Long
     Width As Long
     Height As Long
 End Type
 
-Public Type RECTF
+Public Type RectF
     Left As Single
     Top As Single
     Width As Single
@@ -442,21 +442,21 @@ Public Type RECTF
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
-Public Type SAFEARRAYBOUND
+Public Type SafeArrayBounD
     cElements As Long
     lBound   As Long
 End Type
 
-Public Type SAFEARRAY2D
+Public Type SafeArray2D
     cDims      As Integer
     fFeatures  As Integer
     cbElements As Long
     cLocks     As Long
     pvData     As Long
-    Bounds(1)  As SAFEARRAYBOUND
+    Bounds(1)  As SafeArrayBounD
 End Type
 
-Public Type SAFEARRAY1D
+Public Type SafeArray1D
     cDims      As Integer
     fFeatures  As Integer
     cbElements As Long
@@ -467,7 +467,7 @@ Public Type SAFEARRAY1D
 End Type
 
 'PD's gradient format is straightforward, and it's declared here so functions can easily create their own gradient interfaces.
-Public Type GRADIENTPOINT
+Public Type GradientPoint
     PointRGB As Long
     PointOpacity As Single
     PointPosition As Single
@@ -578,7 +578,7 @@ Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVa
 End Function
 
 'Shortcut function for creating a two-color gradient brush
-Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RECTF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100#, Optional ByVal secondColorOpacity As Single = 100#, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0#) As Boolean
+Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RectF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100#, Optional ByVal secondColorOpacity As Single = 100#, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0#) As Boolean
     
     If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     

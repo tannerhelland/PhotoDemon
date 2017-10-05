@@ -201,7 +201,7 @@ Public Function BytesFromBase64(ByRef dstArray() As Byte, ByRef strBase64 As Str
     Dim lngOutLen As Long, dwActualUsed As Long
     If (CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0) Then
         ReDim dstArray(lngOutLen - 1) As Byte
-        BytesFromBase64 = CBool(CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
+        BytesFromBase64 = (CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
     End If
     
 End Function

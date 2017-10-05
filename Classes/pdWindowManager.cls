@@ -330,6 +330,10 @@ Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
 
+Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
+    GetScreenToClient = (ScreenToClient(srcHwnd, srcPoint) <> 0)
+End Function
+
 Friend Sub ActivateWindowAPI(ByVal hWndToActivate As Long)
     SetActiveWindow hWndToActivate
 End Sub

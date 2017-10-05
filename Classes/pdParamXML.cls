@@ -181,7 +181,7 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
     tagStart = InStr(1, m_ParamString, "<" & paramName & ">")
     
     'If the opening tag was found, we also need to find the closing tag.
-    If tagStart > 0 Then
+    If (tagStart > 0) Then
     
         tagEnd = InStr(tagStart, m_ParamString, "</" & paramName & ">")
         
@@ -196,18 +196,18 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
                 dstString = UnDelimitParamValue(dstString)
                 GetParamValue = True
             Else
-                dstString = ""
+                dstString = vbNullString
                 GetParamValue = False
             End If
             
         Else
             Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed!"
-            dstString = ""
+            dstString = vbNullString
             GetParamValue = False
         End If
         
     Else
-        dstString = ""
+        dstString = vbNullString
         GetParamValue = False
     End If
 

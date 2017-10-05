@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3007</langversion>
+<langversion>6.8.3008</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8091,6 +8091,56 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovorite "Ne".)</tra
 </phrase>
 
 <phrase>
+<original>edit mode</original>
+<translation>Način uređivanja</translation>
+</phrase>
+
+<phrase>
+<original>randomize</original>
+<translation>slučajnom</translation>
+</phrase>
+
+<phrase>
+<original>start opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary hue</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary saturation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary luminance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>automatically distribute nodes evenly</original>
 <translation>Automatski distribuirati čvorove ravnomjerno</translation>
 </phrase>
@@ -8121,11 +8171,6 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovorite "Ne".)</tra
 </phrase>
 
 <phrase>
-<original>edit mode</original>
-<translation>Način uređivanja</translation>
-</phrase>
-
-<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>Lijevi klik za dodavanje novih čvorova ili uređivanje postojećih čvorova. Desnom tipkom miša kliknite čvor da biste je uklonili.</translation>
 </phrase>
@@ -8150,7 +8195,7 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovorite "Ne".)</tra
 <translation>Odaberite čvor</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -9770,11 +9815,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
-<original>randomize</original>
-<translation>slučajnom</translation>
-</phrase>
-
-<phrase>
 <original>number of rays</original>
 <translation>Broj zraka</translation>
 </phrase>
@@ -9794,7 +9834,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Izrada svjetlosnih zraka</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -15040,10 +15080,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4529 phrases. -->
-<!-- 2005 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12252 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12268 total words. -->
 
 </pdData>
