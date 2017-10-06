@@ -200,8 +200,14 @@ Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    Dim initState As Boolean
+    initState = m_MouseInsideBrushRect
+    
     UpdateMousePosition x, y
-    RedrawBackBuffer
+    
+    If (initState <> m_MouseInsideBrushRect) Then RedrawBackBuffer
+    
 End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
@@ -364,9 +370,9 @@ Private Sub RedrawBackBuffer()
         ucSupport.RequestBufferColorManagement VarPtr(m_BrushRect)
         
         'Draw borders around the brush results.
-        Dim outlineColor As Long, outlineWidth As Long
+        Dim outlineColor As Long, outlineWidth As Single
         outlineColor = m_Colors.RetrieveColor(PDBS_Border, Me.Enabled, m_MouseDownBrushRect, m_MouseInsideBrushRect)
-        If m_MouseInsideBrushRect Then outlineWidth = 3 Else outlineWidth = 1
+        If m_MouseInsideBrushRect Then outlineWidth = 3! Else outlineWidth = 1!
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
         
     End If
