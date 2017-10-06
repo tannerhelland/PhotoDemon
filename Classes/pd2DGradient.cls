@@ -60,6 +60,10 @@ Private Type tmpLong
 End Type
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
+'When this class is instantiated, we create a default gradient object.  If this object has never been modified,
+' however, we flag it to avoid things like serializing the default gradient values upon request.
+Private m_GradientIsDefault As Boolean
+
 'Get/set individual settings.  Note that these just wrap the generic Get/SetGradientProperty functions, below.
 Friend Function GetGradientShape() As PD_2D_GradientShape
     GetGradientShape = Me.GetGradientProperty(P2_GradientShape)
@@ -141,32 +145,45 @@ Public Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal ne
             
     End Select
     
+    m_GradientIsDefault = False
+    
 End Sub
 
 Private Function GetGradientNodesAsString() As String
     
-    Dim tmpXML As pdParamXML
-    Set tmpXML = New pdParamXML
-    With tmpXML
+    If (Not m_GradientIsDefault) Then
         
-        'Add two management parameters: the point count (which simplifies parsing), and whether we have already sorted the list.
-        ' (If we have, this saves future functions from needing to perform their own sort.)
-        .AddParam "GradientPointCount", m_NumOfPoints
-        .AddParam "GradientListAlreadySorted", m_IsSorted
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
         
-        'Add the gradient point list; for convenience, RGB and opacity are manually separated.
-        Dim i As Long, iString As String
-        For i = 0 To m_NumOfPoints - 1
-            iString = Trim$(Str(i))
-            .AddParam "GradientPoint_" & iString & "_RGB", m_GradientPoints(i).PointRGB
-            .AddParam "GradientPoint_" & iString & "_Opacity", m_GradientPoints(i).PointOpacity
-            .AddParam "GradientPoint_" & iString & "_Position", m_GradientPoints(i).PointPosition
-        Next i
+        Dim tmpXML As pdParamXML
+        Set tmpXML = New pdParamXML
+        tmpXML.SetParamVersion 1.1
         
-    End With
-    
-    GetGradientNodesAsString = tmpXML.GetParamString()
-    
+        With tmpXML
+            
+            'Add two management parameters: the point count (which simplifies parsing), and whether we have already sorted the list.
+            ' (If we have, this saves future functions from needing to perform their own sort.)
+            .AddParam "GradientPointCount", m_NumOfPoints
+            .AddParam "GradientListAlreadySorted", m_IsSorted
+            
+            'Add the gradient point list; for convenience, RGB and opacity are manually separated.
+            Dim i As Long, iString As String
+            For i = 0 To m_NumOfPoints - 1
+                iString = Trim$(Str(i))
+                .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
+                .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
+                .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
+            Next i
+            
+        End With
+        
+        GetGradientNodesAsString = tmpXML.GetParamString()
+        
+        Debug.Print "Wrote gradient to string in " & VBHacks.GetTimeDiffNowAsString(startTime)
+        
+    End If
+        
 End Function
 
 Private Sub SetGradientNodesFromString(ByRef srcString As String)
@@ -187,12 +204,27 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
             ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
             
             Dim i As Long, iString As String
-            For i = 0 To m_NumOfPoints - 1
-                iString = Trim$(Str(i))
-                m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
-                m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
-                m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
-            Next i
+            
+            'Past versions of the gradient class use slightly different class names
+            If (.GetParamVersion = 1.1) Then
+                
+                For i = 0 To m_NumOfPoints - 1
+                    iString = Trim$(Str(i))
+                    m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
+                    m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
+                    m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
+                Next i
+                
+            Else
+                
+                For i = 0 To m_NumOfPoints - 1
+                    iString = Trim$(Str(i))
+                    m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
+                    m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
+                    m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
+                Next i
+            
+            End If
             
         End With
         
@@ -203,33 +235,41 @@ End Sub
 'For interop purposes, gradients are passed around PD as XML strings.
 Public Function GetGradientAsString() As String
     
-    With m_Serializer
-        .Reset 1#
+    If (Not m_GradientIsDefault) Then
         
-        'Add whole-gradient parameters
-        .AddParam "GradientShape", m_GradientShape
-        .AddParam "GradientAngle", m_GradientAngle
-        .AddParam "GradientWrapMode", m_GradientWrapMode
+        With m_Serializer
+            .Reset 1#
+            
+            'Add whole-gradient parameters
+            .AddParam "GradientShape", m_GradientShape
+            .AddParam "GradientAngle", m_GradientAngle
+            .AddParam "GradientWrapMode", m_GradientWrapMode
+            
+            'Add the gradient point list (and associated params, like number of points) as one contiguous string
+            .AddParam "GradientNodes", GetGradientNodesAsString()
+            
+        End With
         
-        'Add the gradient point list (and associated params, like number of points) as one contiguous string
-        .AddParam "GradientNodes", GetGradientNodesAsString()
+        GetGradientAsString = m_Serializer.GetParamString
         
-    End With
-    
-    GetGradientAsString = m_Serializer.GetParamString
+    Else
+        GetGradientAsString = vbNullString
+    End If
     
 End Function
 
 Public Sub CreateGradientFromString(ByVal srcString As String)
     
-    Dim startTime As Currency
-    VBHacks.GetHighResTime startTime
-    
     'If the string is empty, prep a default object
     If (Len(srcString) = 0) Then
         Me.ResetAllProperties
     Else
-
+        
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
+        m_GradientIsDefault = False
+        
         With m_Serializer
             .SetParamString srcString
             
@@ -264,15 +304,17 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
                 
         End With
         
-    End If
+        Debug.Print "Created " & m_NumOfPoints & "-pt gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
-    'Debug.Print "Created gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    End If
     
 End Sub
 
 'The gradient editor assembles its own list of nodes.  To simplify interaction with this class, it can simply pass its
 ' instances to this function.
 Friend Sub CreateGradientFromPointCollection(ByVal numOfPoints As Long, ByRef srcPoints() As GradientPoint)
+    
+    m_GradientIsDefault = False
     
     'Start by prepping our internal collections
     If (m_NumOfPoints <> numOfPoints) Then
@@ -293,6 +335,8 @@ End Sub
 ' and color arrays.
 Public Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#)
     
+    m_GradientIsDefault = False
+    
     m_NumOfPoints = 2
     ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
     
@@ -309,6 +353,8 @@ Public Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As
 End Sub
 
 Public Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#, Optional ByVal thirdOpacity As Single = 100#, Optional ByVal secondColorPosition As Single = 0.5)
+    
+    m_GradientIsDefault = False
     
     m_NumOfPoints = 3
     ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
@@ -335,9 +381,11 @@ Public Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor 
 End Sub
 
 Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints() As GradientPoint)
-    numOfPoints = m_NumOfPoints
-    ReDim srcPoints(0 To m_NumOfPoints) As GradientPoint
-    CopyMemoryStrict VarPtr(srcPoints(0)), VarPtr(m_GradientPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
+    If (m_NumOfPoints > 0) Then
+        numOfPoints = m_NumOfPoints
+        ReDim srcPoints(0 To m_NumOfPoints) As GradientPoint
+        CopyMemoryStrict VarPtr(srcPoints(0)), VarPtr(m_GradientPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
+    End If
 End Sub
 
 Friend Function GetNumOfNodes() As Long
@@ -355,16 +403,18 @@ Public Sub ResetAllProperties()
     
     With m_GradientPoints(0)
         .PointRGB = vbBlack
-        .PointOpacity = 100
-        .PointPosition = 0
+        .PointOpacity = 100!
+        .PointPosition = 0!
     End With
     
     With m_GradientPoints(1)
         .PointRGB = vbWhite
-        .PointOpacity = 100
-        .PointPosition = 1
+        .PointOpacity = 100!
+        .PointPosition = 1!
     End With
-        
+    
+    m_GradientIsDefault = True
+    
 End Sub
 
 'Sort the gradient array in ascending order.  This greatly simplifies the process of creating a matching brush.
@@ -709,7 +759,7 @@ End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Private Function GetBlendedColors(ByVal firstColor As Byte, ByVal secondColor As Byte, ByRef mixRatio As Double) As Byte
-    GetBlendedColors = ((1 - mixRatio) * firstColor) + (mixRatio * secondColor)
+    GetBlendedColors = ((1# - mixRatio) * firstColor) + (mixRatio * secondColor)
 End Function
 
 Private Sub Class_Initialize()
@@ -727,6 +777,8 @@ Private Sub Class_Initialize()
     m_GradientShape = P2_GS_Linear
     m_GradientAngle = 0
     m_GradientWrapMode = P2_WM_Tile
+    
+    m_GradientIsDefault = True
     
 End Sub
 
