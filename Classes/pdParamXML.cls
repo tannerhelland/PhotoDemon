@@ -50,6 +50,10 @@ Option Compare Binary
 'Current parameter string.
 Private m_ParamString As String
 
+'To improve performance, we search for tags starting from the last-retrieved tag position.  In 99% of cases, PD functions
+' retrieve parameters in-order, so we can save time by moving through the XML sequentially.
+Private m_SearchStart As Long
+
 Friend Function GetParamString() As String
     GetParamString = m_ParamString
 End Function
@@ -61,6 +65,7 @@ End Sub
 
 Friend Sub Reset(Optional ByVal paramStringVersion As Double = 1#)
     m_ParamString = "<version>" & Trim$(Str(paramStringVersion)) & "</version>"
+    m_SearchStart = 1
 End Sub
 
 Private Sub Class_Initialize()
@@ -84,7 +89,7 @@ Friend Function GetParamVersion() As Double
 End Function
 
 Friend Sub SetParamVersion(Optional ByVal newVersion As Double = 1#)
-    UpdateParam "version", newVersion, True
+    Me.UpdateParam "version", newVersion, True
 End Sub
 
 'Simple check to see if a parameter exists
@@ -93,7 +98,13 @@ Friend Function DoesParamExist(ByRef paramName As String) As Boolean
     'Make the parameter name XML-safe
     paramName = GetXMLSafeName(paramName)
     
-    DoesParamExist = (InStr(1, m_ParamString, "<" & paramName & ">") <> 0)
+    Dim paramPos As Long
+    paramPos = InStr(1, m_ParamString, "<" & paramName & ">")
+    DoesParamExist = (paramPos <> 0)
+    
+    'If this parameter *does* exist, update our search pointer to point at it (as it's likely the caller will try to retrieve
+    ' it immediately following this check!)
+    If DoesParamExist Then m_SearchStart = paramPos
     
 End Function
 
@@ -174,16 +185,27 @@ End Function
 ' Returns TRUE if parameter exists; FALSE otherwise.
 Private Function GetParamValue(ByVal paramName As String, ByRef dstString As String) As Boolean
     
+    GetParamValue = False
+    
     'Make the parameter name XML-safe
     paramName = GetXMLSafeName(paramName)
     
+    'Search starting from wherever we found our previous tag
     Dim tagStart As Long, tagEnd As Long
-    tagStart = InStr(1, m_ParamString, "<" & paramName & ">")
+    If (m_SearchStart > Len(m_ParamString)) Then m_SearchStart = 1
+    tagStart = InStr(m_SearchStart, m_ParamString, "<" & paramName & ">")
+    
+    'If we didn't find anything, and we didn't start our search at the front of the string, try a full-string search now
+    If (tagStart = 0) And (m_SearchStart <> 1) Then
+        m_SearchStart = 1
+        tagStart = InStr(m_SearchStart, m_ParamString, "<" & paramName & ">")
+    End If
     
     'If the opening tag was found, we also need to find the closing tag.
     If (tagStart > 0) Then
     
         tagEnd = InStr(tagStart, m_ParamString, "</" & paramName & ">")
+        m_SearchStart = tagEnd
         
         'If the closing tag exists, return everything between that and the opening tag
         If (tagEnd > tagStart) Then
@@ -197,24 +219,22 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
                 GetParamValue = True
             Else
                 dstString = vbNullString
-                GetParamValue = False
             End If
             
         Else
             Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed!"
             dstString = vbNullString
-            GetParamValue = False
         End If
         
     Else
+        m_SearchStart = 1
         dstString = vbNullString
-        GetParamValue = False
     End If
 
 End Function
 
 'Blindly add a parameter to the master string.  No special checks (e.g. duplicates) are applied; use updateParam if you need those.
-Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant) As Boolean
+Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant, Optional ByVal nameGuaranteedXMLSafe As Boolean = False, Optional ByVal valueGuaranteedXMLSafe As Boolean = False) As Boolean
     
     'Convert the parameter value into a string.  We handle this manually to minimize the chance of locale issues.
     Dim strParamValue As String
@@ -240,7 +260,7 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant)
     ElseIf VarType(paramValue) = vbString Then
         strParamValue = paramValue
     ElseIf VarType(paramValue) = vbDate Then
-        strParamValue = Format(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
+        strParamValue = Format$(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
     
     'Pray for a correct implicit cast result
     Else
@@ -248,10 +268,10 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant)
     End If
     
     'Make the parameter name and value XML-safe
-    paramName = GetXMLSafeName(paramName)
-    strParamValue = DelimitParamValue(strParamValue)
+    If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
+    If (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
     
-    'Build a string with the parameter name and value we were passed
+    'Tack the parameter name and value we were passed onto the master string
     Dim newParamEntry As String
     newParamEntry = vbCrLf & "<" & paramName & ">" & strParamValue & "</" & paramName & ">"
             
@@ -322,7 +342,7 @@ Friend Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
     paramLocation = InStr(1, m_ParamString, "<" & paramName & ">")
         
     Dim topHalf As String, bottomHalf As String
-        
+    
     'If the parameter already exists, just update its value in-place.
     If (paramLocation > 0) Then
     
@@ -373,8 +393,7 @@ Friend Function GetXMLSafeName(ByRef srcString As String) As String
     GetXMLSafeName = Trim$(srcString)
     
     'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
-    Dim validChars As String
-    validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:"
+    Const validChars As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:"
     
     'Loop through the source string and replace any invalid characters with underscore
     Dim i As Long
@@ -415,6 +434,6 @@ Private Function CDblCustom(ByVal srcString As String) As Double
     If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
     
     'We can now use Val() to convert to Double
-    If IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
+    If TextSupport.IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
     
 End Function
