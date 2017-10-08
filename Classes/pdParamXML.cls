@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Internal Parameter Handler v2
 'Copyright 2013-2017 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 29/December/16
-'Last update: minor performance improvements
+'Last updated: 07/October/17
+'Last update: switch to pdString, which greatly improves parameter assembly performance
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.
@@ -47,28 +47,30 @@ Attribute VB_Exposed = False
 Option Explicit
 Option Compare Binary
 
-'Current parameter string.
-Private m_ParamString As String
+'Current parameter string, stored in a pdString object (which supports fast string-building).
+Private m_ParamString As pdString
 
 'To improve performance, we search for tags starting from the last-retrieved tag position.  In 99% of cases, PD functions
 ' retrieve parameters in-order, so we can save time by moving through the XML sequentially.
 Private m_SearchStart As Long
 
 Friend Function GetParamString() As String
-    GetParamString = m_ParamString
+    GetParamString = m_ParamString.ToString()
 End Function
 
 'If you obtain a parameter string from elsewhere (e.g. a PDI file), you can simple pass it as-is to this function
 Friend Sub SetParamString(ByRef srcString As String)
-    m_ParamString = srcString
+    m_ParamString.Reset srcString
 End Sub
 
 Friend Sub Reset(Optional ByVal paramStringVersion As Double = 1#)
-    m_ParamString = "<version>" & Trim$(Str(paramStringVersion)) & "</version>"
+    m_ParamString.Reset "<version>" & Trim$(Str(paramStringVersion)) & "</version>"
     m_SearchStart = 1
 End Sub
 
 Private Sub Class_Initialize()
+    
+    Set m_ParamString = New pdString
     
     'For now, this class does not add any extra XML around the parameters themselves.
     ' It will, however, create a generic "version" tag at version 1.0.  Functions are free to override this as necessary.
@@ -99,7 +101,7 @@ Friend Function DoesParamExist(ByRef paramName As String) As Boolean
     paramName = GetXMLSafeName(paramName)
     
     Dim paramPos As Long
-    paramPos = InStr(1, m_ParamString, "<" & paramName & ">")
+    paramPos = m_ParamString.StrStr("<" & paramName & ">")
     DoesParamExist = (paramPos <> 0)
     
     'If this parameter *does* exist, update our search pointer to point at it (as it's likely the caller will try to retrieve
@@ -190,42 +192,43 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
     'Make the parameter name XML-safe
     paramName = GetXMLSafeName(paramName)
     
-    'Search starting from wherever we found our previous tag
+    'Search starting from wherever we found our previous tag.  (PD tags are usually read in sequential order,
+    ' and this *greatly* accelerates parse-time.)
     Dim tagStart As Long, tagEnd As Long
-    If (m_SearchStart > Len(m_ParamString)) Then m_SearchStart = 1
-    tagStart = InStr(m_SearchStart, m_ParamString, "<" & paramName & ">")
+    If (m_SearchStart > m_ParamString.GetLength()) Then m_SearchStart = 1
+    tagStart = m_ParamString.StrStr("<" & paramName & ">", m_SearchStart)
     
     'If we didn't find anything, and we didn't start our search at the front of the string, try a full-string search now
     If (tagStart = 0) And (m_SearchStart <> 1) Then
         m_SearchStart = 1
-        tagStart = InStr(m_SearchStart, m_ParamString, "<" & paramName & ">")
+        tagStart = m_ParamString.StrStr("<" & paramName & ">", m_SearchStart)
     End If
     
     'If the opening tag was found, we also need to find the closing tag.
     If (tagStart > 0) Then
     
-        tagEnd = InStr(tagStart, m_ParamString, "</" & paramName & ">")
-        m_SearchStart = tagEnd
+        'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
+        tagStart = tagStart + Len(paramName) + 2
+            
+        tagEnd = m_ParamString.StrStr("</" & paramName & ">", tagStart)
         
         'If the closing tag exists, return everything between that and the opening tag
         If (tagEnd > tagStart) Then
             
-            'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
-            tagStart = tagStart + Len(paramName) + 2
+            'Advance our "search start" position to the end of this tag
+            m_SearchStart = tagEnd + Len(paramName) + 3
             
-            If (tagEnd > tagStart) Then
-                dstString = Mid$(m_ParamString, tagStart, tagEnd - tagStart)
-                dstString = UnDelimitParamValue(dstString)
-                GetParamValue = True
-            Else
-                dstString = vbNullString
-            End If
+            'Extract and return the parameter at this location
+            dstString = m_ParamString.MidW(tagStart, tagEnd - tagStart)
+            dstString = UnDelimitParamValue(dstString)
+            GetParamValue = True
             
         Else
             Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed!"
             dstString = vbNullString
         End If
-        
+    
+    'When we look for a tag and don't find it, reset our search start position
     Else
         m_SearchStart = 1
         dstString = vbNullString
@@ -272,20 +275,16 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     If (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
     
     'Tack the parameter name and value we were passed onto the master string
-    Dim newParamEntry As String
-    newParamEntry = vbCrLf & "<" & paramName & ">" & strParamValue & "</" & paramName & ">"
-            
-    'Tack it onto the master string
-    m_ParamString = m_ParamString & newParamEntry
+    m_ParamString.XMLAppend paramName, strParamValue
     
     AddParam = True
     
 End Function
 
-'Want to add multiple parameters at once?  Use this function, and call it using the order "Name", Value, "Name 2", Value 2...
+'Want to add multiple parameters at once?  Use this function, and call it using the order "Name", Value, "Name 2", Value 2, etc.
 Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     
-    On Error GoTo multiParamFailure
+    On Error GoTo MultiParamFailure
     
     If (UBound(allParams) >= LBound(allParams)) Then
     
@@ -314,7 +313,7 @@ Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     
     Exit Function
     
-multiParamFailure:
+MultiParamFailure:
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
@@ -327,7 +326,7 @@ End Function
 'Add an existing XML string to this one.  The incoming string is not modified in any way, so please make sure it contains
 ' valid XML!
 Friend Sub AddXMLString(ByRef srcString As String)
-    m_ParamString = m_ParamString & srcString
+    m_ParamString.Append srcString
 End Sub
 
 'Update a given parameter.  If the parameter is not found, it will be added to the string. (Create-if-missing behavior can be toggled.)
@@ -337,46 +336,16 @@ Friend Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
     paramName = GetXMLSafeName(paramName)
     paramValue = DelimitParamValue(paramValue)
     
-    'See if the parameter already exists
-    Dim paramLocation As Long
-    paramLocation = InStr(1, m_ParamString, "<" & paramName & ">")
-        
-    Dim topHalf As String, bottomHalf As String
+    'pdString can perform the update for us; note that it will return FALSE if the parameter does not exist
+    UpdateParam = m_ParamString.XMLUpdateTagValue(paramName, paramValue)
+    If (Not UpdateParam) And createIfMissing Then
     
-    'If the parameter already exists, just update its value in-place.
-    If (paramLocation > 0) Then
-    
-        'Split the XML file into two halves: the half before the relevant tag, and the half after
-        Dim paramCloseLocation As Long
-        paramCloseLocation = InStr(paramLocation, m_ParamString, "</" & paramName & ">")
-        SplitStringIn2 m_ParamString, paramCloseLocation - 1, topHalf, bottomHalf
-        
-        'The "topHalf" string now includes everything before the closing tag.  Chop it off at the end of the start tag (e.g. after
-        ' the closing bracket), add the new contents, then add the bottom half of the original XML string.
-        m_ParamString = Left$(topHalf, paramLocation + Len(paramName) + 1) & paramValue & bottomHalf
-        
+        'The requested tag doesn't exist.  Append it instead of updating it.
+        m_ParamString.XMLAppend paramName, paramValue
         UpdateParam = True
-    
-    'The parameter does not exist; add it contingent on createIfMissing
-    Else
-    
-        If createIfMissing Then
-            
-            'Build a string with the parameter name and value we were passed
-            Dim newParamEntry As String
-            newParamEntry = vbCrLf & "<" & paramName & ">" & paramValue & "</" & paramName & ">"
-            
-            'Reassemble the primary string
-            m_ParamString = m_ParamString & newParamEntry
-            
-            UpdateParam = True
-            
-        Else
-            UpdateParam = False
-        End If
         
     End If
-
+    
 End Function
 
 'Given a string and a position, split it into two strings at that position
@@ -409,21 +378,15 @@ End Function
 'Given a parameter value string, make it XML-safe (e.g. replace "<" and ">" with HTML equivalents).
 ' Note that we don't currently delimit other chars because PD uses only a subset of XML functionality, by design.
 Private Function DelimitParamValue(ByVal srcString As String) As String
-
-    If InStr(1, srcString, "<") Then srcString = Replace$(srcString, "<", "&lt;")
-    If InStr(1, srcString, ">") Then srcString = Replace$(srcString, ">", "&gt;")
-    
     DelimitParamValue = srcString
-
+    If InStr(1, srcString, "<") Then DelimitParamValue = Replace$(DelimitParamValue, "<", "&lt;")
+    If InStr(1, srcString, ">") Then DelimitParamValue = Replace$(DelimitParamValue, ">", "&gt;")
 End Function
 
-Private Function UnDelimitParamValue(ByVal srcString As String) As String
-        
-    If InStr(1, srcString, "&lt;") Then srcString = Replace$(srcString, "&lt;", "<")
-    If InStr(1, srcString, "&gt;") Then srcString = Replace$(srcString, "&gt;", ">")
-    
+Private Function UnDelimitParamValue(ByRef srcString As String) As String
     UnDelimitParamValue = srcString
-    
+    If InStr(1, srcString, "&lt;") Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&lt;", "<")
+    If InStr(1, srcString, "&gt;") Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&gt;", ">")
 End Function
 
 'A custom CDbl function that accepts both commas and decimals as a separator; this is important when moving floating-point data,
@@ -437,3 +400,4 @@ Private Function CDblCustom(ByVal srcString As String) As Double
     If TextSupport.IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
     
 End Function
+

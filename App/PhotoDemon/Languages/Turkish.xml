@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3008</langversion>
+<langversion>6.8.3009</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15068,6 +15068,12 @@ If yamalı vardır.</translation>
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdString.cls -->
+
+<!-- pdString.cls contains 0 phrases. -->
+
+<!-- END text for pdString.cls-->
 
 <!-- Automatic text extraction complete. -->
 
