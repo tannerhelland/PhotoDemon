@@ -1220,9 +1220,11 @@ Private Sub UpdatePreview_Auto()
     Dim gradPoints() As GradientPoint
     Dim numGradientPoints As Long
     
-    'In the future, it would be nice to increase the supported density of gradients, but at present, the XML parsing
-    ' is just too slow.  As such, I no longer increase the incoming density by a factor of 10.
-    numGradientPoints = sldDensityAuto.Value '* 10#
+    'In the future, it would be nice to increase the maximum density of gradients, but at present, there are some factors
+    ' (including XML serialization of the gradient data) that make that unfortunately slow.  An increase factor of five
+    ' seems to still work well across expected hardware configurations, and post-7.0 I'll look at improving performance
+    ' further so we can bump that number up.
+    numGradientPoints = sldDensityAuto.Value * 5#
     If (numGradientPoints < 1) Then numGradientPoints = 1
     
     'Insert two extra points for our initial and final colors

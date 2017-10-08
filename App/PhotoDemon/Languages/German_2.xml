@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3193</langversion>
+<langversion>6.8.3260</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4713,7 +4713,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Undo history</original>
-<translation>Historie rückgängig machen</translation>
+<translation>Verlauf rückgängig machen</translation>
 </phrase>
 
 <phrase>
@@ -6844,7 +6844,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>replace threshold</original>
-<translation>Schwellenwert ersetzen</translation>
+<translation>Ersetzungsschwellenwert</translation>
 </phrase>
 
 <phrase>
@@ -8107,42 +8107,42 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>Opazitätsstart</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>Startfarbe</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>Opazitätsende</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>Endfarbe</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>Farbton variieren</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>Sättigung variieren</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>Luminanz variieren</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>Alpha variieren</translation>
 </phrase>
 
 <phrase>
@@ -11745,7 +11745,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>Kopien</translation>
 </phrase>
 
 <phrase>
@@ -12939,7 +12939,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>erase threshold</original>
-<translation>Schwellenwert löschen</translation>
+<translation>Löschungsschwellenwert</translation>
 </phrase>
 
 <phrase>
@@ -13248,7 +13248,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Farben aus dem Bild auswählen</translation>
 </phrase>
 
 <phrase>
@@ -13319,27 +13319,27 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>Sample-Radius</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>Alle Layer samplen</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB %</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13371,7 +13371,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>Füllungsquelle</translation>
 </phrase>
 
 <phrase>
@@ -13401,12 +13401,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>Aktuelle Farbe</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>Benutzerdef. Pinsel</translation>
 </phrase>
 
 <phrase>
@@ -15080,6 +15080,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdString.cls -->
+
+<!-- pdString.cls contains 0 phrases. -->
+
+<!-- END text for pdString.cls-->
 
 <!-- Automatic text extraction complete. -->
 

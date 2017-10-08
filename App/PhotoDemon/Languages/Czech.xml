@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.15</langversion>
+<langversion>6.8.16</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15073,6 +15073,12 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdString.cls -->
+
+<!-- pdString.cls contains 0 phrases. -->
+
+<!-- END text for pdString.cls-->
 
 <!-- Automatic text extraction complete. -->
 
