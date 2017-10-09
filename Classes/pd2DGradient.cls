@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager
 'Copyright 2015-2017 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 16/June/16
-'Last update: continued clean-up to match the new pd2D drawing system.
+'Last updated: 08/October/17
+'Last update: rework the way gradient nodes are serialized to XML, to improve performance
 '
 'This class manages a single PD gradient instance.
 '
@@ -142,6 +142,7 @@ Public Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal ne
             
         Case P2_GradientNodes
             SetGradientNodesFromString CStr(newSetting)
+            m_IsSorted = False
             
     End Select
     
@@ -149,7 +150,7 @@ Public Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal ne
     
 End Sub
 
-Private Function GetGradientNodesAsString() As String
+Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Boolean = True) As String
     
     If (Not m_GradientIsDefault) Then
         
@@ -166,21 +167,36 @@ Private Function GetGradientNodesAsString() As String
             ' (If we have, this saves future functions from needing to perform their own sort.)
             .AddParam "GradientPointCount", m_NumOfPoints
             .AddParam "GradientListAlreadySorted", m_IsSorted
+            .AddParam "GradientNodesUseBase64", useBase64ForNodes
             
-            'Add the gradient point list; for convenience, RGB and opacity are manually separated.
-            Dim i As Long, iString As String
-            For i = 0 To m_NumOfPoints - 1
-                iString = Trim$(Str(i))
-                .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
-                .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
-                .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
-            Next i
+            'We now have two options for encoding actual node data.  If the caller allows us, we'll just use
+            ' Base64 to dump the full node array to a string.  For very large gradients, this provides a nice
+            ' speed boost over manually encoding individual nodes.
+            If useBase64ForNodes Then
+            
+                Dim strBase64 As String
+                Strings.BytesToBase64Ex VarPtr(m_GradientPoints(0)), m_NumOfPoints * LenB(m_GradientPoints(0)), strBase64
+                .AddParam "GradientNodesBase64", strBase64, True, False 'True
+            
+            Else
+            
+                'Add the gradient point list; for convenience, RGB and opacity are manually separated.
+                Dim i As Long, iString As String
+                For i = 0 To m_NumOfPoints - 1
+                    iString = Trim$(Str(i))
+                    .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
+                    .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
+                    .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
+                Next i
+                
+            End If
             
         End With
         
         GetGradientNodesAsString = tmpXML.GetParamString()
         
-        Debug.Print "Wrote gradient to string in " & VBHacks.GetTimeDiffNowAsString(startTime)
+        'Performance reports:
+        'Debug.Print "Wrote gradient to string in " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
         
@@ -192,6 +208,7 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
         Me.ResetAllProperties
         
     Else
+    
         Dim tmpXML As pdParamXML
         Set tmpXML = New pdParamXML
         With tmpXML
@@ -208,12 +225,32 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
             'Past versions of the gradient class use slightly different class names
             If (.GetParamVersion = 1.1) Then
                 
-                For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str(i))
-                    m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
-                    m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
-                    m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
-                Next i
+                'As of v7.0, callers can choose to save gradient data as Base64 (for a nice performance boost).
+                ' Check for Base64 encoding before proceeding; if it exists, we'll obviously decode the next
+                ' segment differently.
+                If .GetBool("GradientNodesUseBase64", False) Then
+                    
+                    'Base 64 was used.  Retrieve the full tag.
+                    Dim strBase64 As String
+                    strBase64 = .GetString("GradientNodesBase64")
+                    
+                    'Translate the result directly into the target gradient points array
+                    Dim bufferSize As Long
+                    bufferSize = m_NumOfPoints * LenB(m_GradientPoints(0))
+                    Strings.BytesFromBase64Ex VarPtr(m_GradientPoints(0)), bufferSize, strBase64
+                    
+                'Base64 was not used, meaning gradient nodes are encoded as a (potentially large) set of
+                ' individual tags.  Parse each tag in turn.
+                Else
+                
+                    For i = 0 To m_NumOfPoints - 1
+                        iString = Trim$(Str(i))
+                        m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
+                        m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
+                        m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
+                    Next i
+                    
+                End If
                 
             Else
                 
@@ -232,8 +269,10 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
     
 End Sub
 
-'For interop purposes, gradients are passed around PD as XML strings.
-Public Function GetGradientAsString() As String
+'For interop purposes, gradients are passed around PD as XML strings.  To improve performance, you can specify
+' an optional parameter to use Base64 when encoding node data (which can be quite large).  For small gradients,
+' Base64 won't gain you anything, but for huge gradients with many data points, the gains can be large.
+Public Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean = True) As String
     
     If (Not m_GradientIsDefault) Then
         
@@ -246,7 +285,7 @@ Public Function GetGradientAsString() As String
             .AddParam "GradientWrapMode", m_GradientWrapMode
             
             'Add the gradient point list (and associated params, like number of points) as one contiguous string
-            .AddParam "GradientNodes", GetGradientNodesAsString()
+            .AddParam "GradientNodes", GetGradientNodesAsString(useBase64ForNodes), True, True
             
         End With
         
@@ -278,12 +317,12 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
             m_GradientAngle = .GetDouble("GradientAngle", 0)
             m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
             
-            'There are two possible options for gradient storage:
+            'There are several possible options for gradient storage:
             ' 1) New versions of PD stick gradient nodes into their own XML entry.  Retrieve these and pass them off to a
             '    dedicated node parsing function.
             If m_Serializer.DoesParamExist("GradientNodes") Then
                 SetGradientNodesFromString .GetString("GradientNodes", vbNullString)
-            
+                
             ' 2) Old versions of PD stored bare node data right there in the main XML string.  Parse them manually.
             Else
             
@@ -304,7 +343,8 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
                 
         End With
         
-        Debug.Print "Created " & m_NumOfPoints & "-pt gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
+        'Want performance reports?  Here you go:
+        'Debug.Print "Created " & m_NumOfPoints & "-pt gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     End If
     
@@ -422,36 +462,113 @@ End Sub
 '        skip the sorting step entirely.)
 Private Sub SortGradientArray()
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'If the array is already sorted, ignore this request
     If m_IsSorted Then Exit Sub
     
-    'Because these arrays tend to be short, we can sort them using a simple bubble sort.
+    'If the array only contains one node, ignore this request.
     If (m_NumOfPoints > 1) Then
     
-        Dim i As Long, j As Long, loopBound As Long
-        loopBound = m_NumOfPoints - 1
+        'Small node amount can use a simple insertion sort.
+        If (m_NumOfPoints < 20) Then
         
-        'Loop through all entries in the stack, sorting them as we go
-        For i = 0 To loopBound
-            For j = 0 To loopBound
-                If (m_GradientPoints(i).PointPosition < m_GradientPoints(j).PointPosition) Then SwapGradientPoints i, j
-            Next j
-        Next i
+            Dim i As Long, j As Long, loopBound As Long
+            loopBound = m_NumOfPoints - 1
+            
+            Dim tmpSort As GradientPoint
+            i = 1
+            
+            Do While (i < m_NumOfPoints)
+                tmpSort = m_GradientPoints(i)
+                j = i - 1
+                Do While (j >= 0) And (m_GradientPoints(j).PointPosition > tmpSort.PointPosition)
+                    m_GradientPoints(j + 1) = m_GradientPoints(j)
+                    j = j - 1
+                Loop
+                m_GradientPoints(j + 1) = tmpSort
+                i = i + 1
+            Loop
+        
+        'For larger node counts, switch to QuickSort.
+        Else
+            QuickSortNodes
+        End If
         
     End If
     
     'Mark the array as sorted
     m_IsSorted = True
+    
+    'Want timing reports?  Here you go:
+    'Debug.Print "Gradient array sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
 
 End Sub
 
-'Helper for node sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
-Private Sub SwapGradientPoints(ByVal gIndex1 As Long, ByVal gIndex2 As Long)
-    Dim tmpPoint As GradientPoint
-    tmpPoint = m_GradientPoints(gIndex1)
-    m_GradientPoints(gIndex1) = m_GradientPoints(gIndex2)
-    m_GradientPoints(gIndex2) = tmpPoint
+'Use QuickSort to sort gradient nodes.  This becomes important as the number of nodes increases.
+Private Sub QuickSortNodes()
+    QSInner m_GradientPoints, 0, m_NumOfPoints - 1
 End Sub
+
+Private Sub QSInner(ByRef srcGradientNodes() As GradientPoint, ByVal lowVal As Long, ByVal highVal As Long)
+    
+    'Ignore the search request if the bounds are mismatched
+    If (lowVal < highVal) Then
+        
+        'Sort some sub-portion of the list, and use the returned pivot to repeat the sort process
+        Dim j As Long
+        j = QSPartition(srcGradientNodes, lowVal, highVal)
+        QSInner srcGradientNodes, lowVal, j - 1
+        QSInner srcGradientNodes, j + 1, highVal
+        
+    End If
+    
+End Sub
+
+Private Function QSPartition(ByRef srcGradientNodes() As GradientPoint, ByVal lowVal As Long, ByVal highVal As Long) As Long
+    
+    Dim i As Long, j As Long
+    i = lowVal
+    j = highVal + 1
+    
+    Dim v As Single
+    v = srcGradientNodes(lowVal).PointPosition
+    
+    Dim tmpSort As GradientPoint
+    
+    Do
+        
+        'Compare the pivot against points beneath it
+        Do
+            i = i + 1
+            If (i = highVal) Then Exit Do
+        Loop While (srcGradientNodes(i).PointPosition < v)
+        
+        'Compare the pivot against points above it
+        Do
+            j = j - 1
+        Loop While (v < srcGradientNodes(j).PointPosition)
+        
+        'When the pivot arrives at its final location, exit
+        If (i >= j) Then Exit Do
+        
+        'Swap the values at indexes i and j
+        tmpSort = srcGradientNodes(j)
+        srcGradientNodes(j) = srcGradientNodes(i)
+        srcGradientNodes(i) = tmpSort
+        
+    Loop
+    
+    'Move the pivot value into its final location
+    tmpSort = srcGradientNodes(j)
+    srcGradientNodes(j) = srcGradientNodes(lowVal)
+    srcGradientNodes(lowVal) = tmpSort
+    
+    'Return the pivot's final position
+    QSPartition = j
+    
+End Function
 
 'Once this class is populated correctly, you can use this function to retrieve a matching brush handle.  (At present, only GDI+
 ' is supported as a backend.)
@@ -781,7 +898,6 @@ Private Sub Class_Initialize()
     m_GradientIsDefault = True
     
 End Sub
-
 
 'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
 ' better fit your project (e.g. perhaps it could raise an actual error event).
