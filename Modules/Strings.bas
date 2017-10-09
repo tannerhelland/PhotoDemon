@@ -76,7 +76,7 @@ Private Enum REMAP_STRING_API
     LCMAP_TRADITIONAL_CHINESE = &H4000000
 End Enum
 
-Private Declare Function CryptBinaryToString Lib "crypt32" Alias "CryptBinaryToStringW" (ByRef pbBinary As Byte, ByVal cbBinary As Long, ByVal dwFlags As Long, ByVal pszString As Long, ByRef pcchString As Long) As Long
+Private Declare Function CryptBinaryToString Lib "crypt32" Alias "CryptBinaryToStringW" (ByVal ptrBinaryData As Long, ByVal numBytesToConvert As Long, ByVal dwFlags As Long, ByVal ptrToDstString As Long, ByRef sizeOfStringBuffer As Long) As Long
 Private Declare Function CryptStringToBinary Lib "crypt32" Alias "CryptStringToBinaryW" (ByVal pszString As Long, ByVal cchString As Long, ByVal dwFlags As Long, ByVal pbBinary As Long, ByRef pcbBinary As Long, ByRef pdwSkip As Long, ByRef pdwFlags As Long) As Long
 
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
@@ -189,21 +189,59 @@ Private Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLe
     
 End Function
 
+'Convert a byte array into a base-64 encoded string, using standard Windows libraries.
+' Returns TRUE if successful; FALSE otherwise.
+Public Function BytesToBase64(ByRef srcArray() As Byte, ByRef dstBase64 As String) As Boolean
+    
+    BytesToBase64 = False
+    
+    'Retrieve the necessary output buffer size.
+    Dim bufferSize As Long
+    If (CryptBinaryToString(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, CRYPT_STRING_BASE64 Or CRYPT_STRING_NOCRLF, 0&, bufferSize) <> 0) Then
+        dstBase64 = String$(bufferSize - 1, 0)
+        BytesToBase64 = (CryptBinaryToString(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, CRYPT_STRING_BASE64 Or CRYPT_STRING_NOCRLF, StrPtr(dstBase64), bufferSize) <> 0)
+    End If
+    
+End Function
+
+Public Function BytesToBase64Ex(ByVal ptrToSrcData As Long, ByVal lenOfSrcDataInBytes As Long, ByRef dstBase64 As String) As Boolean
+    
+    BytesToBase64Ex = False
+    
+    'Retrieve the necessary output buffer size.
+    Dim bufferSize As Long
+    If (CryptBinaryToString(ptrToSrcData, lenOfSrcDataInBytes, CRYPT_STRING_BASE64 Or CRYPT_STRING_NOCRLF, 0&, bufferSize) <> 0) Then
+        dstBase64 = String$(bufferSize - 1, 0)
+        BytesToBase64Ex = (CryptBinaryToString(ptrToSrcData, lenOfSrcDataInBytes, CRYPT_STRING_BASE64 Or CRYPT_STRING_NOCRLF, StrPtr(dstBase64), bufferSize) <> 0)
+    End If
+    
+End Function
+
 'Convert a base-64 encoded string into a byte array, using standard Windows libraries.
 ' Returns TRUE if successful; FALSE otherwise.
 '
 'Thanks to vbForums user dilettante for the original version of this code (retrieved here: http://www.vbforums.com/showthread.php?514815-JPEG-Base-64&p=3186994&viewfull=1#post3186994)
-Public Function BytesFromBase64(ByRef dstArray() As Byte, ByRef strBase64 As String) As Boolean
+Public Function BytesFromBase64(ByRef dstArray() As Byte, ByRef srcBase64 As String) As Boolean
     
     BytesFromBase64 = False
     
     'Retrieve the necessary output buffer size.
     Dim lngOutLen As Long, dwActualUsed As Long
-    If (CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0) Then
+    If (CryptStringToBinary(StrPtr(srcBase64), Len(srcBase64), CRYPT_STRING_BASE64, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0) Then
         ReDim dstArray(lngOutLen - 1) As Byte
-        BytesFromBase64 = (CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
+        BytesFromBase64 = (CryptStringToBinary(StrPtr(srcBase64), Len(srcBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
     End If
     
+End Function
+
+'WARNING!  This function allows you to directly decode a Base64 string to an arbitrary destination pointer.
+' Because this function cannot resize the destination memory space (obviously), you *must* use some external
+' knowledge to size your destination buffer appropriately.  This function will return the number of bytes used,
+' but crashes and/or security compromises are possible if you do not validate your destination size correctly.
+Public Function BytesFromBase64Ex(ByVal dstPtr As Long, ByRef dstBufferSize As Long, ByRef srcBase64 As String) As Boolean
+    BytesFromBase64Ex = False
+    Dim dwActualUsed As Long
+    BytesFromBase64Ex = (CryptStringToBinary(StrPtr(srcBase64), Len(srcBase64), CRYPT_STRING_BASE64, dstPtr, dstBufferSize, 0&, dwActualUsed) <> 0)
 End Function
 
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
