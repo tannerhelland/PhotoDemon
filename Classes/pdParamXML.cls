@@ -224,7 +224,7 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
             GetParamValue = True
             
         Else
-            Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed!"
+            Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed! (" & tagStart & ", " & tagEnd & ")"
             dstString = vbNullString
         End If
     

@@ -1224,7 +1224,7 @@ Private Sub UpdatePreview_Auto()
     ' (including XML serialization of the gradient data) that make that unfortunately slow.  An increase factor of five
     ' seems to still work well across expected hardware configurations, and post-7.0 I'll look at improving performance
     ' further so we can bump that number up.
-    numGradientPoints = sldDensityAuto.Value * 5#
+    numGradientPoints = sldDensityAuto.Value * 10#
     If (numGradientPoints < 1) Then numGradientPoints = 1
     
     'Insert two extra points for our initial and final colors
