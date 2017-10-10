@@ -41,6 +41,9 @@ Private m_Strings() As String
 Private m_NumOfStrings As Long
 Private Const INIT_STACK_SIZE = 16
 
+Private Declare Sub CopyMemory_Custom Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByRef lpSrc As Long, ByVal byteLength As Long)
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
+
 'Add a string to the stack.  Return value is the index of the added location (which can be used to infer the number of strings
 ' in the stack, obviously).
 Friend Function AddString(ByRef srcString As String) As Long
@@ -136,11 +139,7 @@ End Function
 ' fixes for exponent strings, which the original code did not handle correctly.)
 Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
     
-    Dim Negative As Boolean
-    Dim Number As Boolean
-    Dim Period As Boolean
-    Dim Positive As Boolean
-    Dim Exponent As Boolean
+    Dim Negative As Boolean, Number As Boolean, Period As Boolean, Positive As Boolean, Exponent As Boolean
     Dim x As Long
     For x = 1& To Len(Expression)
         Select Case Mid$(Expression, x, 1&)
@@ -184,8 +183,8 @@ Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
     If (m_NumOfStrings > 1) Then
     
         'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order is typically pretty close
-        ' to sorted.  This saves us from needing an elaborate search algorithm; instead, a simple in-place insertion sort
-        ' performs very well.
+        ' to sorted.  This saves us from needing an elaborate search algorithm; instead, a simple in-place bubble sort
+        ' is predictable and good enough.
         Dim i As Long, j As Long, loopBound As Long
         loopBound = m_NumOfStrings - 1
         
@@ -209,12 +208,12 @@ Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 
 End Sub
 
-'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
+'Helper for string sort functions.  To avoid new string allocations, this function simply swaps BSTR pointers.
 Friend Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
-    Dim tmpString As String
-    tmpString = m_Strings(strIndex1)
-    m_Strings(strIndex1) = m_Strings(strIndex2)
-    m_Strings(strIndex2) = tmpString
+    Dim tmpStrPtr As Long
+    tmpStrPtr = StrPtr(m_Strings(strIndex1))
+    CopyMemory_Custom VarPtr(m_Strings(strIndex1)), ByVal VarPtr(m_Strings(strIndex2)), 4
+    CopyMemory_Custom VarPtr(m_Strings(strIndex2)), tmpStrPtr, 4
 End Sub
 
 'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings
@@ -242,39 +241,21 @@ Friend Sub MoveStringToNewPosition(ByVal srcStringIndex As Long, ByVal dstString
 
 End Sub
 
-'Modified ShellSort function based off an original implementation by Ellis Dee.  Original source here:
-' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-(sort-array-sorting-arrays)&p=2933102&viewfull=1#post2933102
+'Per the name, sort the current stack alphabetically.  In PD, a sorted stack typically needs to have any
+' duplicate entries removed (like e.g. font lists, which Windows may report in strange ways), so this
+' function also handles that duty, as requested.
 Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
     
     If (m_NumOfStrings <= 1) Then Exit Sub
     
-    Dim lngHold As Long, lngGap As Long
-    Dim i As Long, iMin As Long, iMax As Long
-    Dim varSwap As String
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
-    iMin = 0
-    iMax = m_NumOfStrings - 1
-    lngGap = iMin
+    'Sort the stack in-place
+    QuickSortStringStack
     
-    Do
-        lngGap = 3 * lngGap + 1
-    Loop Until lngGap > iMax
-    
-    Do
-        lngGap = lngGap \ 3
-        For i = lngGap + iMin To iMax
-            varSwap = m_Strings(i)
-            lngHold = i
-            Do While (StrComp(m_Strings(lngHold - lngGap), varSwap) > 0)
-                m_Strings(lngHold) = m_Strings(lngHold - lngGap)
-                lngHold = lngHold - lngGap
-                If (lngHold < iMin + lngGap) Then Exit Do
-            Loop
-            m_Strings(lngHold) = varSwap
-        Next i
-    Loop Until lngGap = 1
-    
-    'If the user wants duplicates removed, do so now
+    'If the user wants duplicates removed, do so now.  (This check is fast and easy, because duplicates will
+    ' be sitting next to each other in the sorted list.)
     If removeDuplicates Then
         
         Dim itemsRemoved As Long
@@ -283,36 +264,82 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
         Dim itemCount As Long
         itemCount = m_NumOfStrings - 1
         
-        Dim j As Long
+        Dim i As Long, j As Long
+        i = 0
         
-        For i = 0 To itemCount
-            
-            'If we've reached the point where the array ends due to shifting, exit now
-            If (i = itemCount - itemsRemoved) Then Exit For
+        Do While (i < (itemCount - itemsRemoved))
             
             'If this string and the string above it match, shift everything above it downward
-            If Strings.StringsEqual(m_Strings(i), m_Strings(i + 1), False) Then
+            If Strings.StringsEqual(m_Strings(i), m_Strings(i + 1), True) Then
                 
-                #If DEBUGMODE = 1 Then
-                    Debug.Print "Duplicate string found: " & m_Strings(i)
-                #End If
-                
-                For j = i To UBound(m_Strings) - 1
-                    m_Strings(j) = m_Strings(j + 1)
-                Next j
+                If (itemCount - itemsRemoved) < UBound(m_Strings) Then
+                    For j = i To itemCount - itemsRemoved
+                        m_Strings(j) = m_Strings(j + 1)
+                    Next j
+                End If
                 
                 itemsRemoved = itemsRemoved + 1
                 
+            Else
+                i = i + 1
             End If
             
-        Next i
+        Loop
         
         'If one or more items were removed, mark the new array size accordingly
         If (itemsRemoved > 0) Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
         
     End If
     
+    'Want timing reports?  Here you go:
+    Debug.Print "String stack sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
 End Sub
+
+'Simple QuickSort implementation.  This same QuickSort implementation is used across PD in a variety of ways; if you want details
+' on how it works, search "Sub QuickSort" to find another instance that uses comments.  (This one does not.)
+Private Sub QuickSortStringStack()
+    QSInner 0, m_NumOfStrings - 1
+End Sub
+
+Private Sub QSInner(ByVal lowVal As Long, ByVal highVal As Long)
+    If (lowVal < highVal) Then
+        Dim j As Long
+        j = QSPartition(lowVal, highVal)
+        QSInner lowVal, j - 1
+        QSInner j + 1, highVal
+    End If
+End Sub
+
+Private Function QSPartition(ByVal lowVal As Long, ByVal highVal As Long) As Long
+    
+    Dim i As Long, j As Long
+    i = lowVal
+    j = highVal + 1
+    
+    Dim v As String
+    v = m_Strings(lowVal)
+    
+    Do
+        
+        Do
+            i = i + 1
+            If (i = highVal) Then Exit Do
+        Loop While (Strings.StrCompSort(m_Strings(i), v) < 0)
+        
+        Do
+            j = j - 1
+        Loop While (Strings.StrCompSort(v, m_Strings(j)) < 0)
+        
+        If (i >= j) Then Exit Do
+        SwapIndices i, j
+        
+    Loop
+    
+    SwapIndices j, lowVal
+    QSPartition = j
+    
+End Function
 
 'Clone another string stack
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
@@ -354,7 +381,7 @@ Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     If (newStackSize <= 0) Then newStackSize = INIT_STACK_SIZE
     
     'Reset the array (but only if necessary!)
-    If m_NumOfStrings = 0 Then
+    If (m_NumOfStrings = 0) Then
         ReDim m_Strings(0 To newStackSize - 1) As String
     Else
         If (UBound(m_Strings) <> newStackSize - 1) Then ReDim m_Strings(0 To newStackSize - 1) As String
@@ -383,7 +410,7 @@ Friend Function SerializeStackToSingleString() As String
         
         Dim i As Long
         For i = 0 To m_NumOfStrings - 1
-            If InStr(1, m_Strings(i), tstPipeString, vbBinaryCompare) <> 0 Then
+            If (InStr(1, m_Strings(i), tstPipeString, vbBinaryCompare) <> 0) Then
                 finalString = finalString & tstPipeString & Replace(m_Strings(i), tstPipeString, rplPipeString, , , vbBinaryCompare)
             Else
                 finalString = finalString & tstPipeString & m_Strings(i)
@@ -413,7 +440,7 @@ Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As 
         Dim i As Long
         For i = 0 To m_NumOfStrings - 1
             
-            If InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0 Then
+            If (InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0) Then
                 Me.AddString Replace(stringArray(i + 1), rplPipeString, tstPipeString, , , vbBinaryCompare)
             Else
                 Me.AddString stringArray(i + 1)
@@ -436,19 +463,19 @@ End Function
 Private Sub Class_Initialize()
     
     'Always start with an initialized array
-    ResetStack
+    Me.ResetStack
         
 End Sub
 
 Private Sub Class_Terminate()
-    ResetStack
+    Me.ResetStack
 End Sub
 
 'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.
 ' I also append "--" to the start and end of the string, to help me see if extra whitespace chars are present.
 Friend Sub DEBUG_dumpResultsToImmediateWindow()
     
-    If m_NumOfStrings > 0 Then
+    If (m_NumOfStrings > 0) Then
         Dim i As Long
         For i = 0 To m_NumOfStrings - 1
             Debug.Print i & ": -- " & m_Strings(i) & " -- "

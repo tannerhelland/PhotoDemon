@@ -166,7 +166,7 @@ Public Type OUTLINETEXTMETRIC
     otmLineGap As Long
     otmsCapEmHeight As Long
     otmsXHeight As Long
-    otmrcFontBox As RECTL
+    otmrcFontBox As RectL
     otmMacAscent As Long
     otmMacDescent As Long
     otmMacLineGap As Long
@@ -479,7 +479,7 @@ Private Function GetAllAvailableFonts() As Boolean
     GDI.FreeMemoryDC tmpDC
     
     'If at least one font was found, return TRUE
-    GetAllAvailableFonts = CBool(m_PDFontCache.GetNumOfStrings > 0)
+    GetAllAvailableFonts = (m_PDFontCache.GetNumOfStrings > 0)
 
 End Function
 
@@ -492,9 +492,12 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     CopyMemory ByVal StrPtr(thisFontFace), ByVal VarPtr(lpElfe.lfFaceName(0)), LF_FACESIZEW
     thisFontFace = Strings.TrimNull(thisFontFace)
     
-    'If this font face is identical to the previous font face, do not add it
+    'Perform some basic checks to see if this font is usable
     Dim fontUsable As Boolean
-    fontUsable = Strings.StringsNotEqual(thisFontFace, m_LastFontAdded, False)
+    fontUsable = (Len(thisFontFace) > 0)
+    
+    'If this font face is identical to the previous font face, do not add it
+    If fontUsable Then fontUsable = Strings.StringsNotEqual(thisFontFace, m_LastFontAdded, False)
     
     'We also want to ignore fonts with @ in front of their name, as these are merely duplicates of existing fonts.
     ' (The @ signifies improved support for vertical text, which may someday be useful... but right now I have enough
