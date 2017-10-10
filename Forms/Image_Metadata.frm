@@ -482,7 +482,7 @@ Private Sub cmdBarMini_OKClick()
     Next i
     
     'With all metadata updated, notify the central processor that an Undo update is required
-    Process "Edit metadata", False, , UNDO_IMAGEHEADER
+    Process "Edit metadata", False, , UNDO_ImageHeader
     
 End Sub
 
@@ -689,7 +689,7 @@ Private Sub SortCategoryList()
     targetPosition = 0
     
     For i = 0 To m_NumOfCategories - 1
-        If StrComp(LCase$(cNames.GetString(i)), "system", vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(cNames.GetString(i), "system", True) Then
             cNames.MoveStringToNewPosition i, targetPosition
             targetPosition = targetPosition + 1
             Exit For
@@ -697,7 +697,7 @@ Private Sub SortCategoryList()
     Next i
     
     For i = 0 To m_NumOfCategories - 1
-        If StrComp(LCase$(cNames.GetString(i)), "file", vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(cNames.GetString(i), "file", True) Then
             cNames.MoveStringToNewPosition i, targetPosition
             targetPosition = targetPosition + 1
             Exit For
@@ -705,7 +705,7 @@ Private Sub SortCategoryList()
     Next i
     
     For i = 0 To m_NumOfCategories - 1
-        If StrComp(LCase$(cNames.GetString(i)), "icc profile", vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(cNames.GetString(i), "icc profile", True) Then
             cNames.MoveStringToNewPosition i, targetPosition
             targetPosition = targetPosition + 1
             Exit For
@@ -713,7 +713,7 @@ Private Sub SortCategoryList()
     Next i
     
     For i = 0 To m_NumOfCategories - 1
-        If StrComp(LCase$(cNames.GetString(i)), "inferred", vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(cNames.GetString(i), "inferred", True) Then
             cNames.MoveStringToNewPosition i, targetPosition
             targetPosition = targetPosition + 1
             Exit For
@@ -724,7 +724,7 @@ Private Sub SortCategoryList()
     Dim tmpCat As MDCategory
     For i = 0 To m_NumOfCategories - 1
         For j = i To m_NumOfCategories - 1
-            If (StrComp(cNames.GetString(i), m_MDCategories(j).Name, vbBinaryCompare) = 0) And (i <> j) Then
+            If Strings.StringsEqual(cNames.GetString(i), m_MDCategories(j).Name) And (i <> j) Then
                 tmpCat = m_MDCategories(i)
                 m_MDCategories(i) = m_MDCategories(j)
                 m_MDCategories(j) = tmpCat
@@ -893,7 +893,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     Dim blockCategory As Long
     blockCategory = lstGroup.ListIndex
     
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
