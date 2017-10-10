@@ -471,24 +471,31 @@ Private Sub SortGradientArray()
     'If the array only contains one node, ignore this request.
     If (m_NumOfPoints > 1) Then
     
-        'Small node amount can use a simple insertion sort.
+        'Small node counts can use a simple insertion sort.
         If (m_NumOfPoints < 20) Then
         
-            Dim i As Long, j As Long, loopBound As Long
-            loopBound = m_NumOfPoints - 1
-            
-            Dim tmpSort As GradientPoint
+            Dim i As Long, j As Long
+            Dim tmpSort As GradientPoint, searchCont As Boolean
             i = 1
             
             Do While (i < m_NumOfPoints)
                 tmpSort = m_GradientPoints(i)
                 j = i - 1
-                Do While (j >= 0) And (m_GradientPoints(j).PointPosition > tmpSort.PointPosition)
+                
+                'Because VB6 doesn't short-circuit And statements, we have to split this check into separate parts.
+                searchCont = False
+                If (j >= 0) Then searchCont = (m_GradientPoints(j).PointPosition > tmpSort.PointPosition)
+                
+                Do While searchCont
                     m_GradientPoints(j + 1) = m_GradientPoints(j)
                     j = j - 1
+                    searchCont = False
+                    If (j >= 0) Then searchCont = (m_GradientPoints(j).PointPosition > tmpSort.PointPosition)
                 Loop
+                
                 m_GradientPoints(j + 1) = tmpSort
                 i = i + 1
+                
             Loop
         
         'For larger node counts, switch to QuickSort.
