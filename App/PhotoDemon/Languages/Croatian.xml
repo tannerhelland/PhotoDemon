@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3009</langversion>
+<langversion>6.8.3010</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9297,16 +9297,11 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Distort_ApplyLens.frm (FormLens) -->
 
 <phrase>
-<original>lens strength (refractive index)</original>
-<translation>Snaga leće (indeks refrakcije)</translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated lens</original>
 <translation>Projektiranje slike putem simuliranog leća</translation>
 </phrase>
 
-<!-- Effects_Distort_ApplyLens.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Distort_ApplyLens.frm-->
 
@@ -15086,10 +15081,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2531</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4542 phrases. -->
+<!-- 2011 are duplicates, so only 2531 unique phrases have been written to file. -->
+<!-- These 2531 phrases contain approximately 12264 total words. -->
 
 </pdData>
