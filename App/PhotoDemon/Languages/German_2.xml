@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3260</langversion>
+<langversion>6.8.3261</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9302,16 +9302,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_ApplyLens.frm (FormLens) -->
 
 <phrase>
-<original>lens strength (refractive index)</original>
-<translation>Linsenstärke (refraktiver Index)</translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated lens</original>
 <translation>Bild wird durch simulierte Linse projiziert</translation>
 </phrase>
 
-<!-- Effects_Distort_ApplyLens.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Distort_ApplyLens.frm-->
 
@@ -15089,10 +15084,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2531</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4542 phrases. -->
+<!-- 2011 are duplicates, so only 2531 unique phrases have been written to file. -->
+<!-- These 2531 phrases contain approximately 12264 total words. -->
 
 </pdData>

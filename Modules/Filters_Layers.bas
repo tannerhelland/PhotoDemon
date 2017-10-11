@@ -131,7 +131,7 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
 End Function
 
 'Want to blur just some sub-portion of a DIB?  Use this function instead.
-Public Function QuickBlurDIBRegion(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, ByRef blurBounds As RECTF) As Boolean
+Public Function QuickBlurDIBRegion(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, ByRef blurBounds As RectF) As Boolean
     
     'Create a copy of the current DIB; we need this to hold an intermediate blur copy
     Dim tmpDIB As pdDIB
@@ -157,7 +157,7 @@ Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
     
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -192,7 +192,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -359,7 +359,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -573,7 +573,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -728,14 +728,14 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
  
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D, dstSA1D As SAFEARRAY1D
+    Dim dstSA As SafeArray2D, dstSA1D As SafeArray1D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D, srcSA1D As SAFEARRAY1D
+    Dim srcSA As SafeArray2D, srcSA1D As SafeArray1D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -1067,7 +1067,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     'Create local arrays and point them at the source DIB and blurred DIB
     Dim srcImageData() As Byte, blurImageData() As Byte
-    Dim srcSA As SAFEARRAY2D, blurSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D, blurSA As SafeArray2D
     
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
@@ -1468,14 +1468,14 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -1698,14 +1698,14 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -1937,14 +1937,14 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -2089,14 +2089,14 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     End If
     
     'Wrap 1D arrays around the source and destination images
-    Dim dstImageData() As Byte, dstSA1D As SAFEARRAY1D
+    Dim dstImageData() As Byte, dstSA1D As SafeArray1D
     dstDIB.WrapArrayAroundScanline dstImageData, dstSA1D, 0
     
     Dim dstDibPointer As Long, dstDibStride As Long
     dstDibPointer = dstSA1D.pvData
     dstDibStride = dstSA1D.cElements
     
-    Dim srcImageData() As Byte, srcSA1D As SAFEARRAY1D
+    Dim srcImageData() As Byte, srcSA1D As SafeArray1D
     srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, 0
     
     Dim srcDibPointer As Long, srcDibStride As Long
@@ -2246,7 +2246,7 @@ End Function
 'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
 '
 'NOTE: source and destination DIBs must be 32-bpp
-Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RECTF) As Long
+Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RectF) As Long
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
@@ -2258,14 +2258,14 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -2382,7 +2382,7 @@ End Function
 'Input: up and down distance to blur (I call these radii, because the final box size is (upoffset + downoffset + 1)
 '
 'NOTE: source and destination DIBs must be 32-bpp
-Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RECTF) As Long
+Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef blurBounds As RectF) As Long
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
@@ -2393,14 +2393,14 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     End If
     
     'Wrap 1D arrays around the source and destination images
-    Dim dstImageData() As Byte, dstSA1D As SAFEARRAY1D
+    Dim dstImageData() As Byte, dstSA1D As SafeArray1D
     dstDIB.WrapArrayAroundScanline dstImageData, dstSA1D, 0
     
     Dim dstDibPointer As Long, dstDibStride As Long
     dstDibPointer = dstSA1D.pvData
     dstDibStride = dstSA1D.cElements
     
-    Dim srcImageData() As Byte, srcSA1D As SAFEARRAY1D
+    Dim srcImageData() As Byte, srcSA1D As SafeArray1D
     srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, 0
     
     Dim srcDibPointer As Long, srcDibStride As Long
@@ -2537,14 +2537,14 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent rotated pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -2617,13 +2617,13 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
-                            
+        
         srcX = xCos(x) - ySin(y)
         srcY = yCos(y) + xSin(x)
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
-                
+        
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
@@ -2692,7 +2692,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -2767,7 +2767,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -2848,7 +2848,7 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -2926,7 +2926,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -3039,7 +3039,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, srcDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -3067,7 +3067,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     'To simplify the edge-handling required by this function, we're actually going to resize the source DIB with
     ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
@@ -3084,7 +3084,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     midDIB.CreateFromExistingDIB srcDIBPadded
     
     Dim midImageData() As Byte
-    Dim midSA As SAFEARRAY2D
+    Dim midSA As SafeArray2D
     PrepSafeArray midSA, midDIB
     CopyMemory ByVal VarPtrArray(midImageData()), VarPtr(midSA), 4
         

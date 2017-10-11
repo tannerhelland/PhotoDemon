@@ -49,37 +49,34 @@ Begin VB.Form FormLens
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   3240
+      Top             =   2640
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "radius (percentage)"
+      Caption         =   "radius"
       Min             =   1
       Max             =   100
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.pdSlider sltIndex 
+   Begin PhotoDemon.pdSlider sldCurvature 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2280
+      Top             =   1800
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "lens strength (refractive index)"
-      Min             =   1
+      Caption         =   "curvature"
       Max             =   5
       SigDigits       =   2
-      Value           =   1.2
-      DefaultValue    =   1.2
    End
    Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   4
-      Top             =   1200
+      Top             =   720
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -93,7 +90,7 @@ Begin VB.Form FormLens
       Height          =   405
       Left            =   9000
       TabIndex        =   5
-      Top             =   1200
+      Top             =   720
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -107,7 +104,7 @@ Begin VB.Form FormLens
       Height          =   705
       Left            =   6000
       TabIndex        =   6
-      Top             =   4200
+      Top             =   4320
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -122,7 +119,7 @@ Begin VB.Form FormLens
       Height          =   435
       Index           =   0
       Left            =   6120
-      Top             =   1770
+      Top             =   1200
       Width           =   5655
       _ExtentX        =   0
       _ExtentY        =   0
@@ -134,13 +131,25 @@ Begin VB.Form FormLens
       Height          =   285
       Index           =   0
       Left            =   6000
-      Top             =   840
+      Top             =   360
       Width           =   5925
       _ExtentX        =   0
       _ExtentY        =   0
       Caption         =   "center position (x, y)"
       FontSize        =   12
       ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdSlider sldShape 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "aspect ratio"
+      Min             =   -100
+      Max             =   100
    End
 End
 Attribute VB_Name = "FormLens"
@@ -155,16 +164,14 @@ Attribute VB_Exposed = False
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
 '
-'This tool allows the user to apply a lens distortion to an image.  Subpixel supersampling is now supported for extremely
-' high-quality results.
-'
-'For correcting lens distortion, please see FormLensCorrect.
+'This tool allows the user to apply a lens distortion to an image.  It is comparable to the "Spherize" tool
+' in PhotoShop.  (For correcting lens distortion, please see FormLensCorrect.)
 '
 'As of January '14, the user can now set a custom center point by clicking the image or using the x/y sliders.
 '
-'Finally, the transformation used by this tool is a modified version of a transformation originally written by
-' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
-' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'This transformation is a modified version of a transformation originally written by Jerry Huxtable of JH Labs.
+' Jerry's original code is licensed under an Apache 2.0 license.  You may download his original version at the
+' following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -180,31 +187,32 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim refractiveIndex As Double, lensRadius As Double, centerX As Double, centerY As Double
+    Dim refractiveIndex As Double, lensRadius As Double, lensShape As Double, centerX As Double, centerY As Double
     Dim superSamplingAmount As Long
     
     With cParams
-        refractiveIndex = .GetDouble("strength", sltIndex.Value)
+        refractiveIndex = .GetDouble("strength", sldCurvature.Value)
         lensRadius = .GetDouble("radius", sltRadius.Value)
+        lensShape = .GetDouble("shape", sldShape.Value)
         superSamplingAmount = .GetLong("quality", sltQuality.Value)
         centerX = .GetDouble("centerx", 0.5)
         centerY = .GetDouble("centery", 0.5)
     End With
     
-    refractiveIndex = 1# / refractiveIndex
+    refractiveIndex = 1# / (refractiveIndex + 1#)
 
     If (Not toPreview) Then Message "Projecting image through simulated lens..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -228,7 +236,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, EDGE_CLAMP, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters qvDepth, EDGE_ERASE, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -279,39 +287,59 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
     
-    
     'Lensing requires a collection of specialized variables
     
-    'Calculate the center of the image
+    'Calculate the center of the image, modified by the user's custom center point inputs
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) * centerX
-    midX = midX + initX
-    midY = CDbl(finalY - initY) * centerY
-    midY = midY + initY
+    midX = CDbl(finalX - initX) * centerX + initX
+    midY = CDbl(finalY - initY) * centerY + initY
     
     'Calculation values
     Dim theta As Double, theta2 As Double
     Dim xAngle As Double, yAngle As Double
-    Dim firstAngle As Double, secondAngle As Double
+    Dim lensAngle As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
     Dim nX2 As Double, nY2 As Double
     
-    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
+    'All PD distort filters use reverse-mapping, which means we loop through pixels in the final image,
+    ' and reverse-map their positions back to the original image.
     Dim srcX As Double, srcY As Double
         
-    'Radius is based off the smaller of the two dimensions - width or height
-    Dim tWidth As Long, tHeight As Long
-    tWidth = curDIBValues.Width
-    tHeight = curDIBValues.Height
-    Dim sRadiusW As Double, sRadiusH As Double
-    Dim sRadiusW2 As Double, sRadiusH2 As Double
+    'By default, the lens effect is calculated as a perfect circle, with a radius based off the smaller of
+    ' the two image dimensions.
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = curDIBValues.Width
+    imgHeight = curDIBValues.Height
     
-    sRadiusW = tWidth * (lensRadius / 100#)
+    Dim minDimension As Double
+    If (imgWidth < imgHeight) Then minDimension = imgWidth Else minDimension = imgHeight
+    
+    'The user's "lens shape" parameter allows us to adjust the aspect ratio of the lens on-the-fly.
+    Dim shapeAdjH As Double, shapeAdjV As Double
+    If (lensShape = 0#) Then
+        shapeAdjH = 0#
+        shapeAdjV = 0#
+    ElseIf (lensShape > 0#) Then
+        shapeAdjH = (minDimension * lensShape) * 0.01
+        shapeAdjV = 0#
+    Else
+        shapeAdjH = 0#
+        shapeAdjV = (minDimension * lensShape * -1#) * 0.01
+    End If
+    
+    'We can precalculate a bunch of inner-loop variables to make the supersampling loop faster
+    Dim sRadiusW As Double, sRadiusH As Double
+    Dim sRadiusW2 As Double, sRadiusH2 As Double, invSRadiusH2 As Double
+    sRadiusW = minDimension * (lensRadius * 0.01) + shapeAdjH
+    If (sRadiusW <= 0#) Then sRadiusW = 0.0001
     sRadiusW2 = 1# / (sRadiusW * sRadiusW)
-    sRadiusH = tHeight * (lensRadius / 100#)
+    
+    sRadiusH = minDimension * (lensRadius * 0.01) + shapeAdjV
+    If (sRadiusH <= 0#) Then sRadiusH = 0.0001
     sRadiusH2 = sRadiusH * sRadiusH
+    invSRadiusH2 = 1# / sRadiusH2
     
     Dim sRadiusMult As Double
     sRadiusMult = sRadiusW * sRadiusH
@@ -330,7 +358,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
         newA = 0
         numSamplesUsed = 0
         
-        'Remap the coordinates around a center point of (0, 0)
+        'Remap the coordinates around the user's center point of (0, 0)
         nX = x - midX
         nY = y - midY
         
@@ -344,31 +372,28 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
             nX2 = j * j
             nY2 = k * k
             
-            'If the values are going to be out-of-bounds, simply maintain the current x and y values
+            'If the values are going to be out-of-bounds, force them to a set OOB position to ensure that the
+            ' resampler uses a blank pixel for them.  (Note that we do this *inside* the supersampling loop,
+            ' which allows for smooth antialiasing along the lens boundary at higher quality levels.)
             If (nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) * sRadiusW2))) Then
-                srcX = x
-                srcY = y
+                srcX = -1
+                srcY = -1
             
             'Otherwise, reverse-map x and y back onto the original image using a reversed lens refraction calculation
             Else
-            
-                'Calculate theta
-                theta = Sqr((1 - (nX2 * sRadiusW2) - (nY2 / sRadiusH2)) * sRadiusMult)
+                
+                theta = Sqr((1# - (nX2 * sRadiusW2) - (nY2 * invSRadiusH2)) * sRadiusMult)
                 theta2 = theta * theta
                 
                 'Calculate the angle for x
                 xAngle = Acos(j / Sqr(nX2 + theta2))
-                firstAngle = PI_HALF - xAngle
-                secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
-                secondAngle = PI_HALF - xAngle - secondAngle
-                srcX = x - Tan(secondAngle) * theta
+                lensAngle = PI_HALF - xAngle - Asin(Sin(PI_HALF - xAngle) * refractiveIndex)
+                srcX = x - Tan(lensAngle) * theta
                 
                 'Now do the same thing for y
                 yAngle = Acos(k / Sqr(nY2 + theta2))
-                firstAngle = PI_HALF - yAngle
-                secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
-                secondAngle = PI_HALF - yAngle - secondAngle
-                srcY = y - Tan(secondAngle) * theta
+                lensAngle = PI_HALF - yAngle - Asin(Sin(PI_HALF - yAngle) * refractiveIndex)
+                srcY = y - Tan(lensAngle) * theta
                 
             End If
             
@@ -433,7 +458,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Apply lens distortion", , GetLocalParamString(), UNDO_LAYER
+    Process "Apply lens distortion", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -441,8 +466,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.5
-    sltYCenter.Value = 0.5
     sltRadius.Value = 50
     sltQuality.Value = 2
 End Sub
@@ -458,7 +481,11 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub sltIndex_Change()
+Private Sub sldCurvature_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sldShape_Change()
     UpdatePreview
 End Sub
 
@@ -482,13 +509,11 @@ End Sub
 
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    
     cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-
 End Sub
 
 Private Sub sltXCenter_Change()
@@ -505,7 +530,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "strength", sltIndex.Value
+        .AddParam "strength", sldCurvature.Value
+        .AddParam "shape", sldShape.Value
         .AddParam "radius", sltRadius.Value
         .AddParam "quality", sltQuality.Value
         .AddParam "centerx", sltXCenter.Value

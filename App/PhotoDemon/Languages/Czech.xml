@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.16</langversion>
+<langversion>6.8.17</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9295,16 +9295,11 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Distort_ApplyLens.frm (FormLens) -->
 
 <phrase>
-<original>lens strength (refractive index)</original>
-<translation>Síla čočky (index lomu)</translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated lens</original>
 <translation>Projektování obrazu pomocí simulovaných čoček</translation>
 </phrase>
 
-<!-- Effects_Distort_ApplyLens.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Distort_ApplyLens.frm-->
 
@@ -15082,10 +15077,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2531</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 2009 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12268 total words. -->
+<!-- As of this build, PhotoDemon contains 4542 phrases. -->
+<!-- 2011 are duplicates, so only 2531 unique phrases have been written to file. -->
+<!-- These 2531 phrases contain approximately 12264 total words. -->
 
 </pdData>

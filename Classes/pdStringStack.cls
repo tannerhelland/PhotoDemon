@@ -26,10 +26,6 @@ Attribute VB_Exposed = False
 ' of the stack (rather than enforcing a strict push/pop access system).  But I like the name "string stack" so I
 ' went with it. ;)
 '
-'Special thanks to the following individuals:
-'   - Ellis Dee, for specialized sort function "Snake Sort" which is well-suited to partially sorted arrays.  Original source here:
-'       http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-%28sort-array-sorting-arrays%29&p=2933240#post2933240
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
