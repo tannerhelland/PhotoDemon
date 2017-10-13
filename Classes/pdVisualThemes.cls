@@ -75,13 +75,13 @@ Private m_MonochromeIcons As Boolean
 'Extra API functions for painting form backgrounds
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function ValidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function EndPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
-Private Declare Function BeginPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
-Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function BeginPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'As part of the painting process, we're gonna be generating a looot of paint messages.  To avoid churn, we'll declare
 ' a single paint struct and update rect up front.
@@ -520,7 +520,7 @@ Private Function LoadThemeWithAllFallbacks(ByVal themeFilename As String, ByRef 
 
     Dim fullThemePath As String
     fullThemePath = g_UserPreferences.GetThemePath & themeFilename
-        
+    
     Dim loadSuccess As Boolean
     
     'In debug builds, we preferentially pull theme files from PD's theme folder.  In production builds, however,

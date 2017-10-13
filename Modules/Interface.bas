@@ -1447,7 +1447,7 @@ Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     
     'This function may be triggered during compilation; avoid this
     If MainModule.IsProgramRunning() Then
-        g_Themer.RemoveWindowPainter srcForm.hWnd
+        If (Not g_Themer Is Nothing) Then g_Themer.RemoveWindowPainter srcForm.hWnd
         NavKey.NotifyFormUnloading srcForm
     End If
     
@@ -1879,8 +1879,8 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
         Case PRDUID_ARROW_UP, PRDUID_ARROW_UPR, PRDUID_ARROW_RIGHT, PRDUID_ARROW_DOWNR, PRDUID_ARROW_DOWN, PRDUID_ARROW_DOWNL, PRDUID_ARROW_LEFT, PRDUID_ARROW_UPL
         
             'Calculate button points.  (Note that these are calculated uniformly for all arrow directions.)
-            Dim buttonPts() As POINTFLOAT
-            ReDim buttonPts(0 To 2) As POINTFLOAT
+            Dim buttonPts() As PointFloat
+            ReDim buttonPts(0 To 2) As PointFloat
             
             buttonPts(0).x = dibSize / 6
             buttonPts(0).y = (dibSize / 3) * 2

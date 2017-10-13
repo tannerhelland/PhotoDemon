@@ -288,7 +288,7 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     End If
     
     'Want timing reports?  Here you go:
-    Debug.Print "String stack sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    'Debug.Print "String stack sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

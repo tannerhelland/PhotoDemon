@@ -94,15 +94,19 @@ End Sub
 'Before unloading the toolboxes, call this sub to write our current toolbox data out to the user's preference file.
 Public Sub SaveToolboxData()
 
-    Dim i As PD_Toolbox
-    For i = [_First] To [_Last]
-        With m_Toolboxes(i)
-            g_UserPreferences.SetPref_Boolean "Toolbox", GetToolboxName(i) & "Visible", .IsVisiblePreference
-            g_UserPreferences.SetPref_Long "Toolbox", GetToolboxName(i) & "Size", .ConstrainingSize
-        End With
-    Next i
-    
-    g_UserPreferences.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
+    If MainModule.WasStartupSuccessful() Then
+
+        Dim i As PD_Toolbox
+        For i = [_First] To [_Last]
+            With m_Toolboxes(i)
+                g_UserPreferences.SetPref_Boolean "Toolbox", GetToolboxName(i) & "Visible", .IsVisiblePreference
+                g_UserPreferences.SetPref_Long "Toolbox", GetToolboxName(i) & "Size", .ConstrainingSize
+            End With
+        Next i
+        
+        g_UserPreferences.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
+        
+    End If
 
 End Sub
 

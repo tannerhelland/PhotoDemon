@@ -91,7 +91,7 @@ Public Sub InitializePluginManager()
     ReDim m_PluginInitialized(0 To CORE_PLUGIN_COUNT - 1) As Boolean
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    m_PluginPath = g_UserPreferences.GetAppPath & "Plugins\"
+    m_PluginPath = g_UserPreferences.GetAppPath() & "Plugins\"
     
     'Make sure the plugin path exists
     If (Not Files.PathExists(PluginManager.GetPluginPath)) Then Files.PathCreate PluginManager.GetPluginPath, True
@@ -679,17 +679,17 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     
         'See if the plugin file exists in the base PD folder.  This can happen if a user unknowingly extracts the PD .zip without
         ' folders preserved.
-        If Files.FileExists(g_UserPreferences.GetProgramPath & pluginFilename) Then
+        If Files.FileExists(g_UserPreferences.GetProgramPath() & pluginFilename) Then
             
             pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
-            If cFile.FileCopyW(g_UserPreferences.GetProgramPath & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
+            If cFile.FileCopyW(g_UserPreferences.GetProgramPath() & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
                 
                 pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
-                cFile.FileDelete g_UserPreferences.GetProgramPath & pluginFilename
+                cFile.FileDelete g_UserPreferences.GetProgramPath() & pluginFilename
                 
                 'Finally, move any associated files to their new home in the plugin folder
                 If GetNonEssentialPluginFiles(pluginEnumID, extraFiles) Then
@@ -697,8 +697,8 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
                     Dim tmpFilename As String
                     
                     Do While extraFiles.PopString(tmpFilename)
-                        If cFile.FileCopyW(g_UserPreferences.GetProgramPath & tmpFilename, PluginManager.GetPluginPath & tmpFilename) Then
-                            cFile.FileDelete g_UserPreferences.GetProgramPath & tmpFilename
+                        If cFile.FileCopyW(g_UserPreferences.GetProgramPath() & tmpFilename, PluginManager.GetPluginPath & tmpFilename) Then
+                            cFile.FileDelete g_UserPreferences.GetProgramPath() & tmpFilename
                         End If
                     Loop
                     
