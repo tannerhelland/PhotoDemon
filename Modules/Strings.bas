@@ -510,7 +510,16 @@ End Function
 ' (Why use this instead of StrComp?  This function uses modern WAPI functions that likely perform
 '  better in esoteric Unicode locales.)
 Public Function StrCompSort(ByRef firstString As String, ByRef secondString As String) As Long
-    StrCompSort = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_LINGUISTIC_CASING, StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString)) - 2
+    'Per MSDN: "Both CompareString and CompareStringEx are optimized to run at the highest speed when
+    ' dwCmpFlags is set to 0 or NORM_IGNORECASE, cchCount1 and cchCount2 are set to -1, and the locale
+    ' does not support any linguistic compressions, as when traditional Spanish sorting treats "ch" as
+    ' a single character."  This is why we don't supply a length for either string, even though we
+    ' obviously know 'em.
+    StrCompSort = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_LINGUISTIC_CASING, StrPtr(firstString), -1, StrPtr(secondString), -1) - 2
+End Function
+
+Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringPtr As Long) As Long
+    StrCompSortPtr = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_LINGUISTIC_CASING, firstStringPtr, -1, secondStringPtr, -1) - 2
 End Function
 
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.

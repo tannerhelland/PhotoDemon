@@ -505,19 +505,21 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     If fontUsable Then fontUsable = Strings.StringsNotEqual(Left$(thisFontFace, 1), "@", False)
     
     'For now, we are also ignoring raster fonts, as they create unwanted complications
-    If fontUsable Then fontUsable = (CLng(srcFontType And RASTER_FONTTYPE) = 0)
+    If fontUsable Then fontUsable = ((srcFontType And RASTER_FONTTYPE) = 0)
     
     'If this font is a worthy addition, add it now
     If fontUsable Then
         
         m_PDFontCache.AddString thisFontFace
         
-        'Make a copy of the last added font, so we can ignore duplicates
+        'Make a copy of the last added font name, so we can ignore duplicates
         m_LastFontAdded = thisFontFace
         
         'NOTE: Perhaps it could be helpful to cache the font type, or possibly use it to determine if fonts should be ignored?
+        ' (At present, this is ignored in favor of a more extensive, Uniscribe-based analysis that determines actual
+        '  full-fledged Unicode range support.)
         'm_PDFontCache(m_NumOfFonts).FontType = srcFontType
-                
+        
     End If
     
     'Return 1 so the enumeration continues
@@ -541,7 +543,7 @@ Public Sub BuildFontCacheProperties()
             'For i = 0 To UBound(g_PDFontProperties)
                 
                 'I'm temporarily disabling this while I investigate some performance issues on slow PCs
-                'Uniscribe.getScriptsSupportedByFont m_PDFontCache.GetString(i), g_PDFontProperties(i)
+                'Uniscribe.GetScriptsSupportedByFont m_PDFontCache.GetString(i), g_PDFontProperties(i)
                 
                 'Debug only: list fonts that support CJK forms
                 'If g_PDFontProperties(i).Supports_CJK Then Debug.Print "Supports CJK: " & m_PDFontCache.GetString(i)
