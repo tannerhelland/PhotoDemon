@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Dolgu aracı</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Dolgu katmanı</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>renk ve donukluk</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>sadece kırmızı</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>sadece yeşil</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>sadece mavi</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>yalnızca alfa</translation>
 </phrase>
 
 <phrase>
@@ -1563,7 +1563,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>En son çıkan tüm resimleri aç</translation>
 </phrase>
 
 <phrase>
@@ -5256,7 +5256,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Siyah-beyaz</translation>
 </phrase>
 
 <phrase>
@@ -5336,7 +5336,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastik ambalaj</translation>
 </phrase>
 
 <phrase>
@@ -5551,7 +5551,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Kar</translation>
 </phrase>
 
 <phrase>
@@ -8099,42 +8099,42 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>opaklığa başlamak</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>renk başla</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>son opaklık</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>son rengi</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>renk değiştir</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>doygunluğu değiştir</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>parlaklığı değiştir</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>alfa değişir</translation>
 </phrase>
 
 <phrase>
@@ -8241,12 +8241,12 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Yok Hayır</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Evet</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8951,17 +8951,17 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>ışık açısı</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>ışık şiddeti</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Görüntüyü plastik içinde sarmak</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9898,12 +9898,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>rüzgar</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Kar yağsın, kar yağsın, kar yağsın.</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9924,7 +9924,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>dağıtım</translation>
 </phrase>
 
 <phrase>
@@ -9934,7 +9934,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>üniforma</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11733,7 +11733,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopyalar</translation>
 </phrase>
 
 <phrase>
@@ -13236,7 +13236,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Resmin renklerini seçin</translation>
 </phrase>
 
 <phrase>
@@ -13291,12 +13291,12 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Silgi</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Boya kovası (renk ile doldurun)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13307,27 +13307,27 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>örnek yarıçapı</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>tüm katmanları örnekle</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13359,7 +13359,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>dolgu kaynağı</translation>
 </phrase>
 
 <phrase>
@@ -13384,17 +13384,17 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>harman</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>geçerli renk</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>özel fırça</translation>
 </phrase>
 
 <phrase>
@@ -13414,27 +13414,27 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Dolgular birçok farklı stili destekler. Düz renk, desen ve degrade stilleri arasında geçiş yapmak için tıklayın.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Tolerans, dolguyu aralarında yaymadan önce iki pikselin ne kadar benzer olması gerektiğini denetler.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normalde dolgu işlemleri tüm görüntüyü analiz eder. Ayrıca sadece aktif katmanı analiz edebilirsiniz.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normal olarak, dolgular bir hedef pikselden yayılır ve komşu pikseller arttıkça eklenir. Alternatif olarak süreklilik dikkate alınmaksızın görüntünün tamamını analiz edecek şekilde ayarlayabilirsiniz.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Bu seçenek dolguyu eklerken piksellerin nasıl analiz edildiğini kontrol eder.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13593,37 +13593,37 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>vurgulamak</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>hafif kutu</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>karıncalar</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>tüylü</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>iç</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>dış</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>sınır</translation>
 </phrase>
 
 <phrase>
@@ -14313,7 +14313,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>yüksek çözünürlüklü fare girişi</translation>
 </phrase>
 
 <phrase>
@@ -14343,7 +14343,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>uygulama ayarları klasörü</translation>
 </phrase>
 
 <phrase>
@@ -14884,7 +14884,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Photodemon'u kısıtlı bir sistem klasörüne yerleştirdiniz. Güvenlik önlemleri PhotoDemon'un bu klasörü değiştirmesini engellediğinden, otomatik güncelleştirmeler artık devre dışı bırakılmıştır. Onları geri yüklemek için, PhotoDemon'u Masaüstü, Belgeler veya İndirmeler gibi bir yönetici olmayan klasöre taşımanız gerekir. 
+
+ (PhotoDemon'u olduğu yerde bırakırsanız lütfen zaman zaman photodemon.org'u ziyaret etmeyi unutmayın. yeni sürümler.)</translation>
 </phrase>
 
 <phrase>
@@ -14898,7 +14900,7 @@ If yamalı vardır.</translation>
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Uzak Masaüstü veya bir VM (Sanal Makine) kullanırken, yüksek çözünürlüklü fare girişi düzgün çalışmayabilir. Bu, uzun süredir devam eden bir Windows hatası. Bu durumlarda, doğru fare davranışını geri yüklemek için bu ayarı kullanabilirsiniz.</translation>
 </phrase>
 
 <phrase>

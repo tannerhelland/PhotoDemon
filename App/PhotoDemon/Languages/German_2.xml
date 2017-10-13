@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3262</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1117,7 +1117,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>luminance</original>
-<translation>Leuchtdichte</translation>
+<translation>Luminanz</translation>
 </phrase>
 
 <phrase>
@@ -3961,7 +3961,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Increase luminance</original>
-<translation>Leuchtdichte erhöhen</translation>
+<translation>Luminanz erhöhen</translation>
 </phrase>
 
 <phrase>
@@ -3981,7 +3981,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Decrease luminance</original>
-<translation>Leuchtdichte verringern</translation>
+<translation>Luminanz verringern</translation>
 </phrase>
 
 <phrase>
@@ -6623,7 +6623,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>preserve luminance</original>
-<translation>Leuchtdichte erhalten</translation>
+<translation>Luminanz erhalten</translation>
 </phrase>
 
 <phrase>
@@ -6833,7 +6833,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>Werte für Farbton, Sättigung und Leuchtdichte werden angepasst</translation>
+<translation>Werte für Farbton, Sättigung und Luminanz werden angepasst</translation>
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
@@ -9139,7 +9139,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Merging luminance and chroma into final image</original>
-<translation>Leuchtdichte und Chroma werden in finales Bild zusammengeführt</translation>
+<translation>Luminanz und Chroma werden in finales Bild zusammengeführt</translation>
 </phrase>
 
 <phrase>
@@ -14355,7 +14355,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>Ordner für Anwendungseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -14639,7 +14639,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. PhotoDemon kann nur Bildnamen anzeigen anstelle von vollständigen Bildspeicherorten.</translation>
+<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildspeicherorten.</translation>
 </phrase>
 
 <phrase>
@@ -14896,7 +14896,9 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Sie haben PhotoDemon in einem eingeschränkten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner (wie Desktop, Documents oder Downloads) verschieben.
+
+(Wenn Sie PhotoDemon an diesem Ort belassen, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
 </phrase>
 
 <phrase>

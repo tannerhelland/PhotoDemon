@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If problemet vedvarer, kan du rapportere det til PhotoDemon utviklere via photod
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Fyll verktøy</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Fyll lag</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To aktivere støtte for komprimerte PDI-filer, klikker du på Hjelp> Se etter op
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>farge og opasitet</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To aktivere støtte for komprimerte PDI-filer, klikker du på Hjelp> Se etter op
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>bare rødt</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>kun grønn</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>bare blå</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>bare alfa</translation>
 </phrase>
 
 <phrase>
@@ -1567,7 +1567,7 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Åpne alle nyere bilder</translation>
 </phrase>
 
 <phrase>
@@ -5262,7 +5262,7 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monokrom til grå</translation>
 </phrase>
 
 <phrase>
@@ -5342,7 +5342,7 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastfolie</translation>
 </phrase>
 
 <phrase>
@@ -5557,7 +5557,7 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Snø</translation>
 </phrase>
 
 <phrase>
@@ -8106,42 +8106,42 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>start opacity</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>start farge</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>slutten opacity</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>sluttfarge</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>variere fargetone</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>varierer metning</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>variere luminans</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>variere alfa</translation>
 </phrase>
 
 <phrase>
@@ -8248,12 +8248,12 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Nei</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Ja</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8958,17 +8958,17 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>lys vinkel</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>lysintensitet</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Innpakning bilde i plast</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9905,12 +9905,12 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>vind</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>La det snø, la det snø, la det snø</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9931,7 +9931,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>fordeling</translation>
 </phrase>
 
 <phrase>
@@ -9941,7 +9941,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>uniform</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11741,7 +11741,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopier</translation>
 </phrase>
 
 <phrase>
@@ -13244,7 +13244,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Velg farger fra bildet</translation>
 </phrase>
 
 <phrase>
@@ -13299,12 +13299,12 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Viskelær</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Malebøtte (fyll med farge)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13315,27 +13315,27 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>prøve radius</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>prøv alle lagene</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13367,7 +13367,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>fyll kilde</translation>
 </phrase>
 
 <phrase>
@@ -13392,17 +13392,17 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>blanding</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>nåværende farge</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>tilpasset pensel</translation>
 </phrase>
 
 <phrase>
@@ -13422,27 +13422,27 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Fills støtter mange forskjellige stiler. Klikk for å bytte mellom farge, mønster og gradient stiler.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Toleranse styrer hvordan lignende to piksler må være før spredning av fyllingen mellom dem.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normalt analyserer fyllingsoperasjoner hele bildet. Du kan også analysere bare det aktive laget.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Vanligvis sprer fyllene seg ut fra et målpiksel, og legger til nabobilder som det går. Du kan alternativt sette den til å analysere hele bildet uten hensyn til kontinuitet.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Dette alternativet styrer hvordan piksler blir analysert når de legges til fyllingen.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13601,37 +13601,37 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>fremheve</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>lysboks</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>maur</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>fjær</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>interiør</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>ytre</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>grense</translation>
 </phrase>
 
 <phrase>
@@ -14326,7 +14326,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>høyoppløselig musinngang</translation>
 </phrase>
 
 <phrase>
@@ -14356,7 +14356,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>applikasjonsinnstillingsmappe</translation>
 </phrase>
 
 <phrase>
@@ -14897,7 +14897,7 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Übersetzung fehlgeschlagen!</translation>
 </phrase>
 
 <phrase>
@@ -14911,7 +14911,7 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Når du bruker Eksternt skrivebord eller en VM (Virtual Machine), kan det hende at høyoppløselig musinngang ikke fungerer riktig. Dette er en langvarig Windows-feil. I disse situasjonene kan du bruke denne innstillingen for å gjenopprette korrekt musegang.</translation>
 </phrase>
 
 <phrase>

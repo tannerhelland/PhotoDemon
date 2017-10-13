@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.18</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Naplnit nástroj</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Naplnit vrstvu</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1110,7 +1110,7 @@ VBCRLPovolit podporu komprimovaných souborů PDI, klepněte na tlačítko Nápo
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>barvy a opacity</translation>
 </phrase>
 
 <phrase>
@@ -1120,22 +1120,22 @@ VBCRLPovolit podporu komprimovaných souborů PDI, klepněte na tlačítko Nápo
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>pouze červená</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>pouze zelená</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>pouze modrá</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>pouze alfa</translation>
 </phrase>
 
 <phrase>
@@ -5257,7 +5257,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monochromatický až šedý</translation>
 </phrase>
 
 <phrase>
@@ -8100,42 +8100,42 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>zahájení opacity</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>start barva</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>koncová opacita</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>konečná barva</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>měnit odstín</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>měnit saturaci</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>měnit jas</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>měnit alfa</translation>
 </phrase>
 
 <phrase>
@@ -11735,7 +11735,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopie</translation>
 </phrase>
 
 <phrase>
@@ -13238,7 +13238,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Vyberte barvy z obrázku</translation>
 </phrase>
 
 <phrase>
@@ -13298,7 +13298,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Malý kbelík (vyplňte barvou)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13309,27 +13309,27 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>poloměr vzorku</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>vzorek všech vrstev</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13361,7 +13361,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>zdroj výplně</translation>
 </phrase>
 
 <phrase>
@@ -13386,17 +13386,17 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>směs</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>aktuální barvy</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>vlastní štětec</translation>
 </phrase>
 
 <phrase>
@@ -13416,27 +13416,27 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Naplnění podporuje mnoho různých stylů. Klepnutím přepnete mezi stylovými barvami, vzorem a gradientem.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Tolerance řídí, jak mají být podobné dva pixely před rozložením výplně mezi nimi.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Obvykle provádí operace naplnění analýzu celého obrázku. Můžete také analyzovat pouze aktivní vrstvu.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Obvykle se výplně šíří z cílového pixelu a přidávají sousední obrazové body. Můžete jej také nastavit tak, aby analyzoval celý obraz bez ohledu na kontinuitu.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Tato volba určuje, jak jsou pixely analyzovány při jejich přidávání do výplně.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13595,37 +13595,37 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>zvýraznit</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>světelný box</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>mravenci</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>pernaté</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>interiér</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>vnější</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>okraj</translation>
 </phrase>
 
 <phrase>
@@ -14318,7 +14318,7 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>vstup myši s vysokým rozlišením</translation>
 </phrase>
 
 <phrase>
@@ -14348,7 +14348,7 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>složku nastavení aplikace</translation>
 </phrase>
 
 <phrase>
@@ -14889,7 +14889,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Umístěni aplikaci PhotoDemon do složky s omezeným systémem. Bezpečnostní opatření brání aplikaci PhotoDemon modifikovat tuto složku, takže automatické aktualizace jsou nyní zakázány. Chcete-li je obnovit, musíte přesunout aplikaci PhotoDemon do složky, která není administrátora, například Desktop, Documents nebo Downloads.
+
+ (Pokud necháte PhotoDemon tam, kde je, nezapomeňte čas od času navštívit photodemon.org nové verze.)</translation>
 </phrase>
 
 <phrase>
@@ -14903,7 +14905,7 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Při použití funkce Vzdálená plocha nebo VM (Virtual Machine) nemusí vstup myši s vysokým rozlišením fungovat správně. Jedná se o dlouhou chybu systému Windows. V těchto situacích můžete toto nastavení použít k obnovení správného chování myši.</translation>
 </phrase>
 
 <phrase>
