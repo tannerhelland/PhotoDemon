@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский (Russian)</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If проблема не устранена, пожалуйста, сообщи�
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Инструмент заполнения</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Уровень заполнения</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To включить поддержку сжатых файлов PDI, выбер
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>цвет и непрозрачность</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To включить поддержку сжатых файлов PDI, выбер
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>только красный</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>только зеленый</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>только синий</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>только альфа</translation>
 </phrase>
 
 <phrase>
@@ -1567,7 +1567,7 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Открыть все последние изображения</translation>
 </phrase>
 
 <phrase>
@@ -5262,7 +5262,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Монохромный до серого</translation>
 </phrase>
 
 <phrase>
@@ -5342,7 +5342,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Пластиковая упаковка</translation>
 </phrase>
 
 <phrase>
@@ -5557,7 +5557,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Снег</translation>
 </phrase>
 
 <phrase>
@@ -8106,42 +8106,42 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>начать непрозрачность</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>начать цвет</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>непрозрачность конца</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>конечный цвет</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>варьировать оттенок</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>варьировать насыщенность</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>изменять яркость</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>варьировать альфа</translation>
 </phrase>
 
 <phrase>
@@ -8248,12 +8248,12 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Нет</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Да</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8958,17 +8958,17 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>угол света</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>Интенсивность света</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Обертка изображения в пластике</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9905,12 +9905,12 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>ветер</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Пусть снег, пусть снег, пусть снег</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9931,7 +9931,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>распределение</translation>
 </phrase>
 
 <phrase>
@@ -9941,7 +9941,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>единообразный</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11741,7 +11741,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>копии</translation>
 </phrase>
 
 <phrase>
@@ -13244,7 +13244,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Выберите цвета изображения</translation>
 </phrase>
 
 <phrase>
@@ -13299,12 +13299,12 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Ластик</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Ведро для окраски (заливка цветом)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13315,27 +13315,27 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>радиус образца</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>образец всех слоев</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>N/A</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13367,7 +13367,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>источник заполнения</translation>
 </phrase>
 
 <phrase>
@@ -13392,17 +13392,17 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>смесь</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>текущий цвет</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>пользовательская кисть</translation>
 </phrase>
 
 <phrase>
@@ -13422,27 +13422,27 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Заполняет множество разных стилей. Нажмите, чтобы переключаться между сплошными цветами, рисунком и стилями градиента.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Толерантность управляет тем, насколько подобны два пикселя перед распространением заливки между ними.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Обычно операции заполнения анализируют весь образ. Вы также можете анализировать только активный слой.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Как правило, заполнение распространяется из целевого пикселя, добавляя соседние пиксели по мере их прохождения. Вы можете альтернативно настроить его для анализа всего изображения без учета непрерывности.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Этот параметр управляет тем, как пиксели анализируются при добавлении их к заполнению.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13601,37 +13601,37 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>основной момент</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>лайтбокс</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>муравьи</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>пернатого</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>интерьер</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>экстерьер</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>граница</translation>
 </phrase>
 
 <phrase>
@@ -14326,7 +14326,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>вход мыши с высоким разрешением</translation>
 </phrase>
 
 <phrase>
@@ -14356,7 +14356,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>папка настроек приложения</translation>
 </phrase>
 
 <phrase>
@@ -14897,7 +14897,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Вы разместили PhotoDemon в ограниченной системной папке. Меры предосторожности не позволяют PhotoDemon изменять эту папку, поэтому автоматические обновления теперь отключены. Чтобы восстановить их, вы должны переместить PhotoDemon в папку, отличную от admin, например Desktop, Documents или Downloads.
+
+ (Если вы оставите PhotoDemon там, где она есть, не забудьте периодически посещать photodemon.org, чтобы проверить новые версии.)</translation>
 </phrase>
 
 <phrase>
@@ -14911,7 +14913,7 @@ If вы все еще отключить обновления, не забудь
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>При использовании удаленного рабочего стола или виртуальной машины (VM) использование мыши с высоким разрешением может работать некорректно. Это давняя ошибка Windows. В этих ситуациях вы можете использовать этот параметр для восстановления правильного поведения мыши.</translation>
 </phrase>
 
 <phrase>

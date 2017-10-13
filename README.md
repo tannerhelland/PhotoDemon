@@ -1,6 +1,6 @@
-# PhotoDemon 7.0 pre-alpha
+# PhotoDemon 7.0 beta
 
-![Screenshot](http://photodemon.org/images/PD_70_a2.jpg)
+![Screenshot](http://photodemon.org/images/PD_70_b1.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 

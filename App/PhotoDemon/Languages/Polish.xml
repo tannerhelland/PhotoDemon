@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If problem nie ustępuje, zgłoś go do programistów PhotoDemon poprzez photode
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Napełnij narzędzie</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Warstwa wypełnienia</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>kolor i nieprzejrzystość</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>tylko czerwony</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>tylko zielony</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>tylko niebieski</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>tylko alpha</translation>
 </phrase>
 
 <phrase>
@@ -1561,7 +1561,7 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Otwórz wszystkie najnowsze zdjęcia</translation>
 </phrase>
 
 <phrase>
@@ -5250,7 +5250,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monochromatyczny na szary</translation>
 </phrase>
 
 <phrase>
@@ -5330,7 +5330,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastikowe opakowanie</translation>
 </phrase>
 
 <phrase>
@@ -5545,7 +5545,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Śnieg</translation>
 </phrase>
 
 <phrase>
@@ -8091,42 +8091,42 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>zacznij zaciemniać</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>zacznij kolor</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>koniec zmętnienia</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>kolor końca</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>różnić odcień</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>zmieniać nasycenie</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>zmieniać luminancję</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>różnią się alpha</translation>
 </phrase>
 
 <phrase>
@@ -8233,12 +8233,12 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Nie</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Tak</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8943,17 +8943,17 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>kąt świetlny</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>natężenie światła</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Owijanie obrazu w plastiku</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9890,12 +9890,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>wiatr</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Niech śnieg, śnieg, śnieg</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9916,7 +9916,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>dystrybucja</translation>
 </phrase>
 
 <phrase>
@@ -9926,7 +9926,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>mundur</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11725,7 +11725,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopie</translation>
 </phrase>
 
 <phrase>
@@ -13228,7 +13228,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Wybierz kolory z obrazu</translation>
 </phrase>
 
 <phrase>
@@ -13283,12 +13283,12 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Gumka Do Mazania</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Wiadro z farbą (wypełnienie kolorem)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13299,27 +13299,27 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>promień próbki</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>spróbować wszystkie warstwy</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13351,7 +13351,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>wypełnij źródło</translation>
 </phrase>
 
 <phrase>
@@ -13376,17 +13376,17 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>mieszanka</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>bieżący kolor</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>pędzel niestandardowy</translation>
 </phrase>
 
 <phrase>
@@ -13406,27 +13406,27 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Napełnia wiele różnych stylów. Kliknij, aby przełączać się między stylami stałego koloru, wzoru i gradientu.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Tolerancja kontroluje, jak muszą być podobne dwa piksele przed rozprzestrzenianiem się wypełnienia między nimi.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Zwykle operacje wypełniania analizują cały obraz. Możesz także przeanalizować tylko aktywną warstwę.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Zazwyczaj wypełnienia rozłożone są z docelowego piksela, dodając do niego sąsiednie piksele. Można alternatywnie ustawić to do analizy całego obrazu, bez względu na ciągłość.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Ta opcja określa, jak piksele są analizowane podczas dodawania ich do wypełnienia.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13585,37 +13585,37 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>atrakcja</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>na białym tle</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>mrówki</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>pierzasty</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>wnętrze</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>zewnętrzny</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>granica</translation>
 </phrase>
 
 <phrase>
@@ -14305,7 +14305,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>wejście myszy o wysokiej rozdzielczości</translation>
 </phrase>
 
 <phrase>
@@ -14335,7 +14335,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>folder ustawień aplikacji</translation>
 </phrase>
 
 <phrase>
@@ -14876,7 +14876,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Umieszczono folder PhotoDemon w folderze systemu ograniczonego. Środki ostrożności zapobiegają modyfikowaniu tego folderu przez program PhotoDemon, więc automatyczne aktualizacje są teraz wyłączone. Aby je przywrócić, musisz przenieść program PhotoDemon na folder inny niż administrator, na przykład Pulpit, Dokumenty lub Pobierz.
+
+ (jeśli pozostawisz program PhotoDemon, gdzie jest, nie zapomnij odwiedzić witrynę photodemon.org w celu sprawdzenia, czy nowe wersje).</translation>
 </phrase>
 
 <phrase>
@@ -14890,7 +14892,7 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Jeśli używasz Pulpitu zdalnego lub maszyny wirtualnej (Virtual Machine), wejście myszy o wysokiej rozdzielczości może nie działać poprawnie. Jest to długotrwały błąd systemu Windows. W tych sytuacjach można użyć tego ustawienia, aby przywrócić prawidłowe zachowanie myszy.</translation>
 </phrase>
 
 <phrase>

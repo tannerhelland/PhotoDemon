@@ -168,8 +168,8 @@ Begin VB.Form FormAbout
          Left            =   120
          TabIndex        =   4
          Top             =   240
-         Width           =   9255
-         _ExtentX        =   16325
+         Width           =   9405
+         _ExtentX        =   16589
          _ExtentY        =   10821
          BorderlessMode  =   -1  'True
       End
@@ -266,6 +266,7 @@ Private Sub Form_Load()
     GenerateContributor "Dosadi", "http://eztwain.com/eztwain1.htm"
     GenerateContributor "Easy RGB", "http://www.easyrgb.com/"
     GenerateContributor "Everaldo Coelho", "http://www.everaldo.com/"
+    GenerateContributor "FlatIcons.net", "http://flaticons.net/"
     GenerateContributor "Francis DC"
     GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
@@ -298,14 +299,12 @@ Private Sub Form_Load()
     GenerateContributor "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652"
     GenerateContributor "Roy (rk)"
     GenerateContributor "Raj Chaudhuri", "https://github.com/rajch"
-    GenerateContributor "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1"
+    GenerateContributor "Robert Rayment", "http://rrprogs.com/"
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
-    GenerateContributor "Tango Icon Library", "http://tango.freedesktop.org/"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
     GenerateContributor "Vladimir Vissoultchev", "https://github.com/wqweto"
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
-    GenerateContributor "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
-    GenerateContributor "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1"
+    GenerateContributor "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=55292624&lngWId=1"
     
     'Add dummy entries to the owner-drawn list box
     lstContributors.SetAutomaticRedraws False, False
@@ -353,7 +352,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         End If
         
         'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
         
         'Manually paint an uncolored background

@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -418,12 +418,12 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Fyll verktyg</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Fyll lager</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1112,7 +1112,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>färg och opacitet</translation>
 </phrase>
 
 <phrase>
@@ -1122,22 +1122,22 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>bara röd</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>endast grönt</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>blått bara</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>alfa bara</translation>
 </phrase>
 
 <phrase>
@@ -1563,7 +1563,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Öppna alla nya bilder</translation>
 </phrase>
 
 <phrase>
@@ -5258,7 +5258,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Svartvitt till grått</translation>
 </phrase>
 
 <phrase>
@@ -5338,7 +5338,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastfolie</translation>
 </phrase>
 
 <phrase>
@@ -5553,7 +5553,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Snö</translation>
 </phrase>
 
 <phrase>
@@ -8102,42 +8102,42 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>börja opacitet</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>starta färg</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>slutet opacitet</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>slutfärg</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>variera nyans</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>varierar mättnad</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>varierar luminans</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>variera alfa</translation>
 </phrase>
 
 <phrase>
@@ -8244,12 +8244,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Nej</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Ja</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8954,17 +8954,17 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>ljusvinkel</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>ljusintensitet</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Förpackning i plast</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9901,12 +9901,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>vind</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Låt det snöa, låt det snöa, låt det snöa</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9927,7 +9927,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>distribution</translation>
 </phrase>
 
 <phrase>
@@ -9937,7 +9937,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>enhetlig</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11736,7 +11736,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopior</translation>
 </phrase>
 
 <phrase>
@@ -13239,7 +13239,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Välj färger från bilden</translation>
 </phrase>
 
 <phrase>
@@ -13294,12 +13294,12 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Suddgummi</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Färghink (fyll i färg)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13310,27 +13310,27 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>provradie</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>prova alla lager</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13362,7 +13362,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>fyllningskälla</translation>
 </phrase>
 
 <phrase>
@@ -13387,17 +13387,17 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>blandning</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>nuvarande färg</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>anpassad pensel</translation>
 </phrase>
 
 <phrase>
@@ -13417,27 +13417,27 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Fyller stöder många olika stilar. Klicka för att växla mellan färgtoner, mönster och gradientstilar.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Tolerans kontrollerar hur liknande två pixlar måste vara innan man sprider fyllningen mellan dem.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normalt analyserar fyllningsoperationer hela bilden. Du kan också analysera bara det aktiva lagret.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normalt sprids fyllningar ut från en målpixel och lägger till närliggande pixlar som det går. Du kan alternativt ställa in den för att analysera hela bilden, utan hänsyn till kontinuitet.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Det här alternativet styr hur pixlar analyseras när de läggs till i fyllningen.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13596,37 +13596,37 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>markera</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>ljuslåda</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>myror</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>befjädrad</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>interiör</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>exteriör</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>gräns</translation>
 </phrase>
 
 <phrase>
@@ -14321,7 +14321,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>högupplöst mus-ingång</translation>
 </phrase>
 
 <phrase>
@@ -14351,7 +14351,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>mapp för programinställningar</translation>
 </phrase>
 
 <phrase>
@@ -14892,7 +14892,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Du har placerat PhotoDemon i en begränsad systemmapp. Säkerhetsåtgärder förhindrar PhotoDemon från att ändra den här mappen, så automatiska uppdateringar är nu inaktiverade. För att återställa dem måste du flytta PhotoDemon till en icke-administrativ mapp, som Desktop, Documents eller Downloads. 
+
+ (Om du lämnar PhotoDemon där den är, glöm inte att besöka photodemon.org från tid till annan för att kontrollera nya versioner.)</translation>
 </phrase>
 
 <phrase>
@@ -14906,7 +14908,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>När du använder Fjärrskrivbord eller en VM (Virtual Machine) kanske inte muspekaren med hög upplösning fungerar korrekt. Detta är en långvarig Windows-bugg. I dessa situationer kan du använda denna inställning för att återställa rätt musbeteende.</translation>
 </phrase>
 
 <phrase>

@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Täytä työkalu</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Täytä kerros</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>väri ja opasiteetti</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>vain punainen</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>vain vihreä</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>vain sininen</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>vain alfa</translation>
 </phrase>
 
 <phrase>
@@ -1563,7 +1563,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Avaa kaikki viimeaikaiset kuvat</translation>
 </phrase>
 
 <phrase>
@@ -5256,7 +5256,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Mustavalkoinen tai harmaa</translation>
 </phrase>
 
 <phrase>
@@ -5336,7 +5336,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Muovikääre</translation>
 </phrase>
 
 <phrase>
@@ -5551,7 +5551,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Lumi</translation>
 </phrase>
 
 <phrase>
@@ -8100,42 +8100,42 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>Aloita peittävyys</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>Aloita väri</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>loppuopatia</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>loppuväri</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>vaihtelevat värisävyä</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>vaihtelevat kylläisyyttä</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>vaihdella luminanssia</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>vaihda alfa</translation>
 </phrase>
 
 <phrase>
@@ -8242,12 +8242,12 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Ei</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Joo</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8952,17 +8952,17 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>vaalea kulma</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>valon voimakkuus</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Kääritään kuva muoviin</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9899,12 +9899,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>tuuli</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Anna sen lunta, anna sen lunta, anna sen lunta</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9925,7 +9925,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>jakelu</translation>
 </phrase>
 
 <phrase>
@@ -9935,7 +9935,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>yhtenäinen</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11735,7 +11735,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kappaletta</translation>
 </phrase>
 
 <phrase>
@@ -13238,7 +13238,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Valitse värit kuvasta</translation>
 </phrase>
 
 <phrase>
@@ -13293,12 +13293,12 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Pyyhekumi</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Paint kauha (täytä väreillä)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13309,27 +13309,27 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>näytteen säde</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>näyte kaikki kerrokset</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13361,7 +13361,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>täytä lähde</translation>
 </phrase>
 
 <phrase>
@@ -13386,17 +13386,17 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>sekoitus</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>nykyinen väri</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>mukautettu harja</translation>
 </phrase>
 
 <phrase>
@@ -13416,27 +13416,27 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Täyttyy tukee monia erilaisia tyylejä. Napsauta siirtyäksesi kiinteän värin, kuvion ja kaltevuustyyleiden välillä.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Suvaitsevaisuus määrää, kuinka samankaltaisten kahden pikselin on oltava ennen niiden täyttämistä.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Tavallisesti täyttötoiminnot analysoivat koko kuvan. Voit myös analysoida vain aktiivisen kerroksen.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normaalisti täytteet hajotetaan kohdepikselistä, lisäämällä vierekkäiset pikselit sen mukaan. Voit vaihtoehtoisesti asettaa sen analysoimaan koko kuvan huolimatta jatkuvuudesta.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Tämä vaihtoehto ohjaa kuinka pikselit analysoidaan lisäämällä ne täyttöön.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13595,37 +13595,37 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>kohokohta</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>lightboxiin</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>muurahaisia</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>höyhenpeitteinen</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>sisusta</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>ulkopuoli</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>reunus</translation>
 </phrase>
 
 <phrase>
@@ -14320,7 +14320,7 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>korkean resoluution hiiren sisäänmeno</translation>
 </phrase>
 
 <phrase>
@@ -14350,7 +14350,7 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>sovellusasetusten kansio</translation>
 </phrase>
 
 <phrase>
@@ -14891,7 +14891,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Olet asettanut PhotoDemonin rajoitettuun järjestelmäkansioon. Turvallisuustoimenpiteet estävät PhotoDemonia muokkaamasta tätä kansiota, joten automaattiset päivitykset poistetaan käytöstä. Voit palauttaa ne PhotoDemon-sovelluksen muuhun kuin admin-kansioon, kuten työpöydälle, asiakirjoille tai latauksille. 
+
+ (Jos jätät PhotoDemonin missä se on, älä unohda käydä photodemon.org -palvelussa aika ajoin tarkistaaksesi uusia versioita.)</translation>
 </phrase>
 
 <phrase>
@@ -14905,7 +14907,7 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Kun käytät etätyöpöytä- tai VM-laitetta (Virtual Machine), teräväpiirtohiiren syöttö ei välttämättä toimi oikein. Tämä on pitkäaikainen Windows-bugi. Näissä tilanteissa tämä asetus korjaa hiiren oikean toiminnan.</translation>
 </phrase>
 
 <phrase>

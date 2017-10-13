@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -417,12 +417,12 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Töltsön szerszámot</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Fill réteg</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1111,7 +1111,7 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>szín és homályosság</translation>
 </phrase>
 
 <phrase>
@@ -1121,22 +1121,22 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>csak vörös</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>csak zöld</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>csak kék</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>csak alfa</translation>
 </phrase>
 
 <phrase>
@@ -1561,7 +1561,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Nyissa meg az összes új képet</translation>
 </phrase>
 
 <phrase>
@@ -5248,7 +5248,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monokróm-szürke</translation>
 </phrase>
 
 <phrase>
@@ -5328,7 +5328,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Műanyag csomagolást</translation>
 </phrase>
 
 <phrase>
@@ -5543,7 +5543,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Hó</translation>
 </phrase>
 
 <phrase>
@@ -8089,42 +8089,42 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>indítsa el az opacitást</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>kezdeni a színt</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>véget ér</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>végső színt</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>változó színárnyalat</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>telítettség változik</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>a fénysűrűséget változtatják</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>alfa változhat</translation>
 </phrase>
 
 <phrase>
@@ -8231,12 +8231,12 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Nem</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Igen</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8941,17 +8941,17 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>könnyű szög</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>fényintenzitás</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Csomagolás a képen műanyagból</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9888,12 +9888,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>szél</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Hagyja hó, hagyja hó, hagyja hó</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9914,7 +9914,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>terjesztés</translation>
 </phrase>
 
 <phrase>
@@ -9924,7 +9924,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>egyenruha</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11723,7 +11723,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>példányban</translation>
 </phrase>
 
 <phrase>
@@ -13226,7 +13226,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Válasszon színeket a képből</translation>
 </phrase>
 
 <phrase>
@@ -13281,12 +13281,12 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Radír</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Festés vödör (töltse színnel)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13297,27 +13297,27 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>minta sugara</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>minta minden réteget</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13349,7 +13349,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>töltse ki a forrást</translation>
 </phrase>
 
 <phrase>
@@ -13374,17 +13374,17 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>keverék</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>aktuális szín</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>egyéni ecset</translation>
 </phrase>
 
 <phrase>
@@ -13404,27 +13404,27 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>A kitöltések számos különböző stílust támogatnak. Kattintson a színes, a minta és a színátmenet stílusok közötti váltáshoz.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>A tolerancia azt szabályozza, hogy a két képpontnak milyen hasonlónak kell lennie, mielőtt átadja a kitöltésüket.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normális esetben a teljes műveletek az egész képet elemzik. Az aktív réteget is elemezheti.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normális esetben a tömbök kitágulnak egy célpixelről, hozzáadva a szomszédos pixeket, amint megy. Alternatívaként beállíthatja, hogy elemezze a teljes képet, tekintet nélkül a folytonosságra.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Ez az opció azt szabályozza, hogy miként elemezik a képpontokat a kitöltéskor.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13583,37 +13583,37 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>Kiemel</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>világító doboz</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>hangyák</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>tollas</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>belső</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>külső</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>határ</translation>
 </phrase>
 
 <phrase>
@@ -14303,7 +14303,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>nagy felbontású egérbemenet</translation>
 </phrase>
 
 <phrase>
@@ -14333,7 +14333,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>alkalmazásbeállítások mappáját</translation>
 </phrase>
 
 <phrase>
@@ -14874,7 +14874,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>A PhotoDemont egy korlátozott rendszermappába helyezte. A biztonsági óvintézkedések megakadályozzák, hogy a PhotoDemon módosíthassa ezt a mappát, így az automatikus frissítések letiltásra kerülnek. A helyreállításhoz a PhotoDemon-t át kell vinnie egy nem adminisztrátori mappába, például a Desktop, Documents vagy Downloadss.
+
+ (Ha elhagyja a PhotoDemont, ahol van, kérjük, ne felejtse el látogatni a photodemon.org-ot időről időre, hogy ellenőrizze új verziók.)</translation>
 </phrase>
 
 <phrase>
@@ -14888,7 +14890,7 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Távoli asztal vagy VM (virtuális gép) használata esetén a nagy felbontású egér bemenet nem működik megfelelően. Ez egy régóta működő Windows hiba. Ezekben a helyzetekben a helyes egér viselkedésének visszaállításához ezt a beállítást használhatja.</translation>
 </phrase>
 
 <phrase>

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3011</langversion>
+<langversion>6.8.3280</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -418,12 +418,12 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Alat pengisian</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Lapisan isian</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1112,7 +1112,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>warna dan kelegapan</translation>
 </phrase>
 
 <phrase>
@@ -1122,22 +1122,22 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>merah sahaja</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>hijau sahaja</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>biru sahaja</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>alfa sahaja</translation>
 </phrase>
 
 <phrase>
@@ -1567,7 +1567,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Buka semua imej terkini</translation>
 </phrase>
 
 <phrase>
@@ -5262,7 +5262,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monokrom kepada kelabu</translation>
 </phrase>
 
 <phrase>
@@ -5342,7 +5342,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Pembalut plastik</translation>
 </phrase>
 
 <phrase>
@@ -5557,7 +5557,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Salji</translation>
 </phrase>
 
 <phrase>
@@ -8106,42 +8106,42 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>mulakan kelegapan</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>memulakan warna</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>kelegapan akhir</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>warna akhir</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>bervariasi warna</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>bervariasi ketepuan</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>bervariasi</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>bervariasi alfa</translation>
 </phrase>
 
 <phrase>
@@ -8248,12 +8248,12 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Tidak</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Ya</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8958,17 +8958,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>sudut cahaya</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>keamatan cahaya</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Membungkus imej dalam plastik</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9905,12 +9905,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>angin</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Biarkan salji, biarkan salji, biarkan salji</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9931,7 +9931,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>pengedaran</translation>
 </phrase>
 
 <phrase>
@@ -9941,7 +9941,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>pakaian seragam</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11741,7 +11741,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>salinan</translation>
 </phrase>
 
 <phrase>
@@ -13244,7 +13244,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Pilih warna dari imej</translation>
 </phrase>
 
 <phrase>
@@ -13299,12 +13299,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Pemadam</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Baldi cat (isi dengan warna)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
@@ -13315,27 +13315,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>jejari sampel</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>sampel semua lapisan</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n/a</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13367,7 +13367,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>mengisi sumber</translation>
 </phrase>
 
 <phrase>
@@ -13392,17 +13392,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>campuran</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>warna semasa</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>berus adat</translation>
 </phrase>
 
 <phrase>
@@ -13422,27 +13422,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Mengisi sokongan banyak gaya yang berbeza. Klik untuk bertukar antara warna pepejal, corak, dan gaya kecerunan.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Toleransi mengawal bagaimana dua piksel yang sama sebelum menyebarkan isi di antara mereka.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Biasanya, operasi mengisi menganalisis keseluruhan imej. Anda juga boleh menganalisis hanya lapisan aktif.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Biasanya, mengisi yang tersebar dari piksel sasaran, menambah piksel tetangga apabila ia berjalan. Anda boleh memilih untuk menganalisis keseluruhan imej, tanpa menghiraukan kesinambungan.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Pilihan ini mengawal bagaimana piksel dianalisis apabila menambahkannya ke isi.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13601,37 +13601,37 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>sorot</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>peti cahaya</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>semut</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>berbulu</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>dalaman</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>luar</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>sempadan</translation>
 </phrase>
 
 <phrase>
@@ -14326,7 +14326,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>input tetikus beresolusi tinggi</translation>
 </phrase>
 
 <phrase>
@@ -14356,7 +14356,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>folder tetapan aplikasi</translation>
 </phrase>
 
 <phrase>
@@ -14897,7 +14897,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Anda telah meletakkan PhotoDemon dalam folder sistem terhad. Langkah berjaga-jaga keselamatan menghalang PhotoDemon daripada mengubah suai folder ini, supaya kemas kini automatik kini dilumpuhkan. Untuk memulihkannya, anda mesti memindahkan PhotoDemon ke folder bukan admin, seperti Desktop, Dokumen, atau Muat Turun. 
+
+ (Jika anda meninggalkan PhotoDemon di mana ia adalah, sila jangan lupa untuk melawat photodemon.org dari semasa ke semasa untuk menyemak versi baru.)</translation>
 </phrase>
 
 <phrase>
@@ -14911,7 +14913,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Apabila menggunakan Remote Desktop atau VM (Mesin Maya), input tetikus beresolusi tinggi mungkin tidak berfungsi dengan betul. Ini adalah bug Windows yang lama. Dalam situasi ini, anda boleh menggunakan tetapan ini untuk memulihkan tatalat tetikus yang betul.</translation>
 </phrase>
 
 <phrase>
