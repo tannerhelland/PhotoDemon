@@ -357,9 +357,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'Before continuing on to the next image (if any), see if the just-loaded image contains multiple pages within the file.
         ' If it does, load each page into its own layer.
-        If imageHasMultiplePages Then
+        '
+        'NOTE: as of v7.0, this feature has been disabled for icons and GIFs.  Why?  PD doesn't yet provide a way to
+        ' export "multipage" versions of these files.  As such, importing them as multipage is just frustrating.  I'll look
+        ' at fixing this in a future release.
+        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) Then
             
-            'TODO: deal with prompt options here!
+            'TODO: deal with UI prompt options here!
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
