@@ -38,7 +38,18 @@ Private m_NumOfStrings As Long
 Private Const INIT_STACK_SIZE = 16
 
 Private Declare Sub CopyMemory_Custom Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByRef lpSrc As Long, ByVal byteLength As Long)
+Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
+
+'Because recursion is painfully slow in VB, our QuickSort implementation uses a stack instead.
+Private Type QSStack
+    sLB As Long
+    sUB As Long
+End Type
+
+Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
+Private m_qsStack() As QSStack
+Private m_qsStackSize As Long, m_qsStackPtr As Long
 
 'Add a string to the stack.  Return value is the index of the added location (which can be used to infer the number of strings
 ' in the stack, obviously).
@@ -208,8 +219,8 @@ End Sub
 Friend Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     Dim tmpStrPtr As Long
     tmpStrPtr = StrPtr(m_Strings(strIndex1))
-    CopyMemory_Custom VarPtr(m_Strings(strIndex1)), ByVal VarPtr(m_Strings(strIndex2)), 4
-    CopyMemory_Custom VarPtr(m_Strings(strIndex2)), tmpStrPtr, 4
+    GetMem4 VarPtr(m_Strings(strIndex2)), VarPtr(m_Strings(strIndex1))
+    GetMem4 VarPtr(tmpStrPtr), VarPtr(m_Strings(strIndex2))
 End Sub
 
 'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings
@@ -248,10 +259,10 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     VBHacks.GetHighResTime startTime
     
     'Sort the stack in-place
-    QuickSortStringStack
+    QuickSortStringStack3Way
     
-    'If the user wants duplicates removed, do so now.  (This check is fast and easy, because duplicates will
-    ' be sitting next to each other in the sorted list.)
+    'If the user wants duplicates removed, do so now.  (This check is fast and easy, because duplicates are
+    ' sitting next to each other in the sorted list.)
     If removeDuplicates Then
         
         Dim itemsRemoved As Long
@@ -292,50 +303,127 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     
 End Sub
 
-'Simple QuickSort implementation.  This same QuickSort implementation is used across PD in a variety of ways; if you want details
-' on how it works, search "Sub QuickSort" to find another instance that uses comments.  (This one does not.)
-Private Sub QuickSortStringStack()
-    QSInner 0, m_NumOfStrings - 1
-End Sub
-
-Private Sub QSInner(ByVal lowVal As Long, ByVal highVal As Long)
-    If (lowVal < highVal) Then
-        Dim j As Long
-        j = QSPartition(lowVal, highVal)
-        QSInner lowVal, j - 1
-        QSInner j + 1, highVal
+'Bentley-McIlroy 3-way partitioning QuickSort implementation developed with help from this PDF:
+' http://www.cs.princeton.edu/~rs/talks/QuicksortIsOptimal.pdf
+'
+'Because recursion can quickly become slow in VB, we use an internal stack to track remaining range searches.
+Private Sub QuickSortStringStack3Way()
+    
+    If (m_NumOfStrings > 1) Then
+    
+        'Prep our internal stack
+        ReDim m_qsStack(0 To INIT_QUICKSORT_STACK_SIZE - 1) As QSStack
+        m_qsStackPtr = 0
+        m_qsStack(0).sLB = 0
+        m_qsStack(0).sUB = m_NumOfStrings - 1
+        
+        QSInnerStack3Way
+        
+        'Free the stack before exiting
+        Erase m_qsStack
+        
     End If
+    
 End Sub
 
-Private Function QSPartition(ByVal lowVal As Long, ByVal highVal As Long) As Long
+Private Sub QSInnerStack3Way()
     
-    Dim i As Long, j As Long
-    i = lowVal
-    j = highVal + 1
-    
-    Dim v As String
-    v = m_Strings(lowVal)
+    Dim lowVal As Long, highVal As Long
+    Dim i As Long, j As Long, k As Long
+    Dim p As Long, q As Long
+    Dim v As String, vPtr As Long
     
     Do
         
-        Do
-            i = i + 1
-            If (i = highVal) Then Exit Do
-        Loop While (Strings.StrCompSort(m_Strings(i), v) < 0)
+        'Load the next set of boundaries, and reset all pivots
+        lowVal = m_qsStack(m_qsStackPtr).sLB
+        highVal = m_qsStack(m_qsStackPtr).sUB
         
+        i = lowVal - 1
+        j = highVal
+        p = lowVal - 1
+        q = highVal
+        v = m_Strings(highVal)
+        vPtr = StrPtr(v)
+        
+        'Start the "infinite" loop comprising the bulk of the sort
         Do
+            
+            'Search from the left
+            Do
+                i = i + 1
+            Loop While Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) < 0
+            
+            'Search from the right
+            Do
+                j = j - 1
+                If (j <= lowVal) Then Exit Do
+            Loop While Strings.StrCompSortPtr(vPtr, StrPtr(m_Strings(j))) < 0
+            
+            'If indices cross, this segment is fully sorted; exit!
+            If (i >= j) Then Exit Do
+            
+            'If we're still here, these two indices are out-of-order.  Swap 'em.
+            SwapIndices i, j
+            
+            'Handle equality cases specially.  (This improves performance on lists with many
+            ' duplicate elements.)
+            If (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) = 0) Then
+                p = p + 1
+                SwapIndices p, i
+            End If
+            
+            If (Strings.StrCompSortPtr(vPtr, StrPtr(m_Strings(j))) = 0) Then
+                q = q - 1
+                SwapIndices j, q
+            End If
+            
+        Loop
+        
+        'Swap all equal entries to the center of the partition, so we don't have to process them again
+        SwapIndices i, highVal
+        j = i - 1
+        i = i + 1
+        
+        For k = lowVal To p - 1
+            SwapIndices k, j
             j = j - 1
-        Loop While (Strings.StrCompSort(v, m_Strings(j)) < 0)
+        Next k
         
-        If (i >= j) Then Exit Do
-        SwapIndices i, j
+        For k = highVal - 1 To q + 1 Step -1
+            SwapIndices i, k
+            i = i + 1
+        Next k
         
-    Loop
+        'Push (up to) two new entries on the processing stack
+        If (m_qsStackPtr >= UBound(m_qsStack)) Then ReDim Preserve m_qsStack(0 To m_qsStackPtr * 2 - 1) As QSStack
+        
+        'We now have a trade-off to make:
+        ' 1) We can perform two if/then checks to see if this segment needs to be subdivided further.
+        '    If either of these tests succeeds, we can skip adding a new segment to the stack.
+        ' 2) We can perform zero if/then checks and forcibly add new segments to the stack.
+        '    Then, in the outer Do/Loop, we can perform an "If (lowVal < highVal)" check, and immediately
+        '    decrement the stack if the test fails.
+        '
+        'There are trade-offs to both mechanisms, but given VB's array handling performance, I think
+        ' it's preferable to use branches instead of risking extra array accesses and ReDims.
+        If (j > lowVal) Then
+            m_qsStack(m_qsStackPtr).sLB = lowVal
+            m_qsStack(m_qsStackPtr).sUB = j
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        If (highVal > i) Then
+            m_qsStack(m_qsStackPtr).sLB = i
+            m_qsStack(m_qsStackPtr).sUB = highVal
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        
+        'Decrement the stack pointer
+        m_qsStackPtr = m_qsStackPtr - 1
+        
+    Loop While (m_qsStackPtr >= 0)
     
-    SwapIndices j, lowVal
-    QSPartition = j
-    
-End Function
+End Sub
 
 'Clone another string stack
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
