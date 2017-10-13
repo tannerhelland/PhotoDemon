@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.3261</langversion>
+<langversion>6.8.3262</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14354,6 +14354,11 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
+<original>application settings folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(Haftungsausschluss wird bei Laufzeit gefüllt)</translation>
 </phrase>
@@ -14888,6 +14893,13 @@ Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
@@ -14961,7 +14973,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 170 phrases. 43 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15084,10 +15096,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2531</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4542 phrases. -->
-<!-- 2011 are duplicates, so only 2531 unique phrases have been written to file. -->
-<!-- These 2531 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4545 phrases. -->
+<!-- 2012 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12327 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>6.8.17</langversion>
+<langversion>6.8.18</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14347,6 +14347,11 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 </phrase>
 
 <phrase>
+<original>application settings folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(Zřeknutí se odpovědnosti za běhu)</translation>
 </phrase>
@@ -14881,6 +14886,13 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
@@ -14954,7 +14966,7 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <translation>Tato nová dočasná umístění složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 170 phrases. 43 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15077,10 +15089,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2531</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4542 phrases. -->
-<!-- 2011 are duplicates, so only 2531 unique phrases have been written to file. -->
-<!-- These 2531 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4545 phrases. -->
+<!-- 2012 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12327 total words. -->
 
 </pdData>

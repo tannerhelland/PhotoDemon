@@ -37,8 +37,8 @@ End Type
 ' https://github.com/tannerhelland/PhotoDemon/commit/293de1ba4f2d5bc3102304d0263af624e93b6093
 '
 'I eventually solved the problem by manually unloading all global class instances in a specific order, rather than
-' leaving it to VB, but during testing, I found it helpful to suppress the default Windows crash dialog.  In case this
-' proves useful in the future, I'll leave the declaration here.
+' leaving it to VB, but during testing, I still sometimes find it helpful to suppress the default Windows crash dialog.
+' In case this proves useful in the future, I'll leave the declaration here.
 Private Declare Function SetErrorMode Lib "kernel32" (ByVal wMode As Long) As Long
 Private Const SEM_FAILCRITICALERRORS = &H1
 Private Const SEM_NOGPFAULTERRORBOX = &H2
@@ -51,13 +51,20 @@ Private m_hShellModule As Long
 ' progress bar's maximum value.
 Private Const NUMBER_OF_LOADING_STEPS As Long = 18
 
-'After Main() has been invoked, this will be set to TRUE.  This is important in VB as any number of functions
-' get called during compilation (and inside the IDE in general), so certain need to be forcibly suspended.
+'After Main() has been invoked, this will be set to TRUE.  This is important in VBy as some functions (like those
+' inside user controls) will be called during either design-time or compilation-time.  PD relies on this variable,
+' accessed via the IsProgramRunning function, to forcibly suspend certain program operations.
 Private m_IsProgramRunning As Boolean
+
+'If the program was loaded successfully, this will be set to TRUE.  Various shutdown procedures check this before
+' attempting to write data to file.
+Private m_ProgramStartupSuccessful As Boolean
 
 'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
 ' correctly.  Note that this code is irrelevant within the IDE.
 Public Sub Main()
+    
+    m_ProgramStartupSuccessful = False
     
     'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.  But just in case,
     ' continue loading even if the common control module load fails.
@@ -89,21 +96,31 @@ Public Sub Main()
     
     On Error GoTo 0
     
-    'Because Ambient.UserMode does not report IDE behavior properly, we use our own UserMode tracker.
-    ' Thank you to Kroc of camendesign.com for suggesting this workaround.
+    'Because Ambient.UserMode can produce unexpected behavior - see, for example, this link:
+    ' http://www.vbforums.com/showthread.php?805711-VB6-UserControl-Ambient-UserMode-workaround
+    ' - we manually track program run state.  See additional details at the top of this module,
+    ' where m_IsProgramRunning is declared.
     m_IsProgramRunning = True
     
     'FormMain can now be loaded.  (We load it first, because many initialization steps silently interact with it,
     ' like loading menu icons or prepping toolboxes.)  That said, the first step of FormMain's load process is calling
     'the ContinueLoadingProgram sub, below, so look there for the next stages of the load process.
+    On Error GoTo ExitMainImmediately
     If (Not g_ProgramShuttingDown) Then Load FormMain
     
+ExitMainImmediately:
+
 End Sub
 
-'Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be operated
-' on by functions called from this routine.  (It is necessary to load the main window first, since a number of load operations -
-' like decoding PNG menu icons from the resource file, then applying them to program menus - operate directly on the main window.)
-Public Sub ContinueLoadingProgram()
+'Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be
+' operated on by functions called from this routine.  (It is necessary to load the main window first, since a number of
+' load operations - like decoding PNG menu icons from the resource file, then applying them to program menus - operate
+' directly on the main window.)
+Public Function ContinueLoadingProgram() As Boolean
+    
+    'We assume that the program will initialize correctly.  If for some reason it doesn't, it will return FALSE, and the
+    ' program needs to be shut down accordingly, because it is catastrophically broken.
+    ContinueLoadingProgram = True
     
     '*************************************************************************************************************************************
     ' Check the state of this build (alpha, beta, production, etc) and activate debug code as necessary
@@ -115,15 +132,16 @@ Public Sub ContinueLoadingProgram()
     'If the program is in pre-alpha or alpha state, enable timing reports.
     If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
     
-    'Enable high-performance timer objects
+    'Enable program-wide high-performance timer objects
     VBHacks.EnableHighResolutionTimers
     
-    'Regardless of debug mode or not, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
+    'Regardless of debug mode, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
     ' with DEBUGMODE = 1, however.
     Set pdDebug = New pdDebugger
     
-    'During development, I find it helpful to profile PhotoDemon's startup process.  Timing functions like this can be commented out
-    ' without harming anything.
+    'During development, I find it helpful to profile PhotoDemon's startup process (so I can watch for obvious regressions).
+    ' PD utilizes several different profiler-types; the LT type is "long-term" profiling, where data is written to a persistent
+    ' log file and measured over time.
     Dim perfCheck As pdProfilerLT
     Set perfCheck = New pdProfilerLT
     
@@ -191,10 +209,15 @@ Public Sub ContinueLoadingProgram()
     Set g_UserPreferences = New pdPreferences
     
     'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
+    ' Similarly, if the user has done something stupid, like unzip PD inside a system folder, the preferences manager will
+    ' auto-detect this and silently redirect program settings to the appropriate user folder.  A flag will also be set, so we
+    ' can warn the user about this behavior after the program finishes loading.)
     LoadMessage "Initializing all program directories..."
     
-    g_UserPreferences.InitializePaths
-        
+    'This is one of the few functions where a failure will cause PD to exit immediately.
+    ContinueLoadingProgram = g_UserPreferences.InitializePaths()
+    If (Not ContinueLoadingProgram) Then Exit Function
+    
     'Now, ask the preferences handler to load all other user settings from the preferences file.
     ' IMPORTANTLY: note that loading all settings puts the preferences engine into "batch mode".  Normally, the preferences engine
     ' immediately writes all changes out to file, which preserves things like "last-used settings" if the program goes down
@@ -203,7 +226,7 @@ Public Sub ContinueLoadingProgram()
     LoadMessage "Loading all user settings..."
     
     g_UserPreferences.LoadUserSettings False
-        
+    
     'Mark the Macro recorder as "not recording"
     Macros.SetMacroStatus MacroSTOP
     
@@ -660,7 +683,8 @@ Public Sub ContinueLoadingProgram()
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     Interface.SyncInterfaceToCurrentImage
     
-    
+    'If we made it all the way here, startup can be considered successful!
+    m_ProgramStartupSuccessful = True
     
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
@@ -685,7 +709,7 @@ Public Sub ContinueLoadingProgram()
     
     Unload FormSplash
     
-End Sub
+End Function
 
 'FormMain's Unload step calls this process as its final action.
 Public Sub FinalShutdown()
@@ -776,3 +800,7 @@ Public Function IsProgramRunning() As Boolean
     IsProgramRunning = m_IsProgramRunning
 End Function
 
+'Returns TRUE if PD's startup routines all triggered successfully.
+Public Function WasStartupSuccessful() As Boolean
+    WasStartupSuccessful = m_ProgramStartupSuccessful
+End Function

@@ -67,7 +67,7 @@ Begin VB.Form FormOptions
          Height          =   600
          Left            =   240
          TabIndex        =   33
-         Top             =   4680
+         Top             =   5640
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   1058
@@ -96,7 +96,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdLabel lblMemoryUsageMax 
          Height          =   540
          Left            =   240
-         Top             =   3600
+         Top             =   4560
          Width           =   7965
          _ExtentX        =   14049
          _ExtentY        =   953
@@ -107,7 +107,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
          Height          =   540
          Left            =   240
-         Top             =   3120
+         Top             =   4080
          Width           =   7965
          _ExtentX        =   14049
          _ExtentY        =   953
@@ -119,7 +119,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   5
          Left            =   0
-         Top             =   2640
+         Top             =   3600
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -155,12 +155,34 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   1
          Left            =   0
-         Top             =   4200
+         Top             =   5160
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
          Caption         =   "start over"
          FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   20
+         Left            =   0
+         Top             =   2640
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "application settings folder"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblSettingsFolder 
+         Height          =   285
+         Left            =   240
+         Top             =   3000
+         Width           =   7905
+         _ExtentX        =   13944
+         _ExtentY        =   503
+         Caption         =   ""
          ForeColor       =   4210752
       End
    End
@@ -183,7 +205,6 @@ Begin VB.Form FormOptions
          Caption         =   "(disclaimer populated at run-time)"
          FontSize        =   9
          Layout          =   1
-         UseCustomForeColor=   -1  'True
       End
       Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
@@ -1637,15 +1658,42 @@ Private Sub LoadAllPreferences()
             chkUpdates(2).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
         'END notify when updates are ready for patching
         
-        'Populate the network access disclaimer in the "Update" panel
-            lblExplanation.Caption = g_Language.TranslateMessage("The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.")
+        'START explanation of update options
+        
+            'In normal (portable) mode, I like to provide a short explanation of how automatic updates work.
+            ' In non-portable mode, however, we don't have write access to our own folder (because the user
+            ' probably stuck us in an access-restricted folder).  When this happens, we disable all update
+            ' options and use the explanation label to explain "why".
+            If g_UserPreferences.IsNonPortableModeActive() Then
+            
+                'This is a non-portable install.  Disable all update controls, then explain why.
+                For i = cboUpdates.lBound() To cboUpdates.UBound()
+                    cboUpdates(i).Enabled = False
+                Next i
+                
+                For i = chkUpdates.lBound() To chkUpdates.UBound()
+                    chkUpdates(i).Enabled = False
+                Next i
+                
+                lblExplanation.Caption = g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads." & vbCrLf & vbCrLf & "(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)")
+                
+            'This is a normal (portable) install.  Populate the network access disclaimer in the "Update" panel.
+            Else
+                lblExplanation.Caption = g_Language.TranslateMessage("The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.")
+            End If
+            
+        'END explanation of update options
     
     'END Update preferences
     
     '***************************************************************************
     
     'START Advanced preferences
-            
+        
+        'Display the current program settings folder.  (This is normally a subfolder inside the PD folder,
+        ' unless the user has done something dumb like install us to a restricted folder.)
+        lblSettingsFolder.Caption = g_UserPreferences.GetDataPath()
+        
         'Display the current temporary file path
         txtTempPath.Text = g_UserPreferences.GetTempPath
         

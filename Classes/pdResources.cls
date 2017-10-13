@@ -49,7 +49,7 @@ Private m_XML As pdXML
 
 'When loading image resources during startup, 99% of resources will be an identical size.  To cut down on the amount
 ' of memory we need to allocate, we try to reuse the same image buffer over and over again.
-Private m_Palette() As RGBQUAD, m_numOfPaletteEntries As Long
+Private m_Palette() As RGBQuad, m_numOfPaletteEntries As Long
 Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
 
 'Similarly, a persistent load buffer is also used when copying raw bytes out of individual resource blocks
@@ -66,15 +66,19 @@ Friend Function LoadInitialResourceCollection() As Boolean
     
     'In developer builds, we preferentially load the file-based resource file from the App/PhotoDemon/Themes folder.
     ' (The resource file is updated frequently, and it's easier to work with a standalone file.)
-    Dim srcResFile As String
-    srcResFile = "Core_Icons.pdrc"
-    loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
-        
-    'If the theme file doesn't exist, attempt to recover it.  (This may be necessary if the user used a dumb program
-    ' like WinZip to unzip their PD download.)
-    If (Not loadSuccess) Then
-        AttemptResourceRecovery srcResFile
+    If (PD_BUILD_QUALITY <= PD_BETA) Then
+    
+        Dim srcResFile As String
+        srcResFile = "Core_Icons.pdrc"
         loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+            
+        'If the theme file doesn't exist, attempt to recover it.  (This may be necessary if the user used a dumb program
+        ' like WinZip to unzip their PD download.)
+        If (Not loadSuccess) Then
+            AttemptResourceRecovery srcResFile
+            loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+        End If
+        
     End If
     
     'If the theme file was *not* loaded from a standalone file, load a good copy directly from this .exe's resource segment.
@@ -273,7 +277,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                                 'Reuse the same module-level arrays, to try and reduce unnecessary allocations
                                 If (m_numOfPaletteEntries < numColors) Then
                                     m_numOfPaletteEntries = numColors
-                                    ReDim m_Palette(0 To numColors - 1) As RGBQUAD
+                                    ReDim m_Palette(0 To numColors - 1) As RGBQuad
                                 End If
                                 
                                 If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then

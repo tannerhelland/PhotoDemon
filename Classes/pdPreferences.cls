@@ -15,10 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2017 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 19/July/17
-'Last update: migrate all APIs to their proper home in the OS and Files modules.
+'Last updated: 12/October/17
+'Last update: add detection for "non-portable" mode, which automatically activates when the user extracts
+'             PD to an access-restricted folder (like Program Files).
 '
-'This class is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
+'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
 ' with persistent user settings.
 '
 'By default, user settings are stored in an XML file in the \Data\ subfolder.  This class will generate a default
@@ -86,6 +87,10 @@ Private m_ThumbnailPerformance As PD_PerformanceSetting, m_ThumbnailInterpolatio
 ' file, and individual windows rely on this module to manage the file for them.
 Private m_XMLPresets As pdXML, m_MasterPresetFile As String
 
+'PD runs in portable mode by default, with all data folders assumed present in the same folder
+' as PD itself.  If for some reason this is *not* the case, this variable will be flagged.
+Private m_NonPortableModeActive As Boolean
+
 'Helper functions for performance-sensitive preferences.
 Friend Function GetThumbnailInterpolationPref() As GP_InterpolationMode
     GetThumbnailInterpolationPref = m_ThumbnailInterpolation
@@ -105,6 +110,13 @@ Friend Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting
         m_ThumbnailInterpolation = GP_IM_NearestNeighbor
     End If
 End Sub
+
+'Non-portable mode means PD has been extracted to an access-restricted folder.  The program (should) still run normally,
+' with silent redirection to the local appdata folder, but in-place automatic upgrades will be disabled (as we don't
+' have write access to our own folder, alas).
+Friend Function IsNonPortableModeActive() As Boolean
+    IsNonPortableModeActive = m_NonPortableModeActive
+End Function
 
 'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
 ' without writing the updates out to file after each updated.
@@ -233,21 +245,85 @@ Friend Function GetUpdatePath() As String
     GetUpdatePath = m_UpdatesPath
 End Function
 
-'Initialize key program directories
-Friend Sub InitializePaths()
+'Initialize key program directories.  If this function fails, PD will fail to load.
+Friend Function InitializePaths() As Boolean
+    
+    InitializePaths = True
     
     'First things first: figure out where this .exe was launched from
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     m_ProgramPath = cFile.AppPathW
     
-    'Create an "App" path based off the m_ProgramPath - this is where essential application files (like plugins) are stored.
-    ' Also, make sure the directory exists; if it doesn't, create it.
+    'If this is the first time PhotoDemon is run, we need to create a series of data folders.
+    ' Because PD is a portable application, we default to creating those folders in our own
+    ' application folder.  Unfortunately, some users do dumb things like put PD inside protected
+    ' system folders, which causes this step to fail.  We try to handle this situation gracefully,
+    ' by redirecting those folders to the active user folder.
+    m_NonPortableModeActive = False
+    
+    'Anyway, before doing anything else, let's make sure we actually have write access to our own
+    ' damn folder; if we don't, we can fall activate non-portable mode.
+    Dim localAppDataPath As String
+    localAppDataPath = OS.SpecialFolder(CSIDL_LOCAL_APPDATA)
+    
+    Dim baseFolder As String
+    
+    Dim tmpFileWrite As String, tmpHandle As Long
+    tmpFileWrite = m_ProgramPath & "tmp.tmp"
+    m_NonPortableModeActive = (Not cFile.FileCreateHandle(tmpFileWrite, tmpHandle, True, True, OptimizeNone))
+    cFile.FileCloseHandle tmpHandle
+    
+    If m_NonPortableModeActive Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
+        #End If
+        
+        'Even though the temp file shouldn't exist, be a good citizen and try to kill it anyway
+        cFile.FileDelete tmpFileWrite
+        
+        'Because we don't have access to our own folder, we need a plan B for PD's expected user data folders.
+        ' (Note that we still need access to required plugin DLLs, which must exist *somewhere* we can access.)
+        
+        'Our only real option is to silently redirect the program's settings subfolder to known-good folder, in this case
+        ' the standard local app storage folder.
+        baseFolder = localAppDataPath & "PhotoDemon\"
+        If (Not Files.PathExists(baseFolder)) Then
+            
+            If (Not Files.PathCreate(baseFolder)) Then
+            
+                'Something has gone horrifically wrong.  I'm not sure what to do except let the program
+                ' crash and burn.
+                InitializePaths = False
+                Exit Function
+            
+            End If
+            
+        End If
+        
+        'If we're still here, we were able to create a data folder in a backup location.
+        ' Try to proceed with the load process.
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Non-portable mode activated successfully.  Continuing program initialization..."
+        #End If
+    
+    'This is a normal portable session.  The base folder is the same as PD's app path.
+    Else
+        baseFolder = m_ProgramPath
+    End If
+    
+    'Ensure we have access to an "App" subfolder - this is where essential application files (like plugins)
+    ' are stored.  (In portable mode, we can create this folder as necessary; this typically only happens
+    ' when a user uses a shitty 3rd-party zip program that doesn't preserve zip folder structure, and
+    ' everything gets dumped into the base folder.)
     m_AppPath = m_ProgramPath & "App\"
-    If (Not Files.PathExists(m_AppPath)) Then Files.PathCreate m_AppPath
+    If (Not Files.PathExists(m_AppPath)) Then InitializePaths = Files.PathCreate(m_AppPath)
+    If (Not InitializePaths) Then Exit Function
     
     m_AppPath = m_AppPath & "PhotoDemon\"
-    If (Not Files.PathExists(m_AppPath)) Then Files.PathCreate m_AppPath
+    If (Not Files.PathExists(m_AppPath)) Then InitializePaths = Files.PathCreate(m_AppPath)
+    If (Not InitializePaths) Then Exit Function
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
     m_LanguagePath = m_AppPath & "Languages\"
@@ -257,10 +333,48 @@ Friend Sub InitializePaths()
     m_ThemePath = m_AppPath & "Themes\"
     If (Not Files.PathExists(m_ThemePath)) Then Files.PathCreate m_ThemePath
     
-    'Create a "Data" path based off the m_ProgramPath - this is where the preferences file and any other user-specific files
-    ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
-    m_DataPath = m_ProgramPath & "Data\"
-    If (Not Files.PathExists(m_DataPath)) Then Files.PathCreate m_DataPath
+    'We are now guaranteed an /App subfolder ready for use.  (Note that we haven't checked for plugins - that's handled
+    ' by the separate PluginManager module.)
+    
+    'Next, create a "Data" path based off the base folder we determined above.  (In non-portable mode,
+    ' this points at the user's Local folder.)  This is where the preferences file and any other user-specific
+    ' files (saved filters, macros) get stored.
+    m_DataPath = baseFolder & "Data\"
+    If (Not Files.PathExists(m_DataPath)) Then
+        
+        Dim needToCreateDataFolder As Boolean
+        needToCreateDataFolder = True
+        
+        'If the data path is missing, there are two possible explanations:
+        ' 1) This is the first time the user has run PD, meaning the data folder simply needs to be created.
+        ' 2) This is *not* the first time the user has run PD, but they've moved PD to a new location.
+        '    Normally this isn't a problem - *unless* they've orphaned a data folder somewhere else.
+        '    (While this is a rare possibility, PD auto-detects installs to system folders, and it actively
+        '     encourages the user to move the application somewhere else - so if the user follows our good advice,
+        '     we want to reward them by redirecting the data folder to its original location, so they don't lose
+        '     any of their settings or recently-used lists.)
+        
+        'If we're running in portable mode, look for an existing (orphaned) data folder in local app storage.
+        If (Not m_NonPortableModeActive) Then
+        
+            If Files.PathExists(localAppDataPath & "PhotoDemon\Data\") Then
+                m_DataPath = localAppDataPath & "PhotoDemon\Data\"
+                needToCreateDataFolder = False
+            End If
+        
+        'In portable mode, we have write-access to our own folder, so create the data folder and carry on!
+        End If
+        
+        'If we didn't find a data folder in a non-standard location, go ahead and create it wherever the
+        ' current base folder points.  (In a portable install, this will be PD's application path;
+        ' otherwise, it will be the standard local app storage folder inside the \Users folder.)
+        If needToCreateDataFolder Then Files.PathCreate m_DataPath
+        
+    End If
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "PD data folder points at " & m_DataPath
+    #End If
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     m_MacroPath = m_DataPath & "Macros\"
@@ -302,7 +416,7 @@ Friend Sub InitializePaths()
         m_XMLPresets.PrepareNewXML ("Presets")
     End If
         
-End Sub
+End Function
 
 'Load all user settings from file
 Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
@@ -521,14 +635,15 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "CheckForUpdates", "True"
         m_XMLEngine.WriteTag "LastUpdateCheck", ""
         m_XMLEngine.WriteTag "PromptForPluginDownload", "True"
-        m_XMLEngine.WriteTag "UpdateFrequency", PDUF_EACH_SESSION
+        m_XMLEngine.WriteTag "UpdateFrequency", PDUF_WEEKLY
         
         'The current update track is set according to the hard-coded build ID of this .exe instance.
         Select Case PD_BUILD_QUALITY
         
-            'Technically, I would like to default to nightly updates for alpha versions.  However, I sometimes send casual users
-            ' to the nightly builds to fix a specific bug.  As they likely don't want to be bothered by so many updates, I am
-            ' changing this to default to beta builds only.
+            'Technically, I would like to default to nightly updates for alpha versions.  However, I sometimes refer
+            ' casual users to the nightly builds to address specific bugs they've experienced.  They likely don't
+            ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
+            ' can always opt for a faster update frequency.
             Case PD_PRE_ALPHA, PD_ALPHA
                 m_XMLEngine.WriteTag "UpdateTrack", PDUT_BETA
                 

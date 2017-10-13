@@ -2583,132 +2583,139 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    MainModule.ContinueLoadingProgram
+    If MainModule.ContinueLoadingProgram() Then
     
-    
-    '*************************************************************************************************************************************
-    ' Now that all program engines are initialized, we can finally display the primary window
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Registering toolbars with the window manager..."
-    #End If
-    
-    'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
-    ' to match, then display the window.
-    g_WindowManager.SetAutoRefreshMode True
-    FormMain.UpdateMainLayout
-    g_WindowManager.SetAutoRefreshMode False
-    
-    'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
-    ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't running full Aero.)
-    FormMain.Show vbModeless
-    FormMain.Refresh
-    DoEvents
-    
-    'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
-    ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
-    '  cases are covered nicely.)
-    toolbar_Toolbox.ResetToolButtonStates
-    
-    'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
-    g_WindowManager.SetAutoRefreshMode True
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing input tracker..."
-    #End If
-    
-    
-    '*************************************************************************************************************************************
-    ' Next, make sure PD's previous session closed down successfully
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Checking for old autosave data..."
-    #End If
-    Autosaves.InitializeAutosave
-    
-    
-    '*************************************************************************************************************************************
-    ' Next, analyze the command line and load any image files (if present).
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Checking command line..."
-    #End If
-    
-    'Retrieve a Unicode-friendly copy of any command line parameters
-    Dim cmdLineParams As pdStringStack
-    If OS.CommandW(cmdLineParams, True) Then
+        '*************************************************************************************************************************************
+        ' Now that all program engines are initialized, we can finally display the primary window
+        '*************************************************************************************************************************************
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Command line might contain images.  Attempting to load..."
+            pdDebug.LogAction "Registering toolbars with the window manager..."
         #End If
         
-        Loading.LoadMultipleImageFiles cmdLineParams, True
+        'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
+        ' to match, then display the window.
+        g_WindowManager.SetAutoRefreshMode True
+        FormMain.UpdateMainLayout
+        g_WindowManager.SetAutoRefreshMode False
         
+        'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
+        ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't running full Aero.)
+        FormMain.Show vbModeless
+        FormMain.Refresh
+        DoEvents
+        
+        'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
+        ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
+        '  cases are covered nicely.)
+        toolbar_Toolbox.ResetToolButtonStates
+        
+        'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
+        g_WindowManager.SetAutoRefreshMode True
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Preparing input tracker..."
+        #End If
+        
+        
+        '*************************************************************************************************************************************
+        ' Next, make sure PD's previous session closed down successfully
+        '*************************************************************************************************************************************
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Checking for old autosave data..."
+        #End If
+        Autosaves.InitializeAutosave
+        
+        
+        '*************************************************************************************************************************************
+        ' Next, analyze the command line and load any image files (if present).
+        '*************************************************************************************************************************************
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Checking command line..."
+        #End If
+        
+        'Retrieve a Unicode-friendly copy of any command line parameters
+        Dim cmdLineParams As pdStringStack
+        If OS.CommandW(cmdLineParams, True) Then
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Command line might contain images.  Attempting to load..."
+            #End If
+            
+            Loading.LoadMultipleImageFiles cmdLineParams, True
+            
+        End If
+        
+        
+        '*************************************************************************************************************************************
+        ' Next, see if we need to launch an asynchronous check for updates
+        '*************************************************************************************************************************************
+        
+        'Update checks only work in portable mode (because we require write access to our own folder to do an
+        ' in-place update).
+        If (Not g_UserPreferences.IsNonPortableModeActive()) Then Updates.StandardUpdateChecks
+        
+        
+        '*************************************************************************************************************************************
+        ' Display any final messages and/or warnings
+        '*************************************************************************************************************************************
+        
+        Message ""
+        g_UserPreferences.EndBatchPreferenceMode
+        FormMain.Refresh
+        DoEvents
+        
+        'I occasionally add dire messages to nightly builds.  The line below is the best place to enable that, as necessary.
+        'PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
+        
+        '*************************************************************************************************************************************
+        ' Next, see if we need to display the language/theme selection dialog
+        '*************************************************************************************************************************************
+        
+        'In v7.0, a new "choose your language and UI theme" dialog was added to the project.  This is helpful for first-time
+        ' users to help them get everything set up just the way they want it.
+        
+        'See if we've shown this dialog before; if we have, suspend its load.
+        If (Not g_UserPreferences.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
+        
+        '*************************************************************************************************************************************
+        ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
+        '*************************************************************************************************************************************
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
+        #End If
+        
+        'Because people may be using this code in the IDE, warn them about the consequences of doing so
+        If (Not OS.IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
+        
+        'In debug mode, note that we are about to turn control over to the user
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
+            pdDebug.LogAction "", PDM_Mem_Report
+        #End If
+        
+        'Finally, return focus to the main form
+        g_WindowManager.SetFocusAPI FormMain.hWnd
+        
+        Exit Sub
+        
+FormMainLoadError:
+    
+        #If DEBUGMODE = 1 Then
+            If (Not (pdDebug Is Nothing)) Then
+                pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+            End If
+        #End If
+    
+    'Something went catastrophically wrong during the load process.  Do not continue with the loading process.
+    Else
+        MsgBox "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)", vbOKOnly + vbCritical, "Startup failure"
+        Unload Me
     End If
     
-    
-    '*************************************************************************************************************************************
-    ' Next, see if we need to launch an asynchronous check for updates
-    '*************************************************************************************************************************************
-    
-    Updates.StandardUpdateChecks
-    
-    
-    '*************************************************************************************************************************************
-    ' Display any final messages and/or warnings
-    '*************************************************************************************************************************************
-    
-    Message ""
-    g_UserPreferences.EndBatchPreferenceMode
-    FormMain.Refresh
-    DoEvents
-    
-    'I occasionally add dire messages to nightly builds.  The line below is the best place to enable that, as necessary.
-    'PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
-    
-    '*************************************************************************************************************************************
-    ' Next, see if we need to display the language/theme selection dialog
-    '*************************************************************************************************************************************
-    
-    'In v7.0, a new "choose your language and UI theme" dialog was added to the project.  This is helpful for first-time
-    ' users to help them get everything set up just the way they want it.
-    
-    'See if we've shown this dialog before; if we have, suspend its load.
-    If (Not g_UserPreferences.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
-    
-    '*************************************************************************************************************************************
-    ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
-    #End If
-    
-    'Because people may be using this code in the IDE, warn them about the consequences of doing so
-    If (Not OS.IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
-    
-    'In debug mode, note that we are about to turn control over to the user
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
-        pdDebug.LogAction "", PDM_Mem_Report
-    #End If
-    
-    'Finally, return focus to the main form
-    g_WindowManager.SetFocusAPI FormMain.hWnd
-    
-    Exit Sub
-    
-FormMainLoadError:
-
-    #If DEBUGMODE = 1 Then
-        If (Not (pdDebug Is Nothing)) Then
-            pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
-        End If
-    #End If
-     
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
@@ -2812,14 +2819,18 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutting down clipboard manager..."
     #End If
     
-    If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
-        #End If
-        g_Clipboard.RenderAllClipboardFormatsManually
-    End If
+    If (Not g_Clipboard Is Nothing) Then
     
-    Set g_Clipboard = Nothing
+        If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
+            #End If
+            g_Clipboard.RenderAllClipboardFormatsManually
+        End If
+    
+        Set g_Clipboard = Nothing
+        
+    End If
     
     'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
     ' no images are loaded by this point.  Because it takes some time to shut down, trigger it prematurely.
@@ -2842,8 +2853,10 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Turning off hotkey manager..."
     #End If
     
-    pdHotkeys.DeactivateHook True
-    pdHotkeys.ReleaseResources
+    If (Not pdHotkeys Is Nothing) Then
+        pdHotkeys.DeactivateHook True
+        pdHotkeys.ReleaseResources
+    End If
     
     'Release the tooltip tracker
     #If DEBUGMODE = 1 Then
@@ -2875,8 +2888,10 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Saving recent file list..."
     #End If
     
-    g_RecentFiles.WriteListToFile
-    g_RecentMacros.MRU_SaveToFile
+    If (Not g_RecentFiles Is Nothing) Then
+        g_RecentFiles.WriteListToFile
+        g_RecentMacros.MRU_SaveToFile
+    End If
     
     'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
@@ -2951,7 +2966,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     Interface.ReleaseFormTheming Me
-    g_WindowManager.UnregisterMainForm Me
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.UnregisterMainForm Me
     
     'As a final failsafe, forcibly unload any remaining forms
     #If DEBUGMODE = 1 Then
@@ -2971,7 +2986,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
-    If Updates.IsUpdatePackageAvailable Then
+    If Updates.IsUpdatePackageAvailable And MainModule.WasStartupSuccessful() Then
         
         If Updates.PatchProgramFiles() Then
             

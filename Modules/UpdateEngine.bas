@@ -803,7 +803,10 @@ End Function
 'Every time PD is run, we have to do things like "see if it's time to check for an update".  This meta-function wraps all those behaviors
 ' into a single, caller-friendly function (currently called by FormMain_Load()).
 Public Sub StandardUpdateChecks()
-
+    
+    'If PD is running in non-portable mode, we don't have write access to our own folder - which makes updates impossible.
+    If g_UserPreferences.IsNonPortableModeActive() Then Exit Sub
+    
     'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
     g_ProgramStartedViaRestart = Updates.WasProgramStartedViaRestart
         
