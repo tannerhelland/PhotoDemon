@@ -87,10 +87,9 @@ End Enum
     Private Const PDHP_HASHVAL = 2, PDHP_HASHSIZE = 4
 #End If
 
-'Two important flags for acquiring contexts: first, we don't need specialized private keys, so we only need verify contexts.
-' Also, to avoid the need for admin rights, we use machine-level key sets (as opposed to user-level ones).
+'Important flags for acquiring contexts.
 Private Const CRYPT_VERIFYCONTEXT As Long = &HF0000000
-Private Const CRYPT_MACHINE_KEYSET As Long = 32
+'Private Const CRYPT_MACHINE_KEYSET As Long = 32
 
 'FYI: most crypto APIs return a non-zero value on success; zero on failure
 Private Declare Function CryptAcquireContextW Lib "advapi32" (ByRef phProv As Long, ByVal ptrToStrContainer As Long, ByVal ptrToStrProvider As Long, ByVal dwProvType As PD_CRYPT_PROVIDER_TYPE, ByVal dwFlags As Long) As Long
@@ -240,10 +239,10 @@ Private Function CreateProvider(ByVal hashAlgorithm As PD_CRYPT_ALGOS) As Boolea
         ' the current provider handle for a performance boost.
         If ((m_CryptoProviderHandle = 0) Or (providerID <> m_CryptoProviderID)) Then
             
-            'Free the previous provider, if any
+            'Free the previous provider, if any.
             If (m_CryptoProviderHandle <> 0) Then FreeCurrentProvider
             m_CryptoProviderID = GetProviderType(providerID)
-            CreateProvider = CBool(CryptAcquireContextW(m_CryptoProviderHandle, 0&, StrPtr(strProvider), m_CryptoProviderID, CRYPT_VERIFYCONTEXT Or CRYPT_MACHINE_KEYSET) <> 0)
+            CreateProvider = (CryptAcquireContextW(m_CryptoProviderHandle, 0&, StrPtr(strProvider), m_CryptoProviderID, CRYPT_VERIFYCONTEXT) <> 0)
             
         Else
             CreateProvider = True
@@ -255,7 +254,7 @@ Private Function CreateProvider(ByVal hashAlgorithm As PD_CRYPT_ALGOS) As Boolea
 End Function
 
 Private Function MatchProviderToAlgo(ByVal srcAlgorithm As PD_CRYPT_ALGOS) As PD_CRYPT_PROVIDERS
-
+    
     Select Case srcAlgorithm
         
         'Certain SHA algorithms require an OS version check, because they use a specialized provider under XP
@@ -336,7 +335,7 @@ Private Sub InternalCryptError(ByVal funcName As String, ByVal errName As String
         If (Len(errDescription) <> 0) Then
             errString = errString & " - " & errDescription
         Else
-            errString = errString & " (FYI, last DLL error is #" & Err.LastDllError & ")"
+            errString = errString & " (FYI, last DLL error is #" & Hex(Err.LastDllError) & ")"
         End If
         pdDebug.LogAction errString
     #End If

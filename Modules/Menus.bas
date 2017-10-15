@@ -493,12 +493,16 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 8, 8
     AddMenuItem "Options...", "tools_options", 8, 9, , "pref_advanced"
     AddMenuItem "Plugin manager...", "tools_plugins", 8, 10, , "tools_plugin"
-    AddMenuItem "-", "-", 8, 11
-    AddMenuItem "Developers", "tools_developers", 8, 12
-        AddMenuItem "Theme editor...", "tools_themeeditor", 8, 12, 0
-        AddMenuItem "Build theme package...", "tools_themepackage", 8, 12, 1
-    AddMenuItem "Test", "effects_developertest", 8, 13
     
+    Dim debugMenuVisibility As Boolean
+    debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
+    If debugMenuVisibility Then
+        AddMenuItem "-", "-", 8, 11
+        AddMenuItem "Developers", "tools_developers", 8, 12
+            AddMenuItem "Theme editor...", "tools_themeeditor", 8, 12, 0
+            AddMenuItem "Build theme package...", "tools_themepackage", 8, 12, 1
+        AddMenuItem "Test", "effects_developertest", 8, 13
+    End If
     
     'Window Menu
     AddMenuItem "&Window", "window_top", 9
