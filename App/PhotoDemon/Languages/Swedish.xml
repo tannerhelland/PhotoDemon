@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.3280</langversion>
+<langversion>6.8.3281</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15091,6 +15091,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.93</langversion>
+<langversion>1.0.94</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -15090,6 +15090,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 

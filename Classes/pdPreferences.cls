@@ -273,15 +273,13 @@ Friend Function InitializePaths() As Boolean
     tmpFileWrite = m_ProgramPath & "tmp.tmp"
     m_NonPortableModeActive = (Not cFile.FileCreateHandle(tmpFileWrite, tmpHandle, True, True, OptimizeNone))
     cFile.FileCloseHandle tmpHandle
-    
+    cFile.FileDelete tmpFileWrite
+        
     If m_NonPortableModeActive Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
         #End If
-        
-        'Even though the temp file shouldn't exist, be a good citizen and try to kill it anyway
-        cFile.FileDelete tmpFileWrite
         
         'Because we don't have access to our own folder, we need a plan B for PD's expected user data folders.
         ' (Note that we still need access to required plugin DLLs, which must exist *somewhere* we can access.)

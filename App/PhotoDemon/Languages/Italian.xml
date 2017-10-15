@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.297</langversion>
+<langversion>6.7.298</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -15078,6 +15078,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 
