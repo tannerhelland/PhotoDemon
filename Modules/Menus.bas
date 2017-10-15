@@ -1331,7 +1331,7 @@ Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
         SetMenuItemInfoW hMenu, GetHMenuIndex(mnuIndex), 1&, tmpMII
         
     Else
-        InternalMenuWarning "UpdaetMenuText_ByIndex", "null hMenu"
+        InternalMenuWarning "UpdateMenuText_ByIndex", "null hMenu (" & mnuIndex & ")"
     End If
 
 End Function

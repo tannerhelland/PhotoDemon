@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.297</langversion>
+<langversion>6.7.298</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -15079,6 +15079,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 

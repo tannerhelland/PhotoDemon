@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.300</langversion>
+<langversion>6.7.301</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -15080,6 +15080,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 

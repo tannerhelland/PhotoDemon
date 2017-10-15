@@ -352,6 +352,7 @@ Private Sub QSInnerStack3Way()
             'Search from the left
             Do
                 i = i + 1
+                If (i >= highVal) Then Exit Do
             Loop While Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) < 0
             
             'Search from the right

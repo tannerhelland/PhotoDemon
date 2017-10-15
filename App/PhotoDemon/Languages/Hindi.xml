@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.0</langversion>
+<langversion>1.0.1</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15091,6 +15091,12 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- pdString.cls contains 0 phrases. -->
 
 <!-- END text for pdString.cls-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- Automatic text extraction complete. -->
 
