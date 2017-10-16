@@ -436,7 +436,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Atmosphere...", "effects_atmosphere", 7, 5, 0
         AddMenuItem "Fog...", "effects_fog", 7, 5, 1
         AddMenuItem "Ignite...", "effects_ignite", 7, 5, 2
-        AddMenuItem "Lava", "effects_lava", 7, 5, 3
+        AddMenuItem "Lava...", "effects_lava", 7, 5, 3
         AddMenuItem "Metal...", "effects_metal", 7, 5, 4
         AddMenuItem "Snow...", "effects_snow", 7, 5, 5
         AddMenuItem "Underwater", "effects_underwater", 7, 5, 6

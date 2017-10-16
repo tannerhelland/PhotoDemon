@@ -146,6 +146,7 @@ Option Explicit
 
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Private m_zOffset As Double
+Private m_Random As pdRandomize
 
 'To improve performance, we cache a local temporary DIB when previewing the effect
 Private m_tmpFogDIB As pdDIB
@@ -176,9 +177,12 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     'Contrast is presented to the user on a [0, 100] scale, but the algorithm needs it on [0, 1]; convert it now
     fxContrast = fxContrast / 100#
     
+    'Quality is presented on a [1, 8] scale; convert it to [0, 7]
+    fxQuality = fxQuality - 1
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -229,13 +233,13 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     ' doing this as part of the RGB assignment array, I've separated it into its own step (in hopes the compiled
     ' will be better able to optimize it!)
     Dim p2Lookup() As Single, p2InvLookup() As Single
-    ReDim p2Lookup(1 To fxQuality) As Single, p2InvLookup(1 To fxQuality) As Single
+    ReDim p2Lookup(0 To fxQuality) As Single, p2InvLookup(0 To fxQuality) As Single
     
     'The fractal noise approach we use requires successive sums of 2 ^ n and 2 ^ -n; we calculate these in advance
     ' as the POW operator is so hideously slow.
-    For i = 1 To fxQuality
-        p2Lookup(i) = 2 ^ (i - 1)
-        p2InvLookup(i) = 1# / (2 ^ (i - 1))
+    For i = 0 To fxQuality
+        p2Lookup(i) = 2 ^ i
+        p2InvLookup(i) = 1# / (2 ^ i)
     Next i
     
     'The results of our fog generation will be stored to this array, in [0, 255] format to make the blending step
@@ -255,7 +259,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
         
         'Fractal noise works by summing successively smaller perlin noise values taken from successively larger
         ' amplitudes of the original function.
-        For i = 1 To fxQuality
+        For i = 0 To fxQuality
             pNoiseCache = pNoiseCache + p2InvLookup(i) * cPerlin.Noise2D(p2Lookup(i) * xScaleCache, p2Lookup(i) * yScaleCache)
         Next i
         
@@ -294,6 +298,10 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
         dstImageData(xOffset, y) = pDisplace
         dstImageData(xOffset + 1, y) = pDisplace
         dstImageData(xOffset + 2, y) = pDisplace
+        
+        'Alpha raises an interesting question.  Do we leave it as-is, or forcibly set it to some new value?
+        ' At present, we assume the alpha value from the base image.
+        
     Next x
         If (Not toPreview) Then
             If ((y + finalY) And progBarCheck) = 0 Then
@@ -325,7 +333,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fog", , GetLocalParamString(), UNDO_LAYER
+    Process "Fog", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -340,18 +348,16 @@ Private Sub cmdBar_ResetClick()
     sltQuality = 5
     
     'Calculate a random z offset for the noise function
-    Rnd -1
-    Randomize (Timer * Now)
-    m_zOffset = Rnd * &HEFFFFFFF
+    m_Random.SetSeed_AutomaticAndRandom
+    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
     
 End Sub
 
 Private Sub cmdRandomize_Click()
 
     'Calculate a random z offset for the noise function
-    Rnd -1
-    Randomize (Timer * Now)
-    m_zOffset = Rnd * &HEFFFFFFF
+    m_Random.SetSeed_AutomaticAndRandom
+    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
     
     UpdatePreview
 
@@ -363,9 +369,9 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Calculate a random z offset for the noise function
-    Rnd -1
-    Randomize (Timer * Now)
-    m_zOffset = Rnd * &HEFFFFFFF
+    Set m_Random = New pdRandomize
+    m_Random.SetSeed_AutomaticAndRandom
+    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me

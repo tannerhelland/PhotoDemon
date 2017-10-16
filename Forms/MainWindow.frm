@@ -1159,7 +1159,7 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Lava"
+            Caption         =   "Lava..."
             Index           =   3
          End
          Begin VB.Menu MnuNatureFilter 
@@ -3860,7 +3860,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         
         'Lava
         Case 3
-            Process "Lava", , , UNDO_Layer
+            Process "Lava", True
         
         'Metal (formerly "steel")
         Case 4

@@ -102,8 +102,8 @@ Attribute VB_Exposed = False
 '"Metal" or "Chrome" Image effect
 'Copyright 2002-2017 by Tanner Helland
 'Created: sometime 2002
-'Last updated: 03/August/17
-'Last update: migrate to XML params, performance improvements
+'Last updated: 16/October/17
+'Last update: migrate the actual function code elsewhere; it's helpful in other filter scenarios
 '
 'PhotoDemon's "Metal" filter is the rough equivalent of "Chrome" in Photoshop.  Our implementation is relatively
 ' straightforward; a normalized graymap is created for the image, then remapped according to a sinusoidal-like
@@ -139,126 +139,14 @@ Public Sub ApplyMetalFilter(ByVal effectParams As String, Optional ByVal toPrevi
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the smoothness (kernel radius) to match the size of the preview box
     If toPreview Then steelSmoothness = steelSmoothness * curDIBValues.previewModifier
     
-    'Decompose the shadow and highlight colors into their individual color components
-    Dim rShadow As Long, gShadow As Long, bShadow As Long
-    Dim rHighlight As Long, gHighlight As Long, bHighlight As Long
-    
-    rShadow = Colors.ExtractRed(shadowColor)
-    gShadow = Colors.ExtractGreen(shadowColor)
-    bShadow = Colors.ExtractBlue(shadowColor)
-    
-    rHighlight = Colors.ExtractRed(highlightColor)
-    gHighlight = Colors.ExtractGreen(highlightColor)
-    bHighlight = Colors.ExtractBlue(highlightColor)
-    
-    'Retrieve a normalized luminance map of the current image
-    Dim grayMap() As Byte
-    DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
-    
-    'If the user specified a non-zero smoothness, apply it now
-    If (steelSmoothness > 0) Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, steelSmoothness, 3
-        
-    'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
-    'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
-    
-    'Next, we need to generate a sinusoidal octave lookup table for the graymap.  This causes the luminance of the map to
-    ' vary evenly between the number of detail points requested by the user.
-    
-    'Detail cannot be lower than 2, but it is presented to the user as [0, (arbitrary upper bound)], so add two to the total now
-    steelDetail = steelDetail + 2
-    
-    'We will be using pdFilterLUT to generate corresponding RGB lookup tables, which means we need to use POINTFLOAT arrays
-    Dim rCurve() As POINTFLOAT, gCurve() As POINTFLOAT, bCurve() As POINTFLOAT
-    ReDim rCurve(0 To steelDetail) As POINTFLOAT
-    ReDim gCurve(0 To steelDetail) As POINTFLOAT
-    ReDim bCurve(0 To steelDetail) As POINTFLOAT
-    
-    Dim detailModifier As Double
-    detailModifier = 1# / CDbl(steelDetail)
-    
-    'For all channels, X values are evenly distributed from 0 to 255
-    Dim i As Long
-    For i = 0 To steelDetail
-        rCurve(i).x = CDbl(i) * detailModifier * 255#
-        gCurve(i).x = CDbl(i) * detailModifier * 255#
-        bCurve(i).x = CDbl(i) * detailModifier * 255#
-    Next i
-    
-    'Y values alternate between the shadow and highlight colors; these are calculated on a per-channel basis
-    For i = 0 To steelDetail
-        
-        If (i Mod 2) = 0 Then
-            rCurve(i).y = rShadow
-            gCurve(i).y = gShadow
-            bCurve(i).y = bShadow
-        Else
-            rCurve(i).y = rHighlight
-            gCurve(i).y = gHighlight
-            bCurve(i).y = bHighlight
-        End If
-        
-    Next i
-    
-    'Convert our point array into color curves
-    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
-    
-    Dim cLut As pdFilterLUT
-    Set cLut = New pdFilterLUT
-    cLut.FillLUT_Curve rLookup, rCurve
-    cLut.FillLUT_Curve gLookup, gCurve
-    cLut.FillLUT_Curve bLookup, bCurve
-        
-    'We are now ready to apply the final curve to the image!
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(dstSA), 4
-    
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
-    
-    Dim grayVal As Long
-    
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        grayVal = grayMap(x, y)
-        
-        imageData(quickVal, y) = bLookup(grayVal)
-        imageData(quickVal + 1, y) = gLookup(grayVal)
-        imageData(quickVal + 2, y) = rLookup(grayVal)
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    'The actual chrome filter lives elsewhere
+    Filters_Natural.GetChromeDIB workingDIB, steelDetail, steelSmoothness, shadowColor, highlightColor, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -267,7 +155,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Metal", , GetLocalParamString(), UNDO_LAYER
+    Process "Metal", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
