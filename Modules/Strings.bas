@@ -515,11 +515,24 @@ Public Function StrCompSort(ByRef firstString As String, ByRef secondString As S
     ' does not support any linguistic compressions, as when traditional Spanish sorting treats "ch" as
     ' a single character."  This is why we don't supply a length for either string, even though we
     ' obviously know 'em.
-    StrCompSort = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_LINGUISTIC_CASING, StrPtr(firstString), -1, StrPtr(secondString), -1) - 2
+    StrCompSort = StrCompSortPtr(StrPtr(firstString), StrPtr(secondString))
 End Function
 
 Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringPtr As Long) As Long
-    StrCompSortPtr = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_LINGUISTIC_CASING, firstStringPtr, -1, secondStringPtr, -1) - 2
+    
+    'It took awhile to track down, but unlike MSDN claims, NORM_LINGUISTIC_CASING fails miserably on XP.
+    ' As such, we can't use it blindly - we have to test OS version.  An idealized sort would thus look
+    ' something like this:
+    '
+    'Dim sortFlags As StrCmpFlags
+    'sortFlags = SORT_STRINGSORT Or NORM_IGNORECASE
+    'If OS.IsVistaOrLater Then sortFlags = sortFlags Or NORM_LINGUISTIC_CASING
+    'StrCompSortPtr = CompareStringW(pdli_UserDefault, sortFlags, firstStringPtr, -1, secondStringPtr, -1) - 2
+    '
+    'Unfortunately, string comparisons are often used in tight loops, and all that branching isn't ideal.
+    ' As such, we ignore the NORM_LINGUISTIC_CASING rule for now.
+    StrCompSortPtr = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_IGNORECASE, firstStringPtr, -1, secondStringPtr, -1) - 2
+    
 End Function
 
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.

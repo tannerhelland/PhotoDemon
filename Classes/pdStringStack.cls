@@ -299,7 +299,9 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     End If
     
     'Want timing reports?  Here you go:
-    'Debug.Print "String stack sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "String collection sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
     
 End Sub
 
@@ -387,13 +389,13 @@ Private Sub QSInnerStack3Way()
         i = i + 1
         
         For k = lowVal To p - 1
-            SwapIndices k, j
             j = j - 1
+            SwapIndices k, j
         Next k
         
         For k = highVal - 1 To q + 1 Step -1
-            SwapIndices i, k
             i = i + 1
+            SwapIndices i, k
         Next k
         
         'Push (up to) two new entries on the processing stack
@@ -425,6 +427,20 @@ Private Sub QSInnerStack3Way()
     Loop While (m_qsStackPtr >= 0)
     
 End Sub
+
+'Simple insertion sort, designed to operate directly on the m_Strings() object.  highVal *MUST* be higher
+' than lowVal or the function will never exit.  (Note that this function is currently unused, but it is
+' provided here in case it proves useful in the future.)
+Private Function InsertSortStack(ByVal lowVal As Long, ByVal highVal As Long)
+    Dim i As Long, j As Long, tmpString As String
+    For i = lowVal To highVal - 1
+        tmpString = m_Strings(i + 1)
+            For j = i To 0 Step -1
+                If (Strings.StrCompSort(tmpString, m_Strings(j)) < 0) Then m_Strings(j + 1) = m_Strings(j) Else Exit For
+            Next j
+        m_Strings(j + 1) = tmpString
+    Next i
+End Function
 
 'Clone another string stack
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
