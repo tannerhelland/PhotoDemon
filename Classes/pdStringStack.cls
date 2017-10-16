@@ -259,7 +259,7 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     VBHacks.GetHighResTime startTime
     
     'Sort the stack in-place
-    QuickSortStringStack3Way
+    QuickSortStringStack
     
     'If the user wants duplicates removed, do so now.  (This check is fast and easy, because duplicates are
     ' sitting next to each other in the sorted list.)
@@ -305,11 +305,7 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     
 End Sub
 
-'Bentley-McIlroy 3-way partitioning QuickSort implementation developed with help from this PDF:
-' http://www.cs.princeton.edu/~rs/talks/QuicksortIsOptimal.pdf
-'
-'Because recursion can quickly become slow in VB, we use an internal stack to track remaining range searches.
-Private Sub QuickSortStringStack3Way()
+Private Sub QuickSortStringStack()
     
     If (m_NumOfStrings > 1) Then
     
@@ -319,7 +315,7 @@ Private Sub QuickSortStringStack3Way()
         m_qsStack(0).sLB = 0
         m_qsStack(0).sUB = m_NumOfStrings - 1
         
-        QSInnerStack3Way
+        NaiveQuickSortExtended
         
         'Free the stack before exiting
         Erase m_qsStack
@@ -328,11 +324,20 @@ Private Sub QuickSortStringStack3Way()
     
 End Sub
 
-Private Sub QSInnerStack3Way()
+'Semi-standard QuickSort implementation, with VB-specific enhancements provided by georgekar, and further
+' enhancements by myself to further improve performance.  VB6 has any number of quirks that require special
+' workarounds and optimizations, and because this function is primarily used for sorting API returns
+' (like font names), its use-cases can vary wildly.  This modified implementation should will perform well
+' under a variety of circumstances, including already-sorted, reverse-sorted, even-odd, and other typically
+' rare scenarios, which is good as Windows rarely makes guarantees with sort order when returning strings
+' (again, like installed font names).
+'
+'georgekar's original, unmodified implementation can be found here:
+' http://www.vbforums.com/showthread.php?781043-VB6-Dual-Pivot-QuickSort
+Private Sub NaiveQuickSortExtended()
     
     Dim lowVal As Long, highVal As Long
-    Dim i As Long, j As Long, k As Long
-    Dim p As Long, q As Long
+    Dim i As Long, j As Long
     Dim v As String, vPtr As Long
     
     Do
@@ -341,85 +346,80 @@ Private Sub QSInnerStack3Way()
         lowVal = m_qsStack(m_qsStackPtr).sLB
         highVal = m_qsStack(m_qsStackPtr).sUB
         
-        i = lowVal - 1
-        j = highVal
-        p = lowVal - 1
-        q = highVal
-        v = m_Strings(highVal)
-        vPtr = StrPtr(v)
+        'Check for single-entry ranges
+        If (highVal - lowVal = 1) Then
+            i = lowVal
+            If (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), StrPtr(m_Strings(highVal))) > 0) Then SwapIndices i, highVal 'Tmp = m_Strings(i): m_Strings(i) = m_Strings(highVal): m_Strings(highVal) = Tmp
+            GoTo NextSortItem
+        Else
+            
+            'Bisect this range
+            i = (lowVal + highVal) \ 2
+            
+            'Migrate all equal entries into place
+            If (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), StrPtr(m_Strings(lowVal))) = 0) Then
+                
+                j = highVal - 1
+                i = lowVal
+                
+                Do
+                    i = i + 1
+                    If (i > j) Then
+                        If (Strings.StrCompSortPtr(StrPtr(m_Strings(highVal)), StrPtr(m_Strings(lowVal))) < 0) Then SwapIndices lowVal, highVal
+                        GoTo NextSortItem
+                    End If
+                Loop Until (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), StrPtr(m_Strings(lowVal))) <> 0)
+                
+                v = m_Strings(i)
+                If (i > lowVal) Then If (Strings.StrCompSortPtr(StrPtr(m_Strings(lowVal)), StrPtr(m_Strings(i))) > 0) Then SwapIndices lowVal, i
+            
+            'Move the pointer until we arrive at an unsorted pivot
+            Else
+                v = m_Strings(i)
+                vPtr = StrPtr(m_Strings(i))
+                i = lowVal
+                Do While (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) < 0): i = i + 1: Loop
+            End If
         
-        'Start the "infinite" loop comprising the bulk of the sort
+        'End special case handling
+        End If
+        
+        'Resume standard QuickSort behavior
+        j = highVal
+        
         Do
+            'Advance from the right
+            Do While (Strings.StrCompSortPtr(StrPtr(m_Strings(j)), StrPtr(v)) > 0): j = j - 1: Loop
             
-            'Search from the left
-            Do
+            'Swap as necessary
+            If (i <= j) Then
+                SwapIndices i, j
                 i = i + 1
-                If (i >= highVal) Then Exit Do
-            Loop While Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) < 0
-            
-            'Search from the right
-            Do
                 j = j - 1
-                If (j <= lowVal) Then Exit Do
-            Loop While Strings.StrCompSortPtr(vPtr, StrPtr(m_Strings(j))) < 0
-            
-            'If indices cross, this segment is fully sorted; exit!
-            If (i >= j) Then Exit Do
-            
-            'If we're still here, these two indices are out-of-order.  Swap 'em.
-            SwapIndices i, j
-            
-            'Handle equality cases specially.  (This improves performance on lists with many
-            ' duplicate elements.)
-            If (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), vPtr) = 0) Then
-                p = p + 1
-                SwapIndices p, i
             End If
             
-            If (Strings.StrCompSortPtr(vPtr, StrPtr(m_Strings(j))) = 0) Then
-                q = q - 1
-                SwapIndices j, q
-            End If
+            If (i > j) Then Exit Do
+            
+            'Advance from the left
+            Do While (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), StrPtr(v)) < 0): i = i + 1: Loop
             
         Loop
         
-        'Swap all equal entries to the center of the partition, so we don't have to process them again
-        SwapIndices i, highVal
-        j = i - 1
-        i = i + 1
-        
-        For k = lowVal To p - 1
-            j = j - 1
-            SwapIndices k, j
-        Next k
-        
-        For k = highVal - 1 To q + 1 Step -1
-            i = i + 1
-            SwapIndices i, k
-        Next k
-        
-        'Push (up to) two new entries on the processing stack
-        If (m_qsStackPtr >= UBound(m_qsStack)) Then ReDim Preserve m_qsStack(0 To m_qsStackPtr * 2 - 1) As QSStack
-        
-        'We now have a trade-off to make:
-        ' 1) We can perform two if/then checks to see if this segment needs to be subdivided further.
-        '    If either of these tests succeeds, we can skip adding a new segment to the stack.
-        ' 2) We can perform zero if/then checks and forcibly add new segments to the stack.
-        '    Then, in the outer Do/Loop, we can perform an "If (lowVal < highVal)" check, and immediately
-        '    decrement the stack if the test fails.
-        '
-        'There are trade-offs to both mechanisms, but given VB's array handling performance, I think
-        ' it's preferable to use branches instead of risking extra array accesses and ReDims.
-        If (j > lowVal) Then
+        'Conditionally add new entries to the processing stack
+        If (lowVal < j) Then
             m_qsStack(m_qsStackPtr).sLB = lowVal
             m_qsStack(m_qsStackPtr).sUB = j
             m_qsStackPtr = m_qsStackPtr + 1
         End If
-        If (highVal > i) Then
+        
+        If (i < highVal) Then
             m_qsStack(m_qsStackPtr).sLB = i
             m_qsStack(m_qsStackPtr).sUB = highVal
             m_qsStackPtr = m_qsStackPtr + 1
         End If
+        
+'Yep, VB6 requires us to use GOTO and line labels.  There is no "Continue For" equivalent.
+NextSortItem:
         
         'Decrement the stack pointer
         m_qsStackPtr = m_qsStackPtr - 1
