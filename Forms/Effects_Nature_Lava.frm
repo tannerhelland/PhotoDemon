@@ -167,7 +167,7 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     Filters_Render.GetCloudDIB m_tmpDIB, fxScale, 4, rndSeed, toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, 0
     
     'Chrome-ify it using hard-coded "lava" colors
-    Filters_Natural.GetChromeDIB m_tmpDIB, 8, fxScale, RGB(50, 0, 0), RGB(250, 140, 95), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight
+    Filters_Natural.GetChromeDIB m_tmpDIB, 8, fxScale * 0.25, RGB(50, 0, 0), RGB(250, 140, 95), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight
     
     'Duplicate that layer
     Dim rotDIB As pdDIB
@@ -187,7 +187,6 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     'Merge the result down, then exit
     cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, fxBlendMode, fxOpacity
-    
     EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
@@ -205,6 +204,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    
+    cboBlendMode.ListIndex = BL_OVERLAY
     
     'Calculate a random z offset for the noise function
     m_Random.SetSeed_AutomaticAndRandom
