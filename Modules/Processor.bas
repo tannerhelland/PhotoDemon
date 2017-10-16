@@ -1634,7 +1634,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Lava", True) Then
-        MenuLava
+        If raiseDialog Then ShowPDDialog vbModal, FormLava Else FormLava.fxLava processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Metal", True) Then

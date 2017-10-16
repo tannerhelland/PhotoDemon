@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.1</langversion>
+<langversion>1.0.2</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15098,12 +15098,23 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Filters_Render.bas-->
 
+<!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
+
+<phrase>
+<original>randomize lava flow</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Nature_Lava.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2533</phrasecount>
+<phrasecount>2534</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4545 phrases. -->
-<!-- 2012 are duplicates, so only 2533 unique phrases have been written to file. -->
-<!-- These 2533 phrases contain approximately 12327 total words. -->
+<!-- As of this build, PhotoDemon contains 4552 phrases. -->
+<!-- 2018 are duplicates, so only 2534 unique phrases have been written to file. -->
+<!-- These 2534 phrases contain approximately 12330 total words. -->
 
 </pdData>
