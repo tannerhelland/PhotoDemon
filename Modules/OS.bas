@@ -317,8 +317,8 @@ Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, B
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 
 Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal newValue As Long) As Long
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWordDst As Long, ByVal newValue As Long) As Long
+Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
 
 Private Declare Function SysAllocString Lib "oleaut32" (ByVal Ptr As Long) As Long
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, ByRef pClsID As OS_Guid) As Long
@@ -697,29 +697,29 @@ End Function
 
 'Check for a version >= the specified version.
 Public Function IsVistaOrLater() As Boolean
-    CacheOSVersion
+    If (Not m_VersionInfoCached) Then CacheOSVersion
     IsVistaOrLater = (m_OSVI.dwMajorVersion >= 6)
 End Function
 
 Public Function IsWin7OrLater() As Boolean
-    CacheOSVersion
+    If (Not m_VersionInfoCached) Then CacheOSVersion
     IsWin7OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 1))
 End Function
 
 Public Function IsWin8OrLater() As Boolean
-    CacheOSVersion
+    If (Not m_VersionInfoCached) Then CacheOSVersion
     IsWin8OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 2))
 End Function
 
 Public Function IsWin81OrLater() As Boolean
-    CacheOSVersion
+    If (Not m_VersionInfoCached) Then CacheOSVersion
     IsWin81OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 3))
 End Function
 
 ' (NOTE: the Win-10 check requires a manifest, so don't rely on it in the IDE.  Also, MS doesn't guarantee that this
 ' check will remain valid forever, though it does work as of Windows 10-1703.)
 Public Function IsWin10OrLater() As Boolean
-    CacheOSVersion
+    If (Not m_VersionInfoCached) Then CacheOSVersion
     IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
 End Function
 
