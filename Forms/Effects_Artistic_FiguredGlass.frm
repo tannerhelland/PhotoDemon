@@ -131,8 +131,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
-Private m_zOffset As Double
+Private m_Random As pdRandomize
 
 Private Sub cboEdges_Click()
     UpdatePreview
@@ -158,14 +157,14 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -257,19 +256,28 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
-    'This effect requires a noise function to operate.  I use Steve McMahon's excellent Perlin Noise class for this.
-    Dim cPerlin As cPerlin3D
-    Set cPerlin = New cPerlin3D
+    'pdNoise is used to calculate repeatable noise
+    Dim cNoise As pdNoise
+    Set cNoise = New pdNoise
     
-    'Cache the z-value used in the Perlin Noise function.  This is faster than constantly passing
-    ' it as a value.  (Note that this caching mechanism and resulting function is NOT part of
-    ' Steve's initial implementation, so if it gives anyone trouble, blame me!)
-    cPerlin.cacheZValue m_zOffset
+    'To generate "random" values despite using a fixed 2D noise generator, we calculate random offsets
+    ' into the "infinite grid" of possible noise values.  This yields (perceptually) random results.
+    Dim rndOffsetX As Double, rndOffsetY As Double
+    If (m_Random Is Nothing) Then
+        Set m_Random = New pdRandomize
+        m_Random.SetSeed_AutomaticAndRandom
+    Else
+        m_Random.SetSeed_Float m_Random.GetSeed()
+    End If
+
+    rndOffsetX = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
+    rndOffsetY = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
     
-    'Finally, an integer displacement will be used to move pixel values around
+    'Finally, an integer displacement will be used to move pixel values around.  (Note that these use a
+    ' "Perlin" nomenclature, but we have since moved onto better noise generation methods.)
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
-    Dim multAvg As Double
+    Dim multAvg As Double, xCache As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -291,10 +299,10 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
             j = x + ssX(sampleIndex)
             k = y + ssY(sampleIndex)
             
-            'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
-            ' user's turbulence value.
+            'Calculate a displacement for this point, using a fixed 2D noise function as the basis,
+            ' but modifying it per the user's turbulence value.
             If (fxScale > 0#) Then
-                pNoiseCache = PI_DOUBLE * fxTurbulence * cPerlin.Noise2D(j * invScale, k * invScale)
+                pNoiseCache = PI_DOUBLE * fxTurbulence * cNoise.OpenSimplexNoise2d(rndOffsetX + j * invScale, rndOffsetY + k * invScale)
                 perlinCacheSin = Sin(pNoiseCache) * fxScale
                 perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
             Else
@@ -304,7 +312,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
             
             'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
             ' of the conversion, but technically it would work fine without an additional modifier due to the way
-            ' Perlin noise is generated.)
+            ' fixed noise is generated.)
             srcX = j + perlinCacheSin
             srcY = k + perlinCacheCos
             
@@ -368,7 +376,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , GetLocalParamString(), UNDO_LAYER
+    Process "Figured glass", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -382,6 +390,7 @@ Private Sub cmdBar_ResetClick()
     sltScale.Value = 10#
     sltTurbulence.Value = 0.5
     sltQuality.Value = 2
+    m_Random.SetSeed_AutomaticAndRandom
 
 End Sub
 
@@ -391,9 +400,8 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Calculate a random z offset for the noise function
-    Rnd -1
-    Randomize (Timer * Now)
-    m_zOffset = Rnd * &HEFFFFFFF
+    Set m_Random = New pdRandomize
+    m_Random.SetSeed_AutomaticAndRandom
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.

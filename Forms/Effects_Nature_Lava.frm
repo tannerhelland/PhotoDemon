@@ -28,7 +28,7 @@ Begin VB.Form FormLava
       Height          =   600
       Left            =   6600
       TabIndex        =   3
-      Top             =   3600
+      Top             =   4320
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   1058
@@ -48,7 +48,7 @@ Begin VB.Form FormLava
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   600
+      Top             =   960
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -74,7 +74,7 @@ Begin VB.Form FormLava
       Height          =   705
       Left            =   6000
       TabIndex        =   4
-      Top             =   1560
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -89,7 +89,7 @@ Begin VB.Form FormLava
       Height          =   735
       Left            =   6000
       TabIndex        =   5
-      Top             =   2520
+      Top             =   3120
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
@@ -108,15 +108,9 @@ Attribute VB_Exposed = False
 'Last updated: 16/October/17
 'Last update: rewrite using new algorithm; migrate to dedicated UI instance
 '
-'This tool allows the user to apply a layer of artificial "fog" to an image.  Perlin Noise is used to generate
-' the fog map, using a well-known fractal generation approach to successive layers of noise
-' (see http://freespace.virgin.net/hugo.elias/models/m_perlin.htm for details).
-'
-'A variety of options are provided to help the user find their "ideal" fog.  To simply generate clouds, without any
-' trace of the original image, set the Density parameter to 100.  Also, Quality controls the number of successive
-' Perlin Noise planes summed together; there is arguably no visible difference once you exceed 6 (due to the range
-' of RGB values involved), but maybe someone out there has sharper eyes than me, and can detect RGB differences
-' of 1 or less... ;)
+'This (silly) effect uses a combination of a pdNoise instance (for generating a base fog-like effect),
+' which is then chrome-ified in red/orange hues, rotated 180 degrees, and merged onto itself to create
+' a lava-like map.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -125,8 +119,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
-Private m_zOffset As Double
+'To ensure consistent results across sessions, a dedicated randomizer is used
 Private m_Random As pdRandomize
 
 'To improve performance, we cache a local temporary DIB when previewing the effect
@@ -136,7 +129,6 @@ Private Sub cmbEdges_Click()
     UpdatePreview
 End Sub
 
-'Apply a "fog" effect to an image, using Perlin Noise as the base
 Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Exploding imaginary volcano..."
@@ -153,7 +145,8 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
         fxScale = .GetDouble("scale", sltScale.Value)
         fxOpacity = .GetDouble("opacity", sldOpacity.Value)
         fxBlendMode = .GetLong("blendmode", cboBlendMode.ListIndex)
-        rndSeed = .GetDouble("rndSeed", m_zOffset)
+        If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
+        rndSeed = .GetDouble("rndSeed", m_Random.GetSeed())
     End With
     
     'Create a local array and point it at the pixel data of the current image
@@ -204,23 +197,13 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    
     cboBlendMode.ListIndex = BL_OVERLAY
-    
-    'Calculate a random z offset for the noise function
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
-    
 End Sub
 
 Private Sub cmdRandomize_Click()
-
-    'Calculate a random z offset for the noise function
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
-    
     UpdatePreview
-
 End Sub
 
 Private Sub Form_Load()
@@ -234,7 +217,6 @@ Private Sub Form_Load()
     'Calculate a random z offset for the noise function
     Set m_Random = New pdRandomize
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -286,7 +268,7 @@ Private Function GetLocalParamString() As String
         .AddParam "scale", sltScale.Value
         .AddParam "opacity", sldOpacity.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
-        .AddParam "rndSeed", m_zOffset
+        .AddParam "rndSeed", m_Random.GetSeed()
     End With
     
     GetLocalParamString = cParams.GetParamString()

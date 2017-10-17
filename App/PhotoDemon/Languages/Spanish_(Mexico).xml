@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.302</langversion>
+<langversion>6.7.303</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -597,14 +597,15 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <translation>Imagen Sumergir en agua artificial</translation>
 </phrase>
 
-<phrase>
-<original>Exploding imaginary volcano</original>
-<translation>La explosión del volcán imaginario</translation>
-</phrase>
-
-<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- BEGIN text for Filters_Stylize.bas -->
 
@@ -2665,12 +2666,6 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cPerlin3D.cls -->
-
-<!-- cPerlin3D.cls contains 0 phrases. -->
-
-<!-- END text for cPerlin3D.cls-->
-
 <!-- BEGIN text for cProgressBarOfficial.cls -->
 
 <!-- cProgressBarOfficial.cls contains 0 phrases. -->
@@ -3339,6 +3334,12 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for pdMetadata.cls-->
 
+<!-- BEGIN text for pdNoise.cls -->
+
+<!-- pdNoise.cls contains 0 phrases. -->
+
+<!-- END text for pdNoise.cls-->
+
 <!-- BEGIN text for pdObjectList.cls -->
 
 <!-- pdObjectList.cls contains 0 phrases. -->
@@ -3514,6 +3515,12 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdStream.cls contains 0 phrases. -->
 
 <!-- END text for pdStream.cls-->
+
+<!-- BEGIN text for pdString.cls -->
+
+<!-- pdString.cls contains 0 phrases. -->
+
+<!-- END text for pdString.cls-->
 
 <!-- BEGIN text for pdStringStack.cls -->
 
@@ -9880,6 +9887,22 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
+<!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
+
+<phrase>
+<original>randomize lava flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exploding imaginary volcano</original>
+<translation>La explosión del volcán imaginario</translation>
+</phrase>
+
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Lava.frm-->
+
 <!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
@@ -15075,35 +15098,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdString.cls -->
-
-<!-- pdString.cls contains 0 phrases. -->
-
-<!-- END text for pdString.cls-->
-
-<!-- BEGIN text for Filters_Render.bas -->
-
-<!-- Filters_Render.bas contains 0 phrases. -->
-
-<!-- END text for Filters_Render.bas-->
-
-<!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
-
-<phrase>
-<original>randomize lava flow</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Nature_Lava.frm-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2534</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2018 are duplicates, so only 2534 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4551 phrases. -->
+<!-- 2017 are duplicates, so only 2534 unique phrases have been written to file. -->
 <!-- These 2534 phrases contain approximately 12330 total words. -->
 
 </pdData>
