@@ -94,7 +94,7 @@ Begin VB.Form FormFog
       _ExtentY        =   1270
       Caption         =   "quality"
       Min             =   1
-      Max             =   8
+      Max             =   6
       Value           =   5
       NotchPosition   =   2
       NotchValueCustom=   5
@@ -127,13 +127,13 @@ Attribute VB_Exposed = False
 'Last updated: 03/August/17
 'Last update: migrate to XML params, minor performance improvements
 '
-'This tool allows the user to apply a layer of artificial "fog" to an image.  Perlin Noise is used to generate
+'This tool allows the user to apply a layer of artificial "fog" to an image.  pdNoise is used to generate
 ' the fog map, using a well-known fractal generation approach to successive layers of noise
 ' (see http://freespace.virgin.net/hugo.elias/models/m_perlin.htm for details).
 '
 'A variety of options are provided to help the user find their "ideal" fog.  To simply generate clouds, without any
 ' trace of the original image, set the Density parameter to 100.  Also, Quality controls the number of successive
-' Perlin Noise planes summed together; there is arguably no visible difference once you exceed 6 (due to the range
+' noise planes summed together; there is arguably no visible difference once you exceed 6 (due to the range
 ' of RGB values involved), but maybe someone out there has sharper eyes than me, and can detect RGB differences
 ' of 1 or less... ;)
 '
@@ -144,18 +144,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
-Private m_zOffset As Double
 Private m_Random As pdRandomize
 
 'To improve performance, we cache a local temporary DIB when previewing the effect
 Private m_tmpFogDIB As pdDIB
 
-Private Sub cmbEdges_Click()
-    UpdatePreview
-End Sub
-
-'Apply a "fog" effect to an image, using Perlin Noise as the base
 Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Generating artificial fog..."
@@ -164,7 +157,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim fxScale As Double, fxContrast As Double
+    Dim fxScale As Double, fxContrast As Double, rndSeed As Double
     Dim fxDensity As Long, fxQuality As Long
     
     With cParams
@@ -172,10 +165,11 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
         fxContrast = .GetDouble("contrast", sltContrast.Value)
         fxDensity = .GetLong("density", sltDensity.Value)
         fxQuality = .GetLong("quality", sltQuality.Value)
+        rndSeed = .GetDouble("rndseed")
     End With
     
     'Contrast is presented to the user on a [0, 100] scale, but the algorithm needs it on [0, 1]; convert it now
-    fxContrast = fxContrast / 100#
+    fxContrast = fxContrast * 0.01
     
     'Quality is presented on a [1, 8] scale; convert it to [0, 7]
     fxQuality = fxQuality - 1
@@ -213,15 +207,6 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     
     If (fxScale > 0#) Then fxScale = 1# / fxScale
     
-    'This effect requires a noise function to operate.  I use Steve McMahon's excellent Perlin Noise class for this.
-    Dim cPerlin As cPerlin3D
-    Set cPerlin = New cPerlin3D
-    
-    'Cache the z-value used in the Perlin Noise function.  This is faster than constantly passing
-    ' it as a value.  (Note that this caching mechanism and resulting function is NOT part of
-    ' Steve's initial implementation, so if it gives anyone trouble, blame me!)
-    cPerlin.cacheZValue m_zOffset
-    
     'Some values can be cached in the interior loop to speed up processing time
     Dim pNoiseCache As Double, xScaleCache As Double, yScaleCache As Double
     
@@ -247,20 +232,31 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     Dim fogArray() As Byte
     ReDim fogArray(initX To finalX, initY To finalY) As Byte
     
+    'A pdNoise instance handles the actual noise generation
+    Dim cNoise As pdNoise
+    Set cNoise = New pdNoise
+    
+    'To generate "random" values despite using a fixed 2D noise generator, we calculate random offsets
+    ' into the "infinite grid" of possible noise values.  This yields (perceptually) random results.
+    Dim rndOffsetX As Double, rndOffsetY As Double
+    If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
+    m_Random.SetSeed_Float rndSeed
+    rndOffsetX = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
+    rndOffsetY = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
+    
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
     For x = initX To finalX
     
-        'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
-        ' user's turbulence value.
-        xScaleCache = x * fxScale
-        yScaleCache = y * fxScale
+        'Calculate a displacement for this point
+        xScaleCache = (CDbl(x) * fxScale)
+        yScaleCache = (CDbl(y) * fxScale)
         pNoiseCache = 0#
         
-        'Fractal noise works by summing successively smaller perlin noise values taken from successively larger
+        'Fractal noise works by summing successively smaller noise values taken from successively larger
         ' amplitudes of the original function.
         For i = 0 To fxQuality
-            pNoiseCache = pNoiseCache + p2InvLookup(i) * cPerlin.Noise2D(p2Lookup(i) * xScaleCache, p2Lookup(i) * yScaleCache)
+            pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.SimplexNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
         Next i
         
         'Apply contrast (e.g. stretch the calculated noise value further)
@@ -275,7 +271,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
         End If
         
         fogArray(x, y) = pDisplace
-          
+        
     Next x
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
@@ -293,6 +289,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     'Loop through each pixel in the image, converting stored fog values to RGB triplets
     For y = initY To finalY
     For x = initX To finalX
+    
         pDisplace = fogArray(x, y)
         xOffset = x * qvDepth
         dstImageData(xOffset, y) = pDisplace
@@ -317,12 +314,10 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     m_tmpFogDIB.SetAlphaPremultiplication True
     workingDIB.SetAlphaPremultiplication True
     
-    'A pdCompositor class will help us selectively blend the fog results back onto the main image
-    Dim cComposite As pdCompositor
-    Set cComposite = New pdCompositor
-    
     'Composite our custom fog image against the base layer (workingDIB) using the Normal blend mode,
     ' and adjusting opacity (taken from the Density option provided to the user).
+    Dim cComposite As pdCompositor
+    Set cComposite = New pdCompositor
     cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpFogDIB, BL_NORMAL, fxDensity
     
     If (Not toPreview) Then Set m_tmpFogDIB = Nothing
@@ -341,26 +336,16 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    
     sltScale = 25
     sltContrast = 50
     sltDensity = 50
     sltQuality = 5
-    
-    'Calculate a random z offset for the noise function
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
-    
 End Sub
 
 Private Sub cmdRandomize_Click()
-
-    'Calculate a random z offset for the noise function
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
-    
     UpdatePreview
-
 End Sub
 
 Private Sub Form_Load()
@@ -371,7 +356,6 @@ Private Sub Form_Load()
     'Calculate a random z offset for the noise function
     Set m_Random = New pdRandomize
     m_Random.SetSeed_AutomaticAndRandom
-    m_zOffset = m_Random.GetRandomFloat_WH() * &HEFFFFFFF
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -420,6 +404,7 @@ Private Function GetLocalParamString() As String
         .AddParam "contrast", sltContrast.Value
         .AddParam "density", sltDensity.Value
         .AddParam "quality", sltQuality.Value
+        .AddParam "rndseed", m_Random.GetSeed()
     End With
     
     GetLocalParamString = cParams.GetParamString()

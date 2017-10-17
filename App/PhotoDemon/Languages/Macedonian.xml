@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.95</langversion>
+<langversion>1.0.96</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -596,14 +596,15 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Нурнат слика во вештачки вода</translation>
 </phrase>
 
-<phrase>
-<original>Exploding imaginary volcano</original>
-<translation>Експлодира имагинарен вулкан</translation>
-</phrase>
-
-<!-- Filters_Natural.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for Filters_Natural.bas-->
+
+<!-- BEGIN text for Filters_Render.bas -->
+
+<!-- Filters_Render.bas contains 0 phrases. -->
+
+<!-- END text for Filters_Render.bas-->
 
 <!-- BEGIN text for Filters_Stylize.bas -->
 
@@ -2673,12 +2674,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cPerlin3D.cls -->
-
-<!-- cPerlin3D.cls contains 0 phrases. -->
-
-<!-- END text for cPerlin3D.cls-->
-
 <!-- BEGIN text for cProgressBarOfficial.cls -->
 
 <!-- cProgressBarOfficial.cls contains 0 phrases. -->
@@ -3347,6 +3342,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdMetadata.cls-->
 
+<!-- BEGIN text for pdNoise.cls -->
+
+<!-- pdNoise.cls contains 0 phrases. -->
+
+<!-- END text for pdNoise.cls-->
+
 <!-- BEGIN text for pdObjectList.cls -->
 
 <!-- pdObjectList.cls contains 0 phrases. -->
@@ -3522,6 +3523,12 @@ Please enter a numeric value.</original>
 <!-- pdStream.cls contains 0 phrases. -->
 
 <!-- END text for pdStream.cls-->
+
+<!-- BEGIN text for pdString.cls -->
+
+<!-- pdString.cls contains 0 phrases. -->
+
+<!-- END text for pdString.cls-->
 
 <!-- BEGIN text for pdStringStack.cls -->
 
@@ -9888,6 +9895,22 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
+<!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
+
+<phrase>
+<original>randomize lava flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exploding imaginary volcano</original>
+<translation>Експлодира имагинарен вулкан</translation>
+</phrase>
+
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Lava.frm-->
+
 <!-- BEGIN text for Effects_Nature_Metal.frm (FormMetal) -->
 
 <phrase>
@@ -15085,35 +15108,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdString.cls -->
-
-<!-- pdString.cls contains 0 phrases. -->
-
-<!-- END text for pdString.cls-->
-
-<!-- BEGIN text for Filters_Render.bas -->
-
-<!-- Filters_Render.bas contains 0 phrases. -->
-
-<!-- END text for Filters_Render.bas-->
-
-<!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
-
-<phrase>
-<original>randomize lava flow</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Nature_Lava.frm-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2534</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2018 are duplicates, so only 2534 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4551 phrases. -->
+<!-- 2017 are duplicates, so only 2534 unique phrases have been written to file. -->
 <!-- These 2534 phrases contain approximately 12330 total words. -->
 
 </pdData>

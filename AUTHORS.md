@@ -36,6 +36,7 @@ Djordje Djoric (https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/)
 FlatIcons.net (http://flaticons.net/)
 Frank Donckers (http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 Frans van Beers (https://plus.google.com/+FransvanBeers/)
+Giorgio "Gibra" Brausi (http://nuke.vbcorner.net)
 GioRock (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 Hans Nolte (https://github.com/hansnolte)
 Helmut Kuerbiss

@@ -217,7 +217,7 @@ End Sub
 Private Sub UpdateVisiblePanel()
     Dim i As Long
     For i = 0 To btsPanel.ListCount - 1
-        pnlAbout(i).Visible = CBool(i = btsPanel.ListIndex)
+        pnlAbout(i).Visible = (i = btsPanel.ListIndex)
     Next i
 End Sub
 
@@ -271,6 +271,7 @@ Private Sub Form_Load()
     GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
     GenerateContributor "FreeImage Project", "http://freeimage.sourceforge.net/"
+    GenerateContributor "Giorgio ""Gibra"" Brausi", "http://nuke.vbcorner.net"
     GenerateContributor "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
     GenerateContributor "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
     GenerateContributor "Google Translate", "http://translate.google.com"

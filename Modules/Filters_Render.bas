@@ -15,8 +15,8 @@ Attribute VB_Name = "Filters_Render"
 
 Option Explicit
 
-'Render a "cloud" effect (currently using Perlin noise) to an arbitrary DIB.  The DIB must already exist and
-' be sized to whatever dimensions the caller requires.
+'Render a "cloud" effect to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
+' the caller requires.
 Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Optional ByVal fxQuality As Long = 4, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Quality is passed on a [1, 8] scale; rework it to [0, 7] now
@@ -54,12 +54,19 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
     
     If (fxScale > 0#) Then fxScale = 1# / fxScale
     
-    'This effect requires a noise function to operate.  We currently use a modified Perlin Noise class.
-    Dim cPerlin As cPerlin3D
-    Set cPerlin = New cPerlin3D
+    'A pdNoise instance handles the actual noise generation
+    Dim cNoise As pdNoise
+    Set cNoise = New pdNoise
     
-    'Cache the z-value used in the Perlin Noise function.  (This is actually a z-axis offset.)
-    cPerlin.cacheZValue fxRndSeed
+    'To generate "random" values despite using a fixed 2D noise generator, we calculate random offsets
+    ' into the "infinite grid" of possible noise values.  This yields (perceptually) random results.
+    Dim rndOffsetX As Double, rndOffsetY As Double
+    
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_Float fxRndSeed
+    rndOffsetX = cRandom.GetRandomFloat_WH * 10000000# - 5000000#
+    rndOffsetY = cRandom.GetRandomFloat_WH * 10000000# - 5000000#
     
     'Some values can be cached in the interior loop to speed up processing time
     Dim pNoiseCache As Double, xScaleCache As Double, yScaleCache As Double
@@ -83,22 +90,18 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
         dstSA.pvData = dibPtr + dibStride * y
+        yScaleCache = CDbl(y) * fxScale
     For x = initX To finalX
     
-        'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
-        ' user's turbulence value.
-        xScaleCache = x * fxScale
-        yScaleCache = y * fxScale
+        'Calculate an x-displacement for this point.  (Note that y-displacements are calculated in the outer loop.)
+        xScaleCache = CDbl(x) * fxScale
         pNoiseCache = 0#
         
-        'Fractal noise works by summing successively smaller perlin noise values taken from successively larger
+        'Fractal noise works by summing successively smaller noise values taken from successively larger
         ' amplitudes of the original function.
         For i = 0 To fxQuality
-            pNoiseCache = pNoiseCache + p2InvLookup(i) * cPerlin.Noise2D(p2Lookup(i) * xScaleCache, p2Lookup(i) * yScaleCache)
+            pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.SimplexNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
         Next i
-        
-        'Apply contrast (e.g. stretch the calculated noise value further)
-        'pNoiseCache = pNoiseCache * fxContrast
         
         'Convert the calculated noise value to RGB range and cache it
         pDisplace = 127 + (pNoiseCache * 127#)
