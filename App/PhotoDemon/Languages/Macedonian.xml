@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.96</langversion>
+<langversion>1.0.97</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -591,12 +591,7 @@ If проблемот продолжи, ве молиме да го пријав
 
 <!-- BEGIN text for Filters_Natural.bas -->
 
-<phrase>
-<original>Submerging image in artificial water</original>
-<translation>Нурнат слика во вештачки вода</translation>
-</phrase>
-
-<!-- Filters_Natural.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- Filters_Natural.bas contains 0 phrases. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -9938,6 +9933,27 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- END text for Effects_Nature_Snow.frm-->
 
+<!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
+
+<phrase>
+<original>new turbulence seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color shift</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submerging image in artificial water</original>
+<translation>Нурнат слика во вештачки вода</translation>
+</phrase>
+
+<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Water.frm-->
+
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
@@ -15110,10 +15126,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2534</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4551 phrases. -->
-<!-- 2017 are duplicates, so only 2534 unique phrases have been written to file. -->
-<!-- These 2534 phrases contain approximately 12330 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12335 total words. -->
 
 </pdData>

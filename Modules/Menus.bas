@@ -439,7 +439,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Lava...", "effects_lava", 7, 5, 3
         AddMenuItem "Metal...", "effects_metal", 7, 5, 4
         AddMenuItem "Snow...", "effects_snow", 7, 5, 5
-        AddMenuItem "Underwater", "effects_underwater", 7, 5, 6
+        AddMenuItem "Underwater...", "effects_underwater", 7, 5, 6
     AddMenuItem "Noise", "effects_noise", 7, 6
         AddMenuItem "Add film grain...", "effects_filmgrain", 7, 6, 0
         AddMenuItem "Add RGB noise...", "effects_rgbnoise", 7, 6, 1

@@ -1646,7 +1646,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Water", True) Then
-        MenuWater
+        If raiseDialog Then ShowPDDialog vbModal, FormWater Else FormWater.ApplyWaterFX processParameters
         Process_EffectsMenu = True
     
     'Noise
