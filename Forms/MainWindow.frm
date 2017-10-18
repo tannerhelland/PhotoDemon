@@ -1171,7 +1171,7 @@ Begin VB.Form FormMain
             Index           =   5
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Underwater"
+            Caption         =   "Underwater..."
             Index           =   6
          End
       End
@@ -3872,7 +3872,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
             
         'Water
         Case 6
-            Process "Water", , , UNDO_Layer
+            Process "Water", True
     
     End Select
 

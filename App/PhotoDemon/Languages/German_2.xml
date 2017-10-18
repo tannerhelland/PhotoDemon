@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>7.0.3319</langversion>
+<langversion>7.0.3320</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -592,12 +592,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <!-- BEGIN text for Filters_Natural.bas -->
 
-<phrase>
-<original>Submerging image in artificial water</original>
-<translation>Bild wird in künstliches Wasser eingetaucht</translation>
-</phrase>
-
-<!-- Filters_Natural.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- Filters_Natural.bas contains 0 phrases. -->
 
 <!-- END text for Filters_Natural.bas-->
 
@@ -9941,6 +9936,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Nature_Snow.frm-->
 
+<!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
+
+<phrase>
+<original>new turbulence seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color shift</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Submerging image in artificial water</original>
+<translation>Bild wird in künstliches Wasser eingetaucht</translation>
+</phrase>
+
+<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Nature_Water.frm-->
+
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
@@ -15115,10 +15131,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2534</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4551 phrases. -->
-<!-- 2017 are duplicates, so only 2534 unique phrases have been written to file. -->
-<!-- These 2534 phrases contain approximately 12330 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12335 total words. -->
 
 </pdData>
