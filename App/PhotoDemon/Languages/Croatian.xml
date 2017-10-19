@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3284</langversion>
+<langversion>6.8.3286</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -494,11 +494,6 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 </phrase>
 
 <phrase>
-<original>Performing compound inversion</original>
-<translation>Izvođenje inverzije složenosti</translation>
-</phrase>
-
-<phrase>
 <original>Isolating maximum color channels</original>
 <translation>Izolacija maksimalnih kanala boja</translation>
 </phrase>
@@ -533,7 +528,7 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <translation>Poboljšavanje sjene i naglašava</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -546,23 +541,8 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Performing thermographic analysis</original>
-<translation>Izvođenje termografske analize</translation>
-</phrase>
-
-<phrase>
-<original>Accelerating to 88mph in order to antique-ify this image</original>
-<translation>Ubrzavanje do 88 km/h kako bi se ova slika prikazala antikvarijem</translation>
-</phrase>
-
-<phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
 <translation>Angažiranje hipstera za izvođenje sepijske konverzije</translation>
-</phrase>
-
-<phrase>
-<original>Putting image to sleep, then measuring its REM cycles</original>
-<translation>Postavljanje slike na spavanje, a zatim mjerenje svojih REM ciklusa</translation>
 </phrase>
 
 <phrase>
@@ -585,7 +565,7 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <translation>Ocijenite boje slike</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -10321,6 +10301,37 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Antique.frm (FormAntique) -->
+
+<phrase>
+<original>color fade</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diffuse light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fade edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sending image back in time</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Antique.frm-->
+
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
@@ -15128,10 +15139,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12335 total words. -->
+<!-- As of this build, PhotoDemon contains 4560 phrases. -->
+<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12324 total words. -->
 
 </pdData>

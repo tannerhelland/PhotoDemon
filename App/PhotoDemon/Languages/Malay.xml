@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3284</langversion>
+<langversion>6.8.3286</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -495,11 +495,6 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 </phrase>
 
 <phrase>
-<original>Performing compound inversion</original>
-<translation>Persembahan kompaun penyongsangan</translation>
-</phrase>
-
-<phrase>
 <original>Isolating maximum color channels</original>
 <translation>Mengasingkan saluran warna maksimum</translation>
 </phrase>
@@ -534,7 +529,7 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <translation>Meningkatkan bayang-bayang dan sorotan</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -547,23 +542,8 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Performing thermographic analysis</original>
-<translation>Melaksanakan analisis thermographic</translation>
-</phrase>
-
-<phrase>
-<original>Accelerating to 88mph in order to antique-ify this image</original>
-<translation>Mempercepatkan untuk 88mph untuk antik-ify imej ini</translation>
-</phrase>
-
-<phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
 <translation>Terlibat hipsters untuk melaksanakan penukaran sepia</translation>
-</phrase>
-
-<phrase>
-<original>Putting image to sleep, then measuring its REM cycles</original>
-<translation>Meletakkan gambar untuk tidur, kemudian mengukur kitaran REM yang</translation>
 </phrase>
 
 <phrase>
@@ -586,7 +566,7 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <translation>Mengira warna imej</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -10325,6 +10305,37 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Antique.frm (FormAntique) -->
+
+<phrase>
+<original>color fade</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diffuse light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fade edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sending image back in time</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Antique.frm-->
+
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
@@ -15132,10 +15143,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12335 total words. -->
+<!-- As of this build, PhotoDemon contains 4560 phrases. -->
+<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12324 total words. -->
 
 </pdData>

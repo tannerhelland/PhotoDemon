@@ -1714,7 +1714,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     'Stylize
         
     ElseIf Strings.StringsEqual(processID, "Antique", True) Then
-        MenuAntique
+        If raiseDialog Then ShowPDDialog vbModal, FormAntique Else FormAntique.AntiqueEffect processParameters
         Process_EffectsMenu = True
                 
     ElseIf Strings.StringsEqual(processID, "Diffuse", True) Then

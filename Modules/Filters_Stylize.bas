@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Stylize"
 'Stylize Filter Collection
 'Copyright 2002-2017 by Tanner Helland
 'Created: 8/April/02
-'Last updated: 02/April/15
-'Last update: finish optimizing new Color Halftone filter
+'Last updated: 19/October/17
+'Last update: add upgraded "Antique" filter effect
 '
 'Container module for PD's stylize filter collection.
 '
@@ -14,6 +14,8 @@ Attribute VB_Name = "Filters_Stylize"
 '***************************************************************************
 
 Option Explicit
+
+Private m_tmpDIB As pdDIB
 
 'Given two DIBs, fill one with a stylized "color halftone" version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
@@ -29,13 +31,13 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Do the same for the source iamge
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -88,7 +90,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim clampX As Long, clampY As Long
     Dim target As Long, newTarget As Long, fTarget As Double
     Dim dx As Double, dy As Double
-    Dim tmpRadius As Double, f2 As Double, f3 As Double
+    Dim tmpRadius As Double, F2 As Double, F3 As Double
     Dim overlapCheck As Long
     
     'Because dots can overlap (see details in the inner loop comments), we will occasionally need to check neighboring grid
@@ -208,7 +210,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
-            f2 = 1# - BasicAA(tmpRadius - 1#, tmpRadius, densityLookup(target))
+            F2 = 1# - BasicAA(tmpRadius - 1#, tmpRadius, densityLookup(target))
             
             'If this dot's calculated radius density is greater than a grid block's half-width, this "dot" extends outside
             ' its underlying grid block.  This means it overlaps a neighboring grid, which may have a *different* maximum
@@ -250,11 +252,11 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     dx = x - dstX
                     dy = y - dstY
                     tmpRadius = Sqr(dx * dx + dy * dy)
-                    f3 = 1# - BasicAA(tmpRadius, tmpRadius + 1#, densityLookup(newTarget))
+                    F3 = 1# - BasicAA(tmpRadius, tmpRadius + 1#, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)
-                    If (f3 < f2) Then
-                        f2 = f3
+                    If (F3 < F2) Then
+                        F2 = F3
                         target = newTarget
                     End If
                 
@@ -265,7 +267,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Convert the final calculated intensity back to byte range, and set the corresponding color in the
             ' destination array.
-            dstImageData(quickVal + curChannel, y) = Int(255# * f2)
+            dstImageData(quickVal + curChannel, y) = Int(255# * F2)
             
         Next y
             If Not suppressMessages Then
@@ -304,3 +306,297 @@ Private Function BasicAA(ByVal a As Double, ByVal b As Double, ByVal x As Single
     End If
 
 End Function
+
+'Render an "antique" effect to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
+' the caller requires.
+Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As Double, ByVal colorSoftness As Double, Optional ByVal colorSoftnessOpacity As Double = 100#, Optional ByVal grainAmt As Double = 0#, Optional ByVal vignetteAmt As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte, dstSA As SafeArray1D
+    dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
+    
+    Dim dibPtr As Long, dibStride As Long
+    dibPtr = dstSA.pvData
+    dibStride = dstSA.cElements
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBWidth - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY * 2 Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    Dim highlightColor As Long, shadowColor As Long, balance As Double
+    highlightColor = vbBlue
+    shadowColor = vbRed
+    balance = 0.5
+    
+    'From the incoming colors, determine corresponding hue and saturation values
+    Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
+    Dim ignoreLuminance As Double
+    PreciseRGBtoHSL Colors.ExtractRed(highlightColor) / 255#, Colors.ExtractGreen(highlightColor) / 255#, Colors.ExtractBlue(highlightColor) / 255#, highlightHue, highlightSaturation, ignoreLuminance
+    PreciseRGBtoHSL Colors.ExtractRed(shadowColor) / 255#, Colors.ExtractGreen(shadowColor) / 255#, Colors.ExtractBlue(shadowColor) / 255#, shadowHue, shadowSaturation, ignoreLuminance
+    
+    'Convert balance mix value from an incoming range of [-100, 100] to a new range of [0,1].  We use this value
+    ' to map colors between the shadow tone, neutral gray, and the highlight tone.
+    Dim balGradient As Double, invBalGradient As Double
+    invBalGradient = (balance + 100#) / 200#
+    balGradient = 1# - invBalGradient
+    
+    'Prevent divide-by-zero errors, below
+    If (invBalGradient <= 0.0000001) Then invBalGradient = 0.0000001
+    If (balGradient <= 0.0000001) Then balGradient = 0.0000001
+    
+    'To avoid the need for many divisions on the inner loop, calculate inverse values now
+    Dim multBalGradient As Double, multInvBalGradient As Double
+    multInvBalGradient = 1# / invBalGradient
+    multBalGradient = 1# / balGradient
+    
+    'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.
+    ' Convert it from a [0, 100] to [0, 1] scale.
+    colorStrength = colorStrength * 0.01
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim v As Long, vFloat As Double
+    
+    Dim rHighlight As Double, gHighlight As Double, bHighlight As Double
+    Dim rShadow As Double, gShadow As Double, bShadow As Double
+    Dim thisGradient As Double
+    
+    Const ONE_DIV_255 As Double = 1# / 255#
+    finalX = finalX * 4
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+        dstSA.pvData = dibPtr + dibStride * y
+    For x = initX To finalX Step 4
+    
+        b = dstImageData(x)
+        g = dstImageData(x + 1)
+        r = dstImageData(x + 2)
+        
+        'Use w3c sepia settings (https://www.w3.org/TR/filter-effects/#sepiaEquivalent)
+        newR = (r * 0.393) + (g * 0.769) + (b * 0.189)
+        newG = (r * 0.349) + (g * 0.686) + (b * 0.168)
+        newB = (r * 0.272) + (g * 0.534) + (b * 0.131)
+        If (newR > 255) Then newR = 255
+        If (newG > 255) Then newG = 255
+        If (newB > 255) Then newB = 255
+                
+        'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
+        dstImageData(x) = newB * colorStrength + b * (1# - colorStrength)
+        dstImageData(x + 1) = newG * colorStrength + g * (1# - colorStrength)
+        dstImageData(x + 2) = newR * colorStrength + r * (1# - colorStrength)
+        
+    Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
+            End If
+        End If
+    Next y
+    
+    dstDIB.UnwrapArrayFromDIB dstImageData
+    workingDIB.SetAlphaPremultiplication True
+    
+    Dim cCompositor As pdCompositor
+    Set cCompositor = New pdCompositor
+        
+    'workingDIB now contains a sepia-toned version of the image.  We now want to create a duplicate copy,
+    ' which we will blur according to the user's "softness" parameter.
+    If (colorSoftness > 0#) Then
+    
+        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+        m_tmpDIB.CreateFromExistingDIB workingDIB
+        Filters_Layers.QuickBlurDIB workingDIB, colorSoftness, False
+        
+        'We now want to merge the resulting, blurred DIB onto our original copy, using the HARD LIGHT blend mode
+        ' (which will "blow out" gradiens in the image, giving an overlit appearance)
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BL_SOFTLIGHT, colorSoftnessOpacity
+        
+    End If
+    
+    'We now have a properly softened and light-enhanced image.  Time to add film grain, if any.
+    grainAmt = grainAmt * 0.25
+    If (grainAmt > 0#) Then
+        
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        
+        Dim noiseVal As Long
+        workingDIB.SetAlphaPremultiplication False
+        
+        dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
+        
+        'Loop through each pixel in the image, converting values as we go
+        For y = initY To finalY
+            dstSA.pvData = dibPtr + dibStride * y
+        For x = initX To finalX Step 4
+        
+            b = dstImageData(x)
+            g = dstImageData(x + 1)
+            r = dstImageData(x + 2)
+            
+            'Add monochrome noise to each color
+            noiseVal = grainAmt * cRandom.GetGaussianFloat_WH()
+            
+            r = r + noiseVal
+            g = g + noiseVal
+            b = b + noiseVal
+            
+            If (r > 255) Then r = 255 Else If (r < 0) Then r = 0
+            If (g > 255) Then g = 255 Else If (g < 0) Then g = 0
+            If (b > 255) Then b = 255 Else If (b < 0) Then b = 0
+                    
+            'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
+            dstImageData(x) = b
+            dstImageData(x + 1) = g
+            dstImageData(x + 2) = r
+            
+        Next x
+            If (Not suppressMessages) Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal finalY + y
+                End If
+            End If
+        Next y
+        
+        dstDIB.UnwrapArrayFromDIB dstImageData
+        
+        workingDIB.SetAlphaPremultiplication True
+    
+    End If
+    
+    'Finally, we want to apply a vignette (if any).  Note that our vignette strategy is roughly identical to PD's
+    ' separate Effects > Stylize > Vignetting tool; in the future, it would be nice to simply call that function directly.
+    If (vignetteAmt > 0#) Then
+    
+        'We're going to use the temporary DIB for this; that lets us process the vignette much faster, and we can blend
+        ' it in a single final swoop using a pdCompositor instance.
+        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+        m_tmpDIB.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
+        
+        'Vignette input parameters are hard-coded
+        Dim maxRadius As Double, vFeathering As Double
+        maxRadius = 65#
+        vFeathering = 70#
+        
+        Dim blendVal As Double
+        
+        finalX = workingDIB.GetDIBWidth - 1
+        
+        'Calculate the center of the image, in absolute pixels
+        Dim midX As Double, midY As Double
+        midX = CDbl(finalX - initX) * 0.5
+        midX = midX + initX
+        midY = CDbl(finalY - initY) * 0.5
+        midY = midY + initY
+                
+        'X and Y values, remapped around a center point of (0, 0)
+        Dim nX As Double, nY As Double
+        Dim nX2 As Double, nY2 As Double
+                
+        'Radius is based off the smaller of the two dimensions - width or height.  (This is used in the "circle" mode.)
+        Dim tWidth As Long, tHeight As Long
+        tWidth = curDIBValues.Width
+        tHeight = curDIBValues.Height
+        
+        Dim sRadiusW As Double, sRadiusH As Double
+        Dim sRadiusW2 As Double, sRadiusH2 As Double
+        Dim sRadiusMin As Double, sRadiusMax As Double
+        
+        sRadiusW = tWidth * (maxRadius / 100#)
+        sRadiusH = tHeight * (maxRadius / 100#)
+        sRadiusW2 = sRadiusW * sRadiusW
+        sRadiusH2 = sRadiusH * sRadiusH
+        
+        'Adjust the vignetting to be a proportion of the image's maximum radius.  This ensures accurate correlations
+        ' between the preview and the final result.
+        Dim vFeathering2 As Double
+        vFeathering2 = (vFeathering / 100#) * (sRadiusW * sRadiusH)
+        
+        'Build a lookup table of vignette values.  Because we're just applying the vignette to a standalone layer,
+        ' we can treat the vignette as a constant color scaled from transparent to opaque.  This makes it *very*
+        ' fast to apply.
+        Dim vLookup() As Long
+        ReDim vLookup(0 To 255) As Long
+        Dim tmpQuad As RGBQuad
+        
+        'Extract the RGB values of the vignetting color
+        Dim vColor As Long
+        vColor = RGB(255, 255, 255)
+        
+        newR = Colors.ExtractRed(vColor)
+        newG = Colors.ExtractGreen(vColor)
+        newB = Colors.ExtractBlue(vColor)
+        
+        For x = 0 To 255
+            With tmpQuad
+                .Alpha = x
+                blendVal = CSng(x / 255)
+                .Red = Int(blendVal * CSng(newR))
+                .Green = Int(blendVal * CSng(newG))
+                .Blue = Int(blendVal * CSng(newB))
+            End With
+            CopyMemory ByVal VarPtr(vLookup(x)), ByVal VarPtr(tmpQuad), 4&
+        Next x
+    
+        Dim dstImageDataL() As Long, tmpSA2D As SafeArray2D
+        m_tmpDIB.WrapLongArrayAroundDIB dstImageDataL, tmpSA2D
+        
+        'And that's it!  Loop through each pixel in the image, converting values as we go.
+        For y = initY To finalY
+        For x = initX To finalX
+        
+            'Remap the coordinates around a center point of (0, 0)
+            nX = x - midX
+            nY = y - midY
+            nX2 = nX * nX
+            nY2 = nY * nY
+                
+            sRadiusMax = sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)
+            
+            'Outside
+            If (nY2 > sRadiusMax) Then
+                dstImageDataL(x, y) = vLookup(255)
+            
+            'Inside
+            Else
+                
+                sRadiusMin = sRadiusMax - vFeathering2
+                
+                'Feathered
+                If (nY2 >= sRadiusMin) Then
+                    blendVal = (nY2 - sRadiusMin) / vFeathering2
+                    dstImageDataL(x, y) = vLookup(blendVal * 255)
+                End If
+                    
+            End If
+                            
+        Next x
+        Next y
+        
+        m_tmpDIB.UnwrapLongArrayFromDIB dstImageDataL
+        m_tmpDIB.SetInitialAlphaPremultiplicationState True
+        
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BL_NORMAL, vignetteAmt
+        
+    End If
+    
+    ApplyAntiqueEffect = True
+        
+End Function
+

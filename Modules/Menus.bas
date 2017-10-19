@@ -459,7 +459,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Sharpen...", "effects_sharpen", 7, 8, 0
         AddMenuItem "Unsharp masking...", "effects_unsharp", 7, 8, 1
     AddMenuItem "Stylize", "effects_stylize", 7, 9
-        AddMenuItem "Antique", "effects_antique", 7, 9, 0
+        AddMenuItem "Antique...", "effects_antique", 7, 9, 0
         AddMenuItem "Diffuse...", "effects_diffuse", 7, 9, 1
         AddMenuItem "Outline...", "effects_outline", 7, 9, 2
         AddMenuItem "Palettize...", "effects_palettize", 7, 9, 3

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.301</langversion>
+<langversion>6.7.303</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -495,11 +495,6 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 </phrase>
 
 <phrase>
-<original>Performing compound inversion</original>
-<translation>Uitvoeren van samengestelde inversie</translation>
-</phrase>
-
-<phrase>
 <original>Isolating maximum color channels</original>
 <translation>Isoleren maximale kleurkanalen</translation>
 </phrase>
@@ -534,7 +529,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <translation>Verbeteren van schaduwen en glanspunten</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -547,23 +542,8 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Performing thermographic analysis</original>
-<translation>Uitvoeren van thermografische analyse</translation>
-</phrase>
-
-<phrase>
-<original>Accelerating to 88mph in order to antique-ify this image</original>
-<translation>Versnellen tot 88 mph om deze afbeelding te antiekeren</translation>
-</phrase>
-
-<phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
 <translation>Starten hipsters om sepia conversie uit te voeren</translation>
-</phrase>
-
-<phrase>
-<original>Putting image to sleep, then measuring its REM cycles</original>
-<translation>Afbeelding laten inslapen, dan meten van de REM cycli</translation>
 </phrase>
 
 <phrase>
@@ -586,7 +566,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <translation>Tellen kleuren van de afbeelding</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -10325,6 +10305,37 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Antique.frm (FormAntique) -->
+
+<phrase>
+<original>color fade</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diffuse light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fade edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sending image back in time</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Antique.frm-->
+
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
@@ -15130,10 +15141,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12335 total words. -->
+<!-- As of this build, PhotoDemon contains 4560 phrases. -->
+<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12324 total words. -->
 
 </pdData>

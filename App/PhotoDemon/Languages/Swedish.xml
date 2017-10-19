@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.3284</langversion>
+<langversion>6.8.3286</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -495,11 +495,6 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 </phrase>
 
 <phrase>
-<original>Performing compound inversion</original>
-<translation>Performing förening inversion</translation>
-</phrase>
-
-<phrase>
 <original>Isolating maximum color channels</original>
 <translation>Isolera maximal färgkanaler</translation>
 </phrase>
@@ -534,7 +529,7 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 <translation>Förbättra skuggor och högdagrar</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 15 phrases.  All 15 were unique, so 15 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -547,23 +542,8 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Performing thermographic analysis</original>
-<translation>Performing termografisk analys</translation>
-</phrase>
-
-<phrase>
-<original>Accelerating to 88mph in order to antique-ify this image</original>
-<translation>Accelerera till 88mph för att antik-cera den här bilden</translation>
-</phrase>
-
-<phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
 <translation>Engagera hipsters att utföra sepia konvertering</translation>
-</phrase>
-
-<phrase>
-<original>Putting image to sleep, then measuring its REM cycles</original>
-<translation>Att sätta bilden för att sova, sedan mäta dess REM cykler</translation>
 </phrase>
 
 <phrase>
@@ -586,7 +566,7 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 <translation>Räkna bildens färger</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -10321,6 +10301,37 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Antique.frm (FormAntique) -->
+
+<phrase>
+<original>color fade</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diffuse light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fade edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sending image back in time</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Antique.frm-->
+
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
@@ -15127,10 +15138,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2021 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12335 total words. -->
+<!-- As of this build, PhotoDemon contains 4560 phrases. -->
+<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12324 total words. -->
 
 </pdData>
