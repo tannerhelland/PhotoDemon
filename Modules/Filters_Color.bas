@@ -25,7 +25,7 @@ Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString
     cParams.SetParamString effectParams
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     Filters_Layers.WhiteBalanceDIB cParams.GetDouble("threshold", 0.05), workingDIB, toPreview
@@ -41,7 +41,7 @@ Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Op
     If (Not toPreview) Then Message "Adjusting image contrast..."
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     Filters_Layers.ContrastCorrectDIB percentIgnore, workingDIB, toPreview
@@ -58,7 +58,7 @@ Public Sub MenuInvert()
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -112,7 +112,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -174,7 +174,7 @@ Public Sub MenuNegative()
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -244,7 +244,7 @@ Public Sub MenuInvertHue()
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -311,80 +311,6 @@ Public Sub MenuInvertHue()
     
 End Sub
 
-'CURRENTLY UNUSED!
-'TODO 7.0: consider purging
-'I call this effect a "compound invert", but it's not actually anything like an invert operation.  Oh well.
-Public Sub MenuCompoundInvert(ByVal Divisor As Long)
-
-    Message "Performing compound inversion..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim newR As Long, newG As Long, newB As Long
-        
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        If r = 0 Then r = 1
-        If g = 0 Then g = 1
-        If b = 0 Then b = 1
-        
-        newR = (g * b) \ Divisor
-        newG = (r * b) \ Divisor
-        newB = (r * g) \ Divisor
-        
-        If newR > 255 Then newR = 255
-        If newG > 255 Then newG = 255
-        If newB > 255 Then newB = 255
-        
-        imageData(quickVal + 2, y) = newR
-        imageData(quickVal + 1, y) = newG
-        imageData(quickVal, y) = newB
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData
-
-End Sub
-
 'Isolate the maximum or minimum channel.  Derived from the "Maximum RGB" tool concept in GIMP.
 Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     
@@ -396,7 +322,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -468,7 +394,7 @@ Public Sub fxAutoEnhanceColors()
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -543,7 +469,7 @@ Public Sub fxAutoEnhanceContrast()
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -619,7 +545,7 @@ Public Sub fxAutoEnhanceLighting()
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -704,7 +630,7 @@ Public Sub fxAutoCorrectShadowsAndHighlights()
     Message "Adjusting shadows and highlights..."
     
     'Make a copy of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA
     
     'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
@@ -721,7 +647,7 @@ Public Sub fxAutoEnhanceShadowsAndHighlights()
     Message "Enhancing shadows and highlights..."
     
     'Make a copy of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA
     
     'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
@@ -733,11 +659,11 @@ Public Sub fxAutoEnhanceShadowsAndHighlights()
 End Sub
 
 'Given an RGBQuad, replace all instances with a different RGBQuad
-Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, ByRef newQuad As RGBQUAD)
+Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQuad, ByRef newQuad As RGBQuad)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         

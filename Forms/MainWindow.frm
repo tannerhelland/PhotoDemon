@@ -1251,7 +1251,7 @@ Begin VB.Form FormMain
          Caption         =   "Stylize"
          Index           =   9
          Begin VB.Menu MnuStylize 
-            Caption         =   "Antique"
+            Caption         =   "Antique..."
             Index           =   0
          End
          Begin VB.Menu MnuStylize 
@@ -4129,7 +4129,7 @@ Private Sub MnuStylize_Click(Index As Integer)
     
         'Antique
         Case 0
-            Process "Antique", , , UNDO_Layer
+            Process "Antique", True
         
         'Diffuse
         Case 1
