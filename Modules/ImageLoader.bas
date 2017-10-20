@@ -180,7 +180,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             
             'If successful, notify the parent of the change
             If nodeLoadedSuccessfully Then
-                dstImage.NotifyImageChanged UNDO_LAYER, i
+                dstImage.NotifyImageChanged UNDO_Layer, i
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
@@ -190,6 +190,9 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
         #End If
+        
+        Dim nonEssentialParseTime As Currency
+        VBHacks.GetHighResTime nonEssentialParseTime
         
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
@@ -204,10 +207,12 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
-            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
+            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID, sourceIsUndoFile) Then
                 
                 'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
-                Debug.Print "PDI Metadata Node rejected by metadata parser."
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING: PDI Metadata Node rejected by metadata parser."
+                #End If
                 
             End If
         
@@ -233,7 +238,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-            Debug.Print "Time required to load PDI file: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "####0.00") & " ms"
+            Debug.Print "Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & " ms, non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime)
         #End If
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
@@ -845,7 +850,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     Select Case undoTypeOfAction
     
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
-        Case UNDO_EVERYTHING
+        Case UNDO_Everything
             ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
@@ -853,7 +858,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
         '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE/_VECTORSAFE, we
         '             don't have to do any special processing to the file - just load the whole damn thing.
-        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
+        Case UNDO_Image, UNDO_Image_VectorSafe
             ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
@@ -867,7 +872,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             care if it has DIB data or not, because we'll just ignore it - but a special load function is
         '             required, due to the messy business of non-destructively aligning the current layer stack with
         '             the layer stack described by the file.
-        Case UNDO_IMAGEHEADER
+        Case UNDO_ImageHeader
             ImageImporter.LoadPhotoDemonImageHeaderOnly undoFile, pdImages(g_CurrentImage)
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
@@ -880,7 +885,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             Because the underlying file data can be different types (layer data can be loaded from standalone layer saves,
         '             or from a full pdImage stack save), we must check the undo type of the saved file, and modify our load
         '             behavior accordingly.
-        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
+        Case UNDO_Layer, UNDO_Layer_VectorSafe
             
             'New as of 11 July '14 is the ability for the caller to supply their own destination layer for layer-specific Undo data.
             ' Check this optional parameter, and if it is NOT supplied, point it at the relevant layer in the parent pdImage object.
@@ -890,11 +895,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             Select Case undoTypeOfFile
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
-                Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
+                Case UNDO_Layer, UNDO_Layer_VectorSafe
                     ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
-                Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
+                Case UNDO_Everything, UNDO_Image, UNDO_Image_VectorSafe
                     ImageImporter.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
                 
             End Select
@@ -903,18 +908,18 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             Because the underlying file data can be many different types (layer data header can be loaded from
         '             standalone layer header saves, or full layer saves, or even a full pdImage stack), we must check the
         '             undo type of the saved file, and modify our load behavior accordingly.
-        Case UNDO_LAYERHEADER
+        Case UNDO_LayerHeader
             
             'Layer header data can appear in multiple types of Undo files
             Select Case undoTypeOfFile
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
                 ' header data from this file.
-                Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
+                Case UNDO_Layer, UNDO_Layer_VectorSafe, UNDO_LayerHeader
                     ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).GetLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
-                Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
+                Case UNDO_Everything, UNDO_Image, UNDO_Image_VectorSafe, UNDO_ImageHeader
                     ImageImporter.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).GetLayerByID(targetLayerID), targetLayerID, True
                 
             End Select
@@ -922,7 +927,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'UNDO_SELECTION: a full copy of the saved selection data is wanted
         '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
         '                 any special processing.
-        Case UNDO_SELECTION
+        Case UNDO_Selection
             pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
@@ -1089,7 +1094,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             
             dstImage.SetOriginalFileFormat PDIF_PDI
             dstImage.SetOriginalColorDepth 32
-            dstImage.NotifyImageChanged UNDO_EVERYTHING
+            dstImage.NotifyImageChanged UNDO_Everything
             decoderUsed = PDIDE_INTERNAL
             
         'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and easier for PD than wrapping
@@ -1103,7 +1108,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             dstImage.SetOriginalColorDepth 32
-            dstImage.NotifyImageChanged UNDO_EVERYTHING
+            dstImage.NotifyImageChanged UNDO_Everything
             decoderUsed = PDIDE_INTERNAL
             
         'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.  As ridiculous as it sounds, we must
@@ -1468,7 +1473,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             
             'If successful, notify the parent of the change
             If nodeLoadedSuccessfully Then
-                dstImage.NotifyImageChanged UNDO_LAYER, i
+                dstImage.NotifyImageChanged UNDO_Layer, i
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
