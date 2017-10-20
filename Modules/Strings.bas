@@ -606,18 +606,23 @@ Public Function UTF8FromStrPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long
         
         'Prep a temporary byte buffer.  In some places in PD, we'll reuse the same buffer for multiple string copies,
         ' so to improve performance, only resize the destination array as necessary.
+        Dim newBufferBound As Long
+        newBufferBound = lenUTF8 - 1 + baseArrIndexToWrite
+        If (newBufferBound < 0) Then newBufferBound = 0
+        
         If VBHacks.IsArrayInitialized(dstUtf8) Then
-            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1 + baseArrIndexToWrite) < lenUTF8) Then ReDim dstUtf8(0 To lenUTF8 - 1 + baseArrIndexToWrite) As Byte
+            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1 + baseArrIndexToWrite) < lenUTF8) Then ReDim dstUtf8(0 To newBufferBound) As Byte
         Else
-            ReDim dstUtf8(0 To lenUTF8 - 1 + baseArrIndexToWrite) As Byte
+            ReDim dstUtf8(0 To newBufferBound) As Byte
         End If
         
         'Use the API to perform the actual conversion
-        lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, VarPtr(dstUtf8(baseArrIndexToWrite)), lenUTF8, 0, 0)
+        Dim finalResult As Long
+        finalResult = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, VarPtr(dstUtf8(baseArrIndexToWrite)), lenUTF8, 0, 0)
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
-        UTF8FromStrPtr = (lenUTF8 <> 0)
+        UTF8FromStrPtr = (finalResult <> 0)
         If (Not UTF8FromStrPtr) Then InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
         
     End If
