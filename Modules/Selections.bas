@@ -89,7 +89,7 @@ Public Sub RemoveCurrentSelection()
     pdImages(g_CurrentImage).MainSelection.FreeNonEssentialResources
     
     'Synchronize all user-facing controls to match
-    SyncTextToCurrentSelection g_CurrentImage
+    Selections.SyncTextToCurrentSelection g_CurrentImage
     
 End Sub
 
@@ -146,7 +146,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
                 g_UserPreferences.SetSelectionPath sFile
                 
                 'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
-                Process "Load selection", False, BuildParamList("selectionpath", sFile), UNDO_SELECTION
+                Process "Load selection", False, BuildParamList("selectionpath", sFile), UNDO_Selection
                     
             Else
                 PDMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly Or vbExclamation, "Selection Error", sFile
@@ -370,7 +370,7 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
             'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
             If pdImages(formID).MainSelection.IsTransformable Then
                 
-                Dim tmpRectF As RECTF, tmpRectFRB As RECTF_RB
+                Dim tmpRectF As RectF, tmpRectFRB As RECTF_RB
                 
                 'Different types of selections will display size and position differently
                 Select Case pdImages(formID).MainSelection.GetSelectionShape
@@ -489,7 +489,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     'Regardless of selection type, start by establishing boundaries for the current selection.
     'Calculate points of interest for the current selection.  Individual selection types define what is considered a POI,
     ' but in most cases, corners or interior clicks tend to allow some kind of user interaction.
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     If (srcImage.MainSelection.GetSelectionShape = ss_Rectangle) Or (srcImage.MainSelection.GetSelectionShape = ss_Circle) Then
         tmpRectF = srcImage.MainSelection.GetCornersLockedRect()
     Else
@@ -511,7 +511,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     Dim gdipRegionHandle As Long, gdipHitCheck As Boolean
     
     'Other selection types will use a generic list of points (like the corners of the current selection)
-    Dim poiListFloat() As POINTFLOAT
+    Dim poiListFloat() As PointFloat
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
     Select Case srcImage.MainSelection.GetSelectionShape
@@ -520,7 +520,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Case ss_Rectangle, ss_Circle
     
             'Corners get preference, so check them first.
-            ReDim poiListFloat(0 To 3) As POINTFLOAT
+            ReDim poiListFloat(0 To 3) As PointFloat
             
             With tmpRectF
                 poiListFloat(0).x = .Left
@@ -691,7 +691,7 @@ Public Sub InvertCurrentSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim selMaskData() As Long, selMaskSA As SAFEARRAY1D
+    Dim selMaskData() As Long, selMaskSA As SafeArray1D
     
     Dim maskWidth As Long, maskHeight As Long
     maskWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1
@@ -744,7 +744,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim retRadius As Double
         If DisplaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
-            Process "Feather selection", False, BuildParamList("filtervalue", retRadius), UNDO_SELECTION
+            Process "Feather selection", False, BuildParamList("filtervalue", retRadius), UNDO_Selection
         End If
         
     Else
@@ -798,7 +798,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim retRadius As Double
         If (DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK) Then
-            Process "Sharpen selection", False, BuildParamList("filtervalue", retRadius), UNDO_SELECTION
+            Process "Sharpen selection", False, BuildParamList("filtervalue", retRadius), UNDO_Selection
         End If
         
     Else
@@ -905,7 +905,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_GROW, retSize) = vbOK Then
-            Process "Grow selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
+            Process "Grow selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
     Else
@@ -960,7 +960,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
-            Process "Shrink selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
+            Process "Shrink selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
     Else
@@ -1015,7 +1015,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
-            Process "Border selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
+            Process "Border selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
     Else
@@ -1398,13 +1398,13 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     'Delete key: if a selection is active, erase the selected area
     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).IsSelectionActive Then
         markEventHandled = True
-        Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+        Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
     End If
     
     'Escape key: if a selection is active, clear it
     If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).IsSelectionActive Then
         markEventHandled = True
-        Process "Remove selection", , , UNDO_SELECTION
+        Process "Remove selection", , , UNDO_Selection
     End If
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
@@ -1641,14 +1641,14 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 
                 'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                 ' point falls outside the selection, clear the selection from the image.
-                Dim selBounds As RECTF
+                Dim selBounds As RectF
                 selBounds = pdImages(g_CurrentImage).MainSelection.GetCornersLockedRect
                 
                 eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
-                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     
                 'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                 Else
@@ -1662,7 +1662,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 
                     'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
                     If pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid Then
-                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                        Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     Else
                         
                         'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
@@ -1671,11 +1671,11 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         
                             'Creating a new selection
                             If (pdImages(g_CurrentImage).MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
                             Else
-                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                         
                         'All other selection types use identical transform identifiers
@@ -1686,15 +1686,15 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                             
                             'Creating a new selection
                             If (transformType = poi_Undefined) Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
                             ElseIf (transformType = 8) Then
-                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                                 
                             'Anything else is assumed to be resizing an existing selection
                             Else
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                                         
                             End If
                         
@@ -1727,7 +1727,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1)
                 
                 If eraseThisSelection Then
-                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                 
                 Else
                     
@@ -1741,15 +1741,15 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         
                         'Move selection
                         If (polyPoint = pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints) Then
-                            Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                            Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                         
                         'Create OR resize, depending on whether the initial point is being clicked for the first time, or whether
                         ' it's being click-moved
                         ElseIf (polyPoint = 0) Then
                             If clickEventAlsoFiring Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             Else
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                                 
                         'No point of interest means this click lies off-image; this could be a "clear selection" event (if a Click
@@ -1758,25 +1758,25 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                             
                             'If the user has clicked a blank spot unrelated to the selection, we want to remove the active selection
                             If clickEventAlsoFiring Then
-                                Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                                Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                                 
                             'If they haven't clicked, this could simply indicate that they dragged a polygon point off the polygon
                             ' and into some new region of the image.
                             Else
                                 pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                             
                         'Anything else is a resize
                         Else
-                            Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                            Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                         End If
                         
                         'After all that work, we want to perform one final check to see if all selection coordinates are invalid
                         ' (e.g. if they all lie off-image, which can happen if the user drags all polygon points off-image).
                         ' If they are, we're going to erase this selection, as it's invalid.
                         eraseThisSelection = pdImages(g_CurrentImage).MainSelection.IsLockedIn And pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid
-                        If eraseThisSelection Then Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                        If eraseThisSelection Then Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                         
                     'If the polygon is *not* closed, we want to add this as a new polygon point
                     Else
@@ -1821,9 +1821,9 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 ' - If they are not, commit this selection permanently
                 eraseThisSelection = pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid
                 If eraseThisSelection Then
-                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                    Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                 Else
-                    Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
+                    Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                 End If
                 
                 'Force a redraw of the screen

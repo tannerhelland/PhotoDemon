@@ -111,11 +111,11 @@ End Enum
 Private m_CornersUnlocked As RECTF_RB
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
-Private m_CornersLocked As RECTF
+Private m_CornersLocked As RectF
 
 'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the bounding area of the
 ' selection as a whole.  External functions need these values to determine how to handle the selection's data.
-Private m_Bounds As RECTF
+Private m_Bounds As RectF
 
 'Is this selection "locked in"?
 Private m_IsLocked As Boolean
@@ -170,12 +170,12 @@ Private m_IsTransformable As Boolean
 Private m_IsSquare As Boolean
 
 'Lasso and polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
-Private m_NumOfLassoPoints As Long, m_LassoPoints() As POINTFLOAT
-Private m_NumOfPolygonPoints As Long, m_PolygonPoints() As POINTFLOAT
+Private m_NumOfLassoPoints As Long, m_LassoPoints() As PointFloat
+Private m_NumOfPolygonPoints As Long, m_PolygonPoints() As PointFloat
 
 'When move transforms are applied to lasso or polygon selections, we must maintain a backup copy of the original point array.
 ' Any transformation values are then applied to this backup data, and the backup is erased when the mouse is released.
-Private m_LassoPointsBackup() As POINTFLOAT, m_PolygonPointsBackup() As POINTFLOAT
+Private m_LassoPointsBackup() As PointFloat, m_PolygonPointsBackup() As PointFloat
 
 'When a polygon or lasso selection is closed, these values will be set to TRUE
 Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
@@ -198,8 +198,8 @@ Private m_WandImage As pdDIB, m_WandImageTimestamp As Currency
 ' technique.  (Note that the position of the overlay is also cached in a RECTF object, although - importantly! - this RectF
 ' is *not* boundary-checked against the size of the viewport.  Its coordinates may lay outside the overlay reference DIB,
 ' by design.)
-Private m_ViewportReference As pdDIB, m_ViewportRefRectF As RECTF, m_ViewportRefReady As Boolean
-Private m_LastViewportRectF As RECTF, m_LastImageRectF As RECTF
+Private m_ViewportReference As pdDIB, m_ViewportRefRectF As RectF, m_ViewportRefReady As Boolean
+Private m_LastViewportRectF As RectF, m_LastImageRectF As RectF
 
 'To further improve viewport rendering performance when "highlight" and "lightbox" rendering modes are active, this class
 ' also caches such overlays inside a persistent DIB.  Because this DIB is inextricably tied to the current viewport,
@@ -212,7 +212,7 @@ Private m_ViewportOverlay As pdDIB, m_OverlayIsReady As Boolean
 '
 '(Note that we also store the dimensions of this array, and its (x, y) offset relative to the underlying image.)
 Private m_ViewportByteCopy() As Byte
-Private m_ViewportByteCopyRect As RECTL_WH
+Private m_ViewportByteCopyRect As RectL_WH
 Private m_ViewportEdges As pdEdgeDetector
 
 'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
@@ -237,11 +237,11 @@ Friend Function GetCornersUnlockedRect() As RECTF_RB
     GetCornersUnlockedRect = m_CornersUnlocked
 End Function
 
-Friend Function GetCornersLockedRect() As RECTF
+Friend Function GetCornersLockedRect() As RectF
     GetCornersLockedRect = m_CornersLocked
 End Function
 
-Friend Function GetBoundaryRect() As RECTF
+Friend Function GetBoundaryRect() As RectF
     GetBoundaryRect = m_Bounds
 End Function
 
@@ -402,7 +402,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                     
                     If (m_NumOfPolygonPoints > 0) Then
                     
-                        ReDim m_PolygonPoints(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                        ReDim m_PolygonPoints(0 To m_NumOfPolygonPoints - 1) As PointFloat
                         
                         'Retrieve all polygon points from the param string
                         If (m_NumOfPolygonPoints > 0) Then
@@ -415,7 +415,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                         End If
                         
                     Else
-                        ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
+                        ReDim m_PolygonPoints(0 To 127) As PointFloat
                     End If
                 
                 'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
@@ -426,7 +426,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                     
                     If (m_NumOfLassoPoints > 0) Then
                     
-                        ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                        ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As PointFloat
                         
                         'Retrieve all remaining lasso points
                         If (m_NumOfLassoPoints > 0) Then
@@ -439,7 +439,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                         End If
                         
                     Else
-                        ReDim m_LassoPoints(0 To 127) As POINTFLOAT
+                        ReDim m_LassoPoints(0 To 127) As PointFloat
                     End If
                 
                 'Almost all of the "magic wand" selection properties are unique (relative to other selection shapes)
@@ -702,19 +702,19 @@ End Function
 
 'Return a list of the current selection "points of interest".  Not all selection types support custom POIs.
 ' This function returns TRUE if POIs are both supported and available; you can also check this via DoesShapeSupportCustomPOIs(), above.
-Friend Function GetCurrentPOIList(ByRef dstPoints() As POINTFLOAT) As Boolean
+Friend Function GetCurrentPOIList(ByRef dstPoints() As PointFloat) As Boolean
     
     GetCurrentPOIList = Me.DoesShapeSupportCustomPOIs()
     
     If GetCurrentPOIList Then
         If (m_SelectionShape = ss_Line) Then
-            ReDim dstPoints(0 To 1) As POINTFLOAT
+            ReDim dstPoints(0 To 1) As PointFloat
             dstPoints(0).x = m_CornersUnlocked.Left
             dstPoints(0).y = m_CornersUnlocked.Top
             dstPoints(1).x = m_CornersUnlocked.Right
             dstPoints(1).y = m_CornersUnlocked.Bottom
         ElseIf (m_SelectionShape = ss_Wand) Then
-            ReDim dstPoints(0) As POINTFLOAT
+            ReDim dstPoints(0) As PointFloat
             dstPoints(0).x = m_CornersUnlocked.Left
             dstPoints(0).y = m_CornersUnlocked.Top
         End If
@@ -764,13 +764,13 @@ Friend Function GetNumOfPolygonPoints() As Long
 End Function
 
 'Copy the current polygon point collection into an arbitrary destination array.  This is used by mouse coordinate checking functions.
-Friend Sub GetPolygonPoints(ByRef ptFloatArray() As POINTFLOAT)
+Friend Sub GetPolygonPoints(ByRef ptFloatArray() As PointFloat)
     
     If (m_NumOfPolygonPoints > 0) Then
-        ReDim ptFloatArray(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+        ReDim ptFloatArray(0 To m_NumOfPolygonPoints - 1) As PointFloat
         CopyMemory ByVal VarPtr(ptFloatArray(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
     Else
-        ReDim ptFloatArray(0) As POINTFLOAT
+        ReDim ptFloatArray(0) As PointFloat
     End If
     
 End Sub
@@ -964,7 +964,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 
                 'For the transform to work, we need to apply any transformed data to the *original polygon points*.
                 ' Make a backup copy of the original array now.
-                ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As PointFloat
                 CopyMemory ByVal VarPtr(m_PolygonPointsBackup(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
                 
             'Other transforms don't actually require special handling, as all the work is done in the
@@ -986,7 +986,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 
                 'For the transform to work, we need to apply any transformed data to the *original lasso points*.
                 ' Make a backup copy of the original array now.
-                ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As PointFloat
                 CopyMemory ByVal VarPtr(m_LassoPointsBackup(0)), ByVal VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
                 
         End Select
@@ -1040,7 +1040,7 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
             m_IsTransformable = True
             
             m_NumOfPolygonPoints = 1
-            ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
+            ReDim m_PolygonPoints(0 To 127) As PointFloat
             
             m_PolygonPoints(0).x = x
             m_PolygonPoints(0).y = y
@@ -1058,7 +1058,7 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
             m_IsTransformable = True
             
             m_NumOfLassoPoints = 1
-            ReDim m_LassoPoints(0 To 127) As POINTFLOAT
+            ReDim m_LassoPoints(0 To 127) As PointFloat
             
             m_LassoPoints(0).x = x
             m_LassoPoints(0).y = y
@@ -1243,7 +1243,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             
                 'Make room in the point array
                 m_NumOfPolygonPoints = m_NumOfPolygonPoints + 1
-                If (m_NumOfPolygonPoints > UBound(m_PolygonPoints)) Then ReDim Preserve m_PolygonPoints(0 To m_NumOfPolygonPoints * 2 - 1) As POINTFLOAT
+                If (m_NumOfPolygonPoints > UBound(m_PolygonPoints)) Then ReDim Preserve m_PolygonPoints(0 To m_NumOfPolygonPoints * 2 - 1) As PointFloat
                     
                 'Store the new point
                 m_PolygonPoints(m_NumOfPolygonPoints - 1).x = x
@@ -1258,7 +1258,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             
                     'Make room in the point array
                     m_NumOfLassoPoints = m_NumOfLassoPoints + 1
-                    If (m_NumOfLassoPoints > UBound(m_LassoPoints)) Then ReDim Preserve m_LassoPoints(0 To m_NumOfLassoPoints * 2 - 1) As POINTFLOAT
+                    If (m_NumOfLassoPoints > UBound(m_LassoPoints)) Then ReDim Preserve m_LassoPoints(0 To m_NumOfLassoPoints * 2 - 1) As PointFloat
                     
                     'Store the new point
                     m_LassoPoints(m_NumOfLassoPoints - 1).x = x
@@ -1940,7 +1940,7 @@ Private Sub CreateSelectionMask()
                 ' and manually calculate our own outline instead.
                 
                 'First, copy the endpoints of the current line into dedicated floats
-                Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT
+                Dim pt1 As PointFloat, pt2 As PointFloat
                 pt1.x = m_CornersUnlocked.Left
                 pt1.y = m_CornersUnlocked.Top
                 pt2.x = m_CornersUnlocked.Right
@@ -1954,7 +1954,7 @@ Private Sub CreateSelectionMask()
                 ptAngle2 = ptAngle + PI * 0.5
                 
                 'Calculate endpoints of the box surrounding the line, when drawn with the current line thickness
-                Dim endPoints(0 To 3) As POINTFLOAT
+                Dim endPoints(0 To 3) As PointFloat
                 PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2, endPoints(0).x, endPoints(0).y
                 PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2 + PI, endPoints(1).x, endPoints(1).y
                 PDMath.RotatePointAroundPoint pt2.x + lineWidth * 0.5, pt2.y, pt2.x, pt2.y, ptAngle2, endPoints(2).x, endPoints(2).y
@@ -2223,7 +2223,7 @@ End Sub
 ' *not* taken into account, by design).
 '
 'The destination array must be one-dimensional, zero-dimensioned, and at least four items long (e.g. [0, 3] or larger).
-Private Sub GetSelectionCorners(ByRef dstPoints() As POINTFLOAT)
+Private Sub GetSelectionCorners(ByRef dstPoints() As PointFloat)
     
     With m_CornersLocked
         dstPoints(0).x = .Left
@@ -2253,8 +2253,8 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         '   on the screen, we need to figure out where they lie in the current viewport, accounting for things like zoom and scroll.)
         '
         'We always generate this list of points, regardless of selection type.
-        Dim selCorners() As POINTFLOAT
-        ReDim selCorners(0 To 3) As POINTFLOAT
+        Dim selCorners() As PointFloat
+        ReDim selCorners(0 To 3) As PointFloat
         GetSelectionCorners selCorners
         
         'Transform those corners into the destination viewport coordinate space
@@ -2324,7 +2324,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
             If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
                 
-                Dim poiList() As POINTFLOAT
+                Dim poiList() As PointFloat
                 Me.GetCurrentPOIList poiList
                 
                 Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, poiList, False
@@ -2430,13 +2430,13 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' is very large but zoomed-out.)
     
     'Start by requesting the current canvas intersection rect from the source image
-    Dim viewportIntersectRectCanvas As RECTF
+    Dim viewportIntersectRectCanvas As RectF
     srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
     'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
     ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we use
     ' integer coordinates there as well.)
-    Dim imgViewportRectL As RECTL_WH
+    Dim imgViewportRectL As RectL_WH
     With viewportIntersectRectCanvas
         imgViewportRectL.Left = Int(.Left)
         imgViewportRectL.Top = Int(.Top)
@@ -2448,7 +2448,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on
     '  the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when
     '  scroll and zoom are in effect.)
-    Dim dstRectF As RECTF
+    Dim dstRectF As RectF
     Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_Bounds, dstRectF
     
     'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries.
@@ -2473,7 +2473,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Finally, compare current and previous image rects
         If m_ViewportRefReady Then
             
-            Dim curImgRectF As RECTF
+            Dim curImgRectF As RectF
             srcImage.ImgViewport.GetIntersectRectImage curImgRectF
             
             If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
@@ -2584,7 +2584,7 @@ End Sub
 
 'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
 ' using the HIGHLIGHT or LIGHTBOX selection styles.
-Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
+Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
     'To improve performance, this function caches the current selection overlay image as a persistent DIB.  (This lets
     ' us cheat and directly AlphaBlend the cached result during intensive operations like paint strokes.)  If the associated
@@ -2619,7 +2619,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         Dim overlayLookup() As Long
         ReDim overlayLookup(0 To 255) As Long
         
-        Dim tmpRGBA As RGBQUAD, i As Long
+        Dim tmpRGBA As RGBQuad, i As Long
         Dim newR As Long, newG As Long, newB As Long, newA As Single
         Dim defaultFillColor As Long
             
@@ -2701,10 +2701,10 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' actual overlay UI style)
         Dim x As Long, y As Long
         Dim overlayPixels() As Long, maskPixels() As Long
-        Dim overlaySALine As SAFEARRAY1D, maskSALine As SAFEARRAY1D
+        Dim overlaySALine As SafeArray1D, maskSALine As SafeArray1D
         
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
-        Dim viewportIntersectRectCanvas As RECTF
+        Dim viewportIntersectRectCanvas As RectF
         srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
@@ -2779,7 +2779,7 @@ End Sub
 
 'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
 ' using the OUTLINE or MARCHING ANT selection styles.
-Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
+Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
     
     'Outline rendering isn't free.  In debug builds you may want to profile it.
     ' (At present, profile reports are commented-out, but timing is still tracked - so just uncomment the
@@ -2832,8 +2832,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 If (numOfRenderPoints > 0) Then
                 
                     'Convert the lasso or polygon array to viewport coordinate space
-                    Dim tmpViewportSpace() As POINTFLOAT
-                    ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
+                    Dim tmpViewportSpace() As PointFloat
+                    ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As PointFloat
                     
                     Dim tmpX As Double, tmpY As Double
                     
@@ -2905,7 +2905,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             xModifier = (-loopStartX + 2)
             yModifier = (-loopStartY + 2)
             
-            Dim maskPixels() As Long, maskSALine As SAFEARRAY1D
+            Dim maskPixels() As Long, maskSALine As SafeArray1D
             
             Dim x As Long, y As Long, tmpXPosition As Long, tmpYPosition As Long
             
@@ -3046,7 +3046,7 @@ Friend Sub FreeNonEssentialResources()
 End Sub
 
 'Sometimes a selection needs to directly access the bits of a target DIB. This routine sets up the corresponding SafeArray.
-Private Sub PrepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
+Private Sub PrepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SafeArray2D)
     With tmpSA
         .cbElements = 1
         .cDims = 2
@@ -3064,6 +3064,10 @@ End Sub
 Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
     ReadSelectionFromFile = False
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Reading selection data from file: " & srcFilename
+    #End If
     
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackager
@@ -3196,6 +3200,10 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
         
     End If
         
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
+    #End If
+    
 End Function
 
 'As of v7.0, pdPackager is used to read/write selection files.  Note that this function will blindly overwrite the destination
@@ -3303,7 +3311,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     'Point a standard int array at the selection mask
     Dim x As Long, y As Long
     
-    Dim selMaskData() As Long, selMaskSA As SAFEARRAY2D, selMaskSA1D As SAFEARRAY1D
+    Dim selMaskData() As Long, selMaskSA As SafeArray2D, selMaskSA1D As SafeArray1D
     
     'While here, grab a baseline DIB pointer and stride, so we can quickly wrap individual lines
     Dim maskPtr As Long, maskStride As Long
@@ -3503,10 +3511,10 @@ Private Sub Class_Initialize()
     
     'No lasso or polygon points yet
     m_NumOfLassoPoints = 0
-    ReDim m_LassoPoints(0) As POINTFLOAT
+    ReDim m_LassoPoints(0) As PointFloat
     
     m_NumOfPolygonPoints = 0
-    ReDim m_PolygonPoints(0) As POINTFLOAT
+    ReDim m_PolygonPoints(0) As PointFloat
     
     'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
