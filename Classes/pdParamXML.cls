@@ -224,8 +224,21 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
             GetParamValue = True
             
         Else
-            Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed! (" & tagStart & ", " & tagEnd & ")"
-            dstString = vbNullString
+            
+            'If the closing tag exists, but it *equals* tag start, it means this tag exists but is empty (which is fine)
+            If (tagEnd = tagStart) Then
+                dstString = vbNullString
+            
+            'If tag end is less than tag start, it means there's an XML parsing problem
+            Else
+                Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed! (" & tagStart & ", " & tagEnd & ")"
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
+                    pdDebug.LogAction m_ParamString.ToString()
+                #End If
+                dstString = vbNullString
+            End If
+            
         End If
     
     'When we look for a tag and don't find it, reset our search start position
@@ -238,6 +251,8 @@ End Function
 
 'Blindly add a parameter to the master string.  No special checks (e.g. duplicates) are applied; use updateParam if you need those.
 Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant, Optional ByVal nameGuaranteedXMLSafe As Boolean = False, Optional ByVal valueGuaranteedXMLSafe As Boolean = False) As Boolean
+    
+    On Error GoTo AddParamFailed
     
     'Convert the parameter value into a string.  We handle this manually to minimize the chance of locale issues.
     Dim strParamValue As String
@@ -271,13 +286,26 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     End If
     
     'Make the parameter name and value XML-safe
-    If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
-    If (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
+    If (Len(paramName) > 0) Then
+        If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
+    End If
+    
+    If (Len(strParamValue) > 0) Then
+        If (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
+    End If
     
     'Tack the parameter name and value we were passed onto the master string
     m_ParamString.XMLAppend paramName, strParamValue
     
     AddParam = True
+    Exit Function
+    
+AddParamFailed:
+    AddParam = False
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
+    #End If
     
 End Function
 
