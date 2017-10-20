@@ -165,13 +165,9 @@ Friend Function GetDouble(ByVal paramName As String, Optional ByVal defaultRetur
     End If
 End Function
 
-Friend Function GetString(ByVal paramName As String, Optional ByVal defaultReturn As String = "") As String
+Friend Function GetString(ByRef paramName As String, Optional ByVal defaultReturn As String = vbNullString, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As String
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
-        GetString = paramValue
-    Else
-        GetString = defaultReturn
-    End If
+    If (Not GetParamValue(paramName, GetString, nameGuaranteedXMLSafe)) Then GetString = defaultReturn
 End Function
 
 Friend Function GetVariant(ByVal paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
@@ -185,12 +181,12 @@ End Function
 
 'Given a parameter name, fill a user-supplied string with the parameter value.
 ' Returns TRUE if parameter exists; FALSE otherwise.
-Private Function GetParamValue(ByVal paramName As String, ByRef dstString As String) As Boolean
+Private Function GetParamValue(ByVal paramName As String, ByRef dstString As String, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Boolean
     
     GetParamValue = False
     
     'Make the parameter name XML-safe
-    paramName = GetXMLSafeName(paramName)
+    If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
     
     'Search starting from wherever we found our previous tag.  (PD tags are usually read in sequential order,
     ' and this *greatly* accelerates parse-time.)
@@ -257,7 +253,9 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     'Convert the parameter value into a string.  We handle this manually to minimize the chance of locale issues.
     Dim strParamValue As String
     
-    If VarType(paramValue) = vbByte Then
+    If VarType(paramValue) = vbString Then
+        strParamValue = paramValue
+    ElseIf VarType(paramValue) = vbByte Then
         strParamValue = Trim$(Str(paramValue))
     ElseIf VarType(paramValue) = vbInteger Then
         strParamValue = Trim$(Str(paramValue))
@@ -267,16 +265,14 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
         strParamValue = Trim$(Str(paramValue))
     ElseIf VarType(paramValue) = vbDouble Then
         strParamValue = Trim$(Str(paramValue))
+    ElseIf VarType(paramValue) = vbBoolean Then
+        strParamValue = Trim$(Str(paramValue))
     ElseIf VarType(paramValue) = vbDecimal Then
         strParamValue = Trim$(Str(paramValue))
     ElseIf VarType(paramValue) = vbCurrency Then
         strParamValue = Trim$(Str(paramValue))
     ElseIf VarType(paramValue) = vbNull Then
         strParamValue = Trim$(Str(0))
-    ElseIf VarType(paramValue) = vbBoolean Then
-        strParamValue = Trim$(Str(paramValue))
-    ElseIf VarType(paramValue) = vbString Then
-        strParamValue = paramValue
     ElseIf VarType(paramValue) = vbDate Then
         strParamValue = Format$(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
     
@@ -286,13 +282,8 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     End If
     
     'Make the parameter name and value XML-safe
-    If (Len(paramName) > 0) Then
-        If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
-    End If
-    
-    If (Len(strParamValue) > 0) Then
-        If (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
-    End If
+    If (Len(paramName) > 0) And (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
+    If (Len(strParamValue) > 0) And (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
     
     'Tack the parameter name and value we were passed onto the master string
     m_ParamString.XMLAppend paramName, strParamValue

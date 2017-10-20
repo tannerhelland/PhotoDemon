@@ -344,6 +344,10 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
             m_CompositeCacheClean = False
             m_IsThumbClean = False
         
+        'Selection change notifications can also occur, but they don't require anything from us; the selectino object
+        ' handles it specially
+        Case UNDO_Selection
+        
         Case Else
             Debug.Print "WARNING!  pdImage.NotifyImageChanged received an unknown change request: " & typeOfChange
     
@@ -381,7 +385,7 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
+Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
     imgCompositor.GetCompositedRect Me, dstDIB, dstViewportRect, srcImageRect, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
 End Sub
 
@@ -846,7 +850,7 @@ End Sub
 
 'Helper function to fill a RectF with current image boundaries (as used in hit-testing).
 ' Left/top will always be (0, 0).
-Friend Function GetBoundaryRectF() As RECTF
+Friend Function GetBoundaryRectF() As RectF
     With GetBoundaryRectF
         .Left = 0!
         .Top = 0!
@@ -948,7 +952,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Retrieve a composited thumbnail.  (Note that the user's thumbnail performance setting affects the interpolation
     ' method used.)
-    Dim dstRectF As RECTF, srcRectF As RECTF
+    Dim dstRectF As RectF, srcRectF As RectF
     With dstRectF
         .Left = 0!
         .Top = 0!
@@ -1026,7 +1030,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
     ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
     Else
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
         GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
     End If
@@ -1270,24 +1274,24 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    Dim maskBounds As RECTF
+    Dim maskBounds As RectF
     maskBounds = MainSelection.GetBoundaryRect
     dstDIB.CreateBlank maskBounds.Width, maskBounds.Height, 32, 0
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim selData() As Byte
-    Dim selSA As SAFEARRAY2D
+    Dim selSA As SafeArray2D
     PrepSafeArray selSA, MainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -1391,16 +1395,16 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
     Dim selData() As Byte
-    Dim selSA As SAFEARRAY2D
+    Dim selSA As SafeArray2D
     PrepSafeArray selSA, MainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    Dim maskBounds As RECTF
+    Dim maskBounds As RectF
     maskBounds = MainSelection.GetBoundaryRect
     
     Dim leftBound As Long, topBound As Long, rightBound As Long, bottomBound As Long

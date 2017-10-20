@@ -314,6 +314,9 @@ Private m_GroupCache() As ET_GROUP
 Private m_NumGroupsInCache As Long
 Private m_ModalWaitWindowActive As Boolean
 
+'This module has to do a ton of XML parsing.  Rather than recreate a parser on every call, we just reuse a stock one
+Private m_ParseXML As pdParamXML
+
 Public Function IsDatabaseModeActive() As Boolean
     IsDatabaseModeActive = m_DatabaseModeActive
 End Function
@@ -1931,123 +1934,133 @@ Public Function ShouldTagNeverBeWritten(ByRef srcTag As PDMetadataItem) As Boole
                     
 End Function
 
+'This function is slow, as you'd expect, because tags can potentially be *huge*, including many
+' variable-length strings.  Try not to call it any more than absolutely necessary.
 Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    On Error GoTo SerializeFailed
+
+    If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
+    m_ParseXML.Reset
     
     'Basically, this is just a long-ass process of assembling all tag properties into XML tags.
     With srcMetadata
-        cParams.AddParam "PDMD_TagGroupAndName", .TagGroupAndName
-        cParams.AddParam "PDMD_TagGroup", .TagGroup
-        cParams.AddParam "PDMD_TagGroupFriendly", .TagGroupFriendly
-        cParams.AddParam "PDMD_TagName", .tagName
-        cParams.AddParam "PDMD_TagNameFriendly", .TagNameFriendly
-        cParams.AddParam "PDMD_TagTable", .TagTable
-        cParams.AddParam "PDMD_TagID", .TagID
-        cParams.AddParam "PDMD_TagValueFriendly", .TagValueFriendly
-        cParams.AddParam "PDMD_TagValue", .TagValue
-        cParams.AddParam "PDMD_HasIndex", .HasIndex
-        cParams.AddParam "PDMD_IsTagList", .IsTagList
-        cParams.AddParam "PDMD_IsTagBinary", .IsTagBinary
-        If (Len(.TagBase64Value) <> 0) Then cParams.AddParam "PDMD_TagBase64", .TagBase64Value
-        cParams.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted
-        cParams.AddParam "PDMD_InternalUseOnly", .InternalUseOnly
-        cParams.AddParam "PDMD_TagIndexInternal", .TagIndexInternal
-        cParams.AddParam "PDMD_TagBase64Value", .TagBase64Value
-        cParams.AddParam "PDMD_TagMarkedForRemoval", .TagMarkedForRemoval
-        cParams.AddParam "PDMD_UserModifiedThisSession", .UserModifiedThisSession
-        cParams.AddParam "PDMD_UserModifiedAllSessions", .UserModifiedAllSessions
-        cParams.AddParam "PDMD_UserValueNew", .UserValueNew
-        cParams.AddParam "PDMD_UserIDNew", .UserIDNew
-        cParams.AddParam "PDMD_DBTagHitDatabase", .DB_TagHitDatabase
-        cParams.AddParam "PDMD_DBISWritable", .DB_IsWritable
-        cParams.AddParam "PDMD_DBTypeCount", .DB_TypeCount
-        cParams.AddParam "PDMD_DBDataType", .DB_DataType
-        cParams.AddParam "PDMD_DBDataTypeStrict", .DB_DataTypeStrict
-        cParams.AddParam "PDMD_DBFIsAvoid", .DBF_IsAvoid
-        cParams.AddParam "PDMD_DBFIsBag", .DBF_IsBag
-        cParams.AddParam "PDMD_DBFIsBinary", .DBF_IsBinary
-        cParams.AddParam "PDMD_DBFIsFlattened", .DBF_IsFlattened
-        cParams.AddParam "PDMD_DBFIsList", .DBF_IsList
-        cParams.AddParam "PDMD_DBFIsMandatory", .DBF_IsMandatory
-        cParams.AddParam "PDMD_DBFIsPermanent", .DBF_IsPermanent
-        cParams.AddParam "PDMD_DBFIsProtected", .DBF_IsProtected
-        cParams.AddParam "PDMD_DBFIsSequence", .DBF_IsSequence
-        cParams.AddParam "PDMD_DBFIsUnknown", .DBF_IsUnknown
-        cParams.AddParam "PDMD_DBFIsUnsafe", .DBF_IsUnsafe
-        cParams.AddParam "PDMD_DBDescription", .DB_Description
-        cParams.AddParam "PDMD_DBHardCodedList", .DB_HardcodedList
-        cParams.AddParam "PDMD_DBHardCodedListSize", .DB_HardcodedListSize
+        m_ParseXML.AddParam "PDMD_TagGroupAndName", .TagGroupAndName, True
+        m_ParseXML.AddParam "PDMD_TagGroup", .TagGroup, True
+        m_ParseXML.AddParam "PDMD_TagGroupFriendly", .TagGroupFriendly, True
+        m_ParseXML.AddParam "PDMD_TagName", .tagName, True
+        m_ParseXML.AddParam "PDMD_TagNameFriendly", .TagNameFriendly, True
+        m_ParseXML.AddParam "PDMD_TagTable", .TagTable, True
+        m_ParseXML.AddParam "PDMD_TagID", .TagID, True
+        m_ParseXML.AddParam "PDMD_TagValueFriendly", .TagValueFriendly, True
+        m_ParseXML.AddParam "PDMD_TagValue", .TagValue, True
+        m_ParseXML.AddParam "PDMD_HasIndex", .HasIndex, True
+        m_ParseXML.AddParam "PDMD_IsTagList", .IsTagList, True
+        m_ParseXML.AddParam "PDMD_IsTagBinary", .IsTagBinary, True
+        If (Len(.TagBase64Value) <> 0) Then m_ParseXML.AddParam "PDMD_TagBase64", .TagBase64Value, True
+        m_ParseXML.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted, True
+        m_ParseXML.AddParam "PDMD_InternalUseOnly", .InternalUseOnly, True
+        m_ParseXML.AddParam "PDMD_TagIndexInternal", .TagIndexInternal, True
+        m_ParseXML.AddParam "PDMD_TagBase64Value", .TagBase64Value, True
+        m_ParseXML.AddParam "PDMD_TagMarkedForRemoval", .TagMarkedForRemoval, True
+        m_ParseXML.AddParam "PDMD_UserModifiedThisSession", .UserModifiedThisSession, True
+        m_ParseXML.AddParam "PDMD_UserModifiedAllSessions", .UserModifiedAllSessions, True
+        m_ParseXML.AddParam "PDMD_UserValueNew", .UserValueNew, True
+        m_ParseXML.AddParam "PDMD_UserIDNew", .UserIDNew, True
+        m_ParseXML.AddParam "PDMD_DBTagHitDatabase", .DB_TagHitDatabase, True
+        m_ParseXML.AddParam "PDMD_DBISWritable", .DB_IsWritable, True
+        m_ParseXML.AddParam "PDMD_DBTypeCount", .DB_TypeCount, True
+        m_ParseXML.AddParam "PDMD_DBDataType", .DB_DataType, True
+        m_ParseXML.AddParam "PDMD_DBDataTypeStrict", .DB_DataTypeStrict, True
+        m_ParseXML.AddParam "PDMD_DBFIsAvoid", .DBF_IsAvoid, True
+        m_ParseXML.AddParam "PDMD_DBFIsBag", .DBF_IsBag, True
+        m_ParseXML.AddParam "PDMD_DBFIsBinary", .DBF_IsBinary, True
+        m_ParseXML.AddParam "PDMD_DBFIsFlattened", .DBF_IsFlattened, True
+        m_ParseXML.AddParam "PDMD_DBFIsList", .DBF_IsList, True
+        m_ParseXML.AddParam "PDMD_DBFIsMandatory", .DBF_IsMandatory, True
+        m_ParseXML.AddParam "PDMD_DBFIsPermanent", .DBF_IsPermanent, True
+        m_ParseXML.AddParam "PDMD_DBFIsProtected", .DBF_IsProtected, True
+        m_ParseXML.AddParam "PDMD_DBFIsSequence", .DBF_IsSequence, True
+        m_ParseXML.AddParam "PDMD_DBFIsUnknown", .DBF_IsUnknown, True
+        m_ParseXML.AddParam "PDMD_DBFIsUnsafe", .DBF_IsUnsafe, True
+        m_ParseXML.AddParam "PDMD_DBDescription", .DB_Description, True
+        m_ParseXML.AddParam "PDMD_DBHardCodedList", .DB_HardcodedList, True
+        m_ParseXML.AddParam "PDMD_DBHardCodedListSize", .DB_HardcodedListSize, True
         If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
-            cParams.AddParam "PDMD_StackIDs", .DB_StackIDs.SerializeStackToSingleString()
-            cParams.AddParam "PDMD_StackValues", .DB_StackValues.SerializeStackToSingleString()
+            If (Not .DB_StackIDs Is Nothing) Then m_ParseXML.AddParam "PDMD_StackIDs", .DB_StackIDs.SerializeStackToSingleString(), True
+            If (Not .DB_StackValues Is Nothing) Then m_ParseXML.AddParam "PDMD_StackValues", .DB_StackValues.SerializeStackToSingleString(), True
         End If
-        cParams.AddParam "PDMD_TagDebugData", .TagDebugData
+        m_ParseXML.AddParam "PDMD_TagDebugData", .TagDebugData, True
     End With
     
-    SerializeTagToString = cParams.GetParamString
+    SerializeTagToString = m_ParseXML.GetParamString()
+    
+    Exit Function
+    
+SerializeFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  ExifTool.SerializeTagToString failed with Error #" & Err.Number & ", " & Err.Description
+    #End If
 
 End Function
 
 Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)
     
     If (Len(srcString) <> 0) Then
-    
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
-        cParams.SetParamString srcString
+        
+        If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
+        m_ParseXML.SetParamString srcString
         
         'Basically, this is just a long-ass process of retrieving all tag properties from their specific XML tags.
         With dstMetadata
-            .TagGroupAndName = cParams.GetString("PDMD_TagGroupAndName")
-            .TagGroup = cParams.GetString("PDMD_TagGroup")
-            .TagGroupFriendly = cParams.GetString("PDMD_TagGroupFriendly")
-            .tagName = cParams.GetString("PDMD_TagName")
-            .TagNameFriendly = cParams.GetString("PDMD_TagNameFriendly")
-            .TagTable = cParams.GetString("PDMD_TagTable")
-            .TagID = cParams.GetString("PDMD_TagID")
-            .TagValueFriendly = cParams.GetString("PDMD_TagValueFriendly")
-            .TagValue = cParams.GetString("PDMD_TagValue")
-            .HasIndex = cParams.GetBool("PDMD_HasIndex")
-            .IsTagList = cParams.GetBool("PDMD_IsTagList")
-            .IsTagBinary = cParams.GetBool("PDMD_IsTagBinary")
-            .TagBase64Value = cParams.GetString("PDMD_TagBase64", vbNullString)
-            .WasBinaryExtracted = cParams.GetBool("PDMD_WasBinaryExtracted")
-            .InternalUseOnly = cParams.GetBool("PDMD_InternalUseOnly")
-            .TagIndexInternal = cParams.GetLong("PDMD_TagIndexInternal")
-            .TagBase64Value = cParams.GetString("PDMD_TagBase64Value")
-            .TagMarkedForRemoval = cParams.GetBool("PDMD_TagMarkedForRemoval")
-            .UserModifiedThisSession = cParams.GetBool("PDMD_UserModifiedThisSession")
-            .UserModifiedAllSessions = cParams.GetBool("PDMD_UserModifiedAllSessions")
-            .UserValueNew = cParams.GetString("PDMD_UserValueNew")
-            .UserIDNew = cParams.GetString("PDMD_UserIDNew")
-            .DB_TagHitDatabase = cParams.GetBool("PDMD_DBTagHitDatabase")
-            .DB_IsWritable = cParams.GetBool("PDMD_DBISWritable")
-            .DB_TypeCount = cParams.GetLong("PDMD_DBTypeCount")
-            .DB_DataType = cParams.GetString("PDMD_DBDataType")
-            .DB_DataTypeStrict = cParams.GetLong("PDMD_DBDataTypeStrict")
-            .DBF_IsAvoid = cParams.GetBool("PDMD_DBFIsAvoid")
-            .DBF_IsBag = cParams.GetBool("PDMD_DBFIsBag")
-            .DBF_IsBinary = cParams.GetBool("PDMD_DBFIsBinary")
-            .DBF_IsFlattened = cParams.GetBool("PDMD_DBFIsFlattened")
-            .DBF_IsList = cParams.GetBool("PDMD_DBFIsList")
-            .DBF_IsMandatory = cParams.GetBool("PDMD_DBFIsMandatory")
-            .DBF_IsPermanent = cParams.GetBool("PDMD_DBFIsPermanent")
-            .DBF_IsProtected = cParams.GetBool("PDMD_DBFIsProtected")
-            .DBF_IsSequence = cParams.GetBool("PDMD_DBFIsSequence")
-            .DBF_IsUnknown = cParams.GetBool("PDMD_DBFIsUnknown")
-            .DBF_IsUnsafe = cParams.GetBool("PDMD_DBFIsUnsafe")
-            .DB_Description = cParams.GetString("PDMD_DBDescription")
-            .DB_HardcodedList = cParams.GetBool("PDMD_DBHardCodedList")
-            .DB_HardcodedListSize = cParams.GetLong("PDMD_DBHardCodedListSize")
+            .TagGroupAndName = m_ParseXML.GetString("PDMD_TagGroupAndName", , True)
+            .TagGroup = m_ParseXML.GetString("PDMD_TagGroup", , True)
+            .TagGroupFriendly = m_ParseXML.GetString("PDMD_TagGroupFriendly", , True)
+            .tagName = m_ParseXML.GetString("PDMD_TagName", , True)
+            .TagNameFriendly = m_ParseXML.GetString("PDMD_TagNameFriendly", , True)
+            .TagTable = m_ParseXML.GetString("PDMD_TagTable", , True)
+            .TagID = m_ParseXML.GetString("PDMD_TagID", , True)
+            .TagValueFriendly = m_ParseXML.GetString("PDMD_TagValueFriendly", , True)
+            .TagValue = m_ParseXML.GetString("PDMD_TagValue", , True)
+            .HasIndex = m_ParseXML.GetBool("PDMD_HasIndex")
+            .IsTagList = m_ParseXML.GetBool("PDMD_IsTagList")
+            .IsTagBinary = m_ParseXML.GetBool("PDMD_IsTagBinary")
+            .TagBase64Value = m_ParseXML.GetString("PDMD_TagBase64", , True)
+            .WasBinaryExtracted = m_ParseXML.GetBool("PDMD_WasBinaryExtracted")
+            .InternalUseOnly = m_ParseXML.GetBool("PDMD_InternalUseOnly")
+            .TagIndexInternal = m_ParseXML.GetLong("PDMD_TagIndexInternal")
+            .TagBase64Value = m_ParseXML.GetString("PDMD_TagBase64Value", , True)
+            .TagMarkedForRemoval = m_ParseXML.GetBool("PDMD_TagMarkedForRemoval")
+            .UserModifiedThisSession = m_ParseXML.GetBool("PDMD_UserModifiedThisSession")
+            .UserModifiedAllSessions = m_ParseXML.GetBool("PDMD_UserModifiedAllSessions")
+            .UserValueNew = m_ParseXML.GetString("PDMD_UserValueNew", , True)
+            .UserIDNew = m_ParseXML.GetString("PDMD_UserIDNew", , True)
+            .DB_TagHitDatabase = m_ParseXML.GetBool("PDMD_DBTagHitDatabase")
+            .DB_IsWritable = m_ParseXML.GetBool("PDMD_DBISWritable")
+            .DB_TypeCount = m_ParseXML.GetLong("PDMD_DBTypeCount")
+            .DB_DataType = m_ParseXML.GetString("PDMD_DBDataType", , True)
+            .DB_DataTypeStrict = m_ParseXML.GetLong("PDMD_DBDataTypeStrict")
+            .DBF_IsAvoid = m_ParseXML.GetBool("PDMD_DBFIsAvoid")
+            .DBF_IsBag = m_ParseXML.GetBool("PDMD_DBFIsBag")
+            .DBF_IsBinary = m_ParseXML.GetBool("PDMD_DBFIsBinary")
+            .DBF_IsFlattened = m_ParseXML.GetBool("PDMD_DBFIsFlattened")
+            .DBF_IsList = m_ParseXML.GetBool("PDMD_DBFIsList")
+            .DBF_IsMandatory = m_ParseXML.GetBool("PDMD_DBFIsMandatory")
+            .DBF_IsPermanent = m_ParseXML.GetBool("PDMD_DBFIsPermanent")
+            .DBF_IsProtected = m_ParseXML.GetBool("PDMD_DBFIsProtected")
+            .DBF_IsSequence = m_ParseXML.GetBool("PDMD_DBFIsSequence")
+            .DBF_IsUnknown = m_ParseXML.GetBool("PDMD_DBFIsUnknown")
+            .DBF_IsUnsafe = m_ParseXML.GetBool("PDMD_DBFIsUnsafe")
+            .DB_Description = m_ParseXML.GetString("PDMD_DBDescription", , True)
+            .DB_HardcodedList = m_ParseXML.GetBool("PDMD_DBHardCodedList")
+            .DB_HardcodedListSize = m_ParseXML.GetLong("PDMD_DBHardCodedListSize")
             If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
                 Set .DB_StackIDs = New pdStringStack
                 Set .DB_StackValues = New pdStringStack
-                .DB_StackIDs.RecreateStackFromSerializedString cParams.GetString("PDMD_StackIDs")
-                .DB_StackValues.RecreateStackFromSerializedString cParams.GetString("PDMD_StackValues")
+                .DB_StackIDs.RecreateStackFromSerializedString m_ParseXML.GetString("PDMD_StackIDs")
+                .DB_StackValues.RecreateStackFromSerializedString m_ParseXML.GetString("PDMD_StackValues")
             End If
-            .TagDebugData = cParams.GetString("PDMD_TagDebugData")
+            .TagDebugData = m_ParseXML.GetString("PDMD_TagDebugData", , True)
         End With
         
     End If

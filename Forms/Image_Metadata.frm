@@ -1268,7 +1268,7 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_string
             strResult = g_Language.TranslateMessage("text")
         Case MD_undef
-            Debug.Print "The selected tag actually has an ""undefined"" data format, but PD displays ""text"" as a convenience."
+            'Debug.Print "The selected tag actually has an ""undefined"" data format, but PD displays ""text"" as a convenience."
             strResult = g_Language.TranslateMessage("text")
         Case MD_binary
             strResult = g_Language.TranslateMessage("binary data")

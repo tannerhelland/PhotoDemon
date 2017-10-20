@@ -238,7 +238,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-            Debug.Print "Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & " ms, non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime)
+            Debug.Print "Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & ", non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime)
         #End If
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
@@ -372,7 +372,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
             'Copy the received bytes into a string, then pass that string to the parent image's metadata handler
             retString = Space$(retSize \ 2)
             CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            If dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
+            If dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID, True) Then
                 
                 '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
                 ' and other changes.)
