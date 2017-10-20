@@ -500,23 +500,27 @@ End Sub
 
 Friend Function SerializeStackToSingleString() As String
 
-    If m_NumOfStrings > 0 Then
+    If (m_NumOfStrings > 0) Then
         
         'The first entry in the serialized string is always the string count
-        Dim finalString As String
-        finalString = CStr(m_NumOfStrings)
+        Dim finalString As pdString
+        Set finalString = New pdString
+        finalString.Append CStr(m_NumOfStrings)
         
         Dim tstPipeString As String: tstPipeString = "|"
         Dim rplPipeString As String: rplPipeString = "&pipe;"
         
         Dim i As Long
         For i = 0 To m_NumOfStrings - 1
+            finalString.Append tstPipeString
             If (InStr(1, m_Strings(i), tstPipeString, vbBinaryCompare) <> 0) Then
-                finalString = finalString & tstPipeString & Replace(m_Strings(i), tstPipeString, rplPipeString, , , vbBinaryCompare)
+                finalString.Append Replace$(m_Strings(i), tstPipeString, rplPipeString, , , vbBinaryCompare)
             Else
-                finalString = finalString & tstPipeString & m_Strings(i)
+                finalString.Append m_Strings(i)
             End If
         Next i
+        
+        SerializeStackToSingleString = finalString.ToString()
         
     End If
     
@@ -531,7 +535,7 @@ Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As 
     Dim tstPipeString As String: tstPipeString = "|"
     Dim rplPipeString As String: rplPipeString = "&pipe;"
     
-    If InStr(1, srcString, tstPipeString, vbBinaryCompare) <> 0 Then
+    If (InStr(1, srcString, tstPipeString, vbBinaryCompare) <> 0) Then
     
         Dim stringArray() As String
         stringArray = Split(srcString, tstPipeString, , vbBinaryCompare)

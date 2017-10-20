@@ -55,14 +55,19 @@ Private Const RIGHT_TAG_TEST As String = ">"
 
 'Return the original metadata XML string.  Note that aside from some minimal processing (e.g. removing ExifTool's {ready} marker),
 ' this will be the unmodified XML string originally passed to this class, e.g. without any parsing or validation of the data!
-Public Function GetOriginalXMLMetadataString() As String
+Friend Function GetOriginalXMLMetadataString() As String
     GetOriginalXMLMetadataString = m_OriginalXML
 End Function
+
+Friend Sub GetOriginalXMLMetadataStrPtrAndLen(ByRef dstPtr As Long, ByRef dstLen As Long)
+    dstPtr = StrPtr(m_OriginalXML)
+    dstLen = Len(m_OriginalXML)
+End Sub
 
 'Return a current copy of the metadata collection, serialized into a single massive string.  This string contains all user edits,
 ' and generally speaking, it should be used in parallel to the original XML string, above.  (Both are needed to fully recreate
 ' metadata inside a new image.)
-Public Function GetSerializedXMLData() As String
+Friend Function GetSerializedXMLData() As String
     
     If (m_NumOfTags > 0) Then
         
@@ -83,7 +88,7 @@ Public Function GetSerializedXMLData() As String
     
 End Function
 
-Public Sub RecreateFromSerializedXMLData(ByRef srcString As String)
+Friend Sub RecreateFromSerializedXMLData(ByRef srcString As String)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -106,7 +111,7 @@ End Sub
 'Retrieve resolution data from the metadata collection, if it exists.  Returns TRUE if resolution metadata entrist exist; FALSE
 ' if they do not.  Note that this function always returns resolution in inches.  Pixels per CM measurements will be automatically
 ' converted to PPI.
-Public Function GetResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
+Friend Function GetResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
 
     On Error GoTo mdResolutionError
 
@@ -174,7 +179,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Public Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Friend Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     DoesTagExistFullName = False
     
@@ -200,7 +205,7 @@ End Function
 '
 '(It's assumed that the caller has called DoesTagExistFullName() before calling this function, so they know whether a null string is
 ' the actual return value of the given metadata entry, or a fail state.)
-Public Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare, Optional ByVal returnPrintFriendlyValue As Boolean = False) As String
+Friend Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare, Optional ByVal returnPrintFriendlyValue As Boolean = False) As String
 
     Dim tagIndex As Long
     
@@ -229,17 +234,17 @@ Friend Function SetMetadataEntryByIndex(ByVal mtdIndex As Long, ByRef newMetadat
 End Function
 
 'Return the total metadata count for this object.  Note that binary and list items ARE included in this count.
-Public Function GetMetadataCount() As Long
+Friend Function GetMetadataCount() As Long
     GetMetadataCount = m_NumOfTags
 End Function
 
-Public Function HasMetadata() As Boolean
+Friend Function HasMetadata() As Boolean
     HasMetadata = CBool(m_NumOfTags <> 0)
 End Function
 
 'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
 ' idea if the image contains any.
-Public Function HaveAttemptedToFindGPSData() As Boolean
+Friend Function HaveAttemptedToFindGPSData() As Boolean
     If (m_NumOfTags = 0) Then
         HaveAttemptedToFindGPSData = False
     Else
@@ -248,12 +253,12 @@ Public Function HaveAttemptedToFindGPSData() As Boolean
 End Function
 
 'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
-Public Function HasGPSMetadata() As Boolean
+Friend Function HasGPSMetadata() As Boolean
     HasGPSMetadata = m_HasGPSCoordinates
 End Function
 
 'If GPS metadata exists, this function can be used to retrieve the exact latitude and longitude values
-Public Function FillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
+Friend Function FillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
     
     If m_HasGPSCoordinates Then
         
@@ -317,7 +322,7 @@ End Function
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
 '  removed from the XML string.)
-Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
+Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If (Not g_ExifToolEnabled) Then
@@ -1465,7 +1470,7 @@ End Function
 ' embed as much or as little metadata as the image's settings specify.
 ' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
 '  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
-Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
+Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
     
     'XML writing is handled by PD's master XML engine
     Dim xmlEngine As pdXML

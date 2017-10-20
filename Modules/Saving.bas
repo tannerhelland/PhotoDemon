@@ -539,15 +539,30 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
         VBHacks.GetHighResTime mdStartTime
         
         If srcPDImage.ImgMetadata.HasMetadata Then
-            nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
-            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.ImgMetadata.GetOriginalXMLMetadataString, compressHeaders
-            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetSerializedXMLData, compressHeaders
+            
+            'To avoid unnecessary string copies, we write the (potentially large) original metadata string directly
+            ' from its source pointer.
+            Dim mdPtr As Long, mdLen As Long
+            srcPDImage.ImgMetadata.GetOriginalXMLMetadataStrPtrAndLen mdPtr, mdLen
+            
+            If (mdLen > 0) Then
+            
+                nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
+                pdiWriter.AddNodeDataFromPointer nodeIndex, True, mdPtr, mdLen * 2, compressHeaders
+                'pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetOriginalXMLMetadataString(), compressHeaders
+                'Unfortunately, there's no good way to do this for our already-parsed metadata collection...
+                pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetSerializedXMLData(), compressHeaders
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Note: metadata writes took " & VBHacks.GetTimeDiffNowAsString(mdStartTime)
+                #End If
+        
+            Else
+                Debug.Print "FYI, metadata string data is reported as zero-length; abandoning write"
+            End If
+            
         End If
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Note: metadata writes took " & VBHacks.GetTimeDiffNowAsString(mdStartTime)
-        #End If
-    
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
@@ -555,7 +570,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'Report timing on debug builds
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Saved PDI file in " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+        If SavePhotoDemonImage Then
+            pdDebug.LogAction "Saved PDI file in " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+        Else
+            pdDebug.LogAction "WARNING!  SavePhotoDemonImage failed after " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+        End If
     #End If
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
