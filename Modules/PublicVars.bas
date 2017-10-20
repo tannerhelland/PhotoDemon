@@ -123,9 +123,6 @@ Public g_IsFirstRun As Boolean
 ' we track drag-and-drop enabling ourselves
 Public g_AllowDragAndDrop As Boolean
 
-'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
-Public g_UndoRedoActive As Boolean
-
 'This window manager handles positioning, layering, and sizing of the main canvas and all toolbars
 Public g_WindowManager As pdWindowManager
 

@@ -132,8 +132,10 @@ End Function
 
 'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
 Public Sub ReleaseProgressBar()
-
-    Debug.Print "Releasing progress bar..."
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Releasing progress bar..."
+    #End If
 
     'Briefly display a full progress bar before exiting
     If (Not curProgBar Is Nothing) Then

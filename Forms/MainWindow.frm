@@ -1884,6 +1884,19 @@ Private Sub m_MetadataTimer_Timer()
                                 If (pdImages(curImageID).ImgMetadata Is Nothing) Then Set pdImages(curImageID).ImgMetadata = New pdMetadata
                                 pdImages(curImageID).ImgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
                                 
+                                'Now comes kind of a weird requirement.  Because metadata is loaded asynchronously, it may
+                                ' arrive after the image import engine has already written our first Undo entry out to file
+                                ' (this happens at image load-time, so we have a backup if the original file disappears).
+                                '
+                                'If this occurs, request a rewrite from the Undo engine, so we can make sure metadata gets
+                                ' added to the Undo/Redo stack.
+                                If pdImages(curImageID).UndoManager.HasFirstUndoWriteOccurred Then
+                                    #If DEBUGMODE = 1 Then
+                                        pdDebug.LogAction "Adding late-arrival metadata to original undo entry..."
+                                    #End If
+                                    pdImages(curImageID).UndoManager.ForceLastUndoDataToIncludeEverything
+                                End If
+                                
                             End If
                         End If
                         

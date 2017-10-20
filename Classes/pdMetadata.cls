@@ -89,7 +89,7 @@ Public Sub RecreateFromSerializedXMLData(ByRef srcString As String)
     Set cParams = New pdParamXML
     cParams.SetParamString srcString
     
-    If cParams.GetLong("PDMetadataTagCount", 0) > 0 Then
+    If (cParams.GetLong("PDMetadataTagCount", 0) > 0) Then
     
         m_NumOfTags = cParams.GetLong("PDMetadataTagCount", 0)
         ReDim m_Tags(0 To m_NumOfTags) As PDMetadataItem
@@ -317,7 +317,7 @@ End Function
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
 '  removed from the XML string.)
-Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long) As Boolean
+Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If (Not g_ExifToolEnabled) Then
@@ -434,11 +434,11 @@ Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
     
     'The last task we need to perform is looking for obscure metadata tags that might affect the image's on-screen appearance.
     ' (The need for this is generally rare, FYI - mostly weird PNG chunks and multipage TIFFs that have per-page details.)
-    If (m_NumOfTags <> 0) Then
+    If (m_NumOfTags <> 0) And (Not sourceIsUndoFile) Then
         If ApplyMetadataPostProcessing(parentImageID) Then Interface.SyncInterfaceToCurrentImage
     End If
     
-    LoadAllMetadata = CBool(m_NumOfTags <> 0)
+    LoadAllMetadata = (m_NumOfTags <> 0)
     
 End Function
 
@@ -881,50 +881,61 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             ' broken formatting.  Let's see if we can still apply the ICC profile post-load.  (This may not possible if the profile is
             ' tied to something like CMYK, and we have already converted it to RGB - but we can still try.)
             
-            'Ask ExifTool to extract the ICC profile to a standalone temp file
-            If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
-                
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
-                #End If
-                
-                'Next, we need to pause while ExifTool does its thing
-                Do While ExifTool.IsVerificationModeActive()
-                    DoEvents
-                Loop
-                
-                'Retrieve the temp file name ExifTool used
-                Dim srcFilename As String
-                srcFilename = ExifTool.GetExtractedICCProfilePath()
-                
-                'Pull the ICC profile into a byte array
-                Dim iccBytes() As Byte
-                If Files.FileLoadAsByteArray(srcFilename, iccBytes) Then
+            'As a failsafe, check for active Undo/Redo processing - but note that this is unlikely to be relevant,
+            ' as PD forcibly disables ExifTool behavior when loading Undo/Redo data.  (But the debug messages this generates
+            ' could be helpful in tracking down future bugs.)
+            If (Not pdImages(parentImageID).UndoManager.IsUndoEngineActive) Then
+            
+                'Ask ExifTool to extract the ICC profile to a standalone temp file
+                If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
                     
-                    'Load the ICC bytes into the target DIB
-                    If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
+                    #End If
+                    
+                    'Next, we need to pause while ExifTool does its thing
+                    Do While ExifTool.IsVerificationModeActive()
+                        DoEvents
+                    Loop
+                    
+                    'Retrieve the temp file name ExifTool used
+                    Dim srcFilename As String
+                    srcFilename = ExifTool.GetExtractedICCProfilePath()
+                    
+                    'Pull the ICC profile into a byte array
+                    Dim iccBytes() As Byte
+                    If Files.FileLoadAsByteArray(srcFilename, iccBytes) Then
                         
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
-                        #End If
-                
-                        'Apply ICC conversion now
-                        ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
+                        'Load the ICC bytes into the target DIB
+                        If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
+                            #End If
+                    
+                            'Apply ICC conversion now
+                            ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
+                            
+                            If (parentImageID = g_CurrentImage) Then
+                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                                Interface.NotifyImageChanged parentImageID
+                            End If
+                            
+                            ApplyMetadataPostProcessing = True
                         
-                        If (parentImageID = g_CurrentImage) Then
-                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
-                            Interface.NotifyImageChanged parentImageID
                         End If
                         
-                        ApplyMetadataPostProcessing = True
-                    
                     End If
+                    
+                    'Free the temp file we used
+                    Files.FileDeleteIfExists srcFilename
                     
                 End If
                 
-                'Free the temp file we used
-                Files.FileDeleteIfExists srcFilename
-                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "(Note: ICC profile found, but ignored as this is an internal filetype, so processing has already occurred.)"
+                #End If
             End If
             
         End If

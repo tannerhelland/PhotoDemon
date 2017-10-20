@@ -534,12 +534,19 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
     If includeMetadata And (Not srcPDImage.ImgMetadata Is Nothing) Then
-    
+        
+        Dim mdStartTime As Currency
+        VBHacks.GetHighResTime mdStartTime
+        
         If srcPDImage.ImgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
             pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.ImgMetadata.GetOriginalXMLMetadataString, compressHeaders
             pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetSerializedXMLData, compressHeaders
         End If
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Note: metadata writes took " & VBHacks.GetTimeDiffNowAsString(mdStartTime)
+        #End If
     
     End If
     

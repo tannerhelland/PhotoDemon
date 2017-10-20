@@ -135,16 +135,25 @@ Private m_HeaderFilename As String, m_HeaderXMLHandle As Long, m_UTF8() As Byte,
 Private m_UndoAcceleration() As Long
 Private Const UNDO_TIME_LIMIT_MS As Long = 100
 
+'Some external functions may need to modify their behavior when called during Undo/Redo operations.  As such, this class
+' sets internal flags while Undo/Redo operations are live.
+Private m_UndoRedoActive As Boolean
+
+'Returns TRUE if this class instance is in the middle of an operation
+Friend Function IsUndoEngineActive() As Boolean
+    IsUndoEngineActive = True
+End Function
+
+'Returns TRUE if this class has successfully started tracking Undo data
+Friend Function HasFirstUndoWriteOccurred() As Boolean
+    HasFirstUndoWriteOccurred = (m_UndoTotal >= 1)
+End Function
+
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Friend Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
     
     Dim saveIndex As Long
-    
-    If (m_UndoNum > 0) Then
-        saveIndex = m_UndoNum
-    Else
-        saveIndex = 1
-    End If
+    If (m_UndoNum > 0) Then saveIndex = m_UndoNum Else saveIndex = 1
     
     Select Case typeOfSave
         
@@ -186,6 +195,8 @@ End Function
 '     that this behavior is appropriate, as there is no way to retrieve the overwritten Undo entry.  (PD uses this for
 '     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
 Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
+    
+    m_UndoRedoActive = True
     
     Dim timeAtUndoStart As Currency
     VBHacks.GetHighResTime timeAtUndoStart
@@ -292,6 +303,8 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
         Debug.Print "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
     #End If
     
+    m_UndoRedoActive = False
+    
     'If the default compression setting is active, calculate an acceleration ratio to keep Undo generation as snappy as possible.
     'If (g_UndoCompressionLevel = 1) Then CalculateUndoAcceleration processType, VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000#
     
@@ -372,6 +385,8 @@ End Sub
 ' selection was first created.)
 Friend Sub ForceLastUndoDataToIncludeEverything()
     
+    m_UndoRedoActive = True
+    
     'Overwrite the previous action's Undo data with a full image backup.  Note that all the settings from the previous
     ' action are retained; the only thing we're doing differently is specifying the Undo type as UNDO_EVERYTHING.
     Saving.SaveUndoData parentPDImage, GenerateUndoFilename(m_UndoNum - 1), UNDO_Everything, -1
@@ -385,11 +400,15 @@ Friend Sub ForceLastUndoDataToIncludeEverything()
     'Update the Undo XML header as well.
     WriteUndoDataToXML GenerateUndoHeaderFilename()
         
+    m_UndoRedoActive = False
+        
 End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
 Friend Sub RevertToLastSavedState()
+    
+    m_UndoRedoActive = True
     
     Dim targetUndoPoint As Long
     
@@ -404,15 +423,15 @@ Friend Sub RevertToLastSavedState()
     
     Me.MoveToSpecificUndoPoint targetUndoPoint
     
+    m_UndoRedoActive = False
+    
 End Sub
 
 'Move to a specific location in the Undo/Redo chain.  Note that this function may take some time if the requested
 ' point is quite far into the Undo/Redo chain.
 Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     
-    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
-    ' this global variable to determine if they should fire, so we must set it before doing anything else.
-    g_UndoRedoActive = True
+    m_UndoRedoActive = True
     
     Message "Reconstructing image..."
     
@@ -465,8 +484,7 @@ Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     
     Message "Image successfully restored."
     
-    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
-    g_UndoRedoActive = False
+    m_UndoRedoActive = False
     
 End Sub
 
@@ -481,10 +499,8 @@ End Sub
 'Restore the last undo entry, e.g. "the user just clicked Undo".
 Friend Sub RestoreUndoData()
     
-    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
-    ' this global variable to determine if they should fire, so we must set it before doing anything else.
-    g_UndoRedoActive = True
-        
+    m_UndoRedoActive = True
+    
     'Decrement the Undo stack pointer
     m_UndoNum = m_UndoNum - 1
     If (m_UndoNum < 0) Then m_UndoNum = 0
@@ -502,7 +518,7 @@ Friend Sub RestoreUndoData()
     If (m_UndoNum = m_UndoNumAtLastSave_Flat) Or (m_UndoNum = m_UndoNumAtLastSave_PDI) Then
     
         'In the special case of m_UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If Len(parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+        If (Len(parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
             
             If (parentPDImage.GetCurrentFileFormat = PDIF_PDI) Then
                 parentPDImage.SetSaveState True, pdSE_SavePDI
@@ -650,8 +666,7 @@ Friend Sub RestoreUndoData()
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
     Me.WriteUndoDataToXML GenerateUndoHeaderFilename()
     
-    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
-    g_UndoRedoActive = False
+    m_UndoRedoActive = False
     
 End Sub
 
@@ -762,9 +777,7 @@ End Function
 'Restore a redo entry, e.g. "the user just clicked Redo"
 Friend Sub RestoreRedoData()
     
-    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
-    ' this global variable to determine if they should fire, so we must set it before doing anything else.
-    g_UndoRedoActive = True
+    m_UndoRedoActive = True
     
     'If we're not at the top of the Undo stack, advance the stack index by one
     If (m_UndoNum < m_UndoMax) Then
@@ -801,8 +814,7 @@ Friend Sub RestoreRedoData()
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
     Me.WriteUndoDataToXML GenerateUndoHeaderFilename()
     
-    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
-    g_UndoRedoActive = False
+    m_UndoRedoActive = False
     
 End Sub
 
@@ -1114,7 +1126,12 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
     ' the AutoSave engine can use this information to reconstruct any missing images.
     xmlEngine.WriteTag "imageID", parentPDImage.imageID
-    xmlEngine.WriteTag "friendlyName", parentPDImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    
+    Dim friendlyName As String
+    friendlyName = parentPDImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (Len(parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) > 0) Then friendlyName = friendlyName & "." & parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    
+    xmlEngine.WriteTag "friendlyName", friendlyName
     xmlEngine.WriteTag "originalPath", parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     xmlEngine.WriteBlankLine
     
@@ -1139,7 +1156,7 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     For i = 0 To UBound(m_UndoStack)
         
         'Start each undo entry with a unique numeric identifier (that corresponds to its location in the stack)
-        xmlEngine.WriteTagWithAttribute "UndoEntry", "index", i, "", True
+        xmlEngine.WriteTagWithAttribute "UndoEntry", "index", i, vbNullString, True
         
         'Write out all the properties of this entry
         xmlEngine.WriteTag "ProcessID", m_UndoStack(i).processID
@@ -1193,8 +1210,7 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
             
             If (m_ThumbnailFileHandle <> 0) Then
                 m_FSO.FileMovePointer m_ThumbnailFileHandle, 0, FILE_BEGIN
-                m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle
-                m_FSO.FileSetEOF m_ThumbnailFileHandle
+                If m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile(vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle) Then m_FSO.FileSetEOF m_ThumbnailFileHandle
             End If
             
         End If
