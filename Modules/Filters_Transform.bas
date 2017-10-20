@@ -15,6 +15,8 @@ Attribute VB_Name = "Filters_Transform"
 
 Option Explicit
 
+'NOTE: Autocrop is currently disabled pending further testing.
+
 'Automatically crop the image.  An optional threshold can be supplied; pixels must be this close before they will be cropped.
 ' (The threshold is required for JPEG images; pixels may not be identical due to lossy compression.)
 Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
@@ -25,10 +27,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     '      (NOTE: for left/top, all layer offsets will need to be adjusted to match.)
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
+    'TODO: this is now handled in the central processor
+    'If pdImages(g_CurrentImage).IsSelectionActive Then
+    '    pdImages(g_CurrentImage).SetSelectionActive False
+    '    pdImages(g_CurrentImage).MainSelection.LockRelease
+    'End If
 
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
     
@@ -41,7 +44,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
@@ -267,7 +270,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
             Dim cParams As pdParamXML
             Set cParams = New pdParamXML
             cParams.AddParam "nondestructive", selectionIsPureRectangle
-            Processor.Process "Crop", False, cParams.GetParamString(), UNDO_EVERYTHING
+            Processor.Process "Crop", False, cParams.GetParamString(), UNDO_Everything
             
         End With
     
@@ -280,7 +283,7 @@ Public Sub CropToSelection_XML(ByVal processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Filters_Transform.CropToSelection , cParams.GetBool("nondestructive", False)
+    Filters_Transform.CropToSelection -1, cParams.GetBool("nondestructive", False)
 End Sub
 
 'Crop the image to the current selection.  To crop only a single layer, specify a target layer index.
@@ -300,7 +303,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     Dim tmpLayerRef As pdLayer
     Dim i As Long
     
-    Dim selectionWidth As Long, selectionHeight As Long, selBounds As RECTF
+    Dim selectionWidth As Long, selectionHeight As Long, selBounds As RectF
     selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
     selectionWidth = selBounds.Width
     selectionHeight = selBounds.Height
@@ -346,12 +349,12 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         Set tmpDIB = New pdDIB
         
         'Arrays will be pointed at three sets of pixels: the current layer, the selection mask, and a destination layer.
-        Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
-        Dim dstImageData() As Byte, dstSA As SAFEARRAY2D
+        Dim srcImageData() As Byte, srcSA As SafeArray2D
+        Dim dstImageData() As Byte, dstSA As SafeArray2D
         
         'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
         Dim selData() As Byte
-        Dim selSA As SAFEARRAY2D
+        Dim selSA As SafeArray2D
         pdImages(g_CurrentImage).MainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
         
         'Lots of helper variables for a function like this
@@ -478,8 +481,10 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 
             End If
             
+            Set tmpLayerRef = Nothing
+            
             'Notify the parent of the change
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
             
         Next i
         
@@ -490,15 +495,10 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         
     'From here, we do some generic clean-up that's identical for both destructive and non-destructive modes.
     ' (But generally speaking, only relevant when all layers are being cropped.)
-    If (targetLayerIndex = -1) Then
     
-        'The selection is now going to be out of sync with the image.  Forcibly clear it.
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.EraseCustomTrackers
-        SyncTextToCurrentSelection g_CurrentImage
-        
-    End If
+    'For a full-image crop, the selection is potentially out of sync with the new image size.
+    ' Forcibly clear it.
+    If (targetLayerIndex = -1) Then Selections.RemoveCurrentSelection
     
     'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline (as the image size
     ' may have changed).
@@ -517,6 +517,8 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     SetProgBarVal 0
     ReleaseProgressBar
     
+    Message "Finished. "
+    
 End Sub
 
 'Flip an image vertically.  If no layer is specified (e.g. if targetLayerIndex = -1), all layers will be flipped.
@@ -524,12 +526,6 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
-
-    'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
     
     Message "Flipping image..."
     
@@ -564,12 +560,12 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
     
     Message "Finished. "
     
@@ -584,12 +580,6 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-
     Message "Mirroring image..."
     
     'Iterate through each layer, mirroring them in turn
@@ -623,14 +613,14 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
     
-    Message "Finished."
+    Message "Finished. "
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -643,12 +633,6 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-
     Message "Rotating image clockwise..."
     
     Dim copyDIB As pdDIB
@@ -704,7 +688,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
     
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -733,12 +717,6 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
     
@@ -773,12 +751,12 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
             
     Message "Finished. "
     
@@ -792,12 +770,6 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-
     Message "Rotating image counter-clockwise..."
     
     Dim copyDIB As pdDIB
@@ -853,7 +825,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
     
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -966,14 +938,8 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     
     Message "Fitting image canvas around layer..."
     
-    'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-    
     'Start by calculating a new offset, based on the current layer's offsets.
-    Dim curLayerBounds As RECTF
+    Dim curLayerBounds As RectF
     pdImages(g_CurrentImage).GetLayerByIndex(dstLayerIndex).GetLayerBoundaryRect curLayerBounds
     
     Dim dstX As Long, dstY As Long
@@ -1004,7 +970,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     'Fit the new image on-screen and redraw its viewport
     ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
-    Message "Finished."
+    Message "Finished. "
     
 End Sub
 
@@ -1012,12 +978,6 @@ End Sub
 Public Sub MenuFitCanvasToAllLayers()
     
     Message "Fitting image canvas around layer..."
-    
-    'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
     
     'Start by finding two things:
     ' 1) The lowest x/y offsets in the current layer stack
@@ -1028,7 +988,7 @@ Public Sub MenuFitCanvasToAllLayers()
     dstRight = -1 * &HFFFFFF
     dstBottom = -1 * &HFFFFFF
     
-    Dim curLayerBounds As RECTF
+    Dim curLayerBounds As RectF
     Dim i As Long
     
     For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
@@ -1073,21 +1033,14 @@ Public Sub MenuFitCanvasToAllLayers()
     'Fit the new image on-screen and redraw its viewport
     ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
-    Message "Finished."
+    Message "Finished. "
     
 End Sub
 
 'Automatically trim empty borders from an image.  Empty borders are defined as borders comprised only of 100% transparent pixels.
 Public Sub TrimImage()
-
-    'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-    End If
-
-    'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.
     
+    'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.
     Message "Analyzing top edge of image..."
     
     'Retrieve a copy of the composited image
@@ -1097,7 +1050,7 @@ Public Sub TrimImage()
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
