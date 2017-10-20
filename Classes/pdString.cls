@@ -190,46 +190,51 @@ End Function
 'Because PD uses a ton of XML data, this class exposes some XML-specific operations.  These use a number of
 ' internal shortcuts specific to XML, and they can easily be chopped out if you don't need 'em.  Just delete
 ' all functions and subs starting with "XML" (which I've tried to keep in a block).
-Friend Sub XMLAppend(ByRef tagName As String, ByRef TagValue As String)
-
+Friend Sub XMLAppend(ByRef appendTagName As String, ByRef appendTagValue As String)
+    
+    'Failsafe check for valid tag names
+    If (Len(appendTagName) = 0) Then Exit Sub
+    
     'We need 5 extra chars: "<></>" in addition to the length of the strings we're passed.  (Note also
     ' that we need 2x the length of the tag name - 1x for the opening tag, 1x for the closing tag.)
-    EnsureCapacity m_Length + Len(tagName) * 2 + Len(TagValue) + 5
+    EnsureCapacity m_Length + Len(appendTagName) * 2 + Len(appendTagValue) + 5
     
     'Manually write all tags in order.  This is kinda tedious, but it's faster than calling "Append"
     ' for each char, as that would force multiple validations of the buffer size.
-    Dim TargetPtr As Long
-    TargetPtr = StrPtr(m_Buffer) + m_Length * 2
+    Dim targetPtr As Long
+    targetPtr = StrPtr(m_Buffer) + m_Length * 2
     
     'Opening tag (AscW("<") = 60) (AscW(">") = 62)
-    PutMem2 TargetPtr, 60
-    TargetPtr = TargetPtr + 2
+    PutMem2 targetPtr, 60
+    targetPtr = targetPtr + 2
     
-    CopyMemoryStrict TargetPtr, StrPtr(tagName), Len(tagName) * 2
-    TargetPtr = TargetPtr + Len(tagName) * 2
+    CopyMemoryStrict targetPtr, StrPtr(appendTagName), Len(appendTagName) * 2
+    targetPtr = targetPtr + Len(appendTagName) * 2
     
-    PutMem2 TargetPtr, 62
-    TargetPtr = TargetPtr + 2
+    PutMem2 targetPtr, 62
+    targetPtr = targetPtr + 2
     
     'Tag value
-    CopyMemoryStrict TargetPtr, StrPtr(TagValue), Len(TagValue) * 2
-    TargetPtr = TargetPtr + Len(TagValue) * 2
+    If (Len(appendTagValue) > 0) Then
+        CopyMemoryStrict targetPtr, StrPtr(appendTagValue), Len(appendTagValue) * 2
+        targetPtr = targetPtr + Len(appendTagValue) * 2
+    End If
     
     'Closing tag (AscW("<") = 60) (AscW(">") = 62) (AscW("/") = 47)
-    PutMem2 TargetPtr, 60
-    TargetPtr = TargetPtr + 2
+    PutMem2 targetPtr, 60
+    targetPtr = targetPtr + 2
     
-    PutMem2 TargetPtr, 47
-    TargetPtr = TargetPtr + 2
+    PutMem2 targetPtr, 47
+    targetPtr = targetPtr + 2
     
-    CopyMemoryStrict TargetPtr, StrPtr(tagName), Len(tagName) * 2
-    TargetPtr = TargetPtr + Len(tagName) * 2
+    CopyMemoryStrict targetPtr, StrPtr(appendTagName), Len(appendTagName) * 2
+    targetPtr = targetPtr + Len(appendTagName) * 2
     
-    PutMem2 TargetPtr, 62
-    TargetPtr = TargetPtr + 2
+    PutMem2 targetPtr, 62
+    targetPtr = targetPtr + 2
     
     'Perform a final update of the current length
-    m_Length = m_Length + Len(tagName) * 2 + Len(TagValue) + 5
+    m_Length = m_Length + Len(appendTagName) * 2 + Len(appendTagValue) + 5
 
 End Sub
 
