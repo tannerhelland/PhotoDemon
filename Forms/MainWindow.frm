@@ -1583,10 +1583,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'If one or more language file updates is downloaded and patched, this will be set to TRUE by the downloader.  When all updates finish,
-' this value tells us to update the active language object if the currently in-use language was one of the ones we updated.
-Private m_LanguagesUpdatedSuccessfully As Boolean
-
 'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.  See the timer
 ' start/stop functions for additional details.
 Private WithEvents m_InterfaceTimer As pdTimer
@@ -1597,22 +1593,9 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
-    'When all language updates have been processed and patched, check to see if a translation is active.  If it is, update the translation
-    ' engine against the new language file.
-    If m_LanguagesUpdatedSuccessfully Then
-        
-        m_LanguagesUpdatedSuccessfully = False
-        
-        'One or more language files were patched.  Notify the language engine that it potentially needs updating.  (The updating itself will
-        ' be fired on the next processor call.)
-        If g_Language.TranslationActive Then g_Language.NotifyHotPatchingComplete
-        
-    End If
-    
     'Core program updates are handled specially, so their resources can be freed without question.
     asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK"
     asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
-    'asyncDownloader.Reset
     
     FormMain.mainCanvas(0).SetNetworkState False
     Debug.Print "All downloads complete."
@@ -1625,7 +1608,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
     'On a typical PD install, updates are checked every session, but users can specify a larger interval in the preferences dialog.
     ' As part of honoring that preference, whenever an update check successfully completes, we write the current date out to the
     ' preferences file, so subsequent runs can limit their check frequency accordingly.
-    If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Or (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
+    If Strings.StringsEqual(entryKey, "PROGRAM_UPDATE_CHECK", True) Or Strings.StringsEqual(entryKey, "PROGRAM_UPDATE_CHECK_USER", True) Then
         
         If downloadSuccessful Then
         
@@ -1667,36 +1650,6 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
         Else
             Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.GetLastErrorNumber & " - " & asyncDownloader.GetLastErrorDescription
-        End If
-    
-    'Separate from the core program, we also check language file updates (if preferences allow).
-    ElseIf (StrComp(entryKey, "LANGUAGE_UPDATE_CHECK") = 0) Then
-    
-        'Because we can live-update languages, we don't save the language update code to a file.  Instead, we retrieve its contents directly.
-        Dim langUpdateXML As String
-        langUpdateXML = StrConv(downloadedData, vbUnicode)
-        
-        'Offload the rest of the check to a separate function.  It will initiate subsequent downloads as necessary.
-        Updates.ProcessLanguageUpdateFile langUpdateXML
-    
-    'If LANGUAGE_UPDATE_CHECK (above) finds out-of-date language files, it will trigger their download.  When such a download arrives, we can patch
-    ' it through immediately.
-    ElseIf (OptionalType = PD_LANG_IDENTIFIER) Then
-        
-        'Make sure the downloader thought the download was successful...
-        If downloadSuccessful Then
-            If Updates.PatchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
-                
-                'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
-                ' the language engine on the next PD Processor call.
-                m_LanguagesUpdatedSuccessfully = True
-                Debug.Print "Successfully patched " & Files.FileGetName(savedToThisFile, True) & ".xml."
-                
-            Else
-                Debug.Print "Patching of " & Files.FileGetName(savedToThisFile) & " was unsuccessful."
-            End If
-        Else
-            Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
         End If
     
     'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,

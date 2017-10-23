@@ -49,9 +49,6 @@ Public g_PreviousTool As PDTools
 'Primary zoom handler for the program
 Public g_Zoom As pdZoom
 
-'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
-Public g_AutozoomLargeImages As Long
-
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 

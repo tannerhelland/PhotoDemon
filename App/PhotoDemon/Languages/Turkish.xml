@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3287</langversion>
+<langversion>6.8.3288</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14384,18 +14384,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>Güncelleştirme dili bağımsız dosyaları</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>güncellemeleri otomatik olarak kontrol</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>bağımsız güncelleme eklentileri</translation>
 </phrase>
 
 <phrase>
@@ -14526,11 +14516,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>görüntü dosyaları içindeki otomatik döndürme talimatlara uyun</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>bir görüntü ilk yüklendiğinde, kendi görünüm zoom set</translation>
 </phrase>
 
 <phrase>
@@ -14733,21 +14718,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>otomatik ekrandaki görüntüyü sığdırmak</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>1: 1 ( %100 yakınlaştırma veya "gerçek boyut")</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>2 megapiksel daha büyük herhangi bir fotoğraf ortalama bir bilgisayar monitörü üzerinde sığmayacak kadar büyük. tüm görüntü görüntülenebilir böylece PhotoDemon otomatik büyük fotoğraflarında uzaklaştırabilirsiniz.</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>Görüntünün geçerli dosya formatı kaydediliyor</translation>
 </phrase>
@@ -14898,16 +14868,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>PhotoDemon gönüllü çevirmenler düzenli olarak programın dil dosyaları güncelleyin. PhotoDemon otomatik olarak bu güncellemeleri her zaman en güncel dil dosyalarını sahip olmasını sağlayarak, ana programdan ayrı indirebilirsiniz.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon bazı 3. parti eklentiler kullanır. Bazen, bu eklentileri yazarları hataları düzeltmek veya yeni özellikler eklemek. Bunun yerine bir sonraki PhotoDemon serbest bırakılması için beklemeden, kısa sürede hazır olduklarında eklenti güncellemeleri alabilir.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>bir güncelleştirmeyi uygulamak için hazır olduğunda PhotoDemon sizi uyarabilir. Bu hemen güncelleştirilmiş bir sürümünü kullanmanızı sağlar.</translation>
 </phrase>
@@ -14995,7 +14955,7 @@ If yamalı vardır.</translation>
 <translation>Programı yeniden başlatana kadar bu yeni geçici klasör konumu etkili olmaz.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15112,10 +15072,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>

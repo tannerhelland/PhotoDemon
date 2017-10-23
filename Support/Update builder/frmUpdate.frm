@@ -148,7 +148,7 @@ Private Const PD_PATCH_IDENTIFIER As Long = &H50554450   'PD update patch data (
 Private m_File As pdFSO
 
 'If silent mode has been activated via command line, this will be set to TRUE.
-Dim m_SilentMode As Boolean
+Private m_SilentMode As Boolean
 
 Private Sub cmdAction_Click(Index As Integer)
     

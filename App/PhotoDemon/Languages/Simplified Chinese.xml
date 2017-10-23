@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3036</langversion>
+<langversion>6.8.3037</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -14382,18 +14382,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>只更新语言文件</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>插件单独更新</translation>
 </phrase>
 
 <phrase>
@@ -14524,11 +14514,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>遵循图像文件内的自动旋转指令</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>当一个图像第一次打开，将自动缩放到窗口</translation>
 </phrase>
 
 <phrase>
@@ -14730,21 +14715,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>自动适应屏幕上的图像</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>1:1（100%缩放，或“实际大小”）</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>任何照片超过2百万像素太大的图像，放在普通的电脑显示器将不适合，PhotoDemon可以自动缩小大照片让整个图像是可见的。</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>保存图像的当前文件格式</translation>
 </phrase>
@@ -14895,16 +14865,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>PhotoDemon的志愿者定期更新程序的语言文件。PhotoDemon可以自动下载这些更新主程序，确保您始终获得最新的语言文件。</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon使用一些第三方插件。有时，这些插件的作者修复错误或添加新的功能。而不是等待下一次PhotoDemon版本，您可以尽快为他们变得可用插件收到更新。</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>PhotoDemon可以通知您，当它已经准备好应用更新。这使您可以立即使用更新的版本。</translation>
 </phrase>
@@ -14989,7 +14949,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15106,10 +15066,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>

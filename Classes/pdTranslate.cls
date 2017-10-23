@@ -83,10 +83,6 @@ Private m_isReady As Boolean
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
 
-'If the active language file is updated at run-time, this value will be set to TRUE.  PD's internal processor calls the refreshAsRequired() function
-' whenever a user-initiated action triggers, and refreshAsRequired() uses this value to know whether we need to re-translate the main form.
-Private m_ActiveLanguageWasPatched As Boolean
-
 'File interactions in this class are handled by pdFSO
 Private m_FSO As pdFSO
 
@@ -96,22 +92,6 @@ Private m_Crypto As pdCrypto
 
 'The language file cache is handled inside this XML object.
 Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
-
-Friend Sub RefreshAsRequired()
-    
-    If m_ActiveLanguageWasPatched Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdTranslate paused to patch the active language file..."
-        #End If
-        
-        m_ActiveLanguageWasPatched = False
-        Me.UndoTranslations FormMain
-        Me.ApplyLanguage True, False
-        
-    End If
-    
-End Sub
 
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from Checkm_availableLanguages().
@@ -171,46 +151,6 @@ Friend Sub ActivateNewLanguage(ByVal newLangIndex As Long)
     m_currentLanguage = newLangIndex
     Interface.GenerateInterfaceID
     WriteLanguagePreferencesToFile
-End Sub
-
-'If the language file updater has updated one or more language files, it will call this function.  Any subsequent language update functions (such as loading a
-' new XML file) happen here.
-Friend Sub NotifyHotPatchingComplete()
-
-    'Figure out if the current language is affected by the patch
-    If (m_currentLanguage <> m_defaultLanguage) Then
-    
-        'Retrieve the current language version
-        Dim curLangVersion As String
-        curLangVersion = m_XMLEngine.GetUniqueTag_String("langversion")
-        
-        'Retrieve the version of the XML file on disk; if an update has occurred, we can detect it by comparing version numbers.
-        Dim tmpXML As pdXML
-        Set tmpXML = New pdXML
-        If tmpXML.LoadXMLFile(m_AvailableLanguages(m_currentLanguage).FileName) Then
-            
-            'Retrieve the version number from the potentially updated file
-            Dim newLanguageVersion As String
-            newLanguageVersion = tmpXML.GetUniqueTag_String("langversion")
-            
-            If Strings.StringsNotEqual(curLangVersion, newLanguageVersion, False) Then
-            
-                'The version numbers do not match.  Set a module-level refresh flag; PD's internal processor will a refresh function the next time a
-                ' user-initiated action completes, and that function will check this module-level value to see if a refresh is required.
-                m_ActiveLanguageWasPatched = True
-            
-            Else
-                m_ActiveLanguageWasPatched = False
-            End If
-            
-        Else
-            m_ActiveLanguageWasPatched = False
-        End If
-    
-    Else
-        m_ActiveLanguageWasPatched = False
-    End If
-
 End Sub
 
 'Determine which language to use.  This can be done one of several ways:

@@ -1312,17 +1312,9 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     ' Importantly, this also shows/hides the image tabstrip that's available when multiple images are loaded.
     FormMain.mainCanvas(0).AlignCanvasView
     
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If (g_AutozoomLargeImages = 0) Then
-        FitImageToViewport
-        ViewportEngine.EnableRendering
-        
-    'If the "view 100%" option is checked instead, reset the zoom listbox to match and paint the main window immediately
-    Else
-        FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.GetZoom
-        ViewportEngine.EnableRendering
-        ViewportEngine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
-    End If
+    'Fit the current image to the active viewport
+    FitImageToViewport
+    ViewportEngine.EnableRendering
     
     'Notify the UI manager that it now has one more image to deal with
     If (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageAdded srcImage.imageID

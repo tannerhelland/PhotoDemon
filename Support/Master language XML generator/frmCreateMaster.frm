@@ -20,23 +20,6 @@ Begin VB.Form frmCreateMaster
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton cmdLangVersions 
-      Caption         =   "Generate master language update file(s)"
-      BeginProperty Font 
-         Name            =   "Segoe UI"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Left            =   360
-      TabIndex        =   16
-      Top             =   7320
-      Width           =   3975
-   End
    Begin VB.CommandButton cmdConvertLabels 
       Caption         =   "Convert labels in selected project file to pdLabel format.  (This cannot be undone; use cautiously!)"
       BeginProperty Font 
@@ -182,22 +165,6 @@ Begin VB.Form frmCreateMaster
       TabIndex        =   1
       Top             =   1920
       Width           =   3015
-   End
-   Begin VB.Line Line2 
-      BorderColor     =   &H8000000D&
-      Index           =   1
-      X1              =   304
-      X2              =   304
-      Y1              =   480
-      Y2              =   536
-   End
-   Begin VB.Line Line2 
-      BorderColor     =   &H8000000D&
-      Index           =   0
-      X1              =   8
-      X2              =   304
-      Y1              =   480
-      Y2              =   480
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -558,6 +525,8 @@ Private Function IsValidPDLabelProperty(ByVal srcString As String) As Boolean
     
 End Function
 
+'NOTE: as of the 7.0 release, this code is unused by the core program.  Consider removing for 7.2.
+'
 'This function scans all of PD's current language files, and generates a small XML file with their version numbers.
 ' (Note that two folders are scanned: the standard /App/PhotoDemon/Languages folder, which contains dev build values, and a separate
 '  stable folder, which contains the latest stable build language files.)
@@ -697,9 +666,6 @@ Private Sub cmdLangVersions_Click()
     lblUpdates.Refresh
     DoEvents
     
-    'If the program is running in silent mode, unload it now
-    If m_SilentMode Then Unload Me
-
 End Sub
 
 'Given a full path to a language file, add the language file's information to an output XML object.
@@ -2333,7 +2299,12 @@ Private Sub Form_Load()
         Call cmdMergeAll_Click
         
         'Update the master langupdate.XML file, and generate new compressed language copies in their dedicated upload folders
-        Call cmdLangVersions_Click
+        'NOTE: as of 23 October 2017 (just prior to 7.0's release), this feature has been disabled.  PD no longer attempts to
+        ' patch language files separately, which greatly simplifies the core program's update code and network access requirements.
+        'Call cmdLangVersions_Click
+        
+        'If the program is running in silent mode, unload it now
+        Unload Me
         
     End If
     

@@ -559,8 +559,8 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         'Just to be safe, update the color management profile of the current monitor
         ColorManagement.CheckParentMonitor True
         
-        'If the user wants us to resize the image to fit on-screen, do that now
-        If (g_AutozoomLargeImages = 0) Then CanvasManager.FitImageToViewport True
+        'Fit the new image to the canvas viewport
+        CanvasManager.FitImageToViewport True
         
         'Viewport rendering may have been reset by this point (by the FitImageToViewport sub, among others), so disable it again, then
         ' update the zoom combo box to match the zoom assigned by the window-fit function.
