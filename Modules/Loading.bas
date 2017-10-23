@@ -191,7 +191,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '*************************************************************************************************************************************
         ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
         '*************************************************************************************************************************************
-        If g_ExifToolEnabled And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Starting separate metadata extraction thread..."
@@ -406,7 +406,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
-        If g_ExifToolEnabled And (decoderUsed <> PDIDE_INTERNAL) Then
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (decoderUsed <> PDIDE_INTERNAL) Then
             
             'Some tools may have already stopped to load metadata
             If (Not targetImage.ImgMetadata.HasMetadata) Then

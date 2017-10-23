@@ -57,12 +57,15 @@ Private Const EXPECTED_ZSTD_VERSION As String = "10301"
 Private Const CORE_PLUGIN_COUNT As Long = 9
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
-' Note that these values ARE NOT EXTERNALLY AVAILABLE, by design; external callers should use the global plugin trackers
-' (e.g. g_ZLibEnabled, g_ExifToolEnabled, etc) because those trackers encompass the combination of all these factors, and are
-' thus preferable for high-performance code paths.
+' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
+' IsPluginCurrentlyEnabled() function to determine if a plugin is usable (e.g. installed, valid version, not forcibly disabled).
 Private m_PluginExists() As Boolean
 Private m_PluginAllowed() As Boolean
 Private m_PluginInitialized() As Boolean
+
+'For high-performance code paths, we specifically track a few plugin states.
+Private m_ZlibEnabled As Boolean, m_ZstdEnabled As Boolean, m_lz4Enabled As Boolean
+Private m_ExifToolEnabled As Boolean, m_OptiPNGEnabled As Boolean, m_LCMSEnabled As Boolean
 
 'Path to plugin folder.  For security reasons, this is forcibly constructed as an absolute path
 ' (generally "App.Path/App/PhotoDemon/Plugins"), because we pass it directly to LoadLibrary.
@@ -337,23 +340,23 @@ End Sub
 Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Select Case pluginEnumID
         Case CCP_ExifTool
-            IsPluginCurrentlyEnabled = g_ExifToolEnabled
+            IsPluginCurrentlyEnabled = m_ExifToolEnabled
         Case CCP_EZTwain
             IsPluginCurrentlyEnabled = Plugin_EZTwain.IsScannerAvailable
         Case CCP_FreeImage
             IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
         Case CCP_LittleCMS
-            IsPluginCurrentlyEnabled = g_LCMSEnabled
+            IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
-            IsPluginCurrentlyEnabled = g_Lz4Enabled
+            IsPluginCurrentlyEnabled = m_lz4Enabled
         Case CCP_OptiPNG
-            IsPluginCurrentlyEnabled = g_OptiPNGEnabled
+            IsPluginCurrentlyEnabled = m_OptiPNGEnabled
         Case CCP_PNGQuant
             IsPluginCurrentlyEnabled = g_ImageFormats.pngQuantEnabled
         Case CCP_zLib
-            IsPluginCurrentlyEnabled = g_ZLibEnabled
+            IsPluginCurrentlyEnabled = m_ZlibEnabled
         Case CCP_zstd
-            IsPluginCurrentlyEnabled = g_ZstdEnabled
+            IsPluginCurrentlyEnabled = m_ZstdEnabled
     End Select
 End Function
 
@@ -363,23 +366,23 @@ End Function
 Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
     Select Case pluginEnumID
         Case CCP_ExifTool
-            g_ExifToolEnabled = newEnabledState
+            m_ExifToolEnabled = newEnabledState
         Case CCP_EZTwain
             Plugin_EZTwain.ForciblySetScannerAvailability newEnabledState
         Case CCP_FreeImage
             g_ImageFormats.FreeImageEnabled = newEnabledState
         Case CCP_LittleCMS
-            g_LCMSEnabled = newEnabledState
+            m_LCMSEnabled = newEnabledState
         Case CCP_lz4
-            g_Lz4Enabled = newEnabledState
+            m_lz4Enabled = newEnabledState
         Case CCP_OptiPNG
-            g_OptiPNGEnabled = newEnabledState
+            m_OptiPNGEnabled = newEnabledState
         Case CCP_PNGQuant
             g_ImageFormats.pngQuantEnabled = newEnabledState
         Case CCP_zLib
-            g_ZLibEnabled = newEnabledState
+            m_ZlibEnabled = newEnabledState
         Case CCP_zstd
-            g_ZstdEnabled = newEnabledState
+            m_ZstdEnabled = newEnabledState
     End Select
 End Sub
 
@@ -580,15 +583,14 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
 
 End Function
 
-'Most plugins provide a single global "is plugin available" flag, which spares the program from having to plow through all these
-' verification steps when it needs to do something with a plugin.  This step is technically optional, although I prefer global flags
-' because they let me use plugins in performance-sensitive areas without worry.
+'Most plugins provide a single global "is plugin available" flag, which spares the program from having to plow through
+' all these verification steps when it needs to do something with a plugin.
 Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
     
     Select Case pluginEnumID
     
         Case CCP_ExifTool
-            g_ExifToolEnabled = pluginState
+            m_ExifToolEnabled = pluginState
                     
         Case CCP_EZTwain
             Plugin_EZTwain.ForciblySetScannerAvailability pluginState
@@ -597,22 +599,22 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             g_ImageFormats.FreeImageEnabled = pluginState
         
         Case CCP_LittleCMS
-            g_LCMSEnabled = pluginState
+            m_LCMSEnabled = pluginState
         
         Case CCP_lz4
-            g_Lz4Enabled = pluginState
+            m_lz4Enabled = pluginState
         
         Case CCP_OptiPNG
-            g_OptiPNGEnabled = pluginState
+            m_OptiPNGEnabled = pluginState
         
         Case CCP_PNGQuant
             g_ImageFormats.pngQuantEnabled = pluginState
         
         Case CCP_zLib
-            g_ZLibEnabled = pluginState
+            m_ZlibEnabled = pluginState
             
         Case CCP_zstd
-            g_ZstdEnabled = pluginState
+            m_ZstdEnabled = pluginState
             
     End Select
     
@@ -738,39 +740,36 @@ Public Sub TerminateAllPlugins()
         pdDebug.LogAction "EZTwain released"
     #End If
     
-    If (g_FreeImageHandle <> 0) Then
-        FreeLibrary g_FreeImageHandle
-        g_FreeImageHandle = 0
-        g_ImageFormats.FreeImageEnabled = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FreeImage released"
-        #End If
-    End If
+    Plugin_FreeImage.ReleaseFreeImage
+    g_ImageFormats.FreeImageEnabled = False
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FreeImage released"
+    #End If
     
     LittleCMS.ReleaseLCMS
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "LittleCMS released"
     #End If
     
-    If g_ZLibEnabled Then
+    If m_ZlibEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_ZLib
-        g_ZLibEnabled = False
+        m_ZlibEnabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zLib released"
         #End If
     End If
     
-    If g_ZstdEnabled Then
+    If m_ZstdEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_Zstd
-        g_ZstdEnabled = False
+        m_ZstdEnabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zstd released"
         #End If
     End If
     
-    If g_Lz4Enabled Then
+    If m_lz4Enabled Then
         Compression.ShutDownCompressionEngine PD_CE_Lz4
-        g_Lz4Enabled = False
+        m_lz4Enabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "lz4 released"
         #End If

@@ -21,7 +21,6 @@ Attribute VB_Name = "Plugin_FreeImage"
 
 Option Explicit
 
-
 Private Type BITMAPINFOHEADER
     biSize As Long
     biWidth As Long
@@ -43,6 +42,9 @@ End Type
 
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
+'DLL handle; if it is zero, FreeImage is not available
+Private m_FreeImageHandle As Long
+
 'Additional variables for PD-specific tone-mapping functions
 Private m_shoulderStrength As Double, m_linearStrength As Double, m_linearAngle As Double, m_linearWhitePoint As Single
 Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As Double, m_toeAngle As Double
@@ -57,13 +59,24 @@ Public Function InitializeFreeImage() As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim fiPath As String
     fiPath = PluginManager.GetPluginPath & "FreeImage.dll"
-    g_FreeImageHandle = LoadLibrary(StrPtr(fiPath))
-    InitializeFreeImage = CBool(g_FreeImageHandle <> 0)
+    m_FreeImageHandle = LoadLibrary(StrPtr(fiPath))
+    InitializeFreeImage = (m_FreeImageHandle <> 0)
     
     If (Not InitializeFreeImage) Then
         FI_DebugMsg "WARNING!  LoadLibrary failed to load FreeImage.  Last DLL error: " & Err.LastDllError
         FI_DebugMsg "(FYI, the attempted path was: " & fiPath & ")"
     End If
+    
+End Function
+
+Public Function ReleaseFreeImage() As Boolean
+    
+    If (m_FreeImageHandle <> 0) Then
+        FreeLibrary m_FreeImageHandle
+        m_FreeImageHandle = 0
+    End If
+    
+    ReleaseFreeImage = True
     
 End Function
 
@@ -825,7 +838,7 @@ Private Function FI_LoadBackgroundColor(ByVal fi_Bitmap As Long, ByRef dstDIB As
     If FreeImage_HasBackgroundColor(fi_Bitmap) Then
                 
         'FreeImage will pass the background color to an RGBquad type-variable
-        Dim rQuad As RGBQUAD
+        Dim rQuad As RGBQuad
         If FreeImage_GetBackgroundColor(fi_Bitmap, rQuad) Then
         
             'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
@@ -1309,11 +1322,11 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
         
         'This array will consistently be updated to point to the current line of pixels in the FreeImage object
         Dim srcImageDataInt() As Integer, srcImageDataByte() As Byte
-        Dim srcSA As SAFEARRAY1D
+        Dim srcSA As SafeArray1D
         
         'Same, but for the destination pdDIB object.
         Dim dstImageData() As Byte
-        Dim dstSA As SAFEARRAY2D
+        Dim dstSA As SafeArray2D
         dstDIB.WrapArrayAroundDIB dstImageData, dstSA
         
         'Scanline access variables
@@ -1950,7 +1963,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
     Dim srcImageData() As Single
-    Dim srcSA As SAFEARRAY1D
+    Dim srcSA As SafeArray1D
     
     'Create a 24bpp or 32bpp DIB at the same size as the image
     Dim tmpDIB As pdDIB
@@ -1964,7 +1977,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     'Point a byte array at the temporary DIB
     Dim dstImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, tmpDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
@@ -2147,7 +2160,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
     Dim srcImageData() As Single
-    Dim srcSA As SAFEARRAY1D
+    Dim srcSA As SafeArray1D
     
     'Create a 24bpp or 32bpp DIB at the same size as the image
     Dim tmpDIB As pdDIB
@@ -2161,7 +2174,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     'Point a byte array at the temporary DIB
     Dim dstImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, tmpDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
@@ -2340,7 +2353,7 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
     Dim srcImageData() As Single
-    Dim srcSA As SAFEARRAY1D
+    Dim srcSA As SafeArray1D
     
     'Iterate through each scanline in the source image, checking normalize parameters as we go.
     Dim iWidth As Long, iHeight As Long, iScanWidth As Long
@@ -3000,7 +3013,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                         ReDim paletteCheck(0 To 255) As Byte
                         
                         Dim fiPixels() As Byte
-                        Dim srcSA As SAFEARRAY1D
+                        Dim srcSA As SafeArray1D
                         
                         Dim iWidth As Long, iHeight As Long, iScanWidth As Long
                         Dim x As Long, y As Long, transparentIndex As Long
@@ -3232,7 +3245,7 @@ End Function
 'Given an 8-bpp FreeImage handle, return said image's palette.
 ' RETURNS: image's palette (inside the dstPalette() RGBQuad array), and the number of colors inside said palette.
 '          0 if the source image is not 8bpp.
-Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette() As RGBQUAD) As Long
+Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette() As RGBQuad) As Long
     
     'Make sure the source image is using a palette
     GetFreeImagePalette = FreeImage_GetColorsUsed(srcFIHandle)
@@ -3245,7 +3258,7 @@ Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette(
         If (ptrPalette <> 0) Then
         
             'Copy the source palette into the destination array
-            ReDim dstPalette(0 To GetFreeImagePalette - 1) As RGBQUAD
+            ReDim dstPalette(0 To GetFreeImagePalette - 1) As RGBQuad
             CopyMemory ByVal VarPtr(dstPalette(0)), ByVal ptrPalette, (GetFreeImagePalette - 1) * 4
             
         Else
@@ -3392,6 +3405,6 @@ End Sub
 
 Private Sub FI_DebugMsg(ByVal debugMsg As String, Optional ByVal suppressDebugData As Boolean = False)
     #If DEBUGMODE = 1 Then
-        If (Not suppressDebugData) Then pdDebug.LogAction debugMsg, PDM_EXTERNAL_LIB
+        If (Not suppressDebugData) Then pdDebug.LogAction debugMsg, PDM_External_Lib
     #End If
 End Sub

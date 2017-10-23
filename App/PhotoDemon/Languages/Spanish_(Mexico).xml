@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.306</langversion>
+<langversion>6.7.307</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -342,25 +342,6 @@ Lossless se guardarán en la misma carpeta que esta imagen inicial de ahorro.</t
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>La biblioteca de compresión zlib (zlibwapi.dll) se marcó como falta o discapacitados en el programa initialization.
-
-To permitirá ahorrar PDI, permita por favor 1 %para descargar actualizaciones de plugins por ir a Herramientas -> Opciones y seleccionando la "oferta para descargar núcleo casilla de verificación plugins '.</translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>Error PDI Interface</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>No %1 codificador encontrado. Ahorra abortada.</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>Ahorra cancelado.</translation>
 </phrase>
@@ -404,7 +385,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <translation></translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -685,7 +666,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <translation>Recorte de imagen a las nuevas dimensiones</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -767,6 +748,11 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>No %1 codificador encontrado. Ahorra abortada.</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -785,24 +771,20 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>El archivo de PDI " %1" contiene datos comprimidos, pero el plugin zLib falta o disabled.
-
-To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Buscar actualizaciones, y cuando se le solicita, permita que PhotoDemon para descargar todos los plugins recomendados.</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>zLib plugin de desaparecidos</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15127,10 +15109,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

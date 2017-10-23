@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.99</langversion>
+<langversion>1.0.100</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -341,25 +341,6 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>Библиотеката за компресија zlib (zlibwapi.dll) беше обележана како непостоечка или прекината по завршувањето на почетното поставување на програмата
-
-To овозможи заштеда на ПДИ, ве молиме де се овозможи %1 за да го преземете додатокот за надградби со одење на Алатки -> менито за опции, како и изборот на "понуда да се превземат главните додатоци. </translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>Грешка ПДИ интерфејс</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Ни %1 енкодер најден. Зачувај прекинато.</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>Откажани зачувување.</translation>
 </phrase>
@@ -403,7 +384,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Сликата е преголема</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -684,7 +665,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Порамнување на сликата на нови димензии</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -766,6 +747,11 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>Ни %1 енкодер најден. Зачувај прекинато.</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -784,24 +770,20 @@ To овозможи поддршка за овој формат на слика,
 <translation>Зачувај не може да се заврши без FreeImage библиотека.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>Датотеката за ПИО " %1" содржи компресирани податоци, но додаток zlib недостасува или disabled.
-
-To овозможи поддршка за ПИО компресирани фајлови, кликнете Help> Провери за ажурирања, и кога ќе се побара, дозволете PhotoDemon препорачува да ги преземете сите приклучоци.</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>zlib додаток недостасува</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15137,10 +15119,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

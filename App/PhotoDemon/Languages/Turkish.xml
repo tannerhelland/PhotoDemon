@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3286</langversion>
+<langversion>6.8.3287</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -341,25 +341,6 @@ Kayıpsız kopya kaydetmek bu ilk görüntü olarak aynı klasöre kaydedilir en
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>çekirdek indirmek için 'teklifi> Seçenekler menüsü ve seçme - zLib sıkıştırma kütüphanesi (zlibwapi.dll), PDI tasarrufu sağlayacak %1 Araçlar giderek eklenti güncellemeleri indirmek için izin lütfen initialization.
-
-To eksik veya program üzerine devre dışı olarak işaretlenmiş eklentileri 'onay kutusu.</translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>PDI Arayüz Hatası</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Hayır %1 kodlayıcı bulundu. Kaydet iptal edildi.</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>Kaydet iptal edildi.</translation>
 </phrase>
@@ -403,7 +384,7 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 <translation>çok büyük görüntü</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -684,7 +665,7 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 <translation>yeni boyutlar görüntüyü Kırpma</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -766,6 +747,11 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>Hayır %1 kodlayıcı bulundu. Kaydet iptal edildi.</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -784,24 +770,20 @@ To olarak kutlandı, FreeImage.dll dosyayı kopyalamak lütfen (http://freeimage
 <translation>Kaydet FreeImage kütüphanesinde olmadan tamamlanamaz.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>PDI dosyası " %1" sıkıştırılmış veri içerir, ancak zLib eklentisi eksik veya disabled.
-
-To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın> Güncellemeleri Kontrol ve istendiğinde, PhotoDemon önerilen tüm eklentileri indirmek için izin verir.</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>zLib eklentisi eksik</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15130,10 +15112,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

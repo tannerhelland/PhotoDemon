@@ -338,7 +338,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackagerLegacy object.
     Dim cPackage As pdPackagerLegacy
     Set cPackage = New pdPackagerLegacy
-    cPackage.Init_ZLib "", True, g_ZLibEnabled
+    cPackage.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     If cPackage.ReadPackageFromFile(savedToThisFile) Then
     
@@ -643,7 +643,7 @@ Public Function PatchProgramFiles() As Boolean
     'The patching .exe is embedded inside the update package.  Extract it now.
     Dim cPackage As pdPackagerLegacy
     Set cPackage = New pdPackagerLegacy
-    cPackage.Init_ZLib "", True, g_ZLibEnabled
+    cPackage.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     Dim patchFileName As String
     patchFileName = "PD_Update_Patcher.exe"

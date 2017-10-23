@@ -142,7 +142,7 @@ Public Function Lz4CompressNakedPointers(ByVal dstPointer As Long, ByRef dstSize
     finalSize = LZ4_compress_fast(srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionAcceleration)
     
     'Check for error returns
-    Lz4CompressNakedPointers = CBool(finalSize <> 0)
+    Lz4CompressNakedPointers = (finalSize <> 0)
     
     If Lz4CompressNakedPointers Then
         dstSizeInBytes = finalSize
