@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2017 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 08/September/17
-'Last update: add new checks to reduce memory churn when using the same instance to read/write multiple packages in succession
+'Last updated: 23/September/17
+'Last update: revert to writing original, uncompressed data if compression doesn't reduce data size
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -27,8 +27,8 @@ Attribute VB_Exposed = False
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
 '
-'pdPackager v2.0 is not backwards compatible with pdPackage v1.0.  It is an entirely separate format, with features
-' and formatting that differs greatly from v1.0.
+'pdPackager v2.0 is not backwards compatible with pdPackage v1.0.  It is an entirely separate format, with many
+' improvements over v1.0.
 '
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
 ' with only minor modifications.  Note that compression support requires an explicit path to an STDCALL (sometimes
@@ -72,7 +72,7 @@ Attribute VB_Exposed = False
 '     identify files your software cannot process without compression libraries.
 ' 3) Up to 2GB of data is theoretically supported, but you won't be able to reach that amount from within VB.  The
 '     rear-loaded directory format makes it possible to support larger file sizes, but I have not yet done the work to
-'     implement this.  Sorry.
+'     implement this.  Sorry.  (Patches welcome!)
 ' 4) When reading pdPackage files, relevant file bits will only be loaded as-necessary.  As such, you cannot delete the
 '     original file until all interactions are complete.
 '
@@ -412,30 +412,7 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     If (((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) And (Not Compression.IsCompressionEngineAvailable(PD_CE_Lz4))) Then compressData = PD_CE_NoCompression
     
     'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
-    If (compressData <> PD_CE_NoCompression) Then
-        If (compressData = PD_CE_Zstd) Then
-            SetBitFlag PDP_HF2_ZstdRequired, True, m_FileHeader.DataFlags(0)
-            If useHeaderBuffer Then
-                SetBitFlag PDP_NF2_ZstdRequiredH, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            Else
-                SetBitFlag PDP_NF2_ZstdRequired, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            End If
-        ElseIf (compressData = PD_CE_ZLib) Then
-            SetBitFlag PDP_HF2_ZlibRequired, True, m_FileHeader.DataFlags(0)
-            If useHeaderBuffer Then
-                SetBitFlag PDP_NF2_ZlibRequiredH, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            Else
-                SetBitFlag PDP_NF2_ZlibRequired, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            End If
-        ElseIf ((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) Then
-            SetBitFlag PDP_HF2_Lz4Required, True, m_FileHeader.DataFlags(0)
-            If useHeaderBuffer Then
-                SetBitFlag PDP_NF2_Lz4RequiredH, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            Else
-                SetBitFlag PDP_NF2_Lz4Required, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-            End If
-        End If
-    End If
+    If (compressData <> PD_CE_NoCompression) Then SetCompressionFlag nodeIndex, useHeaderBuffer, compressData, True, True
     
     'Update the pre-compression values for this data chunk.
     If useHeaderBuffer Then
@@ -466,23 +443,41 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     'Data compression was requested, meaning we have a bit of extra work to do.
     Else
         
-        Dim compressedSize As Long
+        Dim compressedSize As Long, compressionIsAnImprovement As Boolean
         
         'Because this code is time-sensitive in PD, I like to track and report performance
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
         
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
-        If CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False) Then
-            Debug.Print "Node data compressed in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0") & " ms; size reduction is " & Format(CStr(100# - (100# * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.0") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
+        compressionIsAnImprovement = CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False)
+        
+        'Perform a failsafe check to ensure that the compressed size is smaller than the uncompressed size
+        If compressionIsAnImprovement Then compressionIsAnImprovement = (compressedSize < dataLength)
+        
+        'If compression was successful (and the end result is smaller than the original), point the source data pointer
+        ' at the compressed data.
+        Dim srcDataPointer As Long
+        If compressionIsAnImprovement Then
+            srcDataPointer = VarPtr(m_CompressionBuffer(0))
+            Debug.Print "Node data compressed in " & VBHacks.GetTimeDiffNowAsString(startTime) & "; size reduction is " & Format$(100# - (100# * (CDbl(compressedSize) / CDbl(dataLength))), "#0.0") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
+        
+        'If compression failed - or if it resulted in a larger data size - disregard the compression results, and instead
+        ' write out an uncompressed data chunk.
         Else
-            'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
-            InternalErrorMsg "Node compression failed; writing original uncompressed data to buffer instead..."
+            
+            'Reset all compression flags and sizes
+            SetCompressionFlag nodeIndex, useHeaderBuffer, compressData, False, False
+            compressedSize = dataLength
+            
+            'Set the source data pointer to the original pointer, *not* the compressed data
+            srcDataPointer = dataPointer
+            
         End If
         
-        'Copy the contents of the compressedData() array into the buffer; note that even if zLib failed, copyPtrToArray will fill compressedData()
-        ' with an uncompressed copy of the source bytes (and compressedSize with the source buffer size), so we can use the same code regardless.
-        m_DataBuffer.WriteBytesFromPointer VarPtr(m_CompressionBuffer(0)), compressedSize
+        'Copy the appropriate data source (compressed or original data, based on the above checks) into our primary
+        ' buffer object, then update the node size flags to match
+        m_DataBuffer.WriteBytesFromPointer srcDataPointer, compressedSize
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = compressedSize
@@ -496,6 +491,33 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     AddNodeDataFromPointer = True
     
 End Function
+
+Private Sub SetCompressionFlag(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal compressData As PD_CompressionEngine, ByVal newState As Boolean, Optional ByVal updateFileHeaderToo As Boolean = True)
+
+    If (compressData = PD_CE_Zstd) Then
+        If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZstdRequired, newState, m_FileHeader.DataFlags(0)
+        If useHeaderBuffer Then
+            SetBitFlag PDP_NF2_ZstdRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        Else
+            SetBitFlag PDP_NF2_ZstdRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        End If
+    ElseIf (compressData = PD_CE_ZLib) Then
+        If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZlibRequired, newState, m_FileHeader.DataFlags(0)
+        If useHeaderBuffer Then
+            SetBitFlag PDP_NF2_ZlibRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        Else
+            SetBitFlag PDP_NF2_ZlibRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        End If
+    ElseIf ((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) Then
+        If updateFileHeaderToo Then SetBitFlag PDP_HF2_Lz4Required, newState, m_FileHeader.DataFlags(0)
+        If useHeaderBuffer Then
+            SetBitFlag PDP_NF2_Lz4RequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        Else
+            SetBitFlag PDP_NF2_Lz4Required, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        End If
+    End If
+    
+End Sub
 
 'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
 Friend Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
@@ -1889,7 +1911,7 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     'Move the data buffer position to the relevant offset for the requested chunk
     m_DataBuffer.SetPosition dataOffset
     
-    'If the original size and packed size are different, assume the data is compressed.
+    'If the original size and packed size are different, the data must be compressed.
     If (dataPackedSize <> dataOriginalSize) Then
         
         'Resize the destination buffer to the original size of the data as necessary
