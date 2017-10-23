@@ -441,9 +441,6 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
     
-    'Check if the user wants large images automatically zoomed when loaded
-    g_AutozoomLargeImages = GetPref_Long("Loading", "InitialImageZoom", 0)
-    
     'Grab the last-used common dialog filters
     g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
     g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
@@ -554,7 +551,6 @@ Private Sub CreateNewPreferencesFile()
     
     m_XMLEngine.WriteTag "Loading", "", True
         m_XMLEngine.WriteTag "ExifAutoRotate", "True"
-        m_XMLEngine.WriteTag "InitialImageZoom", "0"
         m_XMLEngine.WriteTag "MetadataEstimateJPEG", "True"
         m_XMLEngine.WriteTag "MetadataExtractBinary", "False"
         m_XMLEngine.WriteTag "MetadataExtractUnknown", "False"
@@ -630,9 +626,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Updates", "", True
-        m_XMLEngine.WriteTag "CheckForUpdates", "True"
         m_XMLEngine.WriteTag "LastUpdateCheck", ""
-        m_XMLEngine.WriteTag "PromptForPluginDownload", "True"
         m_XMLEngine.WriteTag "UpdateFrequency", PDUF_WEEKLY
         
         'The current update track is set according to the hard-coded build ID of this .exe instance.
@@ -653,8 +647,6 @@ Private Sub CreateNewPreferencesFile()
         
         End Select
         
-        m_XMLEngine.WriteTag "UpdateLanguagesIndependently", True
-        m_XMLEngine.WriteTag "UpdatePluginsIndependently", True
         m_XMLEngine.WriteTag "UpdateNotifications", True
         
     m_XMLEngine.CloseTag "Updates"

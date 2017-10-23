@@ -1,12 +1,14 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
-'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
+'Automatic Software Updater
 'Copyright 2012-2017 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 06/January/16
-'Last update: migrate misc update functions from other modules to this one
+'Last updated: 23/October/17
+'Last update: kill off some update preferences that no longer make sense (e.g. patching core plugins separately)
 '
 'This module includes various support functions for determining if a new version of PhotoDemon is available for download.
+'
+'IMPORTANT NOTE: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates.
 '
 'As of March 2015, this module has been completely overhauled to support live-patching of PhotoDemon and its various support files
 ' (plugins, languages, etc).  Various bits of update code have been moved into the new update support app in the /Support folder.
@@ -71,7 +73,7 @@ Public Function IsItTimeForAnUpdate() As Boolean
     'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  (For example, if a
     ' user is using PD on a pen drive, and they move between PCs with wildly different date representations)
     ' If something goes wrong at any point in this function, we'll simply disable update checks until next run.
-    On Error GoTo noUpdates
+    On Error GoTo DontDoUpdates
 
     Dim allowedToUpdate As Boolean
     allowedToUpdate = False
@@ -80,15 +82,15 @@ Public Function IsItTimeForAnUpdate() As Boolean
     ' updates are respected, if the new preference doesn't exist yet, we'll use the old preference value instead.
     Dim updateFrequency As PD_UPDATE_FREQUENCY
     updateFrequency = PDUF_EACH_SESSION
-    If g_UserPreferences.DoesValueExist("Updates", "Check For Updates") Then
+    If g_UserPreferences.DoesValueExist("Updates", "CheckForUpdates") Then
         
-        If Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then
+        If Not g_UserPreferences.GetPref_Boolean("Updates", "CheckForUpdates", True) Then
             
             'Write a matching preference in the new format.
             g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
             
             'Overwrite the old preference, so it doesn't trigger this check again
-            g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", True
+            g_UserPreferences.SetPref_Boolean "Updates", "CheckForUpdates", True
             
         End If
         
@@ -96,19 +98,18 @@ Public Function IsItTimeForAnUpdate() As Boolean
     
     'In v6.6, PD's update strategy was modified to allow the user to specify an update frequency (rather than
     ' a binary yes/no preference).  Retrieve the allowed frequency now.
-    If updateFrequency <> PDUF_NEVER Then
+    If (updateFrequency <> PDUF_NEVER) Then
         updateFrequency = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
     End If
         
     'If updates ARE allowed, see when we last checked for an update.  If enough time has elapsed, check again.
-    If updateFrequency <> PDUF_NEVER Then
+    If (updateFrequency <> PDUF_NEVER) Then
     
         Dim lastCheckDate As String
         lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
         
         'If a "last update check date" was not found, request an immediate update check.
-        If Len(lastCheckDate) = 0 Then
-        
+        If (Len(lastCheckDate) = 0) Then
             allowedToUpdate = True
         
         'If a last update check date was found, check to see how much time has elapsed since that check.
@@ -135,10 +136,10 @@ Public Function IsItTimeForAnUpdate() As Boolean
             currentDate = Format$(Now, "Medium Date")
             
             'If the allowable date threshold has passed, allow the updater to perform a new check
-            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= numAllowableDays Then
+            If (CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= numAllowableDays) Then
                 allowedToUpdate = True
             
-            'If 10 days haven't passed, prevent an update
+            'If the allowable limit hasn't passed, prevent an update
             Else
                 Message "Update check postponed (a check has been performed recently)"
                 allowedToUpdate = False
@@ -156,265 +157,9 @@ Public Function IsItTimeForAnUpdate() As Boolean
     Exit Function
 
 'In the event of an error, simply disallow updates for this session.
-noUpdates:
+DontDoUpdates:
 
     IsItTimeForAnUpdate = False
-    
-End Function
-
-'Given the XML string of a download language version XML report from photodemon.org, initiate downloads of any languages that need to be updated.
-Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
-    
-    'This boolean array will be track which (if any) language files are in need of an update.  The matching "numOfUpdates"
-    ' value will be > 0 if any files need updating.
-    Dim numOfUpdates As Long
-    numOfUpdates = 0
-    
-    Dim updateFlags() As Boolean
-    
-    'We will be testing a number of different languages to see if they qualify for an update.  This temporary object will
-    ' be passed to the public translation class as necessary, to retrieve a copy of a given language file's data.
-    Dim tmpLanguage As PDLanguageFile
-        
-    'A pdXML object handles XML parsing for us.
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    Dim langVersion As String, langID As String, langRevision As Long
-    
-    'Validate the XML
-    If xmlEngine.LoadXMLFromString(srcXML) Then
-    
-        'Check for a few necessary tags, just to make sure this is actually a PhotoDemon language file
-        If xmlEngine.IsPDDataType("Language versions") Then
-        
-            'We're now going to enumerate all language tags in the file.  If one needs to be updated, a couple extra
-            ' steps need to be taken.
-            Dim langList() As String
-            If xmlEngine.FindAllAttributeValues(langList, "language", "updateID") Then
-                
-                'langList() now contains a list of all the unique language listings in the update file.
-                ' We want to search this list for entries with an identical major/minor version to this PD build.
-                
-                'Start by retrieving the current PD executable version.
-                Dim currentPDVersion As String
-                currentPDVersion = GetPhotoDemonVersionMajorMinorOnly
-                
-                'This step is simply going to flag language files in need of an update.  This array will be used to track
-                ' such language; a separate step will initiate the actual update downloads.
-                ReDim updateFlags(0 To UBound(langList)) As Boolean
-                
-                'Iterate the language update list, looking for version matches
-                Dim i As Long
-                For i = LBound(langList) To UBound(langList)
-                
-                    'Retrieve the major/minor version of this language file.  (String format is fine, as we're just
-                    ' checking equality.)
-                    langVersion = xmlEngine.GetUniqueTag_String("version", , , "language", "updateID", langList(i))
-                    langVersion = RetrieveVersionMajorMinorAsString(langVersion)
-                    
-                    'Retrieve the language's revision as well.  This is explicitly retrieved as a LONG, because we need to perform
-                    ' a >= check between it and the current language file revision.
-                    langRevision = xmlEngine.GetUniqueTag_String("revision", , , "language", "updateID", langList(i))
-                    
-                    'If the version matches this .exe version, this language file is a candidate for updating.
-                    If Strings.StringsEqual(currentPDVersion, langVersion, False) Then
-                    
-                        'Next, we need to compare the versions of the update language file and the installed language file.
-                        
-                        'Retrieve the language ID, which is a unique identifier.
-                        langID = xmlEngine.GetUniqueTag_String("id", , , "language", "updateID", langList(i))
-                        
-                        'Use a helper function to retrieve the language header for the currently installed copy of this language.
-                        If g_Language.GetPDLanguageFileObject(tmpLanguage, langID) Then
-                        
-                            'A matching language file was found.  Compare version numbers.
-                            If Strings.StringsEqual(langVersion, RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion), False) Then
-                            
-                                'The major/minor version of this language file matches the current language.  Compare revisions.
-                                If langRevision > RetrieveVersionRevisionAsLong(tmpLanguage.langVersion) Then
-                                
-                                    'Holy shit, this language actually needs to be updated!  :P  Mark the corresponding location
-                                    ' in the update array, and increment the update counter.
-                                    updateFlags(i) = True
-                                    numOfUpdates = numOfUpdates + 1
-                                    
-                                    #If DEBUGMODE = 1 Then
-                                        pdDebug.LogAction "Language ID " & langID & " will be updated to revision " & langRevision & "."
-                                    #End If
-                                
-                                'The current file is up-to-date.
-                                Else
-                                
-                                    Debug.Print "Language ID " & langID & " is already up-to-date (updated: "; langVersion & "." & langRevision & ", current: "; RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion) & "." & RetrieveVersionRevisionAsLong(tmpLanguage.langVersion) & ")"
-                                
-                                End If
-                            
-                            End If
-                            
-                        'This language ID was not found.  This could mean one of two things:
-                        ' 1) This language file is a new one (e.g. it was not included in the original release of this PD version)
-                        ' 2) The user forcibly deleted this language file at some point in the past.
-                        '
-                        'To avoid undoing (2), we must also ignore (1).  Do nothing if this language file doesn't exist in the
-                        ' current languages folder.
-                        Else
-                            Debug.Print "Language ID " & langID & " does not exist on this PC.  No update will be performed."
-                        End If
-                    
-                    End If
-                    
-                Next i
-            
-            End If
-        
-            'At this point, updateFlags() will contain TRUE for any language files that need to be updated, and numOfUpdates should
-            ' be greater than 0 if updates are required.
-            If numOfUpdates > 0 Then
-                
-                Dim reportedChecksum As Long
-                Dim langFilename As String, langLocation As String, langURL As String
-                
-                Debug.Print numOfUpdates & " updated language files will now be downloaded."
-                
-                'Loop through the update array; for any language marked for update, request an asynchronous download of their
-                ' matching file from the main form.
-                For i = 0 To UBound(updateFlags)
-                
-                    If updateFlags(i) Then
-                    
-                        'Retrieve the matching checksum for this language; we'll be passing this to the downloader, so it can verify
-                        ' the downloaded file prior to us unpacking it.
-                        reportedChecksum = CLng(xmlEngine.GetUniqueTag_String("checksum", "0", , "language", "updateID", langList(i)))
-                        
-                        'Retrieve the filename and location folder for this language; we need these to construct a URL
-                        langFilename = xmlEngine.GetUniqueTag_String("filename", , , "language", "updateID", langList(i))
-                        langLocation = xmlEngine.GetUniqueTag_String("location", , , "language", "updateID", langList(i))
-                        
-                        'Construct a matching URL
-                        langURL = "http://photodemon.org/downloads/languages/"
-                        If Strings.StringsEqual(langLocation, "STABLE", True) Then
-                            langURL = langURL & "stable/"
-                        Else
-                            langURL = langURL & "nightly/"
-                        End If
-                        langURL = langURL & langFilename & ".pdz"
-                        
-                        'Request a download on the main form.  Note that we explicitly set the download type to the pdLanguage file
-                        ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
-                        ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
-                        ' the extracted data matches what we originally uploaded.
-                        If FormMain.RequestAsynchronousDownload(reportedChecksum, langURL, PD_LANG_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.GetUpdatePath & langFilename & ".tmp") Then
-                            Debug.Print "Download successfully initiated for language update at " & langURL
-                        Else
-                            Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & langID & " language file update."
-                        End If
-                                            
-                    End If
-                
-                Next i
-                
-            Else
-                Debug.Print "All language files are up-to-date.  No new files will be downloaded."
-            End If
-        
-        Else
-            Debug.Print "WARNING! Language update XML did not pass basic validation.  Abandoning update process."
-        End If
-    
-    Else
-        Debug.Print "WARNING! Language update XML did not load successfully - check for an encoding error, maybe...?"
-    End If
-    
-End Sub
-
-'After a language file has successfully downloaded, FormMain calls this function to actually apply the patch.
-Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String) As Boolean
-    
-    On Error GoTo LanguagePatchingFailure
-    
-    PatchLanguageFile = False
-    
-    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackagerLegacy object.
-    Dim cPackage As pdPackagerLegacy
-    Set cPackage = New pdPackagerLegacy
-    cPackage.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
-    
-    If cPackage.ReadPackageFromFile(savedToThisFile) Then
-    
-        'The package appears to be intact.  Attempt to retrieve the embedded language file.
-        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, newChecksum As Long
-        Dim rawOldFile() As Byte
-        If cPackage.GetNodeDataByIndex(0, False, rawNewFile) Then
-        
-            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression
-            ' file checksum matches the original checksum calculated at creation time.  Because we are very cautious,
-            ' we now apply a second checksum verification, using the checksum value embedded within the original langupdate.xml
-            ' file.  (For convenience, that checksum was passed to us as the download key.)
-            newChecksum = CLng(entryKey)
-            
-            If (newChecksum = cPackage.ChecksumArbitraryArray(rawNewFile)) Then
-                
-                'Checksums match!  We now want to overwrite the old language file with the new one.
-                
-                'Retrieve the filename of the updated language file
-                If cPackage.GetNodeDataByIndex(0, True, newFilenameArray) Then
-                    
-                    newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
-                    
-                    'See if that file already exists.  Note that a modified path is required for the MASTER language file, which sits
-                    ' in a dedicated subfolder.
-                    If Strings.StringsEqual(newFilename, "master.xml", True) Then
-                        newFilename = g_UserPreferences.GetLanguagePath() & "MASTER\" & newFilename
-                    Else
-                        newFilename = g_UserPreferences.GetLanguagePath() & newFilename
-                    End If
-                    
-                    If Files.FileExists(newFilename) Then
-                        
-                        'Make a temporary backup of the existing file, then delete it
-                        Files.FileLoadAsByteArray newFilename, rawOldFile
-                        Files.FileDelete newFilename
-                        
-                    End If
-                    
-                    'Write out the new file
-                    If Files.FileCreateFromByteArray(rawNewFile, newFilename) Then
-                    
-                        'Perform a final failsafe checksum verification of the extracted file
-                        If (newChecksum = cPackage.ChecksumArbitraryFile(newFilename)) Then
-                            PatchLanguageFile = True
-                        Else
-                            'Failsafe checksum verification didn't pass.  Restore the old file.
-                            Debug.Print "WARNING!  Downloaded language file was written, but final checksum failsafe failed.  Restoring old language file..."
-                            Files.FileCreateFromByteArray rawOldFile, newFilename
-                        End If
-                        
-                    End If
-                
-                Else
-                    Debug.Print "WARNING! pdPackage refused to return filename."
-                End If
-                
-            Else
-                Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.ChecksumArbitraryArray(rawNewFile) & ").  Language update abandoned."
-            End If
-        
-        End If
-    
-    Else
-        Debug.Print "WARNING! Language file downloaded, but pdPackagerLegacy rejected it.  Language update abandoned."
-    End If
-    
-    'Regardless of outcome, we kill the update file when we're done with it.
-    Files.FileDeleteIfExists savedToThisFile
-    
-    Exit Function
-    
-LanguagePatchingFailure:
-
-    PatchLanguageFile = False
     
 End Function
 
@@ -595,8 +340,8 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     
 End Function
 
-'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents hijackers from
-' intercepting the files mid-transit, and replacing them with their own.
+'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents
+' hijackers from intercepting the files mid-transit, and replacing them with their own.
 Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
 
     'Find the position of this file's checksum
@@ -629,7 +374,7 @@ Public Function PatchProgramFiles() As Boolean
     On Error GoTo ProgramPatchingFailure
     
     'If no update file is available, exit without doing anything
-    If Len(m_UpdateFilePath) = 0 Then
+    If (Len(m_UpdateFilePath) = 0) Then
         PatchProgramFiles = True
         Exit Function
     End If
@@ -800,8 +545,8 @@ Public Function WasProgramStartedViaRestart() As Boolean
     
 End Function
 
-'Every time PD is run, we have to do things like "see if it's time to check for an update".  This meta-function wraps all those behaviors
-' into a single, caller-friendly function (currently called by FormMain_Load()).
+'Every time PD is run, we have to do things like "see if it's time to check for an update".  This meta-function wraps all those
+' behaviors into a single, caller-friendly function (currently called by FormMain_Load()).
 Public Sub StandardUpdateChecks()
     
     'If PD is running in non-portable mode, we don't have write access to our own folder - which makes updates impossible.
@@ -835,20 +580,6 @@ Public Sub StandardUpdateChecks()
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
         FormMain.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
         
-        'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
-        ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
-        ' file update *is* found, we'll download and patch those separately.)
-        If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then
-            FormMain.asyncDownloader.AddToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
-        End If
-        
-        'As of v6.6, PhotoDemon also supports independent plugin file updates, separate from updating PD as a whole.
-        ' Check that preference, and if allowed, initiate a separate plugin file check.  (If no core program update is found, but a plugin
-        ' file update *is* found, we'll download and patch those separately.)
-        If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then
-            'TODO!
-        End If
-        
     End If
     
     'With all potentially required downloads added to the queue, we can now begin downloading everything
@@ -860,7 +591,7 @@ End Sub
 Public Sub DisplayUpdateNotification()
     
     'If a modal dialog is active, raising a new window will cause a crash; we must deal with this accordingly
-    On Error GoTo couldNotDisplayUpdateNotification
+    On Error GoTo CouldNotDisplayUpdateNotification
     
     'Suspend any previous update notification flags
     g_ShowUpdateNotification = False
@@ -875,7 +606,7 @@ Public Sub DisplayUpdateNotification()
     
     Exit Sub
     
-couldNotDisplayUpdateNotification:
+CouldNotDisplayUpdateNotification:
 
     'Set a global flag; PD's central processor will use this to display the notification as soon as it reasonably can
     g_ShowUpdateNotification = True

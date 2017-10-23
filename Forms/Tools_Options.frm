@@ -29,7 +29,7 @@ Begin VB.Form FormOptions
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   34
+      TabIndex        =   31
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -38,7 +38,7 @@ Begin VB.Form FormOptions
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   30
+      TabIndex        =   27
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
@@ -56,7 +56,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
          Height          =   975
          Left            =   0
-         TabIndex        =   46
+         TabIndex        =   43
          Top             =   1320
          Width           =   8175
          _ExtentX        =   14420
@@ -66,7 +66,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   33
+         TabIndex        =   30
          Top             =   5640
          Width           =   7935
          _ExtentX        =   13996
@@ -76,7 +76,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   32
+         TabIndex        =   29
          Top             =   435
          Width           =   525
          _ExtentX        =   926
@@ -86,7 +86,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -196,32 +196,21 @@ Begin VB.Form FormOptions
       _ExtentX        =   0
       _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   2535
+         Height          =   3495
          Left            =   240
-         Top             =   3840
+         Top             =   3000
          Width           =   7935
          _ExtentX        =   13996
-         _ExtentY        =   4471
+         _ExtentY        =   6165
          Caption         =   "(disclaimer populated at run-time)"
          FontSize        =   9
          Layout          =   1
-      End
-      Begin PhotoDemon.pdCheckBox chkUpdates 
-         Height          =   330
-         Index           =   0
-         Left            =   180
-         TabIndex        =   25
-         Top             =   2280
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update language files independently"
       End
       Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   735
          Index           =   0
          Left            =   180
-         TabIndex        =   26
+         TabIndex        =   24
          Top             =   480
          Width           =   7935
          _ExtentX        =   13996
@@ -229,22 +218,11 @@ Begin VB.Form FormOptions
          Caption         =   "automatically check for updates:"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdCheckBox chkUpdates 
-         Height          =   330
-         Index           =   1
-         Left            =   180
-         TabIndex        =   27
-         Top             =   2760
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update plugins independently"
-      End
       Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   735
          Index           =   1
          Left            =   180
-         TabIndex        =   28
+         TabIndex        =   25
          Top             =   1350
          Width           =   7935
          _ExtentX        =   13996
@@ -266,10 +244,10 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
-         Index           =   2
+         Index           =   0
          Left            =   180
-         TabIndex        =   29
-         Top             =   3240
+         TabIndex        =   26
+         Top             =   2400
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   582
@@ -358,7 +336,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   810
          Left            =   180
-         TabIndex        =   42
+         TabIndex        =   39
          Top             =   4530
          Width           =   5895
          _ExtentX        =   10398
@@ -369,7 +347,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   795
          Left            =   180
-         TabIndex        =   43
+         TabIndex        =   40
          Top             =   3660
          Width           =   5895
          _ExtentX        =   10398
@@ -380,7 +358,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdColorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   44
+         TabIndex        =   41
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -390,7 +368,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdColorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   45
+         TabIndex        =   42
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -422,7 +400,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
          Left            =   180
-         TabIndex        =   41
+         TabIndex        =   38
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -433,7 +411,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   31
+         TabIndex        =   28
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -511,7 +489,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Index           =   2
          Left            =   180
-         TabIndex        =   40
+         TabIndex        =   37
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -611,7 +589,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdCheckBox chkMetadataListPD 
          Height          =   375
          Left            =   180
-         TabIndex        =   39
+         TabIndex        =   36
          Top             =   4200
          Width           =   7935
          _ExtentX        =   13996
@@ -648,17 +626,6 @@ Begin VB.Form FormOptions
          _ExtentY        =   582
          Caption         =   "obey auto-rotate instructions inside image files"
       End
-      Begin PhotoDemon.pdDropDown cboLargeImages 
-         Height          =   690
-         Left            =   180
-         TabIndex        =   19
-         Top             =   4320
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "when an image is first loaded, set its viewport zoom to: "
-         FontSizeCaption =   10
-      End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   9
@@ -685,18 +652,6 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   11
-         Left            =   0
-         Top             =   3960
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "zoom"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
          Index           =   12
          Left            =   0
          Top             =   960
@@ -710,7 +665,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdCheckBox chkMetadataBinary 
          Height          =   330
          Left            =   180
-         TabIndex        =   35
+         TabIndex        =   32
          Top             =   2400
          Width           =   7920
          _ExtentX        =   13970
@@ -721,7 +676,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
          Left            =   180
-         TabIndex        =   36
+         TabIndex        =   33
          Top             =   1680
          Width           =   7920
          _ExtentX        =   13970
@@ -731,7 +686,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
          Height          =   330
          Left            =   180
-         TabIndex        =   37
+         TabIndex        =   34
          Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
@@ -742,7 +697,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
          Left            =   180
-         TabIndex        =   38
+         TabIndex        =   35
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -762,7 +717,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   765
          Left            =   180
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   4170
          Width           =   7980
          _ExtentX        =   14076
@@ -779,7 +734,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Index           =   0
          Left            =   180
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -791,7 +746,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Index           =   1
          Left            =   180
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   1620
          Width           =   7920
          _ExtentX        =   13970
@@ -803,7 +758,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Index           =   2
          Left            =   180
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   2850
          Width           =   7920
          _ExtentX        =   13970
@@ -1123,11 +1078,6 @@ Private Sub cmdBarMini_OKClick()
         'START/END EXIF auto-rotation
             g_UserPreferences.SetPref_Boolean "Loading", "ExifAutoRotate", CBool(chkLoadingOrientation)
         
-        'START initial zoom
-            g_AutozoomLargeImages = cboLargeImages.ListIndex
-            g_UserPreferences.SetPref_Long "Loading", "Initial Image Zoom", g_AutozoomLargeImages
-        'END initial zoom
-    
     
     'END Loading preferences
     
@@ -1218,15 +1168,9 @@ Private Sub cmdBarMini_OKClick()
         
         'START/END update track
             g_UserPreferences.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
-        
-        'START update language files independently
-            g_UserPreferences.SetPref_Boolean "Updates", "Update Languages Independently", CBool(chkUpdates(0).Value)
             
-        'START update plugins independently
-            g_UserPreferences.SetPref_Boolean "Updates", "Update Plugins Independently", CBool(chkUpdates(1).Value)
-            
-        'START update notifications
-            g_UserPreferences.SetPref_Boolean "Updates", "Update Notifications", CBool(chkUpdates(2).Value)
+        'START/END update notifications
+            g_UserPreferences.SetPref_Boolean "Updates", "Update Notifications", CBool(chkUpdates(0).Value)
     
     'END Update preferences
     
@@ -1457,14 +1401,6 @@ Private Sub LoadAllPreferences()
             chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
         'END auto-rotate according to EXIF data
         
-        'START initial image zoom
-            cboLargeImages.Clear
-            cboLargeImages.AddItem " automatically fit the image on-screen", 0
-            cboLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
-            cboLargeImages.ListIndex = g_UserPreferences.GetPref_Long("Loading", "Initial Image Zoom", 0)
-            
-            cboLargeImages.AssignTooltip "Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable."
-        'END initial image zoom
     
     'END Loading preferences
     
@@ -1613,15 +1549,15 @@ Private Sub LoadAllPreferences()
             
             'Old versions of PD used a binary check/don't check preference.  To respect users who set the "don't check" preference in a
             ' previous version, automatically convert that preference to the new "never (not recommended)" value.
-            If g_UserPreferences.DoesValueExist("Updates", "Check For Updates") Then
+            If g_UserPreferences.DoesValueExist("Updates", "CheckForUpdates") Then
                 
-                If (Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True)) Then
+                If (Not g_UserPreferences.GetPref_Boolean("Updates", "CheckForUpdates", True)) Then
                     
                     'Write a matching preference in the new format.
                     g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
                     
                     'Overwrite the old preference, so it doesn't trigger again
-                    g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", True
+                    g_UserPreferences.SetPref_Boolean "Updates", "CheckForUpdates", True
                     
                 End If
                 
@@ -1642,20 +1578,10 @@ Private Sub LoadAllPreferences()
             cboUpdates(1).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
             cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
         'END update track
-            
-        'START update language files independently
-            If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
-            chkUpdates(0).AssignTooltip "PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files."
-        'END update language files independently
-            
-        'START update plugins independently
-            If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then chkUpdates(1).Value = vbChecked Else chkUpdates(1).Value = vbUnchecked
-            chkUpdates(1).AssignTooltip "PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available."
-        'END update plugins independently
         
         'START notify when updates are ready for patching
-            If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(2).Value = vbChecked Else chkUpdates(2).Value = vbUnchecked
-            chkUpdates(2).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
+            If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
+            chkUpdates(0).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
         'END notify when updates are ready for patching
         
         'START explanation of update options

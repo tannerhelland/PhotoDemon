@@ -114,11 +114,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         End If
     #End If
     
-    'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
-    ' (At present, the only live-patching task PD handles is language file updates.  Note that we must initiate this *prior*
-    '  to disabling the main form, or things like menus won't update correctly.)
-    If (Not g_Language Is Nothing) Then g_Language.RefreshAsRequired
-    
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
     If Strings.StringsEqual(processID, "repeat last action", True) Then

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.304</langversion>
+<langversion>6.7.305</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14397,18 +14397,8 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>taalbestanden onafhankelijk updaten</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>automatisch controleren op updates</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>plugins onafhankelijk updaten</translation>
 </phrase>
 
 <phrase>
@@ -14539,11 +14529,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>gehoorzamen auto-rotate instructies binnen afbeeldingsbestanden</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>wanneer een afbeelding voor het eerst wordt geladen, stel de viewport zoom in op</translation>
 </phrase>
 
 <phrase>
@@ -14746,21 +14731,6 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>automatisch aanpassen aan de afbeelding op het scherm</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>1:1 (100% zoom, of "werkelijke grootte")</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Elke foto groter dan 2 megapixels is te groot om te passen op een gemiddelde computermonitor. PhotoDemon kan automatisch uitzoomen op grote foto's, zodat de gehele afbeelding te bekijken is.</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>het huidige bestandsformaat van de afbeelding wordt opgeslagen</translation>
 </phrase>
@@ -14911,16 +14881,6 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>PhotoDemon's vrijwillige vertalers werken de taalbestanden van het programm regelmatig bij. PhotoDemon kan deze updates automatisch downloaden, gescheiden van het hoofdprogramma, en zorgt er zo voor dat u altijd over de meest up-to-date taalbestanden beschikt.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon maakt gebruik van een aantal 3rd-party plugins. Soms bewerken de auteurs van deze plugins bugs, of voegen nieuwe functies toe. In plaats van te wachten op de volgende PhotoDemon release, kan je plug-updates ontvangen zodra ze beschikbaar zijn.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>PhotoDemon kunt u op de hoogte wanneer het klaar om een update toe te passen. Hierdoor kunt u de bijgewerkte versie direct gebruiken.</translation>
 </phrase>
@@ -15006,7 +14966,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15123,10 +15083,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>

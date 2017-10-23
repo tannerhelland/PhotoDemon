@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.246</langversion>
+<langversion>6.6.247</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -14390,18 +14390,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>Perbarui Bahasa Berkas secara bebas</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>secara Otomatis Mengecek Pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Perbarui Plugin secara bebas</translation>
 </phrase>
 
 <phrase>
@@ -14532,11 +14522,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>taat kepada arahan auto-putar di dalam Berkas-Berkas Gambar</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>apabila gambar semula dimuatkan, set perbesar viewport untuk</translation>
 </phrase>
 
 <phrase>
@@ -14737,21 +14722,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>secara otomatis menyesuaikan gambar pada skrin</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>1 1 ( %perbesar 100, atau "ukuran sebenarnya")</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Gambar apa-apa yang lebih besar daripada 2 megapixel terlalu besar untuk dimuatkan pada monitor komputer. PhotoDemon secara otomatis perbesar pada gambar besar supaya seluruh gambar mana boleh dilihat.</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>format arus berkas gambar yang disimpan</translation>
 </phrase>
@@ -14902,16 +14872,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>PhotoDemon dunia penerjemah sukarela secara teratur memperbarui file bahasa program. PhotoDemon otomatis dapat men-download pembaruan ini terpisah dari program utama, memastikan bahwa Anda selalu memiliki paling up file bahasa-to-date.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation> PhotoDemon menggunakan beberapa plugin pihak ke-3. Kadang-kadang, penulis plugin ini memperbaiki bug atau menambahkan fitur baru. Alih-alih menunggu rilis PhotoDemon berikutnya, Anda dapat menerima update Plugin segera setelah mereka menjadi tersedia.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>PhotoDemon boleh memberitahu anda apabila ia bersedia untuk memohon Perbarui. Ini membolehkan anda menggunakan versi yang diperbarui segera.</translation>
 </phrase>
@@ -14997,7 +14957,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15114,10 +15074,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>

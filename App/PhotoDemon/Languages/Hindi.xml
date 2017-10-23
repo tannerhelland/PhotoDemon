@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.7</langversion>
+<langversion>1.0.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14393,18 +14393,8 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>भाषा फ़ाइलों को स्वतंत्र रूप से अपडेट करें</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>स्वचालित रूप से अद्यतनों की जांच करें</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>प्लगइन को स्वतंत्र रूप से अपडेट करें</translation>
 </phrase>
 
 <phrase>
@@ -14535,11 +14525,6 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>छवि फ़ाइलों के अंदर ऑटो-रोटेट निर्देशों का पालन करना</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>जब कोई छवि पहले लोड हो जाती है, तो उसके व्यूपोर्ट को ज़ूम करें</translation>
 </phrase>
 
 <phrase>
@@ -14741,21 +14726,6 @@ VBCRL क्या आप वाकई जारी रखना चाहते
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>स्वचालित रूप से छवि परदे पर फिट बैठता है</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>1: 1 (100 %ज़ूम, या "वास्तविक आकार")</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>औसत कंप्यूटर मॉनीटर पर फिट होने के लिए 2 मेगापिक्सेल से बड़ा कोई फोटो बड़ा है फोटोडीन बड़ी तस्वीरों पर स्वत: ज़ूम आउट कर सकता है ताकि पूरी छवि को देखने योग्य हो।</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>छवि के मौजूदा फ़ाइल स्वरूप को सहेजा जा रहा है</translation>
 </phrase>
@@ -14906,16 +14876,6 @@ VBCRL क्या आप वाकई जारी रखना चाहते
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>फोटोडीमॉन के स्वयंसेवक अनुवादकों ने कार्यक्रम की भाषा फ़ाइलों को नियमित रूप से अपडेट किया है। PhotoDemon स्वचालित रूप से इन अपडेट को मुख्य कार्यक्रम से अलग डाउनलोड कर सकता है, यह सुनिश्चित करता है कि आपके पास हमेशा सबसे अधिक अद्यतित भाषा फ़ाइलें हैं</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon कुछ तृतीय-पक्ष प्लगिन का उपयोग करता है कभी-कभी, इन प्लगइन्स के लेखक बग्स को ठीक करते हैं या नई सुविधाओं को जोड़ते हैं। अगली फोटोडामॉन रिहाई के लिए प्रतीक्षा करने के बजाय, आप प्लग-इन अपडेट उपलब्ध होने पर ही प्राप्त कर सकते हैं।</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>जब अपडेट अपडेट करने के लिए तैयार है, तो PhotoDemon आपको सूचित कर सकता है यह आपको अद्यतित संस्करण का तुरंत उपयोग करने देता है</translation>
 </phrase>
@@ -15003,7 +14963,7 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation>यह नया अस्थायी फ़ोल्डर स्थान प्रभावी नहीं होगा जब तक कि आप प्रोग्राम को पुनरारंभ न करें।</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15120,10 +15080,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>

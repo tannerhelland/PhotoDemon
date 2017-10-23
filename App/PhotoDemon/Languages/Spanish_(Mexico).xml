@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.307</langversion>
+<langversion>6.7.308</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14385,18 +14385,8 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>update language files independently</original>
-<translation>idioma archivos de actualización de forma independiente</translation>
-</phrase>
-
-<phrase>
 <original>automatically check for updates</original>
 <translation>verificar automáticamente las actualizaciones</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>actualización de plugins de forma independiente</translation>
 </phrase>
 
 <phrase>
@@ -14527,11 +14517,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
 <translation>obedecer las instrucciones auto-gira dentro de archivos de imagen</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>cuando una imagen se carga por primera vez, establezca su zoom de la vista para</translation>
 </phrase>
 
 <phrase>
@@ -14732,21 +14717,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>automatically fit the image on-screen</original>
-<translation>ajustar la imagen de forma automática en la pantalla</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (100% zoom, or "actual size")</original>
-<translation>01:01 (100 %de zoom, o "tamaño real")</translation>
-</phrase>
-
-<phrase>
-<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Cualquier foto de más de 2 megapíxeles es demasiado grande para caber en un monitor de computadora promedio. PhotoDemon puede desactivar automáticamente el zoom en fotografías de gran formato, para que toda la imagen se puede ver.</translation>
-</phrase>
-
-<phrase>
 <original>the current file format of the image being saved</original>
 <translation>el formato de archivo actual de la imagen se guarda</translation>
 </phrase>
@@ -14897,16 +14867,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>Traductores voluntarios de PhotoDemon actualizan regularmente archivos de idioma del programa. PhotoDemon puede descargar automáticamente estas actualizaciones se separan del programa principal, garantizando así que siempre tenga los archivos de la mayoría de idiomas en marcha hasta la fecha.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation>PhotoDemon usa algunos plugins 3 ª parte. A veces, los autores de estos plugins corregir errores o añadir nuevas características. En lugar de esperar a la próxima versión PhotoDemon, puede recibir actualizaciones del plugin tan pronto como estén disponibles.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>PhotoDemon puede notificarle cuando está listo para aplicar una actualización. Esto le permite utilizar la versión actualizada de inmediato.</translation>
 </phrase>
@@ -14992,7 +14952,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 173 phrases. 44 were duplicates of existing phrases, so only 129 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15109,10 +15069,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12140 total words. -->
 
 </pdData>
