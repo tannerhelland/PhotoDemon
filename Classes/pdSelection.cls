@@ -3188,7 +3188,8 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
             
             Else
                 #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header."
+                    pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header; header XML follows:"
+                    pdDebug.LogAction headerXML.GetParamString()
                 #End If
             End If
             
