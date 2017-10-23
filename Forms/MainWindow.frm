@@ -2847,7 +2847,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
     ' no images are loaded by this point.  Because it takes some time to shut down, trigger it prematurely.
-    If g_ExifToolEnabled Then
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
         ExifTool.TerminateExifTool
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "ExifTool terminated"

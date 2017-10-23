@@ -1251,7 +1251,7 @@ Public Sub TerminateExifTool()
         FormMain.shellPipeMain.FinishChild
         
         'As a failsafe, mark the plugin as no longer available
-        g_ExifToolEnabled = False
+        PluginManager.SetPluginEnablement CCP_ExifTool, False
         
     End If
 

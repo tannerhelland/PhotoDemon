@@ -816,7 +816,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         ' reading/browsing/writing metadata.)
         Case PDUI_Metadata
         
-            If g_ExifToolEnabled Then
+            If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
                 If (FormMain.MnuMetadata(0).Enabled <> newState) Then FormMain.MnuMetadata(0).Enabled = newState
             Else
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
@@ -825,7 +825,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'GPS metadata is its own sub-category, and its activation is contigent upon an image having embedded GPS data
         Case PDUI_GPSMetadata
         
-            If g_ExifToolEnabled Then
+            If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
                 If (FormMain.MnuMetadata(3).Enabled <> newState) Then FormMain.MnuMetadata(3).Enabled = newState
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False

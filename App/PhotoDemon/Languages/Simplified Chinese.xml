@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3035</langversion>
+<langversion>6.8.3036</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -342,25 +342,6 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>zlib压缩库（zlibwapi.DLL）丢失或在程序初始化失败。
-
-请允许 %1 下载插件更新，需要在工具 --> 选项菜单，并选择“提供下载的核心插件”复选框。</translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>PDI接口错误</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>没有发现 %1 编码器，保存失败。</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>取消保存</translation>
 </phrase>
@@ -403,7 +384,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>图像太大</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -684,7 +665,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>修剪图像到新的维度</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -766,6 +747,11 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>没有发现 %1 编码器，保存失败。</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -784,24 +770,20 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>由于缺失 FreeImage 库，没有保存成功</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>该PDI文件 “%1” 包含压缩数据，但是zlib的插件丢失或禁用。
-
-要启用压缩的PDI文件的支持，单击帮助>检查更新，并在提示时，允许PhotoDemon下载所有推荐的插件。</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>ZLIB缺少插件</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15124,10 +15106,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

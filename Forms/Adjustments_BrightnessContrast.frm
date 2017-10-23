@@ -149,7 +149,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim srcImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -182,7 +182,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     '(LittleCMS is used for the transform, and if it's missing or disabled, we obviously can't proceed; if that happens,
     ' we fall back to the default brightness/contrast transform.
     Dim modernAlgorithmFailed As Boolean: modernAlgorithmFailed = True
-    If (Not useLegacyModel) And g_LCMSEnabled Then
+    If (Not useLegacyModel) And PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then
         
         'Convert the incoming brightness and contrast values to ranges appropriate for L*a*b*
         Dim tmpBright As Double, tmpContrast As Double

@@ -369,20 +369,8 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     dstFilename = tmpPathString & IncrementFilename(tmpPathString, tmpFilename, "pdi") & "." & "pdi"
     
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
-    If g_ZLibEnabled Then
-        Saving.BeginSaveProcess
-        MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , False, True)
-    Else
-    
-        'If zLib doesn't exist...
-        PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation Or vbOKOnly, " PDI Interface Error", PROGRAMNAME
-        Message "No %1 encoder found. Save aborted.", "PDI"
-        Saving.EndSaveProcess
-        MenuSaveLosslessCopy = False
-        
-        Exit Function
-        
-    End If
+    Saving.BeginSaveProcess
+    MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , False, True)
         
     'At this point, it's safe to re-enable the main form and restore the default cursor
     Saving.EndSaveProcess
@@ -589,7 +577,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
         ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
         ' manual save (e.g. AutoSave).
-        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_Everything
         
         'Report success!
         CreateNewImage = True

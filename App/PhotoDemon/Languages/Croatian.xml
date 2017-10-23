@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Hrvatski (Croatian)</langname>
-<langversion>6.8.3286</langversion>
+<langversion>6.8.3287</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -341,25 +341,6 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>Zlib kompresija knjižnica (zlibwapi.dll) je označena kao nedostaje ili onemogućena nakon inicijalizacije programa. 
-
-To omogućiti PDI spremanje, molimo omogućite %1 za preuzimanje ažuriranja dodataka odlaskom na izbornik Alati -> Opcije i odabirom 'ponuda za preuzimanje jezgre Potvrdni okvir dodataka.</translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>Pogreška sučelja PDI</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Nije pronađen nijedan %1 enkoder. Spremi prekid.</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>Spremi otkazano.</translation>
 </phrase>
@@ -403,7 +384,7 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <translation>Slika je prevelika</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -684,7 +665,7 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <translation>Rezanje slike u nove dimenzije</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -766,6 +747,11 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>Nije pronađen nijedan %1 enkoder. Spremi prekid.</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -784,24 +770,20 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 <translation>Spremi se ne može dovršiti bez FreeImage knjižnice.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>PDI datoteka " %1" sadrži komprimirane podatke, ali zLib dodatak nedostaje ili onemogućen. 
-
-To omogućava podršku za komprimirane PDI datoteke, kliknite Pomoć> Provjeri ažuriranja i kada se to zatraži, dopustite PhotoDemonu preuzimanje svih preporučenih dodataka.</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>Nedostaje zLib dodatak</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15139,10 +15121,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

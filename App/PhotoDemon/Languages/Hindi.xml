@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.6</langversion>
+<langversion>1.0.7</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -342,25 +342,6 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 </phrase>
 
 <phrase>
-<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>Zlib संपीड़न लाइब्रेरी (zlibwapi.dll) कार्यक्रम प्रारंभिक रूप में अनुपलब्ध या अक्षम के रूप में चिह्नित किया गया था। 
-
-To PDI बचत को सक्षम करने के लिए, कृपया उपकरण -> विकल्प मेनू पर जाकर प्लगइन अपडेट डाउनलोड करने के लिए, %1 को और कोर को डाउनलोड करने का प्रस्ताव चुनने दें। प्लगइन्स 'चेक बॉक्स</translation>
-</phrase>
-
-<phrase>
-<original>PDI Interface Error</original>
-<translation>PDI इंटरफ़ेस त्रुटि</translation>
-</phrase>
-
-<phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>कोई %1 एनकोडर नहीं मिला सहेजें निरस्त</translation>
-</phrase>
-
-<phrase>
 <original>Save canceled.</original>
 <translation>सहेजें रद्द करें</translation>
 </phrase>
@@ -404,7 +385,7 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <translation>छवि बहुत बड़ी है</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -685,7 +666,7 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <translation>छवि को नए आयामों में ट्रिम करना</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -767,6 +748,11 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 </phrase>
 
 <phrase>
+<original>No %1 encoder found. Save aborted.</original>
+<translation>कोई %1 एनकोडर नहीं मिला सहेजें निरस्त</translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -785,24 +771,20 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>फ्री आईमेज लाइब्रेरी के बिना सहेजा नहीं जा सकता।</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>पीडीआई फ़ाइल " %1" में संकुचित डेटा शामिल है, लेकिन zLib प्लगिन अनुपलब्ध या अक्षम है। 
-
-To संपीड़ित PDI फ़ाइलों के लिए समर्थन सक्षम करें, मदद> अपडेट के लिए जांचें, और जब संकेत दिया जाता है, तो PhotoDemon सभी अनुशंसित प्लगइन्स को डाउनलोड करने की अनुमति दें</translation>
+<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>zLib प्लगिन गायब है</translation>
+<original>Compression plugin missing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15138,10 +15120,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4560 phrases. -->
-<!-- 2023 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12324 total words. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2023 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12264 total words. -->
 
 </pdData>

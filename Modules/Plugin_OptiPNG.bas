@@ -69,7 +69,7 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
     
     ApplyOptiPNGToFile_Synchronous = False
     
-    If g_OptiPNGEnabled Then
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) Then
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String

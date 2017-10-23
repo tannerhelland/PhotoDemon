@@ -258,8 +258,8 @@ Public Sub GenerateInputFormats()
         AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
     End If
     
-    'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If g_ZLibEnabled Then AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
+    'PDI (PhotoDemon's native file format) is always available!
+    AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
         
     If FreeImageEnabled Then
         AddInputFormat "PFM - Portable Floatmap", "*.pfm", PDIF_PFM
@@ -369,7 +369,7 @@ Public Sub GenerateOutputFormats()
         
     If FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
         
-    If g_ZLibEnabled Then AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
+    AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     
     If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
     

@@ -52,25 +52,6 @@ Public g_Zoom As pdZoom
 'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
 Public g_AutozoomLargeImages As Long
 
-'Is compression via various libraries enabled?
-Public g_ZLibEnabled As Boolean
-Public g_ZstdEnabled As Boolean
-Public g_Lz4Enabled As Boolean
-
-'Is metadata handling via ExifTool enabled?
-Public g_ExifToolEnabled As Boolean
-
-'Is the LittleCMS library enabled?
-Public g_LCMSEnabled As Boolean
-
-'Is PNG optimization via OptiPNG enabled?
-Public g_OptiPNGEnabled As Boolean
-
-'Because FreeImage is used far more than any other plugin, we no longer load it on-demand.  It is loaded once
-' when the program starts, and released when the program ends.  This saves us from repeatedly having to load/free
-' the entire library (which is fairly large).  This variable stores our received library handle.
-Public g_FreeImageHandle As Long
-
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 

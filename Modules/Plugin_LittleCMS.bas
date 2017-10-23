@@ -478,7 +478,8 @@ End Function
 'When PD closes, make sure to release our library handle
 Public Sub ReleaseLCMS()
     If (m_LCMSHandle <> 0) Then FreeLibrary m_LCMSHandle
-    g_LCMSEnabled = False
+    m_LCMSHandle = 0
+    PluginManager.SetPluginEnablement CCP_LittleCMS, False
 End Sub
 
 'After LittleCMS has been initialized, you can call this function to retrieve its current version.
@@ -775,7 +776,7 @@ End Function
 'Apply an already-created transform to some arbitrary sub-region of a pdDIB object.
 ' NOTE!  This function performs no validation on the incoming rect.  You *must* ensure that its bounds fit entirely inside
 ' the pdDIB object or this function will crash and burn.
-Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTransform As Long, ByRef dstRectF As RECTF) As Boolean
+Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTransform As Long, ByRef dstRectF As RectF) As Boolean
     
     If ((Not srcDIB Is Nothing) And (hTransform <> 0)) Then
         

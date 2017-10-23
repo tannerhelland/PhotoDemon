@@ -173,7 +173,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Before doing anything else, convert this DIB to 32bpp.  (This simplifies the inner loop.)
@@ -225,9 +225,11 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     Dim labL2f As Single, labA2f As Single, labB2f As Single
     
     Dim labTransform As pdLCMSTransform
+    Dim useLCMS As Boolean
+    useLCMS = PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS)
     
     'Calculate the L*a*b* values of the color to be removed
-    If g_LCMSEnabled Then
+    If useLCMS Then
     
         'If LittleCMS is available, we're going to use it to perform the whole damn L*a*b* transform.
         Set labTransform = New pdLCMSTransform
@@ -269,7 +271,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     For y = initY To finalY
     
         'Start by pre-calculating all L*a*b* values for this row
-        If g_LCMSEnabled Then
+        If useLCMS Then
             labTransform.ApplyTransformToScanline VarPtr(imageData(0, y)), VarPtr(labValues(0)), finalX + 1
         Else
             For x = xStart To xStop Step pxWidth
@@ -293,7 +295,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
-            If g_LCMSEnabled Then
+            If useLCMS Then
                 cDistance = PDMath.Distance3D_FastFloat(labValues(x), labValues(x + 1), labValues(x + 2), labL2f, labA2f, labB2f)
             Else
                 cDistance = PDMath.DistanceThreeDimensions(labValues(x), labValues(x + 1), labValues(x + 2), labL2, labA2, labB2)

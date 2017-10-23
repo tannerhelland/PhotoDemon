@@ -269,9 +269,14 @@ LoadPDIFail:
     
     'Before falling back to a generic error message, check for a couple known problem states.
     
-    'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
-    If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbCritical Or vbOKOnly, "zLib plugin missing", Files.FileGetName(pdiPath)
+    'Case 1: this file is compressed (using one or more libraries), and the user has somehow messed up their PD plugin situation
+    Dim cmpMissing As Boolean
+    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zLib))
+    cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_ZstdRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zstd))
+    cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_Lz4Required, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_lz4))
+    
+    If cmpMissing Then
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the required plugin is missing or disabled.", vbCritical Or vbOKOnly, "Compression plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
 
@@ -1190,7 +1195,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 #End If
                 
                 'LittleCMS is our preferred color management engine.  Use it whenever possible.
-                If g_LCMSEnabled Then
+                If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then
                     LittleCMS.ApplyICCProfileToPDDIB targetDIB
                 Else
                     ColorManagement.ApplyICCtoPDDib_WindowsCMS targetDIB
@@ -1198,7 +1203,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 
                 #If DEBUGMODE = 1 Then
                     Dim engineUsed As String
-                    If g_LCMSEnabled Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
+                    If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
                     pdDebug.LogAction "Note: color management of the imported image took " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms using " & engineUsed
                 #End If
                 
@@ -1343,7 +1348,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     ' data bits from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1563,11 +1568,14 @@ LoadPDIFail:
     'Before falling back to a generic error message, check for a couple known problem states.
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
-    If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbCritical Or vbOKOnly, "zLib plugin missing", Files.FileGetName(pdiPath)
+    Dim cmpMissing As Boolean
+    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zLib))
+    
+    If cmpMissing Then
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the required plugin is missing or disabled.", vbCritical Or vbOKOnly, "Compression plugin missing", Files.FileGetName(pdiPath)
         Exit Function
     End If
-
+    
     Select Case Err.Number
     
         Case PDP_GENERIC_ERROR
@@ -1593,7 +1601,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1710,7 +1718,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.

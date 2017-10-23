@@ -284,7 +284,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             pdDebug.LogAction "Analyzing color count of 24-bpp image..."
         #End If
         
-        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        Dim srcPixels() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
         
@@ -420,7 +420,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             pdDebug.LogAction "Analyzing color count of 32-bpp image..."
         #End If
 
-        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        Dim srcPixels() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
 
@@ -429,8 +429,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
 
-        Dim uniqueColors() As RGBQUAD
-        ReDim uniqueColors(0 To 255) As RGBQUAD
+        Dim uniqueColors() As RGBQuad
+        ReDim uniqueColors(0 To 255) As RGBQuad
 
         Dim i As Long
         For i = 0 To 255
@@ -1104,7 +1104,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 
                 'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
                 Dim srcImageData() As Single
-                Dim srcSA As SAFEARRAY1D
+                Dim srcSA As SafeArray1D
                 
                 'Iterate through each scanline in the source image, copying it to destination as we go.
                 Dim iWidth As Long, iHeight As Long, iScanWidth As Long, iLoopWidth As Long
@@ -1205,7 +1205,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     useWebOptimizedPath = cParams.GetBool("PNGCreateWebOptimized", False)
     
     'Web-optimized PNGs use their own path, and they supply their own special variables
-    If useWebOptimizedPath And (g_ImageFormats.pngQuantEnabled Or g_OptiPNGEnabled) Then
+    If useWebOptimizedPath And (g_ImageFormats.pngQuantEnabled Or PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG)) Then
     
         Dim pngLossyEnabled As Boolean, pngLossyQuality As Long
         pngLossyEnabled = cParams.GetBool("PNGOptimizeLossy", True)
@@ -1232,7 +1232,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
             'We always finish with at least one OptiPNG pass
-            If g_OptiPNGEnabled And (pngLosslessPerformance > 0) Then
+            If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngLosslessPerformance > 0) Then
                 Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngLosslessPerformance
                 ExportDebugMsg "OptiPNG pass successful!"
             End If
@@ -1405,7 +1405,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             'FreeImage supports the embedding of a bkgd chunk; this doesn't make a lot of sense in modern image development,
             ' but it is part of the PNG spec, so we provide it as an option
             If pngCreateBkgdChunk Then
-                Dim rQuad As RGBQUAD
+                Dim rQuad As RGBQuad
                 rQuad.Red = Colors.ExtractRed(pngBackgroundColor)
                 rQuad.Green = Colors.ExtractGreen(pngBackgroundColor)
                 rQuad.Blue = Colors.ExtractBlue(pngBackgroundColor)
@@ -1427,7 +1427,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                     
                     'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
                     ' of converting existing PNG images to these more compact formats.  Engage it now.
-                    If g_OptiPNGEnabled And (pngStandardOptimizeLevel > 0) Then
+                    If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
                         Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
                     End If
                     
