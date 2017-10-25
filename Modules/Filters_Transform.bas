@@ -245,6 +245,8 @@ End Sub
 ' boundaries and layer offsets to arrive at the crop shape.
 Public Sub SeeIfCropCanBeAppliedNonDestructively()
     
+    If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    
     'First, make sure there is an active selection
     If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
@@ -290,6 +292,8 @@ End Sub
 ' (Optionally, full-image crops can be applied non-destructively, by simply modifying layer offsets and
 '  image dimensions.  Single layers cannot be modified non-destructively, unfortunately.)
 Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optional ByVal applyNonDestructively As Boolean = False)
+    
+    On Error GoTo CropProblem
     
     'First, make sure there is an active selection
     If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
@@ -353,14 +357,13 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         Dim dstImageData() As Byte, dstSA As SafeArray2D
         
         'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
-        Dim selData() As Byte
-        Dim selSA As SafeArray2D
+        Dim selData() As Byte, selSA As SafeArray2D
         pdImages(g_CurrentImage).MainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
         
         'Lots of helper variables for a function like this
         Dim leftOffset As Long, topOffset As Long
-        leftOffset = selBounds.Left
-        topOffset = selBounds.Top
+        leftOffset = Int(selBounds.Left)
+        topOffset = Int(selBounds.Top)
         
         Dim r As Long, g As Long, b As Long
         Dim thisAlpha As Long, origAlpha As Long, blendAlpha As Double
@@ -414,6 +417,10 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
             Dim selMaskDepth As Long
             selMaskDepth = (pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
             
+            Dim selSafeX As Long, selSafeY As Long
+            selSafeX = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth * 4
+            selSafeY = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+            
             'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
             ' of the selection), copying them to the destination as necessary.
             For x = 0 To selectionWidth - 1
@@ -423,7 +430,11 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
             For y = 0 To selectionHeight - 1
             
                 srcQuickY = topOffset + y
+                If (selQuickX < selSafeX) And (srcQuickY < selSafeY) Then
                 thisAlpha = selData(selQuickX, srcQuickY)
+                Else
+                pdDebug.LogAction "WARNING!  OOB!  " & CStr(selQuickX \ 4) & ", " & srcQuickY
+                End If
                 
                 If (thisAlpha > 0) Then
                 
@@ -498,14 +509,27 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     
     'For a full-image crop, the selection is potentially out of sync with the new image size.
     ' Forcibly clear it.
-    If (targetLayerIndex = -1) Then Selections.RemoveCurrentSelection
+    If (targetLayerIndex = -1) Then Selections.RemoveCurrentSelection False
     
     'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline (as the image size
     ' may have changed).
     If (targetLayerIndex = -1) Then
-        pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
-        Interface.DisplaySize pdImages(g_CurrentImage)
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        'For non-destructive crops, we can't use "Fit Canvas to All Layers", as it will resize the image boundaries
+        ' to encompass the selection we just cropped!  As such, we have to manually apply the new boundaries, then
+        ' manually redraw the viewport.
+        If applyNonDestructively Then
+            pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
+            Interface.DisplaySize pdImages(g_CurrentImage)
+            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        'Because the selection boundaries are not guaranteed to be the new image boundaries (as the selection can
+        ' lie partially off-image, or it can be comprised of complicated border outlines), simply shrink the image
+        ' boundaries to match whatever the current union of all layer boundaries are.
+        Else
+            Filters_Transform.MenuFitCanvasToAllLayers
+        End If
+        
         CanvasManager.CenterOnScreen
     
     'For individual layers, we can use some existing viewport pipeline data
@@ -518,6 +542,14 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     ReleaseProgressBar
     
     Message "Finished. "
+    
+    Exit Sub
+    
+CropProblem:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  Filters_Transform.CropToSelection error #" & Err.Number & ": " & Err.Description
+    #End If
     
 End Sub
 
