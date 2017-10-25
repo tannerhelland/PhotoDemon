@@ -881,6 +881,8 @@ End Function
 ' non-destructive actions in the program!)
 Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
+    On Error GoTo CheckForCanvasModifyFail
+
     If (Not pdImages(g_CurrentImage) Is Nothing) Then
     
         If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
@@ -903,7 +905,13 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
         End If
         
     End If
-        
+    
+    Exit Sub
+    
+CheckForCanvasModifyFail:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  Processor.CheckForCanvasModifications failed unexpectedly (#" & Err.Number & ", " & Err.Description & ")"
+    #End If
 End Sub
 
 'Certain processor actions (like rotating the image) require us to remove the active selection.  We could probably work around this

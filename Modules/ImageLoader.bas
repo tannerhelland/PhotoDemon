@@ -44,9 +44,10 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
     #End If
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     On Error GoTo LoadPDIFail
     

@@ -76,7 +76,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
 End Sub
 
 'Remove the current selection
-Public Sub RemoveCurrentSelection()
+Public Sub RemoveCurrentSelection(Optional ByVal updateUIToo As Boolean = True)
     
     'Release the selection object and mark it as inactive
     pdImages(g_CurrentImage).MainSelection.LockRelease
@@ -89,7 +89,7 @@ Public Sub RemoveCurrentSelection()
     pdImages(g_CurrentImage).MainSelection.FreeNonEssentialResources
     
     'Synchronize all user-facing controls to match
-    Selections.SyncTextToCurrentSelection g_CurrentImage
+    If updateUIToo Then Selections.SyncTextToCurrentSelection g_CurrentImage
     
 End Sub
 

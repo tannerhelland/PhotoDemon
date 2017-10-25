@@ -404,7 +404,7 @@ Friend Function WriteTagWithAttribute(ByVal tagName As String, ByVal tagAttribut
         tagLocation = InStrRev(m_xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     End If
 
-    If tagLocation > 0 Then
+    If (tagLocation > 0) Then
     
         'Split the XML file into two halves: the half before the root tag, and the half after
         Dim topHalf As String, bottomHalf As String
@@ -418,7 +418,7 @@ Friend Function WriteTagWithAttribute(ByVal tagName As String, ByVal tagAttribut
         Dim newTagLine As String
         newTagLine = "<" & tagName & " " & tagAttribute & "=""" & attributeValue & """>" & tagContents
         
-        If Not doNotCloseTag Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
+        If (Not doNotCloseTag) Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
         
         'Reassemble the primary string
         m_xmlContents = topHalf & newTagLine & bottomHalf

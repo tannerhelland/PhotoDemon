@@ -298,15 +298,12 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
-    
-    #If DEBUGMODE = 1 Then
-        Debug.Print "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
-    #End If
+    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
     
     m_UndoRedoActive = False
     
     'If the default compression setting is active, calculate an acceleration ratio to keep Undo generation as snappy as possible.
-    'If (g_UndoCompressionLevel = 1) Then CalculateUndoAcceleration processType, VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000#
+    If (g_UndoCompressionLevel = 1) Then CalculateUndoAcceleration processType, VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000#
     
 End Sub
 
@@ -321,7 +318,6 @@ Private Sub CalculateUndoAcceleration(ByVal processType As PD_UndoType, ByVal ti
     ' can happily maximize compression without worrying about performance).
     Dim curLz4Level As Long
     curLz4Level = m_UndoAcceleration(processType)
-    Debug.Print curLz4Level
     
     Dim lz4Levels As Long, timeRatio As Double
     
@@ -343,9 +339,9 @@ Private Sub CalculateUndoAcceleration(ByVal processType As PD_UndoType, ByVal ti
         If (m_UndoAcceleration(processType) > Plugin_lz4.Lz4_GetMaxAccelerationLevel()) Then m_UndoAcceleration(processType) = Plugin_lz4.Lz4_GetMaxAccelerationLevel()
         If (m_UndoAcceleration(processType) < 2) Then m_UndoAcceleration(processType) = 2
         
-        #If DEBUGMODE = 1 Then
+        If UNDO_DETAILED_TIMING_REPORTS Then
             If (m_UndoAcceleration(processType) <> curLz4Level) Then Debug.Print "Undo is too slow, accelerating lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType) & " (" & Format$(timeTaken, "0") & " ms)"
-        #End If
+        End If
         
     Else
     
@@ -362,9 +358,9 @@ Private Sub CalculateUndoAcceleration(ByVal processType As PD_UndoType, ByVal ti
             'If we get too low, restore default settings
             If (m_UndoAcceleration(processType) < 2) Then m_UndoAcceleration(processType) = -1
             
-            #If DEBUGMODE = 1 Then
+            If UNDO_DETAILED_TIMING_REPORTS Then
                 If (m_UndoAcceleration(processType) <> curLz4Level) Then Debug.Print "Undo is fast enough, decreasing lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType)
-            #End If
+            End If
         
         'If we're already running at maximum lz4 compression, we can't improve compression further.
         'Else
@@ -505,16 +501,16 @@ Friend Sub RestoreUndoData()
     m_UndoNum = m_UndoNum - 1
     If (m_UndoNum < 0) Then m_UndoNum = 0
     
-    'If this is not the last Undo state, continue to allow the user to Undo, but if we are at the bottom of the Undo stack
-    ' (e.g. the image is in its original state), disable further Undo-ing.
+    'If this is not the last Undo state, continue to allow the user to Undo, but if we are at the bottom of
+    ' the Undo stack (e.g. the image is in its original state), disable further Undo-ing.
     m_UndoState = (m_UndoNum > 1)
     
     'If we are not at the top of the Undo stack, also enable Redo-ing
     m_RedoState = (m_UndoNum < m_UndoMax)
         
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
-    ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
-    ' appearance).
+    ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its
+    ' original appearance).
     If (m_UndoNum = m_UndoNumAtLastSave_Flat) Or (m_UndoNum = m_UndoNumAtLastSave_PDI) Then
     
         'In the special case of m_UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
@@ -538,18 +534,22 @@ Friend Sub RestoreUndoData()
     
     'Select the relevant tool for this action, if we were supplied one previously
     'NOTE: as of 7.0, I have disabled this capability.  It's not as useful as I thought it would be, and it's very
-    'confusing to have the program auto-swapping tools without your input.
+    'confusing when the program swaps tools without your input.
     'If (GetUndoTool > -1) Then toolbar_Toolbox.SelectNewTool GetUndoTool
     
-    'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.  We handle
-    ' this in two steps.
+    'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.
+    ' (Remember that PhotoDemon doesn't save a full copy of the image on every Undo action.  Instead, it only saves
+    ' the data that has changed.  This makes Undo-ing a bit more complicated, as we sometimes have to revert to a
+    ' much earlier state, then "replay" all subsequent steps to arrive at the correct image state.)
     
-    'First, we ask our search routine to find the nearest relevant diff for this Undo type.  Some parameters (like the undoLayerID)
-    ' will be ignored if this undo entry isn't layer-specific.
+    'First, find the nearest relevant diff for this type of Undo operation.  For a typical UNDO_LAYER operation,
+    ' for example, this can be an UNDO_EVERYTHING, UNDO_IMAGE, or UNDO_LAYER operation - if the UNDO_LAYER operation
+    ' matches this layer ID!  (Similarly, some parameters - like undoLayerID-  will be ignored if this undo entry
+    ' isn't layer-specific.)
     Dim nearestDiffIndex As Long
     nearestDiffIndex = FindNearestDiffIndex(m_UndoNum, m_UndoStack(m_UndoNum).undoType, m_UndoStack(m_UndoNum).undoLayerID)
     
-    'Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & m_undoStack(nearestDiffIndex).undoType
+    Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & m_UndoStack(nearestDiffIndex).undoType
     
     'We now have to handle some tricky diff-related business.  If the Undo type is a full pdImage reconstruction (meaning the entire
     ' layer stack is being recreated as part of the Undo process), we have to re-apply all diffs in two steps: first, we have to
@@ -558,9 +558,11 @@ Friend Sub RestoreUndoData()
     ' against their most recent diff patch(es).  To prevent the screen from flickering like crazy while we do all this background
     ' processing, we forcibly suspend all screen redraws until our work is complete.
     '
-    'Similarly, if we are undoing a single layer action (UNDO_LAYER, UNDO_LAYER_VECTORSAFE), we may need to apply an optional
-    ' UNDO_LAYERHEADER diff after the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred
-    ' since the latest full layer DIB write-to-file.
+    'Similarly, if we are undoing a single layer action (UNDO_LAYER, UNDO_LAYER_VECTORSAFE), we may need to apply optional
+    ' UNDO_LAYERHEADER diffs after the fact, to ensure the layer's header is up-to-date against any header-only changes that
+    ' occurred since the latest full layer DIB write-to-file.
+    '
+    'Selections follow the same rule, but for UNDO_SELECTION types only
     Dim suspendRedraws As Boolean
     If (m_UndoStack(m_UndoNum).undoType = UNDO_Everything) Or (m_UndoStack(m_UndoNum).undoType = UNDO_Image) Or (m_UndoStack(m_UndoNum).undoType = UNDO_Image_VectorSafe) Or (m_UndoStack(m_UndoNum).undoType = UNDO_ImageHeader) Or (m_UndoStack(m_UndoNum).undoType = UNDO_Layer) Or (m_UndoStack(m_UndoNum).undoType = UNDO_Layer_VectorSafe) Then
         
@@ -635,6 +637,22 @@ Friend Sub RestoreUndoData()
                 End If
                 
             Next i
+            
+            'Finally, repeat the above steps for any selection-specific changes that may have occurred.
+            
+            ' (NOTE: I added this fix on 23 October 2017, and to be entirely honest, I'm not sure I comprehend why it works,
+            ' or what other ramifications it may have.  All I know is that there's an extremely obnoxious - and reproducible -
+            ' bug that occurs when you apply the following actions:
+            ' 1) Create selection, 2) Move selection, 3) Crop image, 4) Undo back to (1)
+            ' At this point, your initial selection should be on-screen, but for some reason, it isn't!  The Undo engine has
+            ' instead chosen to restore the original image state, without an active selection.  (Weirdly, if you UNDO one
+            ' more time, back to the original image state, then REDO once, the selection appears, as it should.)  Adding this
+            ' additional check solves the problem completely.
+            Dim nearestSelectionDiff As Long
+            nearestSelectionDiff = FindNearestDiffIndex(m_UndoNum, UNDO_Selection)
+            If (nearestSelectionDiff > nearestDiffIndex) Then
+                ImageImporter.LoadUndo GenerateUndoFilename(nearestSelectionDiff), m_UndoStack(nearestSelectionDiff).undoType, UNDO_Selection, , suspendRedraws
+            End If
         
         'If this is a just a layer Undo, we simply need to verify the layer header against any diffs more recent than the last
         ' full DIB reconstruction for this layer.
@@ -761,6 +779,7 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             'This Case Else statement will not be necessary when we have implemented all Diff types.  Until that happens,
             ' however, we can treat it the same as UNDO_IMAGE.
             Case Else
+                Debug.Print "FindNearestDiffIndex hit a weird place??"
                 If (undoTypeCheck <> UNDO_Selection) Then
                     FindNearestDiffIndex = i
                     Exit For
@@ -1015,7 +1034,7 @@ Friend Sub ClearUndos()
     Files.FileDeleteIfExists GenerateUndoHeaderFilename()
     If (m_ThumbnailFileHandle <> 0) Then m_FSO.FileCloseHandle m_ThumbnailFileHandle
     Files.FileDeleteIfExists GenerateUndoHeaderFilename() & ".pdasi"
-    ReDim m_UTF8(0) As Byte
+    Erase m_UTF8
     
     'Set the current and maximum Undo number to 0
     m_UndoNum = 0
@@ -1107,7 +1126,7 @@ Friend Sub DebugUndo(ByVal sourceOfDebugRequest As String)
 End Sub
 
 'Write the Undo stack out to file, in XML format, with an attached thumbnail image as well (for AutoSave purposes)
-Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
+Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
     
     'The undo/redo engine is the source of a lot of processing time, particularly when painting.  In an attempt to
     ' better profile it, detailed timing measurements are currently reported in nightly builds.
@@ -1147,7 +1166,6 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
     ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
     xmlEngine.WriteTag "OriginalSessionID", OS.UniqueSessionID()
-    
     xmlEngine.WriteBlankLine
     
     'Next, we're going to write out all Undo stack entries. If PD's "PD_UndoEntry" type is ever changed, note
@@ -1179,20 +1197,20 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     'With all Undo data successfully written, close the XML data and write it out to file.
     ' (Note that a custom, high-speed approach is used for this.)
     If (m_HeaderXMLHandle = 0) Then m_FSO.FileCreateHandle dstFilename, m_HeaderXMLHandle, True, True, OptimizeTempFile
-    
     If (m_HeaderXMLHandle <> 0) Then
-    
+
         'Convert the source string to UTF-8, and leave three open spaces for the BOM at the front
         Dim utf8Len As Long
-        Strings.UTF8FromStrPtr xmlEngine.GetXMLStringPtr, xmlEngine.GetXMLStringLen_Chars, m_UTF8, utf8Len, 3
+        Strings.UTF8FromStrPtr xmlEngine.GetXMLStringPtr, -1, m_UTF8, utf8Len, 3
         
         'Add the required UTF-8 BOM.  (Required by PD, anyway - it makes text file reading much faster, as we don't have to
         ' guess at encodings.)
         m_UTF8(0) = &HEF: m_UTF8(1) = &HBB: m_UTF8(2) = &HBF
         
-        'Overwrite our existing XML file
-        m_FSO.FileSave_FastOverwrite m_HeaderXMLHandle, VarPtr(m_UTF8(0)), utf8Len + 3
-    
+        'Overwrite our existing XML file.  Note that we use utf8Len + 2 instead of +3, because the UTF8FromStrPtr call above
+        ' returns a length that *includes* the trailing null char (which we obviously don't want to write to file).
+        m_FSO.FileSave_FastOverwrite m_HeaderXMLHandle, VarPtr(m_UTF8(0)), utf8Len + 2
+
     End If
     
     If UNDO_DETAILED_TIMING_REPORTS Then
@@ -1207,18 +1225,21 @@ Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
             
             'For performance reasons, we use a persistent file handle
             If (m_ThumbnailFileHandle = 0) Then m_FSO.FileCreateHandle GenerateUndoHeaderFilename() & ".pdasi", m_ThumbnailFileHandle, True, True, OptimizeTempFile
-            
             If (m_ThumbnailFileHandle <> 0) Then
-                m_FSO.FileMovePointer m_ThumbnailFileHandle, 0, FILE_BEGIN
-                If m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile(vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle) Then m_FSO.FileSetEOF m_ThumbnailFileHandle
+                
+                'If this image was created from an Autosave instance (e.g. after a program crash), thumbnails won't exist.
+                ' That's okay - but we don't want to try and write a thumbnail file if this occurs.
+                If (m_UndoStack(m_UndoNum - 1).thumbnailLarge.GetDIBWidth > 0) Then
+                    m_FSO.FileMovePointer m_ThumbnailFileHandle, 0, FILE_BEGIN
+                    If m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile(vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle) Then m_FSO.FileSetEOF m_ThumbnailFileHandle
+                End If
+                
             End If
             
         End If
     End If
     
-    If UNDO_DETAILED_TIMING_REPORTS Then
-        Debug.Print "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    End If
+    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -1333,7 +1354,6 @@ Private Sub Class_Initialize()
     
     'A private FSO instance and UTF-8 buffer are now used, for improved performance.
     Set m_FSO = New pdFSO
-    ReDim m_UTF8(0) As Byte
     
     'We also track the export-time taken by Undo type.  If Undos are taking too long to generate, we crank up lz4 acceleration
     ' to compensate.
@@ -1366,7 +1386,17 @@ End Sub
 
 'When this class is unloaded, we must make sure to delete any Undo files we created
 Private Sub Class_Terminate()
-    If (m_HeaderXMLHandle <> 0) Then m_FSO.FileCloseHandle m_HeaderXMLHandle
-    If (m_ThumbnailFileHandle <> 0) Then m_FSO.FileCloseHandle m_ThumbnailFileHandle
+    
+    If (m_HeaderXMLHandle <> 0) Then
+        m_FSO.FileCloseHandle m_HeaderXMLHandle
+        m_HeaderXMLHandle = 0
+    End If
+    
+    If (m_ThumbnailFileHandle <> 0) Then
+        m_FSO.FileCloseHandle m_ThumbnailFileHandle
+        m_ThumbnailFileHandle = 0
+    End If
+    
     ClearUndos
+    
 End Sub

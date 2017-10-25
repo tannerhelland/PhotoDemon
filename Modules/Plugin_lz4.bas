@@ -97,7 +97,7 @@ Public Function GetLz4Version() As String
 End Function
 
 Public Function IsLz4Available() As Boolean
-    IsLz4Available = CBool(m_Lz4Handle <> 0)
+    IsLz4Available = (m_Lz4Handle <> 0)
 End Function
 
 'Determine the maximum possible size required by a compression operation.  The destination buffer should be at least
@@ -143,7 +143,6 @@ Public Function Lz4CompressNakedPointers(ByVal dstPointer As Long, ByRef dstSize
     
     'Check for error returns
     Lz4CompressNakedPointers = (finalSize <> 0)
-    
     If Lz4CompressNakedPointers Then
         dstSizeInBytes = finalSize
     Else
