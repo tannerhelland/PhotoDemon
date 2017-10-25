@@ -35,13 +35,11 @@ Private curProgBar As cProgressBarOfficial
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
 Public Sub Replacement_DoEvents(ByVal srcHwnd As Long)
-
     Dim tmpMsg As winMsg
     Do While PeekMessage(tmpMsg, srcHwnd, 0&, 0&, &H1&)
         TranslateMessage tmpMsg
         DispatchMessage tmpMsg
     Loop
-    
 End Sub
 
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch

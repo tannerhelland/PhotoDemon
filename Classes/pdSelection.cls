@@ -2801,9 +2801,9 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' 2) up-to-date.
     If (Not m_FinalOutlineIsReady) Or (m_FinalOutline Is Nothing) Or overlayWasRegenerated Then
         
-        #If DEBUGMODE = 1 Then
-            'Debug.Print "rebuilding selection outline path (" & Timer & ")"
-        #End If
+        '#If DEBUGMODE = 1 Then
+        '    Debug.Print "rebuilding selection outline path (" & Timer & ")"
+        '#End If
         
         If (m_FinalOutline Is Nothing) Then Set m_FinalOutline = New pd2DPath Else m_FinalOutline.ResetPath
         

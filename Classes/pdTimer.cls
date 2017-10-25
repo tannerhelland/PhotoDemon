@@ -93,7 +93,7 @@ Public Sub StopTimer()
     If (m_TimerID <> 0) Then
     
         Dim timerReleaseCheck As Boolean
-        timerReleaseCheck = CBool(KillTimer(OS.ThunderMainHWnd, ObjPtr(Me)) <> 0)
+        timerReleaseCheck = (KillTimer(OS.ThunderMainHWnd, ObjPtr(Me)) <> 0)
         m_TimerID = 0
         
         If timerReleaseCheck Then

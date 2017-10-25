@@ -183,7 +183,7 @@ Private Const WS_EX_WINDOWEDGE As Long = &H100
 Private Const WS_EX_TOPMOST As Long = &H8
 Private m_TTActive As Boolean, m_TTOwner As Long, m_TTHwnd As Long
 Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long
-Private m_TTRectCopy As RECTL
+Private m_TTRectCopy As RectL
 
 'Tooltips can request icons, but as of 7.0, this behavior is unused.  (As such, these are not currently implemented.)
 Public Enum TT_ICON_TYPE
@@ -384,7 +384,7 @@ End Function
 ' doesn't break by accidentally setting focus to something we shouldn't.
 Public Function IsControlFocusable(ByRef Ctl As Control) As Boolean
 
-    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is pdAccelerator) And Not (TypeOf Ctl Is ShellPipe) And Not (TypeOf Ctl Is pdDownload) Then
+    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is pdAccelerator) And Not (TypeOf Ctl Is pdDownload) Then
         IsControlFocusable = True
     Else
         IsControlFocusable = False
@@ -858,7 +858,7 @@ End Sub
 
 'When an object requests a tooltip, they need to pass a number of additional parameters (like the window rect, which is used to
 ' ideally position the tooltip).  Logic similar to pdDropDown is used to display the tooltip.
-Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL, ByVal mouseX As Single, ByVal mouseY As Single, ByRef ttCaption As String, ByRef ttTitle As String)
+Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL, ByVal mouseX As Single, ByVal mouseY As Single, ByRef ttCaption As String, ByRef ttTitle As String)
     
     On Error GoTo UnexpectedTTTrouble
     
@@ -875,7 +875,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
     ' close to the mouse pointer as possible, while also positioning it outside the control rectangle (so that we
     ' don't obscure the control's contents - a constant annoyance with normal tooltips).
-    Dim ttRect As RECTF
+    Dim ttRect As RectF
     
     'Start by figuring out which edge is closest to the current mouse position.  The passed mouse x/y ratios make this simple.
     ' (Each mouse value is a value [0, 1] instead of a hard-coded coordinate.)
@@ -912,7 +912,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     availableWidth = Interface.FixDPI(PD_TT_MAX_WIDTH)
     
     'Tooltips can include linebreaks, so all size detection needs to be multiline-aware.
-    Dim dtRect As RECTL
+    Dim dtRect As RectL
     ttFont.GetBoundaryRectOfMultilineString ttCaption, availableWidth, dtRect
     ttCaptionWidth = dtRect.Right - dtRect.Left
     If (ttCaptionWidth > availableWidth) Then
@@ -978,7 +978,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     Dim hMonitor As Long
     hMonitor = g_Displays.GetHMonitorFromRectL(srcControlRect)
     
-    Dim monitorRect As RECTL
+    Dim monitorRect As RectL
     g_Displays.GetDisplayByHandle(hMonitor).GetWorkingRect monitorRect
     
     Select Case ttMinPosition
