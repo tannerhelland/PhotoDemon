@@ -83,6 +83,10 @@ Private m_dontShutdownYet As Boolean
 ' (This is controlled via property.)
 Private m_dontAutoUnloadParent As Boolean
 
+'To avoid "Client Site not available (Error 398)", we wait to access certain parent properties until
+' Init/ReadProperty events have fired.  (See MSDN: https://msdn.microsoft.com/en-us/library/aa243344(v=vs.60).aspx)
+Private m_ParentAvailable As Boolean
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -270,6 +274,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     DontAutoUnloadParent = PropBag.ReadProperty("dontAutoUnloadParent", False)
+    m_ParentAvailable = True
 End Sub
 
 Private Sub UserControl_Resize()
@@ -284,10 +289,10 @@ Private Sub UserControl_Show()
     
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
-    On Error GoTo somethingStoleFocus
-    If MainModule.IsProgramRunning() Then cmdOK.SetFocus
+    On Error GoTo SomethingStoleFocus
+    If MainModule.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
 
-somethingStoleFocus:
+SomethingStoleFocus:
     
 End Sub
 
@@ -299,8 +304,10 @@ End Sub
 ' the current monitor's DPI setting.
 Private Sub UpdateControlLayout()
 
-    On Error GoTo skipUpdateLayout
-
+    On Error GoTo SkipUpdateLayout
+    
+    If (Not m_ParentAvailable) Then Exit Sub
+    
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetControlWidth
@@ -334,7 +341,7 @@ Private Sub UpdateControlLayout()
 'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
 '       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
 '       will fail every time a command bar is unloaded (e.g. on almost every tool).
-skipUpdateLayout:
+SkipUpdateLayout:
 
 End Sub
 
