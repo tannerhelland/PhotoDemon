@@ -97,6 +97,23 @@ Friend Sub AppendFromPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long)
     m_Length = m_Length + srcLenInChars
 End Sub
 
+Friend Sub AppendLine(ByRef srcString As String)
+    EnsureCapacity m_Length + Len(srcString) + 2
+    CopyMemoryStrict StrPtr(m_Buffer) + m_Length * 2, StrPtr(srcString), Len(srcString) * 2
+    m_Length = m_Length + Len(srcString) + 2
+    
+    'Manually write a Windows-style CrLf feed after the original string
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 4, 13
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
+End Sub
+
+Friend Sub AppendLineBreak()
+    m_Length = m_Length + 2
+    EnsureCapacity m_Length
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 4, 13
+    PutMem2 StrPtr(m_Buffer) + m_Length * 2 - 2, 10
+End Sub
+
 Friend Sub AppendPDString(ByRef srcPDString As pdString)
     EnsureCapacity m_Length + srcPDString.GetLength
     CopyMemoryStrict StrPtr(m_Buffer) + m_Length * 2, srcPDString.GetStrPtr(), srcPDString.GetLength() * 2
