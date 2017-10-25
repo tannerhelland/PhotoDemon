@@ -102,6 +102,9 @@ Private m_LogFileHandle As Long
 ' we reuse a UTF-8 conversion buffer between writes.  This buffer should only be size-increased if necessary.
 Private m_utf8Buffer() As Byte, m_utf8Size As Long
 
+'A string builder is used to cut down on string allocations
+Private m_LogString As pdString
+
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
@@ -128,58 +131,59 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             Files.FileDeleteIfExists m_logPath
             
             'Assemble a basic collection of relevant debug data.
-            Dim debugHeader As String
+            Dim debugHeader As pdString
+            Set debugHeader = New pdString
             
             If writeHeaderToo Then
             
-                debugHeader = "**********************************************" & vbCrLf & vbCrLf
-                debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
+                debugHeader.AppendLine "**********************************************" & vbCrLf
+                debugHeader.AppendLine "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf
                 
-                debugHeader = debugHeader & "Date: " & Date & vbCrLf
-                debugHeader = debugHeader & "Time: " & Time & vbCrLf
-                debugHeader = debugHeader & "Session ID: " & OS.UniqueSessionID() & vbCrLf
-                debugHeader = debugHeader & "Compiled: " & CStr(OS.IsProgramCompiled) & vbCrLf
-                debugHeader = debugHeader & "First run: " & CStr(g_IsFirstRun) & vbCrLf & vbCrLf
+                debugHeader.AppendLine "Date: " & Date
+                debugHeader.AppendLine "Time: " & Time
+                debugHeader.AppendLine "Session ID: " & OS.UniqueSessionID()
+                debugHeader.AppendLine "Compiled: " & CStr(OS.IsProgramCompiled)
+                debugHeader.AppendLine "First run: " & CStr(g_IsFirstRun) & vbCrLf
                 
-                debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
+                debugHeader.AppendLine "-- SYSTEM INFORMATION --" & vbCrLf
                 
-                debugHeader = debugHeader & "OS: " & OS.OSVersionAsString & vbCrLf
-                debugHeader = debugHeader & "Processor cores (logical): " & OS.LogicalCoreCount & vbCrLf
-                debugHeader = debugHeader & "Processor features: " & OS.ProcessorFeatures & vbCrLf
-                debugHeader = debugHeader & "System RAM: " & OS.RAM_SystemTotal & vbCrLf
-                debugHeader = debugHeader & "Max memory available to PhotoDemon: " & OS.RAM_Available & vbCrLf
-                debugHeader = debugHeader & "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf & vbCrLf
+                debugHeader.AppendLine "OS: " & OS.OSVersionAsString
+                debugHeader.AppendLine "Processor cores (logical): " & OS.LogicalCoreCount
+                debugHeader.AppendLine "Processor features: " & OS.ProcessorFeatures
+                debugHeader.AppendLine "System RAM: " & OS.RAM_SystemTotal
+                debugHeader.AppendLine "Max memory available to PhotoDemon: " & OS.RAM_Available
+                debugHeader.AppendLine "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf
                 
-                debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
+                debugHeader.AppendLine "-- PROGRAM INFORMATION -- " & vbCrLf
                 
-                debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
-                debugHeader = debugHeader & "Translation active: " & CStr(g_Language.TranslationActive()) & vbCrLf
-                debugHeader = debugHeader & "Language in use: " & CStr(g_Language.GetCurrentLanguage()) & vbCrLf
-                debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf & vbCrLf
+                debugHeader.AppendLine "Version: " & GetPhotoDemonNameAndVersion
+                debugHeader.AppendLine "Translation active: " & CStr(g_Language.TranslationActive())
+                debugHeader.AppendLine "Language in use: " & CStr(g_Language.GetCurrentLanguage())
+                debugHeader.AppendLine "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf
                 
-                debugHeader = debugHeader & "-- PLUGIN INFORMATION -- " & vbCrLf & vbCrLf
+                debugHeader.AppendLine "-- PLUGIN INFORMATION -- " & vbCrLf
                 
                 For i = 0 To PluginManager.GetNumOfPlugins - 1
-                    debugHeader = debugHeader & PluginManager.GetPluginName(i) & ": "
+                    debugHeader.Append PluginManager.GetPluginName(i) & ": "
                     If PluginManager.IsPluginCurrentlyInstalled(i) Then
-                        debugHeader = debugHeader & "available"
+                        debugHeader.Append "available"
                     Else
-                        debugHeader = debugHeader & "MISSING"
+                        debugHeader.Append "MISSING"
                     End If
-                    debugHeader = debugHeader & vbCrLf
+                    debugHeader.AppendLineBreak
                 Next i
             
             End If
             
-            debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
-            debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
+            debugHeader.AppendLine vbCrLf & "**********************************************" & vbCrLf
+            debugHeader.AppendLine "-- SESSION REPORT --" & vbCrLf
             
             'Grab a persistent append handle to the log file
             m_logDatatoFile = True
             If (Not m_FSO.FileCreateAppendHandle(m_logPath, m_LogFileHandle)) Then m_LogFileHandle = 0
             
             'Convert the first chunk of debug text to UTF-8, then write the data to file
-            WriteDebugStringAsUTF8 debugHeader
+            WriteDebugStringAsUTF8 debugHeader.ToString()
             
         'File writing is requested, but the log file folder is inaccessible
         Else
@@ -292,7 +296,7 @@ End Function
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
 Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DebugMessages = PDM_Normal, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
     
-    Dim curTime As String, prefixString As String
+    m_LogString.Reset
     
     'If this message was logged at startup, skip all the usual formalities and proceed directly to writing the file.
     If (debugMsgType <> PDM_Startup_Message) Then
@@ -300,38 +304,46 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         'Increase the event count
         m_NumLoggedEvents = m_NumLoggedEvents + 1
         
-        'Generate a timestamp for this request
-        curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
-        
         'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
         Select Case debugMsgType
         
             Case PDM_Normal
-                prefixString = "-DBG-"
+                m_LogString.Append "-DBG-"
                 
             Case PDM_User_Message
-                prefixString = "(USM)"
+                m_LogString.Append "(USM)"
             
             Case PDM_Mem_Report
-                prefixString = "*RAM*"
+                m_LogString.Append "*RAM*"
             
             Case PDM_HDD_Report
-                prefixString = "^HDD^"
+                m_LogString.Append "^HDD^"
                 
             Case PDM_Processor
-                prefixString = "#PRC#"
+                m_LogString.Append "#PRC#"
                 
             Case PDM_External_Lib
-                prefixString = "!EXT!"
+                m_LogString.Append "!EXT!"
                 
             Case PDM_Timer_Report
-                prefixString = "/TMR/"
+                m_LogString.Append "/TMR/"
         
         End Select
         
+        'Generate a timestamp for this request
+        m_LogString.Append " | "
+        m_LogString.Append Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
+        m_LogString.Append " | "
+        m_LogString.Append actionString
+        
         'For special message types, populate their contents now
         If (debugMsgType = PDM_Mem_Report) Then
-        
+            
+            If (Len(actionString) > 0) Then
+                m_LogString.AppendLineBreak
+                m_LogString.Append Space$(22)
+            End If
+            
             m_lastMemCheckEventNum = m_NumLoggedEvents
         
             'The caller wants a RAM update.  Generate one now.
@@ -349,66 +361,58 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 userObjectPeak = OS.AppResourceUsage(PDGR_UserObjectsPeak)
             End If
             
-            'Format the strings into something more readable
+            'Format the return objects into something readable
             If (curMemUsage <> 0) Then
             
-                Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
-                curMemUsageString = Format$(curMemUsage, "###,###,###,##0") & " K"
-                maxMemUsageString = Format$(maxMemUsage, "###,###,###,##0") & " K"
-                deltaMemString = Format$(deltaMem, "###,###,###,##0") & " K"
-                If (deltaMem > 0) Then deltaMemString = "+" & deltaMemString
-                
-                Dim gdiUsageString As String, userUsageString As String
-                gdiUsageString = Format$(curGDIObjects, "###,##0") & " (" & Format$(gdiObjectPeak, "###,##0") & ")"
-                userUsageString = Format$(curUserObjects, "###,##0") & " (" & Format$(userObjectPeak, "###,##0") & ")"
-                
-                'Ignore the supplied action string, and create our own
-                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString _
-                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString
+                m_LogString.Append "CURRENT: "
+                m_LogString.Append Format$(curMemUsage, "###,###,###,##0") & " K"
+                m_LogString.Append " | DELTA: "
+                If (deltaMem > 0) Then m_LogString.Append "+"
+                m_LogString.Append Format$(deltaMem, "###,###,###,##0") & " K"
+                m_LogString.Append " | SESSION MAX: "
+                m_LogString.Append Format$(maxMemUsage, "###,###,###,##0") & " K"
+                m_LogString.Append " | GDI: "
+                m_LogString.Append Format$(curGDIObjects, "###,##0") & " (" & Format$(gdiObjectPeak, "###,##0") & ")"
+                m_LogString.Append " | USER: "
+                m_LogString.Append Format$(curUserObjects, "###,##0") & " (" & Format$(userObjectPeak, "###,##0") & ")"
+                m_LogString.AppendLineBreak
                 
                 'Also report some internal program object counts (DCs, hWnds, hFonts, etc)
-                Dim dcCountString As String
-                dcCountString = Format$(g_DCsCreated - g_DCsDestroyed, "###,##0")
-                dcCountString = dcCountString & " (" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
-                actionString = actionString & vbCrLf & Space$(20) & "DC: " & dcCountString
+                m_LogString.Append Space$(22) & "DC: "
+                m_LogString.Append Format$(g_DCsCreated - g_DCsDestroyed, "###,##0") & " (" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
                 
-                Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long, apiWindowUsage As String
+                Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long
                 apiWindowsNet = UserControls.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
-                apiWindowUsage = Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
-                actionString = actionString & " | HWND: " & apiWindowUsage
+                m_LogString.Append " | HWND: "
+                m_LogString.Append Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
                 
-                Dim fontCountString As String
-                fontCountString = Format$(g_FontsCreated - g_FontsDestroyed, "###,##0")
-                fontCountString = fontCountString & " (" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
-                actionString = actionString & " | FONT: " & fontCountString
+                m_LogString.Append " | FONT: "
+                m_LogString.Append Format$(g_FontsCreated - g_FontsDestroyed, "###,##0") & " (" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
                 
-                Dim dibCountString As String
-                dibCountString = Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0")
-                dibCountString = dibCountString & " (" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
-                actionString = actionString & " | DIB: " & dibCountString
+                m_LogString.Append " | DIB: "
+                m_LogString.Append Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0") & " (" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
                 
-                Dim icoUsageString As String
                 Dim icosNet As Long, icosCreated As Long, icosDestroyed As Long
                 icosNet = IconsAndCursors.GetCreatedIconCount(icosCreated, icosDestroyed)
-                icoUsageString = Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
-                actionString = actionString & " | ICON: " & icoUsageString
+                m_LogString.Append " | ICON: "
+                m_LogString.Append Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
                 
-                Dim hookUsageString As String
                 Dim hooksNet As Long, hooksCreated As Long, hooksDestroyed As Long
                 hooksNet = UserControls.GetHookCount(hooksCreated, hooksDestroyed)
-                hookUsageString = Format$(hooksNet, "###,##0") & " (" & Format$(hooksCreated, "###,##0") & ":" & Format$(hooksDestroyed, "###,##0") & ")"
-                actionString = actionString & vbCrLf & Space$(20) & "HOOK: " & hookUsageString
+                m_LogString.AppendLineBreak
+                m_LogString.Append Space$(22) & "HOOK: "
+                m_LogString.Append Format$(hooksNet, "###,##0") & " (" & Format$(hooksCreated, "###,##0") & ":" & Format$(hooksDestroyed, "###,##0") & ")"
                 
-                Dim timerUsageString As String
                 Dim timersNet As Long, timersCreated As Long, timersDestroyed As Long
                 timersNet = UserControls.GetTimerCount(timersCreated, timersDestroyed)
-                timerUsageString = Format$(timersNet, "###,##0") & " (" & Format$(timersCreated, "###,##0") & ":" & Format$(timersDestroyed, "###,##0") & ")"
-                actionString = actionString & " | TIMER: " & timerUsageString
+                m_LogString.Append " | TIMER: "
+                m_LogString.Append Format$(timersNet, "###,##0") & " (" & Format$(timersCreated, "###,##0") & ":" & Format$(timersDestroyed, "###,##0") & ")"
                 
-                actionString = actionString & " | UC: " & Format$(UserControls.GetPDControlCount(), "###,##0")
+                m_LogString.Append " | UC: "
+                m_LogString.Append Format$(UserControls.GetPDControlCount(), "###,##0")
                 
             Else
-                actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
+                m_LogString.Append "WARNING: PD was unable to measure its own memory usage.  Please investigate."
             End If
             
             'Update the module-level last mem check value
@@ -419,25 +423,25 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         
         End If
         
-        'Add a timestamp
-        actionString = prefixString & " " & curTime & " | " & actionString
-        
         'Mirror output to the Immediate window, then append a final vbCrLf before dumping out to file
-        Debug.Print actionString
-        actionString = actionString & vbCrLf
+        Debug.Print m_LogString.ToString()
+        m_LogString.AppendLineBreak
         
+    Else
+        Debug.Print actionString
+        m_LogString.AppendLine actionString
     End If
     
     'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
-        If m_logDatatoFile Then WriteDebugStringAsUTF8 actionString
+        If m_logDatatoFile Then WriteDebugStringAsUTF8 m_LogString.ToString()
     Else
     
         'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
         ' formally initialize this class.  When that happens, we cache the messages in a temporary array; when the class is
         ' formally initialized, we'll dump that array out to file.
         If (m_numBackupMessages > UBound(m_backupMessages)) Then ReDim Preserve m_backupMessages(0 To m_numBackupMessages * 2 - 1) As String
-        m_backupMessages(m_numBackupMessages) = "(" & CStr(m_numBackupMessages + 1) & ") " & actionString
+        m_backupMessages(m_numBackupMessages) = "<BCK< | " & Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem) & " | " & "(" & CStr(m_numBackupMessages + 1) & ") " & actionString
         m_numBackupMessages = m_numBackupMessages + 1
         
     End If
@@ -453,7 +457,7 @@ End Sub
 
 'Shorcut function for logging timing results
 Friend Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
-    Me.LogAction "Timing report: " & strDescription & " - " & Format$(CStr(timeTakenRaw * 1000), "#####0") & " ms", PDM_Timer_Report
+    Me.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
 End Sub
 
 'Internal helper function that handles the "convert string to UTF-8 and append to file" part of logging
@@ -465,6 +469,8 @@ End Sub
 
 Private Sub Class_Initialize()
     
+    Set m_LogString = New pdString
+    
     m_debuggerActive = False
     m_logDatatoFile = False
     
@@ -473,6 +479,8 @@ Private Sub Class_Initialize()
     
     m_NumLoggedEvents = 0
     m_lastMemCheck = 0
+    
+    ReDim m_utf8Buffer(0) As Byte
     
     Set m_FSO = New pdFSO
 
