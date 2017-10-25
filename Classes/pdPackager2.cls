@@ -460,13 +460,13 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         Dim srcDataPointer As Long
         If compressionIsAnImprovement Then
             srcDataPointer = VarPtr(m_CompressionBuffer(0))
-            Debug.Print "Node data compressed in " & VBHacks.GetTimeDiffNowAsString(startTime) & "; size reduction is " & Format$(100# - (100# * (CDbl(compressedSize) / CDbl(dataLength))), "#0.0") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
+            'Debug.Print "Node data compressed in " & VBHacks.GetTimeDiffNowAsString(startTime) & "; size reduction is " & Format$(100# - (100# * (CDbl(compressedSize) / CDbl(dataLength))), "#0.0") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
         
         'If compression failed - or if it resulted in a larger data size - disregard the compression results, and instead
         ' write out an uncompressed data chunk.
         Else
             
-            'Reset all compression flags and sizes
+            'Debug.Print "Node data showed no benefit from compression; writing uncompressed chunk instead (" & dataPointer & ", " & dataLength & ", " & compressedSize & ")"
             SetCompressionFlag nodeIndex, useHeaderBuffer, compressData, False, False
             compressedSize = dataLength
             
@@ -1911,36 +1911,34 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     'Move the data buffer position to the relevant offset for the requested chunk
     m_DataBuffer.SetPosition dataOffset
     
+    'Before retrieving the data, we need to ensure the destination buffer is large enough to hold the results.
+    ' (For performance reasons, we ReDim the destination buffer *only* if absolutely necessary.)
+    Dim needToSizeArray As Boolean: needToSizeArray = False
+    If VBHacks.IsArrayInitialized(dstArray) Then
+        
+        'If the user wants the destination array trimmed, we can still check to see if it's already the
+        ' ideal size; while the odds of this are low, the potential performance gains are large, so it's
+        ' worth the trouble.
+        If trimDstArray Then
+            If ((UBound(dstArray) - LBound(dstArray) + 1) <> dataOriginalSize) Then needToSizeArray = True
+        
+        'Meanwhile, if the caller doesn't care about a perfectly trimmed array, we still need to ensure
+        ' sufficient size is available for the decompression operation.
+        Else
+            If ((UBound(dstArray) - LBound(dstArray) + 1) < dataOriginalSize) Then needToSizeArray = True
+        End If
+        
+    Else
+        needToSizeArray = True
+    End If
+    
+    If needToSizeArray Then ReDim dstArray(0 To dataOriginalSize - 1) As Byte
+    dstFinalSize = dataOriginalSize
+    
     'If the original size and packed size are different, the data must be compressed.
     If (dataPackedSize <> dataOriginalSize) Then
         
-        'Resize the destination buffer to the original size of the data as necessary
-        Dim needToSizeArray As Boolean: needToSizeArray = False
-        
-        'If the user doesn't want the destination array trimmed, we can still check to see if it's already the
-        ' perfect size; while the odds of this are low, the potential performance gains are large, so it's
-        ' worth the trouble.
-        If trimDstArray Then
-            If VBHacks.IsArrayInitialized(dstArray) Then
-                If ((UBound(dstArray) - LBound(dstArray) + 1) <> dataOriginalSize) Then needToSizeArray = True
-            Else
-                needToSizeArray = True
-            End If
-        
-        'If the user doesn't want the destination array trimmed, we only need to resize it if it's too small for
-        ' this read (or if it's uninitialized, obviously).
-        Else
-            If VBHacks.IsArrayInitialized(dstArray) Then
-                If ((UBound(dstArray) - LBound(dstArray) + 1) < dataOriginalSize) Then needToSizeArray = True
-            Else
-                needToSizeArray = True
-            End If
-        End If
-        
-        If needToSizeArray Then ReDim dstArray(0 To dataOriginalSize - 1) As Byte
-        
         'Now that the destination array is appropriately sized, we can offload further loading to the unsafe pointer-only function
-        dstFinalSize = dataOriginalSize
         GetNodeDataByIndex = Me.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, VarPtr(dstArray(LBound(dstArray))))
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
