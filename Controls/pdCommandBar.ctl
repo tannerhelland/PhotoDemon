@@ -221,6 +221,10 @@ Private m_dontAutoUnloadParent As Boolean
 ' this to TRUE.  If set, they will bear full responsibility for restoring control state at first-run.
 Private m_dontResetAutomatically As Boolean
 
+'To avoid "Client Site not available (Error 398)", we wait to access certain parent properties until
+' Init/ReadProperty events have fired.  (See MSDN: https://msdn.microsoft.com/en-us/library/aa243344(v=vs.60).aspx)
+Private m_ParentAvailable As Boolean
+
 'As of March 2015, presets are now handled by a separate class.  This greatly simplifies the complexity of this user control.
 Private m_Presets As pdToolPreset
 
@@ -782,6 +786,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         DontAutoUnloadParent = .ReadProperty("DontAutoUnloadParent", False)
         DontResetAutomatically = .ReadProperty("DontResetAutomatically", False)
     End With
+    m_ParentAvailable = True
 End Sub
 
 Private Sub UserControl_Resize()
@@ -845,10 +850,10 @@ Private Sub UserControl_Show()
     
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
-    On Error GoTo somethingStoleFocus
-    If MainModule.IsProgramRunning() Then cmdOK.SetFocus
+    On Error GoTo SomethingStoleFocus
+    If MainModule.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
 
-somethingStoleFocus:
+SomethingStoleFocus:
     
     'Enable previews, and request a refresh
     m_controlFullyLoaded = True
@@ -1203,7 +1208,9 @@ End Sub
 Private Sub UpdateControlLayout()
     
     'Note that error handling is relevant for this control, as the parent hWnd may not be available under all circumstances
-    On Error GoTo skipUpdateLayout
+    On Error GoTo SkipUpdateLayout
+    
+    If (Not m_ParentAvailable) Then Exit Sub
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -1238,7 +1245,7 @@ Private Sub UpdateControlLayout()
 'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
 '       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
 '       will fail every time a command bar is unloaded (e.g. on almost every tool).
-skipUpdateLayout:
+SkipUpdateLayout:
 
 End Sub
 

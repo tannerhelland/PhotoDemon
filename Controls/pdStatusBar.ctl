@@ -580,13 +580,13 @@ Public Sub FitMessageArea()
     'Move the message label into position (right-aligned, with a slight margin)
     Dim newLeft As Long
     newLeft = m_LinePositions(2) + FixDPI(7)
-    If lblMessages.GetLeft <> newLeft Then lblMessages.SetLeft newLeft
+    If (lblMessages.GetLeft <> newLeft) Then lblMessages.SetLeft newLeft
     
     'If the message label will overflow other elements of the status bar, shrink it as necessary
     Dim newMessageArea As Long
     newMessageArea = (bWidth - lblMessages.GetLeft) - FixDPI(12)
     
-    If newMessageArea < 0 Then
+    If (newMessageArea < 0) Then
         lblMessages.Visible = False
     Else
         If (lblMessages.GetWidth <> newMessageArea) Then lblMessages.SetWidth newMessageArea
@@ -638,18 +638,15 @@ Private Sub RedrawBackBuffer()
         
         If (Not sbIconCoords Is Nothing) And m_LastEnabledState Then
             sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
-            sbIconCoords.FreeFromDC
         End If
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
             If m_LastEnabledState Then
                 sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
-                sbIconNetwork.FreeFromDC
             Else
                 If m_NetworkAccessActive Then
                     sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
-                    sbIconNetwork.FreeFromDC
                 End If
             End If
         End If
@@ -673,6 +670,8 @@ Private Sub RedrawBackBuffer()
             For i = 0 To UBound(m_LinePositions)
                 cPainter.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
             Next i
+            
+            Set cSurface = Nothing: Set cPainter = Nothing: Set cPen = Nothing
             
         End If
         
