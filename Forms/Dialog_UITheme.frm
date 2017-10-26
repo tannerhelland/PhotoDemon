@@ -276,7 +276,7 @@ Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As Stri
 
     If ((Len(btnValue) <> 0) And MainModule.IsProgramRunning()) Then
     
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
         If (Not m_Painter Is Nothing) Then
@@ -310,7 +310,7 @@ Private Sub LiveUpdateUITheme()
         ' parent function if the dialog is closed after this request.
         If (btsInterface.ListIndex = 0) Then m_ThemeClass = PDTC_Dark Else m_ThemeClass = PDTC_Light
         m_ThemeAccent = strAccents.ListIndex
-        m_MonoIcons = CBool(btsIcons.ListIndex = 1)
+        m_MonoIcons = (btsIcons.ListIndex = 1)
         
         'Relay any changes to PD's central themer and load a new theme to match
         g_Themer.SetMonochromeIconSetting m_MonoIcons
