@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2017 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 09/December/16
-'Last update: ongoing work on implementing file-backed mode(s)
+'Last updated: 25/October/17
+'Last update: add "DeleteFromStart" function, as part of integration with our asynchronous ExifTool interface
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -39,8 +39,8 @@ Attribute VB_Exposed = False
 '   array trimming.  (Without trimming, the array will only be resized if it is currently too small to hold the
 '   returned data - and it's up to the caller to check the returned data size and react accordingly.)  This saves a
 '   ton of time if we're retrieving multiple large nodes, as we can simply reuse a single very large array.
-' - A framework is now place for backing a stream by a file or a memory buffer.  (TODO; only memory buffers are
-'   implemented right now.)
+' - A framework is now place for backing a stream by a file or a memory buffer.  File-backed buffers allow you to
+'   stream data directly to a file on persistent media, without requiring a matching in-memory copy.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -99,6 +99,54 @@ Private m_FilePointerOffset As Long
 
 'File-backed mode requires a number of other pointers and trackers
 Private m_FileHandle As Long
+
+'Remove (n) bytes from the stream, starting at the front of the stream.  Any un-removed bytes will be shifted to
+' the front of the stream, and the current pointer will be shifted accordingly.  (That said, if the current pointer
+' would be moved before the front of the stream, it will be forcibly set to 0.)
+'
+'NOTE: at present, only memory-backed streams support this function
+Friend Sub DeleteFromStart(ByVal numBytesToDelete As Long)
+    
+    'Ensure the number of bytes to delete is valid
+    If (numBytesToDelete > m_BufferSize) Then numBytesToDelete = m_BufferSize
+    If (numBytesToDelete <= 0) Then Exit Sub
+    
+    If (m_StreamMode = PD_SM_MemoryBacked) Then
+    
+        'If there is a difference in size between the number of bytes to remove, and the size of the buffer,
+        ' shift any remaining bytes downward.  (IMPORTANTLY, note that this would normally require overlapped I/O,
+        ' which carries huge performance penalties - to avoid this, we use a temp buffer.)
+        If (numBytesToDelete < m_BufferSize) Then
+        
+            'Note that we allocate an extra byte, "just in case"
+            Dim tmpBuffer() As Byte
+            ReDim tmpBuffer(0 To m_BufferSize - numBytesToDelete) As Byte
+            CopyMemory_Strict VarPtr(tmpBuffer(0)), VarPtr(m_MemBuffer(numBytesToDelete)), m_BufferSize - numBytesToDelete
+            
+            'Now, copy the same memory into place over the buffer itself
+            CopyMemory_Strict VarPtr(m_MemBuffer(0)), VarPtr(tmpBuffer(0)), m_BufferSize - numBytesToDelete
+            Erase tmpBuffer
+            
+            'Shift the pointer accordingly
+            m_Pointer = m_Pointer - numBytesToDelete
+            If (m_Pointer < 0) Then m_Pointer = 0
+            
+            'Also shift the current buffer size
+            m_BufferSize = m_BufferSize - numBytesToDelete
+            If (m_BufferSize < 0) Then m_BufferSize = 0
+            
+        'If we're deleting the entire buffer, just reset the pointer and size variables, but leave the
+        ' existing memory untouched.
+        Else
+            m_Pointer = 0
+            m_BufferSize = 0
+        End If
+        
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        InternalStreamError "sorry, DeleteFromStart is not currently supported in file-backed streams"
+    End If
+
+End Sub
 
 'Return the current stream pointer position.
 Friend Function GetPosition() As Long
@@ -278,28 +326,37 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
         'If the caller supplied a length value, make sure it doesn't extend past the end of the buffer
         Else
             If (Me.GetPosition() + readLength > m_BufferSize) Then readLength = m_BufferSize - Me.GetPosition()
+            If (readLength < 0) Then
+                InternalStreamError "ReadBytes calculated a read length < 0 (" & readLength & ")"
+                ReadBytes = False
+                Exit Function
+            End If
         End If
-        
-        Dim arrLBound As Long, arrUBound As Long
         
         'Check to see if our destination array is already initialized to the perfect size.  If it is, we don't need to
         ' allocate new memory.
         If VBHacks.IsArrayInitialized(dstBytes) Then
             
+            Dim arrLBound As Long, arrUBound As Long
             arrLBound = LBound(dstBytes)
             arrUBound = UBound(dstBytes)
+            
+            Dim requiredSize As Long, mustResize As Long
+            requiredSize = (arrUBound - arrLBound) + 1
             
             'If the user wants the destination array trimmed to exact size, see if we need to modify the destination
             ' array's size to fit.
             If trimDestinationArray Then
-                If ((arrUBound - arrLBound + 1) <> readLength) Then ReDim dstBytes(arrLBound To arrLBound + readLength - 1) As Byte
-            
+                mustResize = (requiredSize <> readLength)
+                
             'If the user doesn't want the destination array trimmed to exact size, we only need to resize it if it's
             ' smaller than the amount of data being read.
             Else
-                If ((arrUBound - arrLBound + 1) < readLength) Then ReDim dstBytes(arrLBound To arrLBound + readLength - 1) As Byte
+                mustResize = (requiredSize < readLength)
             End If
-        
+            
+            If mustResize Then ReDim dstBytes(arrLBound To arrLBound + readLength - 1) As Byte
+            
         'If the destination array is *not* initialized, make it the perfect size regardless of trimDestinationArray.
         Else
             arrLBound = 0

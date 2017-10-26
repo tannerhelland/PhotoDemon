@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.8</langversion>
+<langversion>1.0.9</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2654,6 +2654,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for ISubclass.cls-->
 
+<!-- BEGIN text for pdAsyncPipe.cls -->
+
+<!-- pdAsyncPipe.cls contains 0 phrases. -->
+
+<!-- END text for pdAsyncPipe.cls-->
+
 <!-- BEGIN text for pd2DBrush.cls -->
 
 <!-- pd2DBrush.cls contains 0 phrases. -->
@@ -3631,12 +3637,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdZoom.cls-->
 
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
 <!-- BEGIN text for pdAccelerator.ctl -->
 
 <!-- pdAccelerator.ctl contains 0 phrases. -->
@@ -4561,12 +4561,6 @@ or the File > Open and File > Import menus.</original>
 <!-- pdTitle.ctl contains 0 phrases. -->
 
 <!-- END text for pdTitle.ctl-->
-
-<!-- BEGIN text for ShellPipe.ctl -->
-
-<!-- ShellPipe.ctl contains 0 phrases. -->
-
-<!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 

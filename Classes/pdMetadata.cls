@@ -893,9 +893,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                     pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
                 #End If
                 
-                'Next, we need to pause while ExifTool does its thing
+                'Next, we need to pause while ExifTool does its thing.  To minimize re-entrance issues, we only want to
+                ' yield to WM_TIMER messages (which is how we asynchronously receive data from ExifTool - timer+pipe).
                 Do While ExifTool.IsVerificationModeActive()
-                    DoEvents
+                    VBHacks.DoEventsTimersOnly
                 Loop
                 
                 'Retrieve the temp file name ExifTool used

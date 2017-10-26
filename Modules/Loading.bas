@@ -222,7 +222,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     #End If
     
     'Because ExifTool is sending us data in the background, we must periodically yield for metadata piping.
-    If (ExifTool.IsMetadataPipeActive) Then DoEvents
+    If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
     
     
     '*************************************************************************************************************************************
@@ -248,13 +248,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' If the image contains an embedded ICC profile, apply it now
             '*************************************************************************************************************************************
             
-            If ImageImporter.ApplyPostLoadICCHandling(targetDIB) Then DoEvents
+            If ImageImporter.ApplyPostLoadICCHandling(targetDIB) Then VBHacks.DoEventsTimersOnly
             
             '*************************************************************************************************************************************
             ' If the incoming image is 24bpp, convert it to 32bpp.  (PD assumes an available alpha channel for all layers.)
             '*************************************************************************************************************************************
             
-            If ImageImporter.ForceTo32bppMode(targetDIB) Then DoEvents
+            If ImageImporter.ForceTo32bppMode(targetDIB) Then VBHacks.DoEventsTimersOnly
             
             '*************************************************************************************************************************************
             ' If we were forced to fall back to GDI+ as our loading engine, disable any remaining load-time FreeImage features
@@ -274,7 +274,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, CBool(imageHasMultiplePages)
             targetImage.UpdateSize
             
-            DoEvents
+            If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
             
         '/End specialized handling for non-PDI files
         End If
@@ -330,7 +330,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
-        If (ExifTool.IsMetadataPipeActive) Then DoEvents
+        If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
             
             
         '*************************************************************************************************************************************
@@ -348,7 +348,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
-        If (ExifTool.IsMetadataPipeActive) Then DoEvents
+        If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
         
             
         '*************************************************************************************************************************************

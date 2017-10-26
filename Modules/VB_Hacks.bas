@@ -25,6 +25,16 @@ Attribute VB_Name = "VBHacks"
 
 Option Explicit
 
+Private Type winMsg
+    hWnd As Long
+    sysMsg As Long
+    wParam As Long
+    lParam As Long
+    msgTime As Long
+    ptX As Long
+    ptY As Long
+End Type
+
 'We use Karl E. Peterson's approach of declaring subclass functions by ordinal, per the documentation at http://vb.mvps.org/samples/HookXP/
 Private Declare Function SetWindowSubclass Lib "comctl32" Alias "#410" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
 Private Declare Function GetWindowSubclass Lib "comctl32" Alias "#411" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, pdwRefData As Long) As Long
@@ -51,6 +61,10 @@ Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 
+Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
+Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (ByRef lpMsg As winMsg) As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+
 Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
@@ -73,7 +87,7 @@ Private m_PDIKRef As pdInputKeyboard
 
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
-Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SAFEARRAY2D)
+Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SafeArray2D)
     
     'Retrieve a copy of the original 2D array's SafeArray struct
     Dim ptrSrc As Long
@@ -88,7 +102,7 @@ Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As 
     
 End Sub
 
-Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer, ByRef newArraySA As SAFEARRAY2D)
+Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer, ByRef newArraySA As SafeArray2D)
     
     'Retrieve a copy of the original 2D array's SafeArray struct
     Dim ptrSrc As Long
@@ -103,7 +117,7 @@ Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray
     
 End Sub
 
-Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long, ByRef newArraySA As SAFEARRAY2D)
+Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long, ByRef newArraySA As SafeArray2D)
     
     'Retrieve a copy of the original 2D array's SafeArray struct
     Dim ptrSrc As Long
@@ -182,15 +196,15 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
     Else
         
         'Make sure the length is valid
-        If streamLength <> 0 Then
+        If (streamLength <> 0) Then
         
             Dim hGlobalHandle As Long
             hGlobalHandle = GlobalAlloc(GMEM_MOVEABLE, streamLength)
-            If hGlobalHandle <> 0 Then
+            If (hGlobalHandle <> 0) Then
             
                 Dim ptrGlobal As Long
                 ptrGlobal = GlobalLock(hGlobalHandle)
-                If ptrGlobal <> 0 Then
+                If (ptrGlobal <> 0) Then
                     CopyMemoryStrict ptrGlobal, ptrToFirstArrayElement, streamLength
                     GlobalUnlock ptrGlobal
                     CreateStreamOnHGlobal hGlobalHandle, 1&, GetStreamFromVBArray
@@ -249,7 +263,7 @@ Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArra
         Const ISTREAM_READ As Long = 12
         Const CC_STDCALL As Long = 4
         
-        If DispCallFunc(ptrSrcStream, ISTREAM_READ, CC_STDCALL, vbLong, 3&, pVartypes(0), pVars(0), varRtn) = 0 Then
+        If (DispCallFunc(ptrSrcStream, ISTREAM_READ, CC_STDCALL, vbLong, 3&, pVartypes(0), pVars(0), varRtn) = 0) Then
             ReadIStreamIntoVBArray = True
         Else
             #If DEBUGMODE = 1 Then
@@ -302,15 +316,9 @@ Public Function GetTimerDifferenceNow(ByRef startTime As Currency) As Double
 End Function
 
 Public Function GetTimeDiffNowAsString(ByRef startTime As Currency) As String
-    
-    Dim tmpTime As Currency
-    QueryPerformanceCounter tmpTime
-    
-    Dim tmpDouble As Double
-    tmpDouble = (tmpTime - startTime) * m_TimerFrequency
-    
+    Dim tmpTime As Currency:    QueryPerformanceCounter tmpTime
+    Dim tmpDouble As Double:    tmpDouble = (tmpTime - startTime) * m_TimerFrequency
     GetTimeDiffNowAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"
-    
 End Function
 
 Public Sub GetHighResTime(ByRef dstTime As Currency)
@@ -322,6 +330,18 @@ Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToComp
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
     MemCmp = CBool(bytesEqual = bytesToCompare)
 End Function
+
+'PD sometimes wants to yield for asynchronous timers (we use pipes in a number of places to communicate with
+' 3rd-party libraries), and rather than use DoEvents and risk all kinds of havoc, we simply yield for timer
+' events only.
+Public Sub DoEventsTimersOnly()
+    Dim tmpMsg As winMsg
+    Const WM_TIMER As Long = &H113
+    Do While PeekMessage(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
+        TranslateMessage tmpMsg
+        DispatchMessage tmpMsg
+    Loop
+End Sub
 
 Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As Long
     UnsignedAdd = (baseValue Xor SIGN_BIT) + amtToAdd Xor SIGN_BIT
