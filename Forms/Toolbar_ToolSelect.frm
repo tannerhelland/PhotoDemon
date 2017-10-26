@@ -371,8 +371,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Primary Toolbar
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 24/August/17
-'Last update: add erase tool button
+'Last updated: 26/October/17
+'Last update: add hotkeys for tool selection
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -1234,27 +1234,42 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdFile(FILE_SAVEAS_FLAT).AssignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
         
     'Non-destructive tool buttons are next
-    cmdTools(NAV_DRAG).AssignTooltip "Hand (click-and-drag image scrolling)"
-    cmdTools(NAV_MOVE).AssignTooltip "Move and resize image layers"
-    cmdTools(COLOR_PICKER).AssignTooltip "Select colors from the image"
+    Dim shortcutText As String
+    shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "H")
+    cmdTools(NAV_DRAG).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Move and resize image layers") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "M")
+    cmdTools(NAV_MOVE).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Select colors from the image") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
+    cmdTools(COLOR_PICKER).AssignTooltip shortcutText
     
     '...then selections...
-    cmdTools(SELECT_RECT).AssignTooltip "Rectangular Selection"
-    cmdTools(SELECT_CIRC).AssignTooltip "Elliptical (Oval) Selection"
+    shortcutText = g_Language.TranslateMessage("Rectangular Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    cmdTools(SELECT_RECT).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    cmdTools(SELECT_CIRC).AssignTooltip shortcutText
     cmdTools(SELECT_LINE).AssignTooltip "Line Selection"
-    cmdTools(SELECT_POLYGON).AssignTooltip "Polygon Selection"
-    cmdTools(SELECT_LASSO).AssignTooltip "Lasso (Freehand) Selection"
-    cmdTools(SELECT_WAND).AssignTooltip "Magic Wand Selection"
+    shortcutText = g_Language.TranslateMessage("Polygon Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    cmdTools(SELECT_POLYGON).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    cmdTools(SELECT_LASSO).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Magic Wand Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "W")
+    cmdTools(SELECT_WAND).AssignTooltip shortcutText
     
     '...then vector tools...
-    cmdTools(VECTOR_TEXT).AssignTooltip "Text (basic)"
-    cmdTools(VECTOR_FANCYTEXT).AssignTooltip "Typography (advanced)"
+    shortcutText = g_Language.TranslateMessage("Text (basic)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    cmdTools(VECTOR_TEXT).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Typography (advanced)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    cmdTools(VECTOR_FANCYTEXT).AssignTooltip shortcutText
     
     '...then paint tools...
-    cmdTools(PAINT_BASICBRUSH).AssignTooltip "Pencil (hard-tipped brush)"
-    cmdTools(PAINT_SOFTBRUSH).AssignTooltip "Paintbrush (soft-tipped brush)"
-    cmdTools(PAINT_ERASER).AssignTooltip "Eraser"
-    cmdTools(PAINT_FILL).AssignTooltip "Paint bucket (fill with color)"
+    shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "P")
+    cmdTools(PAINT_BASICBRUSH).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "B")
+    cmdTools(PAINT_SOFTBRUSH).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Eraser") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "E")
+    cmdTools(PAINT_ERASER).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
+    cmdTools(PAINT_FILL).AssignTooltip shortcutText
     
     'The right separator line is colored according to the current shadow accent color
     If (Not g_Themer Is Nothing) Then

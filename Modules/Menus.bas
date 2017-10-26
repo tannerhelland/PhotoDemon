@@ -798,7 +798,24 @@ Public Sub InitializeAllHotkeys()
     With FormMain.pdHotkeys
     
         .Enabled = True
-    
+        
+        'Tool hotkeys (e.g. keys not associated with menus)
+        .AddAccelerator vbKeyH, , "tool_activate_hand", , , , False
+        .AddAccelerator vbKeyM, , "tool_activate_move", , , , False
+        .AddAccelerator vbKeyI, , "tool_activate_colorpicker", , , , False
+        
+        'Note that some hotkeys do double-duty in tool selection; you can press some of these shortcuts multiple times
+        ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in
+        ' FormMain.pdHotkey event handlers.
+        .AddAccelerator vbKeyS, , "tool_activate_selectrect", , , , False
+        .AddAccelerator vbKeyL, , "tool_activate_selectlasso", , , , False
+        .AddAccelerator vbKeyW, , "tool_activate_selectwand", , , , False
+        .AddAccelerator vbKeyT, , "tool_activate_text", , , , False
+        .AddAccelerator vbKeyP, , "tool_activate_pencil", , , , False
+        .AddAccelerator vbKeyB, , "tool_activate_brush", , , , False
+        .AddAccelerator vbKeyE, , "tool_activate_eraser", , , , False
+        .AddAccelerator vbKeyF, , "tool_activate_fill", , , , False
+        
         'File menu
         .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_Nothing
         .AddAccelerator vbKeyO, vbCtrlMask, "Open", "file_open", True, False, True, UNDO_Nothing
@@ -867,8 +884,8 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", "image_trim", True, True, False, UNDO_ImageHeader
         
             'Image -> Rotate submenu
-            .AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_Image
-            .AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", "image_rotate270", True, True, False, UNDO_Image
+            '.AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_Image
+            '.AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", "image_rotate270", True, True, False, UNDO_Image
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
