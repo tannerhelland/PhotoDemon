@@ -543,6 +543,7 @@ Public Function PromptUITheme() As VbMsgBoxResult
     If (PromptUITheme = vbOK) Then
         If (newThemeClass <> backupThemeClass) Or (newThemeAccent <> backupThemeAccent) Or (newIconsMono <> backupIconsMono) Then
             Drawing.CacheUIPensAndBrushes
+            UserControls.NotifyTooltipThemeChange
             IconsAndCursors.LoadMenuIcons False
             Interface.RedrawEntireUI True
         End If

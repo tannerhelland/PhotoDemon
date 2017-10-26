@@ -1129,8 +1129,16 @@ Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
 End Sub
 
 Public Function IsTooltipActive(ByVal ownerHwnd As Long) As Boolean
-    IsTooltipActive = CBool(m_TTOwner = ownerHwnd)
+    IsTooltipActive = (m_TTOwner = ownerHwnd)
 End Function
+
+Public Sub NotifyTooltipThemeChange()
+
+    'If the tooltip isn't active, ignore this event; the tooltip will automatically grab theme settings
+    ' when it is first invoked.
+    If (m_TTHwnd <> 0) Then tool_Tooltip.UpdateAgainstCurrentTheme
+
+End Sub
 
 'Do not call this function until the program is going down.  VB is very unhappy about changing window longs on the fly,
 ' so we only do it once, when the tooltip form is first raised.  After that, we keep the form in memory as-is, and do not
