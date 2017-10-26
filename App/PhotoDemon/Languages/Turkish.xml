@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.3289</langversion>
+<langversion>6.8.3290</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -13256,6 +13256,11 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>Shortcut key: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move and resize image layers</original>
 <translation>Taşı ve görüntü katmanları yeniden boyutlandırmak</translation>
 </phrase>
@@ -13325,7 +13330,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Boya kovası (renk ile doldurun)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15066,10 +15071,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2528</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4549 phrases. -->
-<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12140 total words. -->
+<!-- As of this build, PhotoDemon contains 4552 phrases. -->
+<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
+<!-- These 2528 phrases contain approximately 12142 total words. -->
 
 </pdData>

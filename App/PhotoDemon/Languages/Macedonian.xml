@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.102</langversion>
+<langversion>1.0.103</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -13262,6 +13262,11 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>Shortcut key: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move and resize image layers</original>
 <translation>Се движите и да ја промените големината на сликата слоеви</translation>
 </phrase>
@@ -13331,7 +13336,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 11 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15073,10 +15078,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2528</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4549 phrases. -->
-<!-- 2022 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12140 total words. -->
+<!-- As of this build, PhotoDemon contains 4552 phrases. -->
+<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
+<!-- These 2528 phrases contain approximately 12142 total words. -->
 
 </pdData>

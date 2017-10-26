@@ -291,7 +291,7 @@ End Sub
 ' - "requiresOpenImage": specifies that this action *must be disallowed* unless one (or more) image(s) are loaded and active.
 ' - "showProcForm": controls the "showDialog" parameter of processor string directives.
 ' - "procUndo": controls the "createUndo" parameter of processor string directives.  Remember that UNDO_NOTHING means "do not create Undo data."
-Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UndoType = UNDO_NOTHING) As Long
+Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal HotKeyName As String = vbNullString, Optional ByRef correspondingMenu As String = vbNullString, Optional ByVal IsProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal procUndo As PD_UndoType = UNDO_Nothing) As Long
     
     'Make sure this key combination doesn't already exist in the collection
     Dim failsafeCheck As Long
@@ -526,8 +526,8 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
         If (nCode >= 0) And (m_AcceleratorIndex = -1) Then
             
             'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
-            ' being released.  Shortcuts do not allow for "press-and-hold-to-repeat" behavior, so we only fire on key release.
-            If (lParam < 0) Then
+            ' being released.  To improve responsiveness, we fire on key press.
+            If (lParam >= 0) Then
                 
                 'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
                 ' current state (e.g. it's not locked, in the middle of other processing, etc.)

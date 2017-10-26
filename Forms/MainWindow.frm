@@ -1561,8 +1561,8 @@ Attribute VB_Exposed = False
 'Primary PhotoDemon Window
 'Copyright 2002-2017 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 19/November/15
-'Last update: rework the order of unloading classes, to ensure delayed clipboard rendering doesn't break
+'Last updated: 26/October/17
+'Last update: add hotkey handling for tool selection
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
 ' parameters to other, more interesting sections of the program.
@@ -2403,15 +2403,41 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         '***********************************************************
         'This block of code holds:
         ' - Accelerators that DO NOT require at least one loaded image
+        Dim keyName As String
+        keyName = .HotKeyName(acceleratorIndex)
         
-        If .HotKeyName(acceleratorIndex) = "Preferences" Then
+        'Tool selection
+        If Strings.StringsEqual(keyName, "tool_activate_hand", True) Then
+            toolbar_Toolbox.SelectNewTool NAV_DRAG
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_move", True) Then
+            toolbar_Toolbox.SelectNewTool NAV_MOVE
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_colorpicker", True) Then
+            toolbar_Toolbox.SelectNewTool COLOR_PICKER
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectrect", True) Then
+            If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectlasso", True) Then
+            If (g_CurrentTool = SELECT_LASSO) Then toolbar_Toolbox.SelectNewTool SELECT_POLYGON Else toolbar_Toolbox.SelectNewTool SELECT_LASSO
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_selectwand", True) Then
+            toolbar_Toolbox.SelectNewTool SELECT_WAND
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_text", True) Then
+            If (g_CurrentTool = VECTOR_TEXT) Then toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT Else toolbar_Toolbox.SelectNewTool VECTOR_TEXT
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_pencil", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_brush", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_eraser", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_ERASER
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_fill", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_FILL
+            
+        'Menus
+        ElseIf Strings.StringsEqual(keyName, "Preferences", True) Then
             If Not FormOptions.Visible Then
                 ShowPDDialog vbModal, FormOptions
                 Exit Sub
             End If
-        End If
         
-        If .HotKeyName(acceleratorIndex) = "Plugin manager" Then
+        ElseIf Strings.StringsEqual(keyName, "Plugin manager", True) Then
             If Not FormPluginManager.Visible Then
                 ShowPDDialog vbModal, FormPluginManager
                 Exit Sub
