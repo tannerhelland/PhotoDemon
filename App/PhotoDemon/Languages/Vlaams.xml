@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.305</langversion>
+<langversion>6.7.306</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2657,6 +2657,12 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for ISubclass.cls-->
 
+<!-- BEGIN text for pdAsyncPipe.cls -->
+
+<!-- pdAsyncPipe.cls contains 0 phrases. -->
+
+<!-- END text for pdAsyncPipe.cls-->
+
 <!-- BEGIN text for pd2DBrush.cls -->
 
 <!-- pd2DBrush.cls contains 0 phrases. -->
@@ -3634,12 +3640,6 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdZoom.cls-->
 
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
 <!-- BEGIN text for pdAccelerator.ctl -->
 
 <!-- pdAccelerator.ctl contains 0 phrases. -->
@@ -4565,12 +4565,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdTitle.ctl contains 0 phrases. -->
 
 <!-- END text for pdTitle.ctl-->
-
-<!-- BEGIN text for ShellPipe.ctl -->
-
-<!-- ShellPipe.ctl contains 0 phrases. -->
-
-<!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 

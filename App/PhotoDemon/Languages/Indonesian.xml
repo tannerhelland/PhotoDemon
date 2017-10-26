@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.247</langversion>
+<langversion>6.6.248</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2647,6 +2647,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for ISubclass.cls-->
 
+<!-- BEGIN text for pdAsyncPipe.cls -->
+
+<!-- pdAsyncPipe.cls contains 0 phrases. -->
+
+<!-- END text for pdAsyncPipe.cls-->
+
 <!-- BEGIN text for pd2DBrush.cls -->
 
 <!-- pd2DBrush.cls contains 0 phrases. -->
@@ -3624,12 +3630,6 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdZoom.cls-->
 
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
 <!-- BEGIN text for pdAccelerator.ctl -->
 
 <!-- pdAccelerator.ctl contains 0 phrases. -->
@@ -4560,12 +4560,6 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <!-- pdTitle.ctl contains 0 phrases. -->
 
 <!-- END text for pdTitle.ctl-->
-
-<!-- BEGIN text for ShellPipe.ctl -->
-
-<!-- ShellPipe.ctl contains 0 phrases. -->
-
-<!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 

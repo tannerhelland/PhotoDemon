@@ -253,9 +253,10 @@ Private Const MD_extended = 0, MD_ifd = 0, MD_ifd64 = 0, MD_string = 0, MD_undef
 Private Const MD_integerstring = 0, MD_floatstring = 0, MD_rationalstring = 0, MD_datestring = 0, MD_booleanstring = 0, MD_digits = 0
 #End If
 
-'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the shellPipeMain user control
-' on FormMain is active and connected to ExifTool, and can be used to send/receive input and output.
+'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the pdAsyncPipe
+' class declared below is active and connected to ExifTool, and can be used to send/receive input and output.
 Private m_IsExifToolRunning As Boolean
+Private m_Async As pdAsyncPipe
 
 'Because ExifTool parses metadata asynchronously, we will gather its output as it comes.  This string will hold whatever
 ' XML data ExifTool has returned so far.
@@ -274,6 +275,7 @@ Private m_VerificationString As String
 ' circumstances, as it is filled whenever the user initiates a metadata editing session.)
 Private m_DatabaseModeActive As Boolean
 Private m_DatabaseString As String
+Private m_DatabaseBuilder As pdString
 
 'As of 6.6 alpha, technical metadata reports can now be generated for a given file.  While this mode is active, we do not
 ' want to immediately delete the report; use this boolean to check for that particular state.
@@ -325,9 +327,8 @@ Public Function IsVerificationModeActive() As Boolean
     IsVerificationModeActive = m_VerificationModeActive
 End Function
 
-'The FormMain.ShellPipeMain user control will asynchronously trigger this function whenever it receives new metadata
-' from ExifTool.
-Public Sub NewMetadataReceived(ByVal newMetadata As String)
+'m_Async will asynchronously trigger this function whenever it receives new metadata from ExifTool.
+Public Sub NewMetadataReceived(ByRef newMetadata As String)
     
     If m_captureModeActive Then
         m_currentMetadataText = m_currentMetadataText & newMetadata
@@ -339,7 +340,7 @@ Public Sub NewMetadataReceived(ByVal newMetadata As String)
         
     'During database mode, check for a finish state, then write the retrieved database out to file!
     ElseIf m_DatabaseModeActive Then
-        m_DatabaseString = m_DatabaseString & newMetadata
+        m_DatabaseBuilder.Append newMetadata
         If IsMetadataFinished() Then
             WriteMetadataDatabaseToFile
             If m_ModalWaitWindowActive Then g_UnloadWaitWindow = True
@@ -354,10 +355,31 @@ Private Sub WriteMetadataDatabaseToFile()
     mdDatabasePath = m_ExifToolDataFolder & "ExifToolDatabase.xml"
         
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
-    If (Len(m_DatabaseString) <> 0) Then m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
+    If (Not m_DatabaseBuilder Is Nothing) Then
+        m_DatabaseString = m_DatabaseBuilder.ToString()
+        Set m_DatabaseBuilder = Nothing
+    End If
     
-    'Write our XML string out to file
-    Files.FileSaveAsText m_DatabaseString, mdDatabasePath
+    If (Len(m_DatabaseString) <> 0) Then
+    
+        m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
+    
+        'Write our XML string out to file
+        If Files.FileSaveAsText(m_DatabaseString, mdDatabasePath) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "ExifTool Metadata database created successfully (" & Len(m_DatabaseString) & " chars, " & Files.FileLenW(mdDatabasePath) & " bytes)"
+            #End If
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile failed to write the metadata database to file."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile had a zero-length database string??"
+        #End If
+    End If
         
     'Reset the database mode tracker, so the database doesn't accidentally get rebuilt again!
     m_DatabaseModeActive = False
@@ -443,7 +465,7 @@ Public Function IsMetadataFinished() As Boolean
     ElseIf m_VerificationModeActive Then
         tmpMetadata = m_VerificationString
     ElseIf m_DatabaseModeActive Then
-        tmpMetadata = m_DatabaseString
+        If (Not m_DatabaseBuilder Is Nothing) Then tmpMetadata = m_DatabaseBuilder.ToString()
     Else
         IsMetadataFinished = True
         Exit Function
@@ -465,19 +487,18 @@ Public Function IsMetadataFinished() As Boolean
             IsMetadataFinished = False
         End If
         
+    ElseIf m_VerificationModeActive Then
+        m_VerificationModeActive = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) = 0)
+        IsMetadataFinished = (Not m_VerificationModeActive)
+        
+    ElseIf m_DatabaseModeActive Then
+        m_DatabaseModeActive = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) = 0)
+        IsMetadataFinished = (Not m_DatabaseModeActive)
+    
+    'Standard metadata mode is the only remaining option
     Else
-    
-        If InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0 Then
-            
-            'Terminate the relevant mode
-            If m_VerificationModeActive Then m_VerificationModeActive = False
-            If m_DatabaseModeActive Then m_DatabaseModeActive = False
-            IsMetadataFinished = True
-            
-        Else
-            IsMetadataFinished = False
-        End If
-    
+        IsMetadataFinished = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0)
+        
     End If
     
 End Function
@@ -651,7 +672,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     'Debug.Print cmdParams
     
     'Ask the user control to start processing this image's metadata.  It will handle things from here.
-    FormMain.shellPipeMain.SendData cmdParams
+    If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
     
     StartMetadataProcessing = True
     
@@ -690,7 +711,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         StartVerificationMode
         
         'Ask the user control to start processing this image's metadata.  It will handle things from here.
-        FormMain.shellPipeMain.SendData cmdParams
+        If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
         
         CreateTechnicalMetadataReport = True
     
@@ -745,7 +766,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
         StartVerificationMode
         
         'Ask the user control to start processing this image's metadata.  It will handle things from here.
-        FormMain.shellPipeMain.SendData cmdParams
+        If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
         
         ExtractICCMetadataToFile = True
     
@@ -831,20 +852,20 @@ Public Function WriteTagDatabase() As Boolean
         
         'Start metadata database retrieval mode
         m_DatabaseModeActive = True
-        m_DatabaseString = ""
+        m_DatabaseString = vbNullString
+        Set m_DatabaseBuilder = New pdString
+        m_DatabaseBuilder.Reset
         
         'Request a database rewrite from ExifTool
         Dim cmdParams As String
-        cmdParams = ""
-        
-        cmdParams = cmdParams & "-listx" & vbCrLf
+        cmdParams = "-listx" & vbCrLf
         cmdParams = cmdParams & "-lang" & vbCrLf
         cmdParams = cmdParams & "en" & vbCrLf
         cmdParams = cmdParams & "-f" & vbCrLf
         cmdParams = cmdParams & "-execute" & vbCrLf
         
         'Send the data over to ExifTool.  It will handle the rest from here
-        FormMain.shellPipeMain.SendData cmdParams
+        If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
         
         WriteTagDatabase = True
     
@@ -1129,7 +1150,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     StartVerificationMode
     
     'Ask the user control to start processing this image's metadata.  It will handle things from here.
-    FormMain.shellPipeMain.SendData cmdParams
+    If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
     
     WriteMetadata = True
     
@@ -1161,9 +1182,10 @@ Private Function DoesTagValueRequireEscaping(ByRef srcMetadata As PDMetadataItem
     End If
 End Function
 
-'Start ExifTool.  We now use FormMain.shellPipeMain (a user control of type ShellPipe) to pass data to/from ExifTool.  This greatly
-' reduces the overhead involved in repeatedly starting new ExifTool instances.  It also means that we can asynchronously start
-' ExifTool early in the load process, rather than waiting for an image to be loaded.
+'Start ExifTool.  We now use m_Async (a pdAsyncPipe instance) to pass data to/from ExifTool.  This greatly
+' reduces the overhead involved in repeatedly starting new ExifTool instances.  It also means that we can
+' asynchronously start ExifTool early in the image load process, rather than waiting for the image to finish
+' loading via FreeImage or GDI+.
 Public Function StartExifTool() As Boolean
     
     'Start by creating a temp folder for ExifTool-specific data, as necessary
@@ -1196,35 +1218,22 @@ Public Function StartExifTool() As Boolean
     cmdParams = cmdParams & "exiftool.exe -stay_open true -@ -"
     
     'Attempt to open ExifTool
-    Dim returnVal As SP_RESULTS
-    returnVal = FormMain.shellPipeMain.Run(appLocation, cmdParams)
-    returnVal = SP_CREATEPIPEFAILED
-    returnVal = SP_CREATEPROCFAILED
-    returnVal = SP_SUCCESS
-    Select Case returnVal
-    
-        Case SP_SUCCESS
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
-            #End If
-            m_IsExifToolRunning = True
-            StartExifTool = True
-            
-        Case SP_CREATEPIPEFAILED
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! ExifTool Input/Output pipes could not be created."
-            #End If
-            m_IsExifToolRunning = False
-            StartExifTool = False
-            
-        Case SP_CREATEPROCFAILED
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! ExifTool.exe could not be started."
-            #End If
-            m_IsExifToolRunning = False
-            StartExifTool = False
-    
-    End Select
+    Set m_Async = New pdAsyncPipe
+    If m_Async.Run(appLocation, cmdParams) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
+        #End If
+        m_IsExifToolRunning = True
+        StartExifTool = True
+                
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING! ExifTool Input/Output pipes could not be created."
+        #End If
+        m_IsExifToolRunning = False
+        StartExifTool = False
+        
+    End If
 
 End Function
 
@@ -1232,23 +1241,23 @@ End Function
 Public Sub TerminateExifTool()
 
     If m_IsExifToolRunning Then
-
-        'Prepare a termination order for ExifTool
-        Dim cmdParams As String
-        cmdParams = ""
         
-        cmdParams = cmdParams & "-stay_open" & vbCrLf
-        cmdParams = cmdParams & "False" & vbCrLf
-        cmdParams = cmdParams & "-execute" & vbCrLf
+        If (Not m_Async Is Nothing) Then
+            
+            'Prepare a termination order
+            Dim cmdParams As String
+            cmdParams = "-stay_open" & vbCrLf
+            cmdParams = cmdParams & "False" & vbCrLf
+            cmdParams = cmdParams & "-execute" & vbCrLf
+            m_Async.SendData cmdParams
         
-        'Submit the order
-        FormMain.shellPipeMain.SendData cmdParams
-        
-        'Wait a little bit for ExifTool to receive the order and shut down on its own
-        Sleep 500
-        
-        'Close our own pipe handles and exit
-        FormMain.shellPipeMain.FinishChild
+            'Wait a little bit for ExifTool to receive the order and shut down on its own
+            Sleep 500
+            
+            'ExifTool should be gone by now, but if it isn't, forcibly terminate it
+            m_Async.TerminateChildProcess
+            
+        End If
         
         'As a failsafe, mark the plugin as no longer available
         PluginManager.SetPluginEnablement CCP_ExifTool, False

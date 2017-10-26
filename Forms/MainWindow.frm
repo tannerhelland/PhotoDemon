@@ -45,15 +45,6 @@ Begin VB.Form FormMain
       _ExtentX        =   873
       _ExtentY        =   873
    End
-   Begin PhotoDemon.ShellPipe shellPipeMain 
-      Left            =   120
-      Top             =   1080
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   100
-      WaitForIdle     =   0
-   End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
       Begin VB.Menu MnuFile 
@@ -2509,34 +2500,6 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
     
     End With
         
-End Sub
-
-Private Sub shellPipeMain_ErrDataArrival(ByVal CharsTotal As Long)
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  FormMain's asynchronous shellPipeMain source returned the following data on stderr: "
-        pdDebug.LogAction shellPipeMain.ErrGetData()
-    #End If
-    
-End Sub
-
-'Append any new data to our master metadata string
-Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
-    
-    Dim receivedData As String
-    receivedData = shellPipeMain.GetData()
-    
-    If Len(receivedData) <> 0 Then
-    
-        NewMetadataReceived receivedData
-    
-        'DEBUG ONLY!
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Asynchronously received " & LenB(receivedData) & " bytes of new data from ExifTool."
-        #End If
-        
-    End If
-    
 End Sub
 
 'Note that FormMain is only loaded after MainModule.Main() has triggered.  Look there for the *true* start of the program.
