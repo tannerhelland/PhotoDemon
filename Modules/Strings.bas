@@ -3,9 +3,8 @@ Attribute VB_Name = "Strings"
 'Additional string support functions
 'Copyright 2017-2017 by Tanner Helland
 'Created: 13/June/17
-'Last updated: 13/June/17
-'Last update: initial build; string functions are currently spread across a number of different objects,
-'             and I'd like to perform certain actions without needing to instantiate a class.
+'Last updated: 24/October/17
+'Last update: fix some inexplicable issues with WideCharToMultiByte(); comments are in the UTF-8 conversion functions
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -432,6 +431,25 @@ Public Function StringFromUTF8(ByRef Utf8() As Byte, Optional ByVal customDataLe
     
 End Function
 
+'Unsafe bare pointer variant of StringFromUTF8Ptr, above.  Look there for comments.
+Public Function StringFromUTF8Ptr(ByVal srcUtf8Ptr As Long, ByVal srcUTF8Len As Long) As String
+    
+    Dim lenWideString As Long
+    lenWideString = MultiByteToWideChar(CP_UTF8, 0, srcUtf8Ptr, srcUTF8Len, 0, 0)
+    
+    If (lenWideString = 0) Then
+        InternalError "Strings.StringFromUTF8Ptr() failed because MultiByteToWideChar did not return a valid buffer length (#" & Err.LastDllError & ")."
+        StringFromUTF8Ptr = vbNullString
+    Else
+        StringFromUTF8Ptr = String$(lenWideString, 0)
+        If (MultiByteToWideChar(CP_UTF8, 0, srcUtf8Ptr, srcUTF8Len, StrPtr(StringFromUTF8Ptr), lenWideString) = 0) Then
+            InternalError "Strings.StringFromUTF8Ptr() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
+            StringFromUTF8Ptr = vbNullString
+        End If
+    End If
+    
+End Function
+
 'Given an arbitrary pointer (often to a VB array, but it doesn't matter) and a length IN BYTES, copy that chunk
 ' of bytes to a VB string.  The bytes must already be in Unicode format (UCS-2 or UTF-16).
 Public Function StringFromUTF16_FixedLen(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
@@ -584,34 +602,59 @@ Public Function TrimNull(ByRef origString As String) As String
   
 End Function
 
-'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
-Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, Optional ByRef lenUTF8 As Long) As Boolean
-    UTF8FromString = Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), dstUtf8, lenUTF8)
+'Given a VB string, fill a byte array with matching UTF-8 data.  Null-termination of the source string is
+' (obviously) assumed, which allows us to pass -1 for length; note that we must then remove a null char from
+' the return value length, to ensure correct output.  (This also means that unless you *want* the null char,
+' you can't use the size of the return array to infer the length of the written bytes.  This is by design.
+' Be a good developer and use the lenUTF8 value, as intended.)
+'
+'RETURNS: TRUE if successful; FALSE otherwise
+Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, ByRef lenUTF8 As Long, Optional ByVal baseArrIndexToWrite As Long = 0) As Boolean
+    UTF8FromString = Strings.UTF8FromStrPtr(StrPtr(srcString), -1, dstUtf8, lenUTF8, baseArrIndexToWrite)
+    If (lenUTF8 > 0) Then lenUTF8 = lenUTF8 - 1
 End Function
 
-'Given a pointer to a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
+'Given a pointer to a VB string, fill a byte array with matching UTF-8 data.  Note that you can pass -1
+' for "srcLenInChars" if the source string is null-terminated; per testing, this may actually be faster
+' than explicitly stating a length up-front - BUT if you do this, note that a null char *will* be added
+' to the returned lenUTF8 length, so account for that accordingly.
+' (Also, the passed destination array must be 0-based.  If it needs to be resized, it will be forcibly set to base-0.)
+'
+'RETURNS: TRUE if successful; FALSE otherwise.
 Public Function UTF8FromStrPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long, ByRef dstUtf8() As Byte, Optional ByRef lenUTF8 As Long, Optional ByVal baseArrIndexToWrite As Long = 0) As Boolean
     
+    'Failsafe checks
+    On Error GoTo UTF8FromStrPtrFail
     UTF8FromStrPtr = False
+    If (srcLenInChars = 0) Then Exit Function
     
     'Use WideCharToMultiByte() to calculate the required size of the final UTF-8 array.
     lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, 0, 0, 0, 0)
     
-    'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
-    If (lenUTF8 = 0) Then
-        InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte did not return a valid buffer length (#" & Err.LastDllError & ")."
-        
+    'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if invalid character combinations are found.
+    If (lenUTF8 <= 0) Then
+        InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte did not return a valid buffer length (#" & Err.LastDllError & ", " & srcLenInChars & ")"
+    
     'The returned length is non-zero.  Prep a buffer, then process the bytes.
     Else
         
-        'Prep a temporary byte buffer.  In some places in PD, we'll reuse the same buffer for multiple string copies,
+        'Prep a temporary byte buffer.  In some places in PD, we reuse the same buffer for multiple string copies,
         ' so to improve performance, only resize the destination array as necessary.
         Dim newBufferBound As Long
-        newBufferBound = lenUTF8 - 1 + baseArrIndexToWrite
-        If (newBufferBound < 0) Then newBufferBound = 0
+        newBufferBound = lenUTF8 + baseArrIndexToWrite + 1
+        
+        'NOTE: Originally, the above buffer boundary calculation used (-1) instead of (+1), as you'd expect
+        ' given that we are explicitly declaring the string length instead of relying on null-termination.
+        ' (So the function won't return a null-char, either.)  Unfortunately, this leads to unpredictable
+        ' write access violations.  I'm not the first to encounter this (see http://www.delphigroups.info/2/fc/502394.html)
+        ' but my Google-fu has yet to turn up an actual explanation for why this might occur.
+        '
+        'Avoiding the problem is simple enough - pad our output buffer with a few extra bytes, "just in case"
+        ' WideCharToMultiByte misbehaves.
+        If (newBufferBound < baseArrIndexToWrite) Then newBufferBound = baseArrIndexToWrite
         
         If VBHacks.IsArrayInitialized(dstUtf8) Then
-            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1 + baseArrIndexToWrite) < lenUTF8) Then ReDim dstUtf8(0 To newBufferBound) As Byte
+            If ((UBound(dstUtf8) + 1 + baseArrIndexToWrite) < newBufferBound) Then ReDim dstUtf8(0 To newBufferBound) As Byte
         Else
             ReDim dstUtf8(0 To newBufferBound) As Byte
         End If
@@ -627,7 +670,14 @@ Public Function UTF8FromStrPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long
         
     End If
     
+    Exit Function
+    
+UTF8FromStrPtrFail:
+    InternalError "UTF8FromStrPtr failed on an internal error: " & Err.Description, Err.Number
 End Function
+
+'If the caller wants to manage their own array directly (which is preferable, as they can maintain a custom
+' buffer size independent of what WideCharToMultiByte actually requires)
 
 'Internal string-related errors are passed here.  PD writes these to a debug log, but only in debug builds; you can choose to
 ' handle errors differently.

@@ -400,15 +400,15 @@ Friend Function FileAppendText(ByVal srcString As String, ByRef dstFilename As S
     On Error GoTo StopAppendText
     
     'Convert the incoming string to UTF-8
-    Dim fileBytes() As Byte
-    Strings.UTF8FromString srcString, fileBytes
+    Dim fileBytes() As Byte, lenFileBytes As Long
+    Strings.UTF8FromString srcString, fileBytes, lenFileBytes
     
     'Open the file with append rights only
     Dim hFile As Long
     If Me.FileCreateAppendHandle(dstFilename, hFile) Then
         
         'Write the byte array and exit!
-        Me.FileWriteData hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+        Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
         Me.FileCloseHandle hFile
         FileAppendText = True
         
@@ -954,18 +954,27 @@ Friend Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As
             Dim lenOfFile As Long
             lenOfFile = CLng(FileLenW_Large(hFile))
             
-            If VBHacks.IsArrayInitialized(dstArray) Then
-                If (LBound(dstArray) <> 0) Or (UBound(dstArray) <> lenOfFile - 1) Then ReDim dstArray(0 To lenOfFile - 1) As Byte
+            'Only proceed if the file is not zero-length
+            If (lenOfFile > 0) Then
+                
+                If VBHacks.IsArrayInitialized(dstArray) Then
+                    If (LBound(dstArray) <> 0) Or (UBound(dstArray) <> lenOfFile - 1) Then ReDim dstArray(0 To lenOfFile - 1) As Byte
+                Else
+                    ReDim dstArray(0 To lenOfFile - 1) As Byte
+                End If
+                
+                'Retrieve the full file contents
+                Dim tmpVerify As Long
+                If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
+                    FileLoadAsByteArray = True
+                Else
+                    FSOError "FileLoadAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
+                End If
+                
             Else
-                ReDim dstArray(0 To lenOfFile - 1) As Byte
-            End If
-            
-            'Retrieve the full file contents
-            Dim tmpVerify As Long
-            If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
-                FileLoadAsByteArray = True
-            Else
-                FSOError "FileLoadAsByteArray", "failure when calling ReadFile on " & srcFile & ". Abandoning load."
+                FSOError "FileLoadAsByteArray", "source file is zero-length: " & srcFile
+                ReDim dstArray(0) As Byte
+                FileLoadAsByteArray = False
             End If
             
             CloseHandle hFile
@@ -1012,7 +1021,7 @@ End Function
 
 'After a file has been opened, you can use this function to manually move the file pointer around
 Friend Function FileMovePointer(ByVal srcHandle As Long, ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
-    FileMovePointer = CBool(SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
+    FileMovePointer = (SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
 End Function
 
 'Reads arbitrary binary data from file.  It is up to the caller to make sure the requested number of bytes are valid and accurate,
@@ -1301,8 +1310,8 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
     If Me.FileExists(dstFilename) Then Me.FileDelete dstFilename
     
     'If UTF-8 output is requested, generate it now.  (If the conversion fails, we can fall back to a non-UTF8 write.)
-    Dim fileBytes() As Byte
-    If useUTF8 Then useUTF8 = Strings.UTF8FromString(srcString, fileBytes)
+    Dim fileBytes() As Byte, lenFileBytes As Long
+    If useUTF8 Then useUTF8 = Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), fileBytes, lenFileBytes, 0&) 'Strings.UTF8FromString(srcString, fileBytes, lenFileBytes)
     
     If useUTF8 Then
         
@@ -1319,7 +1328,7 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
             End If
             
             'Write the byte array and exit!
-            Me.FileWriteData hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+            Me.FileWriteData hFile, VarPtr(fileBytes(0)), lenFileBytes
             Me.FileCloseHandle hFile
             FileSaveAsText = True
             
@@ -1357,9 +1366,9 @@ Friend Function FileSave_FastOverwrite(ByVal hFile As Long, ByVal srcPointer As 
     
     On Error GoTo FastFileSaveError
     
-    Me.FileMovePointer hFile, 0, FILE_BEGIN
+    If (Not Me.FileMovePointer(hFile, 0, FILE_BEGIN)) Then FSOError "FileSave_FastOverwrite", "FileMovePointer failed", Err.LastDllError
     Me.FileWriteData hFile, srcPointer, srcDataLength
-    SetEndOfFile hFile
+    If (SetEndOfFile(hFile) = 0) Then FSOError "FileSave_FastOverwrite", "SetEndOfFile failed", Err.LastDllError
     
     FileSave_FastOverwrite = True
     Exit Function
@@ -1444,7 +1453,7 @@ End Function
 ' Returns: TRUE if successful; FALSE otherwise.
 Friend Function FileWriteData(ByVal dstHandle As Long, ByVal srcDataPointer As Long, ByVal numOfBytesToWrite As Long) As Boolean
     Dim tmpReturn As Long
-    FileWriteData = CBool(WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
+    FileWriteData = (WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
     If (Not FileWriteData) Then FSOError "FileWriteData", " failed to write to handle " & dstHandle & ".  Relevant error is " & Err.LastDllError & "."
 End Function
 
