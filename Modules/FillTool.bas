@@ -99,7 +99,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             allowedToFill = PDMath.IsPointInRectF(fillStartX, fillStartY, pdImages(g_CurrentImage).GetBoundaryRectF)
         Else
             
-            Dim tmpRectF As RECTF
+            Dim tmpRectF As RectF
             With tmpRectF
                 .Left = 0!
                 .Top = 0!
@@ -203,7 +203,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         
         'Calculate the gradient rect (if any), using the boundary rect of the fill outline.
         If (tmpBrush.GetBrushMode = P2_BM_Gradient) Then
-            Dim fillBoundaryRect As RECTF
+            Dim fillBoundaryRect As RectF
             fillBoundaryRect = m_FillOutline.GetPathBoundariesF
             tmpBrush.SetBoundaryRect fillBoundaryRect
         End If
@@ -242,8 +242,10 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             ' The full scratch layer will then be merged with the layer beneath it.
             pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
             pdImages(g_CurrentImage).ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+            
             tmpSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB
             If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
+            tmpSurface.SetSurfacePixelOffset P2_PO_Half
             
             m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
             
@@ -264,6 +266,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             '(Note that such a temporary DIB was already created in a previous step - see earlier in this function.)
             tmpSurface.WrapSurfaceAroundPDDIB m_FillImage
             If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
+            tmpSurface.SetSurfacePixelOffset P2_PO_Half
             
             m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
             
@@ -350,7 +353,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
     Else
         
         'Start by grabbing the boundaries of the fill area, and clipping it to the image's bounds, as necessary
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         tmpRectF = m_FillOutline.GetPathBoundariesF
         
         With tmpRectF
