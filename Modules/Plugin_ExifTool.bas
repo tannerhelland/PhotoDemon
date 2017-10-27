@@ -43,8 +43,8 @@ Attribute VB_Name = "ExifTool"
 
 Option Explicit
 
-'DEBUGGING ONLY!  Do not enable this constant in production builds, as it does obnoxious things like overwriting the clipboard with
-' retrieved metadata information.
+'DEBUGGING ONLY!  Do not enable this constant in production builds, as it does obnoxious things like
+' overwrite the clipboard with streaming metadata information.
 Public Const EXIFTOOL_DEBUGGING_ENABLED As Long = 0&
 
 'A number of API functions are required to pipe stdout
@@ -54,9 +54,6 @@ Private Const SW_NORMAL = 1
 Private Const SW_HIDE = 0
 Private Const DUPLICATE_CLOSE_SOURCE = &H1
 Private Const DUPLICATE_SAME_ACCESS = &H2
-
-'Potential error codes (not used at present, but could be added in the future)
-'Private Const ERROR_BROKEN_PIPE = 109
 
 Private Type SECURITY_ATTRIBUTES
     nLength As Long
@@ -253,6 +250,9 @@ Private Const MD_extended = 0, MD_ifd = 0, MD_ifd64 = 0, MD_string = 0, MD_undef
 Private Const MD_integerstring = 0, MD_floatstring = 0, MD_rationalstring = 0, MD_datestring = 0, MD_booleanstring = 0, MD_digits = 0
 #End If
 
+'pdFSO is used for Unicode file interop
+Private m_FSO As pdFSO
+
 'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the pdAsyncPipe
 ' class declared below is active and connected to ExifTool, and can be used to send/receive input and output.
 Private m_IsExifToolRunning As Boolean
@@ -274,8 +274,7 @@ Private m_VerificationString As String
 ' this variable will be set to TRUE. (Note that the matching database string will be available under a variety of
 ' circumstances, as it is filled whenever the user initiates a metadata editing session.)
 Private m_DatabaseModeActive As Boolean
-Private m_DatabaseString As String
-Private m_DatabaseBuilder As pdString
+Private m_DatabaseHandle As Long, m_DatabaseString As String, m_DatabasePath As String
 
 'As of 6.6 alpha, technical metadata reports can now be generated for a given file.  While this mode is active, we do not
 ' want to immediately delete the report; use this boolean to check for that particular state.
@@ -328,19 +327,18 @@ Public Function IsVerificationModeActive() As Boolean
 End Function
 
 'm_Async will asynchronously trigger this function whenever it receives new metadata from ExifTool.
-Public Sub NewMetadataReceived(ByRef newMetadata As String)
+Public Sub NewMetadataReceived()
     
     If m_captureModeActive Then
-        m_currentMetadataText = m_currentMetadataText & newMetadata
+        m_currentMetadataText = m_currentMetadataText & m_Async.GetDataAsString()
     
     'During verification mode, we must also check to see if verification has finished
     ElseIf m_VerificationModeActive Then
-        m_VerificationString = m_VerificationString & newMetadata
+        m_VerificationString = m_VerificationString & m_Async.GetDataAsString()
         If IsMetadataFinished() Then StopVerificationMode
         
     'During database mode, check for a finish state, then write the retrieved database out to file!
     ElseIf m_DatabaseModeActive Then
-        m_DatabaseBuilder.Append newMetadata
         If IsMetadataFinished() Then
             WriteMetadataDatabaseToFile
             If m_ModalWaitWindowActive Then g_UnloadWaitWindow = True
@@ -350,39 +348,26 @@ Public Sub NewMetadataReceived(ByRef newMetadata As String)
 End Sub
 
 Private Sub WriteMetadataDatabaseToFile()
-
-    Dim mdDatabasePath As String
-    mdDatabasePath = m_ExifToolDataFolder & "ExifToolDatabase.xml"
-        
-    'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
-    If (Not m_DatabaseBuilder Is Nothing) Then
-        m_DatabaseString = m_DatabaseBuilder.ToString()
-        Set m_DatabaseBuilder = Nothing
-    End If
     
-    If (Len(m_DatabaseString) <> 0) Then
+    'Remember that we haven't actually removed any data from the async class - it has cached everything for us.
+    ' As such, we just want it to dump everything it has, as-is, to the metadata file (which is still open).
+    ' Note that we also forcibly remove the "{ready}" flag, plus a linebreak, from the end of the buffer.
+    Dim writeSize As Long
+    writeSize = m_Async.GetSizeOfInputBuffer - (7 + 2)  'Len("{ready}") + Len(vbCrLf)
+    If (writeSize > 0) Then m_FSO.FileWriteData m_DatabaseHandle, m_Async.PeekPointer(0), writeSize
+    m_FSO.FileCloseHandle m_DatabaseHandle
     
-        m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
-    
-        'Write our XML string out to file
-        If Files.FileSaveAsText(m_DatabaseString, mdDatabasePath) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "ExifTool Metadata database created successfully (" & Len(m_DatabaseString) & " chars, " & Files.FileLenW(mdDatabasePath) & " bytes)"
-            #End If
+    #If DEBUGMODE = 1 Then
+        If (writeSize > 0) Then
+            pdDebug.LogAction "ExifTool Metadata database created successfully (" & Files.FileLenW(m_DatabasePath) & " bytes)"
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile failed to write the metadata database to file."
-            #End If
+            pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile failed to write the metadata database to file."
         End If
-        
-    Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile had a zero-length database string??"
-        #End If
-    End If
+    #End If
         
     'Reset the database mode tracker, so the database doesn't accidentally get rebuilt again!
     m_DatabaseModeActive = False
+    m_Async.ResetInputBuffer
     
 End Sub
 
@@ -390,7 +375,7 @@ End Sub
 ' to see if ExifTool has finished its previous request.
 Private Sub StartVerificationMode()
     m_VerificationModeActive = True
-    m_VerificationString = ""
+    m_VerificationString = vbNullString
 End Sub
 
 'When verification mode ends (as triggered by an automatic check in newMetadataReceived), we must also remove the temporary
@@ -456,49 +441,27 @@ Public Function IsMetadataFinished() As Boolean
         Exit Function
     End If
     
-    'I don't know much about asynchronous string handling in VB, but just to be safe, make a copy of the current
-    ' metadata string (to avoid collisions?).
-    Dim tmpMetadata As String
-    
-    If m_captureModeActive Then
-        tmpMetadata = m_currentMetadataText
-    ElseIf m_VerificationModeActive Then
-        tmpMetadata = m_VerificationString
-    ElseIf m_DatabaseModeActive Then
-        If (Not m_DatabaseBuilder Is Nothing) Then tmpMetadata = m_DatabaseBuilder.ToString()
-    Else
+    'If no capture or verification modes are active, end any lingering metadata processing.
+    If (Not m_captureModeActive) And (Not m_VerificationModeActive) And (Not m_DatabaseModeActive) Then
         IsMetadataFinished = True
         Exit Function
     End If
     
-    'If there is no temporary metadata string, exit now
-    If (Len(tmpMetadata) = 0) Then Exit Function
-    
     'Different verification modes require different checks for completion.
     If m_captureModeActive Then
-        
-        If InStr(1, tmpMetadata, "{ready" & m_LastRequestID & "}", vbBinaryCompare) > 0 Then
-            
-            'Terminate the relevant mode
-            m_captureModeActive = False
-            IsMetadataFinished = True
-            
-        Else
-            IsMetadataFinished = False
-        End If
+        m_captureModeActive = (InStr(1, m_currentMetadataText, "{ready" & m_LastRequestID & "}", vbBinaryCompare) = 0)
+        IsMetadataFinished = (Not m_captureModeActive)
         
     ElseIf m_VerificationModeActive Then
-        m_VerificationModeActive = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) = 0)
+        m_VerificationModeActive = (InStr(1, m_VerificationString, "{ready}", vbBinaryCompare) = 0)
         IsMetadataFinished = (Not m_VerificationModeActive)
-        
+    
+    'In database mode, we only want to peek at the last few bytes received from ExifTool.  If they equal
+    ' {ready}, it means ExifTool has finished sending us data.
     ElseIf m_DatabaseModeActive Then
-        m_DatabaseModeActive = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) = 0)
+        m_DatabaseModeActive = (InStr(1, m_Async.PeekLastNBytes(), "{ready}", vbBinaryCompare) = 0)
         IsMetadataFinished = (Not m_DatabaseModeActive)
     
-    'Standard metadata mode is the only remaining option
-    Else
-        IsMetadataFinished = (InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0)
-        
     End If
     
 End Function
@@ -579,11 +542,6 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     '        as its construction may lag behind the rest of the image load process.  When a full metadata string is retrieved,
     '        the RetrieveMetadataString() function will handle clearing for us.
     'm_currentMetadataText = ""
-    
-    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
-    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
-    Dim Quotes As String
-    Quotes = Chr(34)
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects them in
     ' ARGFILE format, e.g. each parameter on its own line.
@@ -777,7 +735,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
 End Function
 
 Public Function DoesTagDatabaseExist() As Boolean
-    DoesTagDatabaseExist = Files.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml")
+    DoesTagDatabaseExist = Files.FileExists(m_DatabasePath)
 End Function
 
 Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef parentForm As Form = Nothing) As Boolean
@@ -820,7 +778,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
             End If
             
             'With the database successfully constructed, we now need to load it into memory
-            If (Len(m_DatabaseString) = 0) Then Files.FileLoadAsString m_ExifToolDataFolder & "exifToolDatabase.xml", m_DatabaseString
+            If (Len(m_DatabaseString) = 0) Then Files.FileLoadAsString m_DatabasePath, m_DatabaseString
             
             'Metadata caching is performed on a per-image basis, so we need to reset the cache on each invocation
             ExifTool.StartNewDatabaseCache
@@ -844,7 +802,7 @@ Public Function WriteTagDatabase() As Boolean
 
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
     ' (TODO: check the database version number, as new tags may be added between releases...)
-    If Files.FileExists(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
+    If Files.FileExists(m_DatabasePath) Then
         WriteTagDatabase = True
     Else
     
@@ -853,9 +811,24 @@ Public Function WriteTagDatabase() As Boolean
         'Start metadata database retrieval mode
         m_DatabaseModeActive = True
         m_DatabaseString = vbNullString
-        Set m_DatabaseBuilder = New pdString
-        m_DatabaseBuilder.Reset
         
+        'Open a persistent handle to the database itself.  We'll stream data from ExifTool directly into
+        ' this file.
+        Set m_FSO = New pdFSO
+        If (Not m_FSO.FileCreateHandle(m_DatabasePath, m_DatabaseHandle, True, True, OptimizeSequentialAccess)) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Failed to create ExifTool database.  Metadata editing is disabled for this session."
+            #End If
+            m_DatabaseModeActive = False
+            WriteTagDatabase = False
+            Exit Function
+        End If
+        
+        'To simplify text file heuristics, forcibly write a UTF-8 BOM to the start of the file.
+        Dim bomMarker(0 To 2) As Byte
+        bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
+        m_FSO.FileWriteData m_DatabaseHandle, VarPtr(bomMarker(0)), 3
+                
         'Request a database rewrite from ExifTool
         Dim cmdParams As String
         cmdParams = "-listx" & vbCrLf
@@ -864,7 +837,7 @@ Public Function WriteTagDatabase() As Boolean
         cmdParams = cmdParams & "-f" & vbCrLf
         cmdParams = cmdParams & "-execute" & vbCrLf
         
-        'Send the data over to ExifTool.  It will handle the rest from here
+        'Send the data over to ExifTool.  The database will stream here asynchronously.
         If (Not m_Async Is Nothing) Then m_Async.SendData cmdParams
         
         WriteTagDatabase = True
@@ -929,11 +902,6 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
             tagGroupPrefix = ""
             
     End Select
-    
-    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
-    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
-    Dim Quotes As String
-    Quotes = Chr(34)
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects them in
     ' ARGFILE format, e.g. each parameter on its own line.
@@ -1194,17 +1162,15 @@ Public Function StartExifTool() As Boolean
     Set cFSO = New pdFSO
     Files.PathCreate m_ExifToolDataFolder
     
+    'Set any other, related ExifTool paths now
+    m_DatabasePath = m_ExifToolDataFolder & "exifToolDatabase.xml"
+    
     'Next, set a local environment variable for Perl's temp folder, matching our temp folder above.  (If we do this prior
     ' to shelling ExifTool as a child process, ExifTool will automatically pick up the environment variable.)
     Dim envName As String, envValue As String
     envName = "PAR_GLOBAL_TEMP"
     envValue = m_ExifToolDataFolder
     SetEnvironmentVariableW StrPtr(envName), StrPtr(envValue)
-    
-    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
-    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
-    Dim Quotes As String
-    Quotes = Chr(34)
     
     'Grab the ExifTool path, which we will shell and pipe in a moment
     Dim appLocation As String
@@ -1239,6 +1205,12 @@ End Function
 
 'Make sure to terminate ExifTool politely when the program closes.
 Public Sub TerminateExifTool()
+
+    'If for some reason, we still have an open handle to the ExifTool database, close it now.
+    ' (This should never happen, barring a catastrophic crash or something similarly bad.)
+    If (m_DatabaseHandle <> 0) Then
+        If (Not m_FSO Is Nothing) Then m_FSO.FileCloseHandle m_DatabaseHandle
+    End If
 
     If m_IsExifToolRunning Then
         
