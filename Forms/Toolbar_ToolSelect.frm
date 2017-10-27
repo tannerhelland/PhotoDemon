@@ -32,7 +32,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   0
       Left            =   120
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   30
       Width           =   1815
       _ExtentX        =   3201
@@ -217,22 +217,11 @@ Begin VB.Form toolbar_Toolbox
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
    End
-   Begin PhotoDemon.pdButtonToolbox cmdFile 
-      Height          =   600
-      Index           =   8
-      Left            =   1560
-      TabIndex        =   18
-      Top             =   1920
-      Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
-   End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   9
       Left            =   120
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   5400
       Width           =   720
       _ExtentX        =   1270
@@ -242,7 +231,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   10
       Left            =   840
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   5400
       Width           =   720
       _ExtentX        =   1270
@@ -252,7 +241,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   11
       Left            =   120
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   6480
       Width           =   720
       _ExtentX        =   1270
@@ -262,7 +251,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   1
       Left            =   120
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   1620
       Width           =   1815
       _ExtentX        =   3201
@@ -273,7 +262,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   2
       Left            =   120
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   2580
       Width           =   1815
       _ExtentX        =   3201
@@ -284,7 +273,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   3
       Left            =   120
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   3540
       Width           =   1815
       _ExtentX        =   3201
@@ -295,7 +284,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   4
       Left            =   120
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   5100
       Width           =   1815
       _ExtentX        =   3201
@@ -306,7 +295,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   5
       Left            =   120
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   6120
       Width           =   1815
       _ExtentX        =   3201
@@ -339,7 +328,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   13
       Left            =   1560
-      TabIndex        =   28
+      TabIndex        =   27
       Top             =   6480
       Width           =   720
       _ExtentX        =   1270
@@ -349,7 +338,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   14
       Left            =   120
-      TabIndex        =   29
+      TabIndex        =   28
       Top             =   7080
       Width           =   720
       _ExtentX        =   1270
