@@ -146,6 +146,15 @@ Private Sub CloseHandleSafely(ByRef srcHandle As Long)
     End If
 End Sub
 
+Friend Function GetSizeOfInputBuffer() As Long
+    GetSizeOfInputBuffer = m_BufferIn.GetStreamSize()
+End Function
+
+Friend Sub ResetInputBuffer()
+    m_BufferIn.SetPosition 0
+    m_BufferIn.SetSizeExternally 1024
+End Sub
+
 Friend Function TerminateChildProcess() As Boolean
     
     If (m_ProcInfo.hProcess <> 0) Then
@@ -185,14 +194,14 @@ Friend Function TerminateChildProcess() As Boolean
     
 End Function
 
-Friend Function GetData() As String
+Friend Function GetDataAsString() As String
     
-    If (m_BufferOut.GetStreamSize > 0) Then
+    If (m_BufferIn.GetStreamSize > 0) Then
     
         'Translate the requested amount of data from our internal buffer into a usable string.
         If m_AssumeUTF8Input Then
-            GetData = Strings.StringFromUTF8Ptr(m_BufferOut.Peek_PointerOnly(0), m_BufferOut.GetStreamSize())
-            m_BufferOut.DeleteFromStart m_BufferOut.GetStreamSize()
+            GetDataAsString = Strings.StringFromUTF8Ptr(m_BufferIn.Peek_PointerOnly(0), m_BufferIn.GetStreamSize())
+            m_BufferIn.DeleteFromStart m_BufferIn.GetStreamSize()
             
         'I should probably implement this fallback at some point...
         Else
@@ -203,16 +212,39 @@ Friend Function GetData() As String
     
 End Function
 
-'See comments for GetData(), above, if you're curious about how this works
-Friend Function ErrGetData() As String
+'See comments for GetDataAsString(), above, if you're curious about how this works
+Friend Function ErrGetDataAsString() As String
     If (m_BufferErr.GetStreamSize > 0) Then
         If m_AssumeUTF8Input Then
-            ErrGetData = Strings.StringFromUTF8Ptr(m_BufferErr.Peek_PointerOnly(0), m_BufferErr.GetStreamSize())
+            ErrGetDataAsString = Strings.StringFromUTF8Ptr(m_BufferErr.Peek_PointerOnly(0), m_BufferErr.GetStreamSize())
             m_BufferErr.DeleteFromStart m_BufferErr.GetStreamSize()
         Else
             'TODO
         End If
     End If
+End Function
+
+'With ExifTool, we often need to search for a flag like {ready123} that indicates ExifTool has gone idle.  The ExifTool module
+' uses this function to peek at the last few bytes in the buffer without actually removing any data.  Note that the requested
+' number of bytes may translate to a different number of chars due to UTF-8 conversion.  (Similarly, if there aren't enough
+' requested bytes in the buffer, we'll obviously just return as many as we can.)
+Friend Function PeekLastNBytes(Optional ByVal maxNumBytes As Long = 16&) As String
+    
+    'Calculate an offset into the source buffer
+    Dim ptrOffset As Long
+    ptrOffset = m_BufferIn.GetPosition() - maxNumBytes
+    If (ptrOffset < 0) Then
+        maxNumBytes = maxNumBytes + ptrOffset
+        ptrOffset = 0
+    End If
+    
+    'Retrieve as many bytes as we can
+    If (maxNumBytes > 0) Then PeekLastNBytes = Strings.StringFromUTF8Ptr(m_BufferIn.Peek_PointerOnly(ptrOffset), maxNumBytes) Else PeekLastNBytes = vbNullString
+    
+End Function
+
+Friend Function PeekPointer(Optional ByVal ptrPosition As Long = 0) As Long
+    PeekPointer = m_BufferIn.Peek_PointerOnly(ptrPosition)
 End Function
 
 'NOTE FROM TANNER: I have modified this function to better work with ExifTool.  Specifically, I have separated out the command line
@@ -334,7 +366,7 @@ Friend Sub SendData(ByRef srcData As String)
         
         'If we actually appended usable data to the out stream, submit it to the child process now
         If (writeLen <> 0) Then
-            m_BufferIn.WriteBytesFromPointer VarPtr(byteBuffer(0)), writeLen
+            m_BufferOut.WriteBytesFromPointer VarPtr(byteBuffer(0)), writeLen
             WriteData
         End If
         
@@ -359,7 +391,7 @@ End Sub
 Private Sub ReadData()
     
     'The stdout and stderr pipes are handled in turn, using basically identical code.
-    If (ReadSpecificPipe(m_PipeOutRead, m_BufferOut) > 0) Then InternalDataArrival
+    If (ReadSpecificPipe(m_PipeOutRead, m_BufferIn) > 0) Then InternalDataArrival
     If (ReadSpecificPipe(m_PipeErrRead, m_BufferErr) > 0) Then InternalErrDataArrival
     
 End Sub
@@ -445,16 +477,16 @@ End Function
 Private Sub WriteData()
     
     'Make sure the pipe exists, and that we have a non-zero amount of bytes to write
-    If (m_PipeInWrite <> 0) And (Not m_BufferIn Is Nothing) Then
-        If (m_BufferIn.GetStreamSize > 0) Then
+    If (m_PipeInWrite <> 0) And (Not m_BufferOut Is Nothing) Then
+        If (m_BufferOut.GetStreamSize > 0) Then
         
             'Try to submit the entire remaining data stream
             Dim writeSuccess As Boolean, numBytesWritten As Long
-            writeSuccess = (WriteFile(m_PipeInWrite, m_BufferIn.Peek_PointerOnly(0), m_BufferIn.GetStreamSize, numBytesWritten, 0&) <> 0)
+            writeSuccess = (WriteFile(m_PipeInWrite, m_BufferOut.Peek_PointerOnly(0), m_BufferOut.GetStreamSize, numBytesWritten, 0&) <> 0)
             
             'If we were able to submit at least *some* of our data, remove it from the submission queue
             If writeSuccess Then
-                m_BufferIn.DeleteFromStart numBytesWritten
+                m_BufferOut.DeleteFromStart numBytesWritten
             
             'If the write failed, do not update any internal buffers (so we can try again later)
             Else
@@ -464,8 +496,8 @@ Private Sub WriteData()
     
     'As a failsafe, clear the buffer if a write attempt is made but our pipe has died
     Else
-        If (Not m_BufferIn Is Nothing) Then
-            If (m_BufferIn.GetStreamSize > 0) Then m_BufferIn.StopStream True
+        If (Not m_BufferOut Is Nothing) Then
+            If (m_BufferOut.GetStreamSize > 0) Then m_BufferOut.StopStream True
         End If
     End If
     
@@ -485,17 +517,14 @@ End Sub
 ' - ExifTool.  Our ExifTool interface is currently sited in a module, which means it can't handle events; as such,
 ' we currently handle pipe operations internally.
 Private Sub InternalDataArrival()
-
-    Dim receivedData As String
-    receivedData = Me.GetData()
     
-    If (Len(receivedData) <> 0) Then
+    If (m_BufferIn.GetStreamSize() > 0) Then
     
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Asynchronously received " & Len(receivedData) & " new characters from ExifTool."
+            pdDebug.LogAction "Asynchronously received " & m_BufferIn.GetStreamSize() & " new characters from ExifTool."
         #End If
         
-        ExifTool.NewMetadataReceived receivedData
+        ExifTool.NewMetadataReceived
         
     End If
     
@@ -505,7 +534,7 @@ Private Sub InternalErrDataArrival()
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
-        pdDebug.LogAction Me.ErrGetData()
+        pdDebug.LogAction Me.ErrGetDataAsString()
     #End If
     
 End Sub
@@ -514,16 +543,16 @@ Private Sub Class_Initialize()
     
     'API timer is used to "fake" async
     Set m_Async = New pdTimer
-    m_Async.Interval = 100
+    m_Async.Interval = 34
+    
+    Set m_BufferIn = New pdStream
+    m_BufferIn.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
     
     Set m_BufferOut = New pdStream
     m_BufferOut.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
     
     Set m_BufferErr = New pdStream
     m_BufferErr.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
-    
-    Set m_BufferIn = New pdStream
-    m_BufferIn.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
     
     'Edit by Tanner: we use UTF-8 interop with Exiftool; this behavior may break interactions with other software,
     ' which is why I haven't passed the suggestion upstream.
