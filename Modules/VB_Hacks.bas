@@ -249,7 +249,7 @@ Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArra
     ReadIStreamIntoVBArray = False
     
     'Null streams are pointless; ignore them completely!
-    If (ptrSrcStream <> 0) Then
+    If (ptrSrcStream <> 0) And (dstLength > 0) Then
         
         ReDim dstArray(0 To dstLength - 1) As Byte
         
@@ -273,7 +273,7 @@ Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArra
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer!"
+            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer and/or size!"
         #End If
     End If
     

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 30/March/17
-'Last update: new clipboard support for metafile formats
+'Last updated: 27/October/17
+'Last update: fix drag/drop from Firefox, which broke at some point in the past (idk when)
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
 ' object, which includes a ton of specialized helper functions.  Look there for details.
@@ -1147,22 +1147,26 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Dim dragWasSuccessful As Boolean
     dragWasSuccessful = False
     
-    'Verify that the object being dragged is some sort of file or file list
-    If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer)
-    End If
-    
-    'Next, look for a file content or descriptor flag.  These are received when dragging from .zip files.
-    If Data.GetFormat(CF_FILECONTENTS) Or Data.GetFormat(CF_FILEGROUPDESCRIPTORW) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer)
-    End If
-    
-    'If the data is not a file list, see if it's a text fragment that contains a valid file path or URL.
+    'First, look for text fragments that contain valid file or URL paths.  (These are extremely fast to query,
+    ' and they're preferred with web browsers, as they generally contain a URL to the image in question,
+    ' which we prefer to download manually so we can keep things like metadata intact.)
     If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
         dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer)
     End If
     
-    'If the data is not a file list, see if it's a bitmap
+    'If we can't find text, look for file content or descriptor flags.  These are received when dragging from
+    ' .zip files, and we can use them to manually reconstruct image files.
+    If (Data.GetFormat(CF_FILECONTENTS) Or Data.GetFormat(CF_FILEGROUPDESCRIPTORW)) And (Not dragWasSuccessful) Then
+        dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer)
+    End If
+    
+    'If we're still here, look for formal file or file list objects.  These may be supplied by 3rd-party
+    ' file explorer programs.
+    If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then
+        dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer)
+    End If
+    
+    'If the data is not a file list, see if it's actual bitmap data.
     If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
         dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
     End If
@@ -1186,7 +1190,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
     
     'Note that PD will validate the data object before passing it, but better safe than sorry
     If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
-    If Not OLEDragDrop_DataObject.GetFormat(vbCFFiles) Then Exit Function
+    If (Not OLEDragDrop_DataObject.GetFormat(vbCFFiles)) Then Exit Function
     
     'This function basically handles the task of hacking around the DataObject's VTable, and manually retrieving pointers
     ' to the original, unmodified Unicode filenames in the Data object.  We then overwrite the OUT filename strings with
@@ -1221,14 +1225,14 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
     If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
         
         'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
-        If pMedium.Data = 0 Then Exit Function
+        If (pMedium.Data = 0) Then Exit Function
         
         'Remember that this data object doesn't point directly at the files themselves, but to a 20-byte DROPFILES structure
         Dim hDrop As Long
         CopyMemory hDrop, ByVal pMedium.Data, 4&
         
         'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
-        If hDrop <> 0 Then
+        If (hDrop <> 0) Then
             
             'Convert the hDrop into a usable DROPFILES struct
             Dim dFiles As DROPFILES
@@ -1236,7 +1240,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
             
             'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later.
             ' (But just in case, check - otherwise we'll get gibberish string results.)
-            If dFiles.fWide <> 0 Then
+            If (dFiles.fWide <> 0) Then
                 
                 'Use the pFiles member to track the filename's offsets
                 dFiles.pFiles = dFiles.pFiles + hDrop
@@ -1277,7 +1281,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                 If (cFiles.GetNumOfStrings > 0) Then
                     
                     DragDrop_FileList = True
-                    
+                    Debug.Print "starting load"
                     If (g_OpenImageCount > 0) And loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
                             Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
@@ -1285,7 +1289,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     Else
                         Loading.LoadMultipleImageFiles cFiles
                     End If
-                    
+                    Debug.Print "ending load"
                 End If
                 
             '/End failsafe check for wchar strings
@@ -1418,10 +1422,15 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                         ' We can work with this if we have to.
                         ElseIf (fMedium.TYMED = TYMED_ISTREAM) Then
                             
-                            'Save the file's contents to a temporary file, and note the filename (if successful)
-                            VBHacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
-                            If Files.FileCreateFromByteArray(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
-                                listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                            'Make sure the stream has non-zero content length
+                            If (fileDesc.nFileSizeLow > 0) Then
+                            
+                                'Save the file's contents to a temporary file, and note the filename (if successful)
+                                VBHacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
+                                If Files.FileCreateFromByteArray(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
+                                    listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                                End If
+                                
                             End If
                         
                         Else
