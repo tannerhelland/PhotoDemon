@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>7.0.3326</langversion>
+<langversion>7.0.3377</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -779,12 +779,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Die PDI-Datei "%1" enthält komprimierte Daten, aber das erforderliche Plugin fehlt oder ist deaktiviert.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Kompression-Plugin fehlt</translation>
 </phrase>
 
 <phrase>
@@ -825,12 +825,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Fade</original>
-<translation>Ausblenden</translation>
+<translation>Überblenden</translation>
 </phrase>
 
 <phrase>
 <original>Fade: %1</original>
-<translation>Ausblenden: %1</translation>
+<translation>Überblenden: %1</translation>
 </phrase>
 
 <phrase>
@@ -870,7 +870,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>clamp them to the nearest available pixel</original>
-<translation>Diese an den nächstgelegenen Pixel heften</translation>
+<translation>Diese an den nächsten verfügbaren Pixel heften</translation>
 </phrase>
 
 <phrase>
@@ -1858,7 +1858,7 @@ Melden Sie bitte diesen Fehler via Menü "Hilfe > Fehlerbericht einreichen".</tr
 2) the file location provided to PhotoDemon is correct.</original>
 <translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
-2) der angegebene Speicherort der Datei in PhotoDemon korrekt ist.</translation>
+2) der angegebene Dateiort in PhotoDemon korrekt ist.</translation>
 </phrase>
 
 <phrase>
@@ -4157,7 +4157,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Fahren Sie über ein Thumbnail (Bild), um seinen Namen und aktuellen Dateispeicherort zu sehen.</translation>
+<translation>Fahren Sie über ein Bild-Thumbnail (Miniaturansicht), um seinen Namen und aktuellen Dateiort zu sehen.</translation>
 </phrase>
 
 <!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -4235,7 +4235,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>embed thumbnail image</original>
-<translation>Thumbnail (Vorschaubild) einbetten</translation>
+<translation>Thumbnail-Bild einbetten</translation>
 </phrase>
 
 <phrase>
@@ -4826,7 +4826,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Map photo location</original>
-<translation>Fotospeicherort abbilden</translation>
+<translation>Fotoort abbilden</translation>
 </phrase>
 
 <phrase>
@@ -5361,7 +5361,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation>Symmetrisch nächster Nachbar</translation>
+<translation>Symmetrisch Nearest-Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -5461,7 +5461,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Cross-screen</original>
-<translation>Cross-Sreen</translation>
+<translation>Cross-Screen</translation>
 </phrase>
 
 <phrase>
@@ -6216,7 +6216,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
 
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Vielen Dank für das Einreichen eines Fehlerberichts. Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, muss PhotoDemon wissen, wohin er gesendet wird.
+<translation>Vielen Dank für das Einreichen eines Fehlerberichts. Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, muss PhotoDemon wissen, wohin dieser gesendet wird.
 
 Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies bedeutet, antworten Sie mit "Nein".)</translation>
 </phrase>
@@ -8617,12 +8617,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fading previous action (%1)</original>
-<translation>Vorherige Aktion (%1) wird ausgeblendet</translation>
+<translation>Vorherige Aktion (%1) wird überblendet</translation>
 </phrase>
 
 <phrase>
 <original>Fade complete.</original>
-<translation>Ausblenden fertiggestellt.</translation>
+<translation>Überblenden fertiggestellt.</translation>
 </phrase>
 
 <!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9732,7 +9732,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Cross-screen (stars)</original>
-<translation>Cross-Sreen (Sterne)</translation>
+<translation>Cross-Screen (Sterne)</translation>
 </phrase>
 
 <phrase>
@@ -9896,12 +9896,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>Neuer Turbulenz-Startwert</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>Farbverschiebung</translation>
 </phrase>
 
 <phrase>
@@ -10050,7 +10050,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Softening film grain</original>
-<translation>Filmkörnung weich machen</translation>
+<translation>Filmkörnung wird gedämpft</translation>
 </phrase>
 
 <!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10286,27 +10286,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>Farbüberblendung</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>Diffuses Licht</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>Körnung</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>Kanten überblenden</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Bild wird in der Zeit zurückgeschickt</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10762,7 +10762,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Originalspeicherort.</translation>
+<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Originalort.</translation>
 </phrase>
 
 <phrase>
@@ -12735,7 +12735,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Nearest Neighbor</original>
-<translation>Nächster Nachbar</translation>
+<translation>Nearest-Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -12846,7 +12846,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation>Nächster Nachbar</translation>
+<translation>Nearest-Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -13264,7 +13264,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Shortcut: %1</translation>
 </phrase>
 
 <phrase>
@@ -13568,7 +13568,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Nearest neighbor</original>
-<translation>Nächster Nachbar</translation>
+<translation>Nearest-Neighbor</translation>
 </phrase>
 
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -13671,7 +13671,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Diese Option steuert, wie weich eine Auswahl sich mit ihrer Umgebung vermischt.</translation>
+<translation>Diese Option steuert, wie weich eine Auswahl mit ihrer Umgebung verschmilzt.</translation>
 </phrase>
 
 <phrase>
@@ -14551,7 +14551,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>automatically hide duplicate tags</original>
-<translation>Duplikat-Tags automatisch ausblenden</translation>
+<translation>Doppelte Tags (Duplikate) automatisch ausblenden</translation>
 </phrase>
 
 <phrase>
@@ -14566,7 +14566,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when generating image and layer thumbnail images</original>
-<translation>Beim Generieren von Thumbnails für Bilder und Layer</translation>
+<translation>Beim Generieren von Thumbnail-Bildern für Bild und Layer</translation>
 </phrase>
 
 <phrase>
@@ -14596,7 +14596,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>thumbnails</original>
-<translation>Thumbnails (Vorschaubilder)</translation>
+<translation>Thumbnails</translation>
 </phrase>
 
 <phrase>
@@ -14645,7 +14645,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation>Deskriptiv - Vollständige Bildspeicherorte, einschließlich Ordner</translation>
+<translation>Deskriptiv - Vollständige Bildorte, einschließlich Ordner</translation>
 </phrase>
 
 <phrase>
@@ -14655,7 +14655,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildspeicherorten.</translation>
+<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildorten.</translation>
 </phrase>
 
 <phrase>
@@ -14780,7 +14780,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.</original>
-<translation>PhotoDemon muss eine Menge Vorschaubilder generieren, insbesondere wenn Bilder multiple Layer enthalten. Die Qualität dieser Thumbnails kann herabgesetzt werden, um die Performance zu verbessern.</translation>
+<translation>PhotoDemon muss eine Menge Thumbnail-Bilder generieren, insbesondere wenn Bilder multiple Layer enthalten. Die Qualität dieser Thumbnails kann herabgesetzt werden, um die Performance zu verbessern.</translation>
 </phrase>
 
 <phrase>
@@ -14963,7 +14963,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
+<translation>Dieser neue Speicherort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
