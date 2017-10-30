@@ -838,13 +838,13 @@ End Function
 
 'Helper function that SHOULD NOT BE CALLED DIRECTLY.  Only other ClipboardPaste_* variants are able to safely use this function.
 ' Returns: TRUE if an image was successfully downloaded and loaded to the pdImages collection.  FALSE if failure occurred.
-Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
     
     'This function assumes the source URL is both absolute and well-formed
     Message "Image URL found.  Attempting to download..."
                     
     Dim tmpDownloadFile As String
-    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcURL)
+    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcURL, suppressErrorMsgs)
     
     'If the download was successful, we can now use the standard image load routine to import the temporary file
     If (Files.FileLenW(tmpDownloadFile) <> 0) Then
@@ -1147,11 +1147,22 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Dim dragWasSuccessful As Boolean
     dragWasSuccessful = False
     
+    'When dragging from things like web browsers, there are a *ton* of potential formats we can use for retrieval:
+    ' URL snippets, temporary cached copies, actual in-memory bitmaps.  If multiple formats are available, we'll
+    ' suppress any intermediary error messages until the last possible format fails.  (Otherwise, if we raise a
+    ' warning on the frist format, it's probably premature as we'll just grab a subsequent format.)
+    Dim numSourcesAvailable As Long
+    If Data.GetFormat(vbCFText) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(CF_FILECONTENTS) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(CF_FILEGROUPDESCRIPTORW) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(vbCFFiles) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(vbCFBitmap) Then numSourcesAvailable = numSourcesAvailable + 1
+    
     'First, look for text fragments that contain valid file or URL paths.  (These are extremely fast to query,
     ' and they're preferred with web browsers, as they generally contain a URL to the image in question,
     ' which we prefer to download manually so we can keep things like metadata intact.)
     If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer)
+        dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer, numSourcesAvailable > 1)
     End If
     
     'If we can't find text, look for file content or descriptor flags.  These are received when dragging from
@@ -1566,7 +1577,7 @@ DragDropBMPFailed:
 End Function
 
 'Load dragged text data as a new image and/or layer.  The text will be analyzed for valid file paths or URLs.
-Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
     
     'On Error GoTo DragDropTextFailed
     
@@ -1579,7 +1590,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
     Dim dragText As String
     dragText = OLEDragDrop_DataObject.GetData(vbCFText)
     
-    If Len(dragText) <> 0 Then
+    If (Len(dragText) <> 0) Then
     
         'First, test the text for URL-like indicators
         Dim testURL As String
@@ -1594,7 +1605,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             Message "Image URL found.  Attempting to download..."
             
             'The clipboard function isn't actually specific to the clipboard, so we can freely us it here.
-            DragDrop_TextData = ClipboardPaste_WellFormedURL(testURL, loadAsLayers)
+            DragDrop_TextData = ClipboardPaste_WellFormedURL(testURL, loadAsLayers, suppressErrorMsgs)
             
         'If this doesn't look like a URL, see if it's a file path instead
         Else
