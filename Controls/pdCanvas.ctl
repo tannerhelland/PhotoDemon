@@ -1124,7 +1124,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     If clickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth < 4) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight < 4) Then
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
-                        Dim curImageRectF As RECTF
+                        Dim curImageRectF As RectF
                         pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage curImageRectF
                         
                         With pdImages(g_CurrentImage)
@@ -1452,7 +1452,7 @@ End Function
 
 'Given the current user control rect, modify it to account for the image tabstrip's position, and also fill a new rect
 ' with the tabstrip's dimensions.
-Private Sub FillTabstripRect(ByRef ucRect As RECTF, ByRef dstRect As RECTF)
+Private Sub FillTabstripRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
     
     Dim cSize As Long
     cSize = ImageStrip.ConstrainingSize
@@ -1499,7 +1499,7 @@ End Sub
 
 'Given the current user control rect, modify it to account for the status bar's position, and also fill a new rect
 ' with the status bar's dimensions.
-Private Sub FillStatusBarRect(ByRef ucRect As RECTF, ByRef dstRect As RECTF)
+Private Sub FillStatusBarRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
     ucRect.Height = ucRect.Height - StatusBar.GetHeight
     dstRect.Top = ucRect.Top + ucRect.Height
     dstRect.Height = StatusBar.GetHeight
@@ -1520,14 +1520,14 @@ Public Sub AlignCanvasView()
     bHeight = ucSupport.GetControlHeight
     
     'Using the DPI-aware measurements, construct a rect that defines the entire available control area
-    Dim ucRect As RECTF
+    Dim ucRect As RectF
     ucRect.Left = 0
     ucRect.Top = 0
     ucRect.Width = bWidth
     ucRect.Height = bHeight
     
     'The image tabstrip, if visible, gets placement preference
-    Dim tabstripVisible As Boolean, tabstripRect As RECTF
+    Dim tabstripVisible As Boolean, tabstripRect As RectF
     tabstripVisible = ShouldImageStripBeVisible
     
     'If we are showing the tabstrip for the first time, we need to position it prior to displaying it
@@ -1538,7 +1538,7 @@ Public Sub AlignCanvasView()
     End If
     
     'With the tabstrip rect in place, we now need to calculate a status bar rect
-    Dim statusBarRect As RECTF
+    Dim statusBarRect As RectF
     FillStatusBarRect ucRect, statusBarRect
     
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
