@@ -147,7 +147,7 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 0, 3, 4
         AddMenuItem "Online image...", "file_import_web", 0, 3, 5, "file_importweb"
         AddMenuItem "-", "-", 0, 3, 6
-        AddMenuItem "Screenshot", "file_import_screenshot", 0, 3, 7, "file_importscreen"
+        AddMenuItem "Screenshot...", "file_import_screenshot", 0, 3, 7, "file_importscreen"
     AddMenuItem "-", "-", 0, 4
     AddMenuItem "&Close", "file_close", 0, 5, , "file_close"
     AddMenuItem "Close all", "file_closeall", 0, 6
