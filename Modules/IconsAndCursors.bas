@@ -48,7 +48,7 @@ Private Const ICON_BIG As Long = 1
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
 Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GP_Result
-Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
+Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RectF, ByRef mSrcUnit As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiBitmap As Long) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
 
@@ -97,9 +97,9 @@ End Enum
 
 Private Const GCL_HCURSOR = (-12)
 
-Private numOfCustomCursors As Long
-Private customCursorNames() As String
-Private customCursorHandles() As Long
+Private m_numCustomCursors As Long
+Private m_customCursorNames() As String
+Private m_customCursorHandles() As Long
 
 'This array will be used to store our dynamically created icon handles so we can delete them on program exit
 Private Const INITIAL_ICON_CACHE_SIZE As Long = 16
@@ -558,7 +558,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
     ' cursor size calculated above.
     Dim resDIB As pdDIB
     Set resDIB = New pdDIB
-    If LoadResourceToDIB(resTitle, resDIB, m_CursorSize, m_CursorSize) Then
+    If LoadResourceToDIB(resTitle, resDIB, m_CursorSize, m_CursorSize, , , True) Then
         
         'Next, we need to scale the cursor hotspot to the actual cursor size.
         ' (Cursor hotspots are always hard-coded on a 16x16 basis, then adjusted at run-time as necessary.)
@@ -621,7 +621,7 @@ End Function
 'Load all relevant program cursors into memory
 Public Sub InitializeCursors()
 
-    ReDim customCursorHandles(0) As Long
+    ReDim m_customCursorHandles(0) As Long
 
     'Previously, system cursors were cached here.  This is no longer needed per https://github.com/tannerhelland/PhotoDemon/issues/78
     ' I am leaving this sub in case I need to pre-load tool cursors in the future.
@@ -634,11 +634,11 @@ End Sub
 'Unload any custom cursors from memory
 Public Sub UnloadAllCursors()
     
-    If (numOfCustomCursors = 0) Then Exit Sub
+    If (m_numCustomCursors = 0) Then Exit Sub
     
     Dim i As Long
-    For i = 0 To numOfCustomCursors - 1
-        DestroyCursor customCursorHandles(i)
+    For i = 0 To m_numCustomCursors - 1
+        DestroyCursor m_customCursorHandles(i)
     Next i
     
 End Sub
@@ -688,11 +688,11 @@ Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVa
     cursorAlreadyLoaded = False
     
     'Loop through all cursors that have been loaded, and see if this one has been requested already.
-    If (numOfCustomCursors > 0) Then
+    If (m_numCustomCursors > 0) Then
     
-        For i = 0 To numOfCustomCursors - 1
+        For i = 0 To m_numCustomCursors - 1
         
-            If Strings.StringsEqual(customCursorNames(i), resCursorName, False) Then
+            If Strings.StringsEqual(m_customCursorNames(i), resCursorName, False) Then
                 cursorAlreadyLoaded = True
                 cursorLocation = i
                 Exit For
@@ -704,17 +704,17 @@ Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVa
     
     'If the cursor was not found, load it and add it to the list
     If cursorAlreadyLoaded Then
-        RequestCustomCursor = customCursorHandles(cursorLocation)
+        RequestCustomCursor = m_customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
         tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
         
         If (tmpHandle <> 0) Then
-            ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
-            ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
-            customCursorNames(numOfCustomCursors) = resCursorName
-            customCursorHandles(numOfCustomCursors) = tmpHandle
-            numOfCustomCursors = numOfCustomCursors + 1
+            ReDim Preserve m_customCursorNames(0 To m_numCustomCursors) As String
+            ReDim Preserve m_customCursorHandles(0 To m_numCustomCursors) As Long
+            m_customCursorNames(m_numCustomCursors) = resCursorName
+            m_customCursorHandles(m_numCustomCursors) = tmpHandle
+            m_numCustomCursors = m_numCustomCursors + 1
         End If
         
         RequestCustomCursor = tmpHandle

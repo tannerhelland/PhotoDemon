@@ -81,7 +81,7 @@ Private Const SWP_HIDEWINDOW As Long = &H80
 Private Const SWP_SHOWWINDOW As Long = &H40
 
 Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
@@ -1035,7 +1035,7 @@ Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByV
         
         'Note that we also pass the current control rect; this is used for optimal tooltip positioning.
         ' (This rect must also be in *screen coordinates*, FYI.)
-        Dim curControlRect As RECTL
+        Dim curControlRect As RectL
         GetWindowRect m_hWnd, curControlRect
         
         'Request a tooltip, while converting the (x, y) coordinates to ratios; this simplifies positioning
@@ -1105,7 +1105,7 @@ Friend Function GetBackBufferHeight() As Long
     GetBackBufferHeight = m_Height
 End Function
 
-Friend Sub GetControlRect(ByRef dstRect As RECTL)
+Friend Sub GetControlRect(ByRef dstRect As RectL)
     With dstRect
         .Left = m_MoveSize.GetLeft
         .Top = m_MoveSize.GetTop
@@ -1135,7 +1135,7 @@ Friend Function IsMouseInside() As Boolean
 End Function
 
 Friend Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
-    IsMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
+    IsMouseButtonDown = ((Button And m_MouseButtonState) <> 0)
 End Function
 
 Friend Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
@@ -1208,7 +1208,7 @@ End Sub
 'Also, note that requests are not persistent, by design.  The caller must re-request management any time the underlying
 ' contents change (as this class has no way of being auto-notified).
 Friend Sub RequestBufferColorManagement(ByVal ptrToSrcRectF As Long)
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory_Strict VarPtr(tmpRectF), ptrToSrcRectF, 16&
     ColorManagement.ApplyDisplayColorManagement_RectF m_BackBuffer, tmpRectF, , False
 End Sub

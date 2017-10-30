@@ -483,7 +483,7 @@ Private Sub cmdExport_Click()
             
                 cXML.PrepareNewXML PD_RES_NODE_ID_IMG
                 
-                Dim cCount As Long, testPalette() As RGBQUAD, testPixels() As Byte
+                Dim cCount As Long, testPalette() As RGBQuad, testPixels() As Byte
                 
                 'Load the source image to a temporary DIB (so we can query various image attributes)
                 If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False, False, True) Then
@@ -939,6 +939,8 @@ End Sub
 Private Sub UpdatePreview()
     
     On Error GoTo PreviewError
+    
+    If (m_NumOfResources <= 0) Then Exit Sub
     
     If (Not m_SuspendUpdates) Then
     

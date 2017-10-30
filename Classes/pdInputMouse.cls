@@ -274,12 +274,12 @@ Private m_StillUseDefWindowProc As Boolean
 '    available than VB does, but you're allowed to handle this manually if you desire.
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
+Public Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
     
-    If (MainModule.IsProgramRunning() And (targetHwnd <> 0)) Then
+    If (MainModule.IsProgramRunning() And (targetHWnd <> 0)) Then
     
         'Cache relevant parameters at module-level.  These affect the way the subclasser responds to various window messages.
-        m_hWnd = targetHwnd
+        m_hWnd = targetHWnd
         m_TrackAppCommands = alsoTrackAppCommands
         m_DisregardWheelEvents = disregardWheelEvents
         m_MouseTrackingActive = False
