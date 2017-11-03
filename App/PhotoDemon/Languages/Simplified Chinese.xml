@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.3039</langversion>
+<langversion>7.0.3386</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -398,12 +398,12 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>填充工具</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>填充层</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -778,12 +778,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>PDI文件 "%1" 包含压缩数据，但缺少或禁用所需的插件。</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>压缩插件丢失</translation>
 </phrase>
 
 <phrase>
@@ -1069,7 +1069,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>颜色和不透明度</translation>
 </phrase>
 
 <phrase>
@@ -1079,22 +1079,22 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>仅红色</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>仅绿色</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>仅蓝色</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>仅Alpha</translation>
 </phrase>
 
 <phrase>
@@ -1518,7 +1518,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>打开所有最近的图像</translation>
 </phrase>
 
 <phrase>
@@ -5211,7 +5211,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>单色到灰色</translation>
 </phrase>
 
 <phrase>
@@ -8053,42 +8053,42 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>开始透明度</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>开始彩色</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>透明度结束</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>彩色结束</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>色调变化</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>饱和度变化</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>改变亮度</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>改变Alpha</translation>
 </phrase>
 
 <phrase>
@@ -8195,12 +8195,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>No</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Yes</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9842,7 +9842,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>随机化熔岩流</translation>
 </phrase>
 
 <phrase>
@@ -9885,12 +9885,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>新的湍流种子</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>颜色偏移</translation>
 </phrase>
 
 <phrase>
@@ -10275,27 +10275,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>颜色褪色</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>漫射光</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>颗粒</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>褪色边缘</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>及时发送图像</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11753,7 +11753,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>副本</translation>
 </phrase>
 
 <phrase>
@@ -13252,7 +13252,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>快捷键：%1</translation>
 </phrase>
 
 <phrase>
@@ -13262,7 +13262,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>从图像中选择颜色</translation>
 </phrase>
 
 <phrase>
@@ -13317,12 +13317,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>橡皮擦</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>油漆桶（填充颜色）</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
@@ -13333,27 +13333,27 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>样品半径</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>采样所有层</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB %</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>N / A</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13385,7 +13385,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>补源</translation>
 </phrase>
 
 <phrase>
@@ -13410,17 +13410,17 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>混合/ Alpha模式</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>当前颜色</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>自定义画笔</translation>
 </phrase>
 
 <phrase>
@@ -13440,27 +13440,27 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>填充支持许多不同的风格。 单击可在纯色、图案和渐变样式之间切换。</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>容差控制两个像素之间的相似程度，然后在它们之间展开填充。</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>通常情况下，填充操作分析整个图像，您也可以仅分析活动层。</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>通常，填充从目标像素展开，添加相邻像素。 您也可以将其设置为分析整个图像，而不考虑连续性。</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>此选项控制添加像素到填充时如何分析像素。</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13619,37 +13619,37 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>突出</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>灯箱特效</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>蚂蚁</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>羽化</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>内部</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>外观</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>边界</translation>
 </phrase>
 
 <phrase>
@@ -14342,7 +14342,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>高分辨率鼠标输入</translation>
 </phrase>
 
 <phrase>
@@ -14372,7 +14372,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>应用程序设置文件夹</translation>
 </phrase>
 
 <phrase>
@@ -14872,7 +14872,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>您已将PhotoDemon放置在受限制的系统文件夹中。 安全预防措施可防止PhotoDemon修改此文件夹，因此自动更新现在已被禁用。 要恢复它们，您必须将PhotoDemon移动到非管理文件夹，如桌面，文档或下载。
+
+（如果您离开PhotoDemon，请不要忘记访问PhotoDemon.org不时检查新版本。）</translation>
 </phrase>
 
 <phrase>
@@ -14885,7 +14887,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>使用远程桌面或虚拟机时，高分辨率鼠标输入可能无法正常工作。 这是一个长期存在的Windows错误，在这些情况下您可以使用此设置恢复正确的鼠标行为。</translation>
 </phrase>
 
 <phrase>

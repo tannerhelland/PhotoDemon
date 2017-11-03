@@ -3547,7 +3547,7 @@ Private Sub m_AntTimer_Timer()
     
     'Disallow animations if an external object has forcibly suspended them
     If m_AnimationsAllowed Then
-            
+        
         'Advance the current offset
         m_AntDashOffset = m_AntDashOffset + 1#
         If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0#
@@ -3557,7 +3557,7 @@ Private Sub m_AntTimer_Timer()
         okayToRender = Me.IsLockedIn
         
         If okayToRender And (Not m_parentPDImage Is Nothing) Then
-            okayToRender = CBool(m_parentPDImage.imageID = g_CurrentImage)
+            okayToRender = (m_parentPDImage.imageID = g_CurrentImage)
         Else
             okayToRender = False
         End If
