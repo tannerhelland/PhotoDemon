@@ -107,6 +107,12 @@ Option Explicit
 'Apply a standard SNN filter to an image.  At present, the only supported parameters are "radius" and "strength".
 Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
+    'Create a local array and point it at the destination pixel data
+    Dim dstImageData() As Byte
+    Dim tmpSA As SafeArray2D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -125,12 +131,6 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     snnStrength = cParams.GetDouble("strength", 100#)
     snnStrength = snnStrength / 100#
     
-    'Create a local array and point it at the destination pixel data
-    Dim dstImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
-    
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
@@ -138,7 +138,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     srcDIB.CreateFromExistingDIB workingDIB
     
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
