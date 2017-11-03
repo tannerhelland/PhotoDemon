@@ -440,6 +440,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
+    
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
@@ -463,7 +465,7 @@ Private Sub UpdatePreviewSource()
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'JPEGs don't support transparency, so we can save some time by forcibly converting to 24-bpp in advance

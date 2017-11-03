@@ -232,7 +232,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     markEventHandled = False
     
     'When space is released, redraw the button to match
-    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
+    If (vkCode = VK_SPACE) Then
 
         If Me.Enabled Then
             m_TitleState = Not m_TitleState
@@ -307,7 +307,7 @@ Private Sub UserControl_Initialize()
     
     'Request any control-specific functionality
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_SPACE, VK_RETURN
+    ucSupport.SpecifyRequiredKeys VK_SPACE
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
@@ -450,13 +450,13 @@ Private Sub RedrawBackBuffer()
     If MainModule.IsProgramRunning() Then
     
         'Next, paint the drop-down arrow.  To simplify calculations, we first calculate a boundary rect.
-        Dim arrowRect As RECTF
+        Dim arrowRect As RectF
         arrowRect.Left = bWidth - bHeight - FixDPI(2)
         arrowRect.Top = 1
         arrowRect.Height = bHeight - 2
         arrowRect.Width = bHeight - 2
         
-        Dim arrowPt1 As POINTFLOAT, arrowPt2 As POINTFLOAT, arrowPt3 As POINTFLOAT
+        Dim arrowPt1 As PointFloat, arrowPt2 As PointFloat, arrowPt3 As PointFloat
                     
         'The orientation of the arrow varies depending on open/close state.
         
@@ -494,7 +494,7 @@ Private Sub RedrawBackBuffer()
         m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
         
         'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
-        Dim ctlRect As RECTF
+        Dim ctlRect As RectF
         With ctlRect
             .Left = 0#
             .Top = 0#

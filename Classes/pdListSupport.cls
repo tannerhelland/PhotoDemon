@@ -85,7 +85,7 @@ Private m_ListIndex As Long
 ' on the caller (and because we have sufficient data to do all those calculations anyway).
 Private m_ScrollMax As Long, m_ScrollValue As Long
 Private m_ListIndexHover As Long, m_MouseInsideList As Boolean
-Private m_ListRectF As RECTF
+Private m_ListRectF As RectF
 Private m_InitMouseX As Single, m_InitMouseY As Single, m_InitScroll As Single
 Private m_LMBDown As Boolean
 
@@ -475,7 +475,7 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     'On a variable-size list, this calculation is more complicated
     Else
         
-        Dim tmpRect As RECTF
+        Dim tmpRect As RectF
         tmpRect.Left = m_ListRectF.Left
         tmpRect.Width = m_ListRectF.Width
         
@@ -550,7 +550,7 @@ End Function
 'While this class doesn't actually render anything (that's left to the parent), it has enough information to manage a lot
 ' of the backend rendering details automatically.  This makes it much easier to construct custom list boxes, as things like
 ' hit detection can be handled here - ensuring that all list boxes throughout the program, even custom ones, behave identically.
-Friend Sub NotifyParentRectF(ByRef srcListRectF As RECTF)
+Friend Sub NotifyParentRectF(ByRef srcListRectF As RectF)
     If (m_ListRectF.Width <> srcListRectF.Width) Or (m_ListRectF.Height <> srcListRectF.Height) Or (m_ListRectF.Top <> srcListRectF.Top) Or (m_ListRectF.Left <> srcListRectF.Left) Then
         m_ListRectF = srcListRectF
         If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
@@ -611,6 +611,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
                 Exit Sub
             Else
                 markEventHandled = False
+                Exit Sub
             End If
             
         'For listboxes embedded inside combo boxes, the escape key can hide the dropdown.  Raise a Click() event to mimic this.

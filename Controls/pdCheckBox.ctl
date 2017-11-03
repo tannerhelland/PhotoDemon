@@ -75,15 +75,15 @@ Private m_Value As CheckBoxConstants
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
-Private m_CaptionRect As RECTF
+Private m_CaptionRect As RectF
 
 'Similar rect for the checkbox
-Private m_CheckboxRect As RECTF
+Private m_CheckboxRect As RectF
 
 'Whenever the caption changes or the control is resized, the "clickable" rect must be updated.  (This control allows the user
 ' to click on either the checkbox, or the caption itself.)  It's tracked separately, because there's some fairly messy padding
 ' calculations involved in positioning the checkbox and caption relative to the control as a whole.
-Private m_ClickableRect As RECTF, m_MouseInsideClickableRect As Boolean
+Private m_ClickableRect As RectF, m_MouseInsideClickableRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -219,7 +219,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     markEventHandled = False
     
-    If Me.Enabled And ((vkCode = VK_SPACE) Or (vkCode = VK_RETURN)) Then
+    If (Me.Enabled And (vkCode = VK_SPACE)) Then
         markEventHandled = True
         If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
     End If
@@ -287,7 +287,7 @@ Private Sub UserControl_Initialize()
     
     'Request any control-specific functionality
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_SPACE, VK_RETURN
+    ucSupport.SpecifyRequiredKeys VK_SPACE
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
@@ -445,7 +445,7 @@ Private Sub RedrawBackBuffer()
         'If the check box button is checked, draw a checkmark inside the border.  The checkmark is defined by three points,
         ' defined in LTR order
         If CBool(m_Value) Then
-            Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT, pt3 As POINTFLOAT
+            Dim pt1 As PointFloat, pt2 As PointFloat, pt3 As PointFloat
             pt1.x = m_CheckboxRect.Left + FixDPIFloat(3)
             pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
             pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - FixDPIFloat(1.25)
