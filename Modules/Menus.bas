@@ -218,7 +218,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Trim empty borders", "image_trim", 3, 10
     AddMenuItem "-", "-", 3, 11
     AddMenuItem "Rotate", "image_rotate", 3, 12
-        AddMenuItem "Straighten", "image_straighten", 3, 12, 0
+        AddMenuItem "Straighten...", "image_straighten", 3, 12, 0
         AddMenuItem "-", "-", 3, 12, 1
         AddMenuItem "90 clockwise", "image_rotate90", 3, 12, 2, "generic_rotateright"
         AddMenuItem "90 counter-clockwise", "image_rotate270", 3, 12, 3, "generic_rotateleft"
