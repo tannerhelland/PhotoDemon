@@ -50,9 +50,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Slider+Spinner custom control
 'Copyright 2013-2017 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 12/February/16
-'Last update: migrate slider-specific code into pdSliderStandalone, which hugely reduces the complexity of
-'             synchronizing the slider and spinner elements of this control.
+'Last updated: 06/November/17
+'Last update: add a FinalChange event, which gives us some breathing room on energy intensive canvas instances
 '
 'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -87,8 +86,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This object provides a single Change event which triggers when the slider or spinner values are modified by any mechanism
+'Change vs FinalChange: change is fired whenever the scroller value changes at all (e.g. during every
+' mouse movement); FinalChange is fired only when a mouse or key is released.  If the slider controls a
+' particularly time-consuming operation, it may be preferable to lean on FinalChange instead of Change,
+' but note the caveat that FinalChange *only* triggers on MouseUp/KeyUp - *not* on external .Value changes
+' - so you may still need to handle the regular Change event, if you are externally setting values.
+' This oddity is necessary because otherwise, the spinner and slider controls constantly trigger each
+' other's .Value properties, causing endless FinalChange triggers.
 Public Event Change()
+Public Event FinalChange()
 Public Event ResetClick()
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
@@ -172,7 +178,7 @@ Public Property Get FontSizeTUD() As Single
 End Property
 
 Public Property Let FontSizeTUD(ByVal newSize As Single)
-    If newSize <> tudPrimary.FontSize Then
+    If (newSize <> tudPrimary.FontSize) Then
         tudPrimary.FontSize = newSize
         PropertyChanged "FontSizeTUD"
     End If
@@ -389,6 +395,10 @@ Private Sub pdssPrimary_Change()
     Me.Value = pdssPrimary.Value
 End Sub
 
+Private Sub pdssPrimary_FinalChange()
+    RaiseEvent FinalChange
+End Sub
+
 Private Sub pdssPrimary_GotFocusAPI()
     EvaluateFocusCount
 End Sub
@@ -404,10 +414,6 @@ End Sub
 'During owner-draw mode, our parent can call this sub if they need to modify their owner-drawn track image.
 Public Sub RequestOwnerDrawChange()
     pdssPrimary.RequestOwnerDrawChange
-End Sub
-
-Private Sub tudPrimary_ResetClick()
-    RaiseEvent ResetClick
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -437,12 +443,20 @@ Private Sub tudPrimary_Change()
     End If
 End Sub
 
+Private Sub tudPrimary_FinalChange()
+    RaiseEvent FinalChange
+End Sub
+
 Private Sub tudPrimary_GotFocusAPI()
     EvaluateFocusCount
 End Sub
 
 Private Sub tudPrimary_LostFocusAPI()
     EvaluateFocusCount
+End Sub
+
+Private Sub tudPrimary_ResetClick()
+    RaiseEvent ResetClick
 End Sub
 
 Private Sub tudPrimary_Resize()

@@ -432,7 +432,7 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         
         'Request a 32x32 thumbnail version of the current image
         If srcImage.RequestThumbnail(thumbDIB, 32) Then
-    
+            
             'Request two icon-format versions of the generated thumbnail.
             ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
             Dim hIcon32 As Long, hIcon16 As Long

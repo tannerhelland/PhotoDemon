@@ -1989,9 +1989,7 @@ End Sub
 
 'When a function does something that modifies the current image's appearance, it needs to notify this function.  This function will take
 ' care of the messy business of notifying various UI elements (like the image tabstrip) of the change.
-'
-'If the change only affects a single image or layer, pass their indices; we can use them to shortcut a number of UI syncing steps.
-Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Optional ByVal affectedLayerID As Long = -1)
+Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1)
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime

@@ -1021,7 +1021,7 @@ End Sub
 'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always).
 ' As of PD 7.0, an additional "includeAffineTransforms" parameter is available.  This will return the bounds of the layer, after any/all
 ' affine transforms (rotate, etc) have been processed.
-Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False, Optional ByVal includeAffineTransforms As Boolean = True)
+Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RectF, Optional ByVal useCanvasModifiers As Boolean = False, Optional ByVal includeAffineTransforms As Boolean = True)
 
     With srcLayer
         
@@ -1043,7 +1043,7 @@ End Sub
 '
 'If the pixel lies outside the layer boundaries, the function will return FALSE.  Make sure to check this before evaluating
 ' the RGBQUAD.
-Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As Long, ByVal layerY As Long, ByRef dstQuad As RGBQUAD, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
+Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As Long, ByVal layerY As Long, ByRef dstQuad As RGBQuad, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
 
     'Before doing anything else, check to see if the x/y coordinate even lies inside the image
     Dim tmpLayerRef As pdLayer
@@ -1057,7 +1057,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
         'X and Y now represent the passed coordinate, but translated into the specified layer's coordinate space.
         ' Retrieve the color (and alpha, if relevant) at that point.
         Dim tmpData() As Byte
-        Dim tSA As SAFEARRAY2D
+        Dim tSA As SafeArray2D
         PrepSafeArray tSA, tmpLayerRef.layerDIB
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
@@ -1092,7 +1092,7 @@ End Function
 ' is completely out of the picture will other layers become activated.
 Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
-    Dim tmpRGBA As RGBQUAD
+    Dim tmpRGBA As RGBQuad
     Dim curPOI As PD_PointOfInterest
     
     'Note that the caller passes us an (x, y) coordinate pair in the IMAGE coordinate space.  We will be using these coordinates to
