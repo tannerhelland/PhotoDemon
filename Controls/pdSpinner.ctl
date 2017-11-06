@@ -102,7 +102,7 @@ Private m_TextBoxInitiated As Boolean
 
 'To simplify mouse_down handling, resize events fill four rects: one for the "reset" button, one for the "up" spin
 ' button, one for the "down" spin button, and one for the edit box itself.  Use these for simplified hit-detection.
-Private m_ResetRect As RECTF, m_UpRect As RECTF, m_DownRect As RECTF, m_EditBoxRect As RECTF
+Private m_ResetRect As RectF, m_UpRect As RectF, m_DownRect As RectF, m_EditBoxRect As RectF
 
 'Mouse state for the various button areas
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
@@ -324,9 +324,6 @@ Public Property Let Value(ByVal newValue As Double)
         PropertyChanged "Value"
         RaiseEvent Change
         
-        'If the mouse button is *not* currently down, raise the "FinalChange" event too
-        If (Not m_MouseDownUpButton) And (Not m_MouseDownDownButton) Then RaiseEvent FinalChange
-        
     End If
                 
 End Property
@@ -382,6 +379,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     If PDMath.IsPointInRectF(x, y, m_ResetRect) Then
         Me.Reset
         RaiseEvent ResetClick
+        RaiseEvent FinalChange
     End If
 End Sub
 
@@ -412,6 +410,10 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     ' accepted the keypress, meaning we should forward the event down the line.)
     markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
+End Sub
+
+Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    RaiseEvent FinalChange
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
@@ -507,7 +509,7 @@ End Sub
 'Reset spin control button state on a mouse up event
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
-    If (Button = pdLeftButton) Then
+    If ((Button And pdLeftButton) <> 0) Then
         
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
@@ -516,9 +518,10 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
         
         m_MouseDownResetButton = False
         
-        'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
-        ' long-running actions now.
-        RaiseEvent FinalChange
+        'When the mouse is released, raise a "FinalChange" event, which lets the caller know that they can perform any
+        ' long-running actions now.  (Note that "click" events are an exception - they receive manual handling in
+        ' the Click event handler; look there for details.)
+        If (Not clickEventAlsoFiring) Then RaiseEvent FinalChange
         
         'Request a button redraw
         RedrawBackBuffer
@@ -903,7 +906,7 @@ Private Sub RedrawBackBuffer()
             borderWidth = 1
         End If
         
-        Dim editBoxRenderRect As RECTF
+        Dim editBoxRenderRect As RectF
         With editBoxRenderRect
             .Left = m_EditBoxRect.Left - halfPadding
             .Top = m_EditBoxRect.Top - halfPadding
@@ -977,7 +980,7 @@ Private Sub RedrawBackBuffer()
         'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
         ' to account for things like padding and subpixel positioning.
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
-        Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+        Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
                     
         'Start with the up-pointing arrow
         buttonPt1.x = m_UpRect.Left + FixDPIFloat(4) + 0.5

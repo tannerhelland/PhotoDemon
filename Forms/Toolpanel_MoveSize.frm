@@ -297,8 +297,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 22/June/17
-'Last update: large improvements to the way non-destructive actions interact with the Undo/Redo engine
+'Last updated: 06/November/17
+'Last update: improve the rate at which things like taskbar icons are refreshed during non-destructive modifications
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -322,7 +322,7 @@ End Sub
 Private Sub UpdateSubpanel()
     Dim i As Long
     For i = 0 To ctlMoveContainer.UBound
-        ctlMoveContainer(i).Visible = CBool(i = btsMoveOptions.ListIndex)
+        ctlMoveContainer(i).Visible = (i = btsMoveOptions.ListIndex)
     Next i
 End Sub
 
@@ -355,12 +355,9 @@ Private Sub cboLayerResizeQuality_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex
 End Sub
 
+'En/disable the "ignore transparent layer bits on click activations" setting if the auto-activate clicked layer setting changes
 Private Sub chkAutoActivateLayer_Click()
-    If CBool(chkAutoActivateLayer) Then
-        If (Not chkIgnoreTransparent.Enabled) Then chkIgnoreTransparent.Enabled = True
-    Else
-        If chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = False
-    End If
+    chkIgnoreTransparent.Enabled = CBool(chkAutoActivateLayer)
 End Sub
 
 'Show/hide layer borders while using the move tool
@@ -379,7 +376,7 @@ End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
     If (g_OpenImageCount = 0) Then Exit Sub
-    Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+    Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
@@ -390,7 +387,7 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
         'Make non-destructive resize permanent
         Case 0
-            Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
     
     End Select
     
@@ -464,6 +461,10 @@ Private Sub sltLayerAngle_Change()
     
 End Sub
 
+Private Sub sltLayerAngle_FinalChange()
+    FinalChangeHandler
+End Sub
+
 Private Sub sltLayerAngle_GotFocusAPI()
     If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
@@ -497,6 +498,10 @@ Private Sub sltLayerShearX_Change()
     
 End Sub
 
+Private Sub sltLayerShearX_FinalChange()
+    FinalChangeHandler
+End Sub
+
 Private Sub sltLayerShearX_GotFocusAPI()
     If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
@@ -528,6 +533,10 @@ Private Sub sltLayerShearY_Change()
     If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
+End Sub
+
+Private Sub sltLayerShearY_FinalChange()
+    FinalChangeHandler
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
@@ -583,20 +592,7 @@ End Sub
 'Non-destructive resizing requires the synchronization of several menus, as well.  Because it's time-consuming to invoke
 ' SyncInterfaceToCurrentImage, we only call it when the user releases the mouse.
 Private Sub tudLayerMove_FinalChange(Index As Integer)
-    
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
-    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
-    
-    Select Case Index
-        
-        Case 2, 3
-            Interface.SyncInterfaceToCurrentImage
-        
-        Case Else
-        
-    End Select
-    
+    FinalChangeHandler True
 End Sub
 
 Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
@@ -622,6 +618,23 @@ Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
     ElseIf (Index = 3) Then
         Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
     End If
+End Sub
+
+'When a layer property control (either a slider or spinner) has a "FinalChange" event, use this control to update any
+' necessary UI elements that may need to be adjusted due to non-destructive changes.
+Private Sub FinalChangeHandler(Optional ByVal performFullUISync As Boolean = False)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tools.GetToolBusyState
+    'If (Not Tools.CanvasToolsAllowed) Then Exit Sub
+    
+    'Redraw the viewport and any relevant UI elements
+    'ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+    Processor.NDFXUiUpdate
+    
+    If performFullUISync Then Interface.SyncInterfaceToCurrentImage
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:

@@ -51,6 +51,7 @@ Option Explicit
 'This object provides a single raised event:
 ' - Change (which triggers when the slider moves in any direction)
 Public Event Change()
+Public Event FinalChange()
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -161,7 +162,7 @@ Private m_ScaleExponentialValue As Single
 
 'When the slider track is drawn, this rect will be filled with its relevant coordinates.  We use this to track Mouse_Over behavior,
 ' so we can change the cursor to a hand.
-Private m_SliderTrackRect As RECTF
+Private m_SliderTrackRect As RectF
 
 'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
 Private m_GradientDIB As pdDIB
@@ -519,7 +520,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     If (m_KnobStyle = DefaultKnobStyle) Then
         overSlider = CBool(DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2))
     Else
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         GetKnobRectF tmpRectF
         overSlider = PDMath.IsPointInRectF(mouseX, mouseY, tmpRectF)
     End If
@@ -544,6 +545,10 @@ End Function
 
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    RaiseEvent FinalChange
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
@@ -655,6 +660,7 @@ End Sub
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
         Value = GetCustomPositionValue(x)
+        RaiseEvent FinalChange
         m_MouseDown = False
     End If
 End Sub
@@ -836,7 +842,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     
     'Regardless of control enablement, we always render the track background.  (If the control is *enabled*, we will draw
     ' much more on top of this!)
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     If MainModule.IsProgramRunning() Then
     
         'For default slider knobs, the underlying track is simply a line with rounded edges
@@ -986,7 +992,7 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         If (m_KnobStyle = DefaultKnobStyle) Then
             notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
         ElseIf (m_KnobStyle = SquareStyle) Then
-            Dim tmpRectF As RECTF
+            Dim tmpRectF As RectF
             GetKnobRectF tmpRectF
             notchSize = (m_SliderAreaHeight - tmpRectF.Height) \ 2 - 1
         End If
@@ -1176,7 +1182,7 @@ Private Sub ApplyAlphaToGradientDIB()
             Dim cBrush As pd2DBrush
             Drawing2D.QuickCreateSolidBrush cBrush, vbBlack
             
-            Dim tmpRectF As RECTF
+            Dim tmpRectF As RectF
             GetKnobRectF tmpRectF
             m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
             
@@ -1262,7 +1268,7 @@ Private Sub GetSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
 End Sub
 
 'PLEASE NOTE: this function is only relevant if m_KnobStyle is *NOT* set to the default style.
-Private Sub GetKnobRectF(ByRef dstRect As RECTF)
+Private Sub GetKnobRectF(ByRef dstRect As RectF)
     
     Dim sX As Single, sY As Single
     GetSliderCoordinates sX, sY
@@ -1453,7 +1459,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             Dim cPenTop As pd2DPen
             Drawing2D.QuickCreatePairOfUIPens cPen, cPenTop, m_MouseOverSlider
             
-            Dim tmpRectF As RECTF
+            Dim tmpRectF As RectF
             GetKnobRectF tmpRectF
             m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
             m_Painter.DrawRectangleF_FromRectF cSurface, cPenTop, tmpRectF

@@ -457,7 +457,7 @@ End Sub
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
-    Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
+    'Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'This function is easy; just store the values we are passed
     prevGenericSetting(layerSettingID) = layerSettingValue
@@ -475,7 +475,7 @@ End Sub
 ' will be generated only if the two values match.
 Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
     
-    Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
+    'Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
@@ -502,7 +502,7 @@ End Sub
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
     
-    Debug.Print "START tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
+    'Debug.Print "START tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
@@ -517,7 +517,7 @@ End Sub
 ' function will add an Undo entry and notify the macro recorder (if active).
 Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
-    Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
+    'Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
@@ -593,7 +593,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        Interface.NotifyImageChanged g_CurrentImage, targetLayerID
+        Interface.NotifyImageChanged
         IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     End If
     
@@ -620,6 +620,21 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'Mark the processor as ready
     m_Processing = False
     
+End Sub
+
+Public Sub NDFXUiUpdate()
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        
+        'Notify all relevant parties of the changes.  (This must be done first, so that things like thumbnail caches
+        ' can be marked as dirty.)
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerIndex
+        Interface.NotifyImageChanged g_CurrentImage
+        
+        'Redraw any relevant UI elements
+        IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+        toolbar_Layers.NotifyLayerChange
+        
+    End If
 End Sub
 
 'Want to synchronize all generic properties for a given layer?  Use this function to do so.
