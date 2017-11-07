@@ -226,6 +226,12 @@ Private Declare Function mciSendStringW Lib "winmm" (ByVal lpstrCommand As Long,
 Private Const MCI_OPEN_ERROR As Long = 277
 Private Const MCI_PLAY_ERROR As Long = 263
 
+Private m_OkayToProceed As Boolean
+
+Private Sub cmdBar_CancelClick()
+    m_OkayToProceed = False
+End Sub
+
 Private Sub cmdBar_OKClick()
     
     Dim tmpDIB As pdDIB
@@ -268,11 +274,13 @@ Private Sub cmdBar_OKClick()
     'cFSO returns TRUE if at least one file is found; this is good enough for us to attempt repairs
     If cFSO.RetrieveAllFiles(txtSrcFolder.Text, listOfFiles, CBool(chkRecurseFolders.Value), False) Then
             
+        m_OkayToProceed = True
+        
         numOfFiles = listOfFiles.GetNumOfStrings
         curFileNumber = 1
-            
+        
         Dim srcFilename As String
-        Do While listOfFiles.PopString(srcFilename)
+        Do While (listOfFiles.PopString(srcFilename) And m_OkayToProceed)
             
             UpdateProgress g_Language.TranslateMessage("processing file %1 of %2 (%3 repairs performed)...", curFileNumber, numOfFiles, numFilesRepaired)
             fileWasRepaired = False
@@ -379,7 +387,7 @@ Private Sub cmdBar_OKClick()
             
             'Regardless of what happened to this file, increment the current file count
             curFileNumber = curFileNumber + 1
-            If ((curFileNumber And 31) = 0) Then DoEvents
+            If ((curFileNumber And 7) = 0) Then DoEvents
             
         Loop
         
