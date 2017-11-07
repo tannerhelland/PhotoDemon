@@ -10,9 +10,9 @@ PhotoDemon is completely open-source and available under a permissive BSD licens
 
 New contributions from coders, designers, translators, and enthusiasts are always welcome.
 
-For information on the latest stable release, visit http://photodemon.org
-To download the program's source code, visit https://github.com/tannerhelland/PhotoDemon
-To download a nightly build of the latest source code, visit http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip 
+* For information on the latest stable release, visit http://photodemon.org
+* To download the program's source code, visit https://github.com/tannerhelland/PhotoDemon
+* To download a nightly build of the latest source code, visit http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip 
 
 ***
 

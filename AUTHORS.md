@@ -18,18 +18,21 @@ ZStandard (http://www.zstd.net)
 
 Other contributors
 ------------
-AG Violette
 Abhijit Mhapsekar
-Alfred Hellmueller
+AG Violette
 Allan Lima
 Andrew Yeoman
+Ari Sohandri Putra (http://arisohandrip.indonesiaz.com/)
 Audioglider (https://github.com/audioglider)
+Avery (http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1)
 Bernhard Stockmann (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 Boban Gjerasimoski (https://www.behance.net/Boban_Gjerasimoski)
 Carles P.V. (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1)
+ChenLin
 Chrfb of deviantart.com for the original version of PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0) (http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546)
+Cody Robertson
 Dana Seaman (http://www.cyberactivex.com/) 
-Dave Jamison
+Davor Šikic
 Dilettante (http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
 Dirk Hartmann (http://www.taichi-zentrum-heidelberg.de)
 Djordje Djoric (https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/)
@@ -42,12 +45,18 @@ Hans Nolte (https://github.com/hansnolte)
 Helmut Kuerbiss
 Jason Bullen (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 Jerry Huxtable (http://www.jhlabs.com/ip/filters/index.html)
+Johannes Nendel
+Joseph Greco
 Kroc Camen (http://camendesign.com)
 LaVolpe (http://www.vbforums.com/showthread.php?t=606736)
 Leandro Ascierto (http://leandroascierto.com/blog/clsmenuimage/)
+Lemuel Cushing (https://github.com/LemuelCushing)
+Leonid Blyakher
 Manuel Augusto Santos (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1)
-Mohammad Reza
+Mohammad Reza Karimi
+Nguyen Van Hùng (https://github.com/vhreal1302)
 Olaf Schmidt (http://www.vbrichclient.com)
+Old Abiquiu Photographic
 Paul Bourke (http://paulbourke.net/miscellaneous/)
 Peter Burn
 Plinio C Garcia
@@ -57,6 +66,6 @@ Robert Rayment (http://rrprogs.com/)
 Roy K
 Steve McMahon (http://www.vbaccelerator.com/home/VB/index.asp)
 Tom Loos (http://www.designedbyinstinct.com)
-Waty Thierry (http://www.ppreview.net/)
+Vladimir Vissoultchev (https://github.com/wqweto)
 Will Stampfer (https://github.com/epmatsw)
 Zhu JinYong (http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=55292624&lngWId=1)
