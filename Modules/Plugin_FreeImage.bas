@@ -377,8 +377,8 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     ' With CMYK images out of the way, deal with high bit-depth images in normal color spaces
     '****************************************************************************
     
-    'FIT_BITMAP refers to any image with channel data > 16 bits per channel.  This can range from 16-bpp grayscale images
-    ' to 128-bpp RGBA images.
+    'FIT_BITMAP refers to any image with channel data <= 8 bits per channel.  We want to check for images that do *not*
+    ' fit this definition, e.g. images ranging from 16-bpp grayscale images to 128-bpp RGBA images.
     If (Not dstDIBFinished) And (fi_DataType <> FIT_BITMAP) Then
         
         'We have two mechanisms for downsampling a high bit-depth image:
@@ -415,7 +415,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             
             'Use the central tone-map handler to apply further tone-mapping
             Dim toneMappingOutcome As PD_OPERATION_OUTCOME
-            toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB, Not showMessages)
+            toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB, (Not showMessages) Or (Macros.GetMacroStatus = MacroBATCH))
             
             'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
             If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then

@@ -1023,7 +1023,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
         imageHasMultiplePages = (numOfPages > 1)
         freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB)
-        CascadeLoadGenericImage = CBool(freeImage_Return = PD_SUCCESS)
+        CascadeLoadGenericImage = (freeImage_Return = PD_SUCCESS)
         
         'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),
         ' then continue with the load process.
