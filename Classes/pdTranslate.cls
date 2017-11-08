@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2017 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 26/January/17
-'Last update: use a dedicated translation settings cache to greatly improve startup performance
+'Last updated: 08/November/17
+'Last update: perform some duplicate file clean-up when upgrading between versions
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -476,9 +476,7 @@ Friend Sub CheckAvailableLanguages()
     Set m_LangCacheXML = New pdXML
     m_LangCacheXML.SetTextCompareMode vbBinaryCompare
     
-    If Files.FileExists(langCacheFilename) Then
-        cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
-    End If
+    If Files.FileExists(langCacheFilename) Then cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
@@ -495,6 +493,11 @@ Friend Sub CheckAvailableLanguages()
         m_LangCacheXML.PrepareNewXML "PDLanguageCache"
         m_LangCacheChanged = True
     End If
+    
+    'Before proceeding, perform some automatic language file cleanup.  In-place upgrades
+    ' (e.g. between nightly builds or beta/release versions) may lead to duplicate language files with
+    ' similar names; we always want to remove the old ones, *if* they're in the official language folder.
+    PerformLanguageFileCleanup
     
     'Find all available OFFICIAL language files
     m_numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
@@ -513,7 +516,7 @@ Friend Sub CheckAvailableLanguages()
     #End If
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
-    m_AvailableLanguages(m_numOfLanguages).FileName = ""
+    m_AvailableLanguages(m_numOfLanguages).FileName = vbNullString
     m_AvailableLanguages(m_numOfLanguages).langID = "en-US"
     m_AvailableLanguages(m_numOfLanguages).LangName = "English (US)"
     m_AvailableLanguages(m_numOfLanguages).LangType = "Default"
@@ -554,6 +557,62 @@ Friend Sub CheckAvailableLanguages()
     'For i = 0 To m_numOfLanguages - 1
     '    Debug.Print m_availableLanguages(i).langID & vbCrLf & m_availableLanguages(i).langName & vbCrLf & m_availableLanguages(i).langStatus & vbCrLf & m_availableLanguages(i).langVersion
     'Next i
+    
+End Sub
+
+Private Sub PerformLanguageFileCleanup()
+    
+    'This step is pointless if we are in non-portable mode (because we don't have access to our app folder)
+    If (g_UserPreferences Is Nothing) Then Exit Sub
+    If g_UserPreferences.IsNonPortableModeActive Then Exit Sub
+    
+    '****
+    '6.6 > 7.0 RELEASE CLEANUP
+    
+    'In PD 7.0, language filenames were switched to all-English to simplify their distribution and update process.
+    ' When updating from 6.6 to 7.0, this can lead to duplicate copies of some language files - one file using
+    ' the old name, and the new (updated) one using the new name.
+    
+    'To prevent duplicate copies, we manually check for some old entries and remove them if their newer
+    ' counterpart is found.
+    
+    Dim langPath As String
+    langPath = g_UserPreferences.GetLanguagePath()
+    
+    Dim targetFilename As String, replaceFilename As String
+    targetFilename = langPath & "Francais.xml"
+    replaceFilename = langPath & "French.xml"
+    
+    If (Files.FileExists(targetFilename) And Files.FileExists(replaceFilename)) Then
+        
+        'Check filesize.  This uses magic numbers taken from the last 6.6 release.
+        If (Files.FileLenW(targetFilename) = 424711) Then Files.FileDelete targetFilename
+        
+    End If
+    
+    'Repeat above steps for all other relevant language files
+    targetFilename = langPath & "Espanol.xml"
+    replaceFilename = langPath & "Spanish_(Mexico).xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 421189) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Italiano.xml"
+    replaceFilename = langPath & "Italian.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 423659) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Portuguese.xml"
+    replaceFilename = langPath & "Portuguese_(Brazil).xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 416158) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Deutsch_1.xml"
+    replaceFilename = langPath & "German_1.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 417364) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Deutsch_2.xml"
+    replaceFilename = langPath & "German_2.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 418885) Then Files.FileDelete targetFilename
+    
+    'END 6.6 > 7.0 RELEASE CLEANUP
+    '****
     
 End Sub
 
