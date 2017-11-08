@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2017 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 12/October/17
-'Last update: add detection for "non-portable" mode, which automatically activates when the user extracts
-'             PD to an access-restricted folder (like Program Files).
+'Last updated: 08/November/17
+'Last update: remove potential duplicate README and LICENSE files after an in-place upgrade
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
 ' with persistent user settings.
@@ -399,6 +398,11 @@ Friend Function InitializePaths() As Boolean
     m_UpdatesPath = m_DataPath & "Updates\"
     If (Not Files.PathExists(m_UpdatesPath)) Then Files.PathCreate m_UpdatesPath
     
+    'After all paths have been validated, we sometimes need to perform path clean-up.  This is required if new builds
+    ' change where key PhotoDemon files are stored, or renames key files.  (Without this, we risk leaving behind
+    ' duplicate files between builds.)
+    PerformPathCleanup
+    
     'The user preferences file is also located in the \Data folder
     m_PreferencesPath = m_DataPath & PROGRAMNAME & "_settings.xml"
     
@@ -415,6 +419,40 @@ Friend Function InitializePaths() As Boolean
     End If
         
 End Function
+
+Private Sub PerformPathCleanup()
+    
+    'This step is pointless if we are in non-portable mode
+    If m_NonPortableModeActive Then Exit Sub
+    
+    '****
+    '6.6 > 7.0 RELEASE CLEANUP
+    
+    'In PD 7.0, I switched to distributing text files like README.txt as markdown files (README.md).
+    ' This spares me from maintaining duplicate copies, and it ensures that the actual README used
+    ' on GitHub is identical to the one downloaded from photodemon.org.
+    
+    'To prevent duplicate copies, check for any leftover.txt instances and remove them.  (Note that we explicitly check
+    ' file size to avoid removing files that are not ours.)
+    Dim targetFilename As String, replaceFilename As String
+    targetFilename = Me.GetProgramPath & "README.txt"
+    replaceFilename = Me.GetProgramPath & "README.md"
+    If (Files.FileExists(targetFilename) And Files.FileExists(replaceFilename)) Then
+    
+        'Check filesize.  This uses magic numbers taken from the official 6.6 release file sizes.
+        If (Files.FileLenW(targetFilename) = 13364&) Then Files.FileDelete targetFilename
+        
+    End If
+    
+    'Repeat above steps for LICENSE.md
+    targetFilename = Me.GetProgramPath & "LICENSE.txt"
+    replaceFilename = Me.GetProgramPath & "LICENSE.md"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 30659&) Then Files.FileDelete targetFilename
+    
+    'END 6.6 > 7.0 RELEASE CLEANUP
+    '****
+
+End Sub
 
 'Load all user settings from file
 Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
