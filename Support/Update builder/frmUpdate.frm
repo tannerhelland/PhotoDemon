@@ -180,7 +180,10 @@ Private Sub AssembleNightlyBuild()
     Set nightlyList = New pdStringStack
     
     nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\README.txt"
+    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\README.md"
+    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\LICENSE.md"
+    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\AUTHORS.md"
+    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\CODE_OF_CONDUCT.md"
     nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\Donate to PhotoDemon.url"
     
     'For the /App subfolder, we forcibly restrict which extensions are allowed, to avoid copying any backup files
