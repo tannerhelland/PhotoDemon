@@ -688,31 +688,25 @@ Attribute VB_Exposed = False
 'Last updated: 09/September/16
 'Last update: complete overhaul of UI and underlying logic
 '
-'PhotoDemon's batch process wizard is one of its most unique - and in my opinion, most impressive - features.  It integrates
-' tightly with the macro recording feature to allow any combination of actions to be applied to any set of images.
+'PhotoDemon's batch process wizard is one of its most unique features.  It integrates tightly with PD's
+' macro recorder, which allows any combination of actions to be applied to any set of images.  Neat stuff!
 '
-'The process is broken into four steps.
+'The current batch wizard is broken into four steps.
 '
-'1) Select which photo editing operations (if any) to apply to the images.  This step is optional; if no photo editing actions
-'    are selected, a simple format conversion will be applied.
+'1) Select which photo editing operations (if any) to apply to these images.  This step is optional;
+'    if no photo editing actions are selected, only format conversion and/or renaming will be applied.
 '
-'2) Build the batch list, e.g. the list of files to be processed.  This is by far the most complicated section of the wizard.
-'    I have revisited the design of this page many times, and I think the current incarnation is pretty damn good.  It exposes
-'    a lot of functionality without being overwhelming, and the user has many tools at their disposal to build an ideal list
-'    of images from any number of source directories.  (Many batch tools limit you to just one source folder, which I do not
-'    like.)
+'2) Build the batch list, e.g. the list of files to be processed.  This is currently the most complicated
+'    page of the wizard, but it allows some nice features, like constructing a list of images from any
+'    number of source directories.  (Many batch tools limit you to just one source folder, ugh.)
 '
-'3) Select output file format.  There are three choices: retain original format (e.g. "rename only", which allows the user to
-'    use the tool as a batch renamer), pick optimal format for web (which will intermix JPEG and PNG intelligently) - POSTPONED
-'    UNTIL 6.2 - or the user can pick their own format.  A comprehensive selection of PhotoDemon's many file format options is
-'    also provided.
+'3) Select output file format.  There are two choices: retain original format (with limitations, e.g.
+'    read-only formats like manufacturer-specific RAW files will be saved as JPEGS), or save to some new
+'    format.  If a new format is selected, PD's standard export dialogs are available to set whatever
+'    export parameters the user wants.
 '
-'4) Choose where the files will go and what they will be named.  This includes a number of renaming options, which is a big
-'    step up from the batch process tool of earlier versions.  I am open to suggestions for other renaming features, but at
-'    present I think the selection is sufficiently comprehensive.
-'
-'Due to the complexity of this tool, there may be odd combinations of things that don't work quite right - I'm hoping
-' others can help test and provide feedback to ensure that everything runs smoothly.
+'4) Choose where the new images will go and how they will be named.  This includes a number of basic
+'    renaming options.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -902,7 +896,6 @@ Private Sub cmdCancel_Click()
         
             Dim msgReturn As VbMsgBoxResult
             msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbYesNoCancel Or vbExclamation, "Cancel batch processing")
-            
             If (msgReturn = vbYes) Then Macros.SetMacroStatus MacroCANCEL
             
         Else
@@ -916,10 +909,12 @@ Private Sub cmdCancel_Click()
 End Sub
 
 Private Function AllowedToExit() As Boolean
-
+    
+    AllowedToExit = True
+    
     'If the user has created a list of images to process and they attempt to exit without saving the list,
     ' give them a chance to save it.
-    If m_CurrentPage < picContainer.Count - 1 Then
+    If (m_CurrentPage < picContainer.Count - 1) Then
     
         If (Not m_ImageListSaved) Then
         
@@ -939,16 +934,11 @@ Private Function AllowedToExit() As Boolean
                         AllowedToExit = False
                             
                 End Select
-            Else
-                AllowedToExit = True
+                
             End If
             
-        Else
-            AllowedToExit = True
         End If
         
-    Else
-        AllowedToExit = True
     End If
     
 End Function
@@ -966,9 +956,7 @@ Private Sub cmdExportSettings_Click()
         ' the passed settings and metadata strings with XML data describing the user's settings.
         If Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata) Then
             m_ExportSettingsSet = True
-            Debug.Print m_ExportSettingsFormat
-            Debug.Print m_ExportSettingsMetadata
-            
+             
         'If the user cancels the dialog, exit immediately
         Else
             m_ExportSettingsSet = False
@@ -1016,12 +1004,12 @@ Private Sub cmdLoadList_Click()
             
             'The file was originally delimited by vbCrLf.  Parse it now.
             Dim fileLines() As String
-            fileLines = Split(fileContents, vbCrLf)
+            fileLines = Split(fileContents, vbCrLf, , vbBinaryCompare)
             
-            If UBound(fileLines) > 0 Then
+            If (UBound(fileLines) > 0) Then
                 
                 'Validate the first line of the file
-                If StrComp(fileLines(0), "<" & PROGRAMNAME & " BATCH CONVERSION LIST>", vbTextCompare) = 0 Then
+                If Strings.StringsEqual(fileLines(0), "<PHOTODEMON BATCH CONVERSION LIST>", True) Then
                     
                     'If the user has already created a list of files to process, ask if they want to replace or append
                     ' the loaded entries to their current list.
@@ -1040,17 +1028,25 @@ Private Sub cmdLoadList_Click()
                 Dim numOfEntries As Long
                 numOfEntries = CLng(fileLines(1))
                 
-                Dim suppressDuplicatesCheck As Boolean
-                If numOfEntries > 100 Then suppressDuplicatesCheck = True
-                
                 lstFiles.SetAutomaticRedraws False
                 
                 Dim i As Long
                 For i = 2 To numOfEntries + 1
-                    AddFileToBatchList fileLines(i), suppressDuplicatesCheck
+                    If Files.FileExists(fileLines(i)) Then lstFiles.AddItem fileLines(i)
                 Next i
                 
                 lstFiles.SetAutomaticRedraws True, True
+                
+                'Note that the current list has NOT been saved
+                m_ImageListSaved = False
+    
+                'Enable the "remove all images" button if at least one image exists in the processing list
+                If (lstFiles.ListCount > 0) Then
+                    If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
+                    If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
+                End If
+                
+                UpdateBatchListCount
                 
                 Screen.MousePointer = vbDefault
                         
@@ -1167,18 +1163,14 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
     'Hide all inactive panels (and show the active one)
     Dim i As Long
     For i = 0 To picContainer.Count - 1
-        If i = m_CurrentPage Then
-            picContainer(i).Visible = True
-        Else
-            picContainer(i).Visible = False
-        End If
+        picContainer(i).Visible = (i = m_CurrentPage)
     Next i
     
     'If we are at the beginning, disable the previous button
-    If (m_CurrentPage = 0) Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
+    cmdPrevious.Enabled = (m_CurrentPage <> 0)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
-    If m_CurrentPage = picContainer.Count - 2 Then
+    If (m_CurrentPage = picContainer.Count - 2) Then
         cmdNext.Caption = g_Language.TranslateMessage("Start processing!")
     Else
         If (cmdNext.Caption <> g_Language.TranslateMessage("Next")) Then cmdNext.Caption = g_Language.TranslateMessage("Next")
@@ -1254,16 +1246,16 @@ End Sub
 Private Sub cmdRemove_Click()
     
     If (lstFiles.ListIndex >= 0) Then
-        Dim LastListIndex As Long
-        LastListIndex = lstFiles.ListIndex
-        lstFiles.RemoveItem LastListIndex
-        If (LastListIndex < lstFiles.ListCount) Then lstFiles.ListIndex = LastListIndex Else lstFiles.ListIndex = lstFiles.ListCount - 1
+        
+        Dim prevListIndex As Long
+        prevListIndex = lstFiles.ListIndex
+        lstFiles.RemoveItem prevListIndex
+        If (prevListIndex < lstFiles.ListCount) Then lstFiles.ListIndex = prevListIndex Else lstFiles.ListIndex = lstFiles.ListCount - 1
     
         'And if all files were removed, disable actions that require at least one image
         If (lstFiles.ListCount = 0) Then
             cmdRemoveAll.Enabled = False
             cmdSaveList.Enabled = False
-            'cmdNext.Enabled = False
         End If
         
     End If
@@ -1288,7 +1280,6 @@ Private Sub cmdRemoveAll_Click()
     cmdRemove.Enabled = False
     cmdRemoveAll.Enabled = False
     cmdSaveList.Enabled = False
-    'cmdNext.Enabled = False
     
     'Note that the current list has NOT been saved
     m_ImageListSaved = False
@@ -1322,20 +1313,22 @@ Private Function SaveCurrentBatchList() As Boolean
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
         'Assemble the output string, which basically just contains the currently selected list of files.
-        Dim outputText As String
+        Dim outputText As pdString 'As String
+        Set outputText = New pdString
         
-        outputText = "<" & PROGRAMNAME & " BATCH CONVERSION LIST>" & vbCrLf
-        outputText = outputText & Trim$(Str(lstFiles.ListCount)) & vbCrLf
+        outputText.AppendLine "<PHOTODEMON BATCH CONVERSION LIST>"
+        outputText.AppendLine Trim$(Str(lstFiles.ListCount))
         
         Dim i As Long
         For i = 0 To lstFiles.ListCount - 1
-            outputText = outputText & lstFiles.List(i) & vbCrLf
+            outputText.AppendLine lstFiles.List(i)
         Next i
         
-        outputText = outputText & "<END OF LIST>" & vbCrLf
+        outputText.AppendLine "<END OF LIST>"
+        outputText.AppendLineBreak
         
         'Write the text out to file using a pdFSO instance
-        SaveCurrentBatchList = Files.FileSaveAsText(outputText, sFile)
+        SaveCurrentBatchList = Files.FileSaveAsText(outputText.ToString(), sFile)
                 
     Else
         SaveCurrentBatchList = False
@@ -1369,10 +1362,10 @@ Private Sub cmdRemoveFolder_Click()
             
             If removeSubfolders Then
                 testPath = lstFiles.List(i)
-                removeFile = CBool(InStr(1, testPath, srcPath, vbBinaryCompare) <> 0)
+                removeFile = (InStr(1, testPath, srcPath, vbBinaryCompare) <> 0)
             Else
                 testPath = m_FSO.FileGetPath(lstFiles.List(i))
-                removeFile = CBool(StrComp(testPath, srcPath, vbBinaryCompare) = 0)
+                removeFile = Strings.StringsEqual(testPath, srcPath, True)
             End If
             
             If removeFile Then
@@ -1388,6 +1381,9 @@ Private Sub cmdRemoveFolder_Click()
         m_ListBusy = False
         If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex) Else UpdatePreview vbNullString
         
+        UpdateBatchListCount
+        m_ImageListSaved = False
+        
     End If
 
 End Sub
@@ -1395,15 +1391,13 @@ End Sub
 Private Sub cmdSaveList_Click()
     
     'Before attempting to save, make sure at least one image has been placed in the list
-    If lstFiles.ListCount = 0 Then
+    If (lstFiles.ListCount = 0) Then
         PDMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation Or vbOKOnly, "Empty image list"
-        Exit Sub
-    End If
         
-    SaveCurrentBatchList
-    
-    'Note that the current list has been saved
-    m_ImageListSaved = True
+    Else
+        SaveCurrentBatchList
+        m_ImageListSaved = True
+    End If
     
 End Sub
 
@@ -1415,7 +1409,7 @@ Private Sub cmdSelectMacro_Click()
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Macro", "")
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
+    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     'Prepare a common dialog object
@@ -1441,16 +1435,18 @@ Private Sub cmdSelectMacro_Click()
 
 End Sub
 
-'Use "shell32.dll" to select a folder
 Private Sub cmdSelectOutputPath_Click()
+    
     Dim tString As String
     tString = PathBrowseDialog(FormBatchWizard.hWnd)
+    
     If (Len(tString) <> 0) Then
         txtOutputPath.Text = Files.PathAddBackslash(tString)
     
         'Save this new directory as the default path for future usage
         g_UserPreferences.SetPref_String "Batch Process", "Output Folder", tString
     End If
+    
 End Sub
 
 Private Sub Form_Load()
@@ -1501,11 +1497,6 @@ Private Sub Form_Load()
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
     If (Len(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
-    
-'    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
-'    If (tempPathString <> "") And (cFile.PathExists(tempPathString)) Then Drive1 = tempPathString
-'    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Input Folder", "")
-'    If (tempPathString <> "") And (cFile.PathExists(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -1582,7 +1573,7 @@ End Sub
 Private Sub UpdatePreview(ByVal srcImagePath As String)
     
     'Only redraw the preview if it doesn't match the last image we previewed
-    If (CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0)) Then
+    If (CBool(chkEnablePreview) And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True))) Then
     
         'Use PD's central load function to load a copy of the requested image
         Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
@@ -1606,43 +1597,6 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
         m_CurImagePreview = srcImagePath
     
     End If
-    
-End Sub
-
-'Add a file to a batch list.  This separate routine is used so that duplicates and invalid files can be removed prior to addition.
-Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressDuplicatesCheck As Boolean = False)
-    
-    Dim novelAddition As Boolean
-    novelAddition = True
-    
-    If (Not suppressDuplicatesCheck) Then
-        Dim x As Long
-        For x = 0 To lstFiles.ListCount - 1
-            If (StrComp(lstFiles.List(x), srcFile, vbTextCompare) = 0) Then
-                novelAddition = False
-                Exit For
-            End If
-        Next x
-    End If
-    
-    'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
-    ' a previously saved batch list from file)
-    If novelAddition Then
-        If Files.FileExists(srcFile) Then
-            lstFiles.AddItem srcFile
-            UpdateBatchListCount
-        End If
-    End If
-    
-    'Enable the "remove all images" button if at least one image exists in the processing list
-    If (lstFiles.ListCount > 0) Then
-        If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
-        If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
-        'If Not cmdNext.Enabled Then cmdNext.Enabled = True
-    End If
-    
-    'Note that the current list has NOT been saved
-    m_ImageListSaved = False
     
 End Sub
 
@@ -1683,10 +1637,6 @@ Private Sub PrepareForBatchConversion()
     cmdPrevious.Visible = False
     cmdNext.Visible = False
     
-    'Before doing anything, save relevant folder locations to the preferences file
-    'g_UserPreferences.SetPref_String "Batch Process", "Drive Box", Drive1
-    'g_UserPreferences.SetPref_String "Batch Process", "Input Folder", Dir1.Path
-
     'Let the rest of the program know that batch processing has begun
     Macros.SetMacroStatus MacroBATCH
     
@@ -1755,7 +1705,7 @@ Private Sub PrepareForBatchConversion()
                 
                     'If the user has requested automatic lighting fixes, apply it now
                     If CBool(chkActions(0)) Then
-                        Process "White balance", , TextSupport.BuildParamList("threshold", "0.1"), UNDO_LAYER
+                        Process "White balance", , TextSupport.BuildParamList("threshold", "0.1"), UNDO_Layer
                     End If
                 
                     'If the user has requested an image resize, apply it now
@@ -1855,7 +1805,7 @@ Private Sub PrepareForBatchConversion()
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well
                 If CBool(chkRenameCase) Then
-                    If optCase(0) Then tmpFileExtension = LCase(tmpFileExtension) Else tmpFileExtension = UCase(tmpFileExtension)
+                    If optCase(0) Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
                 End If
                 
                 'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
@@ -1883,9 +1833,9 @@ Private Sub PrepareForBatchConversion()
                 timeRemaining = timePerFile * numFilesRemaining
                 
                 'Convert timeRemaining to seconds (it is currently in milliseconds)
-                timeRemaining = timeRemaining / 1000
+                timeRemaining = timeRemaining / 1000#
                 
-                minutesRemaining = Int(timeRemaining / 60)
+                minutesRemaining = Int(timeRemaining / 60#)
                 secondsRemaining = Int(timeRemaining) Mod 60
                 
                 'Only update the time remaining message if it is LESS than our previous result, the seconds are a multiple
@@ -1956,7 +1906,7 @@ MacroCanceled:
     cancelMsg = g_Language.TranslateMessage("Batch conversion canceled.") & " " & curBatchFile & " "
     
     'Properly display "image" or "images" depending on how many files were processed
-    If curBatchFile <> 1 Then
+    If (curBatchFile <> 1) Then
         cancelMsg = cancelMsg & g_Language.TranslateMessage("images were")
     Else
         cancelMsg = cancelMsg & g_Language.TranslateMessage("image was")
