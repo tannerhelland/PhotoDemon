@@ -1627,6 +1627,7 @@ Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     'The scan will work by looping through the string, and tracking whether or not we are currently inside quotation marks.
     'If we are outside a set of quotes, and we encounter a comma or closing parentheses, we know that we have reached the end of the
     ' first (and/or only) parameter.
+    Const sQuot As String = """"
     
     Dim initPosition As Long
     If inReverse Then
@@ -1636,7 +1637,7 @@ Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     End If
     
     Dim startQuote As Long
-    startQuote = InStr(initPosition, srcLines(lineNumber), """")
+    startQuote = InStr(initPosition, srcLines(lineNumber), sQuot)
     
     Dim endQuote As Long
     endQuote = -1
@@ -1647,7 +1648,7 @@ Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     Dim i As Long
     For i = startQuote + 1 To Len(srcLines(lineNumber))
     
-        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        If Mid$(srcLines(lineNumber), i, 1) = sQuot Then insideQuotes = Not insideQuotes
         
         If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
             endQuote = i - 1
@@ -1703,7 +1704,7 @@ Private Function FindTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     startQuote = InStr(initPosition, srcLines(lineNumber), """")
     
     'Some tooltip assignments rely only on variables, not string text.  Ignore these, obviously, as their translation will be handled elsewhere.
-    If startQuote > 0 Then
+    If (startQuote > 0) Then
         
         Dim endQuote As Long
         endQuote = -1
@@ -1771,19 +1772,49 @@ Private Function FindTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     
 End Function
 
-'Given a line number and the original file contents, search for a message box title
+'Given a line number and the original file contents, search for a message box title.
+' (Note that this is cumbersome, as PD message boxes may have string-delimited ParamArray entries at the end of a PDMsgBox call,
+'  entries which are dynamically inserted at run-time.  As such, we can't just look from the back of the string!)
 Private Function FindMsgBoxTitle(ByRef srcLines() As String, ByRef lineNumber As Long) As String
-
-    Dim endQuote As Long
-    endQuote = InStrRev(srcLines(lineNumber), """", Len(srcLines(lineNumber)))
-        
-    Dim startQuote As Long
-    startQuote = InStrRev(srcLines(lineNumber), """", endQuote - 1)
     
-    If endQuote > 0 Then
+    Const sQuot As String = """"
+    Const sComma As String = ","
+    
+    Dim startQuote As Long
+    startQuote = InStr(1, srcLines(lineNumber), sQuot, vbBinaryCompare)
+    
+    Dim startComma As Long
+    startComma = InStr(1, srcLines(lineNumber), sComma, vbBinaryCompare)
+    
+    'If this string appears *after* the first comma, it's got to be the title - cool!
+    ' If it appears *before* the first comma, however, we need to find the end of this initial message block,
+    ' which is defined by a comma lying outside a quote block.
+    If (startQuote > 0) And (startQuote < startComma) Then
+    
+        Dim insideQuotes As Boolean
+        insideQuotes = True
+        
+        Dim i As Long
+        For i = startQuote + 1 To Len(srcLines(lineNumber))
+        
+            If (Mid$(srcLines(lineNumber), i, 1) = sQuot) Then insideQuotes = Not insideQuotes
+            
+            If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
+                startQuote = InStr(i, srcLines(lineNumber), sQuot, vbBinaryCompare)
+                Exit For
+            End If
+        
+        Next i
+        
+    End If
+    
+    Dim endQuote As Long
+    If (startQuote > 0) Then endQuote = InStr(startQuote + 1, srcLines(lineNumber), sQuot, vbBinaryCompare)
+    
+    If (endQuote > 0) Then
         FindMsgBoxTitle = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     Else
-        FindMsgBoxTitle = ""
+        FindMsgBoxTitle = vbNullString
     End If
 
 End Function
