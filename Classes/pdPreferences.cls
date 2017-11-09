@@ -404,7 +404,7 @@ Friend Function InitializePaths() As Boolean
     PerformPathCleanup
     
     'The user preferences file is also located in the \Data folder
-    m_PreferencesPath = m_DataPath & PROGRAMNAME & "_settings.xml"
+    m_PreferencesPath = m_DataPath & "PhotoDemon_settings.xml"
     
     'Last-used dialog settings are also located in the \Presets subfolder; retrieve the master file now, if it exists.
     m_MasterPresetFile = m_PresetPath & "MainPanels.xml"
@@ -531,17 +531,9 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
     m_XMLEngine.WriteBlankLine
     
-    'Write out the "advanced" block of preferences:
-    m_XMLEngine.WriteTag "Advanced", "", True
-        'As of 6.4, there are no longer any Advanced preferences that need to be stored here.  There may be in the future,
-        ' so I've left the creation code for this section of the preferences file.
-    m_XMLEngine.CloseTag "Advanced"
-    m_XMLEngine.WriteBlankLine
-    
     m_XMLEngine.WriteTag "BatchProcess", "", True
-        m_XMLEngine.WriteTag "DriveBox", ""
         m_XMLEngine.WriteTag "InputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "ListFolder", OS.SpecialFolder(CSIDL_PERSONAL)
+        m_XMLEngine.WriteTag "ListFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "OutputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
     m_XMLEngine.CloseTag "BatchProcess"
     m_XMLEngine.WriteBlankLine
