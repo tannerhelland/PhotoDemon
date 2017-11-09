@@ -35,7 +35,6 @@ Public Const PDP_GENERIC_ERROR As Long = 9001
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
-Public Const PROGRAMNAME As String = "PhotoDemon"
 Public Const FILTER_EXT As String * 3 = "pde"
 Public Const MACRO_EXT As String * 3 = "pdm"
 Public Const SELECTION_EXT As String * 3 = "pds"
