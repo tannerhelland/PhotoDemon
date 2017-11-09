@@ -41,7 +41,6 @@ Begin VB.Form FormConvert24bpp
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   1215
@@ -108,16 +107,20 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
+    
     If cmdBar.PreviewsAllowed Then
-        Dim tmpSA As SAFEARRAY2D
+    
+        Dim tmpSA As SafeArray2D
         EffectPrep.PrepImageData tmpSA, True, pdFxPreview
-        workingDIB.ConvertTo24bpp csBackground.Color
         
-        'PD now requires 32-bpp images in all intermediary copies, so convert *back* to 32-bpp now
-        workingDIB.ConvertTo32bpp
+        Dim newBackColor As Long
+        newBackColor = csBackground.Color
+        workingDIB.CompositeBackgroundColor Colors.ExtractRed(newBackColor), Colors.ExtractGreen(newBackColor), Colors.ExtractBlue(newBackColor)
         
-        EffectPrep.FinalizeImageData True, pdFxPreview
+        EffectPrep.FinalizeImageData True, pdFxPreview, True
+        
     End If
+    
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -133,15 +136,11 @@ Public Sub RemoveLayerTransparency(ByVal processParameters As String)
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
     
-    'TODO: rework this to apply the background color in-place, rather than performing an unnecessary
-    ' copy to 24-bpp, then *another* copy back to 32-bpp.
+    Dim newBackColor As Long
+    newBackColor = cParams.GetLong("backcolor", vbWhite)
     
     'Ask the current DIB to convert itself to 24bpp mode
-    pdImages(g_CurrentImage).GetActiveDIB.ConvertTo24bpp cParams.GetLong("backcolor", RGB(255, 255, 255))
-    
-    'Because PD now uses an "always 32bpp" approach to layers, we need to immediately convert the
-    ' image back to 32bpp mode.  (All its alpha values will be 255, however.)
-    pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
+    pdImages(g_CurrentImage).GetActiveDIB.CompositeBackgroundColor Colors.ExtractRed(newBackColor), Colors.ExtractGreen(newBackColor), Colors.ExtractBlue(newBackColor)
     pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
     
     'Notify the parent of the target layer of the change
