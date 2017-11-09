@@ -196,7 +196,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     calculatedProgBarMax = 6 + csSpokes * 2
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, calculatedProgBarMax
     
     'Distance is calculated as (csDistance / 100) * (smallestImageDimension).  This yields identical results in both the preview
@@ -450,7 +450,7 @@ Private Sub GetMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Cross-screen", , GetLocalParamString(), UNDO_LAYER
+    Process "Cross-screen", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

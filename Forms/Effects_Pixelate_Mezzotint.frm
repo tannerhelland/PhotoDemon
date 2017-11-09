@@ -140,7 +140,7 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
     'The way we calculate mezzotinting varies depending on whether points or strokes are being used.
     
     'Start by prepping a workingDIB instance
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Previews require us to adjust the coarseness parameter to match the preview size
@@ -217,6 +217,7 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
     
     If alphaIsRelevant Then
         overlayDIB.CopyAlphaFromExistingDIB workingDIB
+        overlayDIB.SetInitialAlphaPremultiplicationState False
         overlayDIB.SetAlphaPremultiplication True
     End If
     

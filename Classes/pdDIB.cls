@@ -64,7 +64,7 @@ End Type
 
 Private Type BITMAPINFO
     Header As BITMAPINFOHEADER
-    Colors(0 To 255) As RGBQUAD
+    Colors(0 To 255) As RGBQuad
 End Type
 
 Private Type BITMAPFILEHEADER
@@ -270,7 +270,7 @@ End Function
 
 'Given a pixel coordinate, return an RGBA quad for that coordinate.
 ' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
-Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQUAD) As Boolean
+Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQuad) As Boolean
 
     'Before doing anything else, check to see if the x/y postition lies inside the DIB
     If (x >= 0) And (x < m_dibWidth) And (y >= 0) And (y < m_dibHeight) Then
@@ -278,7 +278,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         'The point lies inside the DIB, which means we need to figure out the color at this position
         GetPixelRGBQuad = True
         
-        Dim tmpData() As Byte, tSA As SAFEARRAY2D
+        Dim tmpData() As Byte, tSA As SafeArray2D
         Me.WrapArrayAroundDIB tmpData, tSA
         
         Dim quickX As Long
@@ -307,12 +307,12 @@ End Function
 
 'Convenience functions for wrapping an array around this DIB's bits.  You *must* call the Unwrap function prior to the array
 ' falling out of scope, or VB will crash.
-Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SAFEARRAY2D)
+Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray2D)
     PrepInternalSafeArray srcSafeArray
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
-Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray As SAFEARRAY1D, Optional ByVal dstScanLine As Long = 0)
+Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalSafeArray_Scanline srcSafeArray, dstScanLine
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
@@ -321,12 +321,12 @@ Friend Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
     CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
 
-Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SAFEARRAY2D)
+Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray2D)
     PrepInternalLongSafeArray srcSafeArray
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
-Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeArray As SAFEARRAY1D, Optional ByVal dstScanLine As Long = 0)
+Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
@@ -348,7 +348,7 @@ Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
         If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             'Loop through the image and force each alpha value to the user's specified value
-            Dim iData() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            Dim iData() As Byte, tmpSA As SafeArray1D, dibPtr As Long, dibStride As Long
             Me.WrapArrayAroundScanline iData, tmpSA, 0
             dibPtr = tmpSA.pvData
             dibStride = tmpSA.cElements
@@ -620,7 +620,7 @@ Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
     'Make sure this DIB isn't empty
     If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
 
-        Dim iData() As Byte, tmpSA As SAFEARRAY2D
+        Dim iData() As Byte, tmpSA As SafeArray2D
         Dim x As Long, y As Long, quickX As Long
         
         Dim newTransFloat As Double
@@ -1530,7 +1530,7 @@ Friend Sub CopyImageBytesIntoStream(ByRef dstArray() As Byte)
     'Retrieve a pointer to the current DIB bits (in VB format).  Technically we could just use the m_dibBits pointer
     ' and calculate bounds manually, but this provides a foolproof way to do the same thing using existing code.
     Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
@@ -1559,7 +1559,7 @@ Friend Sub CopyStreamOverImageArray(ByRef srcArray() As Byte)
 End Sub
 
 'Sometimes this class needs to access its own DIB bits. Here's how.
-Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
+Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SafeArray2D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 2
@@ -1572,7 +1572,7 @@ Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     End With
 End Sub
 
-Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SAFEARRAY1D, ByVal dstLine As Long)
+Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, ByVal dstLine As Long)
     With dstSafeArray
         .cbElements = 1
         .cDims = 1
@@ -1583,7 +1583,7 @@ Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SAFEARRAY1D, By
     End With
 End Sub
 
-Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
+Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SafeArray2D)
     With dstSafeArray
         .cbElements = 4
         .cDims = 2
@@ -1596,7 +1596,7 @@ Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     End With
 End Sub
 
-Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SAFEARRAY1D, ByVal dstLine As Long)
+Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, ByVal dstLine As Long)
     With dstSafeArray
         .cbElements = 4
         .cDims = 1
@@ -1609,7 +1609,7 @@ End Sub
 
 '2D array access is slow, so PD tries to use 1D arrays when possible.  This function initializes a base SafeArray, but the caller
 ' will need to manually update it to point at a desired line.
-Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D)
+Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SafeArray1D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 1
@@ -1620,7 +1620,7 @@ Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D)
 End Sub
 
 'Sometimes this class needs to access the DIB bits of other DIBs. Here's how.
-Private Sub PrepExternalSafeArray(ByRef srcDIB As pdDIB, ByRef dstSafeArray As SAFEARRAY2D)
+Private Sub PrepExternalSafeArray(ByRef srcDIB As pdDIB, ByRef dstSafeArray As SafeArray2D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 2
@@ -1639,10 +1639,6 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If (m_dibColorDepth <> 32) Then Exit Sub
     
-'    #If DEBUGMODE = 1 Then
-'        Debug.Print "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
-'    #End If
-    
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
     Dim finalX As Long, finalY As Long
@@ -1655,18 +1651,20 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     scanlineSize = Me.GetDIBStride
     dibPointer = Me.GetDIBPointer
     
-    Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
+    Dim dibPixels() As Byte, dibSA As SafeArray1D
     PrepInternalSafeArray1D dibSA
+    CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
     
     Dim x As Long, y As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
-        tmpAlpha = 1 - (x / 255)
+        tmpAlpha = 1# - (x * ONE_DIV_255)
         rLookup(x) = Int(newR * tmpAlpha)
         gLookup(x) = Int(newG * tmpAlpha)
         bLookup(x) = Int(newB * tmpAlpha)
@@ -1677,7 +1675,6 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
         
         'Point our 1D pixel array at the proper scanline
         dibSA.pvData = dibPointer + scanlineSize * y
-        CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
         
     For x = 0 To finalX Step 4
         
@@ -1702,7 +1699,7 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
                 Else
                 
                     'Convert the alpha value to a floating-point variable
-                    tmpAlpha = checkAlpha / 255
+                    tmpAlpha = checkAlpha * ONE_DIV_255
                 
                     'Use that alpha value to blend the current colors with the newly requested color
                     dibPixels(x) = Blend2Colors(dibPixels(x), newB, tmpAlpha)
@@ -1805,13 +1802,15 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
     srcScanlineSize = srcDIB.GetDIBStride
     srcPointer = srcDIB.GetDIBPointer
     
-    Dim dstPixels() As Byte, dstSA As SAFEARRAY1D
+    Dim dstPixels() As Byte, dstSA As SafeArray1D
     PrepInternalSafeArray1D dstSA
-    
-    Dim srcPixels() As Byte, srcSA As SAFEARRAY1D
+    CopyMemory ByVal VarPtrArray(dstPixels()), VarPtr(dstSA), 4
+
+    Dim srcPixels() As Byte, srcSA As SafeArray1D
     PrepInternalSafeArray1D srcSA
     srcSA.cElements = srcScanlineSize
     srcSA.pvData = srcPointer
+    CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long
     
@@ -1820,10 +1819,7 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
         
         'Point our 1D pixel arrays at the proper scanlines
         dstSA.pvData = dstPointer + dstScanlineSize * y
-        CopyMemory ByVal VarPtrArray(dstPixels()), VarPtr(dstSA), 4
-        
         srcSA.pvData = srcPointer + srcScanlineSize * y
-        CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(srcSA), 4
         
         'Split handling based on premultiplication
         If binaryAlphaOnly Then
@@ -1882,7 +1878,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         finalY = (m_dibHeight - 1)
     Else
         
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
         PDMath.GetIntClampedRectF tmpRectF
         initX = tmpRectF.Left
@@ -1931,7 +1927,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         scanlineSize = Me.GetDIBStride
         dibPointer = Me.GetDIBPointer
         
-        Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
+        Dim dibPixels() As Byte, dibSA As SafeArray1D
         PrepInternalSafeArray1D dibSA
         
         Dim x As Long, y As Long
