@@ -124,7 +124,7 @@ Public Sub StopMacro()
     Dim sFile As String
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
+    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
             
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save macro data")
@@ -245,7 +245,7 @@ Public Sub PlayMacro()
     Set openDialog = New pdOpenSaveDialog
         
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
+    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
@@ -385,7 +385,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     
 End Function
 
-Public Sub NotifyProcessorEvent(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Public Sub NotifyProcessorEvent(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'At present, PD only records actions when a macro is actively running.  (In the future, it may be cool to *always* record
     ' user actions, which would allow the user to create macros from anything they've done in a given session.)

@@ -286,7 +286,7 @@ Private Sub cmdBar_OKClick()
     
 PrintingFailed:
 
-    PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", PROGRAMNAME, Printer.DeviceName
+    PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", "PhotoDemon", Printer.DeviceName
     cmdBar.DoNotUnloadForm
     
 End Sub
@@ -542,7 +542,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     dstHeight = dstPicture.ScaleHeight
     
     Dim srcWidth As Double, srcHeight As Double
-    Dim selBounds As RECTF
+    Dim selBounds As RectF
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     Dim srcDIB As pdDIB

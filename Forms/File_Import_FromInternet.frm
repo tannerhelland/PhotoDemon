@@ -158,7 +158,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
     
     If (hInternetSession = 0) Then
-        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Internet Connection Error", PROGRAMNAME
+        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Internet Connection Error", "PhotoDemon"
         DownloadURLToTempFile = vbNullString
         Screen.MousePointer = 0
         Exit Function
@@ -171,7 +171,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If (hUrl = 0) Then
-        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Online File Not Found", PROGRAMNAME
+        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Online File Not Found", "PhotoDemon"
         If hInternetSession Then InternetCloseHandle hInternetSession
         DownloadURLToTempFile = vbNullString
         Screen.MousePointer = 0
@@ -230,7 +230,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
             'If something goes horribly wrong, terminate the download
             If (Not chunkOK) Then
                 
-                If (Not suppressErrorMsgs) Then PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Internet Connection Error", PROGRAMNAME
+                If (Not suppressErrorMsgs) Then PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Internet Connection Error", "PhotoDemon"
                 
                 If Files.FileExists(tmpFile) Then
                     cFile.FileCloseHandle hFile
@@ -294,7 +294,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
         
         Dim domainName As String
         domainName = Web.GetDomainName(URL)
-        If (Not suppressErrorMsgs) Then PDMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbExclamation Or vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
+        If (Not suppressErrorMsgs) Then PDMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbExclamation Or vbOKOnly, "Download Unsuccessful", domainName, "PhotoDemon"
         
         Files.FileDeleteIfExists tmpFile
         If (hUrl <> 0) Then InternetCloseHandle hUrl

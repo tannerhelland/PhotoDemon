@@ -31,7 +31,7 @@ Private Const PW_CLIENTONLY As Long = &H1
 Private Const PW_RENDERFULLCONTENT As Long = &H2    'Win 8.1+ only
 
 'Vista+ only
-Private Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal targetHwnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
+Private Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal targetHWnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
 
 'Helper functions for retrieving various window parameters
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
@@ -47,7 +47,7 @@ Private Type WindowPlacement
     ptMinPositionY As Long
     ptMaxPositionX As Long
     ptMaxPositionY As Long
-    rcNormalPosition As RECTL
+    rcNormalPosition As RectL
 End Type
  
 Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, ByRef lpwndpl As WindowPlacement) As Long
@@ -114,7 +114,7 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.GetTempPath & PROGRAMNAME & " Screen Capture.tmpdib"
+    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon Screen Capture.tmpdib"
     
     'Ask the DIB to write out its data to file in PD's internal temporary DIB format
     tmpDIB.WriteToFile tmpFilename, PD_CE_Lz4
@@ -176,7 +176,7 @@ End Sub
 
 'Use this function to return a subsection of the current desktop in DIB format.
 ' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
-Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
+Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL)
     
     'Make sure the target DIB is the correct size
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -195,7 +195,7 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
 End Sub
 
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True, Optional ByRef isWindowMinimized As Boolean = False) As Boolean
+Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True, Optional ByRef isWindowMinimized As Boolean = False) As Boolean
 
     'Vista+ defines window boundaries differently, so we have to use a special API to retrieve correct boundaries.
     ' (NOTE: this behavior is currently disabled, as it doesn't actually help that much, and it introduces some
@@ -206,7 +206,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     'Start by retrieving the necessary dimensions from the target window
     Dim wpSuccess As Boolean, tmpWinPlacement As WindowPlacement
     tmpWinPlacement.wpLength = LenB(tmpWinPlacement)
-    wpSuccess = CBool(GetWindowPlacement(targetHwnd, tmpWinPlacement) <> 0)
+    wpSuccess = CBool(GetWindowPlacement(targetHWnd, tmpWinPlacement) <> 0)
     
     'See if the window is currently minimized; the caller may want to use this information to recognize that the capture
     ' isn't going to look right.
@@ -230,11 +230,11 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
         '    DwmGetWindowAttribute targetHwnd, DWMWA_EXTENDED_FRAME_BOUNDS, VarPtr(targetRect), 16&
         '    FreeLibrary hLib
         'Else
-            GetWindowRect targetHwnd, targetRect
+            GetWindowRect targetHWnd, targetRect
         'End If
         
     Else
-        GetClientRect targetHwnd, targetRect
+        GetClientRect targetHWnd, targetRect
     End If
     
     'Check to make sure the window hasn't been destroyed
@@ -256,7 +256,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     If (Not includeChrome) Then printFlags = printFlags Or PW_CLIENTONLY
     If OS.IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
     
-    GetHwndContentsAsDIB = CBool(PrintWindow(targetHwnd, dstDIB.GetDIBDC, printFlags) <> 0)
+    GetHwndContentsAsDIB = CBool(PrintWindow(targetHWnd, dstDIB.GetDIBDC, printFlags) <> 0)
     
     'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
