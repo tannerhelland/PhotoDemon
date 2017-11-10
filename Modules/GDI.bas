@@ -91,17 +91,19 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 'Helper functions from user32
 Private Declare Function FillRect Lib "user32" (ByVal hDstDC As Long, ByVal ptrToRect As Long, ByVal hSrcBrush As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByVal ptrToRectL As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 Public Function BitBltWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, Optional ByVal rastOp As Long = vbSrcCopy) As Boolean
-    BitBltWrapper = CBool(BitBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, rastOp) <> 0)
+    BitBltWrapper = (BitBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, rastOp) <> 0)
 End Function
 
 Public Function StretchBltWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal rastOp As Long = vbSrcCopy) As Boolean
-    StretchBltWrapper = CBool(StretchBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, srcWidth, srcHeight, rastOp) <> 0)
+    StretchBltWrapper = (StretchBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, srcWidth, srcHeight, rastOp) <> 0)
 End Function
 
 Public Function GetClientRectWrapper(ByVal srcHwnd As Long, ByVal ptrToDestRect As Long) As Boolean
-    GetClientRectWrapper = CBool(GetClientRect(srcHwnd, ptrToDestRect) <> 0)
+    GetClientRectWrapper = (GetClientRect(srcHwnd, ptrToDestRect) <> 0)
 End Function
 
 Public Function GetBitmapHeaderFromDC(ByVal srcDC As Long) As GDI_Bitmap
@@ -180,7 +182,7 @@ Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     oldObject = SelectObject(targetDC, tmpBrush)
     
     'Fill the rect
-    Dim tmpRect As RECTL
+    Dim tmpRect As RectL
     With tmpRect
         .Left = x1
         .Top = y1
