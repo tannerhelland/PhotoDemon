@@ -19,7 +19,7 @@ Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
+Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
 
 'Does a given DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 '
@@ -45,7 +45,7 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
     
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
-            Dim iData() As Byte, tmpSA As SAFEARRAY1D
+            Dim iData() As Byte, tmpSA As SafeArray1D
             srcDIB.WrapArrayAroundScanline iData, tmpSA, 0
             
             Dim dibPtr As Long, dibStride As Long
@@ -109,7 +109,6 @@ End Function
 ' (32-bpp inputs required.)
 Public Function IsDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
     
-    'If we made it to this line, the DIB is blank, so it doesn't matter what value we return
     IsDIBGrayscale = False
     
     'Make sure the DIB exists
@@ -120,7 +119,7 @@ Public Function IsDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
         
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
-            Dim imgPixels() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            Dim imgPixels() As Byte, tmpSA As SafeArray1D, dibPtr As Long, dibStride As Long
             srcDIB.WrapArrayAroundScanline imgPixels, tmpSA, 0
             dibPtr = tmpSA.pvData
             dibStride = tmpSA.cElements
@@ -162,6 +161,69 @@ Public Function IsDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
 
 End Function
 
+'Is a given DIB one solid color?  Determination is made by scanning each pixel and comparing RGB values to see if they match.
+' (32-bpp inputs required.)
+Public Function IsDIBSolidColor(ByRef srcDIB As pdDIB) As Boolean
+    
+    'If we made it to this line, the DIB is blank, so it doesn't matter what value we return
+    IsDIBSolidColor = False
+    
+    'Make sure the DIB exists
+    If (Not srcDIB Is Nothing) Then
+        
+        'Make sure this DIB isn't empty
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+        
+            'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
+            ' match either of this, this is a non-binary alpha channel and it must be handled specially.
+            Dim imgPixels() As Byte, tmpSA As SafeArray1D, dibPtr As Long, dibStride As Long
+            srcDIB.WrapArrayAroundScanline imgPixels, tmpSA, 0
+            dibPtr = tmpSA.pvData
+            dibStride = tmpSA.cElements
+            
+            Dim x As Long, y As Long
+            Dim r As Long, g As Long, b As Long
+            
+            'Flag the first color in the image
+            Dim srcR As Long, srcG As Long, srcB As Long
+            srcB = imgPixels(0)
+            srcG = imgPixels(1)
+            srcR = imgPixels(2)
+            
+            'Loop through the image, checking alphas as we go
+            Dim finalX As Long
+            finalX = srcDIB.GetDIBWidth * 4 - 4
+            
+            For y = 0 To srcDIB.GetDIBHeight - 1
+            
+                'Point our array at the current scanline
+                tmpSA.pvData = dibPtr + y * dibStride
+                
+            For x = 0 To finalX Step 4
+                
+                b = imgPixels(x)
+                g = imgPixels(x + 1)
+                r = imgPixels(x + 2)
+                
+                If (r <> srcR) Or (g <> srcG) Or (b <> srcB) Then
+                    srcDIB.UnwrapArrayFromDIB imgPixels
+                    IsDIBSolidColor = False
+                    Exit Function
+                End If
+                    
+            Next x
+            Next y
+        
+            'If we scanned all pixels without exiting prematurely, the DIB is a single solid color
+            srcDIB.UnwrapArrayFromDIB imgPixels
+            IsDIBSolidColor = True
+            
+        End If
+            
+    End If
+
+End Function
+
 'Given a 32-bpp DIB, return TRUE if any of its alpha bytes are non-255.
 Public Function IsDIBTransparent(ByRef srcDIB As pdDIB) As Boolean
     
@@ -174,7 +236,7 @@ Public Function IsDIBTransparent(ByRef srcDIB As pdDIB) As Boolean
     
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
-            Dim imgPixels() As Byte, tmpSA As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            Dim imgPixels() As Byte, tmpSA As SafeArray1D, dibPtr As Long, dibStride As Long
             srcDIB.WrapArrayAroundScanline imgPixels, tmpSA, 0
             dibPtr = tmpSA.pvData
             dibStride = tmpSA.cElements
@@ -226,7 +288,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
             
@@ -339,7 +401,7 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
     
         'Point a local array at the DIB
         Dim dstImageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         PrepSafeArray tmpSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
@@ -390,7 +452,7 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         
         'Point a local array at the DIB
         Dim dstImageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         PrepSafeArray tmpSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
@@ -449,7 +511,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -575,7 +637,7 @@ Public Function ApplyAlphaCutoff_Ex(ByRef srcDIB As pdDIB, ByRef dstTransparency
                 Exit Function
             End If
             
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
+            Dim iData() As Byte, tmpSA As SafeArray2D
             srcDIB.WrapArrayAroundDIB iData, tmpSA
             
             Dim chkAlpha As Byte
@@ -635,7 +697,7 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
                 needToResetPremultiplication = True
             End If
             
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
+            Dim iData() As Byte, tmpSA As SafeArray2D
             srcDIB.WrapArrayAroundDIB iData, tmpSA
             
             'We will return TRUE if at least one pixel is made transparent
@@ -706,7 +768,7 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
                 finalY = (srcDIB.GetDIBHeight - 1)
             Else
             
-                Dim tmpRectF As RECTF
+                Dim tmpRectF As RectF
                 CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
                 PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
@@ -733,7 +795,7 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
             
                 ReDim dstTransparencyTable(initX To finalX, initY To finalY) As Byte
                 
-                Dim iData() As Byte, tmpSA As SAFEARRAY2D
+                Dim iData() As Byte, tmpSA As SafeArray2D
                 srcDIB.WrapArrayAroundDIB iData, tmpSA
                     
                 'Loop through the image, checking alphas as we go
@@ -777,7 +839,7 @@ Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTranspare
                 finalY = (srcDIB.GetDIBHeight - 1)
             Else
             
-                Dim tmpRectF As RECTF
+                Dim tmpRectF As RectF
                 CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
                 PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
@@ -808,7 +870,7 @@ Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTranspare
                     restorePremultiplication = True
                 End If
                 
-                Dim iData() As Byte, tmpSA As SAFEARRAY1D
+                Dim iData() As Byte, tmpSA As SafeArray1D
                 srcDIB.WrapArrayAroundScanline iData, tmpSA, 0
                 
                 Dim dibPtr As Long, dibStride As Long
@@ -854,7 +916,7 @@ Public Function ApplyBinaryTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTra
             finalX = (srcDIB.GetDIBWidth - 1)
             finalY = (srcDIB.GetDIBHeight - 1)
             
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
+            Dim iData() As Byte, tmpSA As SafeArray2D
             srcDIB.WrapArrayAroundDIB iData, tmpSA
             
             Dim alphaPremultiplied As Boolean: alphaPremultiplied = srcDIB.GetAlphaPremultiplication
@@ -958,7 +1020,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             ' to un-premultiply values in advance, and post-premultiply values afterward.
             Dim lTable(0 To 255) As Long
             
-            Dim tmpQuad As RGBQUAD, aFloat As Double
+            Dim tmpQuad As RGBQuad, aFloat As Double
             Const ONE_DIV_255 As Double = 1# / 255#
             
             For x = 0 To 255
@@ -974,8 +1036,8 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             ' we're going to wrap both a byte-type and long-type array around the image data.  The byte-type
             ' array is faster for retrieving individual color channels (alpha, in this case), while the
             ' long-type array is faster for setting entire pixel values (all four RGBA bytes at once).
-            Dim imgDataL() As Long, tmpSAL As SAFEARRAY1D
-            Dim imgDataB() As Byte, tmpSAB As SAFEARRAY1D, dibPtr As Long, dibStride As Long
+            Dim imgDataL() As Long, tmpSAL As SafeArray1D
+            Dim imgDataB() As Byte, tmpSAB As SafeArray1D, dibPtr As Long, dibStride As Long
             srcDIB.WrapArrayAroundScanline imgDataB, tmpSAB, 0
             dibPtr = tmpSAB.pvData
             dibStride = tmpSAB.cElements
@@ -1020,7 +1082,7 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
             finalX = (srcDIB.GetDIBWidth - 1)
             finalY = (srcDIB.GetDIBHeight - 1)
             
-            Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+            Dim srcPixels() As Byte, tmpSA As SafeArray2D
             srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
             
             'We first need to construct a byte array that separates the pixels into two groups; the barrier
@@ -1057,7 +1119,7 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
             Dim cEdges As pdEdgeDetector
             Set cEdges = New pdEdgeDetector
             
-            Dim finalPolygon() As POINTFLOAT, numOfPoints As Long
+            Dim finalPolygon() As PointFloat, numOfPoints As Long
             
             'Use the edge detector to find an initial (x, y) location to start our path trace
             Dim startX As Long, startY As Long
@@ -1075,7 +1137,7 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
             ' final path outline, instead.
             Else
                 numOfPoints = 4
-                ReDim finalPolygon(0 To 3) As POINTFLOAT
+                ReDim finalPolygon(0 To 3) As PointFloat
                 finalPolygon(0).x = 0
                 finalPolygon(0).y = 0
                 finalPolygon(1).x = 0
@@ -1115,7 +1177,7 @@ Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
     
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
         
-        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        Dim srcPixels() As Byte, tmpSA As SafeArray2D
         srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
         
         Dim pxSize As Long
@@ -1127,8 +1189,8 @@ Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
         finalX = srcDIB.GetDIBStride - 1
         finalY = srcDIB.GetDIBHeight - 1
         
-        Dim colorList() As RGBQUAD
-        ReDim colorList(0 To 255) As RGBQUAD
+        Dim colorList() As RGBQuad
+        ReDim colorList(0 To 255) As RGBQuad
         
         'Always load the first color in advance; this lets us avoid branches in the inner loop
         Dim numColors As Long
@@ -1200,13 +1262,13 @@ End Function
 '
 'RETURNS: number of colors in the destination palette (1-based).  If the return is 257, the function failed because there
 ' are too many colors in the source image.  Reduce the number of colors, then try again.
-Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQUAD, ByRef dstPixels() As Byte) As Long
+Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, ByRef dstPixels() As Byte) As Long
 
     If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
         
-        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        Dim srcPixels() As Byte, tmpSA As SafeArray2D
         srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
         
         Dim pxSize As Long
@@ -1218,7 +1280,7 @@ Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As R
         finalX = srcDIB.GetDIBStride - 1
         finalY = srcDIB.GetDIBHeight - 1
         
-        ReDim dstPalette(0 To 255) As RGBQUAD
+        ReDim dstPalette(0 To 255) As RGBQuad
         ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
         
         'Always load the first color in advance; this lets us avoid branches in the inner loop
@@ -1296,7 +1358,7 @@ End Function
 ' (Obviously, it needs to be 32-bpp too!)
 '
 'RETURNS: TRUE if successful; FALSE otherwise
-Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount As Long, ByRef srcPalette() As RGBQUAD, ByRef srcPixels() As Byte) As Boolean
+Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount As Long, ByRef srcPalette() As RGBQuad, ByRef srcPixels() As Byte) As Boolean
 
     If (dstDIB Is Nothing) Then Exit Function
     
@@ -1318,7 +1380,7 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount A
         
         'To improve performance, we'll point a Long-type array at each individual line in turn (rather than
         ' addressing the entire thing in 2D)
-        Dim imgData() As Long, tmpSA As SAFEARRAY1D, imgPtr As Long, imgStride As Long
+        Dim imgData() As Long, tmpSA As SafeArray1D, imgPtr As Long, imgStride As Long
         dstDIB.WrapLongArrayAroundScanline imgData, tmpSA, 0
         imgPtr = tmpSA.pvData
         imgStride = tmpSA.cElements * 4
@@ -1408,7 +1470,7 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
             Dim lTable() As Long
             ReDim lTable(0 To 255) As Long
             
-            Dim tmpA As Single, tmpQuad As RGBQUAD
+            Dim tmpA As Single, tmpQuad As RGBQuad
             
             For x = 0 To 255
                 tmpQuad.Alpha = x
@@ -1419,7 +1481,7 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
                 CopyMemory ByVal VarPtr(lTable(x)), ByVal VarPtr(tmpQuad), LenB(tmpQuad)
             Next x
             
-            Dim imgData() As Long, tmpSA As SAFEARRAY1D
+            Dim imgData() As Long, tmpSA As SafeArray1D
             
             'Loop through the image, checking alphas as we go
             For y = initY To finalY

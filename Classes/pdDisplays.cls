@@ -56,8 +56,8 @@ Private Const MONITOR_DEFAULTTONEAREST As Long = 2
 'GetMonitorInfo struct
 Private Type MONITORINFOEX
     cbSize As Long
-    rcMonitor As RECTL
-    rcWork As RECTL
+    rcMonitor As RectL
+    rcWork As RectL
     dwFlags As Long
     szDevice(0 To 63) As Byte
 End Type
@@ -80,12 +80,13 @@ Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW"
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MonitorFromPoint Lib "user32" (ByVal x As Long, ByVal y As Long, ByVal dwFlags As Long) As Long
-Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RECTL, ByVal dwFlags As Long) As Long
+Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RectL, ByVal dwFlags As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Number of displays in our collection
 Private m_NumOfDisplays As Long
@@ -129,7 +130,7 @@ Friend Function GetDesktopHeight() As Long
     GetDesktopHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
 End Function
 
-Friend Sub GetDesktopRect(ByRef dstRect As RECTL)
+Friend Sub GetDesktopRect(ByRef dstRect As RectL)
     
     With dstRect
         .Left = Me.GetDesktopLeft
@@ -142,7 +143,7 @@ End Sub
 
 'As an absolute final failsafe, VB's Screen object can be queried for a display rect.  This is typically only done under alternative
 ' environments (e.g. Wine) if all standard display enumeration APIs have failed.
-Friend Sub GetVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixels As Boolean = True)
+Friend Sub GetVBDesktopRect(ByRef dstRect As RectL, Optional ByVal returnInPixels As Boolean = True)
     
     With dstRect
     
@@ -170,7 +171,7 @@ End Function
 'Taskbar height is more complicated in Win 10, since the taskbar can optionally appear across multiple displays.
 ' At present, PD assumes the taskbar is present on most screens, and it uses this to control things like drop-down height.
 Friend Function GetTaskbarHeight() As Long
-    Dim primaryDisplayRect As RECTL, primaryDisplayWorkingRect As RECTL
+    Dim primaryDisplayRect As RectL, primaryDisplayWorkingRect As RectL
     Me.PrimaryDisplay.GetRect primaryDisplayRect
     Me.PrimaryDisplay.GetWorkingRect primaryDisplayWorkingRect
     GetTaskbarHeight = (primaryDisplayRect.Bottom - primaryDisplayRect.Top) - (primaryDisplayWorkingRect.Bottom - primaryDisplayWorkingRect.Top)
@@ -224,7 +225,7 @@ Friend Function RefreshDisplays() As Long
     If (m_NumOfDisplays > 0) Then ResetDisplays
     
     'Retrieve the virtual screen area
-    Dim virtualScreenRect As RECTL
+    Dim virtualScreenRect As RectL
     Me.GetDesktopRect virtualScreenRect
     
     'We're now going to search the display area, in 320x200 increments, probing for unique monitors.
@@ -250,7 +251,7 @@ Friend Function RefreshDisplays() As Long
     If (m_NumOfDisplays = 0) Then
         
         'Get a default screen rect from VB's internal methods
-        Dim workingRect As RECTL
+        Dim workingRect As RectL
         Me.GetVBDesktopRect workingRect, True
         
         'Populate basic display features so external functions don't crash
@@ -616,19 +617,19 @@ Friend Function Displays(ByVal displayIndex As Long) As pdDisplay
 End Function
 
 'Given a rect, find the largest overlapping display device
-Friend Function GetHMonitorFromRectL(ByRef srcRect As RECTL) As Long
+Friend Function GetHMonitorFromRectL(ByRef srcRect As RectL) As Long
     GetHMonitorFromRectL = MonitorFromRect(srcRect, MONITOR_DEFAULTTONEAREST)
 End Function
 
 'Helper function to center a form according to a reference rect.  The reference rect will be used to find the largest overlapping display;
 ' the form will then be centered on that display.  This is essential on multiple monitor systems, to ensure that a form appears on
 ' a single monitor, rather than centered on the virtual display (which may lie between two monitors and thus look shitty!).
-Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef srcRect As RECTL) As Boolean
+Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef srcRect As RectL) As Boolean
     
     On Error GoTo CouldNotCenterForm
     
     'Our goal is to fill this working rect with the working rectangle (e.g. non-chrome) of the monitor containing most of the form.
-    Dim workingRect As RECTL
+    Dim workingRect As RectL
     
     'Start by getting the containing display
     Dim hDisplay As Long

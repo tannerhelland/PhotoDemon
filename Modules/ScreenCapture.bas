@@ -3,8 +3,9 @@ Attribute VB_Name = "ScreenCapture"
 'Screen Capture Interface
 'Copyright 1999-2017 by Tanner Helland
 'Created: 12/June/99
-'Last updated: 27/June/14
-'Last update: sanitize window titles before converting them to filenames; otherwise, subsequent Save/Save As functions may fail
+'Last updated: 10/November/17
+'Last update: workarounds for Win 10 PrintWindow fails; some windows may be recoverable with a manual
+'             BitBlt workaround.
 '
 'Description: this module captures the screen.  The options are fairly minimal - it only captures
 '             the entire screen, but it does give the user the option to minimize the form first.
@@ -17,27 +18,28 @@ Attribute VB_Name = "ScreenCapture"
 Option Explicit
 
 'Various API calls required for screen capturing
-Public Declare Function GetDesktopWindow Lib "user32" () As Long
-Public Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+
 Private Const PW_CLIENTONLY As Long = &H1
 Private Const PW_RENDERFULLCONTENT As Long = &H2    'Win 8.1+ only
 
 'Vista+ only
 Private Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal targetHWnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
-
-'Helper functions for retrieving various window parameters
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
 
 Private Type WindowPlacement
     wpLength As Long
@@ -259,6 +261,32 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As 
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
     If ((dstDIB.GetDIBColorDepth = 32) And GetHwndContentsAsDIB) Then dstDIB.ForceNewAlpha 255
     
+    'Before returning, we now have to deal with an extremely obnoxious side-effect of PrintWindows' implementation.
+    ' PrintWindow requires the client to respond to WM_PRINT messages; if a client doesn't choose to implement this,
+    ' we're SOL.
+    
+    'To avoid this scenario, look for all-black images and resort to an alternate strategy if found.
+    ' (Note that we can't rely on the return of PrintWindow for this; many applications return TRUE even if they
+    '  don't process the message!)
+    Dim captureIsAllBlack As Boolean: captureIsAllBlack = False
+    captureIsAllBlack = DIBs.IsDIBSolidColor(dstDIB)
+    
+    If captureIsAllBlack Or (Not GetHwndContentsAsDIB) Then
+        
+        'New, alternate strategy: BitBlt directly from the source window.  This is not guaranteed to work
+        ' (especially on Win 10+) but it's better than doing nothing.
+        Dim tmpDC As Long
+        tmpDC = GetWindowDC(targetHWnd)
+        GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDC, 0, 0, vbSrcCopy
+        ReleaseDC targetHWnd, tmpDC
+        
+        'Deal with problematic alpha values
+        dstDIB.ForceNewAlpha 255
+        
+        GetHwndContentsAsDIB = True
+        
+    End If
+    
 End Function
 
 'After calling EnumWindowsProc, you can call this function to get a copy of the window title and hWnd string stacks.
@@ -314,7 +342,11 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                         'Perform one final check for protected or known-bad window types.
                         Dim okayToAdd As Boolean: okayToAdd = True
                         If (Not OS.IsVistaOrLater) Then
-                            okayToAdd = Strings.StringsNotEqual(curWindowText, "Program Manager", False)
+                            okayToAdd = Strings.StringsNotEqual(curWindowText, "Program Manager", True)
+                        End If
+                        
+                        If OS.IsWin10OrLater Then
+                            okayToAdd = Strings.StringsNotEqual(curWindowText, "Windows Shell Experience Host", True)
                         End If
                         
                         If okayToAdd Then
