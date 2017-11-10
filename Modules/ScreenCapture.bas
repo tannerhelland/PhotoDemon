@@ -108,9 +108,6 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     
     'If we minimized the main window, now's the time to return it to normal size
     If (captureFullDesktop And minimizePD) Then ShowWindow FormMain.hWnd, SW_RESTORE
-        
-    'TODO: confirm that the previous step is okay on XP.  Previously, we had to forcibly invoke a full refresh via
-    ' the window manager, but since switching to the new, lightweight toolbox manager in v7.0, I haven't re-checked this.
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
@@ -206,12 +203,12 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As 
     'Start by retrieving the necessary dimensions from the target window
     Dim wpSuccess As Boolean, tmpWinPlacement As WindowPlacement
     tmpWinPlacement.wpLength = LenB(tmpWinPlacement)
-    wpSuccess = CBool(GetWindowPlacement(targetHWnd, tmpWinPlacement) <> 0)
+    wpSuccess = (GetWindowPlacement(targetHWnd, tmpWinPlacement) <> 0)
     
     'See if the window is currently minimized; the caller may want to use this information to recognize that the capture
     ' isn't going to look right.
     If wpSuccess Then
-        isWindowMinimized = CBool(tmpWinPlacement.wpShowCmd = SW_SHOWMINIMIZED) Or CBool(tmpWinPlacement.wpShowCmd = SW_MINIMIZE)
+        isWindowMinimized = (tmpWinPlacement.wpShowCmd = SW_SHOWMINIMIZED) Or (tmpWinPlacement.wpShowCmd = SW_MINIMIZE)
     Else
         isWindowMinimized = False
     End If
@@ -256,7 +253,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As 
     If (Not includeChrome) Then printFlags = printFlags Or PW_CLIENTONLY
     If OS.IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
     
-    GetHwndContentsAsDIB = CBool(PrintWindow(targetHWnd, dstDIB.GetDIBDC, printFlags) <> 0)
+    GetHwndContentsAsDIB = (PrintWindow(targetHWnd, dstDIB.GetDIBDC, printFlags) <> 0)
     
     'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
@@ -282,14 +279,14 @@ End Sub
 ' We apply additional checks to the windows it returns to make sure there are no unwanted additions (hidden windows, etc).
 Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Long
 
-    Static WindowText As String
+    Static curWindowText As String
     Static nRet As Long
     
     'Only return visible windows
-    If IsWindowVisible(hWnd) Then
+    If (IsWindowVisible(hWnd) <> 0) Then
     
         'Only return windows without parents (to exclude toolbars, etc)
-        If GetParent(hWnd) = 0& Then
+        If (GetParent(hWnd) = 0&) Then
             
             'Only return windows with a size larger than 0
             Dim tmpRect As winRect
@@ -303,18 +300,27 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                 If ((tmpRect.x2 - tmpRect.x1) > 0) And ((tmpRect.y2 - tmpRect.y1) > 0) Then
                     
                     'Retrieve the window's caption
-                    WindowText = Space$(256)
-                    nRet = GetWindowText(hWnd, StrPtr(WindowText), Len(WindowText))
+                    curWindowText = Space$(256)
+                    nRet = GetWindowText(hWnd, StrPtr(curWindowText), Len(curWindowText))
                     
                     'If window text was obtained, trim it and add this entry to the list
                     If (nRet <> 0) Then
                     
-                        WindowText = Left$(WindowText, nRet)
+                        curWindowText = Left$(curWindowText, nRet)
                         
                         If (m_WindowNames Is Nothing) Then Set m_WindowNames = New pdStringStack
                         If (m_WindowHWnds Is Nothing) Then Set m_WindowHWnds = New pdStringStack
-                        m_WindowNames.AddString WindowText
-                        m_WindowHWnds.AddString CStr(hWnd)
+                        
+                        'Perform one final check for protected or known-bad window types.
+                        Dim okayToAdd As Boolean: okayToAdd = True
+                        If (Not OS.IsVistaOrLater) Then
+                            okayToAdd = Strings.StringsNotEqual(curWindowText, "Program Manager", False)
+                        End If
+                        
+                        If okayToAdd Then
+                            m_WindowNames.AddString curWindowText
+                            m_WindowHWnds.AddString CStr(hWnd)
+                        End If
                         
                     End If
                     
