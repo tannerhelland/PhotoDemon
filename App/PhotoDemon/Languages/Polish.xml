@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.3290</langversion>
+<langversion>6.8.3291</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1112,7 +1112,7 @@ To włączyć obsługę tego formatu obrazu, należy skopiować plik FreeImage.d
 <translation>Podgląd niedostępny</translation>
 </phrase>
 
-<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -9062,37 +9062,6 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
-<!-- BEGIN text for Effects_Blur_ChromaBlur.frm (FormChromaBlur) -->
-
-<phrase>
-<original>Chroma blur</original>
-<translation>Chroma rozmycie</translation>
-</phrase>
-
-<phrase>
-<original>blur radius</original>
-<translation>promień rozmycia</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>Zacieranie chroma (kolor) dane</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>Scalanie luminancji i chrominancji w końcowym obrazie</translation>
-</phrase>
-
-<phrase>
-<original>precise</original>
-<translation>precyzyjny</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_ChromaBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
@@ -9100,7 +9069,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 <translation>Stosowanie rozmycie Gaussa</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>precise</original>
+<translation>precyzyjny</translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13322,7 +13296,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>Wiadro z farbą (wypełnienie kolorem)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15063,10 +15037,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12142 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

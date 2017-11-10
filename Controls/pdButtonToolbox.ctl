@@ -309,7 +309,7 @@ Private Sub GenerateVariantButtonImages()
     Next x
     
     'Grab direct access to the spritesheet's bytes
-    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
     PrepSafeArray tmpSA, m_ButtonImages
     CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
     
@@ -508,14 +508,13 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click.
-' (TODO: switch to MouseUp, so we have a chance to draw the down button state and provide some visual feedback)
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     If Me.Enabled Then
         
         'Sticky toggle allows the button to operate as a checkbox
         If m_StickyToggle Then
-            Value = CBool(Not Value)
+            Value = (Not Value)
         
         'Non-sticky toggle modes will always cause the button to be TRUE on a MouseDown event
         Else

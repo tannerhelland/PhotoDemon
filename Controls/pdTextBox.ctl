@@ -126,7 +126,6 @@ Public Property Get ContainerHwnd() As Long
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
-' TODO: disable text box as well
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled

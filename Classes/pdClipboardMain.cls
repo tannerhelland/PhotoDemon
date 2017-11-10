@@ -1084,8 +1084,8 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     ' to temporarily use this technique for predicting failure.)
                     '
                     'TODO: rewrite PD's central image load functions to return pass/fail status.
-                    If g_CurrentImage <= UBound(pdImages) Then
-                        If Not pdImages(g_CurrentImage) Is Nothing Then
+                    If (g_CurrentImage <= UBound(pdImages)) Then
+                        If (Not pdImages(g_CurrentImage) Is Nothing) Then
                             If pdImages(g_CurrentImage).IsActive Then
                                 Message "Clipboard data imported successfully "
                                 ClipboardPaste_BitmapImage = True

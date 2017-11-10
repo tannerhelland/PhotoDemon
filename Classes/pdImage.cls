@@ -773,7 +773,6 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
-            'TODO: make a firm decision on what data does not belong in PDI files!
             Me.SetOriginalColorDepth xmlEngine.GetUniqueTag_Long("originalColorDepth")
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them

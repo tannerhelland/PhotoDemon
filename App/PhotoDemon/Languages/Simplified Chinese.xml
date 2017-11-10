@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3386</langversion>
+<langversion>7.0.3387</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1112,7 +1112,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>预览不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -9067,37 +9067,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
-<!-- BEGIN text for Effects_Blur_ChromaBlur.frm (FormChromaBlur) -->
-
-<phrase>
-<original>Chroma blur</original>
-<translation>色度模糊</translation>
-</phrase>
-
-<phrase>
-<original>blur radius</original>
-<translation>模糊半径</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>模糊色度（彩色）数据</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>合并的亮度和色度成最终图像</translation>
-</phrase>
-
-<phrase>
-<original>precise</original>
-<translation>精确</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_ChromaBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
@@ -9105,7 +9074,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>应用高斯模糊</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>precise</original>
+<translation>精确</translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13325,7 +13299,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>油漆桶（填充颜色）</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15067,10 +15041,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12142 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

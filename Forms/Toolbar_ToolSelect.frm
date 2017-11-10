@@ -544,14 +544,8 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
     ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
     ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
-    If m_WeAreResponsibleForResize Then
-        
-        m_WeAreResponsibleForResize = False
-        
-        'TODO: make sure this is okay with 7.0's new toolbox manager
-        
-    End If
-
+    If m_WeAreResponsibleForResize Then m_WeAreResponsibleForResize = False
+    
 End Sub
 
 Private Sub Form_Load()

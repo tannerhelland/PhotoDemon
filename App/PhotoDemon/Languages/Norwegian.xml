@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.3290</langversion>
+<langversion>6.8.3291</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1112,7 +1112,7 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 <translation>forhåndsvisning ikke tilgjengelig</translation>
 </phrase>
 
-<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -9077,37 +9077,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
-<!-- BEGIN text for Effects_Blur_ChromaBlur.frm (FormChromaBlur) -->
-
-<phrase>
-<original>Chroma blur</original>
-<translation>Chroma uskarphet</translation>
-</phrase>
-
-<phrase>
-<original>blur radius</original>
-<translation>blur radius</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>Uskarphet chroma (farge) data</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>Sammenslåing luminans og chroma inn endelige bildet</translation>
-</phrase>
-
-<phrase>
-<original>precise</original>
-<translation>nøyaktig</translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_ChromaBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
@@ -9115,7 +9084,12 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Bruk av Gaussian Blur</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>precise</original>
+<translation>nøyaktig</translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13338,7 +13312,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Malebøtte (fyll med farge)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15082,10 +15056,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12142 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

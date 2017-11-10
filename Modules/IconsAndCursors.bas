@@ -262,8 +262,6 @@ Public Sub ResetMenuIcons()
     End If
     
     'Clear the current MRU icon cache.
-    'TODO: figure out a more elegant way to handle this; we really shouldn't need to re-load everything
-    ' from disk!
     If (Not cMRUIcons Is Nothing) Then
         
         cMRUIcons.Clear

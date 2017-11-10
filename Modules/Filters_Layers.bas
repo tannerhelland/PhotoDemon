@@ -2905,8 +2905,7 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
 End Sub
 
 'Quickly modify a DIB's gamma values.  A single value is used to correct all channels.
-' TODO!  Look at wrapping GDI+ gamma correction, if available.  That may be faster than correcting gamma manually.
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+'TODO: optimize to a proper scanline-based approach
 Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Make sure the supplied gamma is valid
@@ -2981,16 +2980,16 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
         quickVal = x * qvDepth
     For y = initY To finalY
             
-        'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
+        'Replace source pixel color values with lookup table values
         b = imageData(quickVal, y)
-        
-        'Assign the look-up table values
-        imageData(quickVal + 2, y) = pixelLookup(r)
-        imageData(quickVal + 1, y) = pixelLookup(g)
         imageData(quickVal, y) = pixelLookup(b)
-                
+        
+        g = imageData(quickVal + 1, y)
+        imageData(quickVal + 1, y) = pixelLookup(g)
+        
+        r = imageData(quickVal + 2, y)
+        imageData(quickVal + 2, y) = pixelLookup(r)
+        
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then

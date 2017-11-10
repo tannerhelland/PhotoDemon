@@ -409,9 +409,6 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If m_WeAreResponsibleForResize Then
         m_WeAreResponsibleForResize = False
         m_MouseEvents.SetSystemCursor IDC_DEFAULT
-        
-        'TODO: make sure this is okay with 7.0's new toolbox manager
-        
     End If
     
 End Sub

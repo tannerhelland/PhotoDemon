@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.307</langversion>
+<langversion>6.7.308</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -1113,7 +1113,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation></translation>
 </phrase>
 
-<!-- Interface.bas contains 80 phrases. 21 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -9066,37 +9066,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
-<!-- BEGIN text for Effects_Blur_ChromaBlur.frm (FormChromaBlur) -->
-
-<phrase>
-<original>Chroma blur</original>
-<translation>Chroma-Weichzeichner</translation>
-</phrase>
-
-<phrase>
-<original>blur radius</original>
-<translation>Unschärferadius</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>Weichzeichnen Chroma (Farbe) Daten</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>Zusammenführen von Luminanz und Chroma in das endgültige Bild</translation>
-</phrase>
-
-<phrase>
-<original>precise</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Blur_ChromaBlur.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_ChromaBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
@@ -9104,7 +9073,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Gaußsche Unschärfe anwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>precise</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13325,7 +13299,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 56 phrases. 13 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15067,10 +15041,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4552 phrases. -->
-<!-- 2024 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12142 total words. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

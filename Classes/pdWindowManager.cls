@@ -476,7 +476,7 @@ Friend Sub SetFirstRunMainWindowPosition()
     Dim tmpPrimaryDisplay As pdDisplay
     Set tmpPrimaryDisplay = g_Displays.PrimaryDisplay
     
-    Dim pWorkingRect As RECTL
+    Dim pWorkingRect As RectL
     If (Not tmpPrimaryDisplay Is Nothing) Then
         tmpPrimaryDisplay.GetWorkingRect pWorkingRect
     Else
@@ -854,16 +854,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         ' may have changed)
         If (hWnd = m_MainWindowHWnd) Then
             If (uiMsg = WM_MOVING) Or (uiMsg = WM_SIZING) Then ColorManagement.CheckParentMonitor
-            
-            'DWM causes titlebar double-clicks (which normally result in a maximize action) to "pass through"
-            ' to the child window post-resize.  This results in all kinds of weird mouse behavior, so as a
-            ' temporary fix, we cheat and disable this behavior.
-            'TODO!  Find a proper fix for this.
-            'If (uiMsg = WM_NCLBUTTONDBLCLK) Then
-            '    bHandled = True
-            '    lReturn = 0
-            'End If
-            
         End If
         
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)

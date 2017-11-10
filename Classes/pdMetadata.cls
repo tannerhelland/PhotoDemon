@@ -1087,7 +1087,6 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                         'If this is not a list tag or a binary tag, it must be an invalid tag of some kind - possibly one that uses
                         ' a linebreak character.  (Linebreak characters are specifically disallowed by most format specs, but because
                         ' we're nice, we'll try and salvage them.)
-                        ' TODO: handle this tag specially??
                         If (Not tagFinished) Then
                             tagFinished = PARSE_InvalidMultilineTag(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
                             If (Not tagFinished) Then Debug.Print "WARNING: weird tag encountered: " & m_Tags(m_NumOfTags).TagGroupAndName

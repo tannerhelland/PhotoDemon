@@ -55,10 +55,10 @@ Private m_tmpDIB As pdDIB
 
 'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
-Private m_PlgPoints() As POINTFLOAT
+Private m_PlgPoints() As PointFloat
 
 'For the rect-specific compositor, we also need a copy of the parallelogram points in the *canvas*/viewport coordinate space
-Private m_PlgPointsDst() As POINTFLOAT
+Private m_PlgPointsDst() As PointFloat
 
 'Historically, pdCompositor handled its own blending, but as part of wide-ranging compositor optimizations in the 7.0 release, blending was
 ' moved to a dedicated class.
@@ -113,7 +113,7 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     bottomLayer.SyncInternalDIB
     
     'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
-    Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
+    Dim bottomRect As RectF, topRect As RectF, finalRect As RectF
     Layers.FillRectForLayerF bottomLayer, bottomRect, True, True
     Layers.FillRectForLayerF topLayer, topRect, True, True
     UnionRectF finalRect, topRect, bottomRect
@@ -288,7 +288,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     'Start by finding the union rect of the two layers.  This is the smallest rectangle that holds both layers.
     ' (Note that this calculation occurs in the *image's* coordinate space.)
-    Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
+    Dim bottomRect As RectF, topRect As RectF, finalRect As RectF
     Layers.FillRectForLayerF bottomLayer, bottomRect, True, True
     
     If (ptrToPaintbrushRectF = 0) Then
@@ -476,9 +476,6 @@ End Sub
 ' requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
 Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True, Optional ByVal paintScratchLayerIndex As Long = -1)
     
-    'TODO: perform special pre-check for 24bpp single-layer images.  For these, we can simply copy the current layer out,
-    '       saving a lot of time!
-    
     'Start by creating the destination DIB, as necessary
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
@@ -630,7 +627,7 @@ End Sub
 '
 'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer
 ' at the requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
-Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
         
     'A few other things to note before we begin:
     ' - dstDIB will have already been created by the caller.  It may contain a background checkerboard, so we can't
@@ -769,7 +766,7 @@ End Sub
 ' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.  If the caches do not need to
 ' be forcibly generated, the optional levelOfDetail parameter should be correctly set, which clues the compositor into which LOD cache to use
 ' in the target layer, greatly improving performance.
-Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByRef maskInViewportSpace As pdDIB = Nothing)
+Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByRef maskInViewportSpace As pdDIB = Nothing)
     
     'This function requires two non-optional rects as parameters:
     
@@ -785,20 +782,20 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     'To simplify coordinate calculation, we also generate a bunch of our own rect objects.  The objects are as follows:
     
     'Floating-point rect of the FULL SOURCE LAYER, IN IMAGE COORDINATES, *WITHOUT* AFFINE TRANSFORMS APPLIED
-    Dim layerRect As RECTF
+    Dim layerRect As RectF
     
     'Floating-point rect of the FULL SOURCE LAYER, IN IMAGE COORDINATES, WITH AFFINE TRANSFORMS APPLIED
-    Dim layerRectAffine As RECTF
+    Dim layerRectAffine As RectF
     
     'Floating-point rect of the PORTION OF THE SOURCE LAYER RELEVANT TO THE CURRENT VIEWPORT, IN VIEWPORT COORDINATES
-    Dim intRectSrc As RECTF
+    Dim intRectSrc As RectF
     
     'Floating-point rect of the DESTINATION OF intRectSrc (above)
-    Dim dstRect As RECTF
+    Dim dstRect As RectF
     
     'Finally, a floating-point rect of intRectSrc, IN 0-BASED 1:1 COORDINATES.  This rect is used to crop-out a portion of the
     ' source layer for pre-processing, if non-destructive FX are active.
-    Dim srcRect As RECTF
+    Dim srcRect As RectF
     
     'Note that some of these rects may only be necessary under certain conditions.
     
@@ -1207,7 +1204,7 @@ End Sub
 '
 'IMPORTANT!  This function is only relevant when painting onto a raster layer.  When painting onto a vector layer,
 ' the paint strokes are automatically assigned to a new layer.
-Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False)
+Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False)
     
     'Just like the standard GetCompositedRect_LayerHelper() function, this function requires two non-optional rects as parameters:
     
@@ -1223,20 +1220,20 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     'To simplify coordinate calculation, we also generate a bunch of our own rect objects.  The objects are as follows:
     
     'Floating-point rect of the FULL SOURCE LAYER, IN IMAGE COORDINATES, *WITHOUT* AFFINE TRANSFORMS APPLIED
-    Dim layerRect As RECTF
+    Dim layerRect As RectF
     
     'Floating-point rect of the FULL SOURCE LAYER, IN IMAGE COORDINATES, WITH AFFINE TRANSFORMS APPLIED
-    Dim layerRectAffine As RECTF
+    Dim layerRectAffine As RectF
     
     'Floating-point rect of the PORTION OF THE SOURCE LAYER RELEVANT TO THE CURRENT VIEWPORT, IN VIEWPORT COORDINATES
-    Dim intRectSrc As RECTF
+    Dim intRectSrc As RectF
     
     'Floating-point rect of the DESTINATION OF intRectSrc (above)
-    Dim dstRect As RECTF
+    Dim dstRect As RectF
     
     'Finally, a floating-point rect of intRectSrc, IN 0-BASED 1:1 COORDINATES.  This rect is used to crop-out a portion of the
     ' source layer for pre-processing, if non-destructive FX are active.
-    Dim srcRect As RECTF
+    Dim srcRect As RectF
     
     'Note that some of these rects may only be necessary under certain conditions.
     
@@ -1596,7 +1593,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         'If a full cache creation is *not* required, we're only going to update the paintbrush's compositor rect in the region
         ' that has been modified since the last viewport render.  This can save us a lot of time, especially if the source brush
         ' is large or if a bunch of weird blend/alpha modes are active.
-        Dim intRectSrcStroke As RECTF, intRectDstStroke As RECTF
+        Dim intRectSrcStroke As RectF, intRectDstStroke As RectF
         If (Not fullCacheCreationRequired) Then
             GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Paintbrush.GetModifiedUpdateRectF
             GetDstRectFromSrcRectF intRectDstStroke, intRectSrcStroke, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
@@ -1725,7 +1722,7 @@ Private Function GetDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
     'Convert the source rectangle coordinates into a [0, 1] scale relative to the total source area.
     ' Note that we use a RECTF here, which typically uses WIDTH and HEIGHT markers - however, we use them as RIGHT and BOTTOM here,
     ' so ignore the original named values.
-    Dim srcRectF As RECTF
+    Dim srcRectF As RectF
     With srcRectF
         .Left = (srcRect.Left - srcX) / srcWidth
         .Width = (srcRect.Right - srcX) / srcWidth
@@ -1745,7 +1742,7 @@ End Function
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
 ' from the source coordinate space to the destination coordinate space.
-Private Function GetDstRectFromSrcRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
+Private Function GetDstRectFromSrcRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
     
     If (srcWidth <> 0#) And (srcHeight <> 0#) Then
         
@@ -1783,8 +1780,8 @@ Private Sub Class_Initialize()
     Set m_tmpDIB = New pdDIB
     Set m_Blender = New pdPixelBlender
     
-    ReDim m_PlgPoints(0 To 3) As POINTFLOAT
-    ReDim m_PlgPointsDst(0 To 3) As POINTFLOAT
+    ReDim m_PlgPoints(0 To 3) As PointFloat
+    ReDim m_PlgPointsDst(0 To 3) As PointFloat
 End Sub
 
 Private Sub Class_Terminate()
