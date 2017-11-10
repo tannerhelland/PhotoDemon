@@ -994,14 +994,11 @@ End Sub
 'Returns: TRUE if allowed to proceed, FALSE otherwise.  If FALSE is returned, you *must* halt the current operation.
 Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True) As Boolean
     
-    'The vast majority of actions either...
-    ' 1) Don't require forcible rasterization, or...
-    ' 2) Are allowed to rasterize to keep the user happy.
-    '
     'Assume that the user is more likely to proceed than cancel, and we will deal with cancellation states as they arise.
     CheckRasterizeRequirements = True
     
-    'TODO!  Migrate all relevant actions to XML params
+    'Some functions require us to parse parameters for additional details; for example, "merge layers" requires us to
+    ' check the involved layers to see if they are vector or text layers.
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -1535,11 +1532,9 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
         Process_EffectsMenu = True
         
-    'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
-    ElseIf Strings.StringsEqual(processID, "Chroma blur", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormChromaBlur Else FormChromaBlur.ChromaBlurFilter processParameters
-        Process_EffectsMenu = True
-        
+    'TODO: Grid blur (and previously, chroma blur) livid here.  Chroma blur has been removed because I'm going to
+    ' re-implement it in LAB space.  Grid blur still exists but is not accessible to the user anywhere; it is going
+    ' to be moved to an eventual texture menu, and I don't want to forget about it.
     ElseIf Strings.StringsEqual(processID, "Grid blur", True) Then
         FilterGridBlur
         Process_EffectsMenu = True

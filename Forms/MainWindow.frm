@@ -3126,10 +3126,6 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
             
         'Currently unused:
         
-        'Chroma blur
-        'Case X
-            'Process "Chroma blur", True
-            
         'Grid blur
         'Case X
         '    Process "Grid blur", , , UNDO_LAYER
