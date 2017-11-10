@@ -323,7 +323,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             Dim dibX As Single, dibY As Single
             GetDIBXYFromMouseXY x, y, dibX, dibY, True
             
-            Dim cRGBA As RGBQUAD
+            Dim cRGBA As RGBQuad
             If m_OriginalImage.GetPixelRGBQuad(dibX, dibY, cRGBA) Then
                 m_curColor = RGB(cRGBA.Red, cRGBA.Green, cRGBA.Blue)
                 If AllowColorSelection Then m_colorJustClicked = 1
@@ -596,7 +596,7 @@ Private Sub UserControl_Show()
         If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
             If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
                 If pdImages(g_CurrentImage).IsSelectionActive Then
-                    Dim selBounds As RECTF
+                    Dim selBounds As RectF
                     selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
                     m_SrcImageWidth = selBounds.Width
                     m_SrcImageHeight = selBounds.Height
@@ -609,11 +609,6 @@ Private Sub UserControl_Show()
         
         CalculateScrollMaxMin
         
-        'TODO: migrate this to LittleCMS
-        'Enable color management
-        'AssignDefaultColorProfileToObject picPreview.hWnd, picPreview.hDC
-        'TurnOnColorManagementForDC picPreview.hDC
-    
     End If
     
     'Ensure the control is redrawn at least once

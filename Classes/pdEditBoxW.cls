@@ -27,11 +27,10 @@ Attribute VB_Exposed = False
 'A few additional notes on this edit box implementation:
 '
 ' 1) I deliberately do not expose all text box properties (just the ones most relevant to PD).
-' 2) Focus is currently problematic.  A fix is in-progress.  TODO!
-' 3) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not,
+' 2) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not,
 '    any parent VB window will eat control keypresses, because it doesn't know about windows created via WAPI.)
-' 4) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  Avoid 'em.
-' 5) This class relies on a number of functions in the UserControls module, such as sharing GDI brushes and
+' 3) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  Avoid 'em.
+' 4) This class relies on a number of functions in the UserControls module, such as sharing GDI brushes and
 '    fonts between all pdEditBoxW instances (to reduce GDI object count).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own

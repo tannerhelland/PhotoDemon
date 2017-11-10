@@ -367,11 +367,6 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
-    Dim v As Long, vFloat As Double
-    
-    Dim rHighlight As Double, gHighlight As Double, bHighlight As Double
-    Dim rShadow As Double, gShadow As Double, bShadow As Double
-    Dim thisGradient As Double
     
     Const ONE_DIV_255 As Double = 1# / 255#
     finalX = finalX * 4

@@ -166,7 +166,6 @@ Friend Function GetDouble(ByVal paramName As String, Optional ByVal defaultRetur
 End Function
 
 Friend Function GetString(ByRef paramName As String, Optional ByVal defaultReturn As String = vbNullString, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As String
-    Dim paramValue As String
     If (Not GetParamValue(paramName, GetString, nameGuaranteedXMLSafe)) Then GetString = defaultReturn
 End Function
 

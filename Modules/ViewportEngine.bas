@@ -73,9 +73,6 @@ Private m_LastPOI As PD_PointOfInterest
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
 '
-'As part of the buffer flip, this stage will also activate and apply color management to the completed front buffer.
-' (Still TODO is fixing the canvas to not rely on AutoRedraw, which will spare us having to re-activate color management on every draw.)
-'
 'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied, it will forward this to any
 ' UI functions that accept POI identifiers.  (Because the viewport is agnostic to underlying UI complexities, by design, it is up to
 ' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
@@ -200,7 +197,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             End If
             
             'Retrieve a copy of the intersected viewport rect; subsequent rendering ops may use this to optimize their operations
-            Dim viewportIntersectRect As RECTF
+            Dim viewportIntersectRect As RectF
             srcImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRect
             
             '*Now* is when we want to apply color management to the front buffer.  (For performance reasons, UI elements drawn atop
@@ -257,7 +254,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         ' match the target viewport settings.
         
         'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
-        Dim imageRect_CanvasCoords As RECTF, canvasRect_ImageCoords As RECTF, canvasRect_ActualPixels As RECTF
+        Dim imageRect_CanvasCoords As RectF, canvasRect_ImageCoords As RectF, canvasRect_ActualPixels As RectF
         With srcImage.ImgViewport
             .GetCanvasRectActualPixels canvasRect_ActualPixels
             .GetCanvasRectImageCoords canvasRect_ImageCoords
@@ -294,7 +291,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         'Translate the image rect (ImageRect_CanvasCoords) by the scroll bar values (which can be zero; that's fine).
         ' Remember that ImageRect_CanvasCoords gives us the pixel values of where the image appears on the canvas,
         ' when the scroll bars are at (0, 0).
-        Dim translatedImageRect As RECTF
+        Dim translatedImageRect As RectF
         With translatedImageRect
             .Left = imageRect_CanvasCoords.Left - xScroll_Canvas
             .Top = imageRect_CanvasCoords.Top - yScroll_Canvas
@@ -308,7 +305,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         'We now know where the full image lies, with zoom applied, relative to the canvas coordinate space.  Think of the canvas as
         ' a tiny window, and the image as a huge poster behind the window.  What we're going to do now is find the intersect rect
         ' between the window rect (which is easy - just the size of the canvas itself) and the image rect we've now calculated.
-        Dim viewportRect As RECTF
+        Dim viewportRect As RectF
         srcImage.ImgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, canvasRect_ActualPixels, translatedImageRect)
         
         If srcImage.ImgViewport.GetIntersectState Then
@@ -329,7 +326,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
             Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, viewportRect.Left, viewportRect.Top, srcLeft, srcTop, False
             
             'Width and height are easy - just the width/height of the viewport, divided by the current zoom!
-            Dim srcRectF As RECTF
+            Dim srcRectF As RectF
             srcRectF.Left = srcLeft
             srcRectF.Top = srcTop
             srcRectF.Width = viewportRect.Width / m_ZoomRatio
@@ -498,7 +495,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             'In almost all cases, the width/height of the rect is calculated first, and the top/left comes later.
             
             'First is the image, translated to the canvas coordinate space (e.g. multiplied by zoom).
-            Dim imageRect_CanvasCoords As RECTF
+            Dim imageRect_CanvasCoords As RectF
             With imageRect_CanvasCoords
                 .Width = (srcImage.Width * m_ZoomRatio)
                 .Height = (srcImage.Height * m_ZoomRatio)
@@ -510,7 +507,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             
             'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is responsible for determining this, as it must
             ' account for the positioning of scroll bars, a status bar, rulers, and whatever else the user has enabled.
-            Dim canvasRect_ActualPixels As RECTF
+            Dim canvasRect_ActualPixels As RectF
             With canvasRect_ActualPixels
                 .Left = 0
                 .Top = 0
@@ -519,7 +516,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             End With
             
             'While here, we want to calculate a second rect for the canvas: its size, in image coordinates.
-            Dim canvasRect_ImageCoords As RECTF
+            Dim canvasRect_ImageCoords As RectF
             With canvasRect_ImageCoords
                 .Left = 0
                 .Top = 0

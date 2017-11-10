@@ -104,7 +104,6 @@ Private Declare Function GetGlyphOutline Lib "gdi32" Alias "GetGlyphOutlineW" (B
 
 'This type is the minimum amount of data required to properly store and render a given glyph outline.  The pd2DPath instance
 ' will be filled with a corresponding GDI+ GraphicsPath, assuming translation was successful.
-' (TODO: trim unneeded data from this struct, as we've replaced various pieces of GDI data with Uniscribe.)
 Private Type pdGlyphOutline
     glyphIndex As Long              'Index of the current glyph inside this font.  This is not guaranteed to have a 1:1 mapping to character codes!
                                     ' Note also that PD no longer stores character code values, as they are not relevant during rendering.
@@ -417,7 +416,7 @@ Private Function GetRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer(
     ggoReturn = GetGlyphOutline(m_tmpDIB.GetDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
     
     'Per MSDN, successful queries return a value > 0
-    GetRawGlyphBuffer = CBool(ggoReturn > 0)
+    GetRawGlyphBuffer = (ggoReturn > 0)
     
 End Function
 
@@ -637,7 +636,7 @@ End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     'Initialize the destination path as necessary
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
@@ -809,7 +808,7 @@ End Function
 
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes from Uniscribe;
 ' this function is primarily responsible for line breaks, and any PD-specific positioning changes (e.g. modified character spacing).
-Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pd2DPath) As Boolean
+Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pd2DPath) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, glyphCheck As Long
@@ -1328,7 +1327,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     '
     'Also, this function has manually marked the last usable (e.g. non-whitespace) glyph on each line, so we can ignore trailing whitespace
     ' when applying underline/strikeout.
-    Dim underlineRect As RECTF, strikeoutRect As RECTF
+    Dim underlineRect As RectF, strikeoutRect As RectF
     
     If m_StyleUnderline Then
         
@@ -1467,11 +1466,9 @@ End Sub
 
 'Return a copy of a path handle for an assembled glyph.  Returns 0 if no path data exists.  Note that 0 is valid output,
 ' as whitespace characters do not have glyphs (for most fonts, anyway).
-'
-'TODO: fix this function to correctly map between glyph outlines and glyphs themselves!
 Public Function GetGlyphPathHandle(ByVal glyphIndex As Long) As Long
     
-    If Not m_GlyphOutlines(glyphIndex).glyphPath Is Nothing Then
+    If (Not m_GlyphOutlines(glyphIndex).glyphPath Is Nothing) Then
         GetGlyphPathHandle = m_GlyphOutlines(glyphIndex).glyphPath.GetHandle
     Else
         GetGlyphPathHandle = 0

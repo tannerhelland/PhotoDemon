@@ -42,7 +42,7 @@ Private m_Permutation() As Byte
 ' no obvious corollary in VB6).
 Private m_PermMod12() As Byte
 Private Const F2 As Double = 0.366025404        '0.5*(Math.sqrt(3.0)-1.0)
-Private Const G2 As Double = 0.211324865        '(3.0-Math.sqrt(3.0))/6.0
+Private Const g2 As Double = 0.211324865        '(3.0-Math.sqrt(3.0))/6.0
 Private Const F3 As Double = 0.333333333333333  '1.0/3.0
 Private Const G3 As Double = 0.166666666666667  '1.0/6.0
 Private Const F4 As Double = 0.309016994        '(Math.sqrt(5.0)-1.0)/4.0
@@ -123,7 +123,7 @@ Private Function PerlinGrad(ByVal hash As Long, ByVal x As Double, ByVal y As Do
     Dim h As Long
     h = hash And 15
 
-    Dim u As Double, v As Double, t As Double
+    Dim u As Double, v As Double
     If (h < 8) Then u = x Else u = y
     If (h < 4) Then v = y Else If (h = 12) Or (h = 14) Then v = x Else v = z
     If (h And 1) = 0 Then
@@ -147,7 +147,7 @@ Friend Function SimplexNoise2d(ByVal xIn As Double, ByVal yIn As Double) As Doub
     j = Int(yIn + s)
     
     Dim t As Double
-    t = (i + j) * G2
+    t = (i + j) * g2
     
     'Unskew the cell origin back to (x, y) space, then calculate (x, y) distances from the cell origin
     Dim x0 As Double, y0 As Double
@@ -175,12 +175,12 @@ Friend Function SimplexNoise2d(ByVal xIn As Double, ByVal yIn As Double) As Doub
     Dim x1 As Double, y1 As Double, x2 As Double, y2 As Double
     
     'Offsets for middle corner in (x,y) unskewed coords
-    x1 = x0 - i1 + G2
-    y1 = y0 - j1 + G2
+    x1 = x0 - i1 + g2
+    y1 = y0 - j1 + g2
     
     'Offsets for last corner in (x,y) unskewed coords
-    x2 = x0 - 1# + 2# * G2
-    y2 = y0 - 1# + 2# * G2
+    x2 = x0 - 1# + 2# * g2
+    y2 = y0 - 1# + 2# * g2
 
     'Work out the hashed gradient indices of the three simplex corners
     Dim ii As Long, jj As Long

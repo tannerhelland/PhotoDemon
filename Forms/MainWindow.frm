@@ -3342,7 +3342,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         Case 4
             'TODO: figure out Undo handling for "Repeat last action"
             Process "Repeat last action", False, , UNDO_Image
-                
+            
         'Fade...
         Case 5
             Process "Fade", True

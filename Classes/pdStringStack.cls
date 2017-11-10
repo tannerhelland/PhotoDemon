@@ -49,7 +49,7 @@ End Type
 
 Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
 Private m_qsStack() As QSStack
-Private m_qsStackSize As Long, m_qsStackPtr As Long
+Private m_qsStackPtr As Long
 
 'Add a string to the stack.  Return value is the index of the added location (which can be used to infer the number of strings
 ' in the stack, obviously).

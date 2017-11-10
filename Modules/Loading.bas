@@ -758,9 +758,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
         End If
     End If
     
-    'Previously, the current load text would be displayed to the user at this point.  As of version 6.6, this step is skipped in favor
-    ' of a more minimalist splash screen.
-    ' TODO BY 6.8's RELEASE: revisit this function entirely, and consider removing it if applicable
+    'We no longer display the actual loading text to the user; instead, they just get a small progress bar update.
     If FormSplash.Visible Then FormSplash.UpdateLoadProgress loadProgress
     
     loadProgress = loadProgress + 1

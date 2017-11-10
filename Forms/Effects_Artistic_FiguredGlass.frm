@@ -277,7 +277,7 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     ' "Perlin" nomenclature, but we have since moved onto better noise generation methods.)
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
-    Dim multAvg As Double, xCache As Double
+    Dim multAvg As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -416,10 +416,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub OptInterpolate_Click(Index As Integer)
-    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()

@@ -300,7 +300,7 @@ Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcString
 Private Declare Function GdipGetStringFormatAlign Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstAlignment As GdiPlusStringAlignment) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
-Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RECTF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RECTF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As Long
+Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RectF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RectF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As Long
 
 'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
@@ -308,7 +308,7 @@ Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GdiPlusSmoothingMode) As Long
 
 'GDI+ Render functions
-Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
+Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RectF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Long
 Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcX As Single, ByVal srcW As Single, ByVal srcWidth As Single, ByVal srcHeight As Single) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Long
@@ -570,7 +570,7 @@ Public Sub SetRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
     m_RenderingEngine = newEngine
 End Sub
 
-'TODO: XML get/set functions for getting/setting all parameters at once
+'XML get/set functions for getting/setting all parameters at once
 Public Function GetAllFontSettingsAsXML() As String
 
     'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
@@ -1446,7 +1446,7 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     gdipBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(crColor, 255)
     
     'Convert the input rect to a RECTF
-    Dim boundingRect As RECTF
+    Dim boundingRect As RectF
     With boundingRect
         .Left = x1
         .Top = y1
@@ -1500,7 +1500,7 @@ End Function
 
 'Use GdipMeasureString to return the bounding box of a given string and assembled GDI+ objects.  This is helpful for knowing how the string
 ' fits into the desired target rect.
-Private Function GetStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString As String, ByRef srcLayoutRect As RECTF, ByRef dstBoundRect As RECTF) As Boolean
+Private Function GetStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString As String, ByRef srcLayoutRect As RectF, ByRef dstBoundRect As RectF) As Boolean
 
     If (m_GDIPlusFont <> 0) Then
         
@@ -1525,7 +1525,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     dstGraphics = GDI_Plus.GetGDIPlusGraphicsFromDC(dstDIB.GetDIBDC, False)
     
     'Next, convert the input rect to a RECTF
-    Dim boundingRect As RECTF
+    Dim boundingRect As RectF
     With boundingRect
         .Left = x1
         .Top = y1
@@ -1668,7 +1668,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
-        Dim exactTextBounds As RECTF
+        Dim exactTextBounds As RectF
         exactTextBounds = finalTextPath.GetPathBoundariesF
         
         Dim gdipReturn As Long
@@ -1957,13 +1957,13 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         
     'Create a local array and point it at the pixel data of the target image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array and point it as the pixel data of our temporary image
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, m_TmpGdiDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     

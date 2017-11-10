@@ -370,14 +370,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     UpdateCursor x, y
     
-    'TODO 6.8: what to do if the mouse button is down...?  Possibly just exit this sub?
-    
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
     mouseHoverIndex = IsMouseOverButton(x, y)
     
     'Only refresh the control if the hover value has changed
-    If mouseHoverIndex <> m_ButtonHoverIndex Then
+    If (mouseHoverIndex <> m_ButtonHoverIndex) Then
     
         m_ButtonHoverIndex = mouseHoverIndex
         
@@ -385,13 +383,13 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         SynchronizeToolTipToIndex m_ButtonHoverIndex
         
         'If the mouse is not currently hovering a button, set a default arrow cursor and exit
-        If mouseHoverIndex = -1 Then
+        If (mouseHoverIndex = -1) Then
             ucSupport.RequestCursor IDC_DEFAULT
-            RedrawBackBuffer
         Else
             ucSupport.RequestCursor IDC_HAND
-            RedrawBackBuffer
         End If
+        
+        RedrawBackBuffer
     
     End If
     

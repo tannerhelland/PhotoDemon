@@ -226,8 +226,6 @@ Friend Sub UpdateUI_NonEmptyList()
             Next i
         End If
         
-        'TODO: where to handle these menu captions?
-        
         'Ensure the special menus at the bottom of the Recent Files list are available
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuLoadAllMRU.Visible = True

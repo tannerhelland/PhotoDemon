@@ -305,8 +305,6 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     UpdateCursor x, y
     
-    'TODO 6.8: what to do if the mouse button is down...?  Possibly just exit this sub?
-    
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
     mouseHoverIndex = IsMouseOverButton(x, y)
@@ -586,7 +584,7 @@ Private Sub RedrawBackBuffer()
     
     If MainModule.IsProgramRunning() Then
         
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         Dim i As Long
         
         'Because this control is owner-drawn, our owner is responsible for drawing the individual buttons.

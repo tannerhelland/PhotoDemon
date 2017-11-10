@@ -1477,9 +1477,8 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
                     Dim tagChunk As String
                     tagChunk = Mid$(m_DatabaseString, tagStart, (tagEnd - tagStart) + 6)
                     
-                    'For convenience, we currently store the entire chunk for debug purposes;
-                    ' TODO 7.0: see if we are ready to abandon this!
-                    dstMetadata.TagDebugData = tagChunk
+                    ''During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
+                    'dstMetadata.TagDebugData = tagChunk
                     
                     If ParseTagDatabaseEntry(dstMetadata, tagChunk) Then
                         'To prevent future passes from hitting the database again, set the relevant shortcut flag
@@ -1971,7 +1970,8 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
             If (Not .DB_StackIDs Is Nothing) Then m_ParseXML.AddParam "PDMD_StackIDs", .DB_StackIDs.SerializeStackToSingleString(), True
             If (Not .DB_StackValues Is Nothing) Then m_ParseXML.AddParam "PDMD_StackValues", .DB_StackValues.SerializeStackToSingleString(), True
         End If
-        m_ParseXML.AddParam "PDMD_TagDebugData", .TagDebugData, True
+        'During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
+        'm_ParseXML.AddParam "PDMD_TagDebugData", .TagDebugData, True
     End With
     
     SerializeTagToString = m_ParseXML.GetParamString()
@@ -2041,7 +2041,10 @@ Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMe
                 .DB_StackIDs.RecreateStackFromSerializedString m_ParseXML.GetString("PDMD_StackIDs")
                 .DB_StackValues.RecreateStackFromSerializedString m_ParseXML.GetString("PDMD_StackValues")
             End If
-            .TagDebugData = m_ParseXML.GetString("PDMD_TagDebugData", , True)
+            
+            'During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
+            '.TagDebugData = m_ParseXML.GetString("PDMD_TagDebugData", , True)
+            
         End With
         
     End If

@@ -18,7 +18,7 @@ Attribute VB_Name = "Colors"
 Option Explicit
 
 'PhotoDemon tries to support a variety of textual color representations.  Not all of these are implemented at present.
-' (TODO 6.8: get all formats working)
+' (TODO: get all formats working)
 Public Enum PD_COLOR_STRING
     ColorInvalid = -1
     ColorUnknown = 0
@@ -780,9 +780,9 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     End If
     '/End hex validation
     
-    'TODO 6.8: if the color is still unkown, continue checking other color possibilities
+    'TODO: if the color is still unkown, continue checking other color possibilities
     If (dstColorType = ColorUnknown) Then
-        'TODO: additional checks
+        '???
     End If
     
     'If we've attempted to match all existing color types without success, return failure
