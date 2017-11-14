@@ -34,6 +34,15 @@ Begin VB.Form FormScreenCapture
       Width           =   5895
       _ExtentX        =   0
       _ExtentY        =   0
+      Begin PhotoDemon.pdButton cmdResetList 
+         Height          =   615
+         Left            =   5175
+         TabIndex        =   8
+         Top             =   3150
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   1085
+      End
       Begin PhotoDemon.pdListBox lstWindows 
          Height          =   3135
          Left            =   120
@@ -50,18 +59,18 @@ Begin VB.Form FormScreenCapture
          Left            =   240
          TabIndex        =   7
          Top             =   3240
-         Width           =   5475
-         _ExtentX        =   9657
+         Width           =   4635
+         _ExtentX        =   8176
          _ExtentY        =   582
          Caption         =   "include window decorations"
       End
       Begin PhotoDemon.pdLabel lblMinimizedWarning 
          Height          =   615
          Left            =   240
-         Top             =   3600
+         Top             =   3660
          Visible         =   0   'False
-         Width           =   5535
-         _ExtentX        =   9763
+         Width           =   4695
+         _ExtentX        =   8281
          _ExtentY        =   1085
          Alignment       =   2
          Caption         =   ""
@@ -228,8 +237,12 @@ Private Sub cmdBarMini_OKClick()
     End If
         
     Me.Visible = False
-    Process "Screen capture", False, cParams.GetParamString, UNDO_NOTHING
+    Process "Screen capture", False, cParams.GetParamString, UNDO_Nothing
     
+End Sub
+
+Private Sub cmdResetList_Click()
+    FillListWithOpenApplications lstWindows
 End Sub
 
 Private Sub Form_Load()
@@ -238,7 +251,9 @@ Private Sub Form_Load()
     btsSource.AddItem "specific program", 1
     btsSource.ListIndex = 0
     UpdateVisibleContainer
-            
+    
+    cmdResetList.AssignImage "generic_reset", , Interface.FixDPI(24), Interface.FixDPI(24)
+    
     'Populate the "window is minimized" warning
     lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
     If Not (g_Themer Is Nothing) Then
@@ -250,8 +265,7 @@ Private Sub Form_Load()
     
     lblSecurity.Caption = g_Language.TranslateMessage("Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.")
     
-    'Retrieve a list of all currently open programs.  Many thanks to Karl E Peterson for help with this topic, via:
-    ' http://vb.mvps.org/articles/ap199902.pdf
+    'Retrieve a list of all running programs (with some caveats; see the function for details)
     FillListWithOpenApplications lstWindows
     
     'Apply translations and visual themes
@@ -266,12 +280,13 @@ Private Sub Form_Load()
     
 End Sub
 
-'Given a list box, fill it with a list of open applications.  The .ItemData property will be filled with
-' each window's hWnd.
-Private Function FillListWithOpenApplications(ByVal dstListbox As pdListBox) As Long
+'Given a list box, fill it with a list of open applications.  Each application's name and hWnd is also cached in a
+' pdStringStack object.
+Private Function FillListWithOpenApplications(ByRef dstListbox As pdListBox) As Long
     
     dstListbox.Clear
-    Call EnumWindows(AddressOf ScreenCapture.EnumWindowsProc, 0&)
+    dstListbox.SetAutomaticRedraws False
+    EnumWindows AddressOf ScreenCapture.EnumWindowsProc, 0&
     
     'Retrieve the list of window names and hWnds
     ScreenCapture.GetAllWindowNamesAndHWnds m_WindowNames, m_WindowHWnds
@@ -282,6 +297,7 @@ Private Function FillListWithOpenApplications(ByVal dstListbox As pdListBox) As 
         dstListbox.AddItem m_WindowNames.GetString(i), i
     Next i
     
+    dstListbox.SetAutomaticRedraws True, True
     FillListWithOpenApplications = dstListbox.ListCount
     
 End Function
