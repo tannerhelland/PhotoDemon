@@ -52,10 +52,10 @@ Private Type WindowPlacement
     rcNormalPosition As RectL
 End Type
  
-Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, ByRef lpwndpl As WindowPlacement) As Long
+Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, ByRef lpWndPl As WindowPlacement) As Long
 
 'Constant used to determine window owner.
-Private Const GWL_HWNDPARENT As Long = (-8)
+Private Const GWL_HWNDPARENT As Long = -8&
 
 'Local string stacks used to store open window names, and open window hWnds
 Private m_WindowNames As pdStringStack
@@ -306,9 +306,6 @@ End Sub
 'The EnumWindows API call will call this function repeatedly until it exhausts the full list of open windows.
 ' We apply additional checks to the windows it returns to make sure there are no unwanted additions (hidden windows, etc).
 Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Long
-
-    Static curWindowText As String
-    Static nRet As Long
     
     'Only return visible windows
     If (IsWindowVisible(hWnd) <> 0) Then
@@ -328,13 +325,14 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                 If ((tmpRect.x2 - tmpRect.x1) > 0) And ((tmpRect.y2 - tmpRect.y1) > 0) Then
                     
                     'Retrieve the window's caption
+                    Dim curWindowText As String, sizeOfName As Long
                     curWindowText = Space$(256)
-                    nRet = GetWindowText(hWnd, StrPtr(curWindowText), Len(curWindowText))
+                    sizeOfName = GetWindowText(hWnd, StrPtr(curWindowText), Len(curWindowText))
                     
                     'If window text was obtained, trim it and add this entry to the list
-                    If (nRet <> 0) Then
+                    If (sizeOfName <> 0) Then
                     
-                        curWindowText = Left$(curWindowText, nRet)
+                        curWindowText = Left$(curWindowText, sizeOfName)
                         
                         If (m_WindowNames Is Nothing) Then Set m_WindowNames = New pdStringStack
                         If (m_WindowHWnds Is Nothing) Then Set m_WindowHWnds = New pdStringStack
@@ -349,6 +347,8 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                             okayToAdd = Strings.StringsNotEqual(curWindowText, "Windows Shell Experience Host", True)
                         End If
                         
+                        If okayToAdd Then okayToAdd = Strings.StringsNotEqual(Trim$(curWindowText), Trim$(g_Language.TranslateMessage("Screenshot options")), True)
+                        
                         If okayToAdd Then
                             m_WindowNames.AddString curWindowText
                             m_WindowHWnds.AddString CStr(hWnd)
@@ -362,6 +362,6 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
     End If
     
     'Return True, which instructs the function to continue enumerating window entries.
-    EnumWindowsProc = 1
+    EnumWindowsProc = 1&
 
 End Function
