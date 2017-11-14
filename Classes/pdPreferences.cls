@@ -370,6 +370,7 @@ Friend Function InitializePaths() As Boolean
     End If
     
     #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "PD base folder is " & m_ProgramPath
         pdDebug.LogAction "PD data folder points at " & m_DataPath
     #End If
     

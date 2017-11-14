@@ -27,9 +27,6 @@ Attribute VB_Exposed = False
 ' this to track performance of PD's startup process(es), and the profiler results have been incredibly helpful at
 ' helping me has isolate and solve a number of perf issues during program initialization.
 '
-'Many thanks to Karl Petersen's "Measuring Optimizations for Classic VB" article (http://vb.mvps.org/articles/vsm20100518.pdf)
-' and accompanying "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which served as my inspiration for this project.
-'
 'Because this class is meant to be as simple to use as possible *from within PD*, I've added a number of PD-specific bits
 ' to it, like automatically using the program's known Debug folder for file output, and automatically generating filenames
 ' from report titles.  These PD-specific instances should be easy to strip out, but as with any class containing a "pd"
