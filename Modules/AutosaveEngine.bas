@@ -147,10 +147,9 @@ Public Sub InitializeAutosave()
                 End If
                 
             
-            'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report??
+            'There's not any AutoSave data worth recovering.  This is okay, as it means the unsafe shutdown
+            ' occurred without any images being loaded.  Do nothing.
             Else
-            
-                'TODO 7.0
             
             End If
         

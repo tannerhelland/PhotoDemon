@@ -785,7 +785,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
             
             ShowPDDialog vbModal, FormMetadata
         
-        'TODO 7.0: still raise the form, and allow the user to add their own metadata to the image
+        'TODO 7.2: still raise the form, and allow the user to add their own metadata to the image
         Else
             Message "No metadata available."
             PDMsgBox "This image does not contain any metadata.", vbInformation Or vbOKOnly, "No metadata available"
@@ -969,8 +969,11 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
             End If
                 
             'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
-            'TODO 7.0: see if this block is even necessary.  At present, we forcibly strip problematic metadata entries
-            ' from the source XML string, as a maximal precaution (see pdMetadata.RetrieveModifiedXMLString() for details).
+            '(NOTE: as of 7.0, this step is skipped.  To ensure removal, we forcibly strip problematic metadata entries
+            ' from the source XML string (see pdMetadata.RetrieveModifiedXMLString() for details).  This spares us from
+            ' needing to rely on ExifTool for the behavior, and similarly, if we request removal "just in case",
+            ' ExifTool is likely to spew a whole bunch of warnings, which we don't want - but I've left this code here
+            ' as an example, in case we need to someday reinstate it.
             'If tmpMetadata.TagMarkedForRemoval Then
             '    cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
             'End If

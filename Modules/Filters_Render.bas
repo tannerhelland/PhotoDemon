@@ -23,12 +23,12 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
     fxQuality = fxQuality - 1
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte, dstSA As SafeArray1D
-    dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
+    Dim dstImageData() As Long, dstSA As SafeArray1D
+    dstDIB.WrapLongArrayAroundScanline dstImageData, dstSA, 0
     
     Dim dibPtr As Long, dibStride As Long
-    dibPtr = dstSA.pvData
-    dibStride = dstSA.cElements
+    dibPtr = dstDIB.GetDIBPointer
+    dibStride = dstDIB.GetDIBStride
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -87,6 +87,23 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
         p2InvLookup(i) = 1# / (2 ^ i)
     Next i
     
+    'Generate a displacement lookup table.  Because we ignore alpha values at present, and clouds are always
+    ' produced as grayscale, we have a fixed set of possible output values.
+    Dim dispLookup() As Long
+    ReDim dispLookup(0 To 255) As Long
+    
+    Dim tmpRGBA As RGBQuad, dispFinal As Byte
+    
+    For i = 0 To 255
+        With tmpRGBA
+            .Red = i
+            .Green = i
+            .Blue = i
+            .Alpha = 255
+        End With
+        CopyMemory ByVal VarPtr(dispLookup(i)), ByVal VarPtr(tmpRGBA), 4&
+    Next i
+    
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
         dstSA.pvData = dibPtr + dibStride * y
@@ -105,17 +122,10 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
         
         'Convert the calculated noise value to RGB range and cache it
         pDisplace = 127 + (pNoiseCache * 127#)
-        If (pDisplace > 255) Then
-            pDisplace = 255
-        ElseIf (pDisplace < 0) Then
-            pDisplace = 0
-        End If
+        If (pDisplace > 255) Then pDisplace = 255 Else If (pDisplace < 0) Then pDisplace = 0
         
-        'TODO: look at wrapping a Long-type array, and writing all 4 bytes at once
-        dstImageData(x * 4) = pDisplace
-        dstImageData(x * 4 + 1) = pDisplace
-        dstImageData(x * 4 + 2) = pDisplace
-        dstImageData(x * 4 + 3) = 255
+        'Write all RGBA bytes at once
+        dstImageData(x) = dispLookup(pDisplace)
           
     Next x
         If (Not suppressMessages) Then
@@ -127,7 +137,7 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
     Next y
     
     'tmpFogDIB now contains a grayscale representation of our fog data
-    dstDIB.UnwrapArrayFromDIB dstImageData
+    dstDIB.UnwrapLongArrayFromDIB dstImageData
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     GetCloudDIB = True

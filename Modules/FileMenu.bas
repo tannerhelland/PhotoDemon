@@ -326,12 +326,11 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
             
 End Function
 
-'TODO 7.0: review this function to make sure it works with the new save engine!
 'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to
 ' "most intuitively" implement this), and I've settled on the following:
 ' 1) Save the copy to the same folder as the current image (if available).  If it's not available, we have no choice but to
 '     prompt for a folder.
-' 2) Save the image in PDI format.
+' 2) Use PDI format (obviously).
 ' 3) Update the Recent Files list with the saved copy.  If we don't do this, the user has no way of knowing what save settings
 '     we've used (filename, location, etc)
 ' 4) Increment the filename automatically.  Saving a copy does not overwrite old copies.  This is important.
@@ -339,7 +338,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
 
     'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
     ' prompt.
-    If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
+    If (Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <= 0) Then
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
@@ -356,17 +355,14 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     'If we made it here, this image has been saved before.  That gives us a folder where we can place our lossless copies.
     Dim dstFilename As String, tmpPathString As String
     
-    'Determine the destination directory now
+    'Find out where this image's on-disk copy currently lives
     tmpPathString = Files.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
     
-    'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
-    ' available next.
+    'Next, determine a filename for our lossless copy.  This is currently calculated as the current filename,
+    ' auto-incremented to whatever number is available next, with ".pdi" slapped on the end.
     Dim tmpFilename As String
     tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    
-    'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety, with the PDI
-    ' file extension forcibly applied.
-    dstFilename = tmpPathString & IncrementFilename(tmpPathString, tmpFilename, "pdi") & "." & "pdi"
+    dstFilename = tmpPathString & IncrementFilename(tmpPathString, tmpFilename, "pdi") & ".pdi"
     
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
     Saving.BeginSaveProcess
@@ -375,21 +371,12 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     'At this point, it's safe to re-enable the main form and restore the default cursor
     Saving.EndSaveProcess
     
-    'MenuSaveLosslessCopy should only be true if the save was successful
+    'MenuSaveLosslessCopy will only be true if the save was successful; if it was, add this file to the MRU list.
     If MenuSaveLosslessCopy Then
-        
-        'Add this file to the MRU list
         g_RecentFiles.AddFileToList dstFilename, srcImage
-        
-        'Return SUCCESS!
-        MenuSaveLosslessCopy = True
-        
     Else
-        
         Message "Save canceled."
         PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Image save error"
-        MenuSaveLosslessCopy = False
-        
     End If
 
 End Function

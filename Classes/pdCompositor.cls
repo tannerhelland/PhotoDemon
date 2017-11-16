@@ -1664,7 +1664,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                 ' it's zoomed-out), but if I don't set that to TRUE, previewed paint strokes are very obviously offset by 0.5 pixels,
                 ' as noticed when releasing the mouse and the final layer merge operation occurs (causing the on-screen preview to shift).
                 ' This requires further study, but it will probably wait until post-7.0 when some other compositor projects are planned.
-                ' TODO 7.0: deal with comment above
+                ' TODO 7.2: deal with comment above
                 If fullCacheCreationRequired Then
                     GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, True, True
                 Else

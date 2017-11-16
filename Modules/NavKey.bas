@@ -129,7 +129,6 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
             
         End If
     
-    'TODO: figure out if we need to manually handle form hWnds here
     End If
     
 End Sub

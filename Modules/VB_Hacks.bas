@@ -328,7 +328,7 @@ End Sub
 Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToCompare As Long) As Boolean
     Dim bytesEqual As Long
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
-    MemCmp = CBool(bytesEqual = bytesToCompare)
+    MemCmp = (bytesEqual = bytesToCompare)
 End Function
 
 'PD sometimes wants to yield for asynchronous timers (we use pipes in a number of places to communicate with
