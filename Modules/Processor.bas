@@ -1532,7 +1532,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
         Process_EffectsMenu = True
         
-    'TODO: Grid blur (and previously, chroma blur) livid here.  Chroma blur has been removed because I'm going to
+    'TODO: Grid blur (and previously, chroma blur) lived here.  Chroma blur has been removed because I'm going to
     ' re-implement it in LAB space.  Grid blur still exists but is not accessible to the user anywhere; it is going
     ' to be moved to an eventual texture menu, and I don't want to forget about it.
     ElseIf Strings.StringsEqual(processID, "Grid blur", True) Then
@@ -2065,7 +2065,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'NOTE!  Some Image-menu actions have been removed in new versions of the programs.  If they exist inside macros, we don't want to
     ' raise any errors, so I've included their keywords here even though they are basically NOPs.
     
-    'TODO 7.0: reinstate auto-cropping
+    'TODO 7.2: reinstate auto-cropping
     ElseIf Strings.StringsEqual(processID, "Autocrop", True) Then
     '    AutocropImage
         Process_ImageMenu = True

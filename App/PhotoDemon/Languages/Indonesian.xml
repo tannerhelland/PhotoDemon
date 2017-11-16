@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.250</langversion>
+<langversion>6.6.251</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2275,7 +2275,12 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Menangkap Layar Lengkap.</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<phrase>
+<original>Screenshot options</original>
+<translation>pilihan screenshot</translation>
+</phrase>
+
+<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -11545,11 +11550,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
 <phrase>
-<original>Screenshot options</original>
-<translation>pilihan screenshot</translation>
-</phrase>
-
-<phrase>
 <original>currently available programs (listed by window title)</original>
 <translation></translation>
 </phrase>
@@ -11609,7 +11609,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Sila pilih yang lain.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15049,8 +15049,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

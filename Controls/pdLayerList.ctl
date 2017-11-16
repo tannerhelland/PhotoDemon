@@ -80,7 +80,7 @@ Attribute ucSupport.VB_VarHelpID = -1
 
 'Because this control supports captions, the main interaction area (list + scrollbar) may be shifted slightly downward.
 ' The usable space of both objects is defined by this rect.
-Private m_InteractiveRect As RECTF
+Private m_InteractiveRect As RectF
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -177,11 +177,8 @@ End Sub
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
     Dim scrollVisible As Boolean
-    scrollVisible = CBool(newMax <> 0)
-    
-    If (vScroll.Visible <> scrollVisible) Then
-        vScroll.Visible = scrollVisible
-    End If
+    scrollVisible = (newMax <> 0)
+    If (vScroll.Visible <> scrollVisible) Then vScroll.Visible = scrollVisible
     
     If (newMax >= 0) Then vScroll.Max = newMax
     'TODO!

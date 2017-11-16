@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.11</langversion>
+<langversion>1.0.12</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2282,7 +2282,12 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 <translation>स्क्रीन कैप्चर पूर्ण</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<phrase>
+<original>Screenshot options</original>
+<translation>स्क्रीनशॉट विकल्प</translation>
+</phrase>
+
+<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -11548,11 +11553,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
 <phrase>
-<original>Screenshot options</original>
-<translation>स्क्रीनशॉट विकल्प</translation>
-</phrase>
-
-<phrase>
 <original>currently available programs (listed by window title)</original>
 <translation>वर्तमान में उपलब्ध प्रोग्राम (विंडो शीर्षक द्वारा सूचीबद्ध)</translation>
 </phrase>
@@ -11612,7 +11612,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>कृपया कोई दूसरा चुनें</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15055,8 +15055,8 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

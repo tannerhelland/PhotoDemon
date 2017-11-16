@@ -1200,8 +1200,7 @@ Private Sub cmdBarMini_OKClick()
     FormMain.Enabled = True
     FormMain.UpdateMainLayout
         
-    'TODO: the image tabstrip should be handled by the program canvas as of 7.0's release.  See if we can remove this line.
-    Interface.RequestTabstripRedraw
+    'TODO: color management changes need to be propagated here; otherwise, they won't trigger until the program is restarted.
     
     SetProgBarVal 0
     ReleaseProgressBar

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский (Russian)</langname>
-<langversion>6.8.3291</langversion>
+<langversion>6.8.3292</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2285,7 +2285,12 @@ In Тем временем, пожалуйста, попытайтесь сох�
 <translation>Захват экрана в комплекте.</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<phrase>
+<original>Screenshot options</original>
+<translation>Скриншот опции</translation>
+</phrase>
+
+<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -11552,11 +11557,6 @@ I искренние извинения за неудобства, но, к со
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
 <phrase>
-<original>Screenshot options</original>
-<translation>Скриншот опции</translation>
-</phrase>
-
-<phrase>
 <original>currently available programs (listed by window title)</original>
 <translation>доступные в настоящее время программы (перечислены в заголовке окна)</translation>
 </phrase>
@@ -11616,7 +11616,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Пожалуйста, выберите другой.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15060,8 +15060,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

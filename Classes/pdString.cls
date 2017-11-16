@@ -80,7 +80,9 @@ End Sub
 
 Friend Sub Append(ByRef srcString As String)
     
-    'Make sure we've got room to append
+    'Make sure we've got room to append.
+    ' NOTE: if performance is crucial, in-line the If statement from EnsureCapcity, like so:
+    ' If (m_Length + Len(srcString)) > Len(m_Buffer) Then EnsureCapacity m_Length + Len(srcString)
     EnsureCapacity m_Length + Len(srcString)
     
     'Copy the string into place, then update our internal length tracker

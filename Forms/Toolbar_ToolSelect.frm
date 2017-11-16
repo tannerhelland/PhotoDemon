@@ -1123,6 +1123,7 @@ Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     Next i
     
     'TODO: notify the new toolbox manager of this change
+    'Toolboxes.FillDefaultToolboxValues??
     'g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
     
     'Reflow the interface as requested

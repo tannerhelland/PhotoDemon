@@ -1629,20 +1629,16 @@ Private Sub UserControl_Show()
         
         'Convert all labels to the current interface font
         If (Len(g_InterfaceFont) = 0) Then
-            Debug.Print "wrong font!!!!!!!!"
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING: pdCanvas.UserControl_Show had to make a premature decision about g_InterfaceFont"
+            #End If
             g_InterfaceFont = "Segoe UI"
         End If
-        
-        'Request an update against the current theme
-        ' TODO: do we really need to do this manually, or is PD's central theme function smart enough to do this on its own?
-        'Me.UpdateAgainstCurrentTheme
         
 CanvasShowError:
         
     End If
     
-    Exit Sub
-
 End Sub
 
 'At present, the only component of the canvas that saves preferences is the image tabstrip

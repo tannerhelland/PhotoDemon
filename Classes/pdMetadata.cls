@@ -838,7 +838,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
                     #End If
                     
-                    Filters_Layers.GammaCorrectDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma, True
+                    Filters_Layers.FastGammaDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma
                     
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "Custom cHRM data analysis complete."

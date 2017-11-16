@@ -2904,108 +2904,66 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     
 End Sub
 
-'Quickly modify a DIB's gamma values.  A single value is used to correct all channels.
-'TODO: optimize to a proper scanline-based approach
-Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+'Quickly modify a DIB's gamma values.  A single value is used to correct all channels.  Only 32-bpp DIBs are supported.
+' NOTE: progress updated are not provided, by design; the goal here is to be as fast as possible!
+Public Function FastGammaDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double) As Long
     
-    'Make sure the supplied gamma is valid
-    If newGamma <= 0 Then
-        
+    'Ensure gamma is valid; bad crashes will occur otherwise
+    If (newGamma <= 0#) Or (newGamma >= 100#) Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Invalid gamma requested in GammaCorrectDIB.  Gamma correction was not applied."
+            pdDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
         #End If
-        
-        GammaCorrectDIB = 0
+        FastGammaDIB = 0
         Exit Function
-        
     End If
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+    If srcDIB.GetAlphaPremultiplication Then srcDIB.SetAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    Dim imgPtr As Long, imgStride As Long
+    imgPtr = srcDIB.GetDIBPointer()
+    imgStride = srcDIB.GetDIBStride
+    
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    srcDIB.WrapArrayAroundScanline imageData, tmpSA, 0&
+    
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color values
-    Dim r As Long, g As Long, b As Long
     
     'Look-up tables are the easiest way to handle this type of conversion
     Dim pixelLookup() As Byte
     ReDim pixelLookup(0 To 255) As Byte
     
     Dim tmpVal As Double
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    newGamma = 1# / newGamma
     
     For x = 0 To 255
-    
-        tmpVal = x / 255
-        tmpVal = tmpVal ^ (1# / newGamma)
-        tmpVal = tmpVal * 255
-        
-        If tmpVal > 255 Then tmpVal = 255
-        If tmpVal < 0 Then tmpVal = 0
-        
+        tmpVal = (x * ONE_DIV_255) ^ newGamma
+        tmpVal = tmpVal * 255#
+        If (tmpVal > 255#) Then tmpVal = 255#
+        If (tmpVal < 0#) Then tmpVal = 0#
         pixelLookup(x) = tmpVal
-        
     Next x
     
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-            
-        'Replace source pixel color values with lookup table values
-        b = imageData(quickVal, y)
-        imageData(quickVal, y) = pixelLookup(b)
-        
-        g = imageData(quickVal + 1, y)
-        imageData(quickVal + 1, y) = pixelLookup(g)
-        
-        r = imageData(quickVal + 2, y)
-        imageData(quickVal + 2, y) = pixelLookup(r)
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
+    For y = 0 To finalY
+        tmpSA.pvData = imgPtr + imgStride * y
+    For x = 0 To finalX Step 4
+        imageData(x) = pixelLookup(imageData(x))
+        imageData(x + 1) = pixelLookup(imageData(x + 1))
+        imageData(x + 2) = pixelLookup(imageData(x + 2))
     Next x
+    Next y
     
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Premultiply the source DIB, as necessary
-    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication True
-    
-    If g_cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
+    If (Not srcDIB.GetAlphaPremultiplication) Then srcDIB.SetAlphaPremultiplication True
+    If g_cancelCurrentAction Then FastGammaDIB = 0 Else FastGammaDIB = 1
     
 End Function
 

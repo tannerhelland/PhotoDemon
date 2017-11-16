@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.104</langversion>
+<langversion>1.0.105</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2283,7 +2283,12 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>екран фаќање заврши.</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<phrase>
+<original>Screenshot options</original>
+<translation>Слика од екранот опции</translation>
+</phrase>
+
+<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -11550,11 +11555,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
 <phrase>
-<original>Screenshot options</original>
-<translation>Слика од екранот опции</translation>
-</phrase>
-
-<phrase>
 <original>currently available programs (listed by window title)</original>
 <translation>во моментов на располагање програми (наведени од страна на насловот на прозорецот)</translation>
 </phrase>
@@ -11614,7 +11614,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Ве молиме изберете друго.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15054,8 +15054,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4558 phrases. -->
+<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>
