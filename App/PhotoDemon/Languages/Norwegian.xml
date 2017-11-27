@@ -778,12 +778,12 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>PDI-Filen " %1" inneholder komprimerte data, men det nødvendige pluginet mangler eller deaktiveres.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Komprimeringspluggen mangler</translation>
 </phrase>
 
 <phrase>
@@ -9831,7 +9831,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>randomisere lavastrømmen</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>nytt turbulensfrø</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>fargeskift</translation>
 </phrase>
 
 <phrase>
@@ -10264,27 +10264,27 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>fargefarge</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>diffust lys</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>korn</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>fade kanter</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Sender bilde tilbake i tid</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13239,7 +13239,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Snarvei: %1</translation>
 </phrase>
 
 <phrase>

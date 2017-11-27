@@ -9,7 +9,7 @@
 <langversion>6.6.251</langversion>
 <langstatus>Complete</langstatus>
 
-<author>Ari Sohandri Putra</author>
+<author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -62,12 +62,12 @@
 
 <phrase>
 <original>Building font cache</original>
-<translation></translation>
+<translation>Membangun cache font</translation>
 </phrase>
 
 <phrase>
 <original>Initializing clipboard interface</original>
-<translation></translation>
+<translation>Inisialisasi antarmuka clipboard</translation>
 </phrase>
 
 <phrase>
@@ -263,12 +263,12 @@
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation></translation>
+<translation>Harap tunggu sementara database tag dibuat</translation>
 </phrase>
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation></translation>
+<translation>Database tag menangani detail teknis dari 20.000 tag metadata yang didukung oleh PhotoDemon. Membuat database memakan waktu 10 sampai 15 detik, dan hanya perlu dibuat satu kali, saat editor metadata digunakan untuk pertama kalinya.</translation>
 </phrase>
 
 <phrase>
@@ -377,12 +377,12 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation></translation>
+<translation>Sayangnya, PC ini tidak memiliki cukup memori untuk membuat gambar %1x %2. Harap kurangi ukuran yang diminta dan coba lagi.</translation>
 </phrase>
 
 <phrase>
 <original>Image too large</original>
-<translation></translation>
+<translation>Gambar terlalu besar</translation>
 </phrase>
 
 <!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -399,12 +399,12 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Isi alat</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Isi layer</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -502,12 +502,12 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 
 <phrase>
 <original>Adjusting shadows and highlights</original>
-<translation></translation>
+<translation>Menyesuaikan bayangan dan sorotan</translation>
 </phrase>
 
 <phrase>
 <original>Enhancing shadows and highlights</original>
-<translation></translation>
+<translation>Meningkatkan bayangan dan sorotan</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
@@ -534,7 +534,7 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 
 <phrase>
 <original>Total unique colors: %1</original>
-<translation></translation>
+<translation>Total warna unik: %1</translation>
 </phrase>
 
 <phrase>
@@ -779,12 +779,12 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>File PDI " %1" berisi data terkompresi, namun plugin yang dibutuhkan hilang atau dinonaktifkan.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Kompresi plugin hilang</translation>
 </phrase>
 
 <phrase>
@@ -845,7 +845,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Undo last action</original>
-<translation></translation>
+<translation>Urungkan tindakan terakhir</translation>
 </phrase>
 
 <phrase>
@@ -855,7 +855,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Redo previous action</original>
-<translation></translation>
+<translation>Ulangi tindakan sebelumnya</translation>
 </phrase>
 
 <phrase>
@@ -895,12 +895,12 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Square</original>
-<translation></translation>
+<translation>Kotak</translation>
 </phrase>
 
 <phrase>
 <original>Circle</original>
-<translation></translation>
+<translation>Lingkaran</translation>
 </phrase>
 
 <phrase>
@@ -1025,42 +1025,42 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Grain extract</original>
-<translation></translation>
+<translation>Ekstrak butir</translation>
 </phrase>
 
 <phrase>
 <original>Grain merge</original>
-<translation></translation>
+<translation>Gandum bergabung</translation>
 </phrase>
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Menghapus</translation>
 </phrase>
 
 <phrase>
 <original>Inherit</original>
-<translation></translation>
+<translation>Mewarisi</translation>
 </phrase>
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Terkunci</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Perseptual</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>Relatif kolorimetri</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Kolimetri absolut</translation>
 </phrase>
 
 <phrase>
@@ -1070,7 +1070,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>warna dan keburaman</translation>
 </phrase>
 
 <phrase>
@@ -1080,22 +1080,22 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>hanya merah</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>hanya hijau</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>hanya biru</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>hanya alpha</translation>
 </phrase>
 
 <phrase>
@@ -1110,7 +1110,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>preview not available</original>
-<translation></translation>
+<translation>pratinjau tidak tersedia</translation>
 </phrase>
 
 <!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
@@ -1126,17 +1126,17 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Text layer</original>
-<translation></translation>
+<translation>Lapisan teks</translation>
 </phrase>
 
 <phrase>
 <original>Typography layer</original>
-<translation></translation>
+<translation>Lapisan tipografi</translation>
 </phrase>
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Terlihat</translation>
 </phrase>
 
 <phrase>
@@ -1156,72 +1156,72 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Cropping layer to selected area</original>
-<translation></translation>
+<translation>Cropping layer ke area yang dipilih</translation>
 </phrase>
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation></translation>
+<translation>Tindakan ini akan mengubah lapisan teks dan vektor menjadi lapisan gambar (raster), artinya Anda tidak dapat lagi memodifikasi pengaturan khusus lapisan seperti teks, font, warna atau bentuk.</translation>
 </phrase>
 
 <phrase>
 <original>Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Apakah anda yakin ingin melanjutkan?</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation></translation>
+<translation>Iya nih. Mengkonversi lapisan teks dan vektor ke lapisan gambar (raster).</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation></translation>
+<translation>Tidak. Tinggalkan teks dan lapisan vektor sebagaimana adanya.</translation>
 </phrase>
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation></translation>
+<translation>Lapisan teks ini akan diubah menjadi layer gambar (raster), artinya Anda tidak bisa lagi mengubah teks atau pengaturan fontnya.</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation></translation>
+<translation>Iya nih. Silahkan ubah layer teks ini.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation></translation>
+<translation>Tidak tinggalkan lapisan teks ini seperti apa adanya.</translation>
 </phrase>
 
 <phrase>
 <original>I can't decide.  Cancel this action.</original>
-<translation></translation>
+<translation>Saya tidak bisa memutuskan Batalkan tindakan ini.</translation>
 </phrase>
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation></translation>
+<translation>Ke depan, secara otomatis rasterize tanpa disuruh saya</translation>
 </phrase>
 
 <phrase>
 <original>Frame %1</original>
-<translation></translation>
+<translation>Frame %1</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation></translation>
+<translation>Ikon ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>Ikon ( %1x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>Page %1</original>
-<translation></translation>
+<translation>Halaman 1</translation>
 </phrase>
 
 <!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
@@ -1248,7 +1248,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Peringatan - file tidak ditemukan: %1</translation>
 </phrase>
 
 <phrase>
@@ -1267,19 +1267,21 @@ Jika gambar ini awalnya terletak di removable media (DVD, USB drive, dll), silah
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Peringatan - file terkunci: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>Sayangnya, file ' %1' saat ini dikunci oleh program lain di PC.
+
+Please tutup file ini di program lain yang sedang berjalan, lalu coba lagi.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>File terkunci</translation>
 </phrase>
 
 <phrase>
@@ -1298,12 +1300,16 @@ Please close this file in any other running programs, then try again.</original>
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation></translation>
+<translation>Sayangnya, PhotoDemon tidak dapat memuat gambar berikut: 
+
+ %1
+
+Please gunakan program lain untuk menyimpan gambar ini dalam format generik (seperti JPEG atau PNG) sebelum memasukkannya. Terima kasih!</translation>
 </phrase>
 
 <phrase>
 <original>Image import failed</original>
-<translation></translation>
+<translation>Impor gambar gagal</translation>
 </phrase>
 
 <phrase>
@@ -1331,7 +1337,7 @@ Tolong Menggunakan Program Berbeda Untuk Melindungi Gambar ini dalam format gene
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation></translation>
+<translation> %1 dari %2 gambar berhasil dimuat</translation>
 </phrase>
 
 <phrase>
@@ -1339,12 +1345,15 @@ Tolong Menggunakan Program Berbeda Untuk Melindungi Gambar ini dalam format gene
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation></translation>
+<translation>Sayangnya, PhotoDemon tidak dapat memuat gambar berikut: 
+
+ %1
+Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukung (seperti JPEG atau PNG). Terima kasih!</translation>
 </phrase>
 
 <phrase>
 <original>Some images were not loaded</original>
-<translation></translation>
+<translation>Beberapa gambar tidak dimuat</translation>
 </phrase>
 
 <phrase>
@@ -1372,12 +1381,14 @@ Please verify that these image(s) exist, and that they use a supported image for
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
 
 (Press No to continue recording.)</original>
-<translation></translation>
+<translation>Makro ini tidak mengandung tindakan apa pun yang dapat direkam. Yakin ingin berhenti merekam? 
+
+ (Tekan Tidak untuk terus merekam.)</translation>
 </phrase>
 
 <phrase>
 <original>Warning: invalid macro</original>
-<translation></translation>
+<translation>Peringatan: makro tidak valid</translation>
 </phrase>
 
 <phrase>
@@ -1387,7 +1398,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Macro</original>
-<translation></translation>
+<translation>Makro</translation>
 </phrase>
 
 <phrase>
@@ -1515,7 +1526,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Buka semua gambar terbaru</translation>
 </phrase>
 
 <phrase>
@@ -1559,12 +1570,12 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Cat stroke</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>Lapisan cat</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1587,7 +1598,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 
 <phrase>
 <original>artistic license</original>
-<translation></translation>
+<translation>lisensi artistik</translation>
 </phrase>
 
 <phrase>
@@ -1597,17 +1608,17 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 
 <phrase>
 <original>FreeImage public license</original>
-<translation></translation>
+<translation>Lisensi publik FreeImage</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation></translation>
+<translation>Lisensi MIT</translation>
 </phrase>
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>Lisensi BSD</translation>
 </phrase>
 
 <phrase>
@@ -1617,7 +1628,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 
 <phrase>
 <original>GNU GPLv3</original>
-<translation></translation>
+<translation>GNU GPLv3</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -1711,7 +1722,7 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Scan dibatalkan</translation>
 </phrase>
 
 <phrase>
@@ -1732,12 +1743,12 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Gambar multipage ditemukan. Memuat halaman # %1 dari %2</translation>
 </phrase>
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation></translation>
+<translation>Menerapkan pemetaan nada</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1748,12 +1759,12 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 
 <phrase>
 <original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Menggunakan OptiPNG untuk mengoptimalkan file PNG. Ini mungkin perlu beberapa saat</translation>
 </phrase>
 
 <phrase>
 <original>OptiPNG optimization successful!</original>
-<translation></translation>
+<translation>Optimalisasi OptiPNG berhasil!</translation>
 </phrase>
 
 <!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1764,17 +1775,17 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 
 <phrase>
 <original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Menggunakan pngquant untuk mengoptimalkan file PNG. Ini mungkin perlu beberapa saat</translation>
 </phrase>
 
 <phrase>
 <original>pngquant optimization successful!</original>
-<translation></translation>
+<translation>optimasi pngquant berhasil!</translation>
 </phrase>
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
+<translation>PNGQuant tidak bisa menulis file Default 32bpp image telah disimpan sebagai gantinya.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1906,7 +1917,7 @@ Deskripsi: %2
 
 <phrase>
 <original>group</original>
-<translation></translation>
+<translation>kelompok</translation>
 </phrase>
 
 <phrase>
@@ -1921,12 +1932,12 @@ Deskripsi: %2
 
 <phrase>
 <original>X offset</original>
-<translation></translation>
+<translation>X offset</translation>
 </phrase>
 
 <phrase>
 <original>Y offset</original>
-<translation></translation>
+<translation>Y offset</translation>
 </phrase>
 
 <phrase>
@@ -1946,12 +1957,12 @@ Deskripsi: %2
 
 <phrase>
 <original>visibility</original>
-<translation></translation>
+<translation>visibilitas</translation>
 </phrase>
 
 <phrase>
 <original>non-destructive effect</original>
-<translation></translation>
+<translation>efek tidak merusak</translation>
 </phrase>
 
 <phrase>
@@ -1961,117 +1972,117 @@ Deskripsi: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>geser horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>geser vertikal</translation>
 </phrase>
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>mode alfa</translation>
 </phrase>
 
 <phrase>
 <original>text</original>
-<translation></translation>
+<translation>teks</translation>
 </phrase>
 
 <phrase>
 <original>font (color)</original>
-<translation></translation>
+<translation>warna huruf)</translation>
 </phrase>
 
 <phrase>
 <original>font (face)</original>
-<translation></translation>
+<translation>font (wajah)</translation>
 </phrase>
 
 <phrase>
 <original>font (size)</original>
-<translation></translation>
+<translation>ukuran huruf)</translation>
 </phrase>
 
 <phrase>
 <original>font (size unit)</original>
-<translation></translation>
+<translation>font (unit ukuran)</translation>
 </phrase>
 
 <phrase>
 <original>style (bold)</original>
-<translation></translation>
+<translation>gaya (bold)</translation>
 </phrase>
 
 <phrase>
 <original>style (italic)</original>
-<translation></translation>
+<translation>gaya (miring)</translation>
 </phrase>
 
 <phrase>
 <original>style (underline)</original>
-<translation></translation>
+<translation>gaya (garis bawah)</translation>
 </phrase>
 
 <phrase>
 <original>style (strikeout)</original>
-<translation></translation>
+<translation>gaya (strikeout)</translation>
 </phrase>
 
 <phrase>
 <original>horizontal alignment</original>
-<translation></translation>
+<translation>kesejajaran horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical alignment</original>
-<translation></translation>
+<translation>keselarasan vertikal</translation>
 </phrase>
 
 <phrase>
 <original>antialiasing</original>
-<translation></translation>
+<translation>antialiasing</translation>
 </phrase>
 
 <phrase>
 <original>antialiasing clarity</original>
-<translation></translation>
+<translation>kejelasan antialiasing</translation>
 </phrase>
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>tipe teks</translation>
 </phrase>
 
 <phrase>
 <original>hinting</original>
-<translation></translation>
+<translation>mengisyaratkan</translation>
 </phrase>
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>kata bungkus</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>mengisi</translation>
 </phrase>
 
 <phrase>
 <original>fill style</original>
-<translation></translation>
+<translation>isi style</translation>
 </phrase>
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>garis besar</translation>
 </phrase>
 
 <phrase>
 <original>outline style</original>
-<translation></translation>
+<translation>garis besar gaya</translation>
 </phrase>
 
 <phrase>
@@ -2081,62 +2092,62 @@ Deskripsi: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>gaya latar belakang</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation></translation>
+<translation>perbatasan latar belakang</translation>
 </phrase>
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>gaya border latar belakang</translation>
 </phrase>
 
 <phrase>
 <original>line spacing</original>
-<translation></translation>
+<translation>spasi</translation>
 </phrase>
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>batas</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>pemetaan ulang karakter</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>spasi karakter</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>orientasi karakter</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>jitter jitter</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>jitter vertikal</translation>
 </phrase>
 
 <phrase>
 <original>inflation</original>
-<translation></translation>
+<translation>inflasi</translation>
 </phrase>
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>mirroring</translation>
 </phrase>
 
 <phrase>
@@ -2501,7 +2512,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Rotate layer (on-canvas)</original>
-<translation></translation>
+<translation>Putar lapisan (di atas kanvas)</translation>
 </phrase>
 
 <phrase>
@@ -2742,7 +2753,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation></translation>
+<translation>URL gambar ditemukan Mencoba mendownload</translation>
 </phrase>
 
 <phrase>
@@ -2752,7 +2763,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation></translation>
+<translation>Unduhan gambar gagal Harap salin URL gambar yang valid dan coba lagi.</translation>
 </phrase>
 
 <phrase>
@@ -2821,12 +2832,12 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Unknown adapter</original>
-<translation></translation>
+<translation>Adaptor tak dikenal</translation>
 </phrase>
 
 <phrase>
 <original>Unknown display</original>
-<translation></translation>
+<translation>Tampilan tidak diketahui</translation>
 </phrase>
 
 <!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3000,17 +3011,17 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Inferred</original>
-<translation></translation>
+<translation>Disimpulkan</translation>
 </phrase>
 
 <phrase>
 <original>Exif (thumbnail)</original>
-<translation></translation>
+<translation>Exif (thumbnail)</translation>
 </phrase>
 
 <phrase>
 <original>Exif</original>
-<translation></translation>
+<translation>Exif</translation>
 </phrase>
 
 <phrase>
@@ -3020,262 +3031,262 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>XMP (Apple)</original>
-<translation></translation>
+<translation>XMP (Apple)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (ACD Systems)</original>
-<translation></translation>
+<translation>XMP (ACD Systems)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Album)</original>
-<translation></translation>
+<translation>XMP (Album Adobe)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe)</original>
-<translation></translation>
+<translation>XMP (Adobe)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Creative Commons)</original>
-<translation></translation>
+<translation>XMP (Creative Commons)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Sony Ericcson)</original>
-<translation></translation>
+<translation>XMP (Sony Ericsson)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe After Effects)</original>
-<translation></translation>
+<translation>XMP (Adobe After Effects)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Photoshop Camera Raw)</original>
-<translation></translation>
+<translation>XMP (Photoshop Camera Raw)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dublin Core)</original>
-<translation></translation>
+<translation>XMP (Dublin Core)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Description Explorer)</original>
-<translation></translation>
+<translation>XMP (Penjelajah Deskripsi)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DICOM)</original>
-<translation></translation>
+<translation>XMP (DICOM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DigiKam)</original>
-<translation></translation>
+<translation>XMP (DigiKam)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF)</original>
-<translation></translation>
+<translation>XMP (EXIF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF 2.3)</original>
-<translation></translation>
+<translation>XMP (EXIF 2.3)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Expression Media)</original>
-<translation></translation>
+<translation>XMP (Microsoft Expression Media)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Extensis Portfolio)</original>
-<translation></translation>
+<translation>XMP (Portofolio Extensis)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Fast Picture Viewer)</original>
-<translation></translation>
+<translation>XMP (Gambar Cepat Penampil)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Getty Images)</original>
-<translation></translation>
+<translation>XMP (Getty Images)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Google Photosphere)</original>
-<translation></translation>
+<translation>XMP (Google Photosphere)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IDimager)</original>
-<translation></translation>
+<translation>XMP (IDimager)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Core)</original>
-<translation></translation>
+<translation>XMP (IPTC Core)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Extension)</original>
-<translation></translation>
+<translation>XMP (Ekstensi IPTC)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Lightroom)</original>
-<translation></translation>
+<translation>XMP (Adobe Lightroom)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (iView MediaPro)</original>
-<translation></translation>
+<translation>XMP (iView MediaPro)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.0)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1.0)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.2)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1.2)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.1)</original>
-<translation></translation>
+<translation>XMP (Foto Microsoft 1.1)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (MWG)</original>
-<translation></translation>
+<translation>XMP (MWG)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF)</original>
-<translation></translation>
+<translation>XMP (Adobe PDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF extended)</original>
-<translation></translation>
+<translation>XMP (Adobe PDF diperpanjang)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PhotoMechanic)</original>
-<translation></translation>
+<translation>XMP (PhotoMechanic)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Photoshop)</original>
-<translation></translation>
+<translation>XMP (Adobe Photoshop)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PixelLive)</original>
-<translation></translation>
+<translation>XMP (PixelLive)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Plus License Data)</original>
-<translation></translation>
+<translation>XMP (Plus Data Lisensi)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation></translation>
+<translation>XMP (PRISM untuk gambar)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM)</original>
-<translation></translation>
+<translation>XMP (PRISM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Rights)</original>
-<translation></translation>
+<translation>XMP (Hak Cipta)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Recipe)</original>
-<translation></translation>
+<translation>XMP (Resep PRISM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Usage Rights)</original>
-<translation></translation>
+<translation>XMP (Hak Penggunaan PRISM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (RDF)</original>
-<translation></translation>
+<translation>XMP (RDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe SWF)</original>
-<translation></translation>
+<translation>XMP (Adobe SWF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF-TIFF)</original>
-<translation></translation>
+<translation>XMP (EXIF-TIFF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Toolkit)</original>
-<translation></translation>
+<translation>XMP (Toolkit)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (General)</original>
-<translation></translation>
+<translation>XMP (Umum)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Basic Job)</original>
-<translation></translation>
+<translation>XMP (Pekerjaan Dasar)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dynamic Media)</original>
-<translation></translation>
+<translation>XMP (Media Dinamis)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Media Management)</original>
-<translation></translation>
+<translation>XMP (Manajemen Media)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Note)</original>
-<translation></translation>
+<translation>XMP (Catatan)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Picture Licensing)</original>
-<translation></translation>
+<translation>XMP (Perizinan Gambar)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Rights Management)</original>
-<translation></translation>
+<translation>XMP (Manajemen Hak)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Paged Text)</original>
-<translation></translation>
+<translation>XMP (Teks Paged)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Misc)</original>
-<translation></translation>
+<translation>XMP (Misc)</translation>
 </phrase>
 
 <phrase>
@@ -3328,7 +3339,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Load canceled.</original>
-<translation></translation>
+<translation>Beban dibatalkan</translation>
 </phrase>
 
 <!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -3359,7 +3370,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation></translation>
+<translation>PERINGATAN! Ukuran potongan direktori yang didekompresi menunjukkan kemungkinan kesalahan CRC (</translation>
 </phrase>
 
 <phrase>
@@ -3394,7 +3405,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation></translation>
+<translation>File node tidak dikompres, tapi ukurannya terdaftar sebagai nol. Beban tidak mungkin; meninggalkan usaha</translation>
 </phrase>
 
 <phrase>
@@ -3728,12 +3739,12 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>(enter text here)</original>
-<translation></translation>
+<translation>(masukkan teks di sini)</translation>
 </phrase>
 
 <phrase>
 <original>New text layer</original>
-<translation></translation>
+<translation>Lapisan teks baru</translation>
 </phrase>
 
 <phrase>
@@ -3743,7 +3754,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>Center the image inside the viewport</original>
-<translation></translation>
+<translation>Pusatkan gambar di dalam area pandang</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -3782,7 +3793,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>compositing warna</translation>
 </phrase>
 
 <phrase>
@@ -3792,37 +3803,37 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>format transparansi</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>format warna</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>transparansi cut-off</translation>
 </phrase>
 
 <phrase>
 <original>palette size</original>
-<translation></translation>
+<translation>ukuran palet</translation>
 </phrase>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>warna transparan</translation>
 </phrase>
 
 <phrase>
 <original>auto</original>
-<translation></translation>
+<translation>mobil</translation>
 </phrase>
 
 <phrase>
 <original>grayscale</original>
-<translation></translation>
+<translation>grayscale</translation>
 </phrase>
 
 <phrase>
@@ -3837,7 +3848,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>indexed</original>
-<translation></translation>
+<translation>diindeks</translation>
 </phrase>
 
 <phrase>
@@ -3847,17 +3858,17 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>full</original>
-<translation></translation>
+<translation>penuh</translation>
 </phrase>
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation></translation>
+<translation>biner (dengan cut-off)</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation></translation>
+<translation>biner (dengan warna)</translation>
 </phrase>
 
 <phrase>
@@ -3873,27 +3884,27 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
-<translation></translation>
+<translation>RGB ( %1, %2, %3)</translation>
 </phrase>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation></translation>
+<translation>Klik untuk masuk ke layar pilihan warna penuh.</translation>
 </phrase>
 
 <phrase>
 <original>Active color</original>
-<translation></translation>
+<translation>Warna aktif</translation>
 </phrase>
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation></translation>
+<translation>Klik untuk membuat warna cat layar utama menjadi warna aktif.</translation>
 </phrase>
 
 <phrase>
 <original>Main screen paint color</original>
-<translation></translation>
+<translation>Warna cat layar utama</translation>
 </phrase>
 
 <!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3904,67 +3915,67 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Current color</original>
-<translation></translation>
+<translation>Warna sekarang</translation>
 </phrase>
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation></translation>
+<translation>Putar searah jarum jam</translation>
 </phrase>
 
 <phrase>
 <original>Increase saturation</original>
-<translation></translation>
+<translation>Meningkatkan kejenuhan</translation>
 </phrase>
 
 <phrase>
 <original>Increase luminance</original>
-<translation></translation>
+<translation>Meningkatkan pencahayaan</translation>
 </phrase>
 
 <phrase>
 <original>Increase red</original>
-<translation></translation>
+<translation>Tingkatkan warna merah</translation>
 </phrase>
 
 <phrase>
 <original>Increase green</original>
-<translation></translation>
+<translation>Tingkatkan warna hijau</translation>
 </phrase>
 
 <phrase>
 <original>Increase blue</original>
-<translation></translation>
+<translation>Meningkatkan warna biru</translation>
 </phrase>
 
 <phrase>
 <original>Decrease luminance</original>
-<translation></translation>
+<translation>Turunkan pencahayaan</translation>
 </phrase>
 
 <phrase>
 <original>Decrease saturation</original>
-<translation></translation>
+<translation>Turunkan kejenuhan</translation>
 </phrase>
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation></translation>
+<translation>Putar rona berlawanan arah jarum jam</translation>
 </phrase>
 
 <phrase>
 <original>Decrease blue</original>
-<translation></translation>
+<translation>Turunkan warna biru</translation>
 </phrase>
 
 <phrase>
 <original>Decrease green</original>
-<translation></translation>
+<translation>Turunkan hijau</translation>
 </phrase>
 
 <phrase>
 <original>Decrease red</original>
-<translation></translation>
+<translation>Kurangi warna merah</translation>
 </phrase>
 
 <!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -4011,7 +4022,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>OK</original>
-<translation></translation>
+<translation>Baik</translation>
 </phrase>
 
 <phrase>
@@ -4021,7 +4032,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Cancel</original>
-<translation></translation>
+<translation>Membatalkan</translation>
 </phrase>
 
 <phrase>
@@ -4097,22 +4108,22 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>before</original>
-<translation></translation>
+<translation>sebelum</translation>
 </phrase>
 
 <phrase>
 <original>after</original>
-<translation></translation>
+<translation>setelah</translation>
 </phrase>
 
 <phrase>
 <original>1:1</original>
-<translation></translation>
+<translation>1: 1</translation>
 </phrase>
 
 <phrase>
 <original>fit</original>
-<translation></translation>
+<translation>cocok</translation>
 </phrase>
 
 <!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -4209,22 +4220,22 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>general metadata settings</original>
-<translation></translation>
+<translation>pengaturan metadata umum</translation>
 </phrase>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>tinjau metadata sebelum disimpan</translation>
 </phrase>
 
 <phrase>
 <original>copy all relevant metadata to the new file</original>
-<translation></translation>
+<translation>salin semua metadata yang relevan ke file baru</translation>
 </phrase>
 
 <phrase>
 <original>erase tags that might be personal (including GPS and location)</original>
-<translation></translation>
+<translation>hapus tag yang mungkin bersifat pribadi (termasuk GPS dan lokasi)</translation>
 </phrase>
 
 <phrase>
@@ -4234,17 +4245,17 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>This image contains metadata.</original>
-<translation></translation>
+<translation>Gambar ini berisi metadata.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not contain metadata.</original>
-<translation></translation>
+<translation>Gambar ini tidak mengandung metadata.</translation>
 </phrase>
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation></translation>
+<translation>Pengaturan khusus JPEG</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -4267,12 +4278,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>new</original>
-<translation></translation>
+<translation>baru</translation>
 </phrase>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>asli</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4316,12 +4327,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation></translation>
+<translation>Pengukuran lebar dan tinggi akhir harus antara 1 dan 32760 piksel.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid measurement</original>
-<translation></translation>
+<translation>Pengukuran tidak valid</translation>
 </phrase>
 
 <phrase>
@@ -4392,12 +4403,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Scroll</original>
-<translation></translation>
+<translation>Gulir</translation>
 </phrase>
 
 <phrase>
 <original>Scroll here</original>
-<translation></translation>
+<translation>Gulir ke sini</translation>
 </phrase>
 
 <phrase>
@@ -4412,52 +4423,52 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Page up</original>
-<translation></translation>
+<translation>Halaman atas</translation>
 </phrase>
 
 <phrase>
 <original>Page down</original>
-<translation></translation>
+<translation>Halaman bawah</translation>
 </phrase>
 
 <phrase>
 <original>Scroll up</original>
-<translation></translation>
+<translation>Gulir ke atas</translation>
 </phrase>
 
 <phrase>
 <original>Scroll down</original>
-<translation></translation>
+<translation>Gulir ke bawah</translation>
 </phrase>
 
 <phrase>
 <original>Left edge</original>
-<translation></translation>
+<translation>Tepi kiri</translation>
 </phrase>
 
 <phrase>
 <original>Right edge</original>
-<translation></translation>
+<translation>Tepi kanan</translation>
 </phrase>
 
 <phrase>
 <original>Page left</original>
-<translation></translation>
+<translation>Halaman kiri</translation>
 </phrase>
 
 <phrase>
 <original>Page right</original>
-<translation></translation>
+<translation>Halaman kanan</translation>
 </phrase>
 
 <phrase>
 <original>Scroll left</original>
-<translation></translation>
+<translation>Gulir ke kiri</translation>
 </phrase>
 
 <phrase>
 <original>Scroll right</original>
-<translation></translation>
+<translation>Gulir ke kanan</translation>
 </phrase>
 
 <!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4570,7 +4581,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation></translation>
+<translation>PhotoDemon oleh Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4630,17 +4641,17 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>&Batch operations</original>
-<translation></translation>
+<translation>Operasi batch</translation>
 </phrase>
 
 <phrase>
 <original>Process</original>
-<translation></translation>
+<translation>Proses</translation>
 </phrase>
 
 <phrase>
 <original>Repair</original>
-<translation></translation>
+<translation>Perbaikan</translation>
 </phrase>
 
 <phrase>
@@ -4785,12 +4796,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>90 clockwise</original>
-<translation></translation>
+<translation>90 searah jarum jam</translation>
 </phrase>
 
 <phrase>
 <original>90 counter-clockwise</original>
-<translation></translation>
+<translation>90 berlawanan arah jarum jam</translation>
 </phrase>
 
 <phrase>
@@ -4815,7 +4826,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Edit metadata</original>
-<translation></translation>
+<translation>Edit metadata</translation>
 </phrase>
 
 <phrase>
@@ -4840,7 +4851,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Lapisan dasar</translation>
 </phrase>
 
 <phrase>
@@ -4855,7 +4866,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Dari lapisan terlihat</translation>
 </phrase>
 
 <phrase>
@@ -4915,17 +4926,17 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation></translation>
+<translation>Putar 90 searah jarum jam</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation></translation>
+<translation>Putar 90 berlawanan arah jarum jam</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 180</original>
-<translation></translation>
+<translation>Putar 180</translation>
 </phrase>
 
 <phrase>
@@ -4960,12 +4971,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Rasterize</original>
-<translation></translation>
+<translation>Rasterize</translation>
 </phrase>
 
 <phrase>
 <original>All layers</original>
-<translation></translation>
+<translation>Semua lapisan</translation>
 </phrase>
 
 <phrase>
@@ -5125,22 +5136,22 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maksimum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Pergeseran kiri</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Pergeseran benar</translation>
 </phrase>
 
 <phrase>
@@ -5180,7 +5191,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Tampilan</translation>
 </phrase>
 
 <phrase>
@@ -5195,7 +5206,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (film negatif)</translation>
 </phrase>
 
 <phrase>
@@ -5220,7 +5231,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monokrom menjadi abu-abu</translation>
 </phrase>
 
 <phrase>
@@ -5240,7 +5251,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Red-eye removal</original>
-<translation></translation>
+<translation>Penghapusan mata merah</translation>
 </phrase>
 
 <phrase>
@@ -5300,7 +5311,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Bungkus plastik</translation>
 </phrase>
 
 <phrase>
@@ -5360,7 +5371,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation></translation>
+<translation>Symmetric terdekat-tetangga</translation>
 </phrase>
 
 <phrase>
@@ -5370,17 +5381,17 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation></translation>
+<translation>Perbaiki distorsi yang ada</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
-<translation></translation>
+<translation>Donat</translation>
 </phrase>
 
 <phrase>
 <original>Lens</original>
-<translation></translation>
+<translation>Lensa</translation>
 </phrase>
 
 <phrase>
@@ -5440,7 +5451,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Range filter</original>
-<translation></translation>
+<translation>Range filter</translation>
 </phrase>
 
 <phrase>
@@ -5510,12 +5521,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Metal</original>
-<translation></translation>
+<translation>Logam</translation>
 </phrase>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Salju</translation>
 </phrase>
 
 <phrase>
@@ -5540,22 +5551,22 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Anisotropic diffusion</original>
-<translation></translation>
+<translation>Difusi anisotropik</translation>
 </phrase>
 
 <phrase>
 <original>Bilateral filter</original>
-<translation></translation>
+<translation>Filter bilateral</translation>
 </phrase>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Harmonic mean</translation>
 </phrase>
 
 <phrase>
 <original>Mean shift</original>
-<translation></translation>
+<translation>Berarti bergeser</translation>
 </phrase>
 
 <phrase>
@@ -5570,12 +5581,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Color halftone</original>
-<translation></translation>
+<translation>Warna halftone</translation>
 </phrase>
 
 <phrase>
 <original>Crystallize</original>
-<translation></translation>
+<translation>Direalisasikan</translation>
 </phrase>
 
 <phrase>
@@ -5585,12 +5596,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Mezzotint</original>
-<translation></translation>
+<translation>Mezzotint</translation>
 </phrase>
 
 <phrase>
 <original>Mosaic</original>
-<translation></translation>
+<translation>Mosaik</translation>
 </phrase>
 
 <phrase>
@@ -5620,12 +5631,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Pikirkan Ulang</translation>
 </phrase>
 
 <phrase>
 <original>Portrait glow</original>
-<translation></translation>
+<translation>Potret bersinar</translation>
 </phrase>
 
 <phrase>
@@ -5700,7 +5711,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Tema</translation>
 </phrase>
 
 <phrase>
@@ -5740,7 +5751,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Developers</original>
-<translation></translation>
+<translation>Pengembang</translation>
 </phrase>
 
 <phrase>
@@ -5750,7 +5761,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Bangun paket tema</translation>
 </phrase>
 
 <phrase>
@@ -5850,7 +5861,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Dukung kami dengan sumbangan kecil (terima kasih!)</translation>
 </phrase>
 
 <phrase>
@@ -5870,22 +5881,22 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>Kunjungi situs PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Download kode sumber PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Baca lisensi dan persyaratan penggunaan</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>Tentang</translation>
 </phrase>
 
 <phrase>
@@ -5948,7 +5959,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>Auto correct shadows and highlights</original>
-<translation></translation>
+<translation>Bayangan dan sorotan otomatis yang benar</translation>
 </phrase>
 
 <phrase>
@@ -5968,7 +5979,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>Auto enhance shadows and highlights</original>
-<translation></translation>
+<translation>Otomatis meningkatkan bayangan dan sorotan</translation>
 </phrase>
 
 <phrase>
@@ -5988,7 +5999,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>Crop layer to selection</original>
-<translation></translation>
+<translation>Crop layer untuk seleksi</translation>
 </phrase>
 
 <phrase>
@@ -6008,7 +6019,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Lapisan baru dari lapisan terlihat</translation>
 </phrase>
 
 <phrase>
@@ -6058,12 +6069,12 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>Rasterize layer</original>
-<translation></translation>
+<translation>Rasterize layer</translation>
 </phrase>
 
 <phrase>
 <original>Rasterize all layers</original>
-<translation></translation>
+<translation>Rasterize semua lapisan</translation>
 </phrase>
 
 <phrase>
@@ -6103,7 +6114,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <phrase>
 <original>Shadow and highlight</original>
-<translation></translation>
+<translation>Bayangan dan sorot</translation>
 </phrase>
 
 <phrase>
@@ -6418,7 +6429,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>transparency</original>
-<translation></translation>
+<translation>transparansi</translation>
 </phrase>
 
 <phrase>
@@ -6433,7 +6444,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>final colors</original>
-<translation></translation>
+<translation>warna akhir</translation>
 </phrase>
 
 <phrase>
@@ -6493,12 +6504,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>do not modify</original>
-<translation></translation>
+<translation>jangan modifikasi</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation></translation>
+<translation>hapus dari gambar</translation>
 </phrase>
 
 <phrase>
@@ -6519,7 +6530,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>model</original>
-<translation></translation>
+<translation>model</translation>
 </phrase>
 
 <phrase>
@@ -6539,7 +6550,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation></translation>
+<translation>Mengatur kecerahan dan kontras</translation>
 </phrase>
 
 <phrase>
@@ -6549,7 +6560,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>legacy</original>
-<translation></translation>
+<translation>warisan</translation>
 </phrase>
 
 <!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -6611,7 +6622,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>color space</original>
-<translation></translation>
+<translation>ruang warna</translation>
 </phrase>
 
 <phrase>
@@ -6621,12 +6632,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>CMY</original>
-<translation></translation>
+<translation>CMY</translation>
 </phrase>
 
 <phrase>
 <original>CMYK</original>
-<translation></translation>
+<translation>CMYK</translation>
 </phrase>
 
 <phrase>
@@ -6832,12 +6843,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Color temperature</original>
-<translation></translation>
+<translation>Temperatur warna</translation>
 </phrase>
 
 <phrase>
 <original>method</original>
-<translation></translation>
+<translation>metode</translation>
 </phrase>
 
 <phrase>
@@ -6847,12 +6858,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>warmer</original>
-<translation></translation>
+<translation>lebih hangat</translation>
 </phrase>
 
 <phrase>
 <original>cooler</original>
-<translation></translation>
+<translation>lebih dingin</translation>
 </phrase>
 
 <phrase>
@@ -7011,7 +7022,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Exit histogram</original>
-<translation></translation>
+<translation>Histogram keluar</translation>
 </phrase>
 
 <phrase>
@@ -7107,17 +7118,17 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>target histogram</original>
-<translation></translation>
+<translation>target histogram</translation>
 </phrase>
 
 <phrase>
 <original>mode</original>
-<translation></translation>
+<translation>mode</translation>
 </phrase>
 
 <phrase>
 <original>kernel shape</original>
-<translation></translation>
+<translation>bentuk kernel</translation>
 </phrase>
 
 <phrase>
@@ -7142,7 +7153,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>local</original>
-<translation></translation>
+<translation>lokal</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -7689,57 +7700,57 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Red eye removal</original>
-<translation></translation>
+<translation>Penghapusan mata merah</translation>
 </phrase>
 
 <phrase>
 <original>strictness</original>
-<translation></translation>
+<translation>kekerasan</translation>
 </phrase>
 
 <phrase>
 <original>enforce shape restrictions</original>
-<translation></translation>
+<translation>menegakkan batasan bentuk</translation>
 </phrase>
 
 <phrase>
 <original>color sensitivity</original>
-<translation></translation>
+<translation>kepekaan warna</translation>
 </phrase>
 
 <phrase>
 <original>object sensitivity</original>
-<translation></translation>
+<translation>sensitivitas objek</translation>
 </phrase>
 
 <phrase>
 <original>highlight detected regions (preview only)</original>
-<translation></translation>
+<translation>sorot daerah yang terdeteksi (hanya pratinjau saja)</translation>
 </phrase>
 
 <phrase>
 <original>enforce size restrictions</original>
-<translation></translation>
+<translation>memberlakukan batasan ukuran</translation>
 </phrase>
 
 <phrase>
 <original>Searching image for potential red-eye locations</original>
-<translation></translation>
+<translation>Menelusuri gambar untuk lokasi mata merah potensial</translation>
 </phrase>
 
 <phrase>
 <original>Refining list of eye candidates</original>
-<translation></translation>
+<translation>Refining daftar kandidat mata</translation>
 </phrase>
 
 <phrase>
 <original>Applying final false-positive checks</original>
-<translation></translation>
+<translation>Menerapkan cek false-positive terakhir</translation>
 </phrase>
 
 <phrase>
 <original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
+<translation>Menerapkan koreksi mata merah akhir ( %1 dari %2)</translation>
 </phrase>
 
 <!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -7796,12 +7807,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>midtone contrast</original>
-<translation></translation>
+<translation>kontras midtone</translation>
 </phrase>
 
 <phrase>
 <original>tonal width</original>
-<translation></translation>
+<translation>lebar tonal</translation>
 </phrase>
 
 <phrase>
@@ -7828,12 +7839,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Restore selected autosaves</original>
-<translation></translation>
+<translation>Kembalikan autosaves yang dipilih</translation>
 </phrase>
 
 <phrase>
 <original>Discard all autosaves</original>
-<translation></translation>
+<translation>Buang semua autosaves</translation>
 </phrase>
 
 <phrase>
@@ -7936,22 +7947,22 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Fill settings</original>
-<translation></translation>
+<translation>Isi pengaturan</translation>
 </phrase>
 
 <phrase>
 <original>preview</original>
-<translation></translation>
+<translation>pratinjau</translation>
 </phrase>
 
 <phrase>
 <original>fill opacity</original>
-<translation></translation>
+<translation>isi opacity</translation>
 </phrase>
 
 <phrase>
 <original>colors</original>
-<translation></translation>
+<translation>warna</translation>
 </phrase>
 
 <phrase>
@@ -7961,12 +7972,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>pattern</original>
-<translation></translation>
+<translation>pola</translation>
 </phrase>
 
 <phrase>
 <original>pattern color</original>
-<translation></translation>
+<translation>warna pola</translation>
 </phrase>
 
 <phrase>
@@ -7976,37 +7987,37 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>solid</original>
-<translation></translation>
+<translation>padat</translation>
 </phrase>
 
 <phrase>
 <original>gradient</original>
-<translation></translation>
+<translation>gradien</translation>
 </phrase>
 
 <phrase>
 <original>line</original>
-<translation></translation>
+<translation>garis</translation>
 </phrase>
 
 <phrase>
 <original>reflection</original>
-<translation></translation>
+<translation>refleksi</translation>
 </phrase>
 
 <phrase>
 <original>circle</original>
-<translation></translation>
+<translation>lingkaran</translation>
 </phrase>
 
 <phrase>
 <original>rectangle</original>
-<translation></translation>
+<translation>empat persegi panjang</translation>
 </phrase>
 
 <phrase>
 <original>diamond</original>
-<translation></translation>
+<translation>berlian</translation>
 </phrase>
 
 <!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -8017,12 +8028,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>&Yes</original>
-<translation></translation>
+<translation>Iya Nih</translation>
 </phrase>
 
 <phrase>
 <original>&No</original>
-<translation></translation>
+<translation>Tidak</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8033,7 +8044,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Please wait a moment</original>
-<translation></translation>
+<translation>Silakan tunggu beberapa saat</translation>
 </phrase>
 
 <phrase>
@@ -8049,67 +8060,67 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Gradient editor</original>
-<translation></translation>
+<translation>Editor gradien</translation>
 </phrase>
 
 <phrase>
 <original>edit mode</original>
-<translation></translation>
+<translation>mode edit</translation>
 </phrase>
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>mengacak</translation>
 </phrase>
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>mulai opacity</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>mulai warna</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>akhir opacity</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>warna akhir</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>bervariasi rona</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>bervariasi saturasi</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>pencahayaan yang bervariasi</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>bervariasi alfa</translation>
 </phrase>
 
 <phrase>
 <original>automatically distribute nodes evenly</original>
-<translation></translation>
+<translation>secara otomatis mendistribusikan node secara merata</translation>
 </phrase>
 
 <phrase>
 <original>current node settings</original>
-<translation></translation>
+<translation>pengaturan simpul saat ini</translation>
 </phrase>
 
 <phrase>
@@ -8119,7 +8130,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>node editor</original>
-<translation></translation>
+<translation>editor simpul</translation>
 </phrase>
 
 <phrase>
@@ -8129,32 +8140,32 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>additional tools</original>
-<translation></translation>
+<translation>alat tambahan</translation>
 </phrase>
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation></translation>
+<translation>Klik kiri untuk menambahkan node baru atau edit node yang ada. Klik kanan sebuah simpul untuk menghapusnya.</translation>
 </phrase>
 
 <phrase>
 <original>manual</original>
-<translation></translation>
+<translation>manual</translation>
 </phrase>
 
 <phrase>
 <original>automatic</original>
-<translation></translation>
+<translation>otomatis</translation>
 </phrase>
 
 <phrase>
 <original>node settings</original>
-<translation></translation>
+<translation>pengaturan simpul</translation>
 </phrase>
 
 <phrase>
 <original>please select a node</original>
-<translation></translation>
+<translation>silahkan pilih sebuah node</translation>
 </phrase>
 
 <!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -8206,12 +8217,12 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Tidak</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Iya Nih</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8222,82 +8233,82 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Outline settings</original>
-<translation></translation>
+<translation>Pengaturan garis besar</translation>
 </phrase>
 
 <phrase>
 <original>outline color and opacity</original>
-<translation></translation>
+<translation>garis besar warna dan keburaman</translation>
 </phrase>
 
 <phrase>
 <original>outline width</original>
-<translation></translation>
+<translation>garis besar lebar</translation>
 </phrase>
 
 <phrase>
 <original>corner shape</original>
-<translation></translation>
+<translation>bentuk sudut</translation>
 </phrase>
 
 <phrase>
 <original>line cap shape</original>
-<translation></translation>
+<translation>garis bentuk topi</translation>
 </phrase>
 
 <phrase>
 <original>miter limit</original>
-<translation></translation>
+<translation>batas miter</translation>
 </phrase>
 
 <phrase>
 <original>dashes</original>
-<translation></translation>
+<translation>tanda hubung</translation>
 </phrase>
 
 <phrase>
 <original>dots</original>
-<translation></translation>
+<translation>titik</translation>
 </phrase>
 
 <phrase>
 <original>dash + dot</original>
-<translation></translation>
+<translation>titik dash</translation>
 </phrase>
 
 <phrase>
 <original>dash + dot + dot</original>
-<translation></translation>
+<translation>titik dash dot</translation>
 </phrase>
 
 <phrase>
 <original>flat</original>
-<translation></translation>
+<translation>datar</translation>
 </phrase>
 
 <phrase>
 <original>square</original>
-<translation></translation>
+<translation>kotak</translation>
 </phrase>
 
 <phrase>
 <original>round</original>
-<translation></translation>
+<translation>bulat</translation>
 </phrase>
 
 <phrase>
 <original>triangle</original>
-<translation></translation>
+<translation>segi tiga</translation>
 </phrase>
 
 <phrase>
 <original>miter</original>
-<translation></translation>
+<translation>gelar uskup</translation>
 </phrase>
 
 <phrase>
 <original>bevel</original>
-<translation></translation>
+<translation>memiringkan</translation>
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -8399,72 +8410,72 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Tema dan bahasa</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikon</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>warna aksen antarmuka</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>tema antarmuka</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>bahasa</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>gelap</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>cahaya</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>coklat</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>berwarna merah muda</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>ungu</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>teal</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>default</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>monokromatik</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Terjemahan oleh %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -8524,7 +8535,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>This image</original>
-<translation></translation>
+<translation>Gambar ini</translation>
 </phrase>
 
 <phrase>
@@ -8632,7 +8643,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>* current image state</original>
-<translation></translation>
+<translation>* keadaan gambar saat ini</translation>
 </phrase>
 
 <phrase>
@@ -8642,7 +8653,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>layer: %1</original>
-<translation></translation>
+<translation>lapisan: %1</translation>
 </phrase>
 
 <phrase>
@@ -8694,7 +8705,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>brush smoothing</original>
-<translation></translation>
+<translation>sikat smoothing</translation>
 </phrase>
 
 <phrase>
@@ -8714,7 +8725,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Animating image</original>
-<translation></translation>
+<translation>Gambar animasi</translation>
 </phrase>
 
 <phrase>
@@ -8766,32 +8777,32 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>shadow cut-off</original>
-<translation></translation>
+<translation>bayangan cut-off</translation>
 </phrase>
 
 <phrase>
 <original>contrast boost</original>
-<translation></translation>
+<translation>dorongan kontras</translation>
 </phrase>
 
 <phrase>
 <original>highlight cut-off</original>
-<translation></translation>
+<translation>sorot cut-off</translation>
 </phrase>
 
 <phrase>
 <original>contrast midpoint</original>
-<translation></translation>
+<translation>titik tengah kontras</translation>
 </phrase>
 
 <phrase>
 <original>film grain</original>
-<translation></translation>
+<translation>butir film</translation>
 </phrase>
 
 <phrase>
 <original>Asking Sam Spade for help</original>
-<translation></translation>
+<translation>Meminta Sam Spade untuk meminta bantuan</translation>
 </phrase>
 
 <!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -8906,7 +8917,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>smoothness</original>
-<translation></translation>
+<translation>kelancaran</translation>
 </phrase>
 
 <phrase>
@@ -8916,17 +8927,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>sudut cahaya</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>Intensitas cahaya</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Membungkus gambar dengan plastik</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9086,7 +9097,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>tepat</translation>
 </phrase>
 
 <!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9128,7 +9139,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>gaussian</original>
-<translation></translation>
+<translation>gaussian</translation>
 </phrase>
 
 <!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9144,7 +9155,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>accuracy</original>
-<translation></translation>
+<translation>ketepatan</translation>
 </phrase>
 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9155,7 +9166,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
-<translation></translation>
+<translation>Menghasilkan pasangan pixel simetris</translation>
 </phrase>
 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9166,7 +9177,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>target</translation>
 </phrase>
 
 <phrase>
@@ -9250,27 +9261,27 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>correction type</original>
-<translation></translation>
+<translation>tipe koreksi</translation>
 </phrase>
 
 <phrase>
 <original>(a) edges</original>
-<translation></translation>
+<translation>(a) tepi</translation>
 </phrase>
 
 <phrase>
 <original>(b) midpoints</original>
-<translation></translation>
+<translation>(b) titik tengah</translation>
 </phrase>
 
 <phrase>
 <original>(c) whole image</original>
-<translation></translation>
+<translation>(c) seluruh gambar</translation>
 </phrase>
 
 <phrase>
 <original>(d) zoom</original>
-<translation></translation>
+<translation>(d) zoom</translation>
 </phrase>
 
 <phrase>
@@ -9280,7 +9291,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation></translation>
+<translation>Anda juga bisa mengatur posisi tengah dengan mengklik jendela pratinjau</translation>
 </phrase>
 
 <phrase>
@@ -9306,22 +9317,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>initial angle</original>
-<translation></translation>
+<translation>sudut awal</translation>
 </phrase>
 
 <phrase>
 <original>spread</original>
-<translation></translation>
+<translation>penyebaran</translation>
 </phrase>
 
 <phrase>
 <original>interior radius</original>
-<translation></translation>
+<translation>radius interior</translation>
 </phrase>
 
 <phrase>
 <original>Deep-frying image</original>
-<translation></translation>
+<translation>Citra penggorengan dalam</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9555,7 +9566,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation></translation>
+<translation>Deteksi tepi kontur artistik</translation>
 </phrase>
 
 <phrase>
@@ -9652,22 +9663,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>synchronize search radius</original>
-<translation></translation>
+<translation>menyinkronkan radius pencarian</translation>
 </phrase>
 
 <phrase>
 <original>horizontal radius</original>
-<translation></translation>
+<translation>radius horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical radius</original>
-<translation></translation>
+<translation>radius vertikal</translation>
 </phrase>
 
 <phrase>
 <original>Searching each pixel range for edges</original>
-<translation></translation>
+<translation>Menelusuri setiap rentang piksel untuk tepi</translation>
 </phrase>
 
 <!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9757,12 +9768,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>varians sinar</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Membangkitkan balok cahaya</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9826,7 +9837,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>Mengacak aliran lahar</translation>
 </phrase>
 
 <phrase>
@@ -9842,7 +9853,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Pouring smoldering metal onto image</original>
-<translation></translation>
+<translation>Tuangkan logam yang membara ke gambar</translation>
 </phrase>
 
 <!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9853,12 +9864,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>angin</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Biarkan salju turun, biarkan salju turun, biarkan salju turun</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9869,12 +9880,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>benih turbulensi baru</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>pergeseran warna</translation>
 </phrase>
 
 <phrase>
@@ -9900,7 +9911,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>distribusi</translation>
 </phrase>
 
 <phrase>
@@ -9910,7 +9921,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>seragam</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9921,37 +9932,37 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>directionality</original>
-<translation></translation>
+<translation>directionality</translation>
 </phrase>
 
 <phrase>
 <original>gradient flow</original>
-<translation></translation>
+<translation>aliran gradien</translation>
 </phrase>
 
 <phrase>
 <original>iterations</original>
-<translation></translation>
+<translation>iterasi</translation>
 </phrase>
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
+<translation>Menghitung gradien energi (lulus %1 dari %2)</translation>
 </phrase>
 
 <phrase>
 <original>4-way cardinal</original>
-<translation></translation>
+<translation>4 arah kardinal</translation>
 </phrase>
 
 <phrase>
 <original>4-way ordinal</original>
-<translation></translation>
+<translation>Ordinal 4 arah</translation>
 </phrase>
 
 <phrase>
 <original>8-way</original>
-<translation></translation>
+<translation>8 arah</translation>
 </phrase>
 
 <phrase>
@@ -9961,7 +9972,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>smooth</original>
-<translation></translation>
+<translation>halus</translation>
 </phrase>
 
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -10002,7 +10013,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation></translation>
+<translation>Penyaringan bilateral adalah tugas yang kompleks, dan pada gambar besar dibutuhkan waktu yang sangat lama untuk diproses. PhotoDemon dapat memperkirakan parameter tertentu, memberikan dorongan kecepatan yang besar dengan mengorbankan kualitas yang sedikit lebih rendah.</translation>
 </phrase>
 
 <!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -10034,12 +10045,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Harmonic Mean</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Menerapkan filter rata-rata harmonis</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10050,7 +10061,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Applying mean shift filter</original>
-<translation></translation>
+<translation>Menerapkan filter pergeseran rata-rata</translation>
 </phrase>
 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10107,22 +10118,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>cyan angle</original>
-<translation></translation>
+<translation>sudut cyan</translation>
 </phrase>
 
 <phrase>
 <original>magenta angle</original>
-<translation></translation>
+<translation>sudut magenta</translation>
 </phrase>
 
 <phrase>
 <original>yellow angle</original>
-<translation></translation>
+<translation>sudut kuning</translation>
 </phrase>
 
 <phrase>
 <original>Printing image to digital halftone surface</original>
-<translation></translation>
+<translation>Mencetak gambar ke permukaan halftone digital</translation>
 </phrase>
 
 <!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10133,7 +10144,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Crystallizing image</original>
-<translation></translation>
+<translation>Mengkristal gambar</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Crystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10149,7 +10160,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Menghitung fragmen gambar</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10160,47 +10171,47 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>type</original>
-<translation></translation>
+<translation>mengetik</translation>
 </phrase>
 
 <phrase>
 <original>randomness</original>
-<translation></translation>
+<translation>keserampangan</translation>
 </phrase>
 
 <phrase>
 <original>stippling</original>
-<translation></translation>
+<translation>penetapan</translation>
 </phrase>
 
 <phrase>
 <original>Mezzotinting image</original>
-<translation></translation>
+<translation>Gambar Mezzotinting</translation>
 </phrase>
 
 <phrase>
 <original>dot</original>
-<translation></translation>
+<translation>dot</translation>
 </phrase>
 
 <phrase>
 <original>horizontal stroke</original>
-<translation></translation>
+<translation>stroke horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical stroke</original>
-<translation></translation>
+<translation>stroke vertikal</translation>
 </phrase>
 
 <phrase>
 <original>coarse</original>
-<translation></translation>
+<translation>kasar</translation>
 </phrase>
 
 <phrase>
 <original>fine</original>
-<translation></translation>
+<translation>baik</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Mezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -10211,7 +10222,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>synchronize block size</original>
-<translation></translation>
+<translation>menyinkronkan ukuran blok</translation>
 </phrase>
 
 <phrase>
@@ -10226,7 +10237,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Applying mosaic</original>
-<translation></translation>
+<translation>Menerapkan mosaik</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10259,27 +10270,27 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>warna memudar</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>cahaya yang menyebar</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>gandum</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>memudar tepi</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Mengirim gambar kembali pada waktunya</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10311,12 +10322,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>tipe tepi</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Membangkitkan garis besar gambar</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10327,32 +10338,32 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>dithering</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>kurangi warna berdarah</translation>
 </phrase>
 
 <phrase>
 <original>quantization method</original>
-<translation></translation>
+<translation>metode kuantisasi</translation>
 </phrase>
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>melestarikan putih dan hitam</translation>
 </phrase>
 
 <phrase>
 <original>alpha cut-off</original>
-<translation></translation>
+<translation>alpha cut-off</translation>
 </phrase>
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>potong median</translation>
 </phrase>
 
 <phrase>
@@ -10362,22 +10373,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
 <original>binary</original>
-<translation></translation>
+<translation>biner</translation>
 </phrase>
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Membangkitkan palet optimal</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Menerapkan palet baru pada gambar</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -10388,27 +10399,27 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>glow radius</original>
-<translation></translation>
+<translation>radius cahaya</translation>
 </phrase>
 
 <phrase>
 <original>exposure boost</original>
-<translation></translation>
+<translation>dorongan paparan</translation>
 </phrase>
 
 <phrase>
 <original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
+<translation>Menerapkan petroleum jelly ke lensa kamera</translation>
 </phrase>
 
 <phrase>
 <original>classic</original>
-<translation></translation>
+<translation>klasik</translation>
 </phrase>
 
 <phrase>
 <original>subtle</original>
-<translation></translation>
+<translation>halus</translation>
 </phrase>
 
 <!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10559,7 +10570,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>conversion</original>
-<translation></translation>
+<translation>konversi</translation>
 </phrase>
 
 <phrase>
@@ -10663,94 +10674,96 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Batch repair</original>
-<translation></translation>
+<translation>Perbaikan batch</translation>
 </phrase>
 
 <phrase>
 <original>include subfolders</original>
-<translation></translation>
+<translation>termasuk subfolder</translation>
 </phrase>
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation></translation>
+<translation>klik OK untuk memulai operasi perbaikan</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair image files</original>
-<translation></translation>
+<translation>mencoba memperbaiki file gambar</translation>
 </phrase>
 
 <phrase>
 <original>source folder</original>
-<translation></translation>
+<translation>folder sumber</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation></translation>
+<translation>folder tujuan (untuk file yang diperbaiki saja)</translation>
 </phrase>
 
 <phrase>
 <original>repair options</original>
-<translation></translation>
+<translation>pilihan perbaikan</translation>
 </phrase>
 
 <phrase>
 <original>progress</original>
-<translation></translation>
+<translation>kemajuan</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation></translation>
+<translation>mencoba memperbaiki file video dan audio</translation>
 </phrase>
 
 <phrase>
 <original>overwrite matching filenames in the destination folder</original>
-<translation></translation>
+<translation>menimpa nama file yang cocok di folder tujuan</translation>
 </phrase>
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation></translation>
+<translation>Setelah pemulihan berhasil, hapus file asli (tidak diperbaiki)</translation>
 </phrase>
 
 <phrase>
 <original>generating list of files to repair</original>
-<translation></translation>
+<translation>membuat daftar file untuk diperbaiki</translation>
 </phrase>
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation></translation>
+<translation>memproses file %1 dari %2 ( %3 perbaikan yang dilakukan)</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation></translation>
+<translation>Perbaikan selesai  %1 file diperbaiki</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation></translation>
+<translation> %1 file diperbaiki.
+
+R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki tetap berada di lokasi aslinya.</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete</original>
-<translation></translation>
+<translation>Perbaikan selesai</translation>
 </phrase>
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation></translation>
+<translation>Folder sumber tidak berisi file apapun. Silakan coba folder lain.</translation>
 </phrase>
 
 <phrase>
 <original>No files found</original>
-<translation></translation>
+<translation>Tidak ada file yang ditemukan</translation>
 </phrase>
 
 <!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -10781,7 +10794,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>setel pengaturan ekspor untuk format ini</translation>
 </phrase>
 
 <phrase>
@@ -10796,7 +10809,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation></translation>
+<translation>Terapkan tindakan pengeditan foto</translation>
 </phrase>
 
 <phrase>
@@ -10816,7 +10829,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>apply other actions from a saved macro file</original>
-<translation></translation>
+<translation>menerapkan tindakan lain dari file makro yang tersimpan</translation>
 </phrase>
 
 <phrase>
@@ -10831,32 +10844,32 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>current batch list</original>
-<translation></translation>
+<translation>daftar batch saat ini</translation>
 </phrase>
 
 <phrase>
 <original>save list</original>
-<translation></translation>
+<translation>simpan daftar</translation>
 </phrase>
 
 <phrase>
 <original>load list</original>
-<translation></translation>
+<translation>daftar beban</translation>
 </phrase>
 
 <phrase>
 <original>erase entire list</original>
-<translation></translation>
+<translation>hapus seluruh daftar</translation>
 </phrase>
 
 <phrase>
 <original>remove selected image</original>
-<translation></translation>
+<translation>hapus gambar yang dipilih</translation>
 </phrase>
 
 <phrase>
 <original>add individual images</original>
-<translation></translation>
+<translation>tambahkan gambar individu</translation>
 </phrase>
 
 <phrase>
@@ -10866,27 +10879,27 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>add images</original>
-<translation></translation>
+<translation>tambahkan gambar</translation>
 </phrase>
 
 <phrase>
 <original>modify list</original>
-<translation></translation>
+<translation>memodifikasi daftar</translation>
 </phrase>
 
 <phrase>
 <original>load / save list</original>
-<translation></translation>
+<translation>beban</translation>
 </phrase>
 
 <phrase>
 <original>add entire folder(s)</original>
-<translation></translation>
+<translation>tambahkan seluruh folder</translation>
 </phrase>
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation></translation>
+<translation>hapus semua gambar dalam folder ini</translation>
 </phrase>
 
 <phrase>
@@ -11025,7 +11038,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation></translation>
+<translation>Anda belum memilih gambar yang akan diproses! Harap tambahkan satu atau beberapa gambar ke daftar bets.</translation>
 </phrase>
 
 <phrase>
@@ -11035,12 +11048,12 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Sebelum melanjutkan, Anda perlu mengeklik tombol "set ekspor setelan untuk format ini" untuk menentukan setelan ekspor yang ingin Anda gunakan.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Pengaturan ekspor diperlukan</translation>
 </phrase>
 
 <phrase>
@@ -11090,17 +11103,17 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation></translation>
+<translation>Anda bisa menambahkan file ke daftar batch dengan dua cara</translation>
 </phrase>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation></translation>
+<translation>1) Dengan menambahkan satu atau lebih file gambar secara manual menggunakan dialog Open Image standar.</translation>
 </phrase>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation></translation>
+<translation>2) Dengan menambahkan seluruh folder sekaligus. File gambar di dalam folder (atau subfolder, jika dipilih) akan diidentifikasi secara otomatis.</translation>
 </phrase>
 
 <phrase>
@@ -11551,7 +11564,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation></translation>
+<translation>program yang tersedia saat ini (terdaftar dengan judul jendela)</translation>
 </phrase>
 
 <phrase>
@@ -11586,17 +11599,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>specific program</original>
-<translation></translation>
+<translation>program khusus</translation>
 </phrase>
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation></translation>
+<translation>Program ini saat ini diminimalkan. Kembalikan ke ukuran normal untuk hasil terbaik.</translation>
 </phrase>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation></translation>
+<translation>Beberapa program (termasuk aplikasi Windows Store) tidak memungkinkan tangkapan layar langsung. Jika pratinjau aplikasi muncul sebagai kotak hitam, Anda perlu mengambil screenshot desktop penuh, kemudian memotong secara manual area jendela yang diinginkan.</translation>
 </phrase>
 
 <phrase>
@@ -11734,7 +11747,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>salinan</translation>
 </phrase>
 
 <phrase>
@@ -11785,92 +11798,92 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>BMP export options</original>
-<translation></translation>
+<translation>Opsi ekspor BMP</translation>
 </phrase>
 
 <phrase>
 <original>restrict palette size</original>
-<translation></translation>
+<translation>membatasi ukuran palet</translation>
 </phrase>
 
 <phrase>
 <original>unique colors</original>
-<translation></translation>
+<translation>warna yang unik</translation>
 </phrase>
 
 <phrase>
 <original>color model</original>
-<translation></translation>
+<translation>model warna</translation>
 </phrase>
 
 <phrase>
 <original>use RLE compression</original>
-<translation></translation>
+<translation>gunakan kompresi RLE</translation>
 </phrase>
 
 <phrase>
 <original>premultiply alpha</original>
-<translation></translation>
+<translation>premultiply alpha</translation>
 </phrase>
 
 <phrase>
 <original>flip row order (top-down)</original>
-<translation></translation>
+<translation>urutan baris flip (top-down)</translation>
 </phrase>
 
 <phrase>
 <original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation></translation>
+<translation>gunakan pengkodean 15-bit lawas (X1-R5-G5-B5)</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify export options</original>
-<translation></translation>
+<translation>Menunggu pengguna menentukan opsi ekspor</translation>
 </phrase>
 
 <phrase>
 <original>color + transparency</original>
-<translation></translation>
+<translation>transparansi warna</translation>
 </phrase>
 
 <phrase>
 <original>color only</original>
-<translation></translation>
+<translation>hanya warna</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation></translation>
+<translation>32-bpp XRGB (X8-R8-G8-B8)</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp RGB (R8-G8-B8)</original>
-<translation></translation>
+<translation>RGB 24-bpp (R8-G8-B8)</translation>
 </phrase>
 
 <phrase>
 <original>16-bpp (R5-G6-B5)</original>
-<translation></translation>
+<translation>16-bpp (R5-G6-B5)</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (indexed)</original>
-<translation></translation>
+<translation>8-bpp (diindeks)</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (256 shades)</original>
-<translation></translation>
+<translation>8-bpp (256 warna)</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp (16 shades)</original>
-<translation></translation>
+<translation>4-bpp (16 warna)</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp (monochrome)</original>
-<translation></translation>
+<translation>1-bpp (monokrom)</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -11881,27 +11894,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>GIF export options</original>
-<translation></translation>
+<translation>Pilihan ekspor GIF</translation>
 </phrase>
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
-<translation></translation>
+<translation>warna transparan (klik kanan gambar untuk memilih)</translation>
 </phrase>
 
 <phrase>
 <original>metadata</original>
-<translation></translation>
+<translation>metadata</translation>
 </phrase>
 
 <phrase>
 <original>by cut-off</original>
-<translation></translation>
+<translation>dengan cut-off</translation>
 </phrase>
 
 <phrase>
 <original>by color</original>
-<translation></translation>
+<translation>dengan warna</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11973,72 +11986,72 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>compression method</original>
-<translation></translation>
+<translation>metode kompresi</translation>
 </phrase>
 
 <phrase>
 <original>chroma subsampling</original>
-<translation></translation>
+<translation>chroma subsampling</translation>
 </phrase>
 
 <phrase>
 <original>perfect (99)</original>
-<translation></translation>
+<translation>sempurna (99)</translation>
 </phrase>
 
 <phrase>
 <original>excellent (92)</original>
-<translation></translation>
+<translation>bagus (92)</translation>
 </phrase>
 
 <phrase>
 <original>good (80)</original>
-<translation></translation>
+<translation>bagus (80)</translation>
 </phrase>
 
 <phrase>
 <original>average (65)</original>
-<translation></translation>
+<translation>rata-rata (65)</translation>
 </phrase>
 
 <phrase>
 <original>low (40)</original>
-<translation></translation>
+<translation>rendah (40)</translation>
 </phrase>
 
 <phrase>
 <original>custom quality</original>
-<translation></translation>
+<translation>kualitas kustom</translation>
 </phrase>
 
 <phrase>
 <original>baseline</original>
-<translation></translation>
+<translation>baseline</translation>
 </phrase>
 
 <phrase>
 <original>optimized baseline</original>
-<translation></translation>
+<translation>dioptimalkan baseline</translation>
 </phrase>
 
 <phrase>
 <original>progressive</original>
-<translation></translation>
+<translation>progresif</translation>
 </phrase>
 
 <phrase>
 <original>low (default)</original>
-<translation></translation>
+<translation>rendah (default)</translation>
 </phrase>
 
 <phrase>
 <original>color (24-bpp)</original>
-<translation></translation>
+<translation>warna (24-bpp)</translation>
 </phrase>
 
 <phrase>
 <original>black and white (8-bpp)</original>
-<translation></translation>
+<translation>hitam dan putih (8-bpp)</translation>
 </phrase>
 
 <!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -12090,27 +12103,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Pixmap Export Options</original>
-<translation></translation>
+<translation>Opsi Ekspor Pixmap</translation>
 </phrase>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation></translation>
+<translation>ubah ekstensi file agar sesuai dengan model warna</translation>
 </phrase>
 
 <phrase>
 <original>format</original>
-<translation></translation>
+<translation>format</translation>
 </phrase>
 
 <phrase>
 <original>floating-point</original>
-<translation></translation>
+<translation>floating point</translation>
 </phrase>
 
 <phrase>
 <original>ASCII</original>
-<translation></translation>
+<translation>ASCII</translation>
 </phrase>
 
 <!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12121,122 +12134,122 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>PNG export options</original>
-<translation></translation>
+<translation>Pilihan ekspor PNG</translation>
 </phrase>
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Tipe PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>pengaturan dasar</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>pengaturan lanjutan</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>pengaturan metadata</translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation></translation>
+<translation>cepat, file lebih besar</translation>
 </phrase>
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>tulis PNG interlaced</translation>
 </phrase>
 
 <phrase>
 <original>compression level</original>
-<translation></translation>
+<translation>tingkat kompresi</translation>
 </phrase>
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed warna latar belakang (bKGD chunk)</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation></translation>
+<translation>lambat, file yang lebih kecil</translation>
 </phrase>
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>optimasi (OptiPNG)</translation>
 </phrase>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation></translation>
+<translation>klik untuk membuat gambar pratinjau baru</translation>
 </phrase>
 
 <phrase>
 <original>lossy optimization options</original>
-<translation></translation>
+<translation>pilihan optimasi lossy</translation>
 </phrase>
 
 <phrase>
 <original>use dithering to improve quality</original>
-<translation></translation>
+<translation>gunakan dithering untuk meningkatkan kualitas</translation>
 </phrase>
 
 <phrase>
 <original>target quality</original>
-<translation></translation>
+<translation>kualitas target</translation>
 </phrase>
 
 <phrase>
 <original>apply lossy optimizations</original>
-<translation></translation>
+<translation>menerapkan optimasi lossy</translation>
 </phrase>
 
 <phrase>
 <original>optimization level</original>
-<translation></translation>
+<translation>tingkat optimasi</translation>
 </phrase>
 
 <phrase>
 <original>lossless optimization options</original>
-<translation></translation>
+<translation>pilihan optimasi tanpa rugi</translation>
 </phrase>
 
 <phrase>
 <original>standard PNG</original>
-<translation></translation>
+<translation>standar PNG</translation>
 </phrase>
 
 <phrase>
 <original>web-optimized PNG</original>
-<translation></translation>
+<translation>PNG yang dioptimalkan untuk web</translation>
 </phrase>
 
 <phrase>
 <original>basic (default)</original>
-<translation></translation>
+<translation>dasar (default)</translation>
 </phrase>
 
 <phrase>
 <original>moderate</original>
-<translation></translation>
+<translation>moderat</translation>
 </phrase>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation></translation>
+<translation>harap tunggu sementara gambar pratinjau baru dibuat</translation>
 </phrase>
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
+<translation>Pengaturan optimasi lossy ini mengurangi ukuran file sebesar %1.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
@@ -12247,32 +12260,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>TIFF export options</original>
-<translation></translation>
+<translation>Pilihan ekspor TIFF</translation>
 </phrase>
 
 <phrase>
 <original>color compression</original>
-<translation></translation>
+<translation>kompresi warna</translation>
 </phrase>
 
 <phrase>
 <original>monochrome compression</original>
-<translation></translation>
+<translation>kompresi monokrom</translation>
 </phrase>
 
 <phrase>
 <original>page format</original>
-<translation></translation>
+<translation>format halaman</translation>
 </phrase>
 
 <phrase>
 <original>single page (composited image)</original>
-<translation></translation>
+<translation>satu halaman (gambar gabungan)</translation>
 </phrase>
 
 <phrase>
 <original>multipage (one page per layer)</original>
-<translation></translation>
+<translation>multipage (satu halaman per layer)</translation>
 </phrase>
 
 <phrase>
@@ -12282,17 +12295,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>ZIP</original>
-<translation></translation>
+<translation>Zip</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 4</original>
-<translation></translation>
+<translation>Faks CCITT 4</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 3</original>
-<translation></translation>
+<translation>Fax CCITT 3</translation>
 </phrase>
 
 <!-- File_Save_TIFF.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -12319,7 +12332,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Sumbang pengembangan PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -12329,42 +12342,42 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Berpartisipasi dalam pengembangan, desain, atau pekerjaan penerjemahan</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Hubungi penulis</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Download kode sumber program</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>Tinjau kembali program dan lisensi plugin</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Berita terbaru</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>Tentang</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>Kontributor</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon adalah Hak Cipta %1 2001-2017 oleh Tanner Helland dan Kontributor</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12412,12 +12425,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Metadata editor</original>
-<translation></translation>
+<translation>Editor metadata</translation>
 </phrase>
 
 <phrase>
 <original>tools</original>
-<translation></translation>
+<translation>alat</translation>
 </phrase>
 
 <phrase>
@@ -12447,17 +12460,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>visit the ExifTool homepage</original>
-<translation></translation>
+<translation>kunjungi homepage ExifTool</translation>
 </phrase>
 
 <phrase>
 <original>Remove tags that might contain personal information</original>
-<translation></translation>
+<translation>Hapus tag yang mungkin berisi informasi pribadi</translation>
 </phrase>
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation></translation>
+<translation> %1 kelompok dalam gambar ini</translation>
 </phrase>
 
 <phrase>
@@ -12472,37 +12485,37 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>edit tags</original>
-<translation></translation>
+<translation>edit tag</translation>
 </phrase>
 
 <phrase>
 <original>editor options</original>
-<translation></translation>
+<translation>pilihan editor</translation>
 </phrase>
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation></translation>
+<translation>Tandai tag ini untuk dihapus</translation>
 </phrase>
 
 <phrase>
 <original>Reset tag to its original value</original>
-<translation></translation>
+<translation>Setel ulang tag ke nilai aslinya</translation>
 </phrase>
 
 <phrase>
 <original>Mark this entire group for removal</original>
-<translation></translation>
+<translation>Tandai seluruh kelompok ini untuk dihapus</translation>
 </phrase>
 
 <phrase>
 <original>Reset entire group to its original values</original>
-<translation></translation>
+<translation>Setel ulang seluruh grup ke nilai aslinya</translation>
 </phrase>
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation></translation>
+<translation>Dukungan metadata disediakan oleh perpustakaan ExifTool open-source.</translation>
 </phrase>
 
 <phrase>
@@ -12517,142 +12530,142 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>no tags in this category</original>
-<translation></translation>
+<translation>tidak ada tag dalam kategori ini</translation>
 </phrase>
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>Tag "System" disediakan oleh sistem operasi. Mereka tidak tertanam sebagai metadata tradisional.</translation>
 </phrase>
 
 <phrase>
 <original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>Tag "File" diminta oleh format gambar ini. Mereka tidak tertanam sebagai metadata tradisional.</translation>
 </phrase>
 
 <phrase>
 <original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>Profil ICC ditangani secara otomatis oleh PhotoDemon. Mereka tidak tertanam sebagai metadata tradisional.</translation>
 </phrase>
 
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>Tag "Tereka" adalah nilai hipotetis yang disimpulkan dari metadata lain. Mereka tidak tertanam sebagai metadata tradisional.</translation>
 </phrase>
 
 <phrase>
 <original>(" & strID & ") " & strValu</original>
-<translation></translation>
+<translation>("Strid") "strValu</translation>
 </phrase>
 
 <phrase>
 <original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation></translation>
+<translation>(".Tagvalue") ".TagValueFriendl</translation>
 </phrase>
 
 <phrase>
 <original>tag restrictions</original>
-<translation></translation>
+<translation>pembatasan tag</translation>
 </phrase>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation></translation>
+<translation>Ini adalah tag yang dilindungi. Hasil edit diperbolehkan, namun mungkin akan diganti untuk menghasilkan file gambar yang valid.</translation>
 </phrase>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation></translation>
+<translation>Tag ini dibatasi Tidak dapat diedit, dan permintaan penghapusan akan diabaikan jika menghasilkan file yang tidak valid.</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-127 to 127]</original>
-<translation></translation>
+<translation>bilangan bulat hanya [-127 sampai 127]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 255]</original>
-<translation></translation>
+<translation>bilangan bulat hanya [0 sampai 255]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-32,768 to 32,767]</original>
-<translation></translation>
+<translation>bilangan bulat hanya [-32,768 sampai 32,767]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 65,535]</original>
-<translation></translation>
+<translation>bilangan bulat hanya [0 sampai 65.535]</translation>
 </phrase>
 
 <phrase>
 <original>integers only</original>
-<translation></translation>
+<translation>bilangan bulat saja</translation>
 </phrase>
 
 <phrase>
 <original>integers >= 0</original>
-<translation></translation>
+<translation>bilangan bulat> = 0</translation>
 </phrase>
 
 <phrase>
 <original>numbers only</original>
-<translation></translation>
+<translation>hanya angka-angka</translation>
 </phrase>
 
 <phrase>
 <original>numbers >= 0</original>
-<translation></translation>
+<translation>angka> = 0</translation>
 </phrase>
 
 <phrase>
 <original>file position marker</original>
-<translation></translation>
+<translation>penanda posisi file</translation>
 </phrase>
 
 <phrase>
 <original>binary data</original>
-<translation></translation>
+<translation>data biner</translation>
 </phrase>
 
 <phrase>
 <original>digits</original>
-<translation></translation>
+<translation>digit</translation>
 </phrase>
 
 <phrase>
 <original>dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</original>
-<translation></translation>
+<translation>tanggal saja (YYYY: mm: dd HH: MM: SS [.ss] [</translation>
 </phrase>
 
 <phrase>
 <original>true or false only</original>
-<translation></translation>
+<translation>benar atau salah saja</translation>
 </phrase>
 
 <phrase>
 <original>digits only</original>
-<translation></translation>
+<translation>digit saja</translation>
 </phrase>
 
 <phrase>
 <original>%1 characters max</original>
-<translation></translation>
+<translation> %1 karakter maks</translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation></translation>
+<translation> %1 bytes maks</translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation></translation>
+<translation> %1 angka maks</translation>
 </phrase>
 
 <phrase>
 <original>list of %1, one entry per line</original>
-<translation></translation>
+<translation>daftar %1, satu entri per baris</translation>
 </phrase>
 
 <!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
@@ -12789,7 +12802,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>border regions</original>
-<translation></translation>
+<translation>daerah perbatasan</translation>
 </phrase>
 
 <phrase>
@@ -12804,32 +12817,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>keep current</original>
-<translation></translation>
+<translation>tetap lancar</translation>
 </phrase>
 
 <phrase>
 <original>enlarge to fit</original>
-<translation></translation>
+<translation>diperbesar agar sesuai</translation>
 </phrase>
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation></translation>
+<translation>tetangga terdekat</translation>
 </phrase>
 
 <phrase>
 <original>bilinear</original>
-<translation></translation>
+<translation>bilinear</translation>
 </phrase>
 
 <phrase>
 <original>bicubic</original>
-<translation></translation>
+<translation>bicubic</translation>
 </phrase>
 
 <phrase>
 <original>fill with color</original>
-<translation></translation>
+<translation>isi dengan warna</translation>
 </phrase>
 
 <phrase>
@@ -12907,17 +12920,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>flatten behavior</original>
-<translation></translation>
+<translation>ratakan perilaku</translation>
 </phrase>
 
 <phrase>
 <original>keep transparency</original>
-<translation></translation>
+<translation>menjaga transparansi</translation>
 </phrase>
 
 <phrase>
 <original>remove transparency</original>
-<translation></translation>
+<translation>hapus transparansi</translation>
 </phrase>
 
 <!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12949,7 +12962,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Melepaskan transparansi</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13018,12 +13031,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>grow radius</original>
-<translation></translation>
+<translation>tumbuh jari-jari</translation>
 </phrase>
 
 <phrase>
 <original>shrink radius</original>
-<translation></translation>
+<translation>menyusut radius</translation>
 </phrase>
 
 <phrase>
@@ -13060,17 +13073,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>overview</original>
-<translation></translation>
+<translation>ikhtisar</translation>
 </phrase>
 
 <phrase>
 <original>layers</original>
-<translation></translation>
+<translation>lapisan</translation>
 </phrase>
 
 <phrase>
 <original>color selector</original>
-<translation></translation>
+<translation>pemilih warna</translation>
 </phrase>
 
 <!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -13107,17 +13120,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>n-d</original>
-<translation></translation>
+<translation>n-d</translation>
 </phrase>
 
 <phrase>
 <original>select</original>
-<translation></translation>
+<translation>memilih</translation>
 </phrase>
 
 <phrase>
 <original>paint</original>
-<translation></translation>
+<translation>cat</translation>
 </phrase>
 
 <phrase>
@@ -13127,32 +13140,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation></translation>
+<translation>Alat file: buat, muat, dan simpan file gambar</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation></translation>
+<translation>Membuka</translation>
 </phrase>
 
 <phrase>
 <original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation></translation>
+<translation>Alat yang tidak merusak: memindahkan, memutar, atau menerapkan penyesuaian foto tertentu tanpa memodifikasi gambar secara permanen</translation>
 </phrase>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation></translation>
+<translation>Pilih alat: isolasikan bagian gambar atau lapisan untuk pengeditan lebih lanjut</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation></translation>
+<translation>Alat teks: membuat dan mengedit lapisan teks</translation>
 </phrase>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation></translation>
+<translation>Alat cat: gunakan mouse, touchpad, atau tablet pena untuk menerapkan sapuan kuas ke gambar atau lapisan</translation>
 </phrase>
 
 <phrase>
@@ -13232,7 +13245,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Tombol pintasan: %1</translation>
 </phrase>
 
 <phrase>
@@ -13242,7 +13255,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Pilih warna dari gambar</translation>
 </phrase>
 
 <phrase>
@@ -13277,32 +13290,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Text (basic)</original>
-<translation></translation>
+<translation>Teks (dasar)</translation>
 </phrase>
 
 <phrase>
 <original>Typography (advanced)</original>
-<translation></translation>
+<translation>Tipografi (lanjutan)</translation>
 </phrase>
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation></translation>
+<translation>Pensil (sikat berujung keras)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation></translation>
+<translation>Kuas (sikat miring)</translation>
 </phrase>
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Penghapus</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Ember cat (isi dengan warna)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
@@ -13313,27 +13326,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>radius sampel</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>sampel semua lapisan</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13344,17 +13357,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>spacing</original>
-<translation></translation>
+<translation>jarak</translation>
 </phrase>
 
 <phrase>
 <original>hardness</original>
-<translation></translation>
+<translation>kekerasan</translation>
 </phrase>
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>mengalir</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13365,12 +13378,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>isi sumber</translation>
 </phrase>
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antialiased</translation>
 </phrase>
 
 <phrase>
@@ -13390,17 +13403,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>Campur</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>warna saat ini</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>sikat kustom</translation>
 </phrase>
 
 <phrase>
@@ -13420,27 +13433,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Mengisi mendukung berbagai gaya. Klik untuk beralih antara warna solid, pola, dan gaya gradien.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Toleransi mengendalikan seberapa mirip dua piksel sebelum menyebarkan isi di antara keduanya.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Biasanya, isilah operasi analisa keseluruhan gambar. Anda juga bisa menganalisa hanya layer aktif.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Biasanya, mengisi menyebar dari piksel target, menambahkan piksel tetangga saat berjalan. Anda juga bisa mengaturnya untuk menganalisis keseluruhan gambar, tanpa memperhatikan kontinuitas.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Opsi ini mengontrol bagaimana piksel dianalisis saat menambahkannya ke isi.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13451,27 +13464,27 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>transform quality</original>
-<translation></translation>
+<translation>mengubah kualitas</translation>
 </phrase>
 
 <phrase>
 <original>layer position (x, y)</original>
-<translation></translation>
+<translation>posisi lapisan (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>layer size (w, h)</original>
-<translation></translation>
+<translation>ukuran lapisan (w, h)</translation>
 </phrase>
 
 <phrase>
 <original>layer angle</original>
-<translation></translation>
+<translation>sudut lapisan</translation>
 </phrase>
 
 <phrase>
 <original>layer shear (x, y)</original>
-<translation></translation>
+<translation>lapisan geser (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -13496,7 +13509,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>show resize nodes</original>
-<translation></translation>
+<translation>tampilkan resize node</translation>
 </phrase>
 
 <phrase>
@@ -13506,37 +13519,37 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>show rotate nodes</original>
-<translation></translation>
+<translation>tampilkan node putar</translation>
 </phrase>
 
 <phrase>
 <original>Make layer changes permanent</original>
-<translation></translation>
+<translation>Buat perubahan lapisan permanen</translation>
 </phrase>
 
 <phrase>
 <original>size and position</original>
-<translation></translation>
+<translation>ukuran dan posisi</translation>
 </phrase>
 
 <phrase>
 <original>angle and shear</original>
-<translation></translation>
+<translation>sudut dan geser</translation>
 </phrase>
 
 <phrase>
 <original>tool settings</original>
-<translation></translation>
+<translation>pengaturan alat</translation>
 </phrase>
 
 <phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation></translation>
+<translation>Buat lapisan saat ini berubah (ukuran, sudut, dan geser) permanen. Tindakan ini tidak pernah diperlukan, namun jika viewport rendering lamban, ini bisa meningkatkan kinerja.</translation>
 </phrase>
 
 <phrase>
 <original>Nearest neighbor</original>
-<translation></translation>
+<translation>Tetangga terdekat</translation>
 </phrase>
 
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -13599,37 +13612,37 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>menyoroti</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>kotak lampu</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>semut</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>berbulu</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>pedalaman</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>bagian luar</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>berbatasan</translation>
 </phrase>
 
 <phrase>
@@ -13705,17 +13718,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>font face</original>
-<translation></translation>
+<translation>wajah font</translation>
 </phrase>
 
 <phrase>
 <original>font size</original>
-<translation></translation>
+<translation>ukuran huruf</translation>
 </phrase>
 
 <phrase>
 <original>font style</original>
-<translation></translation>
+<translation>gaya tulisan</translation>
 </phrase>
 
 <phrase>
@@ -13725,32 +13738,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>alignment</original>
-<translation></translation>
+<translation>penjajaran</translation>
 </phrase>
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>pengaturan</translation>
 </phrase>
 
 <phrase>
 <original>Crisp</original>
-<translation></translation>
+<translation>Garing</translation>
 </phrase>
 
 <phrase>
 <original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation></translation>
+<translation>Lapisan ini adalah lapisan tipografi. Untuk mengeditnya dengan alat teks dasar, Anda harus terlebih dahulu mengubahnya menjadi lapisan teks dasar.</translation>
 </phrase>
 
 <phrase>
 <original>(This action is non-destructive.)</original>
-<translation></translation>
+<translation>(Tindakan ini tidak merusak).</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to a basic text layer.</original>
-<translation></translation>
+<translation>Klik di sini untuk mengubah lapisan ini menjadi lapisan teks dasar.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -13761,142 +13774,142 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>remap</original>
-<translation></translation>
+<translation>remap</translation>
 </phrase>
 
 <phrase>
 <original>jitter</original>
-<translation></translation>
+<translation>naik opelet</translation>
 </phrase>
 
 <phrase>
 <original>mirror</original>
-<translation></translation>
+<translation>cermin</translation>
 </phrase>
 
 <phrase>
 <original>fill background</original>
-<translation></translation>
+<translation>isi latar belakang</translation>
 </phrase>
 
 <phrase>
 <original>border style</original>
-<translation></translation>
+<translation>gaya border</translation>
 </phrase>
 
 <phrase>
 <original>fill text</original>
-<translation></translation>
+<translation>isi teks</translation>
 </phrase>
 
 <phrase>
 <original>outline text</original>
-<translation></translation>
+<translation>garis besar teks</translation>
 </phrase>
 
 <phrase>
 <original>line wrap</original>
-<translation></translation>
+<translation>bungkus garis</translation>
 </phrase>
 
 <phrase>
 <original>h. padding</original>
-<translation></translation>
+<translation>h. lapisan</translation>
 </phrase>
 
 <phrase>
 <original>v. padding</original>
-<translation></translation>
+<translation>v. padding</translation>
 </phrase>
 
 <phrase>
 <original>character</original>
-<translation></translation>
+<translation>karakter</translation>
 </phrase>
 
 <phrase>
 <original>paragraph</original>
-<translation></translation>
+<translation>ayat</translation>
 </phrase>
 
 <phrase>
 <original>visual</original>
-<translation></translation>
+<translation>visual</translation>
 </phrase>
 
 <phrase>
 <original>font</original>
-<translation></translation>
+<translation>font</translation>
 </phrase>
 
 <phrase>
 <original>special</original>
-<translation></translation>
+<translation>khusus</translation>
 </phrase>
 
 <phrase>
 <original>normal</original>
-<translation></translation>
+<translation>normal</translation>
 </phrase>
 
 <phrase>
 <original>crisp</original>
-<translation></translation>
+<translation>garing</translation>
 </phrase>
 
 <phrase>
 <original>both</original>
-<translation></translation>
+<translation>kedua</translation>
 </phrase>
 
 <phrase>
 <original>hiragana</original>
-<translation></translation>
+<translation>hiragana</translation>
 </phrase>
 
 <phrase>
 <original>katakana</original>
-<translation></translation>
+<translation>katakana</translation>
 </phrase>
 
 <phrase>
 <original>simplified Chinese</original>
-<translation></translation>
+<translation>Cina disederhanakan</translation>
 </phrase>
 
 <phrase>
 <original>traditional Chinese</original>
-<translation></translation>
+<translation>Cina tradisional</translation>
 </phrase>
 
 <phrase>
 <original>Titlecase</original>
-<translation></translation>
+<translation>Titlecase</translation>
 </phrase>
 
 <phrase>
 <original>manual only</original>
-<translation></translation>
+<translation>hanya manual</translation>
 </phrase>
 
 <phrase>
 <original>characters</original>
-<translation></translation>
+<translation>karakter</translation>
 </phrase>
 
 <phrase>
 <original>words</original>
-<translation></translation>
+<translation>kata-kata</translation>
 </phrase>
 
 <phrase>
 <original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation></translation>
+<translation>Lapisan ini adalah lapisan teks dasar. Untuk mengeditnya dengan alat tipografi, Anda harus terlebih dulu mengubahnya menjadi lapisan tipografi.</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to a typography layer.</original>
-<translation></translation>
+<translation>Klik di sini untuk mengubah lapisan ini menjadi lapisan tipografi.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -14324,12 +14337,12 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>Masukan mouse dengan resolusi tinggi</translation>
 </phrase>
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>reset semua pengaturan program</translation>
 </phrase>
 
 <phrase>
@@ -14349,12 +14362,12 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>start over</original>
-<translation></translation>
+<translation>mulai dari awal</translation>
 </phrase>
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>folder pengaturan aplikasi</translation>
 </phrase>
 
 <phrase>
@@ -14384,12 +14397,12 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>cara pintas file yang baru saja digunakan</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>teks judul bar judul utama</translation>
 </phrase>
 
 <phrase>
@@ -14404,7 +14417,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>jendela utama</translation>
 </phrase>
 
 <phrase>
@@ -14419,37 +14432,37 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>tampilkan maksud rendering</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>display yang tersedia</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>matikan tampilan manajemen warna</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>gunakan profil sistem saat ini untuk setiap tampilan</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>profil warna untuk tampilan ini</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>menampilkan kebijakan</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>gunakan profil khusus untuk setiap tampilan</translation>
 </phrase>
 
 <phrase>
@@ -14484,7 +14497,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation></translation>
+<translation>daftar PhotoDemon sebagai perangkat lunak pengeditan terakhir yang digunakan</translation>
 </phrase>
 
 <phrase>
@@ -14504,22 +14517,22 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation></translation>
+<translation>paksa ekstrak tag tipe biner seperti Base64 (lambat)</translation>
 </phrase>
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation></translation>
+<translation>perkirakan pengaturan kualitas JPEG asli</translation>
 </phrase>
 
 <phrase>
 <original>extract unknown tags</original>
-<translation></translation>
+<translation>ekstrak tag yang tidak dikenal</translation>
 </phrase>
 
 <phrase>
 <original>automatically hide duplicate tags</original>
-<translation></translation>
+<translation>secara otomatis menyembunyikan tag duplikat</translation>
 </phrase>
 
 <phrase>
@@ -14596,27 +14609,29 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Semua pengaturan akan dikembalikan ke nilai defaultnya. Tindakan ini tidak dapat dibatalkan.
+
+A Anda yakin ingin melanjutkan?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Reset PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>hanya gambar compact - image saja</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>deskriptif - lokasi gambar penuh, termasuk folder</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Bilah judul jendela PhotoDemon utama menampilkan informasi tentang gambar yang dimuat saat ini. Gunakan preferensi ini untuk mengontrol berapa banyak informasi yang ditampilkan.</translation>
 </phrase>
 
 <phrase>
@@ -14771,7 +14786,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Mematikan tampilan manajemen warna bisa memberikan dorongan kinerja kecil. Jika layar Anda saat ini tidak dikonfigurasi untuk pengelolaan warna, gunakan pengaturan ini.</translation>
 </phrase>
 
 <phrase>
@@ -14796,7 +14811,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Jika Anda tidak tahu pengaturan pengaturan ini, setel ke "Perceptual". Perseptual rendering intent adalah pilihan terbaik bagi sebagian besar pengguna.</translation>
 </phrase>
 
 <phrase>
@@ -14853,7 +14868,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Anda telah menempatkan PhotoDemon dalam folder sistem yang dibatasi. Tindakan pencegahan keamanan mencegah PhotoDemon memodifikasi folder ini, jadi pembaruan otomatis sekarang dinonaktifkan. Untuk mengembalikannya, Anda harus memindahkan PhotoDemon ke folder non-admin, seperti Desktop, Documents, atau Downloads.
+
+ (Jika Anda meninggalkan PhotoDemon di tempat itu, jangan lupa kunjungi photodemon.org dari waktu ke waktu untuk memeriksa versi baru.)</translation>
 </phrase>
 
 <phrase>
@@ -14867,7 +14884,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Bila menggunakan Remote Desktop atau VM (Virtual Machine), input mouse dengan resolusi tinggi mungkin tidak bekerja dengan benar. Ini adalah bug Windows yang sudah lama ada. Dalam situasi ini, Anda dapat menggunakan pengaturan ini untuk memulihkan perilaku mouse yang benar.</translation>
 </phrase>
 
 <phrase>
@@ -14922,12 +14939,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation></translation>
+<translation>PERINGATAN: folder ini tidak valid (akses dilarang). Berikan folder yang valid Jika folder baru tidak tersedia, PhotoDemon akan menggunakan folder temp sistem.</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation></translation>
+<translation>Lokasi folder sementara yang baru ini tidak akan berpengaruh sampai Anda me-restart program.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
@@ -14943,27 +14960,27 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>Reset all plugin options</original>
-<translation></translation>
+<translation>Setel ulang semua pilihan plugin</translation>
 </phrase>
 
 <phrase>
 <original>forcibly disable</original>
-<translation></translation>
+<translation>secara paksa dinonaktifkan</translation>
 </phrase>
 
 <phrase>
 <original>homepage</original>
-<translation></translation>
+<translation>beranda</translation>
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation></translation>
+<translation>lisensi</translation>
 </phrase>
 
 <phrase>
 <original>%1 summary</original>
-<translation></translation>
+<translation> %1 ringkasan</translation>
 </phrase>
 
 <phrase>
@@ -15018,12 +15035,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>installed and up to date</original>
-<translation></translation>
+<translation>terinstal dan up to date</translation>
 </phrase>
 
 <phrase>
 <original>installed, but version is unexpected</original>
-<translation></translation>
+<translation>terinstal, tapi versi tak terduga</translation>
 </phrase>
 
 <phrase>
@@ -15033,7 +15050,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrase>
 <original>not installed</original>
-<translation></translation>
+<translation>tidak terpasang</translation>
 </phrase>
 
 <phrase>

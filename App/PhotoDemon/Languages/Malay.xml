@@ -779,12 +779,12 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Fail PDI " %1" mengandungi data termampat, tetapi plugin yang diperlukan hilang atau dilumpuhkan.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Plugin pemampatan hilang</translation>
 </phrase>
 
 <phrase>
@@ -9831,7 +9831,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>rawak aliran lava</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>benih pergolakan baru</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>peralihan warna</translation>
 </phrase>
 
 <phrase>
@@ -10264,27 +10264,27 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>pudar warna</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>cahaya menyebar</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>bijian</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>pinggang pudar</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Menghantar imej kembali dalam masa</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13239,7 +13239,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Kekunci pintasan: %1</translation>
 </phrase>
 
 <phrase>

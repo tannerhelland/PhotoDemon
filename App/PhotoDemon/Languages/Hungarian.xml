@@ -778,12 +778,12 @@ To támogatásának engedélyezéséhez Ez a képformátum másolja a FreeImage.
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>A " %1" PDI fájl tömörített adatokat tartalmaz, de a szükséges bővítmény hiányzik vagy letiltott.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Hiányzik a tömörítő plugin</translation>
 </phrase>
 
 <phrase>
@@ -9814,7 +9814,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>véletlenszerűen kezeli a láva áramlását</translation>
 </phrase>
 
 <phrase>
@@ -9857,12 +9857,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>új turbulencia mag</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>színeltolódás</translation>
 </phrase>
 
 <phrase>
@@ -10247,27 +10247,27 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>a szín elhalványul</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>diffúz fény</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>gabona</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>elhalványodik</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>A kép visszaadása időben</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13221,7 +13221,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Gyorsbillentyű: %1</translation>
 </phrase>
 
 <phrase>

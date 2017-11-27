@@ -398,12 +398,12 @@ If проблемот продолжи, ве молиме да го пријав
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Пополнете ја алатката</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Пополнете слој</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -778,12 +778,12 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>PDI-Датотеката " %1" содржи компресирани податоци, но потребниот додаток недостасува или е оневозможен.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Недостасува компресија</translation>
 </phrase>
 
 <phrase>
@@ -1034,7 +1034,7 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Избриши</translation>
 </phrase>
 
 <phrase>
@@ -1044,22 +1044,22 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Заклучен</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Перцептуален</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>Релативна колориметриска</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Апсолутна колориметриска</translation>
 </phrase>
 
 <phrase>
@@ -1069,7 +1069,7 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>боја и непроѕирност</translation>
 </phrase>
 
 <phrase>
@@ -1079,22 +1079,22 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>црвена само</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>само зелена</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>само сина</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>само алфа</translation>
 </phrase>
 
 <phrase>
@@ -1135,7 +1135,7 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Видливи</translation>
 </phrase>
 
 <phrase>
@@ -1247,7 +1247,7 @@ To овозможи поддршка за овој формат на слика,
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation></translation>
+<translation>Предупредување - не е пронајдена датотека: %1</translation>
 </phrase>
 
 <phrase>
@@ -1266,19 +1266,21 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation></translation>
+<translation>Предупредување - датотека заклучена: %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation></translation>
+<translation>За жал, датотеката " %1" моментално е заклучена од друга програма на овој компјутер. 
+
+Посете ја оваа датотека во која било друга апликација, а потоа пробајте повторно.</translation>
 </phrase>
 
 <phrase>
 <original>File locked</original>
-<translation></translation>
+<translation>Датотеката е заклучена</translation>
 </phrase>
 
 <phrase>
@@ -1523,7 +1525,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <phrase>
 <original>Open all recent images</original>
-<translation></translation>
+<translation>Отвори ги сите неодамнешни слики</translation>
 </phrase>
 
 <phrase>
@@ -1567,12 +1569,12 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Боја на удар</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>Боја слој</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -1615,7 +1617,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>BSD лиценца</translation>
 </phrase>
 
 <phrase>
@@ -1719,7 +1721,7 @@ To овозможи поддршка скенер, молам копирајте
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Скенирањето е откажано</translation>
 </phrase>
 
 <phrase>
@@ -1740,7 +1742,7 @@ To овозможи поддршка скенер, молам копирајте
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Најдени се повеќегодишни слики. Вчитувам страница # %1 од %2</translation>
 </phrase>
 
 <phrase>
@@ -1969,17 +1971,17 @@ Error број %
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>хоризонтална смолкнување</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>вертикална смолкнување</translation>
 </phrase>
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>алфа режим</translation>
 </phrase>
 
 <phrase>
@@ -2049,7 +2051,7 @@ Error број %
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>тип на текст</translation>
 </phrase>
 
 <phrase>
@@ -2059,12 +2061,12 @@ Error број %
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>пренесување на зборови</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>пополнете</translation>
 </phrase>
 
 <phrase>
@@ -2074,7 +2076,7 @@ Error број %
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>преглед</translation>
 </phrase>
 
 <phrase>
@@ -2089,7 +2091,7 @@ Error број %
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>стил на позадина</translation>
 </phrase>
 
 <phrase>
@@ -2099,7 +2101,7 @@ Error број %
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>стил на границата на позадина</translation>
 </phrase>
 
 <phrase>
@@ -2109,32 +2111,32 @@ Error број %
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>маргина</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>карактер remapping</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>карактер проред</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>карактерна ориентација</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>хоризонтална треперење</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>вертикална треперење</translation>
 </phrase>
 
 <phrase>
@@ -2144,7 +2146,7 @@ Error број %
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>пресликување</translation>
 </phrase>
 
 <phrase>
@@ -3790,7 +3792,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>композиција на боја</translation>
 </phrase>
 
 <phrase>
@@ -3800,17 +3802,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>формат на транспарентност</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>боја формат</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>транспарентен пресек</translation>
 </phrase>
 
 <phrase>
@@ -3820,7 +3822,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>транспарентна боја</translation>
 </phrase>
 
 <phrase>
@@ -4222,7 +4224,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>прегледајте метаподатоци пред да зачувате</translation>
 </phrase>
 
 <phrase>
@@ -4275,12 +4277,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>new</original>
-<translation></translation>
+<translation>ново</translation>
 </phrase>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>оригинал</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4843,7 +4845,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Основен слој</translation>
 </phrase>
 
 <phrase>
@@ -4858,7 +4860,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Од видливи слоеви</translation>
 </phrase>
 
 <phrase>
@@ -5128,22 +5130,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Максимум</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Минимум</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Сменете лево</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Сменете десно</translation>
 </phrase>
 
 <phrase>
@@ -5183,7 +5185,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Екран</translation>
 </phrase>
 
 <phrase>
@@ -5198,7 +5200,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (негативен филм)</translation>
 </phrase>
 
 <phrase>
@@ -5223,7 +5225,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Монохроматски до сива боја</translation>
 </phrase>
 
 <phrase>
@@ -5303,7 +5305,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Пластична фолија</translation>
 </phrase>
 
 <phrase>
@@ -5373,7 +5375,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation></translation>
+<translation>Исправи постоечка дисторзија</translation>
 </phrase>
 
 <phrase>
@@ -5383,7 +5385,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Lens</original>
-<translation></translation>
+<translation>Леќи</translation>
 </phrase>
 
 <phrase>
@@ -5518,7 +5520,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Snow</original>
-<translation></translation>
+<translation>Снег</translation>
 </phrase>
 
 <phrase>
@@ -5553,7 +5555,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Harmonic mean</original>
-<translation></translation>
+<translation>Хармонично значи</translation>
 </phrase>
 
 <phrase>
@@ -5623,7 +5625,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Палетирај</translation>
 </phrase>
 
 <phrase>
@@ -5703,7 +5705,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Тема</translation>
 </phrase>
 
 <phrase>
@@ -5753,7 +5755,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Изградба на тематски пакет</translation>
 </phrase>
 
 <phrase>
@@ -5853,7 +5855,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Поддржи ни мала донација (ви благодариме!)</translation>
 </phrase>
 
 <phrase>
@@ -5873,22 +5875,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>Посетете веб-страница на PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Преземи изворниот код на PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Прочитајте лиценца и услови за користење</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>За</translation>
 </phrase>
 
 <phrase>
@@ -6011,7 +6013,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Нов слој од видливи слоеви</translation>
 </phrase>
 
 <phrase>
@@ -6835,12 +6837,12 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <phrase>
 <original>Color temperature</original>
-<translation></translation>
+<translation>Температура на бојата</translation>
 </phrase>
 
 <phrase>
 <original>method</original>
-<translation></translation>
+<translation>метод</translation>
 </phrase>
 
 <phrase>
@@ -6850,12 +6852,12 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <phrase>
 <original>warmer</original>
-<translation></translation>
+<translation>потопло</translation>
 </phrase>
 
 <phrase>
 <original>cooler</original>
-<translation></translation>
+<translation>кулер</translation>
 </phrase>
 
 <phrase>
@@ -8062,47 +8064,47 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <phrase>
 <original>randomize</original>
-<translation></translation>
+<translation>рандомизираат</translation>
 </phrase>
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>започнете непроѕирност</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>започнете со боја</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>крај непроѕирност</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>крајот боја</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>се разликуваат нијанси</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>разликуваат сатурација</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>разликуваат светлост</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>се разликуваат алфа</translation>
 </phrase>
 
 <phrase>
@@ -8209,12 +8211,12 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <phrase>
 <original>No</original>
-<translation></translation>
+<translation>Не</translation>
 </phrase>
 
 <phrase>
 <original>Yes</original>
-<translation></translation>
+<translation>Да</translation>
 </phrase>
 
 <!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8402,72 +8404,72 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Тема и јазик</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>икони</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>интерфејс акцент боја</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>интерфејс тема</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>јазик</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>темно</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>светлина</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>кафеава</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>розова</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>виолетова</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>teal</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>стандардно</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>монохроматски</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Превод од %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -8919,17 +8921,17 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>light angle</original>
-<translation></translation>
+<translation>светлосен агол</translation>
 </phrase>
 
 <phrase>
 <original>light intensity</original>
-<translation></translation>
+<translation>интензитет на светлина</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation></translation>
+<translation>Завиткување на сликата во пластика</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9089,7 +9091,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>precise</original>
-<translation></translation>
+<translation>прецизен</translation>
 </phrase>
 
 <!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9253,27 +9255,27 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>correction type</original>
-<translation></translation>
+<translation>корекција тип</translation>
 </phrase>
 
 <phrase>
 <original>(a) edges</original>
-<translation></translation>
+<translation>(а) рабови</translation>
 </phrase>
 
 <phrase>
 <original>(b) midpoints</original>
-<translation></translation>
+<translation>(б) средни точки</translation>
 </phrase>
 
 <phrase>
 <original>(c) whole image</original>
-<translation></translation>
+<translation>(в) целосна слика</translation>
 </phrase>
 
 <phrase>
 <original>(d) zoom</original>
-<translation></translation>
+<translation>(г) зумирање</translation>
 </phrase>
 
 <phrase>
@@ -9283,7 +9285,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation></translation>
+<translation>можете исто така да поставите централна позиција со кликање на прозорецот за прегледување</translation>
 </phrase>
 
 <phrase>
@@ -9760,12 +9762,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>ray variance</original>
-<translation></translation>
+<translation>ray варијанса</translation>
 </phrase>
 
 <phrase>
 <original>Generating light beams</original>
-<translation></translation>
+<translation>Генерирање на лесни греди</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9829,7 +9831,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>рандомизирање на протокот на лава</translation>
 </phrase>
 
 <phrase>
@@ -9856,12 +9858,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>wind</original>
-<translation></translation>
+<translation>ветер</translation>
 </phrase>
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation></translation>
+<translation>Нека снег, нека снег, нека снег</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9872,12 +9874,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>ново семе од турбуленции</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>промена во боја</translation>
 </phrase>
 
 <phrase>
@@ -9903,7 +9905,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>distribution</original>
-<translation></translation>
+<translation>дистрибуција</translation>
 </phrase>
 
 <phrase>
@@ -9913,7 +9915,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>uniform</original>
-<translation></translation>
+<translation>униформа</translation>
 </phrase>
 
 <!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10037,12 +10039,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>Harmonic Mean</original>
-<translation></translation>
+<translation>Хармонично значи</translation>
 </phrase>
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation></translation>
+<translation>Примена на хармониски среден филтер</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10152,7 +10154,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>Calculating image fragments</original>
-<translation></translation>
+<translation>Пресметување фрагменти на слики</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10262,27 +10264,27 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>бојата исчезнува</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>дифузна светлина</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>жито</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>бледеат рабови</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Испраќање на сликата назад во времето</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10314,12 +10316,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>тип на работ</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Генерирање на сликата</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10330,12 +10332,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>dithering</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>намалување на крварењето во боја</translation>
 </phrase>
 
 <phrase>
@@ -10345,7 +10347,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>чувајте бело и црно</translation>
 </phrase>
 
 <phrase>
@@ -10355,7 +10357,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>средна сече</translation>
 </phrase>
 
 <phrase>
@@ -10365,7 +10367,7 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10375,12 +10377,12 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Генерирање на оптимална палета</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Примена на нова палета на сликата</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -10786,7 +10788,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>поставете поставки за извоз за овој формат</translation>
 </phrase>
 
 <phrase>
@@ -11040,12 +11042,12 @@ Would сакате да ги зачувате вашата листа сериј
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Пред да продолжите, треба да кликнете на копчето "Постави ги поставките за извоз за овој формат" за да одредите какви поставки за извоз сакате да ги користите.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Потребни се поставки за извоз</translation>
 </phrase>
 
 <phrase>
@@ -11739,7 +11741,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>копии</translation>
 </phrase>
 
 <phrase>
@@ -12131,22 +12133,22 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Тип PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>основни прилагодувања</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>напредни поставувања</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>поставки за метаподатоци</translation>
 </phrase>
 
 <phrase>
@@ -12156,7 +12158,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>напиши испреплетен PNG</translation>
 </phrase>
 
 <phrase>
@@ -12166,7 +12168,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>вградена боја на позадина (bKGD парче)</translation>
 </phrase>
 
 <phrase>
@@ -12176,7 +12178,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>оптимизација (OptiPNG)</translation>
 </phrase>
 
 <phrase>
@@ -12324,7 +12326,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Донирајте до развој на PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -12334,42 +12336,42 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Учествувајте во развојот, дизајнот или преводот</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Контактирајте го авторот</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Преземете го изворниот код на програмата</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>Прегледајте програма и лиценци за приклучоци</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Последни вести</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>За</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>Соработници</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon е авторски права %1 2001-2017 од страна на Tanner Helland и соработници</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12954,7 +12956,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Removing transparency</original>
-<translation></translation>
+<translation>Отстранување на транспарентност</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13237,7 +13239,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Копче за кратенка: %1</translation>
 </phrase>
 
 <phrase>
@@ -13247,7 +13249,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Изберете бои од сликата</translation>
 </phrase>
 
 <phrase>
@@ -13292,22 +13294,22 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation></translation>
+<translation>Молив (цврста четка)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation></translation>
+<translation>Маска за четка (мека четка)</translation>
 </phrase>
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Бришач</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Кофа со боја (пополнете со боја)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
@@ -13318,27 +13320,27 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>примерок радиус</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>ги тестираат сите слоеви</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13354,12 +13356,12 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>hardness</original>
-<translation></translation>
+<translation>цврстина</translation>
 </phrase>
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>проток</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13370,12 +13372,12 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>пополнете извор</translation>
 </phrase>
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antialiased</translation>
 </phrase>
 
 <phrase>
@@ -13395,17 +13397,17 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>мешавина</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>тековна боја</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>обичај четка</translation>
 </phrase>
 
 <phrase>
@@ -13425,27 +13427,27 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Пополнува поддршка многу различни стилови. Кликни за да се префрлате помеѓу цврсти бои, шаблони и стилови на градиент.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Толеранцијата контролира колку слични два пиксели мора да бидат пред ширењето на пополнувањето меѓу нив.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Нормално, операциите за пополнување ја анализираат целата слика. Можете исто така да го анализирате само активниот слој.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Нормално, пополнувањата се шират од цел пиксел, додавајќи соседни пиксели како што оди. Можете да го поставите да ја анализирате целата слика, без оглед на континуитетот.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Оваа опција контролира како се анализираат пикселите при додавање на нив до пополнување.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13604,37 +13606,37 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>нагласи</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>светло</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>мравки</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>пернат</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>внатрешни работи</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>екстериер</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>граница</translation>
 </phrase>
 
 <phrase>
@@ -13735,7 +13737,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>поставувања</translation>
 </phrase>
 
 <phrase>
@@ -14329,12 +14331,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>влез со глушец со висока резолуција</translation>
 </phrase>
 
 <phrase>
 <original>reset all program settings</original>
-<translation></translation>
+<translation>ги ресетирате сите нагодувања на програмата</translation>
 </phrase>
 
 <phrase>
@@ -14359,7 +14361,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>папка со поставки за апликација</translation>
 </phrase>
 
 <phrase>
@@ -14389,12 +14391,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recently used file shortcuts</original>
-<translation></translation>
+<translation>неодамна користените кратенки за датотеки</translation>
 </phrase>
 
 <phrase>
 <original>main window title bar text</original>
-<translation></translation>
+<translation>главен текст на насловната лента</translation>
 </phrase>
 
 <phrase>
@@ -14409,7 +14411,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>главниот прозорец</translation>
 </phrase>
 
 <phrase>
@@ -14424,37 +14426,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>прикажување на рендерирање намера</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>достапни прикази</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>исклучете го управувањето на бојата на екранот</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>користете ги постојните системски профили за секој екран</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>профил во боја за овој екран</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>прикажување на политики</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>користете сопствени профили за секој екран</translation>
 </phrase>
 
 <phrase>
@@ -14601,27 +14603,29 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Сите подесувања ќе бидат вратени на нивните основни вредности. Ова дејство не може да се врати. 
+
+A дали сте сигурни дека сакате да продолжите?</translation>
 </phrase>
 
 <phrase>
 <original>Reset PhotoDemon</original>
-<translation></translation>
+<translation>Ресетирај PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>само компактен имиџ</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>описни локации за целосна слика, вклучувајќи папки (и)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Насловот на главниот прозорец на PhotoDemon прикажува информации за моментално вчитаната слика. Користете го ова претпочитање за да контролирате колку информации се прикажуваат.</translation>
 </phrase>
 
 <phrase>
@@ -14776,7 +14780,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Исклучувањето на управувањето со боите на екранот може да обезбеди мал напредок во изведбата. Ако вашиот екран во моментов не е конфигуриран за управување со бои, користете го ова поставување.</translation>
 </phrase>
 
 <phrase>
@@ -14801,7 +14805,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Ако не знаете што поставува оваа опција, поставете ја на "Perceptual". Перцептивната рендерирање намера е најдобриот избор за повеќето корисници.</translation>
 </phrase>
 
 <phrase>
@@ -14858,7 +14862,9 @@ Are you sure you want to continue?</original>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>Сте го ставиле PhotoDemon во ограничена системска папка. Безбедносните мерки на претпазливост спречуваат PhotoDemon да ја модифицира оваа папка, па автоматските ажурирања сега се оневозможени За да ги обновите, мора да го преместите PhotoDemon во папка без администратор, како што се Desktop, Documents или Downloads.
+
+ (Ако го напуштите PhotoDemon каде што е, ве молиме не заборавајте да ја посетите photodemon.org од време на време за да проверите нови верзии.)</translation>
 </phrase>
 
 <phrase>
@@ -14872,7 +14878,7 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Кога користите Remote Desktop или VM (Виртуелна машина), влезот на глувчето со висока резолуција може да не работи правилно. Ова е долготрајна грешка во Windows. Во овие ситуации, можете да го користите ова поставување за да го вратите точниот начин на однесување на глушецот.</translation>
 </phrase>
 
 <phrase>
