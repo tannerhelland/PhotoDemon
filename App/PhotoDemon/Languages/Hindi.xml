@@ -779,12 +779,12 @@ T इस छवि प्रारूप के लिए समर्थन स
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>पीडीआई फ़ाइल " %1" में संकुचित डेटा शामिल है, लेकिन आवश्यक प्लगिन गायब या अक्षम है।</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>संपीड़न प्लगिन अनुपलब्ध</translation>
 </phrase>
 
 <phrase>
@@ -9827,7 +9827,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>लावा प्रवाह को यादृच्छिक बनाना</translation>
 </phrase>
 
 <phrase>
@@ -9870,12 +9870,12 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>नया अशांति बीज</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>रंग बदलाव</translation>
 </phrase>
 
 <phrase>
@@ -10260,27 +10260,27 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>रंग फीका</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>फैलाना प्रकाश</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>अनाज</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>फीका किनारों</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>छवि वापस समय में भेजा जा रहा है</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13235,7 +13235,7 @@ I में लोड करें, इस दुर्भावना के �
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>शॉर्टकट कुंजी: %1</translation>
 </phrase>
 
 <phrase>

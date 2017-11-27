@@ -778,12 +778,12 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>PDI datoteka " %1" sadrži komprimirane podatke, ali potreban dodatak nedostaje ili onemogućen.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Nedostaje nestanak kompresije</translation>
 </phrase>
 
 <phrase>
@@ -9827,7 +9827,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>randomizirati protok lave</translation>
 </phrase>
 
 <phrase>
@@ -9870,12 +9870,12 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>novo turbulentno sjeme</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>promjena boje</translation>
 </phrase>
 
 <phrase>
@@ -10260,27 +10260,27 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>boja izblijedjeti</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>difuzno svjetlo</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>žitarica</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>blijedi rubovi</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Slanje slike natrag u vremenu</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13235,7 +13235,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Tipka prečaca: %1</translation>
 </phrase>
 
 <phrase>

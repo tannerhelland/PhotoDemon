@@ -778,12 +778,12 @@ To включить поддержку этого формата изображ�
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Файл PDI « %1» содержит сжатые данные, но требуемый плагин отсутствует или отключен.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Отсутствует плагин сжатия</translation>
 </phrase>
 
 <phrase>
@@ -9831,7 +9831,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>рандомизировать поток лавы</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>новые семена турбулентности</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>сдвиг цвета</translation>
 </phrase>
 
 <phrase>
@@ -10264,27 +10264,27 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>затухание цвета</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>рассеянный свет</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>зерно</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>края затухания</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Отправка изображения назад во времени</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13239,7 +13239,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Клавиша быстрого доступа: %1</translation>
 </phrase>
 
 <phrase>

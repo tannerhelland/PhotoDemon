@@ -778,12 +778,12 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>PDI-Tiedosto " %1" sisältää pakatut tiedot, mutta vaadittu plugin puuttuu tai poistetaan käytöstä.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Täydennysliittymä puuttuu</translation>
 </phrase>
 
 <phrase>
@@ -9825,7 +9825,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>satunnaisotetaan laavavirtausta</translation>
 </phrase>
 
 <phrase>
@@ -9868,12 +9868,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>uusia turbulensseja</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>värinvaihto</translation>
 </phrase>
 
 <phrase>
@@ -10258,27 +10258,27 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>väri haalistuu</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>diffuusi valo</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>jyvä</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>haalistuvat reunat</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Kuvan lähettäminen takaisin ajoissa</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13233,7 +13233,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Pikanäppäin: %1</translation>
 </phrase>
 
 <phrase>

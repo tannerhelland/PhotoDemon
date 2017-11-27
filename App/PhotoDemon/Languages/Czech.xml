@@ -778,12 +778,12 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Soubor PDI " %1" obsahuje komprimovaná data, ale požadovaný plugin chybí nebo je zakázán.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Chybí kompresní plugin</translation>
 </phrase>
 
 <phrase>
@@ -9826,7 +9826,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>randomize lava flow</translation>
 </phrase>
 
 <phrase>
@@ -9869,12 +9869,12 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>nové osivo turbulence</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>barevný posun</translation>
 </phrase>
 
 <phrase>
@@ -10259,27 +10259,27 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>barevné ztráty</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>difúzní světlo</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>obilí</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>vyblednout hrany</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Odeslání obrazu zpět včas</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13234,7 +13234,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Klávesová zkratka: %1</translation>
 </phrase>
 
 <phrase>

@@ -399,12 +399,12 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 
 <phrase>
 <original>Fill tool</original>
-<translation></translation>
+<translation>Vul gereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation></translation>
+<translation>Vul laag</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -779,12 +779,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Het PDI-bestand " %1" bevat gecomprimeerde gegevens, maar de vereiste plug-in ontbreekt of is uitgeschakeld.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Compressie-Plug-In ontbreekt</translation>
 </phrase>
 
 <phrase>
@@ -1070,7 +1070,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>color and opacity</original>
-<translation></translation>
+<translation>kleur en dekking</translation>
 </phrase>
 
 <phrase>
@@ -1080,22 +1080,22 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>red only</original>
-<translation></translation>
+<translation>alleen rood</translation>
 </phrase>
 
 <phrase>
 <original>green only</original>
-<translation></translation>
+<translation>alleen groen</translation>
 </phrase>
 
 <phrase>
 <original>blue only</original>
-<translation></translation>
+<translation>alleen blauw</translation>
 </phrase>
 
 <phrase>
 <original>alpha only</original>
-<translation></translation>
+<translation>alleen alpha</translation>
 </phrase>
 
 <phrase>
@@ -5075,7 +5075,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Auto enhance</original>
-<translation></translation>
+<translation>Automatisch verbeteren</translation>
 </phrase>
 
 <phrase>
@@ -5225,7 +5225,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monochroom tot grijs</translation>
 </phrase>
 
 <phrase>
@@ -8069,42 +8069,42 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 
 <phrase>
 <original>start opacity</original>
-<translation></translation>
+<translation>begin dekking</translation>
 </phrase>
 
 <phrase>
 <original>start color</original>
-<translation></translation>
+<translation>start kleur</translation>
 </phrase>
 
 <phrase>
 <original>end opacity</original>
-<translation></translation>
+<translation>einddekking</translation>
 </phrase>
 
 <phrase>
 <original>end color</original>
-<translation></translation>
+<translation>eindkleur</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>verander tint</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>varieer verzadiging</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>variëren luminantie</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>variëren alpha</translation>
 </phrase>
 
 <phrase>
@@ -9191,7 +9191,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>edges</original>
-<translation></translation>
+<translation>randen</translation>
 </phrase>
 
 <!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9831,7 +9831,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>randomiseer de lavastroom</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>nieuw turbulentiezaad</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>kleurverschuiving</translation>
 </phrase>
 
 <phrase>
@@ -10264,27 +10264,27 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>kleur vervaagt</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>diffuus licht</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>graan</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>vervaag randen</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Afbeelding terugsturen in de tijd</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11741,7 +11741,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>kopieën</translation>
 </phrase>
 
 <phrase>
@@ -13239,7 +13239,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Sneltoets: %1</translation>
 </phrase>
 
 <phrase>
@@ -13249,7 +13249,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Selecteer kleuren uit de afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -13304,12 +13304,12 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Eraser</original>
-<translation></translation>
+<translation>Gom</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Verfemmer (vul met kleur)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
@@ -13320,27 +13320,27 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>sample radius</original>
-<translation></translation>
+<translation>steekproefstraal</translation>
 </phrase>
 
 <phrase>
 <original>sample all layers</original>
-<translation></translation>
+<translation>proef alle lagen</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB%</translation>
 </phrase>
 
 <phrase>
 <original>HSV</original>
-<translation></translation>
+<translation>HSV</translation>
 </phrase>
 
 <phrase>
 <original>n/a</original>
-<translation></translation>
+<translation>n</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13372,7 +13372,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>vul de bron in</translation>
 </phrase>
 
 <phrase>
@@ -13397,17 +13397,17 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation></translation>
+<translation>mengsel</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>huidige kleur</translation>
 </phrase>
 
 <phrase>
 <original>custom brush</original>
-<translation></translation>
+<translation>aangepaste borstel</translation>
 </phrase>
 
 <phrase>
@@ -13427,27 +13427,27 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation></translation>
+<translation>Vullingen ondersteunen veel verschillende stijlen. Klik om te schakelen tussen effen kleuren, patronen en verloopstijlen.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before spreading the fill between them.</original>
-<translation></translation>
+<translation>Tolerantie bepaalt hoe vergelijkbaar twee pixels moeten zijn voordat de vulling ertussen wordt verspreid.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation></translation>
+<translation>Normaal gesproken analyseren fill-operaties het volledige beeld. U kunt ook alleen de actieve laag analyseren.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation></translation>
+<translation>Normaal gesproken worden vullingen gespreid van een doelpixel en worden er aangrenzende pixels aan toegevoegd. U kunt het alternatief instellen om het volledige beeld te analyseren, ongeacht de continuïteit.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how pixels are analyzed when adding them to the fill.</original>
-<translation></translation>
+<translation>Deze optie bepaalt hoe pixels worden geanalyseerd wanneer ze aan de vulling worden toegevoegd.</translation>
 </phrase>
 
 <!-- Toolpanel_Fill.frm contains 18 phrases. 2 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13606,37 +13606,37 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>highlight</original>
-<translation></translation>
+<translation>hoogtepunt</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation></translation>
+<translation>lichtbak</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation></translation>
+<translation>mieren</translation>
 </phrase>
 
 <phrase>
 <original>feathered</original>
-<translation></translation>
+<translation>gevederde</translation>
 </phrase>
 
 <phrase>
 <original>interior</original>
-<translation></translation>
+<translation>interieur</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation></translation>
+<translation>buitenkant</translation>
 </phrase>
 
 <phrase>
 <original>border</original>
-<translation></translation>
+<translation>grens</translation>
 </phrase>
 
 <phrase>
@@ -14331,7 +14331,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>hoge-resolutie muisinvoer</translation>
 </phrase>
 
 <phrase>
@@ -14361,7 +14361,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>map met app-instellingen</translation>
 </phrase>
 
 <phrase>
@@ -14862,7 +14862,9 @@ Weet je zeker dat je door wilt gaan?</translation>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>U hebt PhotoDemon in een beperkte systeemmap geplaatst. Veiligheidsmaatregelen voorkomen dat PhotoDemon deze map kan aanpassen, zodat automatische updates nu zijn uitgeschakeld. Om ze te herstellen, moet je PhotoDemon verplaatsen naar een niet-beheerdersmap, zoals Desktop, Documenten of Downloads.
+
+ (als je PhotoDemon achterlaat waar het is, vergeet dan niet om van tijd tot tijd naar photodemon.org te gaan om te controleren op nieuwe versies.)</translation>
 </phrase>
 
 <phrase>
@@ -14876,7 +14878,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Wanneer u Remote Desktop of een VM (Virtual Machine) gebruikt, werkt de muisinvoer met hoge resolutie mogelijk niet correct. Dit is een al lang bestaande Windows-bug. In deze situaties kunt u deze instelling gebruiken om het juiste muisgedrag te herstellen.</translation>
 </phrase>
 
 <phrase>

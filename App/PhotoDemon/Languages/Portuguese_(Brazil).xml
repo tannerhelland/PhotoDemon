@@ -779,12 +779,12 @@ To ativar o suporte para esse formato de imagem, copie o arquivo FreeImage.dll (
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>O arquivo PDI " %1" contém dados compactados, mas o plugin necessário está ausente ou desabilitado.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Plugin de compressão faltando</translation>
 </phrase>
 
 <phrase>
@@ -9831,7 +9831,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>aleatorizar o fluxo de lava</translation>
 </phrase>
 
 <phrase>
@@ -9874,12 +9874,12 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>nova semente de turbulência</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>mudança de cor</translation>
 </phrase>
 
 <phrase>
@@ -10264,27 +10264,27 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>Desvanecimento da cor</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>luz difusa</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>grão</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>bordas de desbaste</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Enviando a imagem de volta no tempo</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13238,7 +13238,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Chave de atalho: %1</translation>
 </phrase>
 
 <phrase>

@@ -778,12 +778,12 @@ To włączyć obsługę tego formatu obrazu, należy skopiować plik FreeImage.d
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation></translation>
+<translation>Plik PDI " %1" zawiera skompresowane dane, ale brakuje wymaganej wtyczki lub jest ona wyłączona.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation></translation>
+<translation>Brakuje wtyczki kompresji</translation>
 </phrase>
 
 <phrase>
@@ -9816,7 +9816,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>randomize lava flow</original>
-<translation></translation>
+<translation>Randomizuj przepływ lawy</translation>
 </phrase>
 
 <phrase>
@@ -9859,12 +9859,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>new turbulence seed</original>
-<translation></translation>
+<translation>nowe ziarno burzliwości</translation>
 </phrase>
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>przesunięcie kolorów</translation>
 </phrase>
 
 <phrase>
@@ -10249,27 +10249,27 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>kolor zniknie</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>rozproszone światło</translation>
 </phrase>
 
 <phrase>
 <original>grain</original>
-<translation></translation>
+<translation>ziarno</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>znikają krawędzie</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Przesyłanie obrazu z powrotem w czasie</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13223,7 +13223,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation></translation>
+<translation>Klawisz skrótu: %1</translation>
 </phrase>
 
 <phrase>
