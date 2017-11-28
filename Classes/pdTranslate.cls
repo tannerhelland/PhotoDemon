@@ -696,7 +696,7 @@ Private Sub SortLanguageData()
         For j = 0 To m_numOfLanguages - 1
             
             'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
-            If (StrComp(m_AvailableLanguages(i).LangName, m_AvailableLanguages(j).LangName, vbTextCompare) < 0) Then
+            If (Strings.StrCompSort(m_AvailableLanguages(i).LangName, m_AvailableLanguages(j).LangName) < 0) Then
                 langTmp = m_AvailableLanguages(i)
                 m_AvailableLanguages(i) = m_AvailableLanguages(j)
                 m_AvailableLanguages(j) = langTmp
