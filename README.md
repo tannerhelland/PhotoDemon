@@ -1,4 +1,4 @@
-# PhotoDemon 7.0 beta
+# PhotoDemon 7.0
 
 ![Screenshot](http://photodemon.org/images/PD_70_b1.jpg)
 
