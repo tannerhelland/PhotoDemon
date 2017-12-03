@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Visual theme</pdDataType>
+		
+		<!-- This is the default "dark theme" file for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Default "dark" theme</Description>
+		<Version>6.8.0</Version>
+		<ThemeClass>Dark</ThemeClass>
+		
+		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
+		
+		<Definitions>
+			<DefinitionFile>Colors_Blue.xml</DefinitionFile>
+			<AccentDefault>Accent5</AccentDefault>
+			<AccentDark>Accent3</AccentDark>
+			<AccentSemidark>Accent4</AccentSemidark>
+			<AccentUltradark>Accent1</AccentUltradark>
+			<AccentLight>Accent7</AccentLight>
+			<AccentSemilight>Accent6</AccentSemilight>
+			<AccentUltralight>Accent9</AccentUltralight>
+			<BackgroundDefault>#313131</BackgroundDefault>
+			<BackgroundCanvas>#1e1e1e</BackgroundCanvas>
+			<BackgroundCommandBar>#3e3e42</BackgroundCommandBar>
+			<Black>#000000</Black>
+			<CanvasColor>#a0a0a0</CanvasColor>
+			<ChannelRed>#dc2824</ChannelRed>
+			<ChannelGreen>#3ccf31</ChannelGreen>
+			<ChannelBlue>#317bcf</ChannelBlue>
+			<ErrorRed>#dc2824</ErrorRed>
+			<GrayDefault>#b1bac2</GrayDefault>
+			<GrayDisabled>#929292</GrayDisabled>
+			<GrayDark>#d3dde6</GrayDark>
+			<GrayLight>#5b5b5b</GrayLight>
+			<GrayNeutral>#7f7f7f</GrayNeutral>
+			<GrayUltralight>#363636</GrayUltralight>
+			<MonochromeIcon>#cacaca</MonochromeIcon>
+			<MonochromeIconMenu>#373737</MonochromeIconMenu>
+			<TextDefault>#c0c0c0</TextDefault>
+			<TextDark>#d9d9d9</TextDark>
+			<TextEditBox>TextDark</TextEditBox>
+			<TextError>#eb2b26</TextError>
+			<TextHyperlink>Accent4</TextHyperlink>
+			<TextHover>Accent6</TextHover>
+			<TextInvert>#313131</TextInvert>
+			<TextSuccess>#14c727</TextSuccess>
+			<White>#ffffff</White>
+		</Definitions>
+		
+		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
+		<!-- Colors can be hex RGB values, or named colors that correspond to entries in the Definitions section. -->
+		<Colors>
+		
+			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
+			<Default>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDark</Border>
+				<Border-active>AccentDark</Border-active>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<Border-hover>AccentDefault</Border-hover>
+				<Caption>TextDefault</Caption>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+			</Default>
+			
+			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
+			
+			<!-- ****************************************************************************************** -->
+			
+			<ButtonStrip>
+				<Background></Background>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
+				<SelectedText>TextInvert</SelectedText> 
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>GrayDefault</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedText>TextDefault</UnselectedText>
+				<UnselectedText-hover>TextHyperlink</UnselectedText-hover>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>GrayDisabled</UnselectedItemBorder-disabled> 
+				<SelectedText-disabled>BackgroundDefault</SelectedText-disabled> 
+				<UnselectedText-disabled>GrayDisabled</UnselectedText-disabled>
+				
+				<!-- On the Text and Typography tool panels, the button strip uses a "lighter" color scheme for the text justification options.  The control internally defines this as "light mode" and it requires special colors. -->
+				<BackgroundLightMode>BackgroundDefault</BackgroundLightMode>
+				<SelectedItemFillLightMode>AccentUltralight</SelectedItemFillLightMode>
+				<SelectedItemBorderLightMode>AccentLight</SelectedItemBorderLightMode> 
+				<SelectedItemBorderLightMode-hover>AccentDefault</SelectedItemBorderLightMode-hover> 
+				<SelectedTextLightMode>TextDefault</SelectedTextLightMode> 
+				<UnselectedItemFillLightMode>BackgroundDefault</UnselectedItemFillLightMode>
+				<UnselectedItemBorderLightMode>BackgroundDefault</UnselectedItemBorderLightMode> 
+				<UnselectedItemBorderLightMode-hover>AccentDefault</UnselectedItemBorderLightMode-hover> 
+				<UnselectedTextLightMode>TextDefault</UnselectedTextLightMode>
+				<SelectedItemFillLightMode-disabled>GrayDisabled</SelectedItemFillLightMode-disabled>
+				<SelectedItemBorderLightMode-disabled>GrayDisabled</SelectedItemBorderLightMode-disabled> 
+				<UnselectedItemBorderLightMode-disabled>GrayDisabled</UnselectedItemBorderLightMode-disabled> 
+				<SelectedTextLightMode-disabled>BackgroundDefault</SelectedTextLightMode-disabled> 
+				<UnselectedTextLightMode-disabled>GrayDisabled</UnselectedTextLightMode-disabled>
+			</ButtonStrip>
+			
+			<GenericPDControl>
+				<Background>BackgroundDefault</Background>
+				<Caption></Caption>
+				<Caption-disabled></Caption-disabled>
+			</GenericPDControl>
+			
+			<PDBrushSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDBrushSelector>
+			
+			<PDButton>
+				<Background></Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+				<Border-active>AccentDark</Border-active>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>AccentUltralight</ButtonFill-hover>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-disabled>TextDark</Caption-disabled>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextDefault</Caption-hover>
+			</PDButton>
+			
+			<PDCanvas>
+				<Background>CanvasColor</Background>
+				<StatusBar>GrayUltralight</StatusBar>
+				<SpecialButtonBackground>BackgroundCommandBar</SpecialButtonBackground>
+			</PDCanvas>
+			
+			<PDCheckBox>
+				<Background>BackgroundDefault</Background>
+				<ButtonBorder>GrayDefault</ButtonBorder>
+				<ButtonBorder-disabled>GrayDisabled</ButtonBorder-disabled>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonBorder-activehover>AccentDefault</ButtonBorder-activehover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonFill-activehover>AccentLight</ButtonFill-activehover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+				<Checkmark>BackgroundDefault</Checkmark>
+				<Checkmark-disabled>GrayDisabled</Checkmark-disabled>
+				<Checkmark-active>White</Checkmark-active>
+			</PDCheckBox>
+			
+			<PDColorSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDColorSelector>
+			
+			<PDColorVariants>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+			</PDColorVariants>
+			
+			<PDColorWheel>
+				<Background>BackgroundDefault</Background>
+				<WheelBorder>GrayDefault</WheelBorder>
+				<WheelBorder-hover>AccentDefault</WheelBorder-hover>
+				<BoxBorder>GrayDefault</BoxBorder>
+				<BoxBorder-hover>AccentDefault</BoxBorder-hover>
+			</PDColorWheel>
+			
+			<PDCommandBar>
+				<Background>#1e1e22</Background>
+			</PDCommandBar>
+			
+			<PDContainer>
+				<Background>BackgroundDefault</Background>
+			</PDContainer>
+			
+			<PDDropDown>
+				<Background></Background>
+				<ComboBorder>GrayDefault</ComboBorder>
+				<ComboBorder-hover>AccentDefault</ComboBorder-hover>
+				<ComboBorder-active>AccentDark</ComboBorder-active>
+				<ComboBorder-disabled>GrayDefault</ComboBorder-disabled>
+				<ComboFill>BackgroundDefault</ComboFill>
+				<ComboFill-disabled>GrayLight</ComboFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-disabled>TextDark</Caption-disabled>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextDefault</Caption-hover>
+				<DropArrow>GrayDefault</DropArrow>
+				<DropArrow-disabled>GrayDark</DropArrow-disabled>
+				<DropArrow-active>TextInvert</DropArrow-active>
+				<DropArrow-hover>AccentDefault</DropArrow-hover>
+			</PDDropDown>
+			
+			<PDDropDownFont>
+				<Background></Background>
+				<ComboBorder>GrayDefault</ComboBorder>
+				<ComboBorder-hover>AccentDefault</ComboBorder-hover>
+				<ComboBorder-active>AccentDark</ComboBorder-active>
+				<ComboBorder-disabled>GrayDefault</ComboBorder-disabled>
+				<ComboFill>BackgroundDefault</ComboFill>
+				<ComboFill-active>AccentDefault</ComboFill-active>
+				<ComboFill-disabled>GrayLight</ComboFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-disabled>TextDark</Caption-disabled>
+				<Caption-hover>TextDefault</Caption-hover>
+				<DropArrow>GrayDefault</DropArrow>
+				<DropArrow-disabled>GrayDark</DropArrow-disabled>
+				<DropArrow-active>TextInvert</DropArrow-active>
+				<DropArrow-hover>AccentDefault</DropArrow-hover>
+				<ListCaption>TextDark</ListCaption>
+				<ListCaption-disabled>TextDark</ListCaption-disabled>
+				<ListCaption-active>TextInvert</ListCaption-active>
+				<ListCaption-hover>TextHyperlink</ListCaption-hover>
+				<ListBorder>BackgroundDefault</ListBorder>
+				<ListBorder-hover>AccentDefault</ListBorder-hover>
+				<ListBorder-active>AccentDark</ListBorder-active>
+				<ListBorder-disabled>BackgroundDefault</ListBorder-disabled>
+			</PDDropDownFont>
+			
+			<PDEditBox>
+				<Background>BackgroundDefault</Background>
+				<Background-disabled>GrayLight</Background-disabled>
+				<Border>GrayDefault</Border>
+				<Border-active>AccentDark</Border-active>
+				<Border-hover>AccentDefault</Border-hover>
+				<Text>TextEditBox</Text>
+				<Text-disabled>GrayDefault</Text-disabled>
+			</PDEditBox>
+			
+			<PDFillPatterns>
+				<Background>BackgroundDefault</Background>
+				<Background-active>AccentDefault</Background-active>
+				<Caption>TextDefault</Caption>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<HatchBorder>GrayDefault</HatchBorder>
+				<HatchBorder-active>AccentDark</HatchBorder-active>
+				<HatchBorder-disabled>GrayDisabled</HatchBorder-disabled>
+				<HatchBorder-hover>AccentDefault</HatchBorder-hover>
+				<ItemBorder>BackgroundDefault</ItemBorder>
+				<ItemBorder-active>AccentDark</ItemBorder-active>
+				<ItemBorder-disabled>GrayDisabled</ItemBorder-disabled>
+				<ItemBorder-hover>AccentDefault</ItemBorder-hover>
+			</PDFillPatterns>
+			
+			<PDFXPreview>
+				<Background>BackgroundDefault</Background>
+			</PDFXPreview>
+			
+			<PDGradientSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDGradientSelector>
+			
+			<PDHistory>
+				<Background></Background>
+				<Border>GrayNeutral</Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+				<Caption></Caption>
+			</PDHistory>
+			
+			<PDHyperlink>
+				<Background>BackgroundDefault</Background>
+				<Caption>TextHyperlink</Caption>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+				<Caption-hover>TextHover</Caption-hover>
+			</PDHyperlink>
+			
+			<PDImageStrip>
+				<Background>GrayUltralight</Background>
+				<SelectedFill>BackgroundDefault</SelectedFill>
+				<SelectedFill-hover></SelectedFill-hover>
+				<SelectedBorder>AccentDefault</SelectedBorder>
+				<SelectedBorder-hover>AccentDark</SelectedBorder-hover>
+				<UnselectedFill>GrayUltralight</UnselectedFill>
+				<UnselectedFill-hover></UnselectedFill-hover>
+				<UnselectedBorder>GrayUltralight</UnselectedBorder>
+				<UnselectedBorder-hover>AccentDefault</UnselectedBorder-hover>
+				<Separator>BackgroundDefault</Separator>
+			</PDImageStrip>
+			
+			<PDLayerBoxInner>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
+				<SelectedItemText>TextInvert</SelectedItemText> 
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>BackgroundDefault</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedItemText>TextDefault</UnselectedItemText>
+				<UnselectedItemText-hover>TextHyperlink</UnselectedItemText-hover>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>BackgroundDefault</UnselectedItemBorder-disabled> 
+				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
+				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
+			</PDLayerBoxInner>
+			
+			<PDListBox>
+				<Background>BackgroundDefault</Background>
+			</PDListBox>
+			
+			<PDListBoxView>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
+				<SelectedItemText>TextInvert</SelectedItemText> 
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>BackgroundDefault</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedItemText>TextDefault</UnselectedItemText>
+				<UnselectedItemText-hover>TextHyperlink</UnselectedItemText-hover>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>BackgroundDefault</UnselectedItemBorder-disabled> 
+				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
+				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
+				<SeparatorLine>GrayLight</SeparatorLine>
+			</PDListBoxView>
+			
+			<PDMetadataExport>
+				<Background>BackgroundDefault</Background>
+			</PDMetadataExport>
+			
+			<PDMetadataList>
+				<TitleSelected>TextInvert</TitleSelected> 
+				<TitleSelected-disabled>BackgroundDefault</TitleSelected-disabled> 
+				<TitleUnselected>TextDark</TitleUnselected>
+				<TitleUnselected-hover>TextHyperlink</TitleUnselected-hover>
+				<TitleUnselected-disabled>GrayDisabled</TitleUnselected-disabled>
+				<DescriptionSelected>TextInvert</DescriptionSelected> 
+				<DescriptionSelected-disabled>BackgroundDefault</DescriptionSelected-disabled> 
+				<DescriptionUnselected>TextDefault</DescriptionUnselected>
+				<DescriptionUnselected-hover>TextHyperlink</DescriptionUnselected-hover>
+				<DescriptionUnselected-disabled>GrayDisabled</DescriptionUnselected-disabled>
+				<TagIsWritable>#06994e</TagIsWritable>
+				<TagIsNotWritable>#be003a</TagIsNotWritable>
+				<TagIsUnsafe>#ff883b</TagIsUnsafe>
+				<TextTagEditError>TextError</TextTagEditError>
+				<TagBackgroundDeleted>#d21539</TagBackgroundDeleted>
+				<TagBackgroundEdited>#57b003</TagBackgroundEdited>
+			</PDMetadataList>
+			
+			<PDNavigator>
+				<Background>BackgroundDefault</Background>
+			</PDNavigator>
+			
+			<PDNavInner>
+				<Background>BackgroundDefault</Background>
+			</PDNavInner>
+			
+			<PDNewOld>
+				<Background></Background>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+			</PDNewOld>
+			
+			<PDPenSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDPenSelector>
+			
+			<PDPluginManager>
+				<PluginOK>TextSuccess</PluginOK>
+				<PluginError>TextError</PluginError>
+			</PDPluginManager>
+			
+			<PDPreview>
+				<Background>BackgroundDefault</Background>
+				<PreviewBackground>GrayNeutral</PreviewBackground>
+				<PreviewBorder>GrayDefault</PreviewBorder>
+				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
+			</PDPreview>
+			
+			<PDRadioButton>
+				<Background>BackgroundDefault</Background>
+				<ButtonBorder>GrayDefault</ButtonBorder>
+				<ButtonBorder-disabled>GrayDisabled</ButtonBorder-disabled>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonBorder-activehover>AccentDefault</ButtonBorder-activehover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonFill-activehover>AccentLight</ButtonFill-activehover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+			</PDRadioButton>
+			
+			<PDResize>
+				<Background>BackgroundDefault</Background>
+			</PDResize>
+			
+			<PDScrollBar>
+				<ButtonBorder>BackgroundDefault</ButtonBorder>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonArrow>GrayDefault</ButtonArrow>
+				<ButtonBorder-disabled>GrayLight</ButtonBorder-disabled>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<ButtonArrow-disabled>GrayLight</ButtonArrow-disabled>
+				<ButtonBorder-active>AccentDefault</ButtonBorder-active>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonArrow-active>TextInvert</ButtonArrow-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
+				<ThumbBorder>GrayLight</ThumbBorder>
+				<ThumbFill>GrayLight</ThumbFill>
+				<ThumbBorder-disabled>GrayDefault</ThumbBorder-disabled>
+				<ThumbFill-disabled>GrayDefault</ThumbFill-disabled>
+				<ThumbBorder-active>AccentDefault</ThumbBorder-active>
+				<ThumbFill-active>AccentLight</ThumbFill-active>
+				<ThumbBorder-hover>AccentUltralight</ThumbBorder-hover>
+				<ThumbFill-hover>AccentLight</ThumbFill-hover>
+				<Track>BackgroundCommandBar</Track>
+				<Track-disabled>GrayDefault</Track-disabled>
+				
+				<!-- On the main window, the scroll bar uses a different color scheme.  The control internally defines this as "canvas mode" and it requires special colors. -->
+				<ButtonBorderCanvasMode>BackgroundCommandBar</ButtonBorderCanvasMode>
+				<ButtonFillCanvasMode>BackgroundCommandBar</ButtonFillCanvasMode>
+				<ButtonArrowCanvasMode>GrayDark</ButtonArrowCanvasMode>
+				<ButtonBorderCanvasMode-disabled>GrayLight</ButtonBorderCanvasMode-disabled>
+				<ButtonFillCanvasMode-disabled>GrayLight</ButtonFillCanvasMode-disabled>
+				<ButtonArrowCanvasMode-disabled>GrayLight</ButtonArrowCanvasMode-disabled>
+				<ButtonBorderCanvasMode-active>AccentDefault</ButtonBorderCanvasMode-active>
+				<ButtonFillCanvasMode-active>AccentDefault</ButtonFillCanvasMode-active>
+				<ButtonArrowCanvasMode-active>TextInvert</ButtonArrowCanvasMode-active>
+				<ButtonBorderCanvasMode-hover>AccentLight</ButtonBorderCanvasMode-hover>
+				<ButtonFillCanvasMode-hover>AccentUltralight</ButtonFillCanvasMode-hover>
+				<ButtonArrowCanvasMode-hover>AccentDefault</ButtonArrowCanvasMode-hover>
+				<ThumbBorderCanvasMode>GrayLight</ThumbBorderCanvasMode>
+				<ThumbFillCanvasMode>GrayLight</ThumbFillCanvasMode>
+				<ThumbBorderCanvasMode-disabled>GrayDark</ThumbBorderCanvasMode-disabled>
+				<ThumbFillCanvasMode-disabled>GrayDark</ThumbFillCanvasMode-disabled>
+				<ThumbBorderCanvasMode-active>AccentUltralight</ThumbBorderCanvasMode-active>
+				<ThumbFillCanvasMode-active>AccentDefault</ThumbFillCanvasMode-active>
+				<ThumbBorderCanvasMode-hover>AccentUltralight</ThumbBorderCanvasMode-hover>
+				<ThumbFillCanvasMode-hover>AccentLight</ThumbFillCanvasMode-hover>
+				<TrackCanvasMode>BackgroundCommandBar</TrackCanvasMode>
+				<TrackCanvasMode-disabled>GrayDefault</TrackCanvasMode-disabled>
+			</PDScrollBar>
+			
+			<PDSliderStandalone>
+				<Background>BackgroundDefault</Background>
+				<TrackBack>GrayLight</TrackBack>
+				<TrackFill>AccentSemilight</TrackFill>
+				<TrackJumpIndicator>AccentDark</TrackJumpIndicator>
+				<ThumbFill>BackgroundDefault</ThumbFill>
+				<ThumbFill-hover>BackgroundDefault</ThumbFill-hover>
+				<ThumbBorder>AccentDefault</ThumbBorder>
+				<ThumbBorder-active>AccentDark</ThumbBorder-active>
+				<ThumbBorder-hover>AccentDark</ThumbBorder-hover>
+				<Notch>GrayLight</Notch>
+			</PDSliderStandalone>
+			
+			<PDSpinner>
+				<Background>BackgroundDefault</Background>
+				<Text>TextEditBox</Text>
+				<Text-disabled>GrayDefault</Text-disabled>
+				<TextBorder>GrayDefault</TextBorder>
+				<TextBorder-active>AccentDark</TextBorder-active>
+				<TextBorder-hover>AccentDefault</TextBorder-hover>
+				<ButtonArrow>GrayDefault</ButtonArrow>
+				<ButtonArrow-disabled>GrayLight</ButtonArrow-disabled>
+				<ButtonArrow-active>TextInvert</ButtonArrow-active>
+				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
+				<ButtonBorder>BackgroundDefault</ButtonBorder>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDefault</ButtonBorder-hover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ErrorBorder>ErrorRed</ErrorBorder>
+			</PDSpinner>
+			
+			<PDStatusBar>
+				<Background>GrayUltralight</Background>
+				<Separator>GrayDark</Separator>
+			</PDStatusBar>
+			
+			<PDTitle>
+				<Background>BackgroundDefault</Background>
+				<Arrow>GrayDefault</Arrow>
+				<Arrow-active>AccentDefault</Arrow-active>
+				<Arrow-hover>AccentDefault</Arrow-hover>
+				<Arrow-disabled>GrayDisabled</Arrow-disabled>
+				<Border>GrayLight</Border>
+				<Border-active>AccentDefault</Border-active>
+				<Border-hover>AccentDefault</Border-hover>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<Caption>TextDefault</Caption>
+				<Caption-active>AccentDark</Caption-active>
+				<Caption-hover>AccentDark</Caption-hover>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+			</PDTitle>
+			
+			<PDToolButton>
+				<Background>BackgroundDefault</Background>
+				<Background-disabled>BackgroundDefault</Background-disabled>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentUltralight</ButtonFill-active>
+				<Border>BackgroundDefault</Border>
+				<Border-disabled>BackgroundDefault</Border-disabled>
+				<Border-active>AccentLight</Border-active>
+				<Border-hover>AccentDefault</Border-hover>
+			</PDToolButton>
+			
+			<PDTooltip>
+				<Background>#1e1e22</Background>
+				<Border>GrayDefault</Border>
+				<Caption>TextDark</Caption>
+			</PDTooltip>
+			
+			<UIElements>
+				<UniversalAccent>AccentDefault</UniversalAccent>
+				<UniversalAccentDark>AccentDark</UniversalAccentDark>
+				<UniversalAccentSemidark>AccentSemidark</UniversalAccentSemidark>
+				<UniversalAccentUltradark>AccentUltradark</UniversalAccentUltradark>
+				<UniversalAccentLight>AccentLight</UniversalAccentLight>
+				<UniversalAccentSemilight>AccentSemilight</UniversalAccentSemilight>
+				<UniversalAccentUltralight>AccentUltralight</UniversalAccentUltralight>
+				<UniversalBackground>BackgroundDefault</UniversalBackground>
+				<UniversalCanvasElement>CanvasColor</UniversalCanvasElement>
+				<UniversalChannelRed>ChannelRed</UniversalChannelRed>
+				<UniversalChannelGreen>ChannelGreen</UniversalChannelGreen>
+				<UniversalChannelBlue>ChannelBlue</UniversalChannelBlue>
+				<UniversalErrorRed>ErrorRed</UniversalErrorRed>
+				<UniversalGrayDefault>GrayDefault</UniversalGrayDefault>
+				<UniversalGrayDisabled>GrayDisabled</UniversalGrayDisabled>
+				<UniversalGrayDark>GrayDark</UniversalGrayDark>
+				<UniversalGrayLight>GrayLight</UniversalGrayLight>
+				<UniversalGrayNeutral>GrayNeutral</UniversalGrayNeutral>
+				<UniversalGrayUltralight>GrayUltralight</UniversalGrayUltralight>
+				<UniversalIconMenuMonochrome>MonochromeIconMenu</UniversalIconMenuMonochrome>
+				<UniversalIconMonochrome>MonochromeIcon</UniversalIconMonochrome>
+				<UniversalImageDisabled>GrayLight</UniversalImageDisabled>
+				<UniversalLineEdge>Black</UniversalLineEdge>
+				<UniversalLineCenter>White</UniversalLineCenter>
+				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
+				<UniversalTextClickable>TextHyperlink</UniversalTextClickable>
+				<UniversalTextClickable-hover>TextHover</UniversalTextClickable-hover>
+				<UniversalTextReadOnly>TextDefault</UniversalTextReadOnly>
+				<UniversalTextReadOnly-disabled>GrayDisabled</UniversalTextReadOnly-disabled>
+				<UniversalTextClickableSelected>TextInvert</UniversalTextClickableSelected> 
+				<UniversalTextClickableSelected-disabled>BackgroundDefault</UniversalTextClickableSelected-disabled> 
+				<UniversalTextClickableUnselected>TextDefault</UniversalTextClickableUnselected>
+				<UniversalTextClickableUnselected-hover>TextHyperlink</UniversalTextClickableUnselected-hover>
+				<UniversalTextClickableUnselected-disabled>GrayDisabled</UniversalTextClickableUnselected-disabled>
+			</UIElements>
+			
+			<!-- ****************************************************************************************** -->
+		
+		</Colors>
+		
+	</pdData>
+	

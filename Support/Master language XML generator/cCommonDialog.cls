@@ -686,7 +686,7 @@ End Function
 Private Function FilterLookup(ByVal sFilters As String, ByVal iCur As Long) As String
     Dim iStart As Long, iEnd As Long, s As String
     iStart = 1
-    If sFilters = "" Then Exit Function
+    If Len(sFilters) = 0 Then Exit Function
     Do
         ' Cut out both parts marked by null character
         iEnd = InStr(iStart, sFilters, vbNullChar)

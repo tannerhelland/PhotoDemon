@@ -11,15 +11,17 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.  Modifications primarily include bugfixes relating to use under
-' a non-standard Windows theme (e.g. "Classic Theme"), and a full conversion of the subclassing system to a more stable
-' alternative.  These fixes rely on some internal PhotoDemon checks, variables, and objects, so I do not recommend using this
-' copy of the class in your own projects.  You may download the original version of this code from the following link
-' (good as of June '12): http://leandroascierto.com/blog/clsmenuimage/
-
 'This code was originally written by Leandro I. Ascierto.
-
 ' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
+'
+'NOTE: this file has been heavily modified for use within PhotoDemon.  Modifications include bugfixes relating to use
+' under non-standard Windows themes (e.g. "Classic Theme" on Win 7 and earlier), a full conversion of the subclassing
+' system to comctl32, and rewriting the class so that persistent DCs are not required for each menu image.
+' (Instead, we generate them on-the-fly.)
+'
+'These changes rely on a number of internal PhotoDemon checks, variables, and objects, so I do not recommend using PD's
+' version of the class in your own projects.  You may download the original version of this code from the following link
+' (good as of June 2012): http://leandroascierto.com/blog/clsmenuimage/
 
 Option Explicit
 
@@ -40,20 +42,16 @@ Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As 
 ' ------------
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
-Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
-Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
-Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
+Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoW" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
+Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoW" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function GetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LPMENUINFO As MENUINFO) As Long
@@ -61,31 +59,28 @@ Private Declare Function SetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LP
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 'Private Declare Function GetMenuItemID Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function CreateIconFromResourceEx Lib "user32" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
-Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+'Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
 Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFilename As Long, ByRef Image As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal Image As Long, ByVal rfType As Long) As Long
 Private Declare Function GdipCreateBitmapFromHICON Lib "gdiplus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
+Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef Bitmap As Long) As Long
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Long, ByRef MatrixColor As COLORMATRIX, ByRef MatrixGray As Any, ByVal Flags As Long) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
 
@@ -122,16 +117,16 @@ Private Type MENUITEMINFO
 End Type
 
 Private Type MEASUREITEMSTRUCT
-    CtlType As Long
+    ctlType As Long
     CtlID As Long
     itemID As Long
     itemWidth As Long
     itemHeight As Long
-    ItemData As Long
+    itemData As Long
 End Type
 
 Private Type DRAWITEMSTRUCT
-    CtlType As Long
+    ctlType As Long
     CtlID As Long
     itemID As Long
     itemAction As Long
@@ -139,7 +134,7 @@ Private Type DRAWITEMSTRUCT
     hWndItem As Long
     hDC As Long
     rcItem As RECT
-    ItemData As Long
+    itemData As Long
 End Type
 
 Private Type ICONINFO
@@ -202,29 +197,11 @@ Private Type BITMAPINFO
     bmiColors As ARGB
 End Type
 
-Private Type GdiplusStartupInput
-    GdiplusVersion As Long
-    DebugEventCallback As Long
-    SuppressBackgroundThread As Long
-    SuppressExternalCodecs As Long
-End Type
-
 Private Type COLORMATRIX
-    M(0 To 4, 0 To 4) As Single
+    m(0 To 4, 0 To 4) As Single
 End Type
-
-Private Type OSVERSIONINFO
-    dwOSVersionInfoSize As Long
-    dwMajorVersion As Long
-    dwMinorVersion As Long
-    dwBuildNumber As Long
-    dwPlatformId As Long
-    szCSDVersion As String * 128
-End Type
-
 
 Private Type MemoDIB
-    hDC As Long
     hDIB As Long
     Ptr As Long
 End Type
@@ -251,10 +228,11 @@ Private Enum ColorMatrixFlags
     ColorMatrixFlagsAltGray = 2
 End Enum
 
+'Added by Tanner: GDI+ images use premultiplied alpha!
+Private Const PixelFormat32bppPARGB As Long = &HE200B
 Private Const PixelFormat32bppARGB As Long = &H26200A
 Private Const PixelFormat32bppRGB As Long = &H22009
 
-Private Const GdiplusVersion As Long = 1&
 Private Const IconVersion As Long = &H30000
     
 Private Const DIB_RGB_COLORS As Long = 0&
@@ -288,55 +266,53 @@ Private Const WM_DRAWITEM As Long = &H2B
 Private Const WM_MENUSELECT As Long = &H11F
 Private Const WM_ENTERIDLE As Long = &H121
 
-Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
+'Changed by Tanner: we don't need menu messages, so don't waste time and resources raising this event
+'Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
-Private m_Hwnd As Long
+Private m_hWnd As Long
 
-Private GdipToken As Long
 Private m_lWidth As Long
 Private m_lHeight As Long
 Private mDIB() As MemoDIB
-Private IsWinVistaOrLater As Boolean
 Private cColl As Collection
 
-Private classicThemeWorkaround As Boolean
+Private m_ClassicThemeWorkaround As Boolean
 
-'Tanner's addition: convert this class to ise IDE-safe subclassing
-Private cSubclass As cSelfSubHookCallback
+'Tanner's addition: convert this class to use IDE-safe subclassing
+Implements ISubclass
+Private m_SubclassActive As Boolean
 
-Public Property Get IsWindowVistaOrLater() As Boolean
-    IsWindowVistaOrLater = IsWinVistaOrLater
-End Property
+'Edit by Tanner: instead of relying on UBound() for tracking the number of active DIB handles, track the
+' number internally.  (This lets us be *much* more efficient about memory allocations.)
+Private Const INITIAL_DIB_ARRAY_SIZE As Long = 32
+Private m_NumOfDIBs As Long
+
 
 Public Property Get CanWeTheme() As Boolean
-    CanWeTheme = Not classicThemeWorkaround
+    CanWeTheme = Not m_ClassicThemeWorkaround
 End Property
 
 Public Property Get ImageCount() As Long
-    ImageCount = UBound(mDIB) - 1
+    ImageCount = m_NumOfDIBs
 End Property
 
 
 Public Function RemoveImage(ByVal Index As Long) As Boolean
-
+    
+    If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Function
+    
+    Call DeleteObject(mDIB(Index).hDIB)
+        
     Dim i As Long
-    
-    If Index < 0 Or Index > Me.ImageCount Then Exit Function
-    
-    With mDIB(Index)
-        Call DeleteObject(.hDIB)
-        Call DeleteDC(.hDC)
-    End With
-    
-    For i = Index To Me.ImageCount
+    For i = Index To m_NumOfDIBs - 2
         mDIB(i) = mDIB(i + 1)
     Next
 
-    ReDim Preserve mDIB(Me.ImageCount)
+    m_NumOfDIBs = m_NumOfDIBs - 1
     
     RemoveImage = True
+    
 End Function
-
 
 Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
     
@@ -348,11 +324,11 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     Dim v As Variant
     Dim sKey As String
 
-    hMenu = GetMenu(m_Hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     Dim tmpInfo As MENUINFO
     
-    If classicThemeWorkaround Then
+    If m_ClassicThemeWorkaround Then
         tmpInfo.cbSize = Len(tmpInfo)
         tmpInfo.fMask = MIM_APPLYTOSUBMENUS Or MIM_STYLE
         tmpInfo.dwStyle = MNS_CHECKORBMP
@@ -370,38 +346,48 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
         .fMask = MIIM_ID
     End With
     
-    If GetMenuItemInfo(hSubMenu, MenuPos, True, MII) = 0 Then Exit Function
+    If (GetMenuItemInfo(hSubMenu, MenuPos, True, MII) <> 0) Then
         
-    sKey = hSubMenu & "-" & MII.wID
-
-    With MII
-        '.cbSize = Len(MII)
-        .fMask = MIIM_BITMAP 'Or MIIM_DATA
-        
-        If imageID = -1 Then
-            .hbmpItem = 0
-            If KeyExists(sKey) Then Call cColl.Remove(sKey)
-        Else
-            If IsWinVistaOrLater Then
-                .hbmpItem = mDIB(imageID).hDIB
-            Else
-                .hbmpItem = HBMMENU_CALLBACK
-                If KeyExists(sKey) Then Call cColl.Remove(sKey)
-                cColl.Add imageID, sKey
-            End If
-        End If
-        
-        '.dwItemData = ImageID
-        
-    End With
+        sKey = hSubMenu & "-" & MII.wID
     
-    PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
-   
-    If hSubMenu = hMenu Then DrawMenuBar m_Hwnd
+        With MII
+            '.cbSize = Len(MII)
+            .fMask = MIIM_BITMAP 'Or MIIM_DATA
+            
+            If (imageID = -1) Then
+                .hbmpItem = 0
+                
+                'Edit by Tanner: retain the key, but just remove the bitmap from the menu.  (We may decide to
+                ' reactivate this item later.)
+                'If KeyExists(sKey) Then Call cColl.Remove(sKey)
+                
+            Else
+                If OS.IsVistaOrLater Then
+                    .hbmpItem = mDIB(imageID).hDIB
+                Else
+                    .hbmpItem = HBMMENU_CALLBACK
+                    
+                    'Edit by Tanner: this check is unnecessary, as we apply our own check prior to even
+                    ' calling this function.
+                    'If KeyExists(sKey) Then Call cColl.Remove(sKey)
+                    cColl.Add imageID, sKey
+                    
+                End If
+            End If
+            
+            '.dwItemData = ImageID
+            
+        End With
+        
+        PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
+        
+        If (hSubMenu = hMenu) Then DrawMenuBar m_hWnd
+    
+    End If
     
 End Function
 
-Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal ItemData As Long) As Boolean
+Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal itemData As Long) As Boolean
 
     Dim MII As MENUITEMINFO
     Dim sKey As String
@@ -422,7 +408,7 @@ Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
             .hbmpItem = 0
             If KeyExists(sKey) Then Call cColl.Remove(sKey)
         Else
-            If IsWinVistaOrLater Then
+            If OS.IsVistaOrLater Then
                 .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
@@ -430,7 +416,7 @@ Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
                 cColl.Add imageID, sKey
             End If
         End If
-        .dwItemData = ItemData
+        .dwItemData = itemData
     End With
     
     PutImageToApiMenu = SetMenuItemInfo(hMenu, MenuPos, True, MII)
@@ -455,7 +441,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     Dim hSubMenu As Long
     Dim v As Variant
 
-    hMenu = GetMenu(m_Hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     hSubMenu = hMenu
     
@@ -474,28 +460,28 @@ End Sub
 
 
 Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
-    Dim hPen As Long, OldPen As Long
-    Dim hBrush As Long, OldBrush As Long
+    
+    Dim hPen As Long, oldPen As Long
+    Dim hBrush As Long, oldBrush As Long
     
     hPen = CreatePen(0, 1, GetSysColor(IIf(bDisabled, COLOR_GRAYTEXT, COLOR_APPWORKSPACE)))
     hBrush = GetStockObject(NULL_BRUSH)
     
-    OldPen = SelectObject(hDC, hPen)
-    OldBrush = SelectObject(hDC, hBrush)
+    oldPen = SelectObject(hDC, hPen)
+    oldBrush = SelectObject(hDC, hBrush)
     
     Rectangle hDC, x, y, x + x2, y + y2
     
-    DeleteObject SelectObject(hDC, OldPen)
-    Call SelectObject(hDC, OldBrush)
+    SelectObject hDC, oldPen
+    DeleteObject hPen
+    Call SelectObject(hDC, oldBrush)
     
 End Sub
 
 Private Function CreateNewDib() As Long
 
+    'Prepare a bmp header for the DIB
     Dim tBITMAPINFO As BITMAPINFO
-    Dim Index As Long
-    Dim TempDC As Long
-    
     With tBITMAPINFO.bmiHeader
         .biSize = Len(tBITMAPINFO.bmiHeader)
         .biBitCount = 32
@@ -505,19 +491,18 @@ Private Function CreateNewDib() As Long
         .biSizeImage = .biWidth * .biHeight * 4&
     End With
     
-    Index = UBound(mDIB)
-    
-    
+    'Make sure we have enough room in our tracking array
+    If (m_NumOfDIBs > UBound(mDIB)) Then ReDim Preserve mDIB(0 To m_NumOfDIBs * 2 - 1)
+    Dim Index As Long
+    Index = m_NumOfDIBs
     
     With mDIB(Index)
     
-        TempDC = GetDC(0&)
-        
-        .hDC = CreateCompatibleDC(TempDC)
-
-        .hDIB = CreateDIBSection(TempDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
-        
-        Call ReleaseDC(0&, TempDC)
+        'Create a temporary memory DC, because CreateDIBSection requires a DC for palette matching
+        Dim tmpDC As Long
+        tmpDC = GetDC(0&)
+        .hDIB = CreateDIBSection(tmpDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
+        ReleaseDC 0&, tmpDC
         
         If .hDIB <> 0 Then
             CreateNewDib = Index
@@ -528,7 +513,7 @@ Private Function CreateNewDib() As Long
         
     End With
 
-    ReDim Preserve mDIB(Index + 1)
+    m_NumOfDIBs = m_NumOfDIBs + 1
 
 End Function
 
@@ -536,14 +521,11 @@ Public Function Clear()
 
     Dim i As Long
     
-    For i = 0 To UBound(mDIB) - 1
-        With mDIB(i)
-            Call DeleteObject(.hDIB)
-            Call DeleteDC(.hDC)
-        End With
+    For i = 0 To m_NumOfDIBs - 1
+        If (mDIB(i).hDIB <> 0) Then Call DeleteObject(mDIB(i).hDIB)
     Next
     
-    ReDim mDIB(0)
+    m_NumOfDIBs = 0
     
 End Function
 
@@ -555,33 +537,35 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     Dim tMatrixColor As COLORMATRIX
     Dim tMatrixGray As COLORMATRIX
     
-    If Index < 0 Or Index > Me.ImageCount Then Exit Sub
+    If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Sub
 
-    If GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppARGB, ByVal mDIB(Index).Ptr, hImage) = 0 Then
+    If (GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppPARGB, ByVal mDIB(Index).Ptr, hImage) = 0) Then
 
-        If GdipCreateFromHDC(DestHdc, hGraphics) = 0 Then
-        
-            GdipImageRotateFlip hImage, &H6
+        If (GdipCreateFromHDC(DestHdc, hGraphics) = 0) Then
+            
+            'Edit by Tanner: Leandro's original code flipped the DIB to make it top-down; we don't require this for DIBs
+            ' we've created and cached ourselves.
+            'GdipImageRotateFlip hImage, &H6
             
             If Disabled Then
             
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .M(0, 0) = 0.299
-                    .M(1, 0) = .M(0, 0)
-                    .M(2, 0) = .M(0, 0)
-                    .M(0, 1) = 0.587
-                    .M(1, 1) = .M(0, 1)
-                    .M(2, 1) = .M(0, 1)
-                    .M(0, 2) = 0.114
-                    .M(1, 2) = .M(0, 2)
-                    .M(2, 2) = .M(0, 2)
-                    .M(3, 3) = 0.5
-                    .M(4, 4) = 1
+                    .m(0, 0) = 0.299
+                    .m(1, 0) = .m(0, 0)
+                    .m(2, 0) = .m(0, 0)
+                    .m(0, 1) = 0.587
+                    .m(1, 1) = .m(0, 1)
+                    .m(2, 1) = .m(0, 1)
+                    .m(0, 2) = 0.114
+                    .m(1, 2) = .m(0, 2)
+                    .m(2, 2) = .m(0, 2)
+                    .m(3, 3) = 0.5
+                    .m(4, 4) = 1
                 End With
                 
-                GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
+                GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, 1&, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
     
             End If
             
@@ -589,11 +573,11 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
             
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
-            GdipDeleteGraphics hGraphics
+            If (hGraphics <> 0) Then GdipDeleteGraphics hGraphics
         
         End If
         
-        GdipDisposeImage hImage
+        If (hImage <> 0) Then GdipDisposeImage hImage
     
     End If
     
@@ -668,46 +652,59 @@ AddIconFromHandle_Error:
     
 End Function
 
-
-Public Function AddImageFromFile(ByVal FileName As String, Optional bGhosted As Boolean) As Boolean
+'Add a menu image from a source file.  All GDI+ formats are supported (PNG, JPEG, etc).
+' MODIFIED BY TANNER: PhotoDemon's internal formats are preferentially tested before rolling over to GDI+.
+Public Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromFile_Error
     
-    Dim hIcon As Long
-    Dim FileType As String
-    Dim hBmp As Long
     Dim hImage As Long
     
-    FileType = UCase(Right(FileName, 3))
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    If tmpDIB.CreateFromFile(srcFilename) Then
+        GDI_Plus.GetGdipBitmapHandleFromDIB hImage, tmpDIB
+    Else
+        GdipLoadImageFromFile StrPtr(srcFilename), hImage
+    End If
     
-    If FileType = "ICO" Or FileType = "CUR" Then
+    If (hImage <> 0) Then AddImageFromFile = pvAddImagen(hImage, bGhosted)
+    
+AddImageFromFile_Error:
 
-        hIcon = LoadImage(App.hInstance, FileName, IMAGE_ICON, m_lWidth, m_lHeight, LR_LOADFROMFILE)
+End Function
+
+'CREATED BY TANNER: load an image from an existing pdDIB object
+Public Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Boolean) As Boolean
+
+    On Local Error GoTo AddImageFromDIB_Error
+    
+    Dim hImage As Long
+    If (Not srcDIB Is Nothing) Then
         
-        If hIcon <> 0 Then
-            If IsAlphaIcon(hIcon) Then
-               hImage = AlphaIconToBmp(hIcon, hBmp)
-            Else
-                GdipCreateBitmapFromHICON hIcon, hImage
-            End If
-            
-            DestroyIcon hIcon
+        'Update 29 August 2017 - I've written a new, much faster function that simply clones the incoming DIB.
+        If (Not bGhosted) Then
+            AddImageFromDIB = pvAddImagen_Tanner(srcDIB)
+        Else
+            GDI_Plus.GetGdipBitmapHandleFromDIB hImage, srcDIB
+            If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
         End If
         
     Else
-    
-        Call GdipLoadImageFromFile(StrPtr(FileName), hImage)
-        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
+        #End If
     End If
     
-    AddImageFromFile = pvAddImagen(hImage, bGhosted)
+    Exit Function
     
-    If hBmp <> 0 Then GdipDisposeImage hBmp
+AddImageFromDIB_Error:
 
-AddImageFromFile_Error:
-    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
+    #End If
+
 End Function
-
 
 Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
     
@@ -719,14 +716,14 @@ Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As 
 
     If Not IsArrayDim(VarPtrArray(bvData)) Then Exit Function
 
-    If bvData(2) = vbResIcon Or bvData(2) = vbResCursor Then
+    If ((bvData(2) = vbResIcon) Or (bvData(2) = vbResCursor)) Then
     
         hIcon = LoadIconFromStream(bvData)
         
         If hIcon = 0 Then Exit Function
         
         If IsAlphaIcon(hIcon) Then
-           hImage = AlphaIconToBmp(hIcon, hBmp)
+            hImage = AlphaIconToBmp(hIcon, hBmp)
         Else
             GdipCreateBitmapFromHICON hIcon, hImage
         End If
@@ -747,23 +744,36 @@ AddImageFromStream_Error:
 
 End Function
 
+Private Function pvAddImagen_Tanner(ByRef srcDIB As pdDIB) As Boolean
+    
+    If (m_NumOfDIBs > UBound(mDIB)) Then ReDim Preserve mDIB(0 To m_NumOfDIBs * 2 - 1)
+    srcDIB.TransferDIBOwnership mDIB(m_NumOfDIBs).hDIB, mDIB(m_NumOfDIBs).Ptr
+    
+    m_NumOfDIBs = m_NumOfDIBs + 1
+    pvAddImagen_Tanner = True
+    
+End Function
+
 Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean) As Boolean
+    
     Dim hGraphics As Long
     Dim imgWidth As Single
     Dim imgHeight As Single
     Dim Index As Long
-    Dim OldhDib As Long
-
+    Dim oldHDib As Long
     
-    If hImage <> 0 Then
+    If (hImage <> 0) Then
     
         Index = CreateNewDib()
         
-        If Index <> -1 Then
-
-            OldhDib = SelectObject(mDIB(Index).hDC, mDIB(Index).hDIB)
+        If (Index <> -1) Then
+            
+            Dim tmpDC As Long
+            tmpDC = GDI.GetMemoryDC()
+            
+            oldHDib = SelectObject(tmpDC, mDIB(Index).hDIB)
         
-            GdipCreateFromHDC mDIB(Index).hDC, hGraphics
+            GdipCreateFromHDC tmpDC, hGraphics
         
             GdipGetImageDimension hImage, imgWidth, imgHeight
             
@@ -775,11 +785,11 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .M(0, 0) = 1
-                    .M(1, 1) = 1
-                    .M(2, 2) = 1
-                    .M(3, 3) = 0.7
-                    .M(4, 4) = 1
+                    .m(0, 0) = 1
+                    .m(1, 1) = 1
+                    .m(2, 2) = 1
+                    .m(3, 3) = 0.7
+                    .m(4, 4) = 1
 
                 End With
                 
@@ -791,10 +801,10 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
             GdipDisposeImage hImage
-    
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(mDIB(Index).hDC, OldhDib)
+            Call SelectObject(tmpDC, oldHDib)
+            GDI.FreeMemoryDC tmpDC
             
             pvAddImagen = True
         
@@ -808,17 +818,9 @@ Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Lon
     On Local Error GoTo LoadImageFromStream_Error
     
     Dim IStream As IUnknown
-    
-    Call CreateStreamOnHGlobal(bvData(0), 0&, IStream)
-   
-    If Not IStream Is Nothing Then
-        
-        If GdipLoadImageFromStream(IStream, hImage) = 0 Then
-            
-            LoadImageFromStream = True
-
-        End If
-            
+    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(bvData(0)), UBound(bvData) - LBound(bvData) + 1)
+    If Not (IStream Is Nothing) Then
+        If GdipLoadImageFromStream(IStream, hImage) = 0 Then LoadImageFromStream = True
     End If
 
     Set IStream = Nothing
@@ -883,22 +885,24 @@ End Function
 
 Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If GdipToken Then
+    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And MainModule.IsProgramRunning()) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
-        m_Hwnd = hWnd
         
-        If UBound(mDIB) > 0 Then
-           Me.Clear
-        End If
+        If (m_NumOfDIBs > 0) Then Me.Clear
         
-        If Not IsWinVistaOrLater Or bRaiseEvent Then
-            If hWnd <> 0 Then
-                Call StopSubclassing
-                Init = SetSubclassing(hWnd)
-            End If
+        If (Not OS.IsVistaOrLater) Or bRaiseEvent Then
+            If (m_hWnd <> 0) Then StopSubclassing
+            m_hWnd = hWnd
+            If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
+            #End If
+            
         Else
+            m_hWnd = hWnd
             Init = True
         End If
     
@@ -906,22 +910,20 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
     
 End Function
 
-
-Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
-
-    If cSubclass.ssc_Subclass(hWnd, , , Me) Then
-        cSubclass.ssc_AddMsg hWnd, MSG_AFTER, WM_MENUSELECT, WM_ENTERIDLE, WM_MEASUREITEM, WM_DRAWITEM, WM_DESTROY
-        SetSubclassing = True
+Private Function SetSubclassing() As Boolean
+    If MainModule.IsProgramRunning() Then
+        m_SubclassActive = VBHacks.StartSubclassing(m_hWnd, Me)
+        SetSubclassing = m_SubclassActive
     Else
-        SetSubclassing = False
+        SetSubclassing = True
     End If
-
 End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If m_Hwnd <> 0 Then
-        cSubclass.ssc_UnSubclass m_Hwnd <> 0
+    If (m_SubclassActive And (m_hWnd <> 0)) Then
+        VBHacks.StopSubclassing m_hWnd, Me
+        m_SubclassActive = False
         StopSubclassing = True
     Else
         StopSubclassing = False
@@ -933,13 +935,6 @@ Private Sub Class_Initialize()
     
     Set cColl = New Collection
     
-    Dim tOSVI As OSVERSIONINFO
-    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
-    Call GetVersionEx(tOSVI)
-    
-    If tOSVI.dwMajorVersion < 5 Then Exit Sub
-    IsWinVistaOrLater = (tOSVI.dwMajorVersion >= 6)
-    
     'Tanner's addition 20 September '12:
     ' Double-check that theming is enabled. If it isn't, fall back to subclassing (e.g. Windows XP style)
     Dim hTheme As Long
@@ -947,37 +942,19 @@ Private Sub Class_Initialize()
     sClass = "Window"
     hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
     If hTheme = 0 Then
-        classicThemeWorkaround = True
+        m_ClassicThemeWorkaround = True
     Else
         CloseThemeData hTheme
     End If
     
-    ReDim mDIB(0)
-
-    InitGDI
-
-    'Tanner's fix: initialize an IDE-safe subclasser
-    Set cSubclass = New cSelfSubHookCallback
+    ReDim mDIB(0 To INITIAL_DIB_ARRAY_SIZE - 1)
+    m_NumOfDIBs = 0
     
 End Sub
-
 
 Private Sub Class_Terminate()
-
-    cSubclass.ssc_Terminate
-    Clear
-    TerminateGDI
-    
-End Sub
-
-Private Sub InitGDI()
-    Dim GdipStartupInput As GdiplusStartupInput
-    GdipStartupInput.GdiplusVersion = GdiplusVersion
-    Call GdiplusStartup(GdipToken, GdipStartupInput, ByVal 0&)
-End Sub
- 
-Private Sub TerminateGDI()
-    If GdipToken <> 0 Then Call GdiplusShutdown(GdipToken)
+    StopSubclassing
+    Me.Clear
 End Sub
 
 Private Function IsArrayDim(ByVal lpArray As Long) As Boolean
@@ -1094,125 +1071,108 @@ Private Function IsAlphaIcon(ByVal IconHandle As Long) As Boolean
     
 End Function
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
+    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
+    ' I don't care enough to test it.
     On Error Resume Next
     
-    Select Case uMsg
+    'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
+    ' and once it's done, we'll overwrite the image handling bits with our own code.)
+    HandleMeasureItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
-        Case WM_MENUSELECT, WM_ENTERIDLE 'put here what you need :)
-            RaiseEvent MenuMessages(lng_hWnd, uMsg, wParam, lParam)
-            
-        Case WM_MEASUREITEM
-        
-            Dim MIS As MEASUREITEMSTRUCT
-            
-            CopyMemory MIS, ByVal lParam, Len(MIS)
+    Dim MIS As MEASUREITEMSTRUCT
+    CopyMemory MIS, ByVal lParam, Len(MIS)
 
-            If MIS.CtlType = ODT_MENU Then
+    If (MIS.ctlType = ODT_MENU) Then
 
-                If MIS.itemHeight < m_lHeight + 4 Then
-                    MIS.itemHeight = m_lHeight + 4
-                End If
-                
-                If g_IsVistaOrLater Then
-                    If classicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
-                Else
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 2
-                End If
-                
-                CopyMemory ByVal lParam, MIS, Len(MIS)
-                
-                lReturn = 1
-                bHandled = True
-            Else
-                bHandled = False
-            End If
+        If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
         
+        If OS.IsVistaOrLater Then
+            If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 6&
+        Else
+            MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&
+        End If
         
-        Case WM_DRAWITEM
+        CopyMemory ByVal lParam, MIS, Len(MIS)
+        HandleMeasureItem = 1
+        
+    End If
     
-            Dim DIS As DRAWITEMSTRUCT
-            Dim IsDisabled As Boolean
-            Dim IsCheckStyle As Boolean
-            Dim IsChecked As Boolean
-            Dim lLeft As Long
-            Dim MI As MENUINFO
-            
-            CopyMemory DIS, ByVal lParam, Len(DIS)
+    msgEaten = True
+    
+End Function
 
-            If DIS.CtlType = ODT_MENU Then
+Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+    
+    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
+    ' I don't care enough to test it.
+    On Error Resume Next
+    
+    'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
+    ' and once it's done, we'll overwrite the image handling bits with our own code.)
+    HandleDrawItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+    Dim DIS As DRAWITEMSTRUCT
+    Dim isDisabled As Boolean, isCheckStyle As Boolean, isChecked As Boolean
+    Dim lLeft As Long
+    Dim MI As MENUINFO
+    
+    CopyMemory DIS, ByVal lParam, Len(DIS)
+
+    If (DIS.ctlType = ODT_MENU) Then
+    
+        If (DIS.hWndItem <> GetMenu(hWnd)) Then
             
-                If DIS.hWndItem <> GetMenu(lng_hWnd) Then
-                        
-                    With MI
-                        .cbSize = Len(MI)
-                        .fMask = MIM_STYLE
-                    End With
+            With MI
+                .cbSize = Len(MI)
+                .fMask = MIM_STYLE
+            End With
+
+            GetMenuInfo DIS.hWndItem, MI
+
+            isCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
+            isChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
+            lLeft = IIf(isCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
+        
+        End If
+        
+        isDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
+        
+        If Not isCheckStyle And isChecked Then
+            Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, isDisabled)
+        End If
+        
+        'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
+        ' for users of the "classic theme"
+        If Not (m_ClassicThemeWorkaround And isDisabled) Then
+            DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), isDisabled
+        End If
+        
+        HandleDrawItem = 1
+        
+    End If
     
-                    GetMenuInfo DIS.hWndItem, MI
-  
-                    IsCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
+    msgEaten = True
     
-                    IsChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
+End Function
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
-                    lLeft = IIf(IsCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
-                
-                End If
-                
-                IsDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
-                
-                If Not IsCheckStyle And IsChecked Then
-                
-                    Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
-                    
-                End If
-                
-                'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
-                ' for users of the "classic theme"
-                If Not (classicThemeWorkaround And IsDisabled) Then
-                    DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
-                End If
-                
-                lReturn = 1
-                bHandled = True
-            Else
-                bHandled = False
-            End If
-            
-        Case WM_DESTROY
-            Call StopSubclassing
-            
-    End Select
+    'Sometimes we consume messages before passing them on.  Sometimes we don't.  Child functions will update this as necessary.
+    Dim msgEaten As Boolean: msgEaten = False
     
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+    If (uiMsg = WM_MEASUREITEM) Then
+        ISubclass_WindowMsg = HandleMeasureItem(hWnd, uiMsg, wParam, lParam, msgEaten)
+    
+    ElseIf (uiMsg = WM_DRAWITEM) Then
+        ISubclass_WindowMsg = HandleDrawItem(hWnd, uiMsg, wParam, lParam, msgEaten)
+    
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        VBHacks.StopSubclassing hWnd, Me
+        m_SubclassActive = False
+    End If
+    
+    If (Not msgEaten) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function

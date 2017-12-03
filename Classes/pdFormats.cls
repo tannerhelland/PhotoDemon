@@ -13,26 +13,25 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 14/May/13
-'Last update: added formal RAW and DNG support
+'Last updated: 02/May/16
+'Last update: expand PNM variant support
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
 ' or adjust PhotoDemon's support for individual formats.  To remedy this problem, this class was created.
 '
 'Based on the available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
-' and reading.  These format lists are separately maintained, and the presence of a format in one category does not
-' have any connection to the other.
+' and reading.  These format lists are separately maintained, and the presence of a format in e.g. the Import category
+' does not guarantee a similar presence in the Export category.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
-' individual FreeImage version numbers if necessary.  As of FreeImage 3.15.4 (released October '12) no formats are
-' disabled due to known FreeImage bugs.
+' individual FreeImage version numbers if necessary.  (Thus far, this has *not* proven necessary.)
 '
-'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
+'GDI+ is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
 ' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
-' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch conversions, GDI+ is actually
+' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch processing, GDI+ may be
 ' used preferentially over FreeImage for reading and writing certain filetypes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -48,8 +47,8 @@ Public FreeImageEnabled As Boolean
 'Is GDI+ available?
 Public GDIPlusEnabled As Boolean
 
-'Is pngnq available?
-Public pngnqEnabled As Boolean
+'Is pngQuant available?
+Public pngQuantEnabled As Boolean
 
 'Number of available input, output formats
 Private numOfInputFormats As Long, numOfOutputFormats As Long
@@ -62,137 +61,152 @@ Private outputExtensions() As String
 Private inputDescriptions() As String
 Private outputDescriptions() As String
 
-'Array of corresponding image format constants (using the FreeImage convention)
-Private inputFIFs() As Long
-Private outputFIFs() As Long
+'Array of corresponding image format constants
+Private inputPDIFs() As PD_IMAGE_FORMAT
+Private outputPDIFs() As PD_IMAGE_FORMAT
 
-'Array of common-dialog-formatted input/output filetypes
-Private commonDialogInputs As String, commonDialogOutputs As String
+'Array of common-dialog-formatted input/output filetypes.  (Common dialogs require different pipe-based formatting
+' than normal lists, as you must add human-readable text descriptions to the list.)
+Private m_CommonDialogInputs As String, m_CommonDialogOutputs As String
 
 'Common dialog also require a specialized "default extension" string for output files
-Private cdOutputDefaultExtensions As String
+Private m_cdOutputDefaultExtensions As String
 
-'This value is used to track the number of currently used input/output formats
-Private curFormatIndex As Long
+'When analyzing our current plugin options, we have to make a lot of on-the-fly decisions about format availability.
+' This value is shared among multiple functions while making such decisions.  Do not treat it as a meaningful value.
+Private m_curFormatIndex As Long
 
-'Return the index of given input FIF
-Public Function getIndexOfInputFIF(ByVal srcFIF As Long) As Long
+'Return the index of given input PDIF
+Public Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
-    For i = 0 To getNumOfInputFormats
-        If inputFIFs(i) = srcFIF Then
-            getIndexOfInputFIF = i
+    For i = 0 To GetNumOfInputFormats
+        If inputPDIFs(i) = srcFIF Then
+            GetIndexOfInputPDIF = i
             Exit Function
         End If
     Next i
     
     'If we reach this line of code, no match was found.  Return -1.
-    getIndexOfInputFIF = -1
+    GetIndexOfInputPDIF = -1
     
 End Function
 
-'Return the FIF (image format constant) at a given index
-Public Function getInputFIF(ByVal dIndex As Long) As Long
+'Return the PDIF ("PD image format" constant) at a given index
+Public Function GetInputPDIF(ByVal dIndex As Long) As Long
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
-        getInputFIF = inputFIFs(dIndex)
+        GetInputPDIF = inputPDIFs(dIndex)
     Else
-        getInputFIF = FIF_UNKNOWN
+        GetInputPDIF = FIF_UNKNOWN
     End If
 End Function
 
 'Return the friendly input format description at a given index
-Public Function getInputFormatDescription(ByVal dIndex As Long) As String
+Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
-        getInputFormatDescription = inputDescriptions(dIndex)
+        GetInputFormatDescription = inputDescriptions(dIndex)
     Else
-        getInputFormatDescription = ""
+        GetInputFormatDescription = ""
     End If
 End Function
 
 'Return the input format extension at a given index
-Public Function getInputFormatExtensions(ByVal dIndex As Long) As String
+Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
-        getInputFormatExtensions = inputExtensions(dIndex)
+        GetInputFormatExtensions = inputExtensions(dIndex)
     Else
-        getInputFormatExtensions = ""
+        GetInputFormatExtensions = ""
     End If
 End Function
 
+'Return a list of all input formats supported by the current session.  By default, the list is delimited with commas,
+' and each extension is listed as "*.abc".
+Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
+    
+    'The first entry in the extensions collection is used for the "All supported formats" common dialog option;
+    ' as such, it already contains a full list of valid extensions.
+    GetListOfInputFormats = inputExtensions(0)
+    
+    If Strings.StringsNotEqual(listDelimiter, ";", False) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, ";", listDelimiter)
+    If (Not includeStarDot) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, "*.", "")
+    
+End Function
+
 'Return the number of available input format types
-Public Function getNumOfInputFormats() As Long
-    getNumOfInputFormats = numOfInputFormats
+Public Function GetNumOfInputFormats() As Long
+    GetNumOfInputFormats = numOfInputFormats
 End Function
 
 'Return a list of input filetypes formatted for use with a common dialog box
-Public Function getCommonDialogInputFormats() As String
-    getCommonDialogInputFormats = commonDialogInputs
+Public Function GetCommonDialogInputFormats() As String
+    GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
 'Return the index of given output FIF
-Public Function getIndexOfOutputFIF(ByVal srcFIF As Long) As Long
+Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
-    For i = 0 To getNumOfOutputFormats
-        If outputFIFs(i) = srcFIF Then
-            getIndexOfOutputFIF = i
+    For i = 0 To GetNumOfOutputFormats
+        If outputPDIFs(i) = srcFIF Then
+            GetIndexOfOutputPDIF = i
             Exit Function
         End If
     Next i
     
     'If we reach this line of code, no match was found.  Return -1.
-    getIndexOfOutputFIF = -1
+    GetIndexOfOutputPDIF = -1
     
 End Function
 
 'Return the FIF (image format constant) at a given index
-Public Function getOutputFIF(ByVal dIndex As Long) As Long
+Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
-        getOutputFIF = outputFIFs(dIndex)
+        GetOutputPDIF = outputPDIFs(dIndex)
     Else
-        getOutputFIF = FIF_UNKNOWN
+        GetOutputPDIF = FIF_UNKNOWN
     End If
 End Function
 
 'Return the friendly output format description at a given index
-Public Function getOutputFormatDescription(ByVal dIndex As Long) As String
+Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
-        getOutputFormatDescription = outputDescriptions(dIndex)
+        GetOutputFormatDescription = outputDescriptions(dIndex)
     Else
-        getOutputFormatDescription = ""
+        GetOutputFormatDescription = ""
     End If
 End Function
 
 'Return the output format extension at a given index
-Public Function getOutputFormatExtension(ByVal dIndex As Long) As String
+Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
-        getOutputFormatExtension = outputExtensions(dIndex)
+        GetOutputFormatExtension = outputExtensions(dIndex)
     Else
-        getOutputFormatExtension = ""
+        GetOutputFormatExtension = ""
     End If
 End Function
 
 'Return the number of available output format types
-Public Function getNumOfOutputFormats() As Long
-    getNumOfOutputFormats = numOfOutputFormats
+Public Function GetNumOfOutputFormats() As Long
+    GetNumOfOutputFormats = numOfOutputFormats
 End Function
 
 'Return a list of output filetypes formatted for use with a common dialog box
-Public Function getCommonDialogOutputFormats() As String
-    getCommonDialogOutputFormats = commonDialogOutputs
+Public Function GetCommonDialogOutputFormats() As String
+    GetCommonDialogOutputFormats = m_CommonDialogOutputs
 End Function
 
 'Return a list of output default extensions formatted for use with a common dialog box
-Public Function getCommonDialogDefaultExtensions() As String
-    getCommonDialogDefaultExtensions = cdOutputDefaultExtensions
+Public Function GetCommonDialogDefaultExtensions() As String
+    GetCommonDialogDefaultExtensions = m_cdOutputDefaultExtensions
 End Function
 
 'Generate a list of available import formats
-Public Sub generateInputFormats()
+Public Sub GenerateInputFormats()
 
     'Prepare a list of possible INPUT formats based on the plugins available to us
     ReDim inputExtensions(0 To 50) As String
     ReDim inputDescriptions(0 To 50) As String
-    ReDim inputFIFs(0 To 50) As Long
+    ReDim inputPDIFs(0 To 50) As PD_IMAGE_FORMAT
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
 
@@ -203,112 +217,125 @@ Public Sub generateInputFormats()
     ' it will be automatically generated as we go.
     
     'Set the location tracker to "0".  Beyond this point, it will be automatically updated.
-    curFormatIndex = 0
+    m_curFormatIndex = 0
     
     'Bitmap files require no plugins; they are always supported.
-    addInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", FIF_BMP
+    AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
     
     If FreeImageEnabled Then
-        addInputFormat "DDS - DirectDraw Surface", "*.dds", FIF_DDS
-        addInputFormat "DNG - Adobe Digital Negative", "*.dng", FIF_RAW
-        addInputFormat "EXR - Industrial Light and Magic", "*.exr", FIF_EXR
-        addInputFormat "G3 - Digital Fax Format", "*.g3", FIF_FAXG3
+        AddInputFormat "DDS - DirectDraw Surface", "*.dds", PDIF_DDS
+        AddInputFormat "DNG - Adobe Digital Negative", "*.dng", PDIF_RAW
     End If
     
-    addInputFormat "GIF - Compuserve", "*.gif", FIF_GIF
-    
-    If FreeImageEnabled Then addInputFormat "HDR - High Dynamic Range", "*.hdr", FIF_HDR
-    
-    addInputFormat "ICO - Windows Icon", "*.ico", FIF_ICO
+    If GDIPlusEnabled Then AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
     
     If FreeImageEnabled Then
-        addInputFormat "IFF - Amiga Interchange Format", "*.iff", FIF_IFF
-        addInputFormat "JNG - JPEG Network Graphics", "*.jng", FIF_JNG
-        addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", FIF_JP2
+        AddInputFormat "EXR - Industrial Light and Magic", "*.exr", PDIF_EXR
+        AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
     End If
     
-    addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", FIF_JPEG
+    AddInputFormat "GIF - Compuserve", "*.gif", PDIF_GIF
+    
+    If FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
+    
+    AddInputFormat "ICO - Windows Icon", "*.ico", PDIF_ICO
     
     If FreeImageEnabled Then
-        addInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", FIF_KOALA
-        addInputFormat "LBM - Deluxe Paint", "*.lbm", FIF_LBM
-        addInputFormat "MNG - Multiple Network Graphics", "*.mng", FIF_MNG
-        addInputFormat "PBM - Portable Bitmap", "*.pbm", FIF_PBM
-        addInputFormat "PCD - Kodak PhotoCD", "*.pcd", FIF_PCD
-        addInputFormat "PCX - Zsoft Paintbrush", "*.pcx", FIF_PCX
+        AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
+        AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
+        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", PDIF_JP2
     End If
     
-    'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If g_ZLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", 100
+    AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
+    
+    If FreeImageEnabled Then
+        AddInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", PDIF_JXR
+        AddInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", PDIF_KOALA
+        AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
+        AddInputFormat "MNG - Multiple Network Graphics", "*.mng", PDIF_MNG
+        AddInputFormat "PBM - Portable Bitmap", "*.pbm", PDIF_PBM
+        AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
+        AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
+    End If
+    
+    'PDI (PhotoDemon's native file format) is always available!
+    AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
         
     If FreeImageEnabled Then
-        addInputFormat "PGM - Portable Graymap", "*.pgm", FIF_PGM
-        addInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", FIF_PICT
+        AddInputFormat "PFM - Portable Floatmap", "*.pfm", PDIF_PFM
+        AddInputFormat "PGM - Portable Graymap", "*.pgm", PDIF_PGM
+        AddInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", PDIF_PICT
     End If
     
     'FreeImage or GDI+ works for loading PNGs
-    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "PNG - Portable Network Graphic", "*.png", FIF_PNG
+    If FreeImageEnabled Or GDIPlusEnabled Then AddInputFormat "PNG - Portable Network Graphic", "*.png", PDIF_PNG
         
     If FreeImageEnabled Then
-        addInputFormat "PPM - Portable Pixelmap", "*.ppm", FIF_PPM
-        addInputFormat "PSD - Adobe Photoshop", "*.psd", FIF_PSD
-        addInputFormat "RAS - Sun Raster File", "*.ras", FIF_RAS
-        addInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", FIF_RAW
-        addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", FIF_SGI
-        addInputFormat "TGA - Truevision (TARGA)", "*.tga", FIF_TARGA
+        AddInputFormat "PNM - Portable Anymap", "*.pnm", PDIF_PPM
+        AddInputFormat "PPM - Portable Pixmap", "*.ppm", PDIF_PPM
+        AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
+        AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
+        AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
+        AddInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", PDIF_SGI
+        AddInputFormat "TGA - Truevision (TARGA)", "*.tga", PDIF_TARGA
     End If
     
     'FreeImage or GDI+ works for loading TIFFs
-    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", FIF_TIFF
+    If FreeImageEnabled Or GDIPlusEnabled Then AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
         
-    If FreeImageEnabled Then addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
-        
+    If FreeImageEnabled Then
+        AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
+        AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
+    End If
+    
+    If GDIPlusEnabled Then AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
+    
     'Finish out the list with an obligatory "All files" option
-    addInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
+    AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
     
     'Resize our description and extension arrays to match their final size
-    numOfInputFormats = curFormatIndex
+    numOfInputFormats = m_curFormatIndex
     ReDim Preserve inputDescriptions(0 To numOfInputFormats) As String
     ReDim Preserve inputExtensions(0 To numOfInputFormats) As String
-    ReDim Preserve inputFIFs(0 To numOfInputFormats) As Long
+    ReDim Preserve inputPDIFs(0 To numOfInputFormats) As PD_IMAGE_FORMAT
     
     'Now that all input files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
-    Dim X As Long
-    For X = 0 To numOfInputFormats
+    Dim x As Long
+    For x = 0 To numOfInputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If X <> 0 Then
-            commonDialogInputs = commonDialogInputs & "|" & inputDescriptions(X) & "|" & inputExtensions(X)
+        If (x <> 0) Then
+            m_CommonDialogInputs = m_CommonDialogInputs & "|" & inputDescriptions(x) & "|" & inputExtensions(x)
         Else
-            commonDialogInputs = inputDescriptions(X) & "|" & inputExtensions(X)
+            m_CommonDialogInputs = inputDescriptions(x) & "|" & inputExtensions(x)
         End If
     
-    Next X
+    Next x
     
     'Input format generation complete!
     
 End Sub
 
 'Add support for another input format.  A descriptive string and extension list are required.
-Private Sub addInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingFIF As Long)
+Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PD_IMAGE_FORMAT)
     
     'Increment the counter
-    curFormatIndex = curFormatIndex + 1
+    m_curFormatIndex = m_curFormatIndex + 1
     
     'Add the descriptive text to our collection
-    inputDescriptions(curFormatIndex) = formatDescription
+    inputDescriptions(m_curFormatIndex) = formatDescription
     
     'Add any relevant extension(s) to our collection
-    inputExtensions(curFormatIndex) = extensionList
+    inputExtensions(m_curFormatIndex) = extensionList
     
     'Add the FIF constant
-    inputFIFs(curFormatIndex) = correspondingFIF
+    inputPDIFs(m_curFormatIndex) = correspondingPDIF
     
     'If applicable, add these extensions to the "All Compatible Images" list
-    If extensionList <> "*.*" Then
-        If curFormatIndex <> 1 Then
+    If (extensionList <> "*.*") Then
+        If (m_curFormatIndex <> 1) Then
             inputExtensions(0) = inputExtensions(0) & ";" & extensionList
         Else
             inputExtensions(0) = inputExtensions(0) & extensionList
@@ -318,310 +345,379 @@ Private Sub addInputFormat(ByVal formatDescription As String, ByVal extensionLis
 End Sub
 
 'Generate a list of available export formats
-Public Sub generateOutputFormats()
+Public Sub GenerateOutputFormats()
 
     ReDim outputExtensions(0 To 50) As String
     ReDim outputDescriptions(0 To 50) As String
-    ReDim outputFIFs(0 To 50) As Long
+    ReDim outputPDIFs(0 To 50) As PD_IMAGE_FORMAT
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
     
     'Start by effectively setting the location tracker to "0".  Beyond this point, it will be automatically updated.
-    curFormatIndex = -1
+    m_curFormatIndex = -1
 
-    addOutputFormat "BMP - Windows Bitmap", "bmp", FIF_BMP
+    AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "GIF - Graphics Interchange Format", "gif", FIF_GIF
-        
-    If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
-        
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
-        
-    If g_ZLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
+    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "PNG - Portable Network Graphic", "png", FIF_PNG
-        
     If FreeImageEnabled Then
-        addOutputFormat "PPM - Portable Pixel Map", "ppm", FIF_PPM
-        addOutputFormat "TGA - Truevision (TARGA)", "tga", FIF_TARGA
+        AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
+        AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
+    End If
+        
+    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
+        
+    If FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
+        
+    AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
+    
+    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
+    
+    If FreeImageEnabled Then
+        AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
+        AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
+        AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     End If
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "TIFF - Tagged Image File Format", "tif", FIF_TIFF
-        
+    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
+    
+    If FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    
     'Resize our description and extension arrays to match their final size
-    numOfOutputFormats = curFormatIndex
+    numOfOutputFormats = m_curFormatIndex
     ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
     ReDim Preserve outputExtensions(0 To numOfOutputFormats) As String
-    ReDim Preserve outputFIFs(0 To numOfOutputFormats) As Long
+    ReDim Preserve outputPDIFs(0 To numOfOutputFormats) As PD_IMAGE_FORMAT
     
     'Now that all output files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
-    Dim X As Long
-    For X = 0 To numOfOutputFormats
+    Dim x As Long
+    For x = 0 To numOfOutputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If X <> 0 Then
-            commonDialogOutputs = commonDialogOutputs & "|" & outputDescriptions(X) & "|*." & outputExtensions(X)
-            cdOutputDefaultExtensions = cdOutputDefaultExtensions & "|." & outputExtensions(X)
+        If x <> 0 Then
+            m_CommonDialogOutputs = m_CommonDialogOutputs & "|" & outputDescriptions(x) & "|*." & outputExtensions(x)
+            m_cdOutputDefaultExtensions = m_cdOutputDefaultExtensions & "|." & outputExtensions(x)
         Else
-            commonDialogOutputs = outputDescriptions(X) & "|*." & outputExtensions(X)
-            cdOutputDefaultExtensions = "." & outputExtensions(X)
+            m_CommonDialogOutputs = outputDescriptions(x) & "|*." & outputExtensions(x)
+            m_cdOutputDefaultExtensions = "." & outputExtensions(x)
         End If
     
-    Next X
+    Next x
     
     'Output format generation complete!
         
 End Sub
 
 'Add support for another output format.  A descriptive string and extension list are required.
-Private Sub addOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingFIF As Long)
+Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PD_IMAGE_FORMAT)
     
     'Increment the counter
-    curFormatIndex = curFormatIndex + 1
+    m_curFormatIndex = m_curFormatIndex + 1
     
     'Add the descriptive text to our collection
-    outputDescriptions(curFormatIndex) = formatDescription
+    outputDescriptions(m_curFormatIndex) = formatDescription
     
     'Add the primary extension for this format type
-    outputExtensions(curFormatIndex) = extensionList
+    outputExtensions(m_curFormatIndex) = extensionList
     
     'Add the corresponding FIF
-    outputFIFs(curFormatIndex) = correspondingFIF
+    outputPDIFs(m_curFormatIndex) = correspondingPDIF
             
 End Sub
 
-'Given an FIF (image format constant), return the default extension.
-Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
+'Given a PDIF (PhotoDemon image format constant), return the default extension.
+Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
-    Select Case srcFIF
+    Select Case srcPDIF
     
-        Case FIF_BMP
-            getExtensionFromFIF = "bmp"
-        Case FIF_ICO
-            getExtensionFromFIF = "ico"
-        Case FIF_JPEG
-            getExtensionFromFIF = "jpg"
-        Case FIF_JNG
-            getExtensionFromFIF = "jng"
-        Case FIF_KOALA
-            getExtensionFromFIF = "koa"
-        Case FIF_LBM
-            getExtensionFromFIF = "lbm"
-        Case FIF_IFF
-            getExtensionFromFIF = "iff"
-        Case FIF_MNG
-            getExtensionFromFIF = "mng"
-        Case FIF_PBM
-            getExtensionFromFIF = "pbm"
-        Case FIF_PBMRAW
-            getExtensionFromFIF = "pbm"
-        Case FIF_PCD
-            getExtensionFromFIF = "pcd"
-        Case FIF_PCX
-            getExtensionFromFIF = "pcx"
-        Case FIF_PGM
-            getExtensionFromFIF = "pgm"
-        Case FIF_PGMRAW
-            getExtensionFromFIF = "pgm"
-        Case FIF_PNG
-            getExtensionFromFIF = "png"
-        Case FIF_PPM
-            getExtensionFromFIF = "ppm"
-        Case FIF_PPMRAW
-            getExtensionFromFIF = "ppm"
-        Case FIF_RAS
-            getExtensionFromFIF = "ras"
-        Case FIF_RAW
-            getExtensionFromFIF = "hdr"
-        Case FIF_TARGA
-            getExtensionFromFIF = "tga"
-        Case FIF_TIFF
-            getExtensionFromFIF = "tif"
-        Case FIF_WBMP
-            getExtensionFromFIF = "wbm"
-        Case FIF_PSD
-            getExtensionFromFIF = "psd"
-        Case FIF_CUT
-            getExtensionFromFIF = "cut"
-        Case FIF_XBM
-            getExtensionFromFIF = "xbm"
-        Case FIF_XPM
-            getExtensionFromFIF = "xpm"
-        Case FIF_DDS
-            getExtensionFromFIF = "dds"
-        Case FIF_GIF
-            getExtensionFromFIF = "gif"
-        Case FIF_HDR
-            getExtensionFromFIF = "hdr"
-        Case FIF_FAXG3
-            getExtensionFromFIF = "g3"
-        Case FIF_SGI
-            getExtensionFromFIF = "sgi"
-        Case FIF_EXR
-            getExtensionFromFIF = "exr"
-        Case FIF_J2K
-            getExtensionFromFIF = "j2k"
-        Case FIF_JP2
-            getExtensionFromFIF = "jp2"
-        Case FIF_PFM
-            getExtensionFromFIF = "pfm"
-        Case FIF_PICT
-            getExtensionFromFIF = "pct"
-        Case FIF_RAW
-            getExtensionFromFIF = "raw"
-        Case 100
-            getExtensionFromFIF = "pdi"
+        Case PDIF_BMP
+            GetExtensionFromPDIF = "bmp"
+        Case PDIF_CUT
+            GetExtensionFromPDIF = "cut"
+        Case PDIF_DDS
+            GetExtensionFromPDIF = "dds"
+        Case PDIF_EMF
+            GetExtensionFromPDIF = "emf"
+        Case PDIF_EXR
+            GetExtensionFromPDIF = "exr"
+        Case PDIF_FAXG3
+            GetExtensionFromPDIF = "g3"
+        Case PDIF_GIF
+            GetExtensionFromPDIF = "gif"
+        Case PDIF_HDR
+            GetExtensionFromPDIF = "hdr"
+        Case PDIF_ICO
+            GetExtensionFromPDIF = "ico"
+        Case PDIF_IFF
+            GetExtensionFromPDIF = "iff"
+        Case PDIF_J2K
+            GetExtensionFromPDIF = "j2k"
+        Case PDIF_JNG
+            GetExtensionFromPDIF = "jng"
+        Case PDIF_JP2
+            GetExtensionFromPDIF = "jp2"
+        Case PDIF_JPEG
+            GetExtensionFromPDIF = "jpg"
+        Case PDIF_JXR
+            GetExtensionFromPDIF = "jxr"
+        Case PDIF_KOALA
+            GetExtensionFromPDIF = "koa"
+        Case PDIF_LBM
+            GetExtensionFromPDIF = "lbm"
+        Case PDIF_MNG
+            GetExtensionFromPDIF = "mng"
+        'Case PDIF_PBM                      'NOTE: for simplicity, all PPM extensions are condensed to PNM
+        '    GetExtensionFromPDIF = "pbm"
+        'Case PDIF_PBMRAW
+        '    GetExtensionFromPDIF = "pbm"
+        Case PDIF_PCD
+            GetExtensionFromPDIF = "pcd"
+        Case PDIF_PCX
+            GetExtensionFromPDIF = "pcx"
+        Case PDIF_PDI
+            GetExtensionFromPDIF = "pdi"
+        'Case PDIF_PFM
+        '    GetExtensionFromPDIF = "pfm"
+        'Case PDIF_PGM
+        '    GetExtensionFromPDIF = "pgm"
+        'Case PDIF_PGMRAW
+        '    GetExtensionFromPDIF = "pgm"
+        Case PDIF_PICT
+            GetExtensionFromPDIF = "pct"
+        Case PDIF_PNG
+            GetExtensionFromPDIF = "png"
+        Case PDIF_PBM, PDIF_PBMRAW, PDIF_PFM, PDIF_PGM, PDIF_PGMRAW, PDIF_PNM, PDIF_PPM, PDIF_PPMRAW
+            GetExtensionFromPDIF = "pnm"
+        'Case PDIF_PPM
+        '    GetExtensionFromPDIF = "ppm"
+        'Case PDIF_PPMRAW
+        '    GetExtensionFromPDIF = "ppm"
+        Case PDIF_PSD
+            GetExtensionFromPDIF = "psd"
+        Case PDIF_RAS
+            GetExtensionFromPDIF = "ras"
+        'RAW is an interesting case; because PD can write HDR images, which support nearly all features of all major RAW formats,
+        ' we use HDR as the default extension for RAW-type images.
+        Case PDIF_RAW
+            GetExtensionFromPDIF = "hdr"
+        Case PDIF_SGI
+            GetExtensionFromPDIF = "sgi"
+        Case PDIF_TARGA
+            GetExtensionFromPDIF = "tga"
+        Case PDIF_TIFF
+            GetExtensionFromPDIF = "tif"
+        Case PDIF_WBMP
+            GetExtensionFromPDIF = "wbm"
+        Case PDIF_WEBP
+            GetExtensionFromPDIF = "webp"
+        Case PDIF_WMF
+            GetExtensionFromPDIF = "wmf"
+        Case PDIF_XBM
+            GetExtensionFromPDIF = "xbm"
+        Case PDIF_XPM
+            GetExtensionFromPDIF = "xpm"
+        
         Case Else
-            getExtensionFromFIF = ""
+            GetExtensionFromPDIF = ""
     
     End Select
 
 End Function
 
 'This can be used to see if an output format supports multiple color depths.
-Public Function doesFIFSupportMultipleColorDepths(ByVal outputFIF As Long) As Boolean
+Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
-    Select Case outputFIF
+    Select Case outputPDIF
     
-        Case FIF_GIF
-            doesFIFSupportMultipleColorDepths = False
-            
-        Case FIF_JPEG
-            doesFIFSupportMultipleColorDepths = False
-            
-        Case FIF_PPM
-            doesFIFSupportMultipleColorDepths = False
+        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG
+            DoesPDIFSupportMultipleColorDepths = False
             
         Case Else
-            doesFIFSupportMultipleColorDepths = True
+            DoesPDIFSupportMultipleColorDepths = True
     
     End Select
 
 End Function
 
 'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Boolean
+Public Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputFIF = 100 Then
-        isColorDepthSupported = True
+    If outputPDIF = PDIF_PDI Then
+        IsColorDepthSupported = True
         Exit Function
     End If
 
     'By default, report that a given color depth is NOT supported
-    isColorDepthSupported = False
+    IsColorDepthSupported = False
     
     'First, address formats handled only by FreeImage
     If FreeImageEnabled Then
         
-        Select Case outputFIF
+        Select Case outputPDIF
         
             'BMP
-            Case FIF_BMP
+            Case PDIF_BMP
             
                 Select Case desiredColorDepth
         
                     Case 1
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 4
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 16
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                         
                 End Select
         
             'GIF
-            Case FIF_GIF
+            Case PDIF_GIF
             
-                If desiredColorDepth = 8 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                If desiredColorDepth = 8 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+                
+            'HDR
+            Case PDIF_HDR
+            
+                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
                 
             'JP2 (JPEG 2000)
-            Case FIF_JP2
+            Case PDIF_JP2
             
                 Select Case desiredColorDepth
                 
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                         
                 End Select
                 
             'JPEG
-            Case FIF_JPEG
+            Case PDIF_JPEG
             
-                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
-                                        
+                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+            
+            'JXR (JPEG XR)
+            Case PDIF_JXR
+            
+                Select Case desiredColorDepth
+                
+                    Case 24
+                        IsColorDepthSupported = True
+                    Case 32
+                        IsColorDepthSupported = True
+                    Case Else
+                        IsColorDepthSupported = False
+                        
+                End Select
+                
             'PNG
-            Case FIF_PNG
+            Case PDIF_PNG
         
                 Select Case desiredColorDepth
         
                     Case 1
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 4
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                         
                 End Select
                 
             'PPM (Portable Pixmap)
-            Case FIF_PPM
+            Case PDIF_PPM
             
-                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
-                
+                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+            
+            'PSD (Photoshop document)
+            Case PDIF_PSD
+                    
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        IsColorDepthSupported = True
+                    Case 4
+                        IsColorDepthSupported = True
+                    Case 8
+                        IsColorDepthSupported = True
+                    Case 24
+                        IsColorDepthSupported = True
+                    Case 32
+                        IsColorDepthSupported = True
+                    
+                    'Higher bit-depths may be supported, but I'm not enabling them until high bit-depth output is
+                    ' better supported throughout all of PD.
+                    Case Else
+                        IsColorDepthSupported = False
+                        
+                End Select
+            
             'TGA (Targa)
-            Case FIF_TARGA
+            Case PDIF_TARGA
             
                 Select Case desiredColorDepth
                 
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                 
                 End Select
                 
             'TIFF
-            Case FIF_TIFF
+            Case PDIF_TIFF
             
                 Select Case desiredColorDepth
         
                     Case 1
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 4
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
+                        
+                End Select
+                
+            'WebP
+            Case PDIF_WEBP
+            
+                Select Case desiredColorDepth
+                
+                    Case 24
+                        IsColorDepthSupported = True
+                    Case 32
+                        IsColorDepthSupported = True
+                    Case Else
+                        IsColorDepthSupported = False
                         
                 End Select
         
@@ -637,55 +733,55 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
     'So check to see what color depths GDI+ can offer
     If GDIPlusEnabled Then
     
-        Select Case outputFIF
+        Select Case outputPDIF
         
             'GIF
-            Case FIF_GIF
+            Case PDIF_GIF
             
-                If desiredColorDepth = 8 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                If desiredColorDepth = 8 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
                 
             'JPEG
-            Case FIF_JPEG
+            Case PDIF_JPEG
             
-                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
                 
             'PNG
-            Case FIF_PNG
+            Case PDIF_PNG
         
                 Select Case desiredColorDepth
         
                     Case 1
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 4
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                         
                 End Select
                 
             'TIFF
-            Case FIF_TIFF
+            Case PDIF_TIFF
             
                 Select Case desiredColorDepth
         
                     Case 1
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 4
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 8
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 24
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case 32
-                        isColorDepthSupported = True
+                        IsColorDepthSupported = True
                     Case Else
-                        isColorDepthSupported = False
+                        IsColorDepthSupported = False
                         
                 End Select
         
@@ -696,10 +792,10 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
     
     End If
     
-    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they've got.
-    If outputFIF = FIF_BMP Then
+    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they get.
+    If outputPDIF = PDIF_BMP Then
     
-        If (desiredColorDepth = 24) Or (desiredColorDepth = 32) Then isColorDepthSupported = True Else isColorDepthSupported = False
+        If (desiredColorDepth = 24) Or (desiredColorDepth = 32) Then IsColorDepthSupported = True Else IsColorDepthSupported = False
         
     End If
 
@@ -707,18 +803,18 @@ End Function
 
 'Given a file format and desired color depth, return the next-best color depth that can be used (assuming the desired one is not available)
 ' (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Long
+Public Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Long
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputFIF = 100 Then
-        getClosestColorDepth = desiredColorDepth
+    If outputPDIF = PDIF_PDI Then
+        GetClosestColorDepth = desiredColorDepth
         Exit Function
     End If
 
     'By default, report that 24bpp is the preferred alternative
-    getClosestColorDepth = 24
+    GetClosestColorDepth = 24
 
-    'Certain file formats only support one output color depth, so they are easily handled - these include JPEG, GIF, PPM
+    'Certain file formats only support one output color depth, so they are easily handled (e.g. GIF)
     
     'Some file formats support many color depths (PNG, for example, can handle 1/4/8/24/32)
     
@@ -726,96 +822,285 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
     ' if either of FreeImage or GDI+ is enabled)
     
     'Based on all these factors, return the nearest color depth to the one the user would like to use (but can't, presumably)
-    Select Case outputFIF
+    Select Case outputPDIF
     
         'BMP support changes based on the available encoder
-        Case FIF_BMP
+        Case PDIF_BMP
         
             'FreeImage and GDI+ offer identical bpp support
             If FreeImageEnabled Or GDIPlusEnabled Then
             
                 If desiredColorDepth <= 1 Then
-                    getClosestColorDepth = 1
+                    GetClosestColorDepth = 1
                 ElseIf desiredColorDepth <= 4 Then
-                    getClosestColorDepth = 4
+                    GetClosestColorDepth = 4
                 ElseIf desiredColorDepth <= 8 Then
-                    getClosestColorDepth = 8
+                    GetClosestColorDepth = 8
                 ElseIf desiredColorDepth <= 24 Then
-                    getClosestColorDepth = 24
+                    GetClosestColorDepth = 24
                 Else
-                    getClosestColorDepth = 32
+                    GetClosestColorDepth = 32
                 End If
             
             'If both FreeImage and GDI+ are missing, we can only write 24 and 32bpp bitmaps
             Else
                 If desiredColorDepth <= 24 Then
-                    getClosestColorDepth = 24
+                    GetClosestColorDepth = 24
                 Else
-                    getClosestColorDepth = 32
+                    GetClosestColorDepth = 32
                 End If
             End If
         
         'GIF only supports 8bpp
-        Case FIF_GIF
-            getClosestColorDepth = 8
+        Case PDIF_GIF
+            GetClosestColorDepth = 8
+            
+        'HDR only supports 24bpp
+        Case PDIF_HDR
+            GetClosestColorDepth = 24
             
         'JP2 (JPEG 2000) supports 24/32bpp
-        Case FIF_JP2
+        Case PDIF_JP2
             If desiredColorDepth <= 24 Then
-                getClosestColorDepth = 24
+                GetClosestColorDepth = 24
             Else
-                getClosestColorDepth = 32
+                GetClosestColorDepth = 32
             End If
         
         'JPEG only supports 24bpp (8bpp grayscale is not currently handled)
-        Case FIF_JPEG
-            getClosestColorDepth = 24
+        Case PDIF_JPEG
+            GetClosestColorDepth = 24
+        
+        'JXR (JPEG XR) supports 24/32bpp
+        Case PDIF_JXR
+            If desiredColorDepth <= 24 Then
+                GetClosestColorDepth = 24
+            Else
+                GetClosestColorDepth = 32
+            End If
         
         'PNG supports all available color depths
-        Case FIF_PNG
+        Case PDIF_PNG
         
             If desiredColorDepth <= 1 Then
-                getClosestColorDepth = 1
+                GetClosestColorDepth = 1
             ElseIf desiredColorDepth <= 4 Then
-                getClosestColorDepth = 4
+                GetClosestColorDepth = 4
             ElseIf desiredColorDepth <= 8 Then
-                getClosestColorDepth = 8
+                GetClosestColorDepth = 8
             ElseIf desiredColorDepth <= 24 Then
-                getClosestColorDepth = 24
+                GetClosestColorDepth = 24
             Else
-                getClosestColorDepth = 32
+                GetClosestColorDepth = 32
             End If
         
         'PPM only supports 24bpp
-        Case FIF_PPM
-            getClosestColorDepth = 24
+        Case PDIF_PPM
+            GetClosestColorDepth = 24
+        
+        'PSD supports all available color depths
+        Case PDIF_PSD
+        
+            If desiredColorDepth <= 1 Then
+                GetClosestColorDepth = 1
+            ElseIf desiredColorDepth <= 4 Then
+                GetClosestColorDepth = 4
+            ElseIf desiredColorDepth <= 8 Then
+                GetClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                GetClosestColorDepth = 24
+            Else
+                GetClosestColorDepth = 32
+            End If
         
         'TGA supports 8/24/32
-        Case FIF_TARGA
+        Case PDIF_TARGA
             If desiredColorDepth <= 8 Then
-                getClosestColorDepth = 8
+                GetClosestColorDepth = 8
             ElseIf desiredColorDepth <= 24 Then
-                getClosestColorDepth = 24
+                GetClosestColorDepth = 24
             Else
-                getClosestColorDepth = 32
+                GetClosestColorDepth = 32
             End If
         
         'TIFF supports all available color depths
-        Case FIF_TIFF
+        Case PDIF_TIFF
             
             If desiredColorDepth <= 1 Then
-                getClosestColorDepth = 1
+                GetClosestColorDepth = 1
             ElseIf desiredColorDepth <= 4 Then
-                getClosestColorDepth = 4
+                GetClosestColorDepth = 4
             ElseIf desiredColorDepth <= 8 Then
-                getClosestColorDepth = 8
+                GetClosestColorDepth = 8
             ElseIf desiredColorDepth <= 24 Then
-                getClosestColorDepth = 24
+                GetClosestColorDepth = 24
             Else
-                getClosestColorDepth = 32
+                GetClosestColorDepth = 32
+            End If
+            
+        'WebP supports 24/32bpp
+        Case PDIF_WEBP
+            If desiredColorDepth <= 24 Then
+                GetClosestColorDepth = 24
+            Else
+                GetClosestColorDepth = 32
             End If
         
     End Select
     
 End Function
 
+'Given an output PDIF, return the ideal metadata format for that image format.
+Friend Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
+
+    Select Case outputPDIF
+    
+        Case PDIF_BMP
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
+        Case PDIF_GIF
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
+        Case PDIF_HDR
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
+        Case PDIF_JP2
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
+        Case PDIF_JPEG
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        
+        Case PDIF_JXR
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        
+        Case PDIF_PDI
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        
+        Case PDIF_PNG
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
+        Case PDIF_PNM
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+            
+        Case PDIF_PSD
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
+        Case PDIF_TARGA
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
+        Case PDIF_TIFF
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
+        
+        Case PDIF_WEBP
+            GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
+        Case Else
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
+    End Select
+    
+End Function
+
+'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
+' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
+'  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
+Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+
+    Select Case outputPDIF
+    
+        Case PDIF_BMP
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_GIF
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_HDR
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_JP2
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_JPEG
+            IsExifAllowedForPDIF = True
+        
+        Case PDIF_JXR
+            IsExifAllowedForPDIF = True
+        
+        Case PDIF_PDI
+            IsExifAllowedForPDIF = True
+        
+        Case PDIF_PNG
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_PNM
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_PSD
+            IsExifAllowedForPDIF = True
+        
+        Case PDIF_TARGA
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_TIFF
+            IsExifAllowedForPDIF = True
+        
+        Case PDIF_WEBP
+            IsExifAllowedForPDIF = False
+        
+        Case Else
+            IsExifAllowedForPDIF = False
+        
+    End Select
+    
+End Function
+
+'Given an output PDIF, return a BOOLEAN specifying whether PD has implemented an export dialog for that image format.
+Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+
+    Select Case outputPDIF
+    
+        Case PDIF_BMP
+            IsExportDialogSupported = True
+        
+        Case PDIF_GIF
+            IsExportDialogSupported = True
+        
+        Case PDIF_HDR
+            IsExportDialogSupported = False
+        
+        Case PDIF_JP2
+            IsExportDialogSupported = True
+        
+        Case PDIF_JPEG
+            IsExportDialogSupported = True
+        
+        Case PDIF_JXR
+            IsExportDialogSupported = True
+        
+        Case PDIF_PDI
+            IsExportDialogSupported = False
+        
+        Case PDIF_PNG
+            IsExportDialogSupported = True
+        
+        Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
+            IsExportDialogSupported = True
+        
+        Case PDIF_PSD
+            IsExportDialogSupported = False
+        
+        Case PDIF_TARGA
+            IsExportDialogSupported = False
+        
+        Case PDIF_TIFF
+            IsExportDialogSupported = True
+        
+        Case PDIF_WEBP
+            IsExportDialogSupported = True
+        
+        Case Else
+            IsExportDialogSupported = False
+        
+    End Select
+    
+End Function

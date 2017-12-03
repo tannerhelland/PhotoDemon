@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Auto-Save Form Settings custom class
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 14/September/13
-'Last updated: 14/September/13
-'Last update: initial build
+'Last updated: 26/June/14
+'Last update: add recent localization fixes from the command bar UC version of this code
 '
 'This class is a spin-off of the (far more involved) command bar user control.  Its purpose is to assist with saving
 ' and loading the values of all controls on a given form.  When the parent form is loaded, this control will search
@@ -39,160 +39,157 @@ Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
 
 'XML handling (used to save/load presets) is handled through a specialized class
-Private xmlEngine As pdXML
+Private m_Params As pdParamXML
 
-'Each instance of this control lives on a unique tool dialog.  That dialog's name is stored here (automatically
-' generated at initialization time).
-Private parentToolName As String, parentToolPath As String
+'Each instance of this control must be tied to a unique form.  The form's name is used to generate a unique key
+' at initialization time, and that key is used to set/retrieve preset data from the master preset file.
+Private m_ParentID As String
 
 'If a form needs to read or write custom preset data , we use these variables to store all custom data supplied to us.
-Private numUserPresetEntries As Long
-Private userPresetNames() As String
-Private userPresetData() As String
-Private curPresetEntry As String
+Private m_numUserPresets As Long
+Private m_userPresetNames() As String
+Private m_userPresetData() As String
 
-Private parentForm As Object
+Private m_ParentForm As Object
 
 'BEFORE DOING ANYTHING WITH THIS CLASS, the parent form needs to call this function and pass itself as a reference.
-' This class relies heavily on direct access to its parent form - so don't forget to do this!
-Public Sub setParentForm(ByRef ownerForm As Object)
-    Set parentForm = ownerForm
+' This class relies heavily on direct access to its parent form - so don't forget to do this!  (Similarly, the parent
+' control must pass "Nothing" to this same function somewhere before its "Unload" event fires, or circular references
+' will cause problems.)
+Public Sub SetParentForm(ByRef ownerForm As Object)
+    Set m_ParentForm = ownerForm
 End Sub
 
 'The parent form must manually request the restoration of all previous values.  We do this to give the parent time
 ' to initialize things like drop-downs and other objects.
-Public Function loadAllControlValues() As Boolean
+Public Function LoadAllControlValues() As Boolean
 
-    'Start by looking for a preset file for this form
-    Set xmlEngine = New pdXML
-    parentToolName = Replace$(parentForm.Name, "Form", "", , , vbTextCompare)
-    parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
+    'In previous versions of this control, each instance used a unique presets file inside the /Data/Presets folder.
+    ' This was problematic, because unique disk accesses for each main window panel adds up, slowing program launch time.
     
-    If FileExist(parentToolPath) Then
-            
-        'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-        If (Not xmlEngine.loadXMLFile(parentToolPath)) Or Not (xmlEngine.validateLoadedXMLData("toolName")) Then
-            Message "This form's preset file may be corrupted.  A new preset file has been created."
-            resetXMLData
-        End If
-            
+    'To remedy this, v7.0 moved to a new system, where individual last-used values are all cached inside a single
+    ' XML file.  This file is managed by the user preferences engine.
+    If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+    m_ParentID = Replace$(m_ParentForm.Name, "Form", "", , , vbTextCompare) & "-presets"
+    
+    Dim presetPacket As String
+    If g_UserPreferences.GetDialogPresets(m_ParentID, presetPacket) Then
+        m_Params.SetParamString presetPacket
     Else
-        resetXMLData
+        If (Len(Trim$(m_ParentForm.Caption)) <> 0) Then m_Params.AddParam "ToolDescription", Trim$(m_ParentForm.Caption)
     End If
-        
-    'Populate the preset combo box with any presets found in the file.
-    'findAllXMLPresets
     
     'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
-    readXMLSettings
+    ReadXMLSettings
     
 End Function
 
-Public Function saveAllControlValues() As Boolean
-
-    'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
-    fillXMLSettings
-    xmlEngine.writeXMLToFile parentToolPath
-
-End Function
-
-'Reset the XML engine for this tool.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
-Private Function resetXMLData()
-
-    xmlEngine.prepareNewXML "Tool preset"
-    xmlEngine.writeBlankLine
-    xmlEngine.writeTag "toolName", parentToolName
-    xmlEngine.writeTag "toolDescription", Trim$(parentForm.Caption)
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "Everything past this point is preset values for the controls on this form."
-    xmlEngine.writeBlankLine
-
-End Function
-
-'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
-' those values in the section titled "presetName".
-Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used settings")
+Public Function SaveAllControlValues() As Boolean
     
-    presetName = Trim$(presetName)
+    FillXMLSettings
     
-    'Create an XML-valid preset name here (e.g. remove spaces, etc).  The proper name will still be stored in the file,
-    ' but we need a valid tag name for this section, and we need it before doing subsequent processing.
-    Dim xmlSafePresetName As String
-    xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
-    
-    'Start by looking for this preset name in the file.  If it does not exist, create a new section for it.
-    If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
-    
-        xmlEngine.writeTagWithAttribute "presetEntry", "id", xmlSafePresetName, "", True
-        xmlEngine.writeTag "fullPresetName", presetName
-        xmlEngine.closeTag "presetEntry"
-        xmlEngine.writeBlankLine
+    If (Not g_UserPreferences Is Nothing) Then
+        
+        Dim tmpString As String
+        tmpString = m_Params.GetParamString()
+        
+        'To keep the XML file looking tidy, remove any leading and trailing linebreaks
+        Do While (Left$(tmpString, 2) = vbCrLf)
+            tmpString = Right$(tmpString, Len(tmpString) - 2)
+        Loop
+        
+        Do While (Right$(tmpString, 2) = vbCrLf)
+            tmpString = Left$(tmpString, Len(tmpString) - 2)
+        Loop
+        
+        'Send the tidied-up string to the preset manager
+        g_UserPreferences.SetDialogPresets m_ParentID, vbCrLf & tmpString & vbCrLf
         
     End If
     
-    'Iterate through each control on the form.  Check its type, then write out its relevant "value" property.
+End Function
+
+'Fill the m_Params object with the current values of all controls on our parent form.  (Note that some objects (like labels)
+' do not support last-used settings, by design.)
+Private Sub FillXMLSettings()
+    
+    'Iterate through each control on the form.  Check its type, then determine a relevant way of tracking its "value".
     Dim controlName As String, controlType As String, controlValue As String
     Dim controlIndex As Long
     
     Dim eControl As Object
-    For Each eControl In parentForm.Controls
+    For Each eControl In m_ParentForm.Controls
         
         controlName = eControl.Name
         If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
         controlType = TypeName(eControl)
-        controlValue = ""
+        controlValue = vbNullString
             
         'We only want to write out the value property of relevant controls.  Check that list now.
         Select Case controlType
         
-            'Our custom controls all have a .Value property
-            Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
-                controlValue = CStr(eControl.Value)
+            'Many PD custom controls have a .Value property
+            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner", "pdTitle", "pdScrollBar", "pdButtonToolbox"
+                controlValue = Str$(eControl.Value)
             
-            'Color pickers have a .Color property
-            Case "colorSelector"
-                controlValue = CStr(eControl.Color)
-            
-            'Intrinsic VB controls may have different names for their value properties
-            Case "HScrollBar", "VScrollBar"
-                controlValue = CStr(eControl.Value)
+            'List-type objects have an index
+            Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                controlValue = Str$(eControl.ListIndex)
                 
-            Case "ListBox", "ComboBox"
+            'Custom values, including those returned as strings
+            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
+                controlValue = Str$(eControl.Color)
             
-                'Make sure the combo box is not the preset box on this control!
-                controlValue = CStr(eControl.ListIndex)
+            Case "pdBrushSelector"
+                controlValue = eControl.Brush
                 
-            Case "TextBox"
-                controlValue = CStr(eControl.Text)
-        
+            Case "pdPenSelector"
+                controlValue = eControl.Pen
+                
+            Case "pdGradientSelector"
+                controlValue = eControl.Gradient
+                
+            Case "pdTextBox"
+                controlValue = eControl.Text
+                
+            Case "pdResize"
+                controlValue = eControl.GetCurrentSettingsAsXML()
+            
+            Case "pdHistory"
+                controlValue = eControl.GetHistoryAsString()
+            
         End Select
         
+        'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
+        If (Len(controlValue) <> 0) Then controlValue = Trim$(controlValue)
+        
         'If this control has a valid value property, add it to the XML file
-        If Len(controlValue) > 0 Then
+        If (Len(controlValue) <> 0) Then
         
             'If this control is part of a control array, we need to remember its index as well
-            If controlIndex >= 0 Then
-                xmlEngine.updateTag controlName & ":" & controlIndex, controlValue, "presetEntry", "id", xmlSafePresetName
+            If (controlIndex >= 0) Then
+                m_Params.UpdateParam controlName & ":" & controlIndex, controlValue
             Else
-                xmlEngine.updateTag controlName, controlValue, "presetEntry", "id", xmlSafePresetName
+                m_Params.UpdateParam controlName, controlValue
             End If
+            
         End If
         
     Next eControl
     
-    'We assume the user does not have any additional entries
-    numUserPresetEntries = 0
+    'Reset the custom value tracker (used for dialogs with non-standard UI elements)
+    m_numUserPresets = 0
     
-    'Allow the user to add any custom attributes here
+    'Allow our parent to add any custom attributes here
     RaiseEvent AddCustomPresetData
     
-    'If the user added any custom preset data, the numUserPresetEntries value will have incremented
-    If numUserPresetEntries > 0 Then
+    'If the user added any custom preset data, the m_numUserPresets value will have incremented
+    If (m_numUserPresets > 0) Then
     
         'Loop through the user data, and add each entry to the XML file
         Dim i As Long
-        For i = 0 To numUserPresetEntries - 1
-            xmlEngine.updateTag "custom:" & userPresetNames(i), userPresetData(i), "presetEntry", "id", xmlSafePresetName
+        For i = 0 To m_numUserPresets - 1
+            m_Params.UpdateParam "custom:" & m_userPresetNames(i), m_userPresetData(i)
         Next i
     
     End If
@@ -202,44 +199,28 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
 End Sub
 
 'This function is called when the user wants to add new preset data to the current preset
-Public Function addPresetData(ByVal presetName As String, ByVal presetData As String)
+Public Function AddPresetData(ByRef presetName As String, ByRef presetData As String)
     
     'Increase the array size
-    ReDim Preserve userPresetNames(0 To numUserPresetEntries) As String
-    ReDim Preserve userPresetData(0 To numUserPresetEntries) As String
+    ReDim Preserve m_userPresetNames(0 To m_numUserPresets) As String
+    ReDim Preserve m_userPresetData(0 To m_numUserPresets) As String
 
     'Add the entries
-    userPresetNames(numUserPresetEntries) = presetName
-    userPresetData(numUserPresetEntries) = presetData
+    m_userPresetNames(m_numUserPresets) = presetName
+    m_userPresetData(m_numUserPresets) = presetData
 
     'Increment the custom data count
-    numUserPresetEntries = numUserPresetEntries + 1
+    m_numUserPresets = m_numUserPresets + 1
     
 End Function
 
 'This function is called when the user wants to read custom preset data from file
-Public Function retrievePresetData(ByVal presetName As String) As String
-    retrievePresetData = xmlEngine.getUniqueTag_String("custom:" & presetName, "", , "presetEntry", "id", curPresetEntry)
+Public Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = vbNullString) As String
+    RetrievePresetData = m_Params.GetString("custom:" & presetName, returnValueIfMissing)
 End Function
 
-'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
-' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
-Private Function readXMLSettings(Optional ByVal presetName As String = "last-used settings") As Boolean
-    
-    presetName = Trim$(presetName)
-        
-    'Create an XML-valid preset name here (e.g. remove spaces, etc).  The proper name is stored in the file,
-    ' but we need a valid tag name for this section, and we need it before doing subsequent processing.
-    Dim xmlSafePresetName As String
-    xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
-    
-    'Start by looking for this preset name in the file.  If it does not exist, continue with the load so that the
-    ' ReadCustomPresetData event is still fired - external functions may need access to this, so they can account
-    ' for first-run behavior.
-    'If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
-        'readXMLSettings = False
-        'Exit Function
-    'End If
+'This sub will set the values of all controls on this form, using the values stored in the tool's m_Params object.
+Private Function ReadXMLSettings() As Boolean
     
     'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
     ' saved preset file.
@@ -247,7 +228,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     Dim controlIndex As Long
     
     Dim eControl As Object
-    For Each eControl In parentForm.Controls
+    For Each eControl In m_ParentForm.Controls
         
         controlName = eControl.Name
         If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
@@ -255,49 +236,56 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
         
         'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
         ' controlname:controlindex
-        If controlIndex >= 0 Then
-            controlValue = xmlEngine.getUniqueTag_String(controlName & ":" & controlIndex, "", , "presetEntry", "id", xmlSafePresetName)
+        If (controlIndex >= 0) Then
+            controlValue = m_Params.GetString(controlName & ":" & controlIndex, vbNullString)
         Else
-            controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
+            controlValue = m_Params.GetString(controlName, vbNullString)
         End If
         
-        If Len(controlValue) > 0 Then
+        If (Len(controlValue) <> 0) Then
         
-            'An entry exists!  Assign out its value according to the type of control this is.
+            'An entry exists!  Assign out its value according to the control type.
             Select Case controlType
             
                 'Our custom controls all have a .Value property
-                Case "sliderTextCombo", "textUpDown"
+                Case "pdSlider", "pdSpinner"
+                    eControl.Value = CDblCustom(controlValue)
                     
-                    Select Case eControl.SigDigits
-                
-                        Case 0
-                            eControl.Value = CLng(controlValue)
-                            
-                        Case 1, 2
-                            eControl.Value = CDbl(controlValue)
-                                            
-                    End Select
-                    
-                Case "smartCheckBox"
+                Case "pdCheckBox"
                     eControl.Value = CLng(controlValue)
                 
-                Case "smartOptionButton"
+                Case "pdRadioButton", "pdTitle", "pdButtonToolbox"
                     eControl.Value = CBool(controlValue)
-                
-                'Color pickers have a .Color property
-                Case "colorSelector"
+                    
+                'Lists need to be checked to make sure we have enough entries to propery assign this value
+                Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                    If (CLng(controlValue) < eControl.ListCount) Then
+                        If (CLng(controlValue) > 0) Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
+                    Else
+                        If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
+                    End If
+                    
+                'Various PD controls have their own custom "value"-type properties.
+                Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                     eControl.Color = CLng(controlValue)
+                    
+                Case "pdBrushSelector"
+                    eControl.Brush = controlValue
                 
-                'Intrinsic VB controls may have different names for their value properties
-                Case "HScrollBar", "VScrollBar"
-                    eControl.Value = CLng(controlValue)
+                Case "pdPenSelector"
+                    eControl.Pen = controlValue
+                
+                Case "pdGradientSelector"
+                    eControl.Gradient = controlValue
                     
-                Case "ListBox", "ComboBox"
-                    eControl.ListIndex = CLng(controlValue)
-                    
-                Case "TextBox"
+                Case "pdTextBox"
                     eControl.Text = controlValue
+                    
+                Case "pdResize"
+                    eControl.SetAllSettingsFromXML controlValue
+                    
+                Case "pdHistory"
+                    eControl.SetHistoryFromString controlValue
             
             End Select
 
@@ -306,17 +294,23 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     Next eControl
     
     'Allow the user to retrieve any of their custom preset data from the file
-    curPresetEntry = xmlSafePresetName
     RaiseEvent ReadCustomPresetData
     
     'We have now filled all controls with their relevant values from the XML file.
-    readXMLSettings = True
+    ReadXMLSettings = True
     
 End Function
 
-'This beautiful little function comes courtesy of coder Merri:
+'This helpful little function comes courtesy of coder Merri:
 ' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
-Private Function InControlArray(Ctl As Object) As Boolean
-    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+Private Function InControlArray(ByRef Ctl As Object) As Boolean
+    InControlArray = Not (Ctl.Parent.Controls(Ctl.Name) Is Ctl)
 End Function
 
+Private Sub Class_Initialize()
+    Set m_Params = New pdParamXML
+End Sub
+
+Private Sub Class_Terminate()
+    Set m_ParentForm = Nothing
+End Sub

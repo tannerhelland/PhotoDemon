@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This contains color accent definitions for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Teal accent definitions for PhotoDemon's core visual themes</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes custom, reusable color values that are "plugged in" to a UI theme at run-time. -->
+		
+		<Definitions>
+			<Accent1>#b2dfdb</Accent1>
+			<Accent2>#80cbc4</Accent2>
+			<Accent3>#4db6ac</Accent3>
+			<Accent4>#26a69a</Accent4>
+			<Accent5>#009688</Accent5>
+			<Accent6>#00897b</Accent6>
+			<Accent7>#00796b</Accent7>
+			<Accent8>#00695c</Accent8>
+			<Accent9>#004d40</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

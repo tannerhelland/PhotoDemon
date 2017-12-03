@@ -13,19 +13,18 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 20/September/13
-'Last update: full support for caching binary metadata (necessary when attempting to losslessly preserve metadata)
+'Last updated: 09/June/16
+'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'Because metadata handling is complicated, I have created this dedicated metadata handler class.  Each pdImage object
 ' has one (1) metadata class called "imgMetadata".  That class is publicly accessible.  If metadata is available at
-' load-time, and user preferences allow, the imgMetadata object will automatically be filled with any metadata found
-' in the source file.  If the user disables this option, but has "export metadata" as a preference, metadata will be
-' loaded at export time (e.g. immediately prior to saving).
+' load-time, the imgMetadata object will automatically (and asynchronously) be filled with any metadata found in the
+' source file.
 '
 'At present, metadata handling is 100% tied to the ExifTool plugin (see the "Plugin_ExifTool_Interface" module for more
 ' detail).  Because metadata is insanely complex to both read and write - if you want it done correctly - I have no
@@ -39,612 +38,1516 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'The number of metadata items currently stored
-Private maxMetadataCount As Long
+Private m_NumOfTags As Long
 
 'Array that contains the metadata itself
-Private iMetadata() As mdItem
+Private m_Tags() As PDMetadataItem
 
 'When extracting metadata, we request a full XML dump from ExifTool.  This XML file is stored - in its entirety - in memory,
 ' as it is the only way to precisely restore the XML data in its *exact* form when save-time comes.
-Private originalMetadataXML As String
+Private m_OriginalXML As String
 
-'If GPS data is found, mark its location
-Private hasGPSCoordinates As Boolean
-Private gpsIndex As Long
+'We cache whether or not GPS coords are present; this simplifies UI synching of geotagging controls
+Private m_HasGPSCoordinates As Boolean
 
-'If the user elects to "copy all metadata" for an image, we run into a problem at save-time: if the user is saving this image
-' OVER the one with the metadata they want, we need to cache the original image's metadata before it's overwritten!  We do that
-' by exporting the full metadata to a side file, then caching that file in memory.  Then we save the new file over the old,
-' then restore the metadata using this cached copy.
-Private cachedMetadata() As Byte
+Private Const LEFT_TAG_TEST As String = " <"   'The preceding space is crucial; do not remove it!
+Private Const RIGHT_TAG_TEST As String = ">"
 
-'Given an index and a source metadata object, fill that object with the contents of the matching entry in the iMetadata() array
-Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
+'Return the original metadata XML string.  Note that aside from some minimal processing (e.g. removing ExifTool's {ready} marker),
+' this will be the unmodified XML string originally passed to this class, e.g. without any parsing or validation of the data!
+Friend Function GetOriginalXMLMetadataString() As String
+    GetOriginalXMLMetadataString = m_OriginalXML
+End Function
 
-    'Make sure the passed index is valid
-    If objIndex < maxMetadataCount Then getMetadataEntry = iMetadata(objIndex)
+Friend Sub GetOriginalXMLMetadataStrPtrAndLen(ByRef dstPtr As Long, ByRef dstLen As Long)
+    dstPtr = StrPtr(m_OriginalXML)
+    dstLen = Len(m_OriginalXML)
+End Sub
 
+'Return a current copy of the metadata collection, serialized into a single massive string.  This string contains all user edits,
+' and generally speaking, it should be used in parallel to the original XML string, above.  (Both are needed to fully recreate
+' metadata inside a new image.)
+Friend Function GetSerializedXMLData() As String
+    
+    If (m_NumOfTags > 0) Then
+        
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.Reset 1#
+        
+        cParams.AddParam "PDMetadataTagCount", m_NumOfTags
+        
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+            cParams.AddParam "PDMD_TAG_NO_" & CStr(i), ExifTool.SerializeTagToString(m_Tags(i))
+        Next i
+        
+    End If
+    
+    GetSerializedXMLData = cParams.GetParamString
+    
+End Function
+
+Friend Sub RecreateFromSerializedXMLData(ByRef srcString As String)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString srcString
+    
+    If (cParams.GetLong("PDMetadataTagCount", 0) > 0) Then
+    
+        m_NumOfTags = cParams.GetLong("PDMetadataTagCount", 0)
+        ReDim m_Tags(0 To m_NumOfTags) As PDMetadataItem
+        
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+            ExifTool.RecoverTagFromSerializedString cParams.GetString("PDMD_TAG_NO_" & CStr(i)), m_Tags(i)
+        Next i
+        
+    End If
+    
+End Sub
+
+'Retrieve resolution data from the metadata collection, if it exists.  Returns TRUE if resolution metadata entrist exist; FALSE
+' if they do not.  Note that this function always returns resolution in inches.  Pixels per CM measurements will be automatically
+' converted to PPI.
+Friend Function GetResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
+
+    On Error GoTo mdResolutionError
+
+    Dim xResTagIndex As Long, yResTagIndex As Long
+
+    If DoesTagExist("XResolution", xResTagIndex) And DoesTagExist("YResolution", yResTagIndex) Then
+    
+        'Check for the presence of a resolution type.  If the resolution is in CM, we need to convert it to inches.
+        ' Similarly, if no unit is specified, assume inches.
+        Dim unitIsCentimeters As Boolean
+        unitIsCentimeters = False
+        
+        Dim resUnitIndex As Long
+        If DoesTagExist("ResolutionUnit", resUnitIndex) Then
+        
+            'Note that 3 is a magic number used by EXIF to indicate CM.  See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
+            If CLng(m_Tags(resUnitIndex).TagValue) = 3 Then unitIsCentimeters = True
+            
+        End If
+        
+        'Retrieve X and Y resolution values
+        xResolution = CDblCustom(m_Tags(xResTagIndex).TagValue)
+        yResolution = CDblCustom(m_Tags(yResTagIndex).TagValue)
+        
+        'If the units are in centimeters, convert them to inches
+        If unitIsCentimeters Then
+            xResolution = GetInchesFromCM(xResolution)
+            yResolution = GetInchesFromCM(yResolution)
+        End If
+        
+        GetResolution = True
+    
+    'Resolution tags don't exist.
+    Else
+        GetResolution = False
+    End If
+    
+    Exit Function
+    
+mdResolutionError:
+    GetResolution = False
+
+End Function
+
+'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
+' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
+Private Function DoesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+
+    DoesTagExist = False
+    
+    'If this image has no metadata, exit now
+    If m_NumOfTags <= 0 Then Exit Function
+
+    'Scan the metadata collection, looking for the given tag name
+    Dim i As Long
+    For i = 0 To m_NumOfTags - 1
+        If Strings.StringsEqual(m_Tags(i).tagName, tagName, (searchMode = vbTextCompare)) Then
+            DoesTagExist = True
+            tagIndex = i
+            Exit For
+        End If
+    Next i
+
+End Function
+
+'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
+' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
+Friend Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+
+    DoesTagExistFullName = False
+    
+    'If this image has no metadata, exit now
+    If (m_NumOfTags <= 0) Then Exit Function
+    
+    'Scan the metadata collection, looking for the given tag name
+    Dim i As Long
+    For i = 0 To m_NumOfTags - 1
+    
+        'Tag name found!  Mark the index and exit.
+        If Strings.StringsEqual(m_Tags(i).TagGroupAndName, tagNameAndGroup, (searchMode = vbTextCompare)) Then
+            DoesTagExistFullName = True
+            tagIndex = i
+            Exit For
+        End If
+        
+    Next i
+
+End Function
+
+'Return the human-friendly value of a given tag.  If the tag is not found, a null string is returned.
+'
+'(It's assumed that the caller has called DoesTagExistFullName() before calling this function, so they know whether a null string is
+' the actual return value of the given metadata entry, or a fail state.)
+Friend Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare, Optional ByVal returnPrintFriendlyValue As Boolean = False) As String
+
+    Dim tagIndex As Long
+    
+    If DoesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
+        If returnPrintFriendlyValue Then
+            GetTagValue = GetMetadataEntry(tagIndex).TagValueFriendly
+        Else
+            GetTagValue = GetMetadataEntry(tagIndex).TagValue
+        End If
+    Else
+        GetTagValue = vbNullString
+    End If
+
+End Function
+
+'Given an index and a source metadata object, fill that object with the contents of the matching entry in the m_Tags() array
+Friend Function GetMetadataEntry(ByVal mtdIndex As Long) As PDMetadataItem
+    If (mtdIndex < m_NumOfTags) And (mtdIndex >= 0) Then GetMetadataEntry = m_Tags(mtdIndex)
+End Function
+
+Friend Function SetMetadataEntryByIndex(ByVal mtdIndex As Long, ByRef newMetadata As PDMetadataItem) As Boolean
+    If (mtdIndex < m_NumOfTags) And (mtdIndex >= 0) Then
+        m_Tags(mtdIndex) = newMetadata
+        SetMetadataEntryByIndex = True
+    End If
 End Function
 
 'Return the total metadata count for this object.  Note that binary and list items ARE included in this count.
-Public Function getMetadataCount() As Long
-    getMetadataCount = maxMetadataCount
+Friend Function GetMetadataCount() As Long
+    GetMetadataCount = m_NumOfTags
 End Function
 
-'PD now supports a few different metadata storage methods.  This will return TRUE if XML metadata is present.
-Public Function hasXMLMetadata() As Boolean
-    
-    'If metadata has been loaded in XML format, maxMetadataCount will be > 0.
-    If maxMetadataCount = 0 Then
-        hasXMLMetadata = False
-    Else
-        hasXMLMetadata = True
-    End If
-    
-End Function
-
-'PD now supports a few different metadata storage methods.  This will return TRUE if binary metadata is present.
-Public Function hasBinaryMetadata() As Boolean
-    
-    'If metadata has been loaded in XML format, maxMetadataCount will be > 0.
-    If UBound(cachedMetadata) > 0 Then
-        hasBinaryMetadata = True
-    Else
-        hasBinaryMetadata = False
-    End If
-    
+Friend Function HasMetadata() As Boolean
+    HasMetadata = CBool(m_NumOfTags <> 0)
 End Function
 
 'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
 ' idea if the image contains any.
-Public Function haveAttemptedToFindGPSData() As Boolean
-    If maxMetadataCount = 0 Then
-        haveAttemptedToFindGPSData = False
+Friend Function HaveAttemptedToFindGPSData() As Boolean
+    If (m_NumOfTags = 0) Then
+        HaveAttemptedToFindGPSData = False
     Else
-        haveAttemptedToFindGPSData = True
+        HaveAttemptedToFindGPSData = True
     End If
 End Function
 
 'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
-Public Function hasGPSMetadata() As Boolean
-    hasGPSMetadata = hasGPSCoordinates
+Friend Function HasGPSMetadata() As Boolean
+    HasGPSMetadata = m_HasGPSCoordinates
 End Function
 
 'If GPS metadata exists, this function can be used to retrieve the exact latitude and longitude values
-Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
+Friend Function FillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
     
-    If hasGPSCoordinates Then
+    If m_HasGPSCoordinates Then
+        
+        Dim GPSTagIndex As Long
+        If DoesTagExist("GPSPosition", GPSTagIndex, vbBinaryCompare) Then
+        
+            Dim tmpSplit() As String
+            tmpSplit = Split(m_Tags(GPSTagIndex).TagValue, " ")
+            latString = tmpSplit(0)
+            lonString = tmpSplit(1)
+            
+        End If
     
-        Dim tmpSplit() As String
-        tmpSplit = Split(iMetadata(gpsIndex).ActualValue, " ")
-        latString = tmpSplit(0)
-        lonString = tmpSplit(1)
-    
-        fillLatitudeLongitude = True
+        FillLatitudeLongitude = True
     
     Else
-        fillLatitudeLongitude = False
+        FillLatitudeLongitude = False
     End If
     
 End Function
 
 'This function will return a new XML file string with all "marked for removal" entries removed
-Private Function retrieveModifiedXMLString() As String
+Private Function RetrieveModifiedXMLString() As String
     
-    Dim newXMLString As String
-    newXMLString = originalMetadataXML
-    
-    Dim tagStart As Long, tagEnd As Long
-    
-    'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
-    ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
-    Dim i As Long
-    For i = 0 To maxMetadataCount - 1
-    
-        If iMetadata(i).markedForRemoval Then
+    'If this image has no metadata, exit now
+    If (m_NumOfTags <= 0) Then
+        RetrieveModifiedXMLString = vbNullString
+    Else
         
-            'Find this tag's start position
-            tagStart = InStr(1, newXMLString, "<" & iMetadata(i).FullGroupAndName)
+        Dim newXMLString As String
+        newXMLString = m_OriginalXML
+        
+        Dim tagStart As Long, tagEnd As Long
+        
+        'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
+        ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+        
+            If m_Tags(i).TagMarkedForRemoval Then
             
-            'Next, find this tag's end position
-            tagEnd = InStr(tagStart, newXMLString, "</" & iMetadata(i).FullGroupAndName) + Len(iMetadata(i).FullGroupAndName) + 3
+                'Find this tag's start position
+                tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName)
+                
+                'Next, find this tag's end position
+                tagEnd = InStr(tagStart, newXMLString, "</" & m_Tags(i).TagGroupAndName) + Len(m_Tags(i).TagGroupAndName) + 3
+                
+                'Use those positions to fully remove the tag from the master XML string
+                newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
             
-            'Use those positions to fully remove the tag from the master XML string
-            newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
+            End If
         
-        End If
-    
-    Next i
+        Next i
+            
+        RetrieveModifiedXMLString = newXMLString
         
-    retrieveModifiedXMLString = newXMLString
-    
+    End If
+        
 End Function
 
-'Given an image path, export all metadata to ExifTool's preferred MIE sidecar format, than store the full contents of that MIE file
-' in an array.  This is the fastest/easiest way to fully preserve metadata for a file.
-Public Function quickCacheMetadata(ByVal srcFile As String) As Boolean
+'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
+' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
+'  removed from the XML string.)
+Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
-    If Not g_ExifToolEnabled Then
+    If (Not PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool)) Then
         Message "ExifTool plugin missing.  Metadata import abandoned."
+        LoadAllMetadata = False
         Exit Function
     End If
     
-    'Request a metadata export from ExifTool.
-    If cacheMetadata(srcFile, cachedMetadata) Then
-        quickCacheMetadata = True
+    'If no metadata was returned, we can also abandon this function
+    If (Len(mdString) = 0) Then
+        LoadAllMetadata = False
+        Exit Function
+    End If
+    
+    'We now know that 1) ExifTool exists, and 2) it returned *something* for this image.
+    
+    'If you want to examine the XML output yourself (e.g. while debugging), you can dump the full XML contents to the clipboard
+    ' by enabling the EXIFTOOL_DEBUGGING_ENABLED constant inside the Exiftool module.  (Note that a forcible ANSI conversion will
+    ' be applied, so extended chars may not survive.)
+    If (EXIFTOOL_DEBUGGING_ENABLED <> 0) Then
+        Clipboard.Clear
+        Clipboard.SetText mdString
+    End If
+    
+    'Because PD intercepts metadata asynchronously, the returned string will contain trailing text similar to {ready123},
+    ' where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
+    ' parentImageID to find and remove the trailing synchronizer bit.
+    If (InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
+    
+    'We now have a (potentially very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of
+    ' that string.  We need this backup when it comes time to write the metadata back out to file.
+    
+    '(It's a bit confusing, but PD works by passing ExifTool the full original metadata XML, followed by a list of specialized
+    ' instructions on what to remove, what to add, and what to change.  This is the most efficient way to write metadata using
+    ' ExifTool's rather complex interaction structure.)
+    m_OriginalXML = mdString
+    
+    m_NumOfTags = 0
+    ReDim m_Tags(0 To 15) As PDMetadataItem
+    
+    'ExifTool outputs very clean XML output, with each tag sitting on its own line, and tag hierarchy indicated by preceding
+    ' spaces (one per hierarchy level).  As such, it is elegantly parsed by a line-by-line method.  Split it into lines now.
+    Dim xmlLines() As String
+    xmlLines = Split(mdString, vbCrLf)
+    
+    If VBHacks.IsArrayInitialized(xmlLines) Then
+        
+        'With the data successfully split, we now want to advance the parser to the first valid tag entry.
+        Dim curLine As Long: curLine = 0
+        If PARSE_AdvanceToFirstMeaningfulLine(xmlLines, curLine) Then
+            
+            'curLine now contains the line index of the first valid tag entry.  From here, all tags will be listed back-to-back,
+            ' so we can simply keep iterating through the list until we hit an invalid entry.
+            Do While PARSE_LikelyTagLine(xmlLines, curLine)
+            Loop
+            
+        Else
+            Debug.Print "Metadata received successfully, but no valid tag entries were found; abandoning further processing."
+        End If
+        
     Else
-        quickCacheMetadata = False
+        Debug.Print "Raw XML metadata received, but splitting by line-ending seems to have failed??"
+    End If
+    
+    'm_Tags() now contains all successfully parsed metadata entries in the file.  We're going to do a little extra processing to
+    ' the tag list, to try and remove any potentially confusing or unhelpful entries.
+    
+    m_HasGPSCoordinates = False
+    
+    If (m_NumOfTags > 0) Then
+    
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+        
+            'First, we're going to perform a special check for unextracted binary data.
+            
+            'ExifTool exposes a "-b" flag that instructs it to extract binary data for further examination.  I've gone back and forth
+            ' on whether to use this.  There are pros and cons to extracting binary data, and among the big cons are its tendency to
+            ' add a significant amount of processing time to RAW images.
+            
+            'At present, I have *not* enabled it, but ExifTool sometimes makes its own decision about what binary data is worth extracting.
+            ' When it does this, it will post a comment similar to "(binary data 12345 bytes, use -b option to extract)".  We want to find
+            ' any entries like this and remove the developer-centric "use -b option..." instructions.
+            If (InStr(1, m_Tags(i).TagValue, ", use -b option to extract") <> 0) Then
+                m_Tags(i).TagValue = Replace$(m_Tags(i).TagValue, ", use -b option to extract", "", , , vbBinaryCompare)
+            End If
+            
+            If (InStr(1, m_Tags(i).TagValueFriendly, ", use -b option to extract") <> 0) Then
+                m_Tags(i).TagValueFriendly = Replace$(m_Tags(i).TagValueFriendly, ", use -b option to extract", "", , , vbBinaryCompare)
+            End If
+            
+            'Next, look for GPS coordinate tags.  If found, we can enable some fun bonus metadata options (like pulling up Google Maps
+            ' with the photo's location already helpfully tagged).
+            If Strings.StringsEqual(m_Tags(i).tagName, "GPSPosition", vbBinaryCompare) Then
+                m_HasGPSCoordinates = True
+                Interface.SyncInterfaceToCurrentImage
+            End If
+            
+            'Next, we want to mark any tags that are not relevant to the user.  We will still preserve these tags internally,
+            ' but they will be forcibly hidden on the editor screen.
+            If Strings.StringsEqual(m_Tags(i).TagGroup, "ExifTool") Then m_Tags(i).InternalUseOnly = True
+            
+            'Next, we want to improve the grouping of tags.  ExifTool's grouping is somewhat erratic; for example, all software
+            ' treats ICC profiles as single, contiguous units, but ExifTool tends to group ICC properties into a bunch of
+            ' highly specific subcategories.  I prefer to use the same grouping as other software, to avoid confusing users.
+            CalculateIdealGroupName m_Tags(i), i, parentImageID
+            
+        Next i
+    
+    End If
+    
+    'We now have all tags sorted into appropriate categories, and we've extracted as much data as we can out of the XML source
+    ' provided by ExifTool.
+    
+    'The last task we need to perform is looking for obscure metadata tags that might affect the image's on-screen appearance.
+    ' (The need for this is generally rare, FYI - mostly weird PNG chunks and multipage TIFFs that have per-page details.)
+    If (m_NumOfTags <> 0) And (Not sourceIsUndoFile) Then
+        If ApplyMetadataPostProcessing(parentImageID) Then Interface.SyncInterfaceToCurrentImage
+    End If
+    
+    LoadAllMetadata = (m_NumOfTags <> 0)
+    
+End Function
+
+Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, ByVal tagIndex As Long, ByVal parentImageID As Long) As Boolean
+    
+    Dim i As Long
+    
+    Dim GroupName As String, groupNameCheck As String
+    GroupName = dstMetadata.TagGroup
+    groupNameCheck = UCase$(dstMetadata.TagGroup)
+    
+    dstMetadata.TagGroupFriendly = GroupName
+    
+    'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
+    ' (Pre-7.0's release I am experimenting with leaving these as-is.)
+    'If StrComp(groupNameCheck, "SYSTEM", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    'If StrComp(groupNameCheck, "FILE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    
+    'Next, ExifTool provides "Composite" tags - basically, tags that do not exist in the file, but whose value can be inferred
+    ' from other pieces of information.  As "Composite" doesn't make much sense, we use "Inferred" instead.
+    If Strings.StringsEqual(groupNameCheck, "COMPOSITE", False) Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Inferred")
+    
+    'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
+    ' (For TIFFs, which may have multiple pages, we handle this differently.)
+    If (Not (pdImages(parentImageID) Is Nothing)) Then
+        If (pdImages(parentImageID).GetOriginalFileFormat <> PDIF_TIFF) Then
+            If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
+                dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
+            ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
+                dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+            End If
+        End If
+    End If
+
+    'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
+    ' a single "ICC Profile" group.
+    If InStr(1, groupNameCheck, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC Profile")
+    
+    'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  We'll display names for a few of the most
+    ' common XMP groups, while everything else gets condensed under an "XMP (misc)" heading.
+    If InStr(1, groupNameCheck, "XMP", vbBinaryCompare) > 0 Then CalculateIdealXMPGroupName dstMetadata
+    
+    'Next comes a tricky one.  There is no technical prohibition against duplicate metadata tags - and in fact, some software may
+    ' choose to deliberately add duplicate tags in multiple groups (IPTC, EXIF, XMP, etc) to maximize compatibility.
+    
+    'PhotoDemon allows the presence of multiple tags everywhere except in JFIF headers.  JPEG thumbnails embedded inside a JPEG
+    ' parent image will have their own JFIF header, which includes information like x/y resolution that is totally irrelevant
+    ' (and confusing, as it makes the image look like it has multiple headers!).  Here, we want to check for duplicate JFIF tags,
+    ' and place them into their own category as necessary.
+    If (InStr(1, groupNameCheck, "JFIF", vbBinaryCompare) > 0) Then
+
+        'Check the metadata list up to this point.  If a matching group and technical tag name are found,
+        ' move this tag into a separate "thumbnail" category.  (Note that we want to avoid matching this tag against itself,
+        ' so we only search up to its *current* position.)
+        If (tagIndex > 0) Then
+            For i = 0 To tagIndex - 1
+                If Strings.StringsEqual(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, False) Then
+                    dstMetadata.TagGroupFriendly = "JFIF (thumbnail)"
+                    Exit For
+                End If
+            Next i
+        End If
+    
+    End If
+    
+    CalculateIdealGroupName = CBool(Len(dstMetadata.TagGroupFriendly) <> 0)
+    
+End Function
+
+Private Function CalculateIdealXMPGroupName(ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    Dim GroupName As String
+    GroupName = LCase$(dstMetadata.TagGroup)
+    
+    If InStr(1, GroupName, "xmp", vbBinaryCompare) > 0 Then
+        
+        'There are hundreds of potential XMP namespaces.  Rather than try to convert all of them into human-readable versions,
+        ' PD just sorts through the most common ones.  Other coders are welcome to expand this list, using the reference at
+        ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html
+        If Strings.StringsEqual(GroupName, "xmp-aas") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-acdsee") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (ACD Systems)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-album") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Album)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-apple-fi") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-aux") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-cc") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Creative Commons)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-cell") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Sony Ericcson)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-creatoratom") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe After Effects)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-crs") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Photoshop Camera Raw)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dc") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dublin Core)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dex") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Description Explorer)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dicom") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DICOM)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-digikam") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DigiKam)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-exif") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-exifex") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF 2.3)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-expressionmedia") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Expression Media)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-extensis") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Extensis Portfolio)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-fpv") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Fast Picture Viewer)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-getty") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Getty Images)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-gpano") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Google Photosphere)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-ics") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IDimager)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-iptccore") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Core)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-iptcext") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Extension)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-lr") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Lightroom)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mediapro") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (iView MediaPro)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-microsoft") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.0)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mp") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.2)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mp1") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.1)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-coll") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-kw") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-rs") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pdf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pdfx") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF extended)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-photomech") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PhotoMechanic)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-photoshop") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Photoshop)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pixellive") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PixelLive)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-plus") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Plus License Data)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pmi") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM for images)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prism") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prl") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Rights)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Recipe)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pur") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Usage Rights)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-rdf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (RDF)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-swf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe SWF)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-tiff") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF-TIFF)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-x") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Toolkit)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmp") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (General)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpbj") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Basic Job)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpdm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dynamic Media)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpmm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Media Management)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpnote") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Note)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpplus") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Picture Licensing)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmprights") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Rights Management)")
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmptpg") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Paged Text)")
+        Else
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Misc)")
+        End If
+        
+        CalculateIdealXMPGroupName = True
+        
+    End If
+    
+End Function
+
+Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boolean
+    
+    Dim ppMayBeNeeded As Boolean: ppMayBeNeeded = False
+    
+    ppMayBeNeeded = CBool(m_NumOfTags <> 0)
+    If ppMayBeNeeded Then ppMayBeNeeded = CBool(parentImageID <= UBound(pdImages))
+    If ppMayBeNeeded Then ppMayBeNeeded = Not (pdImages(parentImageID) Is Nothing)
+    
+    Dim relevantTagIndex As Long
+        
+    'At present, the only post-processing supplied by this function is limited to:
+    ' 1) Rare PNG chunks that the color-management system is unable to handle on its own
+    ' 2) Multipage TIFFs that may have per-page information stored (like page names)
+    ' 3) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can)
+    
+    'Because of this, we only need to proceed if the image meets some very specific criteria.
+    If ppMayBeNeeded Then
+        
+        'Check for PNGs that do not possess an ICC profile
+        ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+        
+        'Check for multipage TIFFs that were loaded using the "one layer per page" method
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        
+        'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
+        ' we may be able to use ExifTool to manually retrieve the full profile data.
+        If (Not ppMayBeNeeded) Then
+            If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
+                ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
+            End If
+        End If
+        
+    End If
+    
+    If ppMayBeNeeded Then
+        
+        'PNG-specific tags:
+        If (pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) Then
+        
+            'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
+            ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
+            ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.
+            
+            'Note that ICC handling supercedes all other chunks, so an ICC profile was found, this whole section *must* be skipped.
+            ' (We apply this check at the top of the function.)
+            
+            Dim srcGamma As Double: srcGamma = 0
+            
+            Dim cHRMHandled As Boolean, gAMAHandled As Boolean, sRGBHandled As Boolean
+            cHRMHandled = False: gAMAHandled = False: sRGBHandled = False
+                
+            'First, check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
+            ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
+            If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
+                #End If
+                
+                ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                
+                sRGBHandled = True
+                
+                ApplyMetadataPostProcessing = True
+            
+            End If
+                
+            'Next, we're going to look for the "PNG:WhitePointX/Y" pair of tags.  These are found in the cHRM chunk of the
+            ' PNG file, and they specify a custom white point to be used as part of color management.  These days, cHRM has largely
+            ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
+            ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
+            ' implemented this feature in the first place!)
+            If (Not sRGBHandled) And DoesTagExistFullName("PNG:WhitePointX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", relevantTagIndex, vbBinaryCompare) Then
+            
+                'Both tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
+                ' those next.  If either are found, ignore further processing.
+                If (Not DoesTagExistFullName("PNG:ProfileName", relevantTagIndex, vbBinaryCompare)) And (Not DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare)) Then
+                
+                    'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
+                    If DoesTagExistFullName("PNG:RedX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:RedY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueY", relevantTagIndex, vbBinaryCompare) Then
+                    
+                        'All required tags exist.  Retrieve their values now.
+                        Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
+                        WhiteX = CDblCustom(GetTagValue("PNG:WhitePointX", vbBinaryCompare))
+                        WhiteY = CDblCustom(GetTagValue("PNG:WhitePointY", vbBinaryCompare))
+                        RedX = CDblCustom(GetTagValue("PNG:RedX", vbBinaryCompare))
+                        RedY = CDblCustom(GetTagValue("PNG:RedY", vbBinaryCompare))
+                        GreenX = CDblCustom(GetTagValue("PNG:GreenX", vbBinaryCompare))
+                        GreenY = CDblCustom(GetTagValue("PNG:GreenY", vbBinaryCompare))
+                        BlueX = CDblCustom(GetTagValue("PNG:BlueX", vbBinaryCompare))
+                        BlueY = CDblCustom(GetTagValue("PNG:BlueY", vbBinaryCompare))
+                        
+                        'Check for matching inputs, including zeroes.  These indicate a writer error.
+                        If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
+                                pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
+                            #End If
+                            
+                        'End points appear to be valid!  Continue with the transform.
+                        Else
+                        
+                            'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
+                            ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
+                            ' Look for gamma now.
+                            If DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
+                            
+                            'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
+                            ' the conversion, but we have no choice but to assume a default gamma value.
+                            If (srcGamma = 0) Then
+                            
+                                #If DEBUGMODE = 1 Then
+                                    pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
+                                #End If
+                            
+                            End If
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
+                            #End If
+                            
+                            'We're now going to do something weird.  If the reported cHRM endpoints match sRGB endpoints, we're going to pass 0 to the
+                            ' gamut conversion function.  This enables the sRGB gamma function, which is a rather complicated two-part ramp (instead of
+                            ' a standard gamma function).  It also produces results identical to Firefox for libpng's test image library.
+                            '
+                            'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
+                            If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
+                                ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                            Else
+                                ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                            End If
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values
+                            'ColorManagement.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded Adobe RGB values
+                            'ColorManagement.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
+                            
+                            'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
+                            ' corrections to the image.
+                            cHRMHandled = True
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "Custom cHRM data analysis complete."
+                            #End If
+                            
+                            'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
+                            ' so the image may already be visible on the screen!)
+                            If (parentImageID = g_CurrentImage) Then
+                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                                Interface.NotifyImageChanged parentImageID
+                            End If
+                            
+                            ApplyMetadataPostProcessing = True
+                            
+                        End If
+                    
+                    Else
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
+                        #End If
+                    End If
+                
+                Else
+                    If sRGBHandled Then
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
+                        #End If
+                    End If
+                End If
+            
+            'End cHRM chunk handling for PNG files
+            End If
+                
+            'The next tag we're going to look for is the "PNG:Gamma" value.  FreeImage provides an option for handling this value,
+            ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
+            ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
+            ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
+            If (Not cHRMHandled) And (Not sRGBHandled) And DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then
+            
+                srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
+                
+                'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
+                If (srcGamma <= 0) Then
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
+                    #End If
+                
+                'If gamma does exist, and it is encoded correctly (as far as we can tell), apply it now
+                Else
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
+                    #End If
+                    
+                    Filters_Layers.FastGammaDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Custom cHRM data analysis complete."
+                    #End If
+                    
+                    'Note that gAMA has been handled; this prevents subsequent checks from possibly applying a second round of
+                    ' corrections to the image.
+                    gAMAHandled = True
+                    
+                    'Refresh the screen to reflect the new colors
+                    If (parentImageID = g_CurrentImage) Then
+                        ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                        Interface.NotifyImageChanged parentImageID
+                    End If
+                    
+                    ApplyMetadataPostProcessing = True
+                    
+                End If
+                
+            'END gAMA chunk handling
+            End If
+                
+        'END PNG TAGS
+        End If
+        
+        'TIFF-specific tags:
+        If (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) Then
+        
+            'Look for page name tags.  If found, assign them to their matching image layers.
+            Dim i As Long
+            For i = 0 To pdImages(parentImageID).GetNumOfLayers - 1
+                If DoesTagExistFullName("IFD" & i & ":PageName", relevantTagIndex, vbBinaryCompare) Then
+                    pdImages(parentImageID).GetLayerByIndex(i).SetLayerName GetTagValue("IFD" & i & ":PageName", vbBinaryCompare)
+                    ApplyMetadataPostProcessing = True
+                End If
+            Next i
+        
+        'END TIFF TAGS
+        End If
+        
+        'NON-FORMAT-SPECIFIC tags:
+        If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) Then
+            
+            'ExifTool pulled an ICC profile from this image file, but FreeImage did not.  This may be an esoteric format or one with
+            ' broken formatting.  Let's see if we can still apply the ICC profile post-load.  (This may not possible if the profile is
+            ' tied to something like CMYK, and we have already converted it to RGB - but we can still try.)
+            
+            'Ask ExifTool to extract the ICC profile to a standalone temp file
+            If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
+                #End If
+                
+                'Next, we need to pause while ExifTool does its thing.  To minimize re-entrance issues, we only want to
+                ' yield to WM_TIMER messages (which is how we asynchronously receive data from ExifTool - timer+pipe).
+                Do While ExifTool.IsVerificationModeActive()
+                    VBHacks.DoEventsTimersOnly
+                Loop
+                
+                'Retrieve the temp file name ExifTool used
+                Dim srcFilename As String
+                srcFilename = ExifTool.GetExtractedICCProfilePath()
+                
+                'Pull the ICC profile into a byte array
+                Dim iccBytes() As Byte
+                If Files.FileLoadAsByteArray(srcFilename, iccBytes) Then
+                    
+                    'Load the ICC bytes into the target DIB
+                    If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
+                        
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
+                        #End If
+                
+                        'Apply ICC conversion now
+                        ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
+                        
+                        If (parentImageID = g_CurrentImage) Then
+                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                            Interface.NotifyImageChanged parentImageID
+                        End If
+                        
+                        ApplyMetadataPostProcessing = True
+                    
+                    End If
+                    
+                End If
+                
+                'Free the temp file we used
+                Files.FileDeleteIfExists srcFilename
+                
+            End If
+                
+        End If
+        
+        #If DEBUGMODE = 1 Then
+            If ApplyMetadataPostProcessing Then pdDebug.LogAction "NOTE!  Metadata-based post-processing was applied to this image."
+        #End If
+        
+    'END all preprocessing checks
+    End If
+    
+End Function
+
+Private Function PARSE_AdvanceToFirstMeaningfulLine(ByRef xmlLines() As String, ByRef linePointer As Long) As Boolean
+    
+    linePointer = 0
+    
+    Dim i As Long
+    For i = LBound(xmlLines) To UBound(xmlLines)
+        If PARSE_IsLinePotentialTag(xmlLines(i)) Then
+            linePointer = i
+            Exit For
+        End If
+    Next i
+    
+    PARSE_AdvanceToFirstMeaningfulLine = CBool(linePointer <> 0)
+
+End Function
+
+Private Function PARSE_IsLinePotentialTag(ByRef srcXMLLine As String) As Boolean
+    If Strings.StringsEqual(Left$(srcXMLLine, 2), LEFT_TAG_TEST, False) Then
+        If Strings.StringsEqual(Right$(srcXMLLine, 1), RIGHT_TAG_TEST, False) Then
+            PARSE_IsLinePotentialTag = True
+        End If
+    End If
+End Function
+
+Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePointer As Long) As Boolean
+    
+    If linePointer < UBound(xmlLines) Then
+        
+        'Make sure this line looks like a valid tag definition
+        If PARSE_IsLinePotentialTag(xmlLines(linePointer)) Then
+        
+            'Make sure we have room in our metadata collection for the new tag
+            If m_NumOfTags > UBound(m_Tags) Then ReDim Preserve m_Tags(0 To m_NumOfTags * 2 - 1) As PDMetadataItem
+            
+            '...while sLine and eLine are the line indices where this tag starts and ends
+            Dim sLine As Long, eLine As Long
+            Dim tagFinished As Boolean
+            
+            'Tag entries come in many shapes and sizes, but they all follow a predictable pattern.  Here is a typical sample:
+            ' <IFD0:ResolutionUnit>
+            '  <rdf:Description et:id='296' et:table='Exif::Main'>
+            '   <et:desc>Resolution Unit</et:desc>
+            '   <et:prt>inches</et:prt>
+            '   <et:val>2</et:val>
+            '  </rdf:Description>
+            ' </IFD0:ResolutionUnit>
+            
+            '*Not all lines are required*, except for:
+            ' 1) The initial rdf:Description.  The contents of this tag can vary, but it will always list a table.
+            ' 2) The <et:desc> tag.  This is a human-readable version of the tag name.
+            ' 3) The <et:prt> tag.  This is a human-readable ("print") version of the tag value.  For some tags (e.g. dates or strings),
+            '     this will be the *only* value provided.  For known tags with hard-coded constants (like the example above),
+            '     an <et:val> tag will also be provided, to tell us what the actual, physical value of the tag is.
+            
+            'Other rare descriptors can exist, but we'll get to those in turn.
+            
+            'Start by stripping out the full group+tag name combination.  We need this value to find where the tag entry ends.
+            Dim curTagName As String, endTagName As String, curTagValue As String
+            If PARSE_GetTagName(xmlLines(linePointer), curTagName) Then
+                
+                tagFinished = False
+                sLine = linePointer
+                
+                'Use the tag name to find the line where this tag ends
+                endTagName = "</" & curTagName & ">"
+                Do While (InStr(1, xmlLines(linePointer), endTagName, vbBinaryCompare) = 0)
+                    linePointer = linePointer + 1
+                    If linePointer > UBound(xmlLines) Then
+                        PARSE_LikelyTagLine = False
+                        Exit Function
+                    End If
+                Loop
+                
+                eLine = linePointer
+                
+                'Make sure the tag comprises at least *6* lines (inclusive).  This is the amount assumed by our parser, and a
+                ' deviation indicates an unexpected change in ExifTool's output formatting.
+                If (eLine - sLine) >= 5 Then
+                
+                    'With the tag's start and end line locations now known, we can commence with parsing all the lines in-between.
+                    
+                    'Start by storing the group and tag names
+                    m_Tags(m_NumOfTags).TagGroupAndName = curTagName
+                    PARSE_GetTagAndGroupName curTagName, m_Tags(m_NumOfTags)
+                    
+                    'Next, parse the description line.  This will supply the tag table and low-level numeric ID (if any).
+                    ' (Also, any duplicate tags will be tagged by their "et:index" value.)
+                    PARSE_RDFDescription xmlLines(sLine + 1), m_Tags(m_NumOfTags)
+                    
+                    'After the RDF description comes the Exiftool-specific description of the tag name.  This may
+                    ' include spaces and special chars (unlike the formal name).
+                    If PARSE_WholeLine(xmlLines(sLine + 2), curTagValue, "et:desc") Then m_Tags(m_NumOfTags).TagNameFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
+                    If PARSE_WholeLine(xmlLines(sLine + 3), curTagValue, "et:prt") Then
+                        m_Tags(m_NumOfTags).TagValueFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
+                    
+                    'If the print tag is not contained on a single line, it may be a binary tag.  These only appear if the -b
+                    ' option is sent to ExifTool, and they result in XML like this:
+                    ' <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+                    '/9j/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAH
+                    '...many more Base64 lines...
+                    '</et:prt>
+                    
+                    'PD can parse these via a specialized Binary tag parser.
+                    Else
+                        tagFinished = PARSE_UnprocessedBinaryValue(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                    End If
+                    
+                    'For many tags, this will be the full extent of the tag's contents.  Let's look for one more semi-common tag
+                    ' before exiting - a formal value tag, which is the non-human-friendly version of the tag's contents.
+                    If PARSE_WholeLine(xmlLines(sLine + 4), curTagValue, "et:val") Then
+                        m_Tags(m_NumOfTags).TagValue = curTagValue
+                        tagFinished = PARSE_EndOfTagDetails(xmlLines(sLine + 5))
+                    
+                    'Check for a closing rdf description; if it exists, we can ignore any further parsing.
+                    Else
+                        m_Tags(m_NumOfTags).TagValue = m_Tags(m_NumOfTags).TagValueFriendly
+                        
+                        'In 99% of cases, this is just a simple tag that ends at (sLine + 4).  Rare, fully processed binary tags,
+                        ' (as demonstrated in the previous If/Then block) will also end here, but the finished line of their tag
+                        ' will have already been calculated by a previous step, and tagFinished will be TRUE.
+                        If (Not tagFinished) Then tagFinished = PARSE_EndOfTagDetails(xmlLines(sLine + 4))
+                        
+                    End If
+                    
+                    'If a closing rdf description has already been located, this tag has been successfully parsed
+                    If (Not tagFinished) Then
+                        
+                        'This tag contains even more details.  It is possibly a binary-type tag (like a thumbnail) or a list-type tag
+                        ' (common in images coming from PhotoShop, as PS tracks thing like image history).  It could also be a
+                        ' comment or other string-based tag that contains illegal linebreaks.
+                        
+                        'Let's start by checking for list-type values (e.g. an rdf:Bag comprised of multiple list nodes).
+                        ' rdf:Bag entries are well-formed, so they are easily detected and parsed.
+                        tagFinished = PARSE_RDFBagCheck(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                        
+                        'If this is not a list-type tag, check for a binary tag.
+                        If (Not tagFinished) Then
+                            tagFinished = PARSE_BinaryValueCheck(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                        End If
+                        
+                        'If this is not a list tag or a binary tag, it must be an invalid tag of some kind - possibly one that uses
+                        ' a linebreak character.  (Linebreak characters are specifically disallowed by most format specs, but because
+                        ' we're nice, we'll try and salvage them.)
+                        If (Not tagFinished) Then
+                            tagFinished = PARSE_InvalidMultilineTag(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                            If (Not tagFinished) Then Debug.Print "WARNING: weird tag encountered: " & m_Tags(m_NumOfTags).TagGroupAndName
+                        End If
+                        
+                    End If
+                    
+                    'With all parsing finished, we can finally increment the tag count and proceed to the next tag
+                    m_NumOfTags = m_NumOfTags + 1
+                    
+                Else
+                    Debug.Print "Ending line of this tag is too close to starting line - abandoning parse!"
+                End If
+                
+                'Increment the line pointer one final time, so that it points to the line *after* this one
+                linePointer = eLine + 1
+                PARSE_LikelyTagLine = True
+                
+            End If
+            
+        End If
+        
     End If
 
 End Function
 
-'Given an image path, attempt to load all metadata from that file.
-' (The image's format is also passed to this function, which may be helpful in the future for enabling certain options on a per-format basis.)
-Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
-
-    'If the ExifTool plugin can't be found, abandon all metadata loading attempts
-    If Not g_ExifToolEnabled Then
-        Message "ExifTool plugin missing.  Metadata import abandoned."
-        Exit Sub
-    End If
+'Unprocessed binary values are only available if the -b option is sent to ExifTool at extraction time.  Otherwise, binary tags
+' are generally ignored, unless their length is extremely small (a few bytes)
+Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
     
-    maxMetadataCount = 0
-    hasGPSCoordinates = False: gpsIndex = 0
+    dstMetadata.IsTagBinary = False
     
-    'ExifTool will return all metadata in one enormous string, which we will have to parse manually.
-    Dim mdString As String
-    mdString = getMetadata(srcFile, srcFormat)
+    'Here is the layout of a base-64 encoded binary tag (this is taken from an actual, real-world image):
+'    <Composite:ThumbnailImage>
+'     <rdf:Description et:id='ThumbnailImage' et:table='Composite'>
+'      <et:desc>Thumbnail Image</et:desc>
+'      <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+'/9j/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAH
+'zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
+'...many more Base64 lines...
+'2Q==
+'</et:prt>
+'     </rdf:Description>
+'    </Composite:ThumbnailImage>
     
-    'If no metadata was found, we can safely exit now
-    If mdString = "" Then Exit Sub
+    Dim i As Long
+    Dim finalValueLine As Long, fullTagValue As String
     
-    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging.  Uncomment as necessary.
-    'Clipboard.Clear
-    'Clipboard.SetText mdString
-    
-    'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
-    ' We need this backup when it comes time to write the metadata back out to file.
-    originalMetadataXML = mdString
-    
-    'Our next job is to parse our very large XML string into individual components within the iMetadata() array. We accomplish this by
-    ' stepping through the XML and looking for tag/value pairs as we go.  Because the XML is precisely structured, we can rely on a few
-    ' key markers to do this successfully.
-    
-    'Start by chopping up the string into an array, delimited into individual lines
-    Dim xmlLines() As String
-    xmlLines = Split(mdString, vbCrLf)
-    
-    'Each line that contains a tag name will also contain the text "rdf:parseType='Resource'".  Because we don't know what the tag
-    ' or group name will be, we look for that text instead.
-    Dim curLine As Long
-    curLine = 0
-    
-    Dim ignoreThisTag As Boolean
-    
-    Dim tmpString As String
-    Dim tmpSplitOuter() As String, tmpSplitInner() As String
-    
-    ReDim iMetadata(0) As mdItem
-    
-    Do
-    
-        'If our definitive text is found, parse this line to retrieve this tag's Group and Name values
-        If InStr(1, xmlLines(curLine), "rdf:parseType='Resource'", vbTextCompare) > 0 Then
-            
-            ignoreThisTag = False
+    'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 3)), "<et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", False) Then
         
-            'Divide the tag into two segments: the prefix (which contains Group and Name) and the rdf parse-type, which we don't care about.
-            tmpSplitOuter = Split(xmlLines(curLine), "rdf:parseType='Resource")
-            
-            'Store the full group and name text, because we will use that to relocate this tag (if necessary) at write-time
-            tmpString = Trim$(tmpSplitOuter(0))
-            iMetadata(maxMetadataCount).FullGroupAndName = Right$(tmpString, Len(tmpString) - 1)
-            
-            'Now, divide the prefix into two segments: Group and Name
-            tmpSplitInner = Split(tmpSplitOuter(0), ":")
-            
-            'It is now trivial to retrieve the Group and Name values
-            iMetadata(maxMetadataCount).Group = Trim$(Right$(tmpSplitInner(0), Len(tmpSplitInner(0)) - 2))
-            iMetadata(maxMetadataCount).Name = Trim$(tmpSplitInner(1))
-                        
-            'A description line always follows a group/name line.  Retrieve that value now.
-            curLine = curLine + 1
-            xmlLines(curLine) = Trim$(xmlLines(curLine))
-            iMetadata(maxMetadataCount).Description = Trim$(Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10))
-            
-            'A human-friendly value always follows a description line, but parsing it is more difficult than the first two entries.
-            ' Why?  The variety of Value properties that can exist.  My testing shows three main types of values:
-            
-            ' 1) Simple value.  This is the most common type of entry, and it looks like:
-            '    <et:prt>value</et:prt>
-            '    These values are easy to parse.
-            
-            ' 2) Complex (binary) value.  Used for things like thumbnails, and not generally relevant to display to the user.  Looks like:
-            '    <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
-            '       zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
-            '       ...many more lines of gibberish...
-            '    </et:prt>
-            '    Not difficult to parse, but FYI there is really no reason to store or attempt to convert the specific binary values.
-            
-            ' 3) List-type values.  Used primarily by PhotoShop.  Looks like:
-            '<et:prt>
-            '  <rdf:Bag>
-            '    <rdf:li>saved</rdf:li>
-            '    <rdf:li>derived</rdf:li>
-            '    <rdf:li>saved</rdf:li>
-            '    ...many more lines of this
-            '  </rdf:Bag>
-            '</et:prt>
-            '    More problematic than the first two types, as a LOT of rdf lines can exist, and there is possible merit to extracting their values.
-            '    At present, these are condensed into a single string delimited by semicolons.  Might revisit this approach in the future.
-            
-            'Using this knowledge of various data types, check to see if the value is binary or list-type.  If it is,
-            ' mark it and proceed to ignore the tag's full contents.
-            curLine = curLine + 1
-            
-            'Simple data will exist on a single line; use that knowledge to separate such values out.
-            If (InStr(1, xmlLines(curLine), "<et:prt>") > 0) And (InStr(1, xmlLines(curLine), "</et:prt>") > 0) Then
-                iMetadata(maxMetadataCount).isValueBinary = False
-                iMetadata(maxMetadataCount).isValueList = False
-            Else
-                'The current value is either binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
-                If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
-                    iMetadata(maxMetadataCount).isValueBinary = False
-                    iMetadata(maxMetadataCount).isValueList = True
-                    iMetadata(maxMetadataCount).Value = "(list of values too long to display)"
-                Else
-                    iMetadata(maxMetadataCount).isValueBinary = True
-                    iMetadata(maxMetadataCount).isValueList = False
-                    iMetadata(maxMetadataCount).Value = "(binary data)"
-                End If
-            End If
-            
-            If iMetadata(maxMetadataCount).isValueBinary Or iMetadata(maxMetadataCount).isValueList Then
-            
-                'Binary and list data can be enormous.  ExifTool is kind enough to always start these tag types on a new line -
-                ' so move down a line, then start searching for the end of the chunk.
-                Do
-                    curLine = curLine + 1
-                Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
-            Else
-                xmlLines(curLine) = Trim$(xmlLines(curLine))
-                iMetadata(maxMetadataCount).Value = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
-            End If
-            
-            curLine = curLine + 1
-            
-            'For some tags, the human-friendly value will be the actual value of the tag.  For others, the tag will have some kind
-            ' of obscure value that ExifTool has kindly translated for us.  We still want to retrieve the actual, technical value
-            ' if available - so check for it now.
-            
-            'Note that actual value tags can also come in binary and list varieties, so they are analyzed with an algorithm identical
-            ' to the one directly above.  The only difference is an initial check, because a separate "actual value" tag may not exist.
-            
-            If InStr(1, xmlLines(curLine), "<et:val") > 0 Then
-            
-                'Simple data will exist on a single line; use that knowledge to separate such values out.
-                If (InStr(1, xmlLines(curLine), "<et:val>") > 0) And (InStr(1, xmlLines(curLine), "</et:val>") > 0) Then
-                    iMetadata(maxMetadataCount).isActualValueBinary = False
-                    iMetadata(maxMetadataCount).isActualValueList = False
-                Else
-                    'The current value is eithr binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
-                    If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
-                        iMetadata(maxMetadataCount).isActualValueBinary = False
-                        iMetadata(maxMetadataCount).isActualValueList = True
-                        iMetadata(maxMetadataCount).ActualValue = "(list of values too long to display)"
-                    Else
-                        iMetadata(maxMetadataCount).isActualValueBinary = True
-                        iMetadata(maxMetadataCount).isActualValueList = False
-                        iMetadata(maxMetadataCount).ActualValue = "(binary data)"
-                    End If
-                End If
-                
-                'Binary and list-type values can be ignored.  Only retrieve the data if it is neither of these types.
-                If iMetadata(maxMetadataCount).isActualValueBinary Or iMetadata(maxMetadataCount).isActualValueList Then
-                
-                    'Binary and list data can be enormous.  ExifTool is kind enough to always start it on a new line for us -
-                    ' so move down a line, then start searching for the end of the binary or list chunk.
-                    Do
-                        curLine = curLine + 1
-                    Loop While InStr(1, xmlLines(curLine), "</et:val>") = 0
-                Else
-                    xmlLines(curLine) = Trim$(xmlLines(curLine))
-                    iMetadata(maxMetadataCount).ActualValue = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
-                End If
-                
-                curLine = curLine + 1
-                
-            End If
-            
-            'Now that we have fully parsed the tag, we need to run a few additional checks.
-            
-            'ANALYZE GROUP
-            
-            'First, analyze the current Group.  Some groups can be ignored - check for those first.
-            tmpString = iMetadata(maxMetadataCount).Group
-            If StrComp(tmpString, "ExifTool") = 0 Then ignoreThisTag = True
-            
-            'Next, ExifTool provides VERY detailed group information.  I prefer to simplify its groups into something more manageable.
-            
-            'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
-            If StrComp(tmpString, "System") = 0 Then
-                iMetadata(maxMetadataCount).SubGroup = g_Language.TranslateMessage("System")
-                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("General")
-            End If
-            If StrComp(tmpString, "File") = 0 Then
-                iMetadata(maxMetadataCount).SubGroup = g_Language.TranslateMessage("File")
-                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("General")
-            End If
-            
-            'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
-            If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then
-                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = "Exif"
-            End If
-            
-            'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
-            ' a single "ICC Profile".
-            If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then
-                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("ICC Profile")
-            End If
-            
-            'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
-            If InStr(1, tmpString, "XMP", vbBinaryCompare) > 0 Then
-                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = "XMP"
-            End If
-            
-            'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
-            ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
-            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("Composite") & "*"
-            
-            'ANALYZE NAME
-            tmpString = iMetadata(maxMetadataCount).Name
-            
-            'Check for GPS coordinates.  If found, we can enable some fun bonus metadata options.
-            If StrComp(tmpString, "GPSPosition") = 0 Then
-                hasGPSCoordinates = True
-                gpsIndex = maxMetadataCount
-            End If
-            
-            'ANALYZE VALUE
-            
-            'Next come .Value checks.  Certain values may be invalid - if so, ignore this tag.
-            tmpString = iMetadata(maxMetadataCount).Value
-            
-            'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
-            'If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
-            
-            'Increment the max metadata count, and redim our metadata array as necessary
-            If Not ignoreThisTag Then
-                maxMetadataCount = maxMetadataCount + 1
-                ReDim Preserve iMetadata(0 To maxMetadataCount) As mdItem
-            End If
+        'This is a binary tag.  *STARTING WITH THE NEXT LINE*, everything that follows is part of the tag, until the closing
+        ' </et:val> tag is reached.  (Note that we will need to strip a trailing CrLf from the value.)
+        dstMetadata.IsTagBinary = True
         
-        'If this line doesn't contain a tag, move to the next one
-        Else
-                
-            'Move to the next line
-            curLine = curLine + 1
-                
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:prt>", False) Then Exit For
+        Next i
+        
+        If (i > tagStartLine) Then
+            
+            finalValueLine = i - 1
+            
+            For i = (tagStartLine + 4) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Strip any vbCrLfs in the data and store the raw Base64 data.  (Without additional semantics, it's hard to know what format
+            ' the data actually represents.)
+            'If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            dstMetadata.TagBase64Value = fullTagValue
+            dstMetadata.TagValueFriendly = fullTagValue
+            dstMetadata.WasBinaryExtracted = True
+            
         End If
         
-    Loop While curLine < UBound(xmlLines)
-
-    'If no metadata was found, exit now
-    If maxMetadataCount = 0 Then Exit Sub
-    
-End Sub
-
-
-'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
-' copy over any relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the
-' PhotoDemon_SaveImage function.)
-Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions As Long, ByRef srcPDImage As pdImage) As Boolean
-    
-    'Metadata only needs to be written out if it exists (obviously)
-    If hasXMLMetadata Then
+        PARSE_UnprocessedBinaryValue = dstMetadata.IsTagBinary
         
-        Dim etReturn As String, newXMLString As String, tmpXMLPath As String
-        Dim fileNum As Integer
+    'If this line does *not* include a base-64 tag, it is a normal printable tag -- just a multiline one.
+    Else
         
-        Dim cSHA2 As CSHA256
-        Set cSHA2 = New CSHA256
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:prt>", False) Then Exit For
+        Next i
         
-        'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
-        Select Case saveOptions
+        If (i >= tagStartLine) Then
             
-            'Save as much metadata as possible - basically, copy all tags from the original file to the new one
-            Case 0
+            finalValueLine = i - 1
             
-                Message "Embedding metadata..."
-                
-                'Presumably, we have already cached the original file's metadata.  If not, warn the user and exit.
-                If UBound(cachedMetadata) > 0 Then
-                
-                    'Dump the cached metadata into a temp file
-                    Dim tmpOutputFile As String
-                    tmpOutputFile = g_UserPreferences.getTempPath
-    
-                    'Append a partial hash to the temporary filename to avoid overwriting any existing metadata files in the temp folder (highly unlikely,
-                    ' but we play it safe anyway!)
-                    tmpOutputFile = tmpOutputFile & "pdmd_" & Left$(cSHA2.SHA256(outputPath), 16) & ".mie"
-                    
-                    'Using that temp filename + location, export the metadata byte array
-                    fileNum = FreeFile
-                    
-                    Open tmpOutputFile For Binary Access Write As #fileNum
-                        Put #fileNum, 1, cachedMetadata
-                    Close #fileNum
-                    
-                    'The next part is easy - supply the original location on disk to ExifTool, and request a copying of metadata
-                    ' from that file to the new one.  Note that any number of irrelevant tags - including stuff like old thumbnails -
-                    ' will be copied over, but this option is called "copy all metadata" for a reason.
-                    etReturn = writeMetadata(tmpOutputFile, outputPath, srcPDImage)
-                    
-                    'Delete our temporary file
-                    If FileExist(tmpOutputFile) Then Kill tmpOutputFile
-                    
-                    'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                    ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                    ' we don't need to do any specialized damage control.
-                    If InStr(1, etReturn, "1 image files updated") > 0 Then
-                        Message "Metadata embedded successfully."
-                        
-                    Else
-                        Message "Unexpected message returned: %1", etReturn
-                        Message "Metadata may not have been embedded (but saved image still written successfully)."
-                    End If
-                
-                Else
-                    Message "Unexpected message returned: %1", g_Language.TranslateMessage("No cached metadata found.")
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
+            If (Len(xmlLines(tagStartLine + 3)) > 8) Then
+                fullTagValue = xmlLines(tagStartLine + 3)
+                fullTagValue = Right$(fullTagValue, Len(fullTagValue) - (InStr(1, fullTagValue, "<et:prt>", vbBinaryCompare) + 7))
+            End If
             
-            'Save as much RELEVANT metadata as possible (default action)
-            Case 1
+            For i = (tagStartLine + 4) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
             
-                Message "Embedding metadata..."
-                
-                'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for this test,
-                ' simply dump the full original XML contents to a temp file.
-                newXMLString = originalMetadataXML
-                
-                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = getDirectory(outputPath)
-                
-                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
-                
-                'Write the XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                fileNum = FreeFile
-    
-                Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
-                Close #fileNum
-                
-                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage)
-                
-                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                ' we don't need to do any specialized damage control.
-                If InStr(1, etReturn, "1 image files updated") > 0 Then
-                    Message "Metadata embedded successfully."
-                    
-                Else
-                    Message "Unexpected message returned: %1", etReturn
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
-                
-                'Delete our temporary XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                
-                'NEED TO TEST: is JPEG thumbnail overwritten??
-                
-            'Save metadata, but remove items with potential privacy concerns (GPS coordinates, serial numbers, etc)
-            Case 2
+            'Store the result as a normal tag.
+            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)
+            dstMetadata.TagValue = dstMetadata.TagValueFriendly
+            PARSE_UnprocessedBinaryValue = True
             
-                Message "Removing metadata with potential privacy concerns..."
-            
-                'First thing we need to do is mark all tags to be removed.  Note that GPS tags will be automatically removed by
-                ' a parameter we pass to ExifTool, but any other privacy tags must be removed manually.
-                Dim i As Long
-                Dim removeThisTag As Boolean
-                For i = 0 To maxMetadataCount - 1
-                
-                    removeThisTag = False
-                
-                    'Compare this tag against a manually curated database of potentially private tags.  If a match is found,
-                    ' mark this tag for removal.
-                    If InStr(1, iMetadata(i).Name, "Firmware", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Serial", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Name", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Baby", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Software", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "About", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Creator", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Country", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "City", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Location", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "By-line", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Toolkit", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "History", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Value, "xmp.iid", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Value, "xmp.did", vbTextCompare) > 0 Then
-                        removeThisTag = True
-                        
-                    End If
-                    
-                    iMetadata(i).markedForRemoval = removeThisTag
-                    
-                Next i
-                
-                'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
-                newXMLString = retrieveModifiedXMLString
-                
-                Message "Embedding metadata..."
-                
-                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = getDirectory(outputPath)
-                
-                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
-                
-                'Write the XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                fileNum = FreeFile
-    
-                Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
-                Close #fileNum
-                
-                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage, True)
-                
-                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                ' we don't need to do any specialized damage control.
-                If InStr(1, etReturn, "1 image files updated") > 0 Then
-                    Message "Metadata embedded successfully."
-                    
-                Else
-                    Message "Unexpected message returned: %1", etReturn
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
-                
-                'Delete our temporary XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-            
-            'Do not save metadata.  This is by far the easiest method.  :)
-            Case 3
-        
-        End Select
+        End If
         
     End If
     
-    writeAllMetadata = True
+End Function
+
+Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    dstMetadata.IsTagBinary = False
+    
+    'Here is the layout of a base-64 encoded binary tag (this is taken from an actual, real-world image):
+'    <IPTC:CodedCharacterSet>
+'        <rdf:Description et:id='90' et:table='IPTC::EnvelopeRecord'>
+'            <et:desc>Coded Character Set</et:desc>
+'            <et:prt>UTF8</et:prt>
+'            <et:val rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+'GyVH
+'</et:val>
+'        </rdf:Description>
+'    </IPTC:CodedCharacterSet>
+    
+    'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 4)), "<et:val rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", False) Then
+        
+        'This is a binary tag.  *STARTING WITH THE NEXT LINE*, everything that follows is part of the tag, until the closing
+        ' </et:val> tag is reached.  (Note that we will need to strip a trailing CrLf from the value.)
+        dstMetadata.IsTagBinary = True
+        
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:val> tag.
+        Dim i As Long
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If Strings.StringsEqual(Trim$(xmlLines(i)), "</et:val>", False) Then Exit For
+        Next i
+        
+        If (i > tagStartLine) Then
+            
+            Dim finalValueLine As Long:  finalValueLine = i
+            Dim fullTagValue As String
+            
+            For i = (tagStartLine + 5) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Strip any vbCrLfs in the data and store the raw Base64 data.  (Without additional semantics, it's hard to know what format
+            ' the data actually represents.)
+            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            dstMetadata.TagBase64Value = fullTagValue
+            dstMetadata.WasBinaryExtracted = True
+            
+            'ExifTool will sometimes store characters of an unknown codepage as Base64 data.  Attempt a heuristic-based conversion to a
+            ' raw string and store the result; this is the best we can do at present.
+            Dim tmpBytes() As Byte
+            Strings.BytesFromBase64 tmpBytes, fullTagValue
+            Strings.StringFromMysteryBytes tmpBytes, dstMetadata.TagValue, False
+            
+        End If
+        
+    End If
+    
+    PARSE_BinaryValueCheck = dstMetadata.IsTagBinary
+    
+End Function
+
+Private Function PARSE_RDFBagCheck(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    dstMetadata.IsTagList = False
+    
+    'Here is the layout of a basic XMP list (this is taken from an actual, real-world image):
+    '<XMP-xmpMM:HistorySoftwareAgent>
+    '  <rdf:Description et:id='HistorySoftwareAgent' et:table='XMP::xmpMM'>
+    '    <et:desc>History Software Agent</et:desc>
+    '    <et:prt>Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows);Adobe Photoshop CS6 (Windows)</et:prt>
+    '    <et:val>
+    '    <rdf:Bag>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '        <rdf:li>Adobe Photoshop CS6 (Windows)</rdf:li>
+    '    </rdf:Bag>
+    '    </et:val>
+    '    </rdf:Description>
+    '</XMP-xmpMM:HistorySoftwareAgent>
+    
+    'ExifTool's output is consistent, so we can use line separators to quickly check for such tags.
+    
+    'Start by looking for a bare <et:val> tag on the (startLine + 4) line
+    If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 4)), "<et:val>", False) Then
+        
+        'Check the next line for a bare <rdf:Bag> tag
+        If Strings.StringsEqual(Trim$(xmlLines(tagStartLine + 5)), "<rdf:Bag>", False) Then
+            
+            'This is a list.  We could manually parse the list, but for now, just use the semicolon-delimited version from the
+            ' <et:prt> tag.
+            dstMetadata.IsTagList = True
+            
+        End If
+    End If
+    
+    PARSE_RDFBagCheck = dstMetadata.IsTagList
+    
+End Function
+
+Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    PARSE_InvalidMultilineTag = False
+    dstMetadata.IsTagBinary = False
+    dstMetadata.IsTagList = False
+    
+    'Here is the layout of an invalid, multiline XMP tag (this is taken from an actual, real-world image):
+    ' <XMP-dc:Description>
+    '  <rdf:Description et:id='description' et:table='XMP::dc'>
+    '   <et:desc>Description</et:desc>
+    '   <et:prt>???? ????
+    '
+    '??? ???? ? ????? ?????
+    '
+    '
+    '
+    '
+    '
+    ' *** Local Caption *** ??????</et:prt>
+    '  </rdf:Description>
+    ' </XMP-dc:Description>
+    
+    'Unlike other non-standard metadata checks, there is no easy way to check for tags like this, so they simply get a "failsafe"
+    ' check after checks for all valid types have failed.
+    If (InStr(1, xmlLines(tagStartLine + 3), "<et:prt>", vbBinaryCompare) <> 0) And (InStr(1, xmlLines(tagStartLine + 3), "</et:prt>", vbBinaryCompare) = 0) Then
+        
+        'This appears to be an invalid multiline tag.  Search subsequent lines for the trailing </et:prt> tag, and note that valid
+        ' tag content may appear on the same line where the closing tag is found.  (This is different from other multiline types.)
+        
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        Dim i As Long
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If (InStr(1, xmlLines(i), "</et:prt>", vbBinaryCompare) <> 0) Then Exit For
+        Next i
+        
+        If (i > tagStartLine) Then
+            
+            'Assemble the full string into one contiguous length
+            Dim finalValueLine As Long:  finalValueLine = i
+            Dim fullTagValue As String
+            
+            For i = (tagStartLine + 3) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Strip any vbCrLfs in the data, then remove the opening/closing tags
+            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "<et:prt>", "", , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "</et:prt>", "", , , vbBinaryCompare)
+            
+            'Store the result as a normal tag.
+            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)
+            dstMetadata.TagValue = dstMetadata.TagValueFriendly
+            PARSE_InvalidMultilineTag = True
+            
+        End If
+        
+    End If
+    
+End Function
+
+Private Function PARSE_EndOfTagDetails(ByRef srcLine As String) As Boolean
+    PARSE_EndOfTagDetails = CBool(InStr(1, srcLine, "</rdf:Description>", vbBinaryCompare) <> 0)
+End Function
+
+Private Function PARSE_WholeLine(ByRef srcLine As String, ByRef dstString As String, Optional ByVal tagValidate As String = vbNullString) As Boolean
+
+    If Len(tagValidate) <> 0 Then
+        Dim failedValidation As Boolean
+        If (InStr(1, srcLine, "<" & tagValidate & ">", vbBinaryCompare) = 0) Then failedValidation = True
+        If (InStr(1, srcLine, "</" & tagValidate & ">", vbBinaryCompare) = 0) Then failedValidation = True
+        If failedValidation Then Exit Function
+    End If
+    
+    Dim sPos As Long, ePos As Long
+    sPos = InStr(1, srcLine, ">", vbBinaryCompare)
+    If (sPos > 0) Then
+        ePos = InStrRev(srcLine, "<", , vbBinaryCompare) - 1
+        If (ePos > 0) Then
+            PARSE_WholeLine = True
+            dstString = Mid$(srcLine, sPos + 1, ePos - sPos)
+        End If
+    End If
+
+End Function
+
+Private Function PARSE_RDFDescription(ByRef srcLine As String, ByRef dstMetadata As PDMetadataItem) As Boolean
+
+    Dim etID As String, etTable As String, etIndex As String
+    etID = PARSE_GetNamedAttributeValue(srcLine, "et:id")
+    
+    'Make sure an ID exists. If it doesn't, something is wrong with the XML output
+    If (Len(etID) > 0) Then
+    
+        dstMetadata.TagID = etID
+        
+        etTable = PARSE_GetNamedAttributeValue(srcLine, "et:table")
+        If Len(etTable) > 0 Then dstMetadata.TagTable = etTable
+            
+        etIndex = PARSE_GetNamedAttributeValue(srcLine, "et:index")
+        If Len(etIndex) > 0 Then
+            dstMetadata.HasIndex = True
+            dstMetadata.TagIndexInternal = CLng(etIndex)
+        End If
+        
+        PARSE_RDFDescription = True
+        
+    Else
+        Debug.Print "WARNING!  RDF tag ID does not exist.  Please investigate!"
+    End If
+
+End Function
+
+Private Function PARSE_GetNamedAttributeValue(ByRef srcLine As String, ByRef srcAttribute As String) As String
+
+    Dim posAttribute As Long
+    posAttribute = InStr(1, srcLine, srcAttribute & "=", vbBinaryCompare)
+    
+    If (posAttribute > 0) Then
+    
+        Dim dFirst As Long, dLast As Long
+        dFirst = InStr(posAttribute + 1, srcLine, "'", vbBinaryCompare)
+        dLast = InStr(dFirst + 1, srcLine, "'", vbBinaryCompare)
+        
+        If (dLast > dFirst) Then
+            PARSE_GetNamedAttributeValue = Mid$(srcLine, dFirst + 1, (dLast - dFirst) - 1)
+        End If
+    
+    End If
+
+End Function
+
+Private Function PARSE_GetTagAndGroupName(ByRef fullName As String, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    Dim locColon As Long
+    locColon = InStr(1, fullName, ":", vbBinaryCompare)
+    
+    If (locColon <> 0) Then
+        dstMetadata.TagGroup = Trim$(Left$(fullName, locColon - 1))
+        dstMetadata.tagName = Trim$(Right$(fullName, Len(fullName) - locColon))
+        PARSE_GetTagAndGroupName = True
+    End If
+    
+End Function
+
+Private Function PARSE_GetTagName(ByRef srcLine As String, ByRef dstLine As String) As Boolean
+    Dim sPos As Long, ePos As Long
+    sPos = InStr(1, srcLine, "<", vbBinaryCompare)
+    If (sPos > 0) Then
+        ePos = InStrRev(srcLine, ">", , vbBinaryCompare) - 1
+        If (ePos > 0) Then
+            PARSE_GetTagName = True
+            dstLine = Mid$(srcLine, sPos + 1, ePos - sPos)
+        End If
+    End If
+End Function
+
+'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a reference to the image in question,
+' embed as much or as little metadata as the image's settings specify.
+' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
+'  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
+Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
+    
+    'XML writing is handled by PD's master XML engine
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    Dim newXMLString As String, tmpXMLPath As String
+    
+    'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
+    Dim metadataParams As String
+    metadataParams = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString metadataParams
+    
+    'First, see if metadata export is even allowed
+    If cParams.GetBool("MetadataExportAllowed", True) Then
+        
+        Dim i As Long
+        
+        'See if the caller wants their metadata anonymized prior to export
+        Dim forciblyAnonymize As Boolean
+        forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
+        
+        If (forciblyAnonymize And Me.HasMetadata) Then
+        
+            Message "Removing metadata with potential privacy concerns..."
+        
+            'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
+            ' privacy-problematic tags must be manually flagged.
+            For i = 0 To m_NumOfTags - 1
+                If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
+            Next i
+            
+        End If
+        
+        'Next, manually remove certain metadata entries that are explicitly noted as "not writable"; these include things like
+        ' format or ExifTool version numbers, which ExifTool will raise warnings about (as those values need to be implicitly
+        ' handled by ExifTool itself, rather than being forcibly set to their previous values).
+        For i = 0 To m_NumOfTags - 1
+            If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
+        Next i
+            
+        'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
+        ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
+        '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
+        newXMLString = RetrieveModifiedXMLString()
+        
+        Message "Embedding metadata..."
+        
+        'Note that at this point, the image may not have any metadata.  That's okay - we just skip the part where
+        ' we copy over metadata from an existing image.
+        
+        'If, however, the image *does* have metadata, we need to write it out to a temporary XML file.
+        If (Len(newXMLString) <> 0) Then
+            
+            'Since we can assume the user has rights to the output directory, write the temporary XML file there
+            tmpXMLPath = Files.FileGetPath(outputPath)
+                    
+            'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
+            Dim cHash As pdCrypto: Set cHash = New pdCrypto
+            tmpXMLPath = tmpXMLPath & "metadata_" & cHash.QuickHashString(CStr(Timer) & outputPath) & ".xml"
+            
+            'Write the XML file
+            xmlEngine.LoadXMLFromString newXMLString
+            xmlEngine.WriteXMLToFile tmpXMLPath, True
+        
+        Else
+            tmpXMLPath = vbNullString
+        End If
+        
+        'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+        WriteAllMetadata = ExifTool.WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
+        
+        If WriteAllMetadata Then
+            Message "Metadata embedded successfully."
+        Else
+            Message "Metadata may not have been embedded (but saved image still written successfully)."
+        End If
+        
+    'If metadata export is *not* allowed, we don't have to do a thing!
+    Else
+        WriteAllMetadata = True
+    End If
     
 End Function
 
 Private Sub Class_Initialize()
-    maxMetadataCount = 0
-    ReDim cachedMetadata(0) As Byte
+    m_NumOfTags = 0
+    ReDim m_Tags(0) As PDMetadataItem
 End Sub

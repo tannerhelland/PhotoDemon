@@ -14,18 +14,20 @@ Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.  It may require modifications to work with other projects.
 '
 'This code was originally written by the talented Frank Donckers.  Many thanks to Frank for allowing me to use his
-' code in PhotoDemon.  (Frank also provided PhotoDemon's German, French, and Vlaams translations.)
+' code in PhotoDemon.  (Frank also provided PhotoDemon's original German, French, and Vlaams translations.)
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright ©2012-2013 by Frank Donckers
+'Copyright 2013-2017 by Frank Donckers
 'Created: 19/February/13
-'Last updated: 10/September/13
-'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications
+'Last updated: 12/December/17
+'Last update: harden against IE initialization errors
 '
-'This class requires your project to have a reference to the Microsoft Scripting Library (scrrun.dll).
+'This class only works if IE is installed and functional.  Other browsers don't currently work.
 '
 'For Google Translate's Terms of Use, please visit http://www.google.com/policies/terms/
+'
+'Thank you to everyone who has contributed fixes for different locales, including ChenLin and Zhu JinYong.
 '
 '(Note from Tanner: this class relies on Google to provide its translation with very specific formatting.
 ' Google may change its code at any time, rendering this class ineffective.  Thus I cannot guarantee that
@@ -35,138 +37,197 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'IE object used to pass our text to Google and capture the return
-Private ie As Object
+'IE object used to pass our text to Google and capture the return.  Note that Internet Explorer *can* be
+' uninstalled by determined users, so this function is not guaranteed to work.
+Private m_IE As Object
 
 'The IE object may mark itself as "ready" before it's actually ready, so various artificial pauses are applied.
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 'This class supports translation between any two languages (assuming Google supports them, obviously).
 ' Specify which languages by calling the setSrcLanguage and setDstLanguage functions.
-Private srcLanguage As String, dstLanguage As String
+Private m_srcLanguage As String, m_dstLanguage As String
 
 'If the ie object fails to retrieve a translation, it will sometimes return the previous page instead of the current one.
 ' To protect against this, we manually compare this translation to the previous one and request a new translation as necessary.
-Private lastTranslation As String
+Private m_lastTranslation As String
 
-Public Sub setSrcLanguage(ByVal srcLangID As String)
-    srcLanguage = srcLangID
+'If we are able to successfully initialize an IE instance, this will be set to TRUE.  Do not attempt to
+' interact with the m_IE object *unless* this is TRUE.
+Private m_IEAvailable As Boolean
+
+Public Sub SetSrcLanguage(ByVal srcLangID As String)
+    m_srcLanguage = srcLangID
 End Sub
 
-Public Sub setDstLanguage(ByVal dstLangID As String)
-    dstLanguage = dstLangID
+Public Sub SetDstLanguage(ByVal dstLangID As String)
+    m_dstLanguage = dstLangID
 End Sub
 
 Private Sub Class_Initialize()
     
-    'Prepare an Internet Explorer scripting object
-    If Not (ie Is Nothing) Then
-        ie.quit
-        Set ie = Nothing
-    End If
-    
-    Set ie = CreateObject("InternetExplorer.application")
-    ie.Visible = False
+    On Error GoTo IENotAvailable
     
     'By default, translate from English to English
-    srcLanguage = "en"
-    dstLanguage = "en"
+    m_srcLanguage = "en"
+    m_dstLanguage = "en"
+    m_lastTranslation = vbNullString
     
-    lastTranslation = ""
-
+    'Prepare an Internet Explorer scripting object
+    If (Not m_IE Is Nothing) Then
+        m_IE.quit
+        Set m_IE = Nothing
+    End If
+    
+    'IE is now uninstallable, so it is possible for this line to fail
+    Set m_IE = CreateObject("InternetExplorer.application")
+    
+    If (Not m_IE Is Nothing) Then
+        m_IE.Visible = False
+        m_IEAvailable = True
+    Else
+        m_IEAvailable = False
+    End If
+    
+    Exit Sub
+    
+IENotAvailable:
+    
+    m_IEAvailable = False
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  clsGoogleTranslate could not initialize an IE instance.  Last error was #" & Err.Number & ", " & Err.Description
+    #End If
+    
 End Sub
 
 Private Sub Class_Terminate()
-    ie.quit
-    Set ie = Nothing
+    
+    On Error GoTo IEWasntInitialized
+    
+    If (Not m_IE Is Nothing) Then
+        m_IE.quit
+        Set m_IE = Nothing
+    End If
+    
+IEWasntInitialized:
+    
+    m_IEAvailable = False
+    
 End Sub
 
 'Given a string, return the Google Translate equivalent (per the set source and destination language codes).
 ' Optionally, the HTML of the translation can also be returned for further parsing.
-Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef copyOfHtml As String) As String
-
+Public Function GetGoogleTranslation(ByVal srcText As String, Optional ByRef copyOfHtml As String) As String
+    
+    On Error GoTo NoTranslationAvailable
+    
     Dim origHTML As String, processedHTML As String
-    origHTML = ""
-    processedHTML = ""
+    origHTML = vbNullString
+    processedHTML = vbNullString
     
-    'PhotoDemon uses %n to define custom parameters in text entries.  URLs also make use of the % identifier,
-    ' so replace our % with something else before attempting to translate.
-    srcText = Replace(srcText, "%", "&#37;", , , vbBinaryCompare)
-    
-    'Some PhotoDemon phrases contain line breaks.  We can't pass these in a URL, so replace them with a custom ID.
-    srcText = Replace(srcText, vbCrLf, "VBCRLF")
-    srcText = Replace(srcText, vbLf, "VBCRLF")
-    srcText = Replace(srcText, vbCr, "VBCRLF")
-    
-    getGoogleTranslation = ""
-    
-    'If translation fails, we will try again twice.  (Could be changed to as many times as you want, but twice is sufficient IMO.)
-    Dim numOfRetries As Long
-    numOfRetries = 0
-    
+    'If an IE object wasn't initialized successfully, this whole function is pointless
+    If (m_IEAvailable And (Not m_IE Is Nothing)) Then
+        
+        'PhotoDemon uses %n to define custom parameters in text entries.  URLs also make use of the % identifier,
+        ' so replace our % with something else before attempting to translate.
+        If (InStr(srcText, "%") <> 0) Then srcText = Replace$(srcText, "%", "&#37;", , , vbBinaryCompare)
+        
+        'Some PhotoDemon phrases contain line breaks.  We can't pass these in a URL, so replace them with a custom ID.
+        If (InStr(srcText, vbCrLf) <> 0) Then srcText = Replace$(srcText, vbCrLf, "VBCRLF")
+        If (InStr(srcText, vbLf) <> 0) Then srcText = Replace$(srcText, vbLf, "VBCRLF")
+        If (InStr(srcText, vbCr) <> 0) Then srcText = Replace$(srcText, vbCr, "VBCRLF")
+        
+        'Also replace some other problematic forbidden chars
+        If (InStr(srcText, "\") <> 0) Then processedHTML = Replace$(srcText, "\", "&#92;", 1, , vbBinaryCompare)
+        If (InStr(srcText, "/") <> 0) Then processedHTML = Replace$(srcText, "/", "&#47;", 1, , vbBinaryCompare)
+        
+        GetGoogleTranslation = vbNullString
+        
+        'If translation fails, we will try again twice.  (Could be changed to as many times as you want, but twice is sufficient IMO.)
+        Dim numOfRetries As Long
+        numOfRetries = 0
+        
 RetryTranslation:
-    
-    'Use the ie scripting object to access Google translate
-    ie.navigate "http://translate.google.com/#" & srcLanguage & "/" & dstLanguage & "/" & srcText
-    
-    'Loop until the ie object has received the translation from Google.  The amount of time this requires is
-    ' obviously dependent on this PC's Internet connection.
-    Do While ie.busy Or (Not ie.ReadyState = 4)
         
-        'Briefly wait to prevent spamming the CPU with repeated loop calls
-        Sleep 200
+        'Use the ie scripting object to access Google translate.  Note that special care must be taken for
+        ' Chinese languages, if the user originates in China; we must use the .cn URL there or Google will fail.
+        Dim useChineseEngine As Boolean: useChineseEngine = False
+        useChineseEngine = CBool(InStr(1, LCase$(m_dstLanguage), "zh", vbBinaryCompare) <> 0) Or CBool(InStr(1, LCase$(m_dstLanguage), "cn", vbBinaryCompare) <> 0)
         
-    Loop
-        
-    'Sometimes the ie object claims to be ready, despite the output result not fully being filled.
-    ' In an attempt to remedy this, we'll wait just a tiny bit longer...
-    Do
-        Sleep 200
-    Loop Until (ie.ReadyState = 4) And (Not ie.busy)
-        
-    'Copy the translation (including all HTML elements) into a VB string
-    origHTML = ie.Document.getElementById("result_box").innerHTML
-    ie.Document.Clear
-    
-    'If this translation matches the previous one, try again if necessary.
-    If InStr(1, origHTML, lastTranslation, vbTextCompare) > 0 Then
-        If numOfRetries < 2 Then
-            numOfRetries = numOfRetries + 1
-            GoTo RetryTranslation
+        If useChineseEngine Then
+            m_IE.navigate "http://translate.google.cn/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
         Else
-            lastTranslation = origHTML
+            m_IE.navigate "http://translate.google.com/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
         End If
-    Else
-        lastTranslation = origHTML
+        
+        'Loop until the ie object has received the translation from Google.  The amount of time this requires is
+        ' obviously dependent on this PC's Internet connection.
+        Do While m_IE.busy Or (Not m_IE.ReadyState = 4)
+            
+            'Briefly wait to prevent spamming the CPU with repeated loop calls
+            Sleep 200
+            
+        Loop
+            
+        'Sometimes the ie object claims to be ready, despite the output result not fully being filled.
+        ' In an attempt to remedy this, we'll wait just a tiny bit longer...
+        Do
+            Sleep 200
+        Loop Until (m_IE.ReadyState = 4) And (Not m_IE.busy)
+            
+        'Copy the translation (including all HTML elements) into a VB string
+        origHTML = m_IE.Document.getElementById("result_box").innerHTML
+        m_IE.Document.Clear
+        
+        'If this translation matches the previous one, try again if necessary.
+        If (InStr(1, origHTML, m_lastTranslation, vbTextCompare) > 0) Then
+            If (numOfRetries < 2) Then
+                numOfRetries = numOfRetries + 1
+                GoTo RetryTranslation
+            Else
+                m_lastTranslation = origHTML
+            End If
+        Else
+            m_lastTranslation = origHTML
+        End If
+        
+        'Return any characters we removed before translation
+        If (InStr(origHTML, "&#37;") <> 0) Then origHTML = Replace$(origHTML, "&#37;", "%", , , vbBinaryCompare)
+        If (InStr(origHTML, "VBCRLF") <> 0) Then origHTML = Replace$(origHTML, "VBCRLF", vbCrLf)
+        If (InStr(1, origHTML, "&#92;", vbBinaryCompare) <> 0) Then processedHTML = Replace$(origHTML, "&#92;", "\", 1, , vbBinaryCompare)
+        If (InStr(1, origHTML, "&#47;", vbBinaryCompare) <> 0) Then processedHTML = Replace$(origHTML, "&#47;", "/", 1, , vbBinaryCompare)
+        
+        'Remove all irrelevant HTML tags
+        processedHTML = StripHTMLTags(origHTML)
+        
+        'Finally, fix some weird quirks of the Google translate service.  For example, spaces are frequently
+        ' added to translated text for no good reason - so remove these in an attempt to preserve the original
+        ' text as much as possible.
+        If (InStr(processedHTML, "&gt;") <> 0) Then processedHTML = Replace$(processedHTML, "&gt;", ">", 1, , vbTextCompare)
+        If (InStr(processedHTML, "&lt;") <> 0) Then processedHTML = Replace$(processedHTML, "&lt;", "<", 1, , vbTextCompare)
+        If (InStr(processedHTML, "&amp;") <> 0) Then processedHTML = Replace$(processedHTML, "&amp;", "&", 1, , vbTextCompare)
+        If (InStr(processedHTML, vbTab) <> 0) Then processedHTML = Replace$(processedHTML, vbTab, "", 1, , vbTextCompare)
+        If (InStr(processedHTML, "( ") <> 0) Then processedHTML = Replace$(processedHTML, "( ", "(", 1, , vbTextCompare)
+        If (InStr(processedHTML, " )") <> 0) Then processedHTML = Replace$(processedHTML, " )", ")", 1, , vbTextCompare)
+        If (InStr(processedHTML, " ,") <> 0) Then processedHTML = Replace$(processedHTML, " ,", ",", 1, , vbTextCompare)
+        If (InStr(processedHTML, " :") <> 0) Then processedHTML = Replace$(processedHTML, " :", ":", 1, , vbTextCompare)
+        If (InStr(processedHTML, " .") <> 0) Then processedHTML = Replace$(processedHTML, " .", ".", 1, , vbTextCompare)
+        If (InStr(processedHTML, " \") <> 0) Then processedHTML = Replace$(processedHTML, " \ ", "\", 1, , vbTextCompare)
+        If (InStr(processedHTML, " /") <> 0) Then processedHTML = Replace$(processedHTML, " / ", "/", 1, , vbTextCompare)
+        If (InStr(processedHTML, "% ") <> 0) Then processedHTML = Replace$(processedHTML, "% ", " %", 1, , vbTextCompare)
+        
+        'Thanks to Zhu JY for pointing out that guillemet (<</>> used as single-char quotation marks)
+        ' are not handled properly under some localizations; we'll use specific character codes instead.
+        If (InStr(processedHTML, ChrW$(174)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(174), "'", 1, , vbTextCompare)
+        If (InStr(processedHTML, ChrW$(175)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(175), "'", 1, , vbTextCompare)
+    
     End If
     
-    'Return any characters we removed before translation
-    origHTML = Replace(origHTML, "&#37;", "%", , , vbBinaryCompare)
-    origHTML = Replace(origHTML, "VBCRLF", vbCrLf)
-    
-    'Remove all irrelevant HTML tags
-    processedHTML = stripHTMLTags(origHTML)
-    
-    'Finally, fix some weird quirks of the Google translate service.  For example, spaces are frequently
-    ' added to translated text for no good reason - so remove these in an attempt to preserve the original
-    ' text as much as possible.
-    processedHTML = Replace(processedHTML, "&gt;", ">", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "&lt;", "<", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "&amp;", "&", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, vbTab, "", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "( ", "(", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " )", ")", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " ,", ",", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " :", ":", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " .", ".", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " \ ", "\", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
+NoTranslationAvailable:
     
     'Return the translated data
-    getGoogleTranslation = processedHTML
+    GetGoogleTranslation = processedHTML
     
     'Optionally, return the original translation HTML as well.
     copyOfHtml = origHTML
@@ -175,38 +236,42 @@ End Function
 
 'Simple function to strip all HTML tags from a string.  Angle brackets that are part of content should
 ' (mostly) be properly preserved by this function.
-Private Function stripHTMLTags(ByVal srcString As String) As String
-
-    Dim curPosition As Long
-    curPosition = InStr(1, srcString, "<")
+Private Function StripHTMLTags(ByVal srcString As String) As String
     
-    Dim closePosition As Long, nextPosition As Long
+    If (Len(srcString) <> 0) Then
     
-    Do While curPosition > 0
+        Dim curPosition As Long
+        curPosition = InStr(1, srcString, "<")
         
-        'curPosition points to the location of a "<" sign.  We need to find the matching close bracket, with the
-        ' following condition: if we find another "<" sign before finding a ">" sign, this "<" sign is part of
-        ' the document content - so do not remove it.
+        Dim closePosition As Long, nextPosition As Long
         
-        'Find the close bracket
-        closePosition = InStr(curPosition + 1, srcString, ">")
+        Do While (curPosition > 0)
+            
+            'curPosition points to the location of a "<" sign.  We need to find the matching close bracket, with the
+            ' following condition: if we find another "<" sign before finding a ">" sign, this "<" sign is part of
+            ' the document content - so do not remove it.
+            
+            'Find the close bracket
+            closePosition = InStr(curPosition + 1, srcString, ">")
+            
+            'Find the next "<"
+            nextPosition = InStr(curPosition + 1, srcString, "<")
+            If (nextPosition = 0) Then nextPosition = Len(srcString) + 1
+            
+            If (closePosition < nextPosition) Then
+            
+                'Remove this tag
+                srcString = Left$(srcString, curPosition - 1) & Right$(srcString, Len(srcString) - closePosition)
+            
+            End If
         
-        'Find the next "<"
-        nextPosition = InStr(curPosition + 1, srcString, "<")
-        If nextPosition = 0 Then nextPosition = Len(srcString) + 1
+            'Find the next occurrence
+            curPosition = InStr(curPosition, srcString, "<")
         
-        If closePosition < nextPosition Then
-        
-            'Remove this tag
-            srcString = Left$(srcString, curPosition - 1) & Right$(srcString, Len(srcString) - closePosition)
-        
-        End If
+        Loop
     
-        'Find the next occurrence
-        curPosition = InStr(curPosition, srcString, "<")
+    End If
     
-    Loop
-    
-    stripHTMLTags = srcString
+    StripHTMLTags = srcString
 
 End Function

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This contains color accent definitions for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Pink accent definitions for PhotoDemon's core visual themes</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes custom, reusable color values that are "plugged in" to a UI theme at run-time. -->
+		
+		<Definitions>
+			<Accent1>#f8bbd0</Accent1>
+			<Accent2>#f48fb1</Accent2>
+			<Accent3>#f06292</Accent3>
+			<Accent4>#ec407a</Accent4>
+			<Accent5>#e91e63</Accent5>
+			<Accent6>#d81b60</Accent6>
+			<Accent7>#c2185b</Accent7>
+			<Accent8>#ad1457</Accent8>
+			<Accent9>#880e4f</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

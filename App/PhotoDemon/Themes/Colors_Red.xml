@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This contains color accent definitions for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Red accent definitions for PhotoDemon's core visual themes</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes custom, reusable color values that are "plugged in" to a UI theme at run-time. -->
+		
+		<Definitions>
+			<Accent1>#ffcdd2</Accent1>
+			<Accent2>#ef9191</Accent2>
+			<Accent3>#e57373</Accent3>
+			<Accent4>#ef5350</Accent4>
+			<Accent5>#f44336</Accent5>
+			<Accent6>#e53935</Accent6>
+			<Accent7>#d32f2f</Accent7>
+			<Accent8>#c62828</Accent8>
+			<Accent9>#b71c1c</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

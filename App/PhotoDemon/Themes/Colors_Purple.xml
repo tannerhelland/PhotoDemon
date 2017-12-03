@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This contains color accent definitions for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Purple accent definitions for PhotoDemon's core visual themes</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes custom, reusable color values that are "plugged in" to a UI theme at run-time. -->
+		
+		<Definitions>
+			<Accent1>#e1bee7</Accent1>
+			<Accent2>#ce93d8</Accent2>
+			<Accent3>#ba68c8</Accent3>
+			<Accent4>#ab47bc</Accent4>
+			<Accent5>#9c27b0</Accent5>
+			<Accent6>#8e24aa</Accent6>
+			<Accent7>#7b1fa2</Accent7>
+			<Accent8>#6a1b9a</Accent8>
+			<Accent9>#4a148c</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

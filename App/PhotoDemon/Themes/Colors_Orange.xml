@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This contains color accent definitions for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Orange accent definitions for PhotoDemon's core visual themes</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes custom, reusable color values that are "plugged in" to a UI theme at run-time. -->
+		
+		<Definitions>
+			<Accent1>#ffe0b2</Accent1>
+			<Accent2>#ffcc80</Accent2>
+			<Accent3>#ffb74d</Accent3>
+			<Accent4>#ffa726</Accent4>
+			<Accent5>#ff9800</Accent5>
+			<Accent6>#fb8c00</Accent6>
+			<Accent7>#f57c00</Accent7>
+			<Accent8>#ef6c00</Accent8>
+			<Accent9>#e65100</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

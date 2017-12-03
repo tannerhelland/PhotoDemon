@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
-'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
+'Copyright 2012-2017 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 03/September/13
-'Last update: replace all custom XML code with the new pdXML class
+'Last updated: 08/November/17
+'Last update: perform some duplicate file clean-up when upgrading between versions
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -28,11 +28,6 @@ Attribute VB_Exposed = False
 ' If you do decide to edit these language files, I strongly suggest saving the new files inside the USER
 ' folder of the project, e.g. /Data/Languages/.  This will ensure they are not overwritten by software
 ' updates or future changes to the official language files included with PD.
-'
-'Many features are on the roadmap for translation, including things like interactive editing and automatic
-' updating of translation files, but this version of the engine focuses primarily on just getting the damn
-' thing implemented across all the text in the program, including all controls, messages, message boxes,
-' and more.
 '
 'Most of the crucial translation work in the program happens inside a global object called "g_Language",
 ' which is an object of this class (pdTranslate).  Most subs and functions should be self-explanatory.  To
@@ -51,7 +46,7 @@ Option Explicit
 
 'Language-related API calls
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
-Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String, ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 
 'Constants related to API language calls
 Private Const LOCALE_USER_DEFAULT = &H400
@@ -59,14 +54,14 @@ Private Const LOCALE_SISO639LANGNAME As Long = &H59   'ISO 639 abbreviated langu
 Private Const LOCALE_SISO3166CTRYNAME As Long = &H5A   'ISO 4166 abbreviated country/region name, e.g. "US" for "United States"
 
 'Array of currently available languages
-Private numOfLanguages As Long
-Private availableLanguages() As pdLanguageFile
+Private m_numOfLanguages As Long
+Private m_AvailableLanguages() As PDLanguageFile
 
 'Array ID of the current language.  If no language is selected (e.g. PhotoDemon is using its default text), this value is -1
-Private curLanguage As Long
+Private m_currentLanguage As Long
 
 'Array ID of the default language (English - US)
-Private defaultLanguage As Long
+Private m_defaultLanguage As Long
 
 'If the user needs to be shown a language select screen, this will be set to true at some point in the initialization process
 Private m_needToShowLanguageDialog As Boolean
@@ -79,7 +74,7 @@ Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language 
 Private m_reasonForLanguageDialog As Long
 
 'The full contents of the translation file will be loaded into this string.
-Private xmlEngine As pdXML
+Private m_XMLEngine As pdXML
 
 'Is the class ready to be used for translations?
 Private m_isReady As Boolean
@@ -88,77 +83,83 @@ Private m_isReady As Boolean
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
 
+'File interactions in this class are handled by pdFSO
+Private m_FSO As pdFSO
+
+'Language files are checksummed to improve startup time.  This class is not guaranteed to exist, so please review individual
+' functions before attempting to use the crypto object.
+Private m_Crypto As pdCrypto
+
+'The language file cache is handled inside this XML object.
+Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
+
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
-' function will then fill with the data assembled from CheckAvailableLanguages().
-Friend Sub copyListOfLanguages(ByRef dstListOfLanguages() As pdLanguageFile)
+' function will then fill with the data assembled from Checkm_availableLanguages().
+Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As PDLanguageFile)
     
-    ReDim dstListOfLanguages(0 To numOfLanguages - 1) As pdLanguageFile
+    ReDim dstListOfLanguages(0 To m_numOfLanguages - 1) As PDLanguageFile
     
     'Copy all language data entries into the new array.
     Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        dstListOfLanguages(i) = availableLanguages(i)
+    For i = 0 To m_numOfLanguages - 1
+        dstListOfLanguages(i) = m_AvailableLanguages(i)
     Next i
     
 End Sub
 
 'External functions can request the current language, which may then be used to request translations from
 ' 3rd-party plugins (specifically, ExifTool).
-Public Function getCurrentLanguage() As String
-    
-    If translationActive Then
-        getCurrentLanguage = Left$(availableLanguages(curLanguage).langID, 2)
+Friend Function GetCurrentLanguage() As String
+    If TranslationActive Then
+        GetCurrentLanguage = Left$(m_AvailableLanguages(m_currentLanguage).langID, 2)
     Else
-        getCurrentLanguage = "en"
+        GetCurrentLanguage = "en"
     End If
-    
+End Function
+
+'This function will return PD's internal language index (m_currentLanguage), which matches the language's index in the Language menu.
+Friend Function GetCurrentLanguageIndex() As Long
+    GetCurrentLanguageIndex = m_currentLanguage
 End Function
 
 'External function for asking the translator if a language selection dialog is needed
-Public Function isLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
-    If reasonForDialog <> -1 Then reasonForDialog = m_reasonForLanguageDialog
-    isLanguageDialogNeeded = m_needToShowLanguageDialog
+Friend Function IsLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
+    If (reasonForDialog <> -1) Then reasonForDialog = m_reasonForLanguageDialog
+    IsLanguageDialogNeeded = m_needToShowLanguageDialog
 End Function
 
 'If a translation file has been requested and successfully loaded, this function will return TRUE
-Public Function readyToTranslate() As Boolean
-    
-    If Not xmlEngine Is Nothing Then
-        readyToTranslate = m_isReady
+Friend Function ReadyToTranslate() As Boolean
+    If (Not m_XMLEngine Is Nothing) Then
+        ReadyToTranslate = m_isReady
     Else
-        readyToTranslate = False
+        ReadyToTranslate = False
     End If
-    
 End Function
 
 'If the currently active language is different from the default language, this function will return TRUE
-Public Function translationActive() As Boolean
-
-    If curLanguage = defaultLanguage Then
-        translationActive = False
-    Else
-        translationActive = True
-    End If
-
+Friend Function TranslationActive() As Boolean
+    TranslationActive = Not (m_currentLanguage = m_defaultLanguage)
 End Function
 
-'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
-Public Sub activateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoEvents As Boolean = False)
+Friend Sub WriteLanguagePreferencesToFile()
+    g_UserPreferences.SetPref_String "Language", "Current Language File", m_AvailableLanguages(m_currentLanguage).FileName
+End Sub
 
-    curLanguage = newLangIndex
-    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(newLangIndex).FileName
-    ApplyLanguage useDoEvents
-
+'Given an index in the m_availableLanguages array, mark that as the new language (including saving it to the preferences file)
+Friend Sub ActivateNewLanguage(ByVal newLangIndex As Long)
+    m_currentLanguage = newLangIndex
+    Interface.GenerateInterfaceID
+    WriteLanguagePreferencesToFile
 End Sub
 
 'Determine which language to use.  This can be done one of several ways:
 ' 1) If the user has already specified a language, use that one (obviously)
-' 2) If the user has not specified a language, and this is not the first time they have run the program, default to English.
+' 2) If the user has not specified a language, and this is *not* the first time they have run the program,
+'     assume they're using English.
 ' 3) If this is the first time PhotoDemon has been run on this machine, estimate what language to present based on the
 '     current system language.  If a matching language is available, present that.  If not, present English.
-'     (In the future, the user will be presented with an actual "choose your language" dialog if the system language
-'      is NOT set to English.)
-Public Sub DetermineLanguage()
+Friend Sub DetermineLanguage()
 
     'FOR TESTING PURPOSES ONLY: uncomment the line below to trick the program into thinking it is being run for the first time.
     ' This will also initiate the language engine's analysis of the current system language, and it will do its best to match
@@ -174,23 +175,23 @@ Public Sub DetermineLanguage()
     If g_IsFirstRun Then
     
         Dim curLangID As String
-        curLangID = "en-US" 'getDefaultUserLanguage()
-                
+        curLangID = GetDefaultUserLanguage()        'Want to default to PD's stock translation?  Set this to "en-US"
+        
         'Compare the full language ID (language and region) against language files available in the Languages folder.
         ' If an exact match is found, present that as the default program language.
-        curLanguage = isExactLanguageMatch(curLangID)
+        m_currentLanguage = IsExactLanguageMatch(curLangID)
         
         'If an exact match is not found, try comparing just the language part of the code.  If a match is found,
         ' present that as the default language - and note that we also need to show the language selection dialog.
-        If curLanguage = -1 Then
-            curLanguage = isApproximateLanguageMatch(curLangID)
+        If (m_currentLanguage = -1) Then
+            m_currentLanguage = IsApproximateLanguageMatch(curLangID)
             m_reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
             m_needToShowLanguageDialog = True
         End If
         
         'If we still can't find a match, present the language selection screen in English.
-        If curLanguage = -1 Then
-            curLanguage = defaultLanguage
+        If (m_currentLanguage = -1) Then
+            m_currentLanguage = m_defaultLanguage
             m_reasonForLanguageDialog = LANGREASON_NOMATCH
             m_needToShowLanguageDialog = True
         End If
@@ -198,19 +199,19 @@ Public Sub DetermineLanguage()
     'If this is not the first run, retrieve the user's language preference from the preferences file
     Else
     
-        Dim curLanguageFile As String
-        curLanguageFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
+        Dim curLangFile As String
+        curLangFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
         
         'If no specific file has been named, use the default language
-        If curLanguageFile = "" Then
-            curLanguage = defaultLanguage
+        If (Len(curLangFile) = 0) Then
+            m_currentLanguage = m_defaultLanguage
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
         Else
-            If FileExist(curLanguageFile) Then
-                curLanguage = getLangIndexFromFile(curLanguageFile)
+            If Files.FileExists(curLangFile) Then
+                m_currentLanguage = GetLangIndexFromFile(curLangFile)
             Else
-                curLanguage = defaultLanguage
+                m_currentLanguage = m_defaultLanguage
                 m_reasonForLanguageDialog = LANGREASON_FILEMISSING
                 m_needToShowLanguageDialog = True
             End If
@@ -222,85 +223,86 @@ Public Sub DetermineLanguage()
     
 End Sub
 
-'Given a language filename, return the index in the availableLanguages() array
-Private Function getLangIndexFromFile(ByVal srcFile As String) As Long
+'Given a language filename, return the index in the m_availableLanguages() array
+Private Function GetLangIndexFromFile(ByRef srcFile As String) As Long
     
     Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).FileName, srcFile, vbTextCompare) = 0 Then
-            getLangIndexFromFile = i
+    For i = 0 To m_numOfLanguages - 1
+        If Strings.StringsEqual(m_AvailableLanguages(i).FileName, srcFile, True) Then
+            GetLangIndexFromFile = i
             Exit Function
         End If
     Next i
     
 End Function
 
-'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the availableLanguages array
-Private Function isApproximateLanguageMatch(ByRef srcLangID As String)
+'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the
+' current language collection.
+Private Function IsApproximateLanguageMatch(ByRef srcLangID As String)
 
+    IsApproximateLanguageMatch = -1
+    
+    'Why search the language collection backward?  PD supplies multiple translations for some languages, and the second
+    ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        If StrComp(Left(srcLangID, 2), Left(availableLanguages(i).langID, 2), vbTextCompare) = 0 Then
-            isApproximateLanguageMatch = i
-            'pdMsgBox "Approximate language match found: " & availableLanguages(i).langID
+    For i = m_numOfLanguages - 1 To 0 Step -1
+        If Strings.StringsEqual(Left$(srcLangID, 2), Left$(m_AvailableLanguages(i).langID, 2), True) Then
+            IsApproximateLanguageMatch = i
             Exit Function
         End If
     Next i
     
-    'If we made it all the way here, no match was found.  Return -1
-    isApproximateLanguageMatch = -1
-
 End Function
 
-'Given a language ID (as a string), try to find an exact match (language AND region) in the availableLanguages array
-Private Function isExactLanguageMatch(ByRef srcLangID As String)
+'Given a language ID (as a string), try to find an exact match (language AND region) in the current language collection.
+Private Function IsExactLanguageMatch(ByRef srcLangID As String)
 
+    IsExactLanguageMatch = -1
+    
+    'Why search the language collection backward?  PD supplies multiple translations for some languages, and the second
+    ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        If StrComp(srcLangID, availableLanguages(i).langID, vbTextCompare) = 0 Then
-            isExactLanguageMatch = i
-            'pdMsgBox "Exact language match found: " & availableLanguages(i).langID
+    For i = m_numOfLanguages - 1 To 0 Step -1
+        If Strings.StringsEqual(srcLangID, m_AvailableLanguages(i).langID, True) Then
+            IsExactLanguageMatch = i
             Exit Function
         End If
     Next i
     
-    'If we made it all the way here, no match was found.  Return -1
-    isExactLanguageMatch = -1
-
 End Function
 
 'ALWAYS CALL DetermineLanguage BEFORE THIS STAGE!
 'Once a PhotoDemon language has been selected (via DetermineLanguage), this function can be called to "apply" that language to the program.
 ' NOTE: if the language is changed, this function must be called again to set the new language program-wide.
-Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
-
-    'Mark the active language menu entry (and unmark all others)
-    Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        If curLanguage = i Then FormMain.mnuLanguages(i).Checked = True Else FormMain.mnuLanguages(i).Checked = False
-    Next i
+Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional ByVal useDoEvents As Boolean = False)
     
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
-    If translationActive Then
-        Set xmlEngine = New pdXML
-        xmlEngine.loadXMLFile availableLanguages(curLanguage).FileName
-    End If
-
-    'Redraw all text on the main form using the new language
-    If FormMain.Visible Then
-        FormMain.requestMakeFormPretty useDoEvents
-        DrawAccelerators
-        applyAllMenuIcons True
+    If Me.TranslationActive Then
+    
+        Set m_XMLEngine = New pdXML
+        m_XMLEngine.LoadXMLFile m_AvailableLanguages(m_currentLanguage).FileName
         
-        'Resync the interface to redraw any remaining text and/or buttons
-        syncInterfaceToCurrentImage
+        'New as of August '14 is use of binary text comparisons when matching translations.  This provides a large
+        ' performance boost, and also results in correct captioning when the same word is used in multiple places
+        ' with different cases (e.g. menus vs sliders).
+        m_XMLEngine.SetTextCompareMode vbBinaryCompare
         
     End If
-        
+    
+    'Mark the active language menu entry (and unmark all others).  This is necessary even if a translation is *not* active,
+    ' to ensure that the "English (US)" entry is checked correctly.
+    Dim i As Long
+    For i = 0 To m_numOfLanguages - 1
+        FormMain.mnuLanguages(i).Checked = CBool(m_currentLanguage = i)
+    Next i
+    
+    'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)
+    If redrawMainUI Then Interface.RedrawEntireUI useDoEvents
+    
 End Sub
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"
-Private Function getDefaultUserLanguage() As String
+Private Function GetDefaultUserLanguage() As String
 
     'First, retrieve the user's current language.
     Dim langReturn As Integer
@@ -312,13 +314,13 @@ Private Function getDefaultUserLanguage() As String
     Dim abbrLang As String, abbrRegion As String
     
     'Get the ISO 639 abbreviated language name (e.g. "en" for "English")
-    abbrLang = LCase(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
+    abbrLang = LCase$(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
     
     'Get the ISO 4166 abbreviated country/region name (e.g. "US" for "United States")
-    abbrRegion = LCase(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
+    abbrRegion = UCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
     
     'Return the language codes
-    getDefaultUserLanguage = abbrLang & "-" & abbrRegion
+    GetDefaultUserLanguage = abbrLang & "-" & abbrRegion
 
 End Function
 
@@ -326,8 +328,8 @@ End Function
 Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
     Dim sBuffer As String, sRet As String
     sBuffer = String$(256, 0)
-    sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, lInfo, sBuffer, Len(sBuffer))
-    If sRet > 0 Then
+    sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, lInfo, StrPtr(sBuffer), Len(sBuffer))
+    If (sRet > 0) Then
         GetSpecificLocaleInfo = Left$(sBuffer, sRet - 1)
     Else
         GetSpecificLocaleInfo = ""
@@ -337,161 +339,409 @@ End Function
 'Add all the language files in a given folder.  The function will return the number of languages found.
 ' Optionally, a language offset count can be provided.  This is required for any folders besides the first, as the
 ' function will use that as the array index where it can place found language file data.
-Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = "") As Long
+Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = vbNullString) As Long
 
     Dim nLanguages As Long
-    nLanguages = 0
+    nLanguages = langOffset
+    
+    'If this is the official language folder, we will mark those entries specially, as they are the only ones PD is allowed to auto-update.
+    Dim isOfficialFolder As Boolean
+    isOfficialFolder = Strings.StringsEqual(langTypeForThisFolder, "OFFICIAL", True)
+    
+    'An XML class will be used to parse and validate language files, as needed.  (This class may not be instantiated
+    ' if the current language file list matches the list at last-run, because language values are cached.  Plan accordingly.)
+    Dim tmpXMLEngine As pdXML
     
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
-    Dim chkFile As String
-    chkFile = Dir(srcFolder & "*.xml", vbNormal)
+    Dim listOfFiles As pdStringStack
+    Set listOfFiles = New pdStringStack
+    
+    If m_FSO.RetrieveAllFiles(srcFolder, listOfFiles, False, False, "xml") Then
         
-    Do While (chkFile <> "")
+        'We need to checksum various files, so prep a crypto object in advance
+        Set m_Crypto = New pdCrypto
         
-        'Use PD's XML engine to load the file
-        Dim tmpXMLEngine As pdXML
-        Set tmpXMLEngine = New pdXML
-        If tmpXMLEngine.loadXMLFile(srcFolder & chkFile) Then
+        Dim chkFile As String, chkCachedValue As String, chkXMLName As String
+        Dim fileValidationRequired As Boolean
         
-            'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-            If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
-        
-                'If this is a valid language file, get the language information (if available).
-                fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages + langOffset)
-                availableLanguages(nLanguages + langOffset).FileName = srcFolder & chkFile
-                availableLanguages(nLanguages + langOffset).langType = langTypeForThisFolder
-                nLanguages = nLanguages + 1
+        Do While listOfFiles.PopString(chkFile)
+            
+            fileValidationRequired = True
+            
+            'We now have two options for loading this file.  If this is the first time we've seen this language file,
+            ' we need to validate it (to make sure it's a usable PD language file).  But if we've seen this file before,
+            ' we should have checksummed it and stored the result inside the user's preferences file.  If checksums
+            ' match, we don't need to load and validate the file this time.
+            
+            'Look for an existing checksum
+            chkXMLName = m_LangCacheXML.GetXMLSafeTagName(Files.FileGetName(chkFile, True))
+            chkCachedValue = Trim$(m_LangCacheXML.GetUniqueTag_String(chkXMLName))
+            If (Len(chkCachedValue) <> 0) Then
+            
+                'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
+                fileValidationRequired = Strings.StringsNotEqual(chkCachedValue, GetLangFileChecksum(chkFile), False)
                 
-                'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
-                If nLanguages + langOffset > UBound(availableLanguages) Then ReDim Preserve availableLanguages(0 To (nLanguages + langOffset) * 2) As pdLanguageFile
+                #If DEBUGMODE = 1 Then
+                    If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
+                #End If
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
+                #End If
+            End If
+            
+            'If validation is required, we need to load the file from scratch and run some checks on it
+            If fileValidationRequired Then
+                
+                If (tmpXMLEngine Is Nothing) Then
+                    Set tmpXMLEngine = New pdXML
+                    tmpXMLEngine.SetTextCompareMode vbBinaryCompare
+                End If
+                
+                'Use PD's XML engine to load the file
+                If tmpXMLEngine.LoadXMLFile(chkFile) Then
+                
+                    'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+                    If tmpXMLEngine.IsPDDataType("Translation") Then
+                        
+                        'If this is a valid language file, get the language information (if available).
+                        FillLanguageInfo tmpXMLEngine, m_AvailableLanguages(nLanguages)
+                        m_AvailableLanguages(nLanguages).FileName = chkFile
+                        m_AvailableLanguages(nLanguages).LangType = langTypeForThisFolder
+                        m_AvailableLanguages(nLanguages).IsOfficial = isOfficialFolder
+                        
+                        'Because this is a valid language file, we want to cache its key properties in the
+                        ' master user preferences file.  This lets us skip validation on subsequent runs.
+                        m_LangCacheXML.UpdateTag chkXMLName, GetLangFileChecksum(chkFile)
+                        CacheLanguageInfo chkXMLName, m_AvailableLanguages(nLanguages)
+                        
+                        'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
+                        nLanguages = nLanguages + 1
+                        If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As PDLanguageFile
+                        
+                    End If
+                    
+                End If
+            
+            'If file validation is *not* required, pull previously cached values from the preference file
+            Else
+            
+                GetCachedLanguageInfo chkXMLName, m_AvailableLanguages(nLanguages)
+                m_AvailableLanguages(nLanguages).FileName = chkFile
+                m_AvailableLanguages(nLanguages).LangType = langTypeForThisFolder
+                m_AvailableLanguages(nLanguages).IsOfficial = isOfficialFolder
+                
+                nLanguages = nLanguages + 1
+                If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As PDLanguageFile
             
             End If
             
-        End If
-        
         'Retrieve the next file and repeat
-        chkFile = Dir
+        Loop
+        
+    End If
     
-    Loop
-    
-    tallyLanguageFilesInFolder = nLanguages
+    TallyLanguageFilesInFolder = nLanguages - langOffset
 
 End Function
 
-'Search the Languages folder, and make a list of all available languages
-Public Sub CheckAvailableLanguages()
+Private Function GetLangFileChecksum(ByRef srcFile As String) As String
+
+    'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
+    Dim strHashSource As String
+    strHashSource = srcFile & "|" & CStr(m_FSO.FileLenW(srcFile)) & "|" & CStr(m_FSO.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
     
-    numOfLanguages = 0
-    ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
+    'A dedicated crypto class handles the actual hashing
+    GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource, 64)
+    
+End Function
+
+'Search the Languages folder, and make a list of all available languages
+Friend Sub CheckAvailableLanguages()
+        
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+        
+    m_numOfLanguages = 0
+    ReDim m_AvailableLanguages(0 To 99) As PDLanguageFile
+    
+    'Language file names and attributes are cached inside a dedicated language settings file.  This file lets
+    ' us bypass a lot of obnoxious and time-consuming validation steps.
+    Dim langCacheFilename As String
+    langCacheFilename = g_UserPreferences.GetPresetPath() & "LangCache.xml"
+    
+    Dim cacheLoadedSuccessfully As Boolean: cacheLoadedSuccessfully = False
+    
+    Set m_LangCacheXML = New pdXML
+    m_LangCacheXML.SetTextCompareMode vbBinaryCompare
+    
+    If Files.FileExists(langCacheFilename) Then cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    #End If
+    
+    'If the cache exists, we won't write it back out to file unless it somehow changes during this session
+    ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
+    ' and force it to write out to file at the end of this initiation.
+    If (Not cacheLoadedSuccessfully) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
+        #End If
+        m_LangCacheXML.PrepareNewXML "PDLanguageCache"
+        m_LangCacheChanged = True
+    End If
+    
+    'Before proceeding, perform some automatic language file cleanup.  In-place upgrades
+    ' (e.g. between nightly builds or beta/release versions) may lead to duplicate language files with
+    ' similar names; we always want to remove the old ones, *if* they're in the official language folder.
+    PerformLanguageFileCleanup
     
     'Find all available OFFICIAL language files
-    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0, "Official")
+    m_numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    #End If
     
     'Find all available USER language files
-    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "Unofficial")
+    m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    #End If
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
-    availableLanguages(numOfLanguages).FileName = ""
-    availableLanguages(numOfLanguages).langID = "en-US"
-    availableLanguages(numOfLanguages).langName = "English (US) - Default"
-    availableLanguages(numOfLanguages).langType = "Default"
-    availableLanguages(numOfLanguages).langStatus = "Complete"
-    availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
-    numOfLanguages = numOfLanguages + 1
+    m_AvailableLanguages(m_numOfLanguages).FileName = vbNullString
+    m_AvailableLanguages(m_numOfLanguages).langID = "en-US"
+    m_AvailableLanguages(m_numOfLanguages).LangName = "English (US)"
+    m_AvailableLanguages(m_numOfLanguages).LangType = "Default"
+    m_AvailableLanguages(m_numOfLanguages).LangStatus = "Complete"
+    m_AvailableLanguages(m_numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    m_AvailableLanguages(m_numOfLanguages).IsOfficial = True
+    m_numOfLanguages = m_numOfLanguages + 1
     
     'Resize the array to contain only the number of languages found
-    ReDim Preserve availableLanguages(0 To numOfLanguages - 1) As pdLanguageFile
+    ReDim Preserve m_AvailableLanguages(0 To m_numOfLanguages - 1) As PDLanguageFile
     
     'Sort the array alphabetically by language name (because we are going to fill the languages submenu with the entries)
-    sortLanguageData
+    SortLanguageData
     
     'Populate the languages menu
-    populateLanguageMenu
+    PopulateLanguageMenu
     
     'Mark the location in the array of the default language, as other functions may need to know it
     Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).langName, "English (US) - Default", vbTextCompare) = 0 Then defaultLanguage = i
+    For i = 0 To m_numOfLanguages - 1
+        If Strings.StringsEqual(m_AvailableLanguages(i).LangName, "english (us)", True) Then
+            m_defaultLanguage = i
+            Exit For
+        End If
     Next i
+    
+    'If the cached language data was modified during this session, write the updated cache out to file
+    If m_LangCacheChanged Then m_LangCacheXML.WriteXMLToFile langCacheFilename
+    Set m_LangCacheXML = Nothing
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    #End If
     
     'TESTING: display the info we retrieved
     'Dim i As Long
-    'For i = 0 To numOfLanguages - 1
-    '    pdMsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
+    'For i = 0 To m_numOfLanguages - 1
+    '    Debug.Print m_availableLanguages(i).langID & vbCrLf & m_availableLanguages(i).langName & vbCrLf & m_availableLanguages(i).langStatus & vbCrLf & m_availableLanguages(i).langVersion
     'Next i
     
 End Sub
 
-'Populate the Tools -> Languages menu
-Private Sub populateLanguageMenu()
+Private Sub PerformLanguageFileCleanup()
+    
+    'This step is pointless if we are in non-portable mode (because we don't have access to our app folder)
+    If (g_UserPreferences Is Nothing) Then Exit Sub
+    If g_UserPreferences.IsNonPortableModeActive Then Exit Sub
+    
+    '****
+    '6.6 > 7.0 RELEASE CLEANUP
+    
+    'In PD 7.0, language filenames were switched to all-English to simplify their distribution and update process.
+    ' When updating from 6.6 to 7.0, this can lead to duplicate copies of some language files - one file using
+    ' the old name, and the new (updated) one using the new name.
+    
+    'To prevent duplicate copies, we manually check for some old entries and remove them if their newer
+    ' counterpart is found.
+    
+    Dim langPath As String
+    langPath = g_UserPreferences.GetLanguagePath()
+    
+    Dim targetFilename As String, replaceFilename As String
+    targetFilename = langPath & "Francais.xml"
+    replaceFilename = langPath & "French.xml"
+    
+    If (Files.FileExists(targetFilename) And Files.FileExists(replaceFilename)) Then
+        
+        'Check filesize.  This uses magic numbers taken from the last 6.6 release.
+        If (Files.FileLenW(targetFilename) = 424711) Then Files.FileDelete targetFilename
+        
+    End If
+    
+    'Repeat above steps for all other relevant language files
+    targetFilename = langPath & "Espanol.xml"
+    replaceFilename = langPath & "Spanish_(Mexico).xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 421189) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Italiano.xml"
+    replaceFilename = langPath & "Italian.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 423659) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Portuguese.xml"
+    replaceFilename = langPath & "Portuguese_(Brazil).xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 416158) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Deutsch_1.xml"
+    replaceFilename = langPath & "German_1.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 417364) Then Files.FileDelete targetFilename
+    
+    targetFilename = langPath & "Deutsch_2.xml"
+    replaceFilename = langPath & "German_2.xml"
+    If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 418885) Then Files.FileDelete targetFilename
+    
+    'END 6.6 > 7.0 RELEASE CLEANUP
+    '****
+    
+End Sub
+
+'Populate the Tools -> Languages menu.  Note that most of this is now handled via the Menus module (which allows us to display Unicode names).
+Private Sub PopulateLanguageMenu()
 
     'Start by unloading all current language menu entries
     Dim i As Long
-    If FormMain.mnuLanguages.Count > 1 Then
-        For i = 0 To FormMain.mnuLanguages.Count - 1
+    If (FormMain.mnuLanguages.Count > 1) Then
+        For i = FormMain.mnuLanguages.Count - 1 To 0 Step -1
             Unload FormMain.mnuLanguages(i)
         Next i
     End If
     
     'Load all the menu entries we'll be needing.
-    If numOfLanguages > 1 Then
-        For i = 1 To numOfLanguages - 1
+    If (m_numOfLanguages > 1) Then
+        For i = 1 To m_numOfLanguages - 1
             Load FormMain.mnuLanguages(i)
         Next i
     End If
     
-    'Assign names to all the menu entries
-    For i = 0 To numOfLanguages - 1
-        FormMain.mnuLanguages(i).Caption = availableLanguages(i).langName
+    'Make sure all menus are un-checked
+    For i = 0 To m_numOfLanguages - 1
         FormMain.mnuLanguages(i).Checked = False
     Next i
+    
+    'Use the menus module to update menu captions; this allows for Unicode text
+    Menus.UpdateSpecialMenu_Language m_numOfLanguages, m_AvailableLanguages
 
 End Sub
 
 'Given a language file (or partial language file), extract the key language information and place it in the passed variable.
-Private Sub fillLanguageInfo(ByRef srcXMLEngine As pdXML, ByRef targetLangHolder As pdLanguageFile)
+Private Sub FillLanguageInfo(ByRef srcXmlEngine As pdXML, ByRef targetLangHolder As PDLanguageFile)
 
     'First, get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-    targetLangHolder.langID = srcXMLEngine.getUniqueTag_String("langid")
-    targetLangHolder.langName = srcXMLEngine.getUniqueTag_String("langname")
+    With targetLangHolder
+        
+        .langID = srcXmlEngine.GetUniqueTag_String("langid")
+        .LangName = srcXmlEngine.GetUniqueTag_String("langname")
     
-    'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-    targetLangHolder.langVersion = srcXMLEngine.getUniqueTag_String("langversion")
-    targetLangHolder.langStatus = srcXMLEngine.getUniqueTag_String("langstatus")
-    targetLangHolder.Author = srcXMLEngine.getUniqueTag_String("author")
+        'Version, status, and author information should also be present, but the file will still be loaded even if
+        ' they don't exist
+        .langVersion = srcXmlEngine.GetUniqueTag_String("langversion")
+        .LangStatus = srcXmlEngine.GetUniqueTag_String("langstatus")
+        .Author = srcXmlEngine.GetUniqueTag_String("author")
+        
+    End With
         
 End Sub
 
-'Sort the availableLanguages array alphabetically, using language names as the sort parameter
-Private Sub sortLanguageData()
+Private Sub GetCachedLanguageInfo(ByRef srcFilename As String, ByRef dstLangHolder As PDLanguageFile)
+    With dstLangHolder
+        .langID = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langid")
+        .LangName = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langname")
+        .langVersion = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langversion")
+        .LangStatus = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langstatus")
+        .Author = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langauthor")
+    End With
+End Sub
+
+'Cache key language information inside the user's preference file.  This allows for faster retrieval on future runs.
+Private Sub CacheLanguageInfo(ByRef srcFilename As String, ByRef srcLangHolder As PDLanguageFile)
+    With srcLangHolder
+        m_LangCacheXML.UpdateTag srcFilename & "-langid", .langID
+        m_LangCacheXML.UpdateTag srcFilename & "-langname", .LangName
+        m_LangCacheXML.UpdateTag srcFilename & "-langversion", .langVersion
+        m_LangCacheXML.UpdateTag srcFilename & "-langstatus", .LangStatus
+        m_LangCacheXML.UpdateTag srcFilename & "-langauthor", .Author
+    End With
+    m_LangCacheChanged = True
+End Sub
+
+'Sort the m_availableLanguages() array alphabetically, using language names as the sort parameter
+Private Sub SortLanguageData()
 
     Dim i As Long, j As Long
+    Dim langTmp As PDLanguageFile
     
     'Loop through all entries in the languages array, sorting them as we go
-    For i = 0 To numOfLanguages - 1
-        For j = 0 To numOfLanguages - 1
+    For i = 0 To m_numOfLanguages - 1
+        For j = 0 To m_numOfLanguages - 1
             
             'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
-            If StrComp(availableLanguages(i).langName, availableLanguages(j).langName, vbTextCompare) = -1 Then
-                SwapLanguageData availableLanguages(i), availableLanguages(j)
+            If (Strings.StrCompSort(m_AvailableLanguages(i).LangName, m_AvailableLanguages(j).LangName) < 0) Then
+                langTmp = m_AvailableLanguages(i)
+                m_AvailableLanguages(i) = m_AvailableLanguages(j)
+                m_AvailableLanguages(j) = langTmp
             End If
+            
         Next j
     Next i
 
 End Sub
 
-'Swap the values of two language file headers
-Private Sub SwapLanguageData(ByRef langOne As pdLanguageFile, ByRef langTwo As pdLanguageFile)
-    Dim langTmp As pdLanguageFile
-    langTmp = langOne
-    langOne = langTwo
-    langTwo = langTmp
-End Sub
+'External functions can use this retrieve the current pdLanguageFile contents for a given language ID.
+' Note that this ONLY SUPPORTS OFFICIAL LANGUAGE FILES, by design.  User language files should not be modified by PD itself.
+' Returns TRUE if a match is found; FALSE otherwise.
+Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As PDLanguageFile, ByVal languageID As String) As Boolean
+    
+    languageID = Trim$(UCase(languageID))
+    
+    'Find the matching language ID
+    Dim i As Long
+    For i = 0 To UBound(m_AvailableLanguages)
+    
+        If m_AvailableLanguages(i).IsOfficial Then
+            
+            If Strings.StringsEqual(languageID, Trim$(m_AvailableLanguages(i).langID), True) Then
+                
+                'It's a match!  Fill the target object and exit
+                dstLanguageFileObject = m_AvailableLanguages(i)
+                GetPDLanguageFileObject = True
+                Exit Function
+            
+            End If
+        
+        End If
+    
+    Next i
+    
+    'If we made it here, no matching language was found
+    GetPDLanguageFileObject = False
+
+End Function
 
 'All text to be translated should be passed here first.  This sub will perform a few automatic checks of the string, and it will record what
 ' it finds.  For example, if the text has "..." at the end, this sub will remove that.  Its counterpart - postProcessText() - will re-apply
 ' any necessary changes to the translation.
-Private Sub preProcessText(ByRef srcString As String)
+Private Sub PreProcessText(ByRef srcString As String)
 
     '1) Trim the string
     srcString = Trim$(srcString)
@@ -514,13 +764,13 @@ Private Sub preProcessText(ByRef srcString As String)
     
 End Sub
 
-Private Sub postProcessText(ByRef srcString As String)
+Private Sub PostProcessText(ByRef srcString As String)
 
     '1) Trim the string
     srcString = Trim$(srcString)
     
     '2) If the string is now empty, return a blank string rather than attempting to reconstruct it
-    If srcString <> "" Then
+    If (Len(srcString) <> 0) Then
     
         '2) If the original had a trailing "...", restore it now
         If m_hasDotDotDot Then
@@ -538,89 +788,114 @@ Private Sub postProcessText(ByRef srcString As String)
 End Sub
 
 'Given the translated caption of a message or control, return the original translation from the active translation file
-Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As String
+Private Function GetOriginalTagFromTranslation(ByVal curCaption As String) As String
 
-    'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    preProcessText curCaption
-    
-    Dim phraseLocation As Long
-    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
-    
-    'Make sure a phrase tag was found
-    If phraseLocation > 0 Then
+    'If translations aren't active, return the requested caption as-is
+    If TranslationActive Then
+
+        'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
+        PreProcessText curCaption
         
-        'Retrieve the <translation> tag inside this phrase tag
-        curCaption = xmlEngine.getUniqueTag_String("original", "", phraseLocation)
-        postProcessText curCaption
-        getOriginalTagFromTranslation = curCaption
+        Dim phraseLocation As Long
+        phraseLocation = m_XMLEngine.GetLocationOfParentTag("phrase", "translation", curCaption)
+        
+        'Make sure a phrase tag was found
+        If (phraseLocation > 0) Then
+            
+            'Retrieve the <translation> tag inside this phrase tag
+            curCaption = m_XMLEngine.GetUniqueTag_String("original", vbNullString, phraseLocation)
+            
+        End If
+        
+        'Apply any relevant post-processing, then return the text
+        PostProcessText curCaption
+        GetOriginalTagFromTranslation = curCaption
         
     Else
-        getOriginalTagFromTranslation = ""
+        GetOriginalTagFromTranslation = curCaption
     End If
 
 End Function
 
 'Given the original caption of a message or control, return the matching translation from the active translation file
-Private Function getTranslationTagFromCaption(ByVal origCaption As String) As String
+Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As String
+
+    If (m_XMLEngine Is Nothing) Then
+        GetTranslationTagFromCaption = origCaption
+        Exit Function
+    End If
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    preProcessText origCaption
+    PreProcessText origCaption
     
     Dim phraseLocation As Long
-    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "original", origCaption)
+    phraseLocation = m_XMLEngine.GetLocationOfParentTag("phrase", "original", origCaption)
     
     'Make sure a phrase tag was found
-    If phraseLocation > 0 Then
+    If (phraseLocation > 0) Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = xmlEngine.getUniqueTag_String("translation", "", phraseLocation)
-        postProcessText origCaption
-        If origCaption <> "" Then
-            getTranslationTagFromCaption = origCaption
+        origCaption = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocation)
+        PostProcessText origCaption
+        If (Len(origCaption) <> 0) Then
+            GetTranslationTagFromCaption = origCaption
         Else
-            getTranslationTagFromCaption = ""
+            GetTranslationTagFromCaption = vbNullString
         End If
         
     Else
-        getTranslationTagFromCaption = ""
+        GetTranslationTagFromCaption = vbNullString
     End If
 
 End Function
 
 'Given a message (basically, a string), return the translation of said string.
 ' If a translation cannot be found, return the original string.
-Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
+Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
     Dim searchString As String, newString As String
-    If translationActive Then
+    If Me.TranslationActive() Then
+    
         searchString = srcMessage
-        newString = getTranslationTagFromCaption(searchString)
+        newString = GetTranslationTagFromCaption(searchString)
+    
+        'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
+        ' even if translation text is missing.
+        If (Len(newString) = 0) Then
+            
+            'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+            If (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
+                
+                newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
+                
+                If (Len(newString) = 0) Then
+                    newString = srcMessage
+                Else
+                
+                    'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
+                    newString = Replace$(newString, vbLf, vbCrLf, , , vbBinaryCompare)
+                
+                End If
+                
+            Else
+                newString = srcMessage
+            End If
+            
+        End If
+    
+    'If translations are not active, just use the existing string "as-is"
     Else
         newString = srcMessage
-    End If
-    
-    'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
-    ' even if translation text is missing.
-    If newString = "" Then
-        
-        'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
-            newString = getTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
-            If newString = "" Then newString = srcMessage
-        Else
-            newString = srcMessage
-        End If
-        
     End If
     
     'newString now contains the translated message (or the original text, if no translation was found).
     
     'The last step is to replace any optional parameters in the text
-    If Not IsMissing(ExtraText) Then
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
-            newString = Replace$(newString, "%" & i + 1, ExtraText(i))
+            newString = Replace$(newString, "%" & i + 1, ExtraText(i), , , vbBinaryCompare)
         Next i
     
     End If
@@ -630,36 +905,37 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
 End Function
 
-'Given a message (basically, a string), return the translation of said string.
-' If a translation cannot be found, return the original string.
-Public Function RestoreMessage(ByRef srcMessage As String) As String
+'Given a translated string, return the original English version of said string.
+'
+'Returns: ORIGINAL ENGLISH VERSION of string, if such a thing exists; ORIGINAL STRING otherwise.
+Friend Function RestoreMessage(ByRef srcMessage As String) As String
     
     Dim searchString As String, newString As String
     searchString = srcMessage
-    newString = getOriginalTagFromTranslation(searchString)
+    newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then RestoreMessage = newString Else RestoreMessage = srcMessage
+    If (Len(newString) <> 0) Then RestoreMessage = newString Else RestoreMessage = srcMessage
     
 End Function
 
 'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file
-Public Sub translateObjectCaption(ByRef srcObject As Control)
+Friend Sub TranslateObjectCaption(ByRef srcObject As Control)
 
     Dim searchString As String, newString As String
     
-    If translationActive Then
+    If TranslationActive Then
         searchString = srcObject.Caption
-        newString = getTranslationTagFromCaption(searchString)
+        newString = GetTranslationTagFromCaption(searchString)
     Else
         newString = srcObject.Caption
     End If
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then
+    If (Len(newString) <> 0) Then
         
-        'Check boxes, option buttons, and forms require a space at the front of their captions (it looks better)
-        If (TypeOf srcObject Is CheckBox) Or (TypeOf srcObject Is OptionButton) Or (TypeOf srcObject Is Form) Then
+        'Form captions look better with a prepended space
+        If (TypeOf srcObject Is Form) Then
             srcObject.Caption = " " & newString
         Else
             srcObject.Caption = newString
@@ -669,17 +945,17 @@ Public Sub translateObjectCaption(ByRef srcObject As Control)
 End Sub
 
 'Given an object with a guaranteed .Caption property (command button, label, etc.), replace a translated caption with the original
-Public Sub restoreObjectCaption(ByRef srcObject As Control)
+Friend Sub RestoreObjectCaption(ByRef srcObject As Control)
 
     Dim searchString As String, newString As String
     searchString = srcObject.Caption
-    newString = getOriginalTagFromTranslation(searchString)
+    newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then
+    If (Len(newString) <> 0) Then
         
-        'Check boxes, option buttons, and forms require a space at the front of their captions (it looks better)
-        If (TypeOf srcObject Is CheckBox) Or (TypeOf srcObject Is OptionButton) Or (TypeOf srcObject Is Form) Then
+        'Form captions look better with a prepended space
+        If (TypeOf srcObject Is Form) Then
             srcObject.Caption = " " & newString
         Else
             srcObject.Caption = newString
@@ -688,210 +964,62 @@ Public Sub restoreObjectCaption(ByRef srcObject As Control)
 
 End Sub
 
-'Restore a form caption
-Public Sub restoreFormCaption(ByRef srcForm As Form)
-
+'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
+Friend Sub UndoTranslations(ByRef srcForm As Form)
+    
+    'Unicode form captions require special help; see GetWindowCaptionW for details.
     Dim searchString As String, newString As String
-    searchString = srcForm.Caption
-    newString = getOriginalTagFromTranslation(searchString)
-    
-    'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = " " & newString
-    
-End Sub
-
-'Translate a form caption
-Public Sub translateFormCaption(ByRef srcForm As Form)
-
-    Dim searchString As String, newString As String
-    
-    If translationActive Then
+    If (g_WindowManager Is Nothing) Then
         searchString = srcForm.Caption
-        newString = getTranslationTagFromCaption(searchString)
     Else
-        newString = srcForm.Caption
+        searchString = g_WindowManager.GetWindowCaptionW(srcForm.hWnd)
     End If
     
+    newString = GetOriginalTagFromTranslation(searchString)
+    
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = " " & newString
+    If (Len(newString) <> 0) Then
+        If (Not g_WindowManager Is Nothing) Then
+            g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
+        Else
+            srcForm.Caption = " " & newString
+        End If
+    End If
     
 End Sub
 
-'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
-Public Sub undoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
-
-    'This function only has to be applied if a translation is currently active.  If it isn't, simply exit.
-    If Not translationActive Then Exit Sub
-
-    'Start by returning the form's original caption
-    restoreFormCaption srcForm
+'Apply any special handling to a given form.  At present, this only affects form captions; everything else is handled internally.
+Friend Sub ApplyTranslations(ByRef srcForm As Form)
     
-    Dim i As Long, strPos As Long
-    Dim tmpString As String
+    'For en-US locales, we can entirely skip this step
+    If Me.TranslationActive Then
     
-    'Iterate through every control on the form, and restore original captions as necessary
-    Dim eControl As Control
-    For Each eControl In srcForm.Controls
-    
-        'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
-            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.restoreObjectCaption eControl
+        'At present, all we have to do is translate the form's caption
+        If (Len(srcForm.Caption) <> 0) Then
+        
+            Dim searchString As String, newString As String
+            searchString = srcForm.Caption
+            newString = GetTranslationTagFromCaption(searchString)
             
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
-                        
-            'jcbutton controls have multiple tooltip entries, including a tooltip title
-            If (TypeOf eControl Is jcbutton) Then
-                If (Trim(eControl.TooltipTitle) <> "") Then eControl.TooltipTitle = RestoreMessage(eControl.TooltipTitle)
-                If (Trim(eControl.ToolTip) <> "") Then eControl.ToolTip = RestoreMessage(eControl.ToolTip)
+            'If a new string was found, apply it to the object's caption
+            If (Len(newString) <> 0) Then
+                If (Not g_WindowManager Is Nothing) Then
+                    g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
+                Else
+                    srcForm.Caption = " " & newString
+                End If
             End If
             
         End If
         
-        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
-        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
-        ' for the original text.
-        If (TypeOf eControl Is Menu) Then
-            tmpString = eControl.Caption
-            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
-            
-            'If this menu caption has a custom accelerator appended, strip it off
-            If strPos > 0 Then tmpString = Left(tmpString, strPos - 1)
-            eControl.Caption = RestoreMessage(tmpString)
-            
-        End If
-        
-        'If this is a list box or combo box, replacing the text is a bit more confusing
-        If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
-            
-            'Enumerate through each entry in the control
-            For i = 0 To eControl.ListCount - 1
-                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = RestoreMessage(eControl.List(i))
-            Next i
-            
-            'Restore the tooltip as well
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
-            
-        End If
-        
-        'Optionally, DoEvents can be called after each change.  This slows the translation process, but it allows external progress
-        ' bars to be automatically refreshed.
-        If useDoEvents Then DoEvents
+    End If
     
-    Next
-
 End Sub
 
-'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
-Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
+Private Sub Class_Initialize()
+    Set m_FSO = New pdFSO
+End Sub
 
-    If Not translationActive Then Exit Sub
-
-    'Dim localTimeTaken As Long
-    'localTimeTaken = Timer
-
-    'Start by translating the form's caption
-    translateFormCaption srcForm
-
-    'Iterate through every control on the form, and restore original captions as necessary
-    Dim i As Long, strPos As Long
-    Dim tmpString As String
-    Dim eControl As Control
-    
-    For Each eControl In srcForm.Controls
-    
-        'The goal is to apply translations to any object with a non-blank, non-numeric caption property
-        
-        'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
-            
-            'TESTING ONLY
-            'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
-            
-            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-                        
-            'jcbutton controls have multiple tooltip entries, including a tooltip title
-            If (TypeOf eControl Is jcbutton) Then
-                If (Trim(eControl.TooltipTitle) <> "") Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
-                If (Trim(eControl.ToolTip) <> "") Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
-            End If
-            
-        End If
-        
-        'Picture boxes and text boxes can have tooltips.  Translate those too.
-        If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-        End If
-        
-        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
-        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
-        ' for a translation.
-        If (TypeOf eControl Is Menu) Then
-            tmpString = eControl.Caption
-            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
-            
-            'If this menu caption has a custom accelerator appended, strip it off
-            If strPos > 0 Then tmpString = Left(tmpString, strPos - 1)
-                
-            eControl.Caption = TranslateMessage(tmpString)
-            
-        End If
-            
-        'If this is a list box or combo box, replacing the text is a bit more confusing
-        If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
-            
-            'Enumerate through each entry in the control
-            For i = 0 To eControl.ListCount - 1
-                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
-            Next i
-            
-            'Translate the tooltip as well
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-            
-        End If
-        
-        Dim curFontSize As Long
-        
-        'Labels receive a bit of extra attention.  Because translations can be longer than their original English text, a translated
-        ' label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until it fits.
-        If (TypeOf eControl Is Label) Then
-            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
-            
-                'Try shrinking the font size until an acceptable width is found
-                curFontSize = eControl.FontSize
-                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
-            
-                    curFontSize = curFontSize - 1
-                    eControl.FontSize = curFontSize
-                    eControl.Refresh
-            
-                Loop
-            
-            End If
-        End If
-        
-        'PhotoDemon's "smart" option and check box buttons receive the same autosize treatment
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
-            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) Then
-            
-                'Try shrinking the font size until an acceptable width is found
-                curFontSize = eControl.Font.Size
-                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
-                
-                    curFontSize = curFontSize - 1
-                    eControl.Font.Size = curFontSize
-                
-                Loop
-            
-            End If
-        End If
-        
-        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.
-        If useDoEvents Then DoEvents
-        
-    Next
-    
-    'If DISPLAY_TIMINGS Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
-    
+Private Sub Class_Terminate()
+    Set m_FSO = Nothing
 End Sub
