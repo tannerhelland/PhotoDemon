@@ -69,14 +69,14 @@ Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As I
 'Each hotkey stores several additional (and sometimes optional) parameters.  This spares us from writing specialized
 ' handling code for each individual keypress.
 Private Type pdHotkey
-    vKeyCode As Long
-    shiftState As ShiftConstants
-    HotKeyName As String
-    IsProcessorString As Boolean
-    requiresOpenImage As Boolean
-    showProcDialog As Boolean
-    procUndo As PD_UndoType
-    menuNameIfAny As String
+    AccKeyCode As Long
+    AccShiftState As ShiftConstants
+    AccKeyName As String
+    AccIsProcessorString As Boolean
+    AccRequiresOpenImage As Boolean
+    AccShowProcDialog As Boolean
+    AccProcUndo As PD_UndoType
+    AccMenuNameIfAny As String
 End Type
 
 'The list of hotkeys is stored in a basic array.  This makes it easy to set/retrieve values using built-in VB functions,
@@ -98,11 +98,16 @@ Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) 
 ' until this returns to FALSE*.  To ensure correct unhooking behavior, we use a timer failsafe.
 Private m_InHookNow As Boolean
 
-'Keyboard accelerators are troublesome to handle because they interfere with PD's dynamic hooking solution for canvas hotkeys.  To work around this
-' limitation, these module-level variables are set by the accelerator hook control any time a potential accelerator is intercepted.  The hook then
-' initiates the tmrAccelerator timer and immediately exits, which allows the hookproc to safely exit.  After the timer enforces a slight delay,
-' it then performs the actual accelerator evaluation.
+'Keyboard accelerators are troublesome to handle because they interfere with PD's dynamic hooking solution for
+' various canvas and control-related key events.  To work around this limitation, module-level variables are set
+' by the accelerator hook control any time a potential accelerator is intercepted.  The hook then initiates an
+' internal timer and immediately exits, which allows the keyboard hook proc to safely exit.  When the timer
+' finishes enforcing a slight delay, we then perform the actual accelerator evaluation.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Currency
+
+'To reduce the potential for double-fired keys, we track the last-fired accelerator key and shift state, and compare
+' it to the current one.  The current system keyboard delay must pass before we fire the same accelerator a second time.
+Private m_LastAccKeyCode As Long, m_LastAccShiftState As ShiftConstants
 
 'This control may be problematic on systems with system-wide custom key handlers (like some Intel systems, argh).
 ' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
@@ -138,7 +143,7 @@ Private Sub m_FireTimer_Timer()
     'If we're still inside the hookproc, wait another 16 ms before testing the keypress
     If (Not m_InHookNow) Then
         
-        'To prevent multiple events from firing too closely together, enforce a slight action delay before processing
+        'To prevent multiple events from firing too closely together, enforce a slight action delay (1/60 of a second) before processing
         If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) > 0.016) Then
         
             'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
@@ -217,6 +222,7 @@ Private Sub UserControl_Initialize()
     'You may want to consider straight-up disabling hotkeys inside the IDE
     If MainModule.IsProgramRunning() Then
         
+        'UI-related timers run at 60 fps
         Set m_ReleaseTimer = New pdTimer
         m_ReleaseTimer.Interval = 17
         
@@ -309,14 +315,14 @@ Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, Optional ByVa
     
     'Add the new entry
     With m_Hotkeys(m_NumOfHotkeys)
-        .vKeyCode = vKeyCode
-        .shiftState = Shift
-        .HotKeyName = HotKeyName
-        .menuNameIfAny = correspondingMenu
-        .IsProcessorString = IsProcessorString
-        .requiresOpenImage = requiresOpenImage
-        .showProcDialog = showProcDialog
-        .procUndo = procUndo
+        .AccKeyCode = vKeyCode
+        .AccShiftState = Shift
+        .AccKeyName = HotKeyName
+        .AccMenuNameIfAny = correspondingMenu
+        .AccIsProcessorString = IsProcessorString
+        .AccRequiresOpenImage = requiresOpenImage
+        .AccShowProcDialog = showProcDialog
+        .AccProcUndo = procUndo
     End With
     
     'Return this index, and increment the active hotkey count
@@ -334,7 +340,7 @@ Private Function GetAcceleratorIndex(ByVal vKeyCode As KeyCodeConstants, ByVal S
         
         Dim i As Long
         For i = 0 To m_NumOfHotkeys - 1
-            If (m_Hotkeys(i).vKeyCode = vKeyCode) And (m_Hotkeys(i).shiftState = Shift) Then
+            If (m_Hotkeys(i).AccKeyCode = vKeyCode) And (m_Hotkeys(i).AccShiftState = Shift) Then
                 GetAcceleratorIndex = i
                 Exit For
             End If
@@ -352,54 +358,54 @@ End Function
 
 Public Function IsProcessorString(ByVal hkIndex As Long) As Boolean
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsProcessorString = m_Hotkeys(hkIndex).IsProcessorString
+        IsProcessorString = m_Hotkeys(hkIndex).AccIsProcessorString
     End If
 End Function
 
 Public Function IsImageRequired(ByVal hkIndex As Long) As Boolean
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsImageRequired = m_Hotkeys(hkIndex).requiresOpenImage
+        IsImageRequired = m_Hotkeys(hkIndex).AccRequiresOpenImage
     End If
 End Function
 
 Public Function IsDialogDisplayed(ByVal hkIndex As Long) As Boolean
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        IsDialogDisplayed = m_Hotkeys(hkIndex).showProcDialog
+        IsDialogDisplayed = m_Hotkeys(hkIndex).AccShowProcDialog
     End If
 End Function
 
 Public Function HasMenu(ByVal hkIndex As Long) As Boolean
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        HasMenu = (Len(m_Hotkeys(hkIndex).menuNameIfAny) <> 0)
+        HasMenu = (Len(m_Hotkeys(hkIndex).AccMenuNameIfAny) <> 0)
     End If
 End Function
 
 Public Function HotKeyName(ByVal hkIndex As Long) As String
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        HotKeyName = m_Hotkeys(hkIndex).HotKeyName
+        HotKeyName = m_Hotkeys(hkIndex).AccKeyName
     End If
 End Function
 
 Public Function GetMenuName(ByVal hkIndex As Long) As String
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetMenuName = m_Hotkeys(hkIndex).menuNameIfAny
+        GetMenuName = m_Hotkeys(hkIndex).AccMenuNameIfAny
     End If
 End Function
 
 Public Function GetKeyCode(ByVal hkIndex As Long) As KeyCodeConstants
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetKeyCode = m_Hotkeys(hkIndex).vKeyCode
+        GetKeyCode = m_Hotkeys(hkIndex).AccKeyCode
     End If
 End Function
 
 Public Function GetShift(ByVal hkIndex As Long) As ShiftConstants
     If (hkIndex >= 0) And (hkIndex < m_NumOfHotkeys) Then
-        GetShift = m_Hotkeys(hkIndex).shiftState
+        GetShift = m_Hotkeys(hkIndex).AccShiftState
     End If
 End Function
 
 Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UndoType
-    ProcUndoValue = m_Hotkeys(hkIndex).procUndo
+    ProcUndoValue = m_Hotkeys(hkIndex).AccProcUndo
 End Function
 
 'VB exposes a UserControl.EventsFrozen property to check for IDE breaks, but in my testing it isn't reliable.
@@ -444,10 +450,6 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
         ' action is in the middle of execution)
         If (Not FormMain.Enabled) Then CanIRaiseAnAcceleratorEvent = False
         
-        'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
-        ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-        If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
-        
         'If the accelerator timer is already waiting to process an existing accelerator, exit
         If (m_FireTimer Is Nothing) Then
             CanIRaiseAnAcceleratorEvent = False
@@ -481,20 +483,55 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
         For i = 0 To m_NumOfHotkeys - 1
             
             'First, see if the keycode matches.
-            If (m_Hotkeys(i).vKeyCode = wParam) Then
+            If (m_Hotkeys(i).AccKeyCode = wParam) Then
                 
                 'Next, see if the Ctrl+Alt+Shift state matches
-                If (m_Hotkeys(i).shiftState = retShiftConstants) Then
+                If (m_Hotkeys(i).AccShiftState = retShiftConstants) Then
                     
-                    'We have a match!  Cache the index of the accelerator, note the current time,
-                    ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
-                    m_AcceleratorIndex = i
-                    VBHacks.GetHighResTime m_TimerAtAcceleratorPress
+                    'We have a match!
                     
-                    If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
+                    'We have one last check to perform before firing this accelerator.  Users with accessibility constraints
+                    ' (including elderly users) may press-and-hold accelerators long enough to trigger repeat occurrences.
+                    ' Accelerators should require full "release key and press again" behavior to avoid double-firing
+                    ' their associated events.
                     
-                    'Also, make sure to eat this keystroke
-                    HandleActualKeypress = True
+                    'Note that we only want to check this possibility if the current key and shift state matches the last-fired
+                    ' key and shift state combination.  (Many thanks to Jason Peter Brown for fixing this;
+                    ' see https://github.com/tannerhelland/PhotoDemon/issues/243 for details and related discussion.)
+                    Dim codeIsNotDuplicate As Boolean
+                    codeIsNotDuplicate = True
+                    
+                    'Make sure a previous key state has been cached
+                    If (m_LastAccKeyCode > 0) Then
+                    
+                        'See if this hotkey matches the last hotkey we fired.
+                        If (m_Hotkeys(i).AccKeyCode = m_LastAccKeyCode) And (m_Hotkeys(i).AccShiftState = m_LastAccShiftState) Then
+                            
+                            'This hotkey matches the last hotkey we fired.  Enforce a timed delay between events, using the
+                            ' system keyboard delay as our guide (250ms at minimum, 1s at maximum).
+                            If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then
+                                codeIsNotDuplicate = False
+                            End If
+                            
+                        End If
+                    End If
+                    
+                    'This hotkey is allowed.  Cache the index of the accelerator, note the current time, then initiate
+                    ' the accelerator evaluation timer.  It handles all further evaluation.
+                    If codeIsNotDuplicate Then
+                        
+                        m_AcceleratorIndex = i
+                        VBHacks.GetHighResTime m_TimerAtAcceleratorPress
+                        
+                        m_LastAccKeyCode = m_Hotkeys(i).AccKeyCode
+                        m_LastAccShiftState = m_Hotkeys(i).AccShiftState
+                        
+                        If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
+                        
+                        'Also, make sure to eat this keystroke
+                        HandleActualKeypress = True
+                        
+                    End If
                     
                     Exit For
                 
