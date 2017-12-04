@@ -432,7 +432,8 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
 End Function
 
 'Want to globally disable accelerators under certain circumstances?  Add code here to do it.
-Private Function CanIRaiseAnAcceleratorEvent() As Boolean
+Private Function CanIRaiseAnAcceleratorEvent(ByVal nCode As Long) As Boolean
+    Static lastnCode As Long
     
     'By default, assume we can raise accelerator events
     CanIRaiseAnAcceleratorEvent = True
@@ -446,7 +447,11 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
         
         'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
         ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-        If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
+        If nCode = lastnCode Then
+            If (VBHacks.GetTimerDifferenceNow(m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
+        Else
+            lastnCode = nCode
+        End If
         
         'If the accelerator timer is already waiting to process an existing accelerator, exit
         If (m_FireTimer Is Nothing) Then
@@ -531,7 +536,7 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
                 
                 'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
                 ' current state (e.g. it's not locked, in the middle of other processing, etc.)
-                If CanIRaiseAnAcceleratorEvent Then
+                If CanIRaiseAnAcceleratorEvent(nCode) Then
                     
                     msgEaten = HandleActualKeypress(nCode, wParam, lParam)
                     
