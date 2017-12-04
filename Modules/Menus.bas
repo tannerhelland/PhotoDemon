@@ -352,7 +352,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Black and white...", "adj_blackandwhite", 6, 13, 8
         AddMenuItem "Colorize...", "adj_colorize", 6, 13, 9
         AddMenuItem "Replace color...", "adj_replacecolor", 6, 13, 10
-        AddMenuItem "Sepia...", "adj_sepia", 6, 13, 11
+        AddMenuItem "Sepia", "adj_sepia", 6, 13, 11
     AddMenuItem "Histogram", "adj_histogram", 6, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 6, 14, 0
         AddMenuItem "-", "-", 6, 14, 1
