@@ -230,7 +230,7 @@ Public Function ForwardFocusToNewControl(ByRef sourceControl As Object, ByVal fo
     On Error GoTo ParentHasNoControls
 
     'If the user has deactivated tab support, or we are invisible/disabled, ignore this completely
-    If sourceControl.Extender.TabStop And sourceControl.Extender.Visible And sourceControl.Enabled Then
+    If (sourceControl.Extender.TabStop And sourceControl.Extender.Visible And sourceControl.Enabled) Then
         
         'Iterate through all controls in the container, looking for the next TabStop index
         Dim myIndex As Long
@@ -260,7 +260,7 @@ Public Function ForwardFocusToNewControl(ByRef sourceControl As Object, ByVal fo
             If IsControlFocusable(Ctl) Then
             
                 'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
-                If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
+                If (Ctl.TabStop And Ctl.Visible And Ctl.Enabled) Then
                         
                     If focusDirectionForward Then
                     
@@ -319,7 +319,7 @@ NextControlCheck:
                 If IsControlFocusable(Ctl) Then
                     
                     'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
-                    If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
+                    If (Ctl.TabStop And Ctl.Visible And Ctl.Enabled) Then
                             
                         If focusDirectionForward Then
                         
@@ -361,7 +361,7 @@ NextControlCheck2:
         On Error GoTo NoFocusRecipient
         
         'Ignore the second case completely, as tab should have no effect
-        If newIndex <> myIndex Then
+        If (newIndex <> myIndex) Then
             targetControl.SetFocus
         
 NoFocusRecipient:
@@ -384,7 +384,7 @@ End Function
 ' doesn't break by accidentally setting focus to something we shouldn't.
 Public Function IsControlFocusable(ByRef Ctl As Control) As Boolean
 
-    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is pdAccelerator) And Not (TypeOf Ctl Is pdDownload) Then
+    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is pdAccelerator) And Not (TypeOf Ctl Is pdDownload) Then
         IsControlFocusable = True
     Else
         IsControlFocusable = False

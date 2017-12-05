@@ -152,7 +152,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     Dim amtVal As Double, avgVal As Double
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
@@ -191,7 +191,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         
         'Now that we have a gaussian DIB created in blurDIB, we can point arrays toward it and the source DIB
         Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
+        Dim srcSA As SafeArray2D
         PrepSafeArray srcSA, m_blurDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -370,7 +370,7 @@ Private Sub cboStyle_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Colored pencil", , GetLocalParamString(), UNDO_LAYER
+    Process "Colored pencil", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
