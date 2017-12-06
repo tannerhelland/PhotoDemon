@@ -382,7 +382,7 @@ End Function
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
-Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_EVERYTHING)
+Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = vbNullString, Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_Everything)
 
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -408,7 +408,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     If (Not pdImages(g_CurrentImage) Is Nothing) And refreshScreen Then
         
-        If (associatedUndoType = UNDO_EVERYTHING) Or (associatedUndoType = UNDO_IMAGE) Or (associatedUndoType = UNDO_IMAGE_VECTORSAFE) Or (associatedUndoType = UNDO_IMAGEHEADER) Then
+        If (associatedUndoType = UNDO_Everything) Or (associatedUndoType = UNDO_Image) Or (associatedUndoType = UNDO_Image_VectorSafe) Or (associatedUndoType = UNDO_ImageHeader) Then
             
             ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
             
@@ -448,7 +448,7 @@ Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcIm
         
         'Remember: the imgViewport's intersection rect contains the intersection of the canvas and the image.
         ' If the target point lies inside this, it's over the image!
-        Dim intRect As RECTF
+        Dim intRect As RectF
         srcImage.ImgViewport.GetIntersectRectCanvas intRect
         IsMouseOverImage = PDMath.IsPointInRectF(x1, y1, intRect)
         
