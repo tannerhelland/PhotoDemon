@@ -271,7 +271,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             newLayerName = Layers.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
             
             'Create the new layer in the target image, and pass our created name to it
-            targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, CBool(imageHasMultiplePages)
+            targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, imageHasMultiplePages
             targetImage.UpdateSize
             
             If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
@@ -449,7 +449,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             #End If
             
-            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_Everything
+            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), vbNullString, UNDO_Everything
             
         End If
             
@@ -510,7 +510,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
-        CanvasManager.ActivatePDImage g_CurrentImage, "MRU entry finished loading"
+        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage"
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then

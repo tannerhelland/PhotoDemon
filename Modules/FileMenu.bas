@@ -473,6 +473,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
     Dim newImage As pdImage
     CanvasManager.GetDefaultPDImageObject newImage
+    newImage.imageID = CanvasManager.GetProvisionalImageID()
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
@@ -485,17 +486,17 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
     
         'Transparent (blank)
         Case 0
-            newBackColor = vbBlack
+            newBackColor = 0
             newBackAlpha = 0
             
         'Black
         Case 1
-            newBackColor = vbBlack
+            newBackColor = RGB(0, 0, 0)
             newBackAlpha = 255
         
         'White
         Case 2
-            newBackColor = vbWhite
+            newBackColor = RGB(255, 255, 255)
             newBackAlpha = 255
         
         'Custom color
@@ -514,57 +515,47 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         tmpDIB.SetInitialAlphaPremultiplicationState True
         newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
         
-        'Make the newly created layer the active layer
-        CanvasManager.AddImageToMasterCollection newImage
-        Layers.SetActiveLayerByID newLayerID, False, False
-        
         'Update the pdImage container to be the same size as its (newly created) base layer
         newImage.UpdateSize
         
         'Assign the requested DPI to the new image
         newImage.SetDPI newDPI, newDPI, False
         
-        'Disable viewport rendering, then reset the main viewport
-        ViewportEngine.DisableRendering
-        FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
-        
-        'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
+        'Reset any/all file format markers; at save-time, PD will run heuristics on the image's contents and suggest a
+        ' better format accordingly.
         newImage.SetOriginalFileFormat PDIF_UNKNOWN
         newImage.SetCurrentFileFormat PDIF_UNKNOWN
         newImage.SetOriginalColorDepth 32
         
-        'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
-        ' (PD detects this state if a pdImage object does not supply a location on disk)
+        'Similarly, because this image does not exist on the user's hard-drive, we want to force use of a full Save As dialog
+        ' in the future.  (PD detects this state if a pdImage object does not supply an on-disk location)
         newImage.ImgStorage.AddEntry "CurrentLocationOnDisk", ""
         newImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
         newImage.ImgStorage.AddEntry "OriginalFileExtension", ""
         newImage.SetSaveState False, pdSE_AnySave
         
-        'Make any interface changes related to the presence of a new image
-        Interface.NotifyImageAdded g_CurrentImage
+        'Add the finished image to the master collection, and ensure that the newly created layer is the active layer
+        CanvasManager.AddImageToMasterCollection newImage
+        Layers.SetActiveLayerByID newLayerID, False, False
         
-        'Just to be safe, update the color management profile of the current monitor
-        ColorManagement.CheckParentMonitor True
-        
-        'Fit the new image to the canvas viewport
-        CanvasManager.FitImageToViewport True
-        
-        'Viewport rendering may have been reset by this point (by the FitImageToViewport sub, among others), so disable it again, then
-        ' update the zoom combo box to match the zoom assigned by the window-fit function.
-        ViewportEngine.DisableRendering
-        FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.GetZoom
-        
-        'Now that the image's window has been fully sized and moved around, use ViewportEngine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
-        ViewportEngine.EnableRendering
-        ViewportEngine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
-        
-        'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-        FormMain.mainCanvas(0).UpdateCanvasLayout
+        'Use the Image Importer engine to prepare a bunch of default viewport settings for us.  (Because this new image
+        ' doesn't exist on-disk yet, note that we pass a null-string for the filename, and we explicitly request that
+        ' the engine does *not* add this entry to the Recent Files list yet.)
+        ImageImporter.ApplyPostLoadUIChanges vbNullString, newImage, False
         
         'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
         ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
         ' manual save (e.g. AutoSave).
-        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_Everything
+        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), vbNullString, UNDO_Everything
+        
+        'Synchronize all interface elements to match the newly loaded image(s), including various layer-specific settings
+        Interface.SyncInterfaceToCurrentImage
+        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        
+        'Unlock the program's UI and activate the finished image
+        Processor.MarkProgramBusyState False, True
+        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage"
         
         'Report success!
         CreateNewImage = True
