@@ -392,8 +392,8 @@ HelpContextID="0"
 Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=7
-MinorVer=0
-RevisionVer=1
+MinorVer=1
+RevisionVer=9
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Copyright 2000-2017 Tanner Helland -  photodemon.org"
@@ -401,7 +401,7 @@ VersionCompanyName="photodemon.org"
 VersionFileDescription="PhotoDemon Photo Editor"
 VersionLegalCopyright="Copyright 2000-2017 by Tanner Helland and Contributors"
 VersionProductName="PhotoDemon Photo Editor"
-CondComp="DEBUGMODE = 0"
+CondComp="DEBUGMODE = 1"
 CompilationType=0
 OptimizationType=0
 FavorPentiumPro(tm)=-1

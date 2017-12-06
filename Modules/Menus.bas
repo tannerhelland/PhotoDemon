@@ -352,7 +352,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Black and white...", "adj_blackandwhite", 6, 13, 8
         AddMenuItem "Colorize...", "adj_colorize", 6, 13, 9
         AddMenuItem "Replace color...", "adj_replacecolor", 6, 13, 10
-        AddMenuItem "Sepia...", "adj_sepia", 6, 13, 11
+        AddMenuItem "Sepia", "adj_sepia", 6, 13, 11
     AddMenuItem "Histogram", "adj_histogram", 6, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 6, 14, 0
         AddMenuItem "-", "-", 6, 14, 1
@@ -854,7 +854,10 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
         
         .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cut", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_Layer
+        
+        'This "cut from layer" hotkey combination is used as "crop to selection" in other software; as such,
+        ' I am suspending this instance for now.
+        '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_Layer
         .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copy", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", "edit_copylayer", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
@@ -880,7 +883,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_Image
         .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, True, UNDO_ImageHeader
-        '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, UNDO_IMAGE
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", "image_crop", True, True, False, UNDO_Image
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", "image_trim", True, True, False, UNDO_ImageHeader
         
             'Image -> Rotate submenu
