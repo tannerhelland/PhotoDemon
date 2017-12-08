@@ -125,8 +125,11 @@ Private WithEvents m_ReleaseTimer As pdTimer
 Attribute m_ReleaseTimer.VB_VarHelpID = -1
 Private WithEvents m_FireTimer As pdTimer
 Attribute m_FireTimer.VB_VarHelpID = -1
-Private m_AcceleratorQueue As VBA.Collection ' Active queue of accelerators for which events are currently to be raised
-Private m_AcceleratorAccumulator As VBA.Collection ' Queue of accelerators which are accumulating while the active queue is being processed
+
+'Thanks to a patch by jpbro (https://github.com/tannerhelland/PhotoDemon/pull/248), PD no longer drops accelerators
+' that are triggered in quick succession.  Instead, it queues them and fires them in turn.
+Private m_AcceleratorQueue As VBA.Collection        'Active queue of accelerators for which events are currently to be raised
+Private m_AcceleratorAccumulator As VBA.Collection  'Queue of accelerators which are accumulating while the active queue is being processed
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Accelerator
@@ -148,16 +151,19 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Private Sub m_FireTimer_Timer()
+    
     Dim i As Long
     
-    'If we're still inside the hookproc, wait another 16 ms before testing the keypress
+    'If we're still inside the hookproc, wait another 16 ms before testing the keypress.
     If (Not m_InHookNow) Then
-         If Not CanIRaiseAnAcceleratorEvent(True) Then
-            'We are not currently allowed to raise any events, so short-circuit
-            ' If the program is shutting down also stop the timer - we won't ever need to raise any of these events again
-            If g_ProgramShuttingDown Then m_FireTimer.StopTimer
+    
+         If (Not CanIRaiseAnAcceleratorEvent(True)) Then
             
+            'We are not currently allowed to raise any events, so short-circuit
+            ' (If the program is shutting down, forcibly stop the timer so we don't raise hotkey events again)
+            If g_ProgramShuttingDown Then m_FireTimer.StopTimer
             Exit Sub
+            
          End If
         
          'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
@@ -165,8 +171,9 @@ Private Sub m_FireTimer_Timer()
          m_InFireTimerNow = True ' Notify other methods that we are busy in the timer
          m_FireTimer.StopTimer
          
-         ' Process accelerators in the active queue in FIFO order
+         'Process accelerators in the active queue in FIFO order
          For i = 1 To m_AcceleratorQueue.Count
+         
              m_AcceleratorIndex = m_AcceleratorQueue.Item(i)
          
              If (m_AcceleratorIndex <> -1) Then
@@ -179,17 +186,17 @@ Private Sub m_FireTimer_Timer()
                 m_AcceleratorIndex = -1
              
              End If
+             
          Next i
          
-         ' Swap the active queue for the accumuator queue
-         ' And empty the old accumulator queue object
+         'Swap the active queue for the accumuator queue and empty the old accumulator queue object
          Set m_AcceleratorQueue = m_AcceleratorAccumulator
          Set m_AcceleratorAccumulator = New VBA.Collection
          
-         ' If we have accumulated accelerators that are now active, restart the timer
-         If m_AcceleratorQueue.Count > 0 Then m_FireTimer.StartTimer
+         'If we have accumulated accelerators that are now active, restart the timer
+         If (m_AcceleratorQueue.Count > 0) Then m_FireTimer.StartTimer
          
-         m_InFireTimerNow = False   ' Clear the "busy in timer" flag
+         m_InFireTimerNow = False   'Clear the "busy in timer" flag
         
     End If
     
@@ -460,9 +467,9 @@ EventStateCheckError:
     
 End Function
 
+'Returns: TRUE if hotkeys are allowed to accumulate.
 Private Function CanIAccumulateAnAccelerator() As Boolean
-   ' Return True if we are in a state to allow accelerators to accumulate
-   CanIAccumulateAnAccelerator = (FormMain.hWnd = GetActiveWindow)
+    CanIAccumulateAnAccelerator = (Not g_ModalDialogActive)
 End Function
 
 'Want to globally disable accelerators under certain circumstances?  Add code here to do it.
@@ -471,37 +478,40 @@ Private Function CanIRaiseAnAcceleratorEvent(Optional ByVal ignoreActiveTimer As
     'By default, assume we can raise accelerator events
     CanIRaiseAnAcceleratorEvent = True
     
-    'Perform some very basic checks
+    'I'm not entirely sure how VB's message pumps work when WM_TIMER events hit disabled controls, so just to be safe,
+    ' let's be paranoid and ensure this control hasn't been externally deactivated.
     If (Me.Enabled And (m_NumOfHotkeys > 0)) Then
         
         'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
         ' action is in the middle of execution)
         If (Not FormMain.Enabled) Then CanIRaiseAnAcceleratorEvent = False
         
-        'If the accelerator timer is already waiting to process an existing accelerator, exit
+        'If the accelerator timer is already waiting to process an existing accelerator, exit.  (We'll get a chance to
+        ' try again on the next timer event.)
         If (m_FireTimer Is Nothing) Then
             CanIRaiseAnAcceleratorEvent = False
         Else
-            If Not ignoreActiveTimer Then
-               If m_FireTimer.IsActive Then CanIRaiseAnAcceleratorEvent = False
-            End If
+            
+            'If the timer is active, let it finish its current task before we attempt to raise another accelerator
+            If (Not ignoreActiveTimer) And m_FireTimer.IsActive Then CanIRaiseAnAcceleratorEvent = False
             If m_InFireTimerNow Then CanIRaiseAnAcceleratorEvent = False
+            
         End If
         
-        'If PD is shutting down, ignore accelerators
+        'If PD is shutting down, we obviously want to ignore accelerators entirely
         If g_ProgramShuttingDown Then CanIRaiseAnAcceleratorEvent = False
-        
+    
+    'If this control is disabled or no hotkeys have been loaded (a potential possibility in future builds, when the
+    ' user will have control over custom hotkeys), save some CPU cycles and prevent further processing.
     Else
         CanIRaiseAnAcceleratorEvent = False
     End If
-        
-    'By this point, the function is set to the proper pass/fail state
     
 End Function
 
 Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal p_AccumulateOnly As Boolean) As Boolean
     
-    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+    'Translate modifier states (shift, control, alt/menu) to their masked VB equivalent
     Dim retShiftConstants As ShiftConstants
     If m_CtrlDown Then retShiftConstants = retShiftConstants Or vbCtrlMask
     If m_AltDown Then retShiftConstants = retShiftConstants Or vbAltMask
@@ -573,8 +583,6 @@ Private Sub UpdateCtrlAltShiftState(ByVal wParam As Long, ByVal lParam As Long)
         m_ShiftDown = (lParam >= 0)
     End If
     
-    Debug.Print m_CtrlDown, m_AltDown, m_ShiftDown, Hex(lParam)
-
 End Sub
 
 Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -600,14 +608,14 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
             If (lParam >= 0) Then
             
                 'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
-                ' current state (e.g. it's not locked, in the middle of other processing, etc.)
+                ' current state (e.g. if a modal dialog is active, we don't want to raise events)
                 If CanIAccumulateAnAccelerator Then
                     msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or Not CanIRaiseAnAcceleratorEvent)
                 End If
                 
             End If  'Key is not in a transitionary state
             
-        End If
+        End If  'nCode is not negative
         
     End If  'Events are not frozen
     
