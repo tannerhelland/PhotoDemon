@@ -582,11 +582,11 @@ Begin VB.Form FormMain
          Index           =   14
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image..."
+         Caption         =   "Merge visible layers"
          Index           =   15
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge visible layers"
+         Caption         =   "Flatten image..."
          Index           =   16
       End
    End
@@ -2073,13 +2073,13 @@ Private Sub MnuLayer_Click(Index As Integer)
         '<separator>
         Case 14
         
-        'Flatten layers
-        Case 15
-            Process "Flatten image", True
-        
         'Merge visible layers
-        Case 16
+        Case 15
             Process "Merge visible layers", , , UNDO_Image
+        
+        'Flatten layers
+        Case 16
+            Process "Flatten image", True
         
     End Select
 
