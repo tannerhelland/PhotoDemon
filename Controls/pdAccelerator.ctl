@@ -31,10 +31,11 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon
-'Last updated: 09/February/17
-'Last update: migrate to safer comctl32 subclassing technique
+'Last updated: 08/December/17
+'Last update by: jpbro (https://github.com/jpbro)
+'Last update: queue rapidly fired hotkeys instead of just dropping them
 '
 'For many years, PD used vbAccelerator's "hook control" to handle program hotkeys:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
@@ -63,9 +64,6 @@ Option Explicit
 'This control only raises a single "Accelerator" event, and it only does it when one (or more) keys in the combination are released
 Public Event Accelerator(ByVal acceleratorIndex As Long)
 
-'Key state can be retrieved directly from the hook messages, but it's actually easier to dynamically query the API
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 ' GetActiveWindow is used to determine if our main for is the active window in order to allow/prevent accelerator key accumulation
 Private Declare Function GetActiveWindow Lib "user32.dll" () As Long
 
@@ -92,6 +90,11 @@ Private Const INITIAL_HOTKEY_LIST_SIZE As Long = 16&
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
 Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
+
+'New solution!  Virtual-key tracking is a bad idea, because we want to know key state at the time the hotkey was pressed
+' (not what it is right now).  Solving this is as easy as tracking key up/down state for Ctrl/Alt/Shift presses and
+' storing the results locally.
+Private m_CtrlDown As Boolean, m_AltDown As Boolean, m_ShiftDown As Boolean
 
 'If the control's hook proc is active and primed, this will be set to TRUE.  (HookID is the actual Windows hook handle.)
 Private m_HookingActive As Boolean, m_HookID As Long
@@ -457,12 +460,6 @@ EventStateCheckError:
     
 End Function
 
-'Note that the vKey constant taken by this function is a *virtual key mapping*.  This may or may not map to a
-' standard VB key constant, so use care when calling it.
-Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000&
-End Function
-
 Private Function CanIAccumulateAnAccelerator() As Boolean
    ' Return True if we are in a state to allow accelerators to accumulate
    CanIAccumulateAnAccelerator = (FormMain.hWnd = GetActiveWindow)
@@ -503,11 +500,12 @@ Private Function CanIRaiseAnAcceleratorEvent(Optional ByVal ignoreActiveTimer As
 End Function
 
 Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal p_AccumulateOnly As Boolean) As Boolean
+    
     'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
     Dim retShiftConstants As ShiftConstants
-    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+    If m_CtrlDown Then retShiftConstants = retShiftConstants Or vbCtrlMask
+    If m_AltDown Then retShiftConstants = retShiftConstants Or vbAltMask
+    If m_ShiftDown Then retShiftConstants = retShiftConstants Or vbShiftMask
     
     'Search our accelerator database for a match to the current keycode
     If (m_NumOfHotkeys > 0) Then
@@ -520,6 +518,7 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
                 
                 'Next, see if the Ctrl+Alt+Shift state matches
                 If (m_Hotkeys(i).AccShiftState = retShiftConstants) Then
+                
                     'We have a match!
                     
                     'We have one last check to perform before firing this accelerator.  Users with accessibility constraints
@@ -561,9 +560,25 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
         Next i
     
     End If  'Hotkey collection exists
+    
 End Function
 
+Private Sub UpdateCtrlAltShiftState(ByVal wParam As Long, ByVal lParam As Long)
+
+    If (wParam = VK_CONTROL) Then
+        m_CtrlDown = (lParam >= 0)
+    ElseIf (wParam = VK_ALT) Then
+        m_AltDown = (lParam >= 0)
+    ElseIf (wParam = VK_SHIFT) Then
+        m_ShiftDown = (lParam >= 0)
+    End If
+    
+    Debug.Print m_CtrlDown, m_AltDown, m_ShiftDown, Hex(lParam)
+
+End Sub
+
 Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
     m_InHookNow = True
     
     On Error GoTo HookProcError
@@ -576,17 +591,24 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
         If (nCode >= 0) Then
+            
+            'Before processing any further keys, update our Ctrl/Alt/Shift tracking
+            UpdateCtrlAltShiftState wParam, lParam
+            
             'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
             ' being released.  To improve responsiveness, we fire on key press.
-            
             If (lParam >= 0) Then
+            
                 'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
                 ' current state (e.g. it's not locked, in the middle of other processing, etc.)
                 If CanIAccumulateAnAccelerator Then
                     msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or Not CanIRaiseAnAcceleratorEvent)
-                End If  'PD allows accelerators in its current state
+                End If
+                
             End If  'Key is not in a transitionary state
+            
         End If
+        
     End If  'Events are not frozen
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
