@@ -149,6 +149,13 @@ Private Sub m_FireTimer_Timer()
     
     'If we're still inside the hookproc, wait another 16 ms before testing the keypress
     If (Not m_InHookNow) Then
+         If Not CanIRaiseAnAcceleratorEvent(True) Then
+            'We are not currently allowed to raise any events, so short-circuit
+            ' If the program is shutting down also stop the timer - we won't ever need to raise any of these events again
+            If g_ProgramShuttingDown Then m_FireTimer.StopTimer
+            
+            Exit Sub
+         End If
         
          'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
          ' current sub will still complete its actions.
@@ -178,6 +185,7 @@ Private Sub m_FireTimer_Timer()
          
          ' If we have accumulated accelerators that are now active, restart the timer
          If m_AcceleratorQueue.Count > 0 Then m_FireTimer.StartTimer
+         
          m_InFireTimerNow = False   ' Clear the "busy in timer" flag
         
     End If
@@ -461,8 +469,8 @@ Private Function CanIAccumulateAnAccelerator() As Boolean
 End Function
 
 'Want to globally disable accelerators under certain circumstances?  Add code here to do it.
-Private Function CanIRaiseAnAcceleratorEvent() As Boolean
-    
+Private Function CanIRaiseAnAcceleratorEvent(Optional ByVal ignoreActiveTimer As Boolean = False) As Boolean
+   
     'By default, assume we can raise accelerator events
     CanIRaiseAnAcceleratorEvent = True
     
@@ -477,7 +485,9 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
         If (m_FireTimer Is Nothing) Then
             CanIRaiseAnAcceleratorEvent = False
         Else
-            If m_FireTimer.IsActive Then CanIRaiseAnAcceleratorEvent = False
+            If Not ignoreActiveTimer Then
+               If m_FireTimer.IsActive Then CanIRaiseAnAcceleratorEvent = False
+            End If
             If m_InFireTimerNow Then CanIRaiseAnAcceleratorEvent = False
         End If
         
@@ -510,7 +520,6 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
                 
                 'Next, see if the Ctrl+Alt+Shift state matches
                 If (m_Hotkeys(i).AccShiftState = retShiftConstants) Then
-                    
                     'We have a match!
                     
                     'We have one last check to perform before firing this accelerator.  Users with accessibility constraints
@@ -527,12 +536,11 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
                     VBHacks.GetHighResTime m_TimerAtAcceleratorPress
                     
                     If p_AccumulateOnly Then
-                        ' Add to accelerator accumulator, it will be processed later.
+                        'Add to accelerator accumulator, it will be processed later.
                         m_AcceleratorAccumulator.Add m_AcceleratorIndex
-                        Debug.Print "Accumulate " & wParam
-                    
+                        
                     Else
-                        ' Add to the live accelerator processing queue
+                        'Add to the live accelerator processing queue
                         m_AcceleratorQueue.Add m_AcceleratorIndex
                      
                        If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
@@ -567,17 +575,18 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
         
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
-        '
-        'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
-        ' being released.  To improve responsiveness, we fire on key press.
-        If (lParam >= 0) Then
+        If (nCode >= 0) Then
+            'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
+            ' being released.  To improve responsiveness, we fire on key press.
             
-            'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
-            ' current state (e.g. it's not locked, in the middle of other processing, etc.)
-            If CanIAccumulateAnAccelerator Then
-                msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or Not CanIRaiseAnAcceleratorEvent)
-            End If  'PD allows accelerators in its current state
-        End If  'Key is not in a transitionary state
+            If (lParam >= 0) Then
+                'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
+                ' current state (e.g. it's not locked, in the middle of other processing, etc.)
+                If CanIAccumulateAnAccelerator Then
+                    msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or Not CanIRaiseAnAcceleratorEvent)
+                End If  'PD allows accelerators in its current state
+            End If  'Key is not in a transitionary state
+        End If
     End If  'Events are not frozen
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
