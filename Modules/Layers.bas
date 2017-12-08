@@ -801,10 +801,10 @@ End Sub
 Public Sub MergeVisibleLayers()
     
     'If there's only one layer, this function should not be called - but just in case, exit in advance.
-    If pdImages(g_CurrentImage).GetNumOfLayers = 1 Then Exit Sub
+    If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then Exit Sub
     
     'Similarly, if there's only one *visible* layer, this function should not be called - but just in case, exit in advance.
-    If pdImages(g_CurrentImage).GetNumOfVisibleLayers = 1 Then Exit Sub
+    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers = 1) Then Exit Sub
     
     'By this point, we can assume there are at least two visible layers in the image.  Rather than deal with the messiness
     ' of finding the lowest base layer and gradually merging everything into it, we're going to just create a new blank
@@ -822,6 +822,7 @@ Public Sub MergeVisibleLayers()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
+    tmpDIB.SetAlphaPremultiplication True
     pdImages(g_CurrentImage).GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
