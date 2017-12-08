@@ -284,9 +284,9 @@ Public Sub InitializeMenus()
         AddMenuItem "Current layer", "layer_rasterizecurrent", 4, 13, 0
         AddMenuItem "All layers", "layer_rasterizeall", 4, 13, 1
         AddMenuItem "-", "-", 4, 14
-    AddMenuItem "Flatten image...", "layer_flatten", 4, 15, , "layer_flatten"
-    AddMenuItem "Merge visible layers", "layer_mergevisible", 4, 16, , "generic_visible"
-   
+    AddMenuItem "Merge visible layers", "layer_mergevisible", 4, 15, , "generic_visible"
+    AddMenuItem "Flatten image...", "layer_flatten", 4, 16, , "layer_flatten"
+    
    
     'Select Menu
     AddMenuItem "&Select", "select_top", 5
@@ -892,8 +892,8 @@ Public Sub InitializeAllHotkeys()
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
-        '(none yet)
-        
+        .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "layer_mergevisible", True, True, False, UNDO_Image
+        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "layer_flatten", True, True, True, UNDO_Nothing
         
         'Select Menu
         .AddAccelerator vbKeyA, vbCtrlMask, "Select all", "select_all", True, True, False, UNDO_Selection
