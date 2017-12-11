@@ -573,22 +573,26 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
     
 End Function
 
-Private Sub UpdateCtrlAltShiftState(ByVal wParam As Long, ByVal lParam As Long)
-
+Private Function UpdateCtrlAltShiftState(ByVal wParam As Long, ByVal lParam As Long) As Boolean
+    
+    UpdateCtrlAltShiftState = False
+    
     If (wParam = VK_CONTROL) Then
         m_CtrlDown = (lParam >= 0)
+        UpdateCtrlAltShiftState = True
     ElseIf (wParam = VK_ALT) Then
         m_AltDown = (lParam >= 0)
+        UpdateCtrlAltShiftState = True
     ElseIf (wParam = VK_SHIFT) Then
         m_ShiftDown = (lParam >= 0)
+        UpdateCtrlAltShiftState = True
     End If
     
-End Sub
+End Function
 
 Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     m_InHookNow = True
-    
     On Error GoTo HookProcError
     
     Dim msgEaten As Boolean: msgEaten = False
@@ -597,23 +601,39 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
     If (Not AreEventsFrozen) Then
         
         'MSDN states that negative codes must be passed to the next hook, without processing
-        ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
-        If (nCode >= 0) Then
+        ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx).  Similarly, hooks passed with the code "3"
+        ' mean that this is not an actual key event, but one triggered by a PeekMessage() call with PM_NOREMOVE specified.
+        ' We can ignore such peeks and only deal with actual key events.
+        If (nCode = 0) Then
             
-            'Before processing any further keys, update our Ctrl/Alt/Shift tracking
-            UpdateCtrlAltShiftState wParam, lParam
-            
-            'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
-            ' being released.  To improve responsiveness, we fire on key press.
-            If (lParam >= 0) Then
-            
-                'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
-                ' current state (e.g. if a modal dialog is active, we don't want to raise events)
-                If CanIAccumulateAnAccelerator Then
-                    msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or Not CanIRaiseAnAcceleratorEvent)
-                End If
+            'Key hook callbacks can be raised under a variety of conditions.  To ensure we only track actual "key down"
+            ' or "key up" events, let's compare transition and previous states.  Because hotkeys are (by design) not
+            ' triggered by hold-to-repeat behavior, we only want to deal with key events that are full transitions from
+            ' "Unpressed" to "Pressed" or vice-versa.  (The byte masks here all come from MSDN - check the link above
+            ' for details!)
+            If ((lParam >= 0) And ((lParam And &H40000000) = 0)) Or ((lParam < 0) And ((lParam And &H40000000) <> 0)) Then
                 
-            End If  'Key is not in a transitionary state
+                'We now want to check two things simultaneously.  First, we want to update Ctrl/Alt/Shift key state tracking.
+                ' (This is handled by a separate function.)  If something other than Ctrl/Alt/Shift was pressed, *and* this is
+                ' a keydown event, let's process the key for hotkey matches.
+                
+                '(How do we detect keydown vs keyup events?  The first bit (e.g. "bit 31" per MSDN) of lParam defines key state:
+                ' 0 means the key is being pressed, 1 means the key is being released.  Note the similarity to the transition
+                ' check, above.)
+                If (lParam >= 0) And (Not UpdateCtrlAltShiftState(wParam, lParam)) Then
+                
+                    'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
+                    ' current state (e.g. if a modal dialog is active, we don't want to raise events)
+                    If CanIAccumulateAnAccelerator Then
+                    
+                        'All checks have passed.  We'll handle the actual keycode evaluation matching in another function.
+                        msgEaten = HandleActualKeypress(nCode, wParam, lParam, m_InFireTimerNow Or (Not CanIRaiseAnAcceleratorEvent))
+                        
+                    End If
+                    
+                End If  'Key is not in a transitionary state
+                
+            End If  'Key other than Ctrl/Alt/Shift was pressed
             
         End If  'nCode is not negative
         
@@ -621,7 +641,7 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
     If (Not msgEaten) Then
-        KeyboardHookProcAccelerator = CallNextHookEx(0&, nCode, wParam, lParam)
+        KeyboardHookProcAccelerator = CallNextHookEx(0, nCode, wParam, lParam)
     Else
         KeyboardHookProcAccelerator = 1
     End If
@@ -632,7 +652,7 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
 'On errors, we simply want to bail, as there's little we can safely do to address an error from inside the hooking procedure
 HookProcError:
     
-    KeyboardHookProcAccelerator = CallNextHookEx(0&, nCode, wParam, lParam)
+    KeyboardHookProcAccelerator = CallNextHookEx(0, nCode, wParam, lParam)
     m_InHookNow = False
     
 End Function
