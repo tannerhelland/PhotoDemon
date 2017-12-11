@@ -44,6 +44,7 @@ GioRock (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResu
 Hans Nolte (https://github.com/hansnolte)
 Helmut Kuerbiss
 Jason Bullen (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
+Jason Peter Brown (https://github.com/jpbro)
 Jerry Huxtable (http://www.jhlabs.com/ip/filters/index.html)
 Johannes Nendel
 Joseph Greco
@@ -64,8 +65,10 @@ Portablefreeware.com (http://www.portablefreeware.com/forums/viewtopic.php?t=216
 Raj Chaudhuri (https://github.com/rajch)
 Robert Rayment (http://rrprogs.com/)
 Roy K
+Shishi
 Steve McMahon (http://www.vbaccelerator.com/home/VB/index.asp)
 Tom Loos (http://www.designedbyinstinct.com)
+Vatterspun (https://github.com/vatterspun)
 Vladimir Vissoultchev (https://github.com/wqweto)
 Will Stampfer (https://github.com/epmatsw)
 Zhu JinYong (http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=55292624&lngWId=1)
