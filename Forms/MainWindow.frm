@@ -3485,12 +3485,11 @@ Private Sub MnuHelp_Click(Index As Integer)
         Case 2
             Message "Checking for software updates..."
             
-            'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
+            'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
+            Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
             
-        
         'Submit feedback
         Case 3
             Web.OpenURL "http://photodemon.org/about/contact/"

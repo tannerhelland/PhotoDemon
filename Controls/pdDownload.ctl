@@ -55,9 +55,7 @@ Attribute VB_Exposed = False
 'Many thanks in particular to that last link; Kroc Camen's bluDownload control served PD very well prior to pdDownload,
 ' and it would be a great choice if you need a simple, standalone single-file download UC.
 '
-'The goal with this control is simple: to provide silent background downloads of relevant PD files.  At present, it is
-' primarily focused on update files (including language updates), but in the future it will likely be expanded to cover
-' other items, including patches for PD itself.
+'The goal with this control is simple: to provide silent background downloads of PD update files.
 '
 'Still TODO:
 ' - Implement a "try again later" flag.  This would retry any failed downloads within [x] seconds, using a timer to track [x].
@@ -195,7 +193,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(AsyncProp.propertyName)
     
-    If itemIndex >= 0 Then
+    If (itemIndex >= 0) Then
     
         'Check the download state.  If the download was incomplete, we might be able to detect it here, rather than
         ' having to rely on the error handler.
@@ -401,7 +399,7 @@ Public Function CopyDownloadArray(ByVal itemKey As String, ByRef targetBytes() A
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
     
-    If itemKey >= 0 Then
+    If (itemKey >= 0) Then
     
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)
@@ -430,7 +428,7 @@ Public Sub FreeResourcesForItem(ByVal itemKey As String)
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
     
-    If itemIndex >= 0 Then
+    If (itemIndex >= 0) Then
     
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)
@@ -453,7 +451,7 @@ Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
     
     'Cancel any downloads currently in progress
     Dim i As Long
-    If m_NumOfFiles > 0 Then
+    If (m_NumOfFiles > 0) Then
     
         For i = 0 To m_NumOfFiles - 1
         
@@ -519,10 +517,12 @@ End Sub
 Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
 
     'Make sure this key is unique in the collection
-    If DoesKeyExist(downloadKey) >= 0 Then
+    If (DoesKeyExist(downloadKey) >= 0) Then
     
         'Duplicate keys are not allowed.
-        Debug.Print "WARNING: duplicate download key requested in pdDownload addToQueue.  Invalid usage; download abandoned."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload addToQueue.  Invalid usage; download abandoned."
+        #End If
         AddToQueue = False
         Exit Function
     
@@ -548,7 +548,7 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
         
     'Update the size of the directory, as necessary
     m_NumOfFiles = m_NumOfFiles + 1
-    If m_NumOfFiles > UBound(m_DownloadList) Then ReDim Preserve m_DownloadList(0 To m_NumOfFiles * 2 - 1) As pdDownloadEntry
+    If (m_NumOfFiles > UBound(m_DownloadList)) Then ReDim Preserve m_DownloadList(0 To m_NumOfFiles * 2 - 1) As pdDownloadEntry
     
     'If the user requested an immediate download, initiate it now and mirror that return value to addToQueue
     If m_DownloadsAllowed Or startDownloadImmediately Then
@@ -576,24 +576,22 @@ End Function
 ' in the current collection.  Like other places in PD, binary compare mode is enforced.  Plan accordingly.
 '
 'Returns: index of found key (>= 0) if key exists.  -1 if it does not exist.
-Public Function DoesKeyExist(ByVal downloadKey As String) As Long
-
-    If m_NumOfFiles > 0 Then
+Public Function DoesKeyExist(ByRef downloadKey As String) As Long
+    
+    DoesKeyExist = -1
+    
+    If (m_NumOfFiles > 0) Then
         
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
             If Strings.StringsEqual(downloadKey, m_DownloadList(i).Key, False) Then
                 DoesKeyExist = i
-                Exit Function
+                Exit For
             End If
         Next i
         
-        'If we made it here, the key does not exist
-        
     End If
     
-    DoesKeyExist = -1
-
 End Function
 
 'pdDownload will automatically resize its download directory as files are added to it, and it starts with a default directory
@@ -603,14 +601,16 @@ Public Function ForceDownloadQueueSize(ByVal newSize As Long) As Boolean
 
     'Perform a failsafe check against current queue contents
     If (newSize < m_NumOfFiles) Or (newSize < 0) Then
-        Debug.Print "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
+        #End If
         ForceDownloadQueueSize = False
         Exit Function
     End If
     
     'ReDim or ReDim Preserve as necessary.  (Generally speaking, I wouldn't advise against using this function *after* files
     ' have been added to the queue, even though this function allows it.)
-    If m_NumOfFiles > 0 Then
+    If (m_NumOfFiles > 0) Then
         ReDim Preserve m_DownloadList(0 To newSize - 1) As pdDownloadEntry
     Else
         ReDim m_DownloadList(0 To newSize - 1) As pdDownloadEntry
@@ -636,9 +636,7 @@ Public Sub SetAutoDownloadMode(ByVal newMode As Boolean)
     
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
-            If m_DownloadList(i).CurrentStatus = PDS_NOT_YET_STARTED Then
-                StartDownloadingByIndex i
-            End If
+            If m_DownloadList(i).CurrentStatus = PDS_NOT_YET_STARTED Then StartDownloadingByIndex i
         Next i
     
     End If
@@ -656,7 +654,7 @@ Public Function StartDownloadingByIndex(ByVal keyIndex As Long) As Boolean
     If (keyIndex >= 0) And (keyIndex < m_NumOfFiles) Then
         
         'Make sure the file isn't already downloading
-        If m_DownloadList(keyIndex).CurrentStatus <> PDS_DOWNLOADING Then
+        If (m_DownloadList(keyIndex).CurrentStatus <> PDS_DOWNLOADING) Then
             
             'Everything is good to go!  Start downloading the file in question, and return SUCCESS
             With m_DownloadList(keyIndex)
@@ -676,6 +674,8 @@ Public Function StartDownloadingByIndex(ByVal keyIndex As Long) As Boolean
         StartDownloadingByIndex = False
     End If
     
+    Exit Function
+    
 'UserControl.AsyncRead may throw errors for various Internet issues.  Rather than raise errors, we simply return FALSE,
 ' and the caller can choose to retrieve more specific error information as necessary.
 startDownloadingFailure:
@@ -685,18 +685,22 @@ startDownloadingFailure:
     m_LastErrorDescription = Err.Description
     
     'TODO: implement "try again later" status
-    If keyIndex >= 0 Then m_DownloadList(keyIndex).CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
+    If (keyIndex >= 0) Then m_DownloadList(keyIndex).CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdDownload.StartDownloadingByIndex had an error (#" & Err.Number & "): " & Err.Description
+    #End If
 
 End Function
 
 'Thin wrapper to startDownloadingByIndex, above
-Public Function StartDownloadingByKey(ByVal itemKey As String) As Boolean
+Public Function StartDownloadingByKey(ByRef itemKey As String) As Boolean
     
     'Retrieve an index for the specified key
     Dim keyIndex As Long
     keyIndex = DoesKeyExist(itemKey)
     
-    If keyIndex >= 0 Then
+    If (keyIndex >= 0) Then
         StartDownloadingByKey = StartDownloadingByIndex(keyIndex)
     Else
         Debug.Print "WARNING! Could not start download, because itemKey does not exist in collection."

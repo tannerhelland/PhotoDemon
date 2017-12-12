@@ -289,7 +289,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 
                 'Construct a URL that matches the selected update track
                 Dim updateURL As String
-                updateURL = "http://photodemon.org/downloads/updates/"
+                updateURL = "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/auto/"
                 
                 Select Case trackWithValidUpdate
                 
@@ -575,10 +575,10 @@ Public Sub StandardUpdateChecks()
     
         Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
         
-        'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
+        'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        FormMain.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
+        FormMain.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
         
     End If
     
@@ -667,7 +667,7 @@ Public Function GetUpdateVersion_Friendly() As String
     litVersion = GetUpdateVersion_Literal(True)
     
     'If the current update track is *NOT* a beta, the friendly string matches the literal string.  Return it now.
-    If m_UpdateTrack <> PDUT_BETA Then
+    If (m_UpdateTrack <> PDUT_BETA) Then
         GetUpdateVersion_Friendly = litVersion
     
     'If the current update track *IS* a beta, we need to manually update the number prior to returning it
@@ -689,7 +689,7 @@ Public Function GetUpdateVersion_Friendly() As String
         vMinor = vMinor + 1
         
         'Account for .10, which means a release to the next major version (e.g. 6.9 leads to 7.0, not 6.10)
-        If vMinor = 10 Then
+        If (vMinor = 10) Then
             vMinor = 0
             vMajor = vMajor + 1
         End If
@@ -788,7 +788,7 @@ Public Function RetrieveVersionMajorMinorAsString(ByVal srcVersionString As Stri
     Dim tmpArray() As String
     tmpArray = Split(srcVersionString, ".")
     
-    If UBound(tmpArray) >= 1 Then
+    If (UBound(tmpArray) >= 1) Then
         RetrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
     Else
         RetrieveVersionMajorMinorAsString = ""
@@ -811,7 +811,7 @@ Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) 
     Dim tmpArray() As String
     tmpArray = Split(srcVersionString, ".")
     
-    If UBound(tmpArray) >= 2 Then
+    If (UBound(tmpArray) >= 2) Then
         RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
     
     'If one or less "." chars are found, assume a revision of 0
