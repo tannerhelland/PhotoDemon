@@ -231,6 +231,23 @@ Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
+'If the command bar itself has focus, manually handle Enter/Esc as OK/Cancel events
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+
+    'Interpret Enter as OK...
+    If (whichSysKey = pdnk_Enter) Then
+        markEventHandled = True
+        HandleOKButton
+        
+    '...and Esc as CANCEL.
+    ElseIf (whichSysKey = pdnk_Escape) Then
+        markEventHandled = True
+        HandleCancelButton
+        
+    End If
+
+End Sub
+
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub

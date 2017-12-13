@@ -237,7 +237,15 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         End With
         
         If m_FillSampleMerged Or (Not useCustomDIB) Then
-        
+            
+            'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
+            If (pdImages(g_CurrentImage).ScratchLayer Is Nothing) Then
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
+                #End If
+                pdImages(g_CurrentImage).ResetScratchLayer True
+            End If
+            
             'When filling a merged region, we render the result directly onto the current image's scratch layer.
             ' The full scratch layer will then be merged with the layer beneath it.
             pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0

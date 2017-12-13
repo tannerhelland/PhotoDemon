@@ -164,7 +164,7 @@ End Sub
 ' Turbulence is a value on the scale [0, 1]; 1 will result in maximum randomization
 ' Seed is optional; the same seed will result in the same diagram, with the exception of seed value "0.0" - this tells the
 ' randomizer to choose its own random seed.
-Friend Function RandomizePoints(ByVal fxTurbulence As Single, Optional ByVal rndSeed As Double = 0#) As Boolean
+Friend Function RandomizePoints(ByVal fxTurbulence As Double, Optional ByVal rndSeed As Double = 0#) As Boolean
 
     'Make sure the point array was successfully initialized
     If (Not m_PointsInitialized) Then
@@ -398,7 +398,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
 
     'If shading is not active, return 1 and exit
     If (m_shadingMode = NO_SHADE) Then
-        GetShadingValue = 1
+        GetShadingValue = 1!
         
     Else
 
@@ -437,7 +437,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
         
         'If the max distance is greater than 0, return it.  If it equals zero (e.g. the source location lies directly
         ' atop a Voronoi point), the calculation will hit a divide-by-zero error, so catch that case and return 1 explicitly.
-        If (m_vPointsMaxDistance(nearestPointIndex) > 0) Then
+        If (m_vPointsMaxDistance(nearestPointIndex) > 0!) Then
         
             'Use the getShadingDistance function to calculate a shade value for this pixel, per the user's requested
             ' shading method.
@@ -448,7 +448,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
             If (m_shadingMode = SHADE_F1) Or (m_shadingMode = SHADE_F1_DIVIDE_F2) Then GetShadingValue = 1# - GetShadingValue
             
         Else
-            GetShadingValue = 1#
+            GetShadingValue = 1!
         End If
         
     End If

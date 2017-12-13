@@ -190,10 +190,16 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
+    
+    'Failsafe check for cellsize
+    Dim minDimension As Long
+    If (curDIBValues.Width < curDIBValues.Height) Then minDimension = curDIBValues.Width Else minDimension = curDIBValues.Height
+    minDimension = (minDimension - 1) \ 2
+    If (cellSize >= minDimension) Then cellSize = minDimension
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -213,7 +219,7 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     'If this is a preview, reduce cell size to better portray how the final image will look
     Else
         cellSize = cellSize * curDIBValues.previewModifier
-        If cellSize < 3 Then cellSize = 3
+        If (cellSize < 3) Then cellSize = 3
     End If
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -226,10 +232,10 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     Set cVoronoi = New pdVoronoi
     
     'Pass all meaningful input parameters on to the Voronoi class
-    cVoronoi.initPoints cellSize, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    cVoronoi.randomizePoints fxTurbulence, cRandom.GetSeed
-    cVoronoi.setDistanceMode distanceMethod
-    cVoronoi.setShadingMode shadeQuality
+    cVoronoi.InitPoints cellSize, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+    cVoronoi.RandomizePoints fxTurbulence, cRandom.GetSeed
+    cVoronoi.SetDistanceMode distanceMethod
+    cVoronoi.SetShadingMode shadeQuality
     
     'Create several look-up tables, specifically:
     ' One table for each color channel (RGBA)
@@ -246,7 +252,7 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     'Size all pixels to match the number of possible Voronoi points; the nearest Voronoi point for each pixel
     ' will be used to determine the relevant point in the lookup tables.
     Dim numVoronoiPoints As Long
-    numVoronoiPoints = cVoronoi.getTotalNumOfVoronoiPoints() - 1
+    numVoronoiPoints = cVoronoi.GetTotalNumOfVoronoiPoints() - 1
     
     'If the number of unique Voronoi points is less than 32767 (the limit for an unsigned Int), we could get away with
     ' using an Integer lookup table instead of Longs, but as VB6 doesn't provide an easy way to change array types
@@ -274,28 +280,28 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     For y = initY To finalY
         
         'Use the Voronoi class to find the nearest points to this pixel
-        nearestPoint = cVoronoi.getNearestPointIndex(x, y, secondNearestPoint)
+        nearestPoint = cVoronoi.GetNearestPointIndex(x, y, secondNearestPoint)
         
         'Store the nearest and second-nearest point indices in our master lookup table
         vLookup(x, y) = nearestPoint
-        If shadeQuality > SHADE_F1 Then vLookup2(x, y) = secondNearestPoint
+        If (shadeQuality > SHADE_F1) Then vLookup2(x, y) = secondNearestPoint
         
         'If the user has elected to recolor each cell using the average color for the cell, we need to track
         ' color values.  This is no different from a histogram approach, except in this case, each histogram
         ' bucket corresponds to one Voronoi cell.
-        If colorSamplingMethod = 1 Then
+        If (colorSamplingMethod = 1) Then
         
             'Retrieve RGBA values for this pixel
-            r = dstImageData(quickVal + 2, y)
-            g = dstImageData(quickVal + 1, y)
             b = dstImageData(quickVal, y)
-            If qvDepth = 4 Then a = dstImageData(quickVal + 3, y)
+            g = dstImageData(quickVal + 1, y)
+            r = dstImageData(quickVal + 2, y)
+            a = dstImageData(quickVal + 3, y)
             
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
             gLookup(nearestPoint) = gLookup(nearestPoint) + g
             bLookup(nearestPoint) = bLookup(nearestPoint) + b
-            If qvDepth = 4 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
+            aLookup(nearestPoint) = aLookup(nearestPoint) + a
             
             'Increment the count of all pixels who share this Voronoi point as their nearest point
             numPixels(nearestPoint) = numPixels(nearestPoint) + 1
@@ -320,24 +326,24 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     
         'The user wants a "fast and dirty" approach to coloring.  For each cell, use only the color of the
         ' corresponding Voronoi point pixel of that cell.
-        If colorSamplingMethod = 0 Then
+        If (colorSamplingMethod = 0) Then
         
             'Retrieve the location of this Voronoi point
-            thisPoint = cVoronoi.getVoronoiCoordinates(x)
+            thisPoint = cVoronoi.GetVoronoiCoordinates(x)
             
             'Validate its bounds
-            If thisPoint.x < initX Then thisPoint.x = initX
-            If thisPoint.x > finalX Then thisPoint.x = finalX
+            If (thisPoint.x < initX) Then thisPoint.x = initX
+            If (thisPoint.x > finalX) Then thisPoint.x = finalX
             
-            If thisPoint.y < initX Then thisPoint.y = initY
-            If thisPoint.y > finalY Then thisPoint.y = finalY
+            If (thisPoint.y < initX) Then thisPoint.y = initY
+            If (thisPoint.y > finalY) Then thisPoint.y = finalY
             
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
             quickVal = thisPoint.x * qvDepth
-            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
-            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
             bLookup(x) = dstImageData(quickVal, thisPoint.y)
-            If qvDepth = 4 Then aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
+            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
+            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
+            aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
@@ -345,11 +351,11 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
         
             numPixelsCache = numPixels(x)
             
-            If numPixelsCache > 0 Then
+            If (numPixelsCache > 0) Then
                 rLookup(x) = rLookup(x) \ numPixelsCache
                 gLookup(x) = gLookup(x) \ numPixelsCache
                 bLookup(x) = bLookup(x) \ numPixelsCache
-                If qvDepth = 4 Then aLookup(x) = aLookup(x) \ numPixelsCache
+                aLookup(x) = aLookup(x) \ numPixelsCache
             End If
             
         End If
@@ -371,24 +377,24 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
         ' (NOTE: this step could be rewritten to simply re-request a distance calculation from the Voronoi class,
         '        but that would slow the function considerably.)
         nearestPoint = vLookup(x, y)
-        If shadeQuality > SHADE_F1 Then secondNearestPoint = vLookup2(x, y)
+        If (shadeQuality > SHADE_F1) Then secondNearestPoint = vLookup2(x, y)
         
         'Retrieve the RGB values from the relevant Voronoi cell bin
         r = rLookup(nearestPoint)
         g = gLookup(nearestPoint)
         b = bLookup(nearestPoint)
-        If qvDepth = 4 Then a = aLookup(nearestPoint)
+        a = aLookup(nearestPoint)
         
         'If the user is using a custom edge value, we need to perform a number of extra calculations.  If they are
         ' just doing a generic filter, however, we can greatly shortcut the process.
-        If edgeThreshold = 0 Then
+        If (edgeThreshold = 0) Then
         
-            If shadeQuality <> NO_SHADE Then
+            If (shadeQuality <> NO_SHADE) Then
                 
                 'Retrieve a shade value on the scale [0, 1] from the Voronoi class; it will calculate this
                 ' value using the relationship between this point's distance to the nearest Voronoi point,
                 ' and the maximum shading value for this cell.
-                shadeAdjustment = cVoronoi.getShadingValue(x, y, nearestPoint, secondNearestPoint)
+                shadeAdjustment = cVoronoi.GetShadingValue(x, y, nearestPoint, secondNearestPoint)
                 
                 'Modify the RGB values for this pixel by the retrieved shading adjustment
                 r = r * shadeAdjustment
@@ -406,24 +412,24 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
             ' shading adjustment).
             
             'We can shortcut the edge calculation process for the basic, non-shade method.
-            If shadeQuality = NO_SHADE Then
-                shadeAdjustment = 1
+            If (shadeQuality = NO_SHADE) Then
+                shadeAdjustment = 1!
             Else
-                shadeAdjustment = cVoronoi.getShadingValue(x, y, nearestPoint, secondNearestPoint)
+                shadeAdjustment = cVoronoi.GetShadingValue(x, y, nearestPoint, secondNearestPoint)
             End If
             
             'Retrieve the maximum distance for this Voronoi cell, and use that to calculate a cell threshold value.
-            maxDistance = cVoronoi.getMaxDistanceForCell(nearestPoint)
+            maxDistance = cVoronoi.GetMaxDistanceForCell(nearestPoint)
             shadeThreshold = (edgeThreshold * maxDistance)
             
             'Different shading methods require different calculations to make the edge algorithm work similarly.
             ' Sort by shade method, and calculate only a relevant edge adjustment value.
-            If shadeQuality < SHADE_F2_MINUS_F1 Then
-                edgeAdjustment = maxDistance - cVoronoi.getDistance(x, y, nearestPoint)
+            If (shadeQuality < SHADE_F2_MINUS_F1) Then
+                edgeAdjustment = maxDistance - cVoronoi.GetDistance(x, y, nearestPoint)
             Else
                 
-                If shadeQuality = SHADE_F2_MINUS_F1 Then
-                    edgeAdjustment = (cVoronoi.getDistance(x, y, secondNearestPoint) - cVoronoi.getDistance(x, y, nearestPoint))
+                If (shadeQuality = SHADE_F2_MINUS_F1) Then
+                    edgeAdjustment = (cVoronoi.GetDistance(x, y, secondNearestPoint) - cVoronoi.GetDistance(x, y, nearestPoint))
                 Else
                     edgeAdjustment = shadeAdjustment
                 End If
@@ -432,14 +438,14 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
             
             'If our calculated adjustment falls below the shading threshold we calculated, this pixel is a candidate for
             ' edge enhancement.
-            If edgeAdjustment < shadeThreshold Then
+            If (edgeAdjustment < shadeThreshold) Then
                 
                 'Check for the special case of 0 shade thresholds; to avoid divide-by-zero errors, we must handle
                 ' such pixels separately.
-                If shadeThreshold <> 0 Then
+                If (shadeThreshold <> 0) Then
                     edgeAdjustment = edgeAdjustment / shadeThreshold
                 Else
-                    edgeAdjustment = 0
+                    edgeAdjustment = 0!
                 End If
                 
                 'To provide a slightly better look, we actually use an n^2 fall-off instead of a linear one
@@ -448,12 +454,13 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
                 'To avoid potential overflow errors, make sure our edge parameter only shrinks RGB values.
                 ' (This case should never occur, but given the number of parameters at play in this tool,
                 '  it doesn't hurt to exert a little extra caution!)
-                If shadeAdjustment > 1 Then shadeAdjustment = 1
+                If (shadeAdjustment > 1!) Then shadeAdjustment = 1!
                 
             End If
             
             'With our shade adjustment finalized, we can finally calculate final RGB values for this pixel.  Note
             ' that shading does not currently affect alpha.
+            If (shadeAdjustment < 0!) Then shadeAdjustment = 0!
             r = r * shadeAdjustment
             g = g * shadeAdjustment
             b = b * shadeAdjustment
@@ -461,10 +468,10 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
         End If
         
         'Set the new RGBA values to the image
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
         dstImageData(quickVal, y) = b
-        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = a
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 3, y) = a
         
     Next y
         If (Not toPreview) Then
@@ -498,7 +505,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Stained glass", , GetLocalParamString(), UNDO_LAYER
+    Process "Stained glass", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

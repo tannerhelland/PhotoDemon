@@ -404,12 +404,17 @@ End Sub
 'Resize an image using the FreeImage library.  Very fast.
 Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
     
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication False
-        
+        If (srcDIB.GetDIBColorDepth = 32) Then
+            srcDIB.SetAlphaPremultiplication False
+            dstDIB.SetInitialAlphaPremultiplicationState False
+        End If
+            
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, False)
@@ -427,7 +432,6 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
             Else
                 dstDIB.ResetDIB 0
             End If
-            dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
             
             'Copy the bits from the FreeImage DIB to our DIB
             Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, iWidth, iHeight
@@ -438,7 +442,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If (srcDIB.GetDIBColorDepth = 32) And (Not dstDIB.GetAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
+        If (srcDIB.GetDIBColorDepth = 32) Then dstDIB.SetAlphaPremultiplication True
         
     End If
     

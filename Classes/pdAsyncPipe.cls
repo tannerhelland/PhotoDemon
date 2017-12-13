@@ -408,7 +408,7 @@ Private Function ReadSpecificPipe(ByRef srcPipeHandle As Long, ByRef dstBuffer A
         Dim failState As Long
         
         'See if the pipe has any bytes for us
-        Dim numBytesAvailable As Long, bytesRead As Long
+        Dim numBytesAvailable As Long, numBytesRead As Long
         If (PeekNamedPipe(srcPipeHandle, 0&, 0&, ByVal 0&, numBytesAvailable, 0&) <> 0) Then
             If (numBytesAvailable > 0) Then
                 
@@ -416,7 +416,7 @@ Private Function ReadSpecificPipe(ByRef srcPipeHandle As Long, ByRef dstBuffer A
                 ' Also - because we're clever, notice how we dump the bytes directly into our buffer, then advance the
                 ' pointer manually.
                 dstBuffer.EnsureBufferSpaceAvailable numBytesAvailable + 4
-                If (ReadFile(srcPipeHandle, dstBuffer.Peek_PointerOnly(), numBytesAvailable, bytesRead, 0&) = 0) Then
+                If (ReadFile(srcPipeHandle, dstBuffer.Peek_PointerOnly(), numBytesAvailable, numBytesRead, 0&) = 0) Then
                     
                     failState = Err.LastDllError
                     InternalError "ReadFile (inside .ReadData()) failed with API error #" & failState
@@ -427,12 +427,12 @@ Private Function ReadSpecificPipe(ByRef srcPipeHandle As Long, ByRef dstBuffer A
                 Else
                     
                     'Make sure we received more than 0 bytes before modifying the stream object
-                    If (bytesRead > 0) Then
+                    If (numBytesRead > 0) Then
                     
                         'Advance the stream size and pointer manually.
-                        dstBuffer.SetSizeExternally dstBuffer.GetStreamSize + bytesRead
-                        dstBuffer.SetPosition bytesRead, FILE_CURRENT
-                        ReadSpecificPipe = bytesRead
+                        dstBuffer.SetSizeExternally dstBuffer.GetStreamSize + numBytesRead
+                        dstBuffer.SetPosition numBytesRead, FILE_CURRENT
+                        ReadSpecificPipe = numBytesRead
                         
                         'Handle the data arrival immediately
                         InternalDataArrival
