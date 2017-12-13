@@ -61,14 +61,14 @@ Friend Sub SetTextCompareMode(ByVal newCompareMode As VbCompareMethod)
 End Sub
 
 'If this class is being used to write out a new XML file, this function can be called to initialize the blank file.
-Friend Sub PrepareNewXML(ByVal pdDataType As String)
+Friend Sub PrepareNewXML(ByRef pdDataType As String)
     m_xmlContents = "<?xml version=""1.0"" encoding=""UTF-8""?>" & vbCrLf & vbCrLf
     m_xmlContents = m_xmlContents & ROOT_TAG & vbCrLf & vbCrLf & PD_DATA_ID & pdDataType & PD_DATA_ID_CLOSE & vbCrLf & ROOT_TAG_CLOSE & vbCrLf
 End Sub
 
 'PhotoDemon-specific XML files are required to encode a data type (filter, macro, etc).  This function can be used to quickly
 ' retrieve that type, allowing the calling function to determine if a proper filetype has been loaded for their operation.
-Friend Function IsPDDataType(ByVal expectedType As String) As Boolean
+Friend Function IsPDDataType(ByRef expectedType As String) As Boolean
     IsPDDataType = Strings.StringsEqual(GetTextBetweenTags("pdDataType"), expectedType, (m_TextCompareMode = vbTextCompare))
 End Function
 
