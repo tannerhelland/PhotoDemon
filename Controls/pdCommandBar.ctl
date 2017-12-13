@@ -721,6 +721,23 @@ Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
+'If the command bar itself has focus, manually handle Enter/Esc as OK/Cancel events
+Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
+
+    'Interpret Enter as OK...
+    If (whichSysKey = pdnk_Enter) Then
+        markEventHandled = True
+        HandleOKButton
+        
+    '...and Esc as CANCEL.
+    ElseIf (whichSysKey = pdnk_Escape) Then
+        markEventHandled = True
+        HandleCancelButton
+        
+    End If
+
+End Sub
+
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
@@ -747,7 +764,7 @@ Private Sub UserControl_Initialize()
     m_dontShutdownYet = False
     
     'By default, the user hasn't appended a special name for this instance
-    m_userSuppliedToolName = ""
+    m_userSuppliedToolName = vbNullString
     
     'We don't enable previews yet - that happens after the Show event fires
     

@@ -757,18 +757,18 @@ End Sub
 Private Sub chkEnablePreview_Click()
     
     picPreview.Picture = LoadPicture("")
-    
+        
+    'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
+    If CBool(chkEnablePreview) Then
+        If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex), True
+        
     'If the user is disabling previews, clear the picture box and display a notice
-    If (Not CBool(chkEnablePreview)) Then
+    Else
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Previews disabled")
         picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
         picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
         picPreview.Print strToPrint
-        
-    'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
-    Else
-        If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex)
     End If
     
 End Sub
@@ -1570,10 +1570,10 @@ Private Sub lstFiles_Click()
 End Sub
 
 'Update the active image preview in the top-right
-Private Sub UpdatePreview(ByVal srcImagePath As String)
+Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpdate As Boolean = False)
     
     'Only redraw the preview if it doesn't match the last image we previewed
-    If (CBool(chkEnablePreview) And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True))) Then
+    If (CBool(chkEnablePreview) And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True) Or forceUpdate)) Then
     
         'Use PD's central load function to load a copy of the requested image
         Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB

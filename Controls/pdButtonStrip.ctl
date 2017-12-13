@@ -275,7 +275,7 @@ End Sub
 Private Sub ucSupport_GotFocusAPI()
     
     'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not ucSupport.DoIHaveFocus Then
+    If (Not ucSupport.IsMouseInside) Then
         m_FocusRectActive = m_ButtonIndex
         RedrawBackBuffer
     End If
@@ -924,8 +924,8 @@ Private Sub RedrawBackBuffer()
         For i = 0 To m_numOfButtons - 1
             
             If enabledState Then
-                isButtonSelected = CBool(i = m_ButtonIndex)
-                isButtonHovered = CBool(i = m_ButtonHoverIndex)
+                isButtonSelected = (i = m_ButtonIndex)
+                isButtonHovered = (i = m_ButtonHoverIndex)
             Else
                 isButtonSelected = False
                 isButtonHovered = False

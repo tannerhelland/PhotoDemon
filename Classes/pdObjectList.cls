@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 'Last updated: 24/August/17
 'Last update: finish work on automatic tab-order sorting
 '
-'This class is exclusively used by the Tabs module.  Look there for implementation details.
+'This class is exclusively used by the NavKey module.  Look there for implementation details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -32,12 +32,17 @@ Private Const DISPLAY_DEBUG_TABORDER_DATA As Boolean = False
 
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'The hWnd of the parent (the form hosting this collection)
 Private m_ParentHWnd As Long
 
 'hWnds of child controls
 Private Const INIT_NUM_OF_CONTROLS As Long = 16
+
+'As part of subclassing the parent control, we want to detect ENTER and ESC keypresses.  Dialogs with
+' command bars will automatically assign those keypresses to OK/Cancel.
+Private Const WM_KEYDOWN As Long = &H100
 
 'We may not need to use a custom type for this - an hWnd may ultimately be enough - but during debugging,
 ' it's nice to store some extra bits of information
@@ -62,8 +67,21 @@ End Type
 Private m_ControlsSort() As PD_ControlSort
 Private m_numOfControlsSort As Long
 
+'Subclasser for intercepting window messages
+Implements ISubclass
+
 Friend Sub SetParentHWnd(ByVal hWnd As Long)
-    m_ParentHWnd = hWnd
+    
+    If (MainModule.IsProgramRunning() And (hWnd <> 0)) Then
+    
+        m_ParentHWnd = hWnd
+        
+        'We also subclass the parent control so we can capture ENTER and ESCAPE keypresses (to facilitate
+        ' keyboard navigation)
+        VBHacks.StartSubclassing hWnd, Me
+        
+    End If
+    
 End Sub
 
 Friend Function GetParentHWnd() As Long
@@ -342,3 +360,57 @@ Friend Sub PrintDebugList()
     End If
     
 End Sub
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+    
+    Dim eatMsg As Boolean: eatMsg = False
+    
+    If (uiMsg = WM_KEYDOWN) Then
+    
+        'The only keypresses we currently care about are ENTER and ESCAPE
+        If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Then
+        
+            'See if this form 1) is a raised dialog, and 2) contains a command bar
+            If g_ModalDialogActive Then
+            
+                If Me.DoesTypeOfControlExist(pdct_CommandBar) Then
+                
+                    'It does!  Grab the hWnd and forward the relevant window message to it
+                    SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBar), WM_PD_DIALOG_NAVKEY, wParam, 0&
+                    ISubclass_WindowMsg = 0&
+                    eatMsg = True
+                
+                'If a command bar doesn't exist, look for a "mini command bar" instead
+                ElseIf Me.DoesTypeOfControlExist(pdct_CommandBarMini) Then
+                    SendNotifyMessage Me.GetFirstHWndForType(pdct_CommandBarMini), WM_PD_DIALOG_NAVKEY, wParam, 0&
+                    ISubclass_WindowMsg = 0&
+                    eatMsg = True
+                    
+                'No command bar exists on this form, which is fine - this could be a toolpanel, for example.
+                ' As such, there's nothing we need to do.
+                End If
+            
+            End If
+            
+        End If
+        
+    'Failsafe window destruction check
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        EndSubclassing
+    End If
+    
+    If (Not eatMsg) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function
+
+Private Sub EndSubclassing()
+    If (m_ParentHWnd <> 0) Then
+        VBHacks.StopSubclassing m_ParentHWnd, Me
+        m_ParentHWnd = 0
+    End If
+End Sub
+
+Private Sub Class_Terminate()
+    EndSubclassing
+End Sub
+
