@@ -894,7 +894,6 @@ Private Sub RedrawBackBuffer()
                     
                     'If this button has received focus via keyboard, paint it with a special interior border
                     If (i = m_FocusRectActive) Then
-                        Debug.Print "drawing?"
                         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 3, .btBounds.Bottom - 2, btnColorSelectedBorder, 255, 1
                     End If
                     

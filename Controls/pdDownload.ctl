@@ -23,12 +23,6 @@ Begin VB.UserControl pdDownload
    ScaleWidth      =   32
    ToolboxBitmap   =   "pdDownload.ctx":0000
    Windowless      =   -1  'True
-   Begin VB.Timer tmrReset 
-      Enabled         =   0   'False
-      Interval        =   1000
-      Left            =   0
-      Top             =   0
-   End
 End
 Attribute VB_Name = "pdDownload"
 Attribute VB_GlobalNameSpace = False
@@ -152,6 +146,10 @@ Private m_LastErrorNumber As Long, m_LastErrorDescription As String
 ' have been released for a given array.  If they have, it knows it can safely erase the master array.
 Private m_ResetActive As Boolean
 
+'Canceled downloads are released using a failsafe timer; this prevents issues where internal functions are working with
+' an array that a pending Reset command is attempting to erase.
+Private WithEvents m_ResetTimer As pdTimer
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Download
 End Function
@@ -160,9 +158,9 @@ Public Function GetControlName() As String
     GetControlName = UserControl.Extender.Name
 End Function
 
-Private Sub tmrReset_Timer()
+Private Sub m_ResetTimer_Timer()
 
-    On Error GoTo arrayNotReadyForRelease
+    On Error GoTo ArrayNotReadyForRelease
 
     If m_ResetActive Then
     
@@ -172,11 +170,11 @@ Private Sub tmrReset_Timer()
         
         'If we didn't error out, the ReDim was successful.  Reset the timer and tracking variable.
         m_ResetActive = False
-        tmrReset.Enabled = False
+        m_ResetTimer.StopTimer
     
     End If
     
-arrayNotReadyForRelease:
+ArrayNotReadyForRelease:
 
 End Sub
 
@@ -478,7 +476,11 @@ Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
     ' To prevent asynchronicity issues, launch a separate timer.  It will handle the actual erasing of the array.
     If setFailsafeTimer Then
         m_ResetActive = True
-        tmrReset.Enabled = True
+        If (m_ResetTimer Is Nothing) Then
+            Set m_ResetTimer = New pdTimer
+            m_ResetTimer.Interval = 1000
+        End If
+        m_ResetTimer.StartTimer
     End If
 
 End Sub
@@ -521,7 +523,7 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     
         'Duplicate keys are not allowed.
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload addToQueue.  Invalid usage; download abandoned."
+            pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload.AddToQueue(), meaning an update request is likely already in-progress.  Ignoring duplicate request."
         #End If
         AddToQueue = False
         Exit Function

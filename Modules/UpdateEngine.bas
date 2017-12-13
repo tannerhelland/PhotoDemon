@@ -3,8 +3,8 @@ Attribute VB_Name = "Updates"
 'Automatic Software Updater
 'Copyright 2012-2017 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 23/October/17
-'Last update: kill off some update preferences that no longer make sense (e.g. patching core plugins separately)
+'Last updated: 13/December/17
+'Last update: clean up code, improve debug reporting, switch to https for patch downloads
 '
 'This module includes various support functions for determining if a new version of PhotoDemon is available for download.
 '
@@ -64,10 +64,10 @@ Private m_BetaNumber As String
 
 'Determine if the program should check online for update information.  This will return true IFF the following
 ' criteria are met:
-' 1) User preferences allow us to check for updates (e.g. the user has not forcibly disabled such checks)
-' 2) At least 10 days have passed since the last update check...
-' 3) ...or 10 days haven't passed, but we have never checked for updates before, and this is NOT the first time the user
-'    is running the program
+' 1) User preferences allow us to check for updates (e.g. the user has not forcibly disabled update checks)
+' 2) At least (n) days have passed since the last update check, where (n) matches the current user preference...
+' 3) ...or (n) days haven't passed, but we have never checked for updates before, and this is NOT the first time the user
+'    is running the program.  (This case covers 3rd-party download sites that don't maintain up-to-date download links)
 Public Function IsItTimeForAnUpdate() As Boolean
 
     'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  (For example, if a
@@ -84,29 +84,24 @@ Public Function IsItTimeForAnUpdate() As Boolean
     updateFrequency = PDUF_EACH_SESSION
     If g_UserPreferences.DoesValueExist("Updates", "CheckForUpdates") Then
         
+        'Write a matching preference in the new format, and overwrite the old preference (so it doesn't trigger this
+        ' check again)
         If Not g_UserPreferences.GetPref_Boolean("Updates", "CheckForUpdates", True) Then
-            
-            'Write a matching preference in the new format.
             g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
-            
-            'Overwrite the old preference, so it doesn't trigger this check again
             g_UserPreferences.SetPref_Boolean "Updates", "CheckForUpdates", True
-            
         End If
         
     End If
     
     'In v6.6, PD's update strategy was modified to allow the user to specify an update frequency (rather than
     ' a binary yes/no preference).  Retrieve the allowed frequency now.
-    If (updateFrequency <> PDUF_NEVER) Then
-        updateFrequency = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
-    End If
-        
+    If (updateFrequency <> PDUF_NEVER) Then updateFrequency = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+    
     'If updates ARE allowed, see when we last checked for an update.  If enough time has elapsed, check again.
     If (updateFrequency <> PDUF_NEVER) Then
     
         Dim lastCheckDate As String
-        lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
+        lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check")
         
         'If a "last update check date" was not found, request an immediate update check.
         If (Len(lastCheckDate) = 0) Then
@@ -136,15 +131,9 @@ Public Function IsItTimeForAnUpdate() As Boolean
             currentDate = Format$(Now, "Medium Date")
             
             'If the allowable date threshold has passed, allow the updater to perform a new check
-            If (CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= numAllowableDays) Then
-                allowedToUpdate = True
+            allowedToUpdate = (CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= numAllowableDays)
+            If (Not allowedToUpdate) Then Message "Update check postponed (a check has been performed recently)"
             
-            'If the allowable limit hasn't passed, prevent an update
-            Else
-                Message "Update check postponed (a check has been performed recently)"
-                allowedToUpdate = False
-            End If
-                    
         End If
     
     'If the user has specified "never" as their desired update frequency, we'll always return FALSE.
@@ -158,41 +147,42 @@ Public Function IsItTimeForAnUpdate() As Boolean
 
 'In the event of an error, simply disallow updates for this session.
 DontDoUpdates:
-
     IsItTimeForAnUpdate = False
     
 End Function
 
-'Given the XML string of a download program version XML report from photodemon.org, initiate the download of a program update package, as necessary.
-' This function basically checks to see if PhotoDemon.exe is out of date on the current update track (stable, beta, or nightly, per the user's
-' preference).  If it is, an update package will be downloaded.  At extraction time, all files that need to be updated, will be updated; this function's
-' job is simply to initiate a larger package download if necessary.
+'tl;dr; given an XML report from photodemon.org, initiate a program update package download, as necessary.
+' Long version: this function checks to see if PhotoDemon.exe is out of date against the current update track
+' (stable, beta, or nightly, per the current user preference).  If the .exe *is* out of date, a full update
+' package will be downloaded.
 '
-'Returns TRUE is an update is available; FALSE otherwise
+'Returns: TRUE if an update is available *and* its download was initiated successfully; FALSE otherwise
 Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     
-    'In most cases, we assume there to *not* be an update
+    'In most cases, an update will *not* be available.
     ProcessProgramUpdateFile = False
     
     'A pdXML object handles XML parsing for us.
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
-    'Validate the XML
+    'Validate the XML we were passed
     If xmlEngine.LoadXMLFromString(srcXML) Then
     
-        'Check for a few necessary tags, just to make sure this is actually a valid update file
+        'As an additional precaution, ensure that some PD-specific update tags exist in the XML
         If xmlEngine.IsPDDataType("Program version") Then
             
-            'Next, figure out which update track we need to check.  The user can change this at any time, so it may not necessarily correlate to
-            ' the current build.  (e.g., if the user is on the stable track, they may switch to the nightly track, which necessitates a different
-            ' update procedure).
+            'Next, figure out which update track we need to check.  The user can change this at any time, so it may not
+            ' necessarily correlate to this .exe's build type.  (For example, maybe this is a stable PD build, but the user
+            ' has decided to switch update checks to include beta and nightly builds - that's okay!)
             Dim curUpdateTrack As PD_UPDATE_TRACK
             curUpdateTrack = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
             
-            'From the update track, we need to generate a string that identifies the correct chunk of the XML file.  Some update tracks can update
-            ' to more than one type of build (for example, the nightly build track can update to a stable version, if the stable version is newer),
-            ' so we may need to search multiple regions of the update file in order to find the best update target.
+            'From the update track, we need to generate a string that identifies the correct chunk of the XML file.
+            ' Some update tracks can update to more than one type of build (for example, nightly builds can update
+            ' to stable builds, if the stable version is newer, but stable builds can only update to nightly builds
+            ' if the user's preferences explicit allow), so we may need to search multiple XML regions to find the
+            ' most relevant update target for this .exe version.
             Dim updateTagIDs() As String, numUpdateTagIDs As Long
             ReDim updateTagIDs(0 To 2) As String
             updateTagIDs(0) = "stable"
@@ -214,20 +204,22 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
             
             ReDim Preserve updateTagIDs(0 To numUpdateTagIDs - 1) As String
             
-            'If we find an update track with a valid update available, this value will point at that track (0, 1, or 2, for stable, beta,
-            ' or nightly, respectively).  If no update is found, it will remain at -1.
+            'If we find an update track that provides a valid update target, this value will point at that track
+            ' (0, 1, or 2, for stable, beta, or nightly, respectively).  If no update is found, it will remain at -1.
             Dim trackWithValidUpdate As Long
             trackWithValidUpdate = -1
             
-            'We start with the current PD version as a baseline.  If newer update targets are found, this string will be updated with those targets instead.
+            'We start with the current PD version as a baseline.  If newer update targets are found, this string will
+            ' be updated with newer versions instead.
             Dim curVersionMatch As String
             curVersionMatch = GetPhotoDemonVersionCanonical()
             
-            'FAKE TESTING VERSION ONLY!
+            'If you want to perform testing against random version numbers, feel free to plug-in your own test version
+            ' number here, e.g...
             'curVersionMatch = "6.4.0"
             
-            'Next, we need to search the update file for PhotoDemon.exe versions.  Each valid updateTagID region (as calculated above) will be
-            ' searched.  If any return a hit, we will initiate the download of an update package.
+            'Next, search the update file for PhotoDemon.exe versions.  Each valid updateTagID region (as calculated above)
+            ' will be searched.  If any return a hit, we will initiate the download of that update package.
             Dim i As Long
             For i = 0 To numUpdateTagIDs - 1
             
@@ -235,7 +227,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 Dim tagAreaStart As Long, tagAreaEnd As Long
                 If xmlEngine.GetTagCharacterRange(tagAreaStart, tagAreaEnd, "update", "track", updateTagIDs(i)) Then
                     
-                    'Find the position of the PhotoDemon.exe version
+                    'Find the position of the reported PhotoDemon.exe version in this track
                     Dim pdTagPosition As Long
                     pdTagPosition = xmlEngine.GetLocationOfTagPlusAttribute("version", "component", "PhotoDemon.exe", tagAreaStart)
                     
@@ -245,16 +237,16 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                         'This is the version tag we want!  Retrieve its value.
                         Dim newPDVersionString As String
                         newPDVersionString = xmlEngine.GetTagValueAtPreciseLocation(pdTagPosition)
+                        InternalDebugMsg "Update track " & i & " reports version " & newPDVersionString & " (our version: " & GetPhotoDemonVersionCanonical() & ")", "ProcessProgramUpdateFile"
                         
-                        Debug.Print "Update track " & i & " reports version " & newPDVersionString & " (our version: " & GetPhotoDemonVersionCanonical() & ")"
-                        
-                        'If this value is higher than our current update target, mark it and proceed.  Note that this approach gives us the
-                        ' highest possible update target from all available/enabled update tracks.
+                        'If this value is newer than our current update target, mark it and proceed.  Note that this approach gives
+                        ' us the highest possible update target from all available/enabled update tracks.
                         If IsNewVersionHigher(curVersionMatch, newPDVersionString) Then
                             
                             trackWithValidUpdate = i
                             
-                            'Set some matching module-level values, which we'll need when it's time to actually patch the files in question.
+                            'Set some matching module-level values, which we'll need when it's time to actually patch the files
+                            ' in question.
                             m_SelectedTrack = trackWithValidUpdate
                             m_TrackStartPosition = tagAreaStart
                             m_TrackEndPosition = tagAreaEnd
@@ -267,27 +259,27 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 
                 'This Else branch should never trigger, as it means the update file doesn't contain the listed update track.
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  Update XML file is possibly corrupt, as the requested update track could not be located within the file."
-                    #End If
+                    InternalDebugMsg "WARNING!  Update XML file is possibly corrupt, as the requested update track could not be located within the file.", "ProcessProgramUpdateFile"
                 End If
                 
             Next i
             
-            'If trackWithValidUpdate is >= 0, it points to the update track with the highest possible update target.
-            If trackWithValidUpdate >= 0 Then
+            'If we found a track with a valid update target, initiate its download
+            If (trackWithValidUpdate >= 0) Then
             
                 'Make a backup copy of the update XML string.  We'll need to refer to it later, after the patch files have downloaded,
-                ' as it contains failsafe checksumming information.
+                ' as it contains failsafe checksum values.
                 m_PDPatchXML = xmlEngine.ReturnCurrentXMLString(True)
                 
-                'We also want to cache the current update track at module-level, so we can display customized update notifications to the user
+                'We also want to cache the current update track at module-level, so we can display customized update notifications to
+                ' the user.
                 m_UpdateTrack = trackWithValidUpdate
                 
-                'Retrieve the manually listed beta number, just in case we need it later
+                'Retrieve the manually listed beta number, just in case we need it later.  (For example, the current .exe may be
+                ' Beta 1, and we're gonna update to Beta 2.)
                 m_BetaNumber = xmlEngine.GetUniqueTag_String("releasenumber-beta", "1")
                 
-                'Construct a URL that matches the selected update track
+                'Construct a URL that matches the selected update track.  GitHub currently hosts PD's update downloads.
                 Dim updateURL As String
                 updateURL = "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/auto/"
                 
@@ -304,38 +296,30 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 
                 End Select
                 
+                'Download files ship using a custom archive format
                 updateURL = updateURL & ".pdz"
 
-                'Request a download on the main form.  Note that we explicitly set the download type to the pdLanguage file
-                ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
-                ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
-                ' the extracted data matches what we originally uploaded.
-                If FormMain.RequestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.GetUpdatePath & "PDPatch.tmp") Then
-                    
-                    Debug.Print "Download successfully initiated for program patch file at " & updateURL
-                    
-                    'Only now do we report SUCCESS to the caller
+                'Request a download from the main form.  Note that we also use the reported checksum as the file's
+                ' unique ID value. (Post-download and extraction, this value will be used to ensure that the extracted
+                ' patch data matches what we originally uploaded.)
+                If FormMain.RequestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, g_UserPreferences.GetUpdatePath & "PDPatch.tmp") Then
+                    InternalDebugMsg "Now downloading update summary from " & updateURL, "ProcessProgramUpdateFile"
                     ProcessProgramUpdateFile = True
-                    
                 Else
-                    Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & updateURL & " patch file."
+                    InternalDebugMsg "WARNING! FormMain.RequestAsynchronousDownload refused to download update summary (" & updateURL & ")", "ProcessProgramUpdateFile"
                 End If
                 
-            'No update was found.  Exit now.
+            'No newer version was found.  Exit now.
             Else
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Update check performed successfully.  (No update available right now.)"
-                #End If
-            
+                InternalDebugMsg "Update check performed successfully.  (No update available right now.)", "ProcessProgramUpdateFile"
             End If
         
         Else
-            Debug.Print "WARNING! Program update XML did not pass basic validation.  Abandoning update process."
+            InternalDebugMsg "WARNING! Program update XML did not pass basic validation.  Abandoning update process.", "ProcessProgramUpdateFile"
         End If
     
     Else
-        Debug.Print "WARNING! Program update XML did not load successfully - check for an encoding error, maybe...?"
+        InternalDebugMsg "WARNING! Program update XML did not load successfully - check for an encoding error, maybe...?", "ProcessProgramUpdateFile"
     End If
     
 End Function
@@ -363,8 +347,6 @@ Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePat
         GetFailsafeChecksum = 0
     End If
     
-    'Debug.Print pdTagPosition & " (" & m_TrackStartPosition & ", " & m_TrackEndPosition & "): " & relativePath
-    
 End Function
 
 'If a program update file has successfully downloaded during this session, FormMain calls this function at program termination.
@@ -388,7 +370,7 @@ Public Function PatchProgramFiles() As Boolean
     'The patching .exe is embedded inside the update package.  Extract it now.
     Dim cPackage As pdPackagerLegacy
     Set cPackage = New pdPackagerLegacy
-    cPackage.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    cPackage.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     Dim patchFileName As String
     patchFileName = "PD_Update_Patcher.exe"
@@ -396,9 +378,7 @@ Public Function PatchProgramFiles() As Boolean
     If cPackage.ReadPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
         cPackage.AutoExtractSingleFile g_UserPreferences.GetProgramPath, patchFileName, , 99
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Patch program wasn't found inside the update package.  Patching will not proceed."
-        #End If
+        InternalDebugMsg "WARNING!  Patch program wasn't found inside the update package.  Patching will not proceed.", "PatchProgramFiles"
     End If
     
     'All that's left to do is shell the patch .exe.  It will wait for PD to close, then initiate the patching process.
@@ -416,13 +396,9 @@ Public Function PatchProgramFiles() As Boolean
     
     'ShellExecute returns a value > 32 if successful (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx)
     If (shellReturn < 32) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ShellExecute could not launch the updater!  It returned code #" & shellReturn & "."
-        #End If
+        InternalDebugMsg "ShellExecute could not launch the updater!  It returned code #" & shellReturn & ".", "PatchProgramFiles"
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ShellExecute returned success.  Updater should launch momentarily..."
-        #End If
+        InternalDebugMsg "ShellExecute returned success.  Updater should launch momentarily...", "PatchProgramFiles"
     End If
     
     'Exit now
@@ -449,9 +425,7 @@ End Function
 'As such, this function is called when PD starts. It scans the update folder for old temp files and deletes them as encountered.
 Public Sub CleanPreviousUpdateFiles()
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Looking for previous update files and cleaning as necessary..."
-    #End If
+    InternalDebugMsg "Looking for previous update files and cleaning as necessary...", "CleanPreviousUpdateFiles"
     
     'Use pdFSO to generate a list of .tmp files in the Update folder
     Dim tmpFileList As pdStringStack
@@ -469,13 +443,10 @@ Public Sub CleanPreviousUpdateFiles()
     
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
-        
-        Files.FileDeleteIfExists tmpFile
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Found and deleting update file: " & tmpFile
-        #End If
-    
+        If Files.FileExists(tmpFile) Then
+            Files.FileDeleteIfExists tmpFile
+            InternalDebugMsg "deleting update file: " & tmpFile, "CleanPreviousUpdateFiles"
+        End If
     Loop
         
     'Do the same thing for temp files in the base PD folder
@@ -483,13 +454,10 @@ Public Sub CleanPreviousUpdateFiles()
     If Files.RetrieveAllFiles(g_UserPreferences.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
-            
-            Files.FileDeleteIfExists tmpFile
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Found and deleting update file: " & tmpFile
-            #End If
-            
+            If Files.FileExists(tmpFile) Then
+                Files.FileDeleteIfExists tmpFile
+                InternalDebugMsg "deleting update file: " & tmpFile, "CleanPreviousUpdateFiles"
+            End If
         Loop
         
     End If
@@ -499,13 +467,10 @@ Public Sub CleanPreviousUpdateFiles()
     If Files.RetrieveAllFiles(PluginManager.GetPluginPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
-        
-            Files.FileDeleteIfExists tmpFile
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Found and deleting update file: " & tmpFile
-            #End If
-            
+            If Files.FileExists(tmpFile) Then
+                Files.FileDelete tmpFile
+                InternalDebugMsg "deleting update file: " & tmpFile, "CleanPreviousUpdateFiles"
+            End If
         Loop
         
     End If
@@ -524,23 +489,12 @@ Public Function WasProgramStartedViaRestart() As Boolean
     restartFile = g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
     If Files.FileExists(restartFile) Then
-        
         Files.FileDelete restartFile
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FYI: this session was started by an update process (PD_Update_Patcher is present)"
-        #End If
-        
+        InternalDebugMsg "this session was started by an update process (PD_Update_Patcher is present)", "WasProgramStartedViaRestart"
         WasProgramStartedViaRestart = True
-        
     Else
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FYI: this session was started by the user (PD_Update_Patcher is not present)"
-        #End If
-        
+        InternalDebugMsg "FYI: this session was started by the user (PD_Update_Patcher is not present)", "WasProgramStartedViaRestart"
         WasProgramStartedViaRestart = False
-        
     End If
     
 End Function
@@ -578,7 +532,7 @@ Public Sub StandardUpdateChecks()
         'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        FormMain.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
+        FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, g_UserPreferences.GetUpdatePath & "updates.xml"
         
     End If
     
@@ -598,9 +552,13 @@ Public Sub DisplayUpdateNotification()
     
     'Check user preferences; they can choose to ignore update notifications
     If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
-    
-        'Display the dialog
-        FormUpdateNotify.Show vbModeless, FormMain
+        
+        'Display the dialog, while yielding for the rare case that a modal dialog is already active
+        If (Not g_ModalDialogActive) Then
+            FormUpdateNotify.Show vbModeless, FormMain
+        Else
+            g_ShowUpdateNotification = True
+        End If
         
     End If
     
@@ -658,8 +616,8 @@ Public Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As 
     
 End Function
 
-'Outside functions can use this to request a human-readable string of the "friendly" update number (e.g. beta releases are properly identified and
-' bumped up to the next stable release).
+'Outside functions can use this to request a human-readable string of the "friendly" update number (e.g. beta releases are
+' properly identified and bumped up to the next stable release).
 Public Function GetUpdateVersion_Friendly() As String
     
     'Start by retrieving the literal version number
@@ -791,7 +749,7 @@ Public Function RetrieveVersionMajorMinorAsString(ByVal srcVersionString As Stri
     If (UBound(tmpArray) >= 1) Then
         RetrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
     Else
-        RetrieveVersionMajorMinorAsString = ""
+        RetrieveVersionMajorMinorAsString = vbNullString
     End If
 
 End Function
@@ -802,7 +760,7 @@ Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) 
     
     'An improperly formatted version number can cause failure; if this happens, we'll assume a revision of 0, which should
     ' force a re-download of the problematic file.
-    On Error GoTo cantFormatRevisionAsLong
+    On Error GoTo CantFormatRevisionAsLong
     
     'To avoid locale issues, replace any "," with "."
     If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
@@ -821,8 +779,7 @@ Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) 
     
     Exit Function
     
-cantFormatRevisionAsLong:
-
+CantFormatRevisionAsLong:
     RetrieveVersionRevisionAsLong = 0
 
 End Function
@@ -872,13 +829,20 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
             
         End If
         
-        'With both version numbers normalized, compare each entry in turn.
-        Dim newIsNewer As Boolean
-        newIsNewer = False
+        'To simplify comparisons, convert the string arrays to numeric ones
+        Dim oldVersionNums(0 To 3) As Long
+        Dim newVersionNums(0 To 3) As Long
+        For i = 0 To 3
+            oldVersionNums(i) = CLng(oldV(i))
+            newVersionNums(i) = CLng(newV(i))
+        Next i
         
-        'For each version, we will be comparing entries in turn, starting with the major version and working
-        ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures that
-        ' e.g. 6.6.0 does not update to 6.5.1.)
+        'With both version numbers normalized, compare each entry in turn.
+        Dim newIsNewer As Boolean: newIsNewer = False
+        
+        'For each version, we will compare numbers in turn, starting with the major version and working
+        ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures
+        ' that e.g. 6.6.0 does not update to 6.5.1.)
         Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean
                 
         For i = 0 To 3
@@ -888,46 +852,42 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
                 'Major version updates always trigger an update
                 Case 0
                 
-                    If (CLng(newV(i)) > CLng(oldV(i))) Then
+                    If (newVersionNums(i) > oldVersionNums(i)) Then
                         newIsNewer = True
                         Exit For
-                        
                     Else
-                        majorIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
+                        majorIsEqual = (newVersionNums(i) = oldVersionNums(i))
                     End If
                 
-                'Minor version updates trigger an update only if the major version matches
+                'Minor version updates trigger an update only if the major version matches (e.g. 1.0 will update to 1.2,
+                ' but 2.0 will not update to 1.2)
                 Case 1
                 
                     If majorIsEqual Then
-                        
-                        If (CLng(newV(i)) > CLng(oldV(i))) Then
+                        If (newVersionNums(i) > oldVersionNums(i)) Then
                             newIsNewer = True
                             Exit For
                         Else
-                            minorIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
+                            minorIsEqual = (newVersionNums(i) = oldVersionNums(i))
                         End If
-                        
                     End If
                 
                 'Build and revision updates follow the pattern above
                 Case 2
                 
                     If minorIsEqual Then
-                        
-                        If (CLng(newV(i)) > CLng(oldV(i))) Then
+                        If (newVersionNums(i) > oldVersionNums(i)) Then
                             newIsNewer = True
                             Exit For
                         Else
-                            revIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
+                            revIsEqual = (newVersionNums(i) = oldVersionNums(i))
                         End If
-                        
                     End If
                 
                 Case Else
                 
                     If revIsEqual Then
-                        newIsNewer = CBool(CLng(newV(i)) > CLng(oldV(i)))
+                        newIsNewer = (newVersionNums(i) > oldVersionNums(i))
                         Exit For
                     End If
                 
@@ -940,3 +900,18 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     End If
     
 End Function
+
+'Updates involve the Internet, so any number of things can go wrong.  PD versions (post-7.0) post a lot of internal
+' debug data throughout this module, to help us identify problems where we can.  Instead of inserting your own
+' "#IF DEBUGMODE = 1" lines, please route debugging data through here.
+Private Sub InternalDebugMsg(ByRef srcMsg As String, ByRef srcFunctionName As String, Optional ByVal errNumber As Long = 0, Optional ByRef errDescription As String = vbNullString)
+
+    #If DEBUGMODE = 1 Then
+        If (errNumber <> 0) Then
+            pdDebug.LogAction "WARNING!  Updates." & srcFunctionName & " reported an error (#" & CStr(errNumber) & "): " & errDescription & ".  Further details: " & srcMsg
+        Else
+            pdDebug.LogAction "Updates." & srcFunctionName & " reports: " & srcMsg, , True
+        End If
+    #End If
+
+End Sub
