@@ -469,7 +469,7 @@ End Function
 
 'Returns: TRUE if hotkeys are allowed to accumulate.
 Private Function CanIAccumulateAnAccelerator() As Boolean
-    CanIAccumulateAnAccelerator = (Not g_ModalDialogActive)
+    CanIAccumulateAnAccelerator = (Not Interface.IsModalDialogActive())
 End Function
 
 'Want to globally disable accelerators under certain circumstances?  Add code here to do it.

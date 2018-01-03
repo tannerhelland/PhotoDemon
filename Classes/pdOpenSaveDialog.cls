@@ -146,7 +146,9 @@ Public Function GetOpenFileName(ByRef FileName As String, _
                            Optional ByRef DlgTitle As String, _
                            Optional ByRef DefaultExt As String, _
                            Optional ByVal Owner As Long = 0&) As Boolean
-                           
+    
+    Interface.NotifySystemDialogState True
+    
     Dim lReturn As Long, lInitPathSize As Long, Flags As Long
     
     'Prep a relevant OFN struct
@@ -191,6 +193,7 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         Else
             lInitPathSize = MAX_PATH_LOAD_XP
         End If
+        
         s = FileName & String$(lInitPathSize - Len(FileName), 0)
         .lpstrFile = s
         .nMaxFile = lInitPathSize
@@ -213,7 +216,7 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error: too many images"
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_NORMAL
+            pdDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
         #End If
         
     End If
@@ -230,9 +233,9 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         
         If (Not MultiSelect) Then
         
-            If tmpOFN.nFileOffset <> 0 Then
-                lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1&
-                If lLen < 1& Then lLen = Len(tmpOFN.lpstrFile)
+            If (tmpOFN.nFileOffset <> 0) Then
+                lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1
+                If (lLen < 1) Then lLen = Len(tmpOFN.lpstrFile)
             Else
                 lLen = lstrlenW(StrPtr(tmpOFN.lpstrFile))
             End If
@@ -255,10 +258,12 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         
         Message "Load canceled. "
         GetOpenFileName = False
-        FileName = ""
-        FileTitle = ""
+        FileName = vbNullString
+        FileTitle = vbNullString
         
     End If
+    
+    Interface.NotifySystemDialogState False
                            
 End Function
 
@@ -274,6 +279,8 @@ Public Function GetSaveFileName(ByRef FileName As String, _
                            Optional ByRef DefaultExt As String, _
                            Optional ByVal Owner As Long = -1) As Boolean
 
+    Interface.NotifySystemDialogState True
+    
     Dim lReturn As Long, lInitPathSize As Long, Flags As Long
     
     'Prep a relevant OFN struct
@@ -354,5 +361,7 @@ Public Function GetSaveFileName(ByRef FileName As String, _
         GetSaveFileName = False
         
     End If
+    
+    Interface.NotifySystemDialogState False
     
 End Function

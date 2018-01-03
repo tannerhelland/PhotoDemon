@@ -554,10 +554,10 @@ Public Sub DisplayUpdateNotification()
     If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
         
         'Display the dialog, while yielding for the rare case that a modal dialog is already active
-        If (Not g_ModalDialogActive) Then
-            FormUpdateNotify.Show vbModeless, FormMain
-        Else
+        If Interface.IsModalDialogActive() Then
             g_ShowUpdateNotification = True
+        Else
+            FormUpdateNotify.Show vbModeless, FormMain
         End If
         
     End If

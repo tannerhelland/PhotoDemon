@@ -127,6 +127,10 @@ Private m_PopupIconsSmall() As Long, m_PopupIconsLarge() As Long
 ' large swaths of the interface to match.
 Private m_CurrentInterfaceID As String
 
+'Various program functions related to the main window disable themselves while modal dialogs (including common dialogs)
+' are active.  We track dialog state internally, although things like modal dialogs require external notifications.
+Private m_ModalDialogActive As Boolean, m_SystemDialogActive As Boolean
+
 Private Type FakeDWord
     wordOne As Integer
     wordTwo As Integer
@@ -910,6 +914,13 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
     
 End Sub
 
+Public Function IsModalDialogActive() As Boolean
+    IsModalDialogActive = m_ModalDialogActive Or m_SystemDialogActive
+End Function
+
+Public Sub NotifySystemDialogState(ByVal dialogIsActive As Boolean)
+    m_SystemDialogActive = dialogIsActive
+End Sub
 
 'For best results, any modal form should be shown via this function.  This function will automatically center the form over the main window,
 ' while also properly assigning ownership so that the dialog is truly on top of any active windows.  It also handles deactivation of
@@ -917,9 +928,9 @@ End Sub
 ' to another program while a modal dialog is active.
 Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, Optional ByVal doNotUnload As Boolean = False)
 
-    On Error GoTo showPDDialogError
+    On Error GoTo ShowPDDialogError
     
-    g_ModalDialogActive = True
+    m_ModalDialogActive = True
     
     'Reset our "last dialog result" tracker.  (We use "ignore" as the "default" value, as it's a value PD never utilizes internally.)
     m_LastShowDialogResult = vbIgnore
@@ -997,15 +1008,15 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
         Set dialogForm = Nothing
     End If
     
-    g_ModalDialogActive = False
+    m_ModalDialogActive = False
     
     Exit Sub
     
 'For reasons I can't yet ascertain, this function will sometimes fail, claiming that a modal window is already active.  If that happens,
 ' we can just exit.
-showPDDialogError:
+ShowPDDialogError:
 
-    g_ModalDialogActive = False
+    m_ModalDialogActive = False
 
 End Sub
 
@@ -1014,7 +1025,7 @@ End Sub
 Public Sub NotifyShowDialogResult(ByVal msgResult As VbMsgBoxResult, Optional ByVal nonStandardDialogSource As Boolean = False)
     
     'Only store the result if the dialog was initiated via ShowPDDialog, above
-    If g_ModalDialogActive Or nonStandardDialogSource Then m_LastShowDialogResult = msgResult
+    If m_ModalDialogActive Or nonStandardDialogSource Then m_LastShowDialogResult = msgResult
     
 End Sub
 

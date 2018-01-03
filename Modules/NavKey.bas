@@ -185,7 +185,7 @@ Public Function NotifyNavKeypress(ByRef childObject As Object, ByVal navKeyCode 
         If (navKeyCode = pdnk_Enter) Or (navKeyCode = pdnk_Escape) Then
             
             'See if this form 1) is a raised dialog, and 2) contains a command bar
-            If g_ModalDialogActive Then
+            If Interface.IsModalDialogActive() Then
             
                 If m_Forms(formIndex).DoesTypeOfControlExist(pdct_CommandBar) Then
                 
