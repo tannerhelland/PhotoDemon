@@ -371,7 +371,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Then
         
             'See if this form 1) is a raised dialog, and 2) contains a command bar
-            If g_ModalDialogActive Then
+            If Interface.IsModalDialogActive() Then
             
                 If Me.DoesTypeOfControlExist(pdct_CommandBar) Then
                 
