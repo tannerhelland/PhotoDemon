@@ -1681,7 +1681,7 @@ End Sub
 
 'Resize all currently active canvases.  This was an important function back when PD used an MDI engine, but now that we
 ' use our own tabbed interface, it's due for a major revisit.  If we could kill this function entirely, I'd be very happy.
-Public Sub UpdateMainLayout()
+Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
 
     'If the main form has been minimized, don't refresh anything
     If (FormMain.WindowState = vbMinimized) Then Exit Sub
@@ -1692,9 +1692,11 @@ Public Sub UpdateMainLayout()
     Toolboxes.CalculateNewToolboxRects mainRect, canvasRect
     
     'With toolbox positions successfully calculated, we can now synchronize each toolbox to its calculated rect.
-    Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
-    Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
-    Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
+    If resizeToolboxesToo Then
+        Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
+    End If
     
     'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
     ' Note that resizing the canvas rect will automatically trigger a redraw of the viewport, as necessary.

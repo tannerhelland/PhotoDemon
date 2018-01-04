@@ -344,12 +344,6 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
-   Begin VB.Line lnRightSeparator 
-      X1              =   136
-      X2              =   136
-      Y1              =   0
-      Y2              =   648
-   End
 End
 Attribute VB_Name = "toolbar_Toolbox"
 Attribute VB_GlobalNameSpace = False
@@ -520,14 +514,15 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         'Change the cursor to a resize cursor
         m_MouseEvents.SetSystemCursor IDC_SIZEWE
         
-        If (Button = vbLeftButton) Then
+        If ((Button And vbLeftButton) <> 0) Then
+        
             m_WeAreResponsibleForResize = True
             ReleaseCapture
             SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
             
             'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
             ' notify any neighboring toolboxes (and/or the central canvas)
-            Toolboxes.SetConstrainingSize PDT_LeftToolbox, Me.ScaleWidth
+            Toolboxes.SetConstrainingSize PDT_LeftToolbox, g_WindowManager.GetClientWidth(Me.hWnd)
             FormMain.UpdateMainLayout
             
             'A premature exit is required, because the end of this sub contains code to detect the release of the
@@ -579,45 +574,66 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub ReflowToolboxLayout()
-
-    Dim i As Long
     
-    'Before doing anything complicated, right-align the line separator
-    lnRightSeparator.x1 = Me.ScaleWidth - 1
-    lnRightSeparator.y1 = 0
-    lnRightSeparator.x2 = lnRightSeparator.x1
-    lnRightSeparator.y2 = Me.ScaleHeight
+    Dim continueWithReflow As Boolean
     
-    'We're also going to mark the right boundary for images, which allows for some padding when reflowing the interface
-    m_rightBoundary = Me.ScaleWidth - 3
+    Do
     
-    'Reflow label width first; they are easy because they simply match the width of the form
-    For i = 0 To ttlCategories.UBound
-        ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
-    Next i
+        continueWithReflow = True
     
-    lblRecording.SetWidth m_rightBoundary - (lblRecording.Left + FixDPI(2))
-    
-    'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
-    ' they are actual buttons and not persistent toggles), then the toolbox buttons.
-    
-    'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
-    ' according to a few simple rules:
-    ' 1) Title labels are handled first.  They always receive their own row.
-    ' 2) Buttons are laid out in groups.  The groups are hand-coded.
-    ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
-    '     pushed down to a new row.
-    ' 4) We repeat the pattern until all buttons and labels have been dealt with.
-    
-    Dim hOffset As Long, vOffset As Long
-    
-    'Start by establishing default values
-    m_hOffsetDefaultLabel = FixDPI(4) 'Left-position of labels
-    m_hOffsetDefaultButton = 0        'Left-position of left-most buttons
-    m_labelMarginBottom = FixDPI(4)   'Distance between the bottom of labels and the top of buttons
-    m_labelMarginTop = FixDPI(2)      'Distance between the bottom of buttons and top of labels
-    m_buttonMarginBottom = 0          'Distance between button rows
-    m_buttonMarginRight = 0           'Distance between buttons
+        'Mark the right boundary for images, which allows for some padding when reflowing the interface
+        Dim rightBoundPadding As Long
+        rightBoundPadding = Interface.FixDPI(3)
+        m_rightBoundary = g_WindowManager.GetClientWidth(Me.hWnd) - rightBoundPadding
+        
+        'Reflow label width first; they are easy because they simply match the width of the form
+        Dim i As Long
+        For i = 0 To ttlCategories.UBound
+            ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
+        Next i
+        
+        lblRecording.SetWidth m_rightBoundary - (lblRecording.Left + FixDPI(2))
+        
+        'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
+        ' they are actual buttons and not persistent toggles), then the toolbox buttons.
+        
+        'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
+        ' according to a few simple rules:
+        ' 1) Title labels are handled first.  They always receive their own row.
+        ' 2) Buttons are laid out in groups.  The groups are hand-coded.
+        ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
+        '     pushed down to a new row.
+        ' 4) We repeat the pattern until all buttons and labels have been dealt with.
+        
+        Dim hOffset As Long, vOffset As Long
+        
+        'Start by establishing default values
+        m_hOffsetDefaultLabel = FixDPI(4) 'Left-position of labels
+        m_hOffsetDefaultButton = 0        'Left-position of left-most buttons
+        m_labelMarginBottom = FixDPI(4)   'Distance between the bottom of labels and the top of buttons
+        m_labelMarginTop = FixDPI(2)      'Distance between the bottom of buttons and top of labels
+        m_buttonMarginBottom = 0          'Distance between button rows
+        m_buttonMarginRight = 0           'Distance between buttons
+        
+        'With all default values correctly calculated, we now want to ensure that the underlying form is a nice match
+        ' for our current button size.  Said another way, we want to force the toolbox's width to a clean multiple of
+        ' the current button size. (This minimizes dead space on the bar's right margin.)
+        Dim newWidth As Long
+        newWidth = g_WindowManager.GetClientWidth(Me.hWnd) - (m_hOffsetDefaultButton + rightBoundPadding)
+        newWidth = Int(newWidth \ m_ButtonWidth) * m_ButtonWidth
+        newWidth = newWidth + (m_hOffsetDefaultButton + rightBoundPadding)
+        
+        'If our calculated size differs from the actual size, resize immediately, and refresh the surrounding
+        ' client area to match.  (Note that we skip a few cases - specifically, if this resize is invalid because
+        ' it's too small, or if our newly calculated size matches our previously calculated size.)
+        If (newWidth <> g_WindowManager.GetClientWidth(Me.hWnd)) And (newWidth > Toolboxes.GetToolboxMinWidth(PDT_LeftToolbox)) Then
+            Toolboxes.SetConstrainingSize PDT_LeftToolbox, newWidth
+            g_WindowManager.SetSizeByHWnd Me.hWnd, newWidth, g_WindowManager.GetClientHeight(Me.hWnd), True
+            FormMain.UpdateMainLayout False
+            continueWithReflow = False
+        End If
+        
+    Loop While (Not continueWithReflow)
     
     'If category labels are displayed, make them visible now
     For i = 0 To ttlCategories.UBound
@@ -1254,13 +1270,6 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_ERASER).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
     cmdTools(PAINT_FILL).AssignTooltip shortcutText
-    
-    'The right separator line is colored according to the current shadow accent color
-    If (Not g_Themer Is Nothing) Then
-        lnRightSeparator.borderColor = g_Themer.GetGenericUIColor(UI_GrayDark)
-    Else
-        lnRightSeparator.borderColor = vbHighlight
-    End If
     
 End Sub
 
