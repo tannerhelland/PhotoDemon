@@ -119,6 +119,10 @@ Public Function GetToolboxVisibility(ByVal toolID As PD_Toolbox) As Boolean
     GetToolboxVisibility = m_Toolboxes(toolID).IsVisibleNow
 End Function
 
+Public Function GetToolboxMinWidth(ByVal toolID As PD_Toolbox) As Long
+    GetToolboxMinWidth = m_Toolboxes(toolID).MinSize
+End Function
+
 Public Function AreAllToolboxesHidden() As Boolean
     Dim atLeastOneBoxVisible As Boolean: atLeastOneBoxVisible = False
     Dim i As PD_Toolbox
