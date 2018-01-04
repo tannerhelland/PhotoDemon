@@ -42,12 +42,12 @@ End Enum
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.64"
+Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.71"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.9.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10800"
-Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.6"
+Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Private Const EXPECTED_ZSTD_VERSION As String = "10301"

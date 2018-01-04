@@ -1,4 +1,4 @@
-Copyright (C) 2001-2016 Cosmin Truta and the Contributing Authors.
+Copyright (C) 2001-2017 Cosmin Truta and the Contributing Authors.
 For the purpose of copyright and licensing, the list of Contributing
 Authors is available in the accompanying AUTHORS file.
 
