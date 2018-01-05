@@ -118,24 +118,24 @@ Private Const TA_NOUPDATECP = 0
 Private Const FONT_TRANSPARENT = &H3
 
 'Formatting constants for DrawText
-Private Const DT_TOP = &H0
-Private Const DT_LEFT = &H0
-Private Const DT_CENTER = &H1
-Private Const DT_RIGHT = &H2
-Private Const DT_VCENTER = &H4
-Private Const DT_BOTTOM = &H8
-Private Const DT_WORDBREAK = &H10
-Private Const DT_SINGLELINE = &H20
-Private Const DT_EXPANDTABS = &H40
-Private Const DT_TABSTOP = &H80
-Private Const DT_NOCLIP = &H100
-Private Const DT_EXTERNALLEADING = &H200
-Private Const DT_CALCRECT = &H400
-Private Const DT_NOPREFIX = &H800
-Private Const DT_INTERNAL = &H1000
-Private Const DT_EDITCONTROL = &H2000
-Private Const DT_PATH_ELLIPSIS = &H4000
-Private Const DT_END_ELLIPSIS = &H8000
+Private Const DT_TOP = &H0&
+Private Const DT_LEFT = &H0&
+Private Const DT_CENTER = &H1&
+Private Const DT_RIGHT = &H2&
+Private Const DT_VCENTER = &H4&
+Private Const DT_BOTTOM = &H8&
+Private Const DT_WORDBREAK = &H10&
+Private Const DT_SINGLELINE = &H20&
+Private Const DT_EXPANDTABS = &H40&
+Private Const DT_TABSTOP = &H80&
+Private Const DT_NOCLIP = &H100&
+Private Const DT_EXTERNALLEADING = &H200&
+Private Const DT_CALCRECT = &H400&
+Private Const DT_NOPREFIX = &H800&
+Private Const DT_INTERNAL = &H1000&
+Private Const DT_EDITCONTROL = &H2000&
+Private Const DT_PATH_ELLIPSIS = &H4000&
+Private Const DT_END_ELLIPSIS = &H8000&
 Private Const DT_MODIFYSTRING = &H10000
 Private Const DT_RTLREADING = &H20000
 Private Const DT_WORD_ELLIPSIS = &H40000
@@ -270,25 +270,27 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     If centerVertically Then dtFlags = DT_VCENTER Else dtFlags = DT_TOP
     If (Not treatAmpAsControlChar) Then dtFlags = dtFlags Or DT_NOPREFIX
     
+    Const ELLIPSES_METHOD As Long = DT_WORD_ELLIPSIS
+    
     Select Case curTextAlignment
         
         Case TA_LEFT
             If useEllipses Then
-                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_LEFT
+                dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_LEFT
             Else
                 dtFlags = dtFlags Or DT_SINGLELINE Or DT_LEFT Or DT_NOCLIP
             End If
             
         Case TA_RIGHT
             If useEllipses Then
-                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_RIGHT
+                dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_RIGHT
             Else
                 dtFlags = dtFlags Or DT_SINGLELINE Or DT_RIGHT Or DT_NOCLIP
             End If
             
         Case TA_CENTER
             If useEllipses Then
-                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_CENTER
+                dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_CENTER
             Else
                 dtFlags = dtFlags Or DT_SINGLELINE Or DT_CENTER Or DT_NOCLIP
             End If
@@ -618,7 +620,7 @@ End Function
 '  is less than the width of the rectangle, the width is reduced. If there is only one line of text, DrawText
 '  modifies the right side of the rectangle so that it bounds the last character in the line. In either case,
 '  DrawText returns the height of the formatted text but does not draw the text."
-Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVal maxAllowedWidth As Long, ByRef dstRect As RECTL) As Boolean
+Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVal maxAllowedWidth As Long, ByRef dstRect As RectL) As Boolean
 
     Dim tmpRect As RECT
     tmpRect.Left = 0
@@ -818,7 +820,7 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     stringWidth = GetWidthOfString(srcString)
     
     'If the string does not fit within the control size, shrink the font accordingly.
-    Do While (stringWidth > desiredWidth) And (m_origFontSize >= 7)
+    Do While (stringWidth > desiredWidth) And (m_origFontSize >= 7!)
         
         'Shrink the font size
         m_origFontSize = m_origFontSize - 0.5
@@ -826,9 +828,9 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
         'Recreate the font
         ReleaseFromDC
         DeleteCurrentFont
-        SetFontSize m_origFontSize
-        CreateFontObject
-        AttachToDC targetDC
+        Me.SetFontSize m_origFontSize
+        Me.CreateFontObject
+        Me.AttachToDC targetDC
         
         'Measure the new size
         stringWidth = GetWidthOfString(srcString)
@@ -848,12 +850,12 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     End If
     
     'If we created a temporary DC, free it now
-    If targetDC <> backupDC Then
+    If (targetDC <> backupDC) Then
         GDI.FreeMemoryDC targetDC
     
     'Conversely, if we were originally selected into a DC, restore that DC now
     Else
-        If backupDC <> 0 Then AttachToDC backupDC
+        If (backupDC <> 0) Then AttachToDC backupDC
     End If
     
 End Function

@@ -488,7 +488,7 @@ Friend Sub SetCaptionAutomaticPainting(ByVal newState As Boolean)
 End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any location of their choosing.
-Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
+Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False)
     If m_NoBackBufferMode Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
@@ -496,7 +496,7 @@ Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
     Else
         If newX = -1 Then newX = m_CustomCaptionRect.Left
         If newY = -1 Then newY = m_CustomCaptionRect.Top
-        m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, newX, newY, m_BackBuffer.GetDIBWidth - newX, m_BackBuffer.GetDIBHeight - newY, customColor
+        m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, newX, newY, m_BackBuffer.GetDIBWidth - newX, m_BackBuffer.GetDIBHeight - newY, customColor, useEllipses
     End If
 End Sub
 

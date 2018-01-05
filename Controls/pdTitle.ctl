@@ -374,13 +374,61 @@ Private Sub UpdateControlLayout()
     'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
     ' caption text ends vertically.)
     If ucSupport.IsCaptionActive Then
+    
+        'Normally, we would rely on the built-in caption support of the ucSupport class.  However, this control
+        ' behaves like a label by attempting to fit its caption into the available space as neatly as possible.
+        ' As such, the built-in ucSupport class will have already auto-sized its font based on the *previous*
+        ' control size.  Because we are inside the UpdateControlLayout sub, we know that the control's size
+        ' has changed, which means we need to perform a fresh size calculation.
         
-        If ucSupport.GetCaptionHeight + FixDPI(vTextPadding) * 2 <> bHeight Then
-            ucSupport.RequestNewSize bWidth, ucSupport.GetCaptionHeight + FixDPI(vTextPadding) * 2, False
+        'As such, start with a default caption instance.
+        Dim tmpFont As pdFont
+        Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize, Me.FontBold)
+        
+        'In this control, we auto-size the control's height according to the control's current font size.
+        ' In turn, the control's font size may be automatically shrunk to fit the control's available width.
+        
+        '(I know, it's a bit confusing.)
+        
+        'Let's start by determining how much horizontal space is available for the caption.
+        Dim maxCaptionWidth As Long
+        maxCaptionWidth = bWidth - (FixDPI(hTextPadding) * 2) - bHeight
+        
+        'Next, determine if our current caption + font-size combination fits within the available space.
+        Dim fontWidth As Long
+        fontWidth = tmpFont.GetWidthOfString(Me.Caption)
+        
+        'If our current caption + font-size fits in the available space, great!  Use our current font height
+        ' to auto-size this control accordingly.
+        If (fontWidth <= maxCaptionWidth) Then
+        
+            If (tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2 <> bHeight) Then
+                bHeight = tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2
+                ucSupport.RequestNewSize bWidth, bHeight, False
+            End If
+            
+        'If our current caption + font-size does *not* fit in the available space, we need to figure out what
+        ' size *does* fit.
+        Else
+        
+            Dim tmpFontSize As Single
+            tmpFontSize = Fonts.FindFontSizeSingleLine(Me.Caption, maxCaptionWidth, Me.FontSize, Me.FontBold, , , True)
+            
+            'Retrieve a new font object at the specified size.
+            Set tmpFont = Fonts.GetMatchingUIFont(tmpFontSize, Me.FontBold)
+            
+            'Use that font's height to calculate a new height for this control
+            If (tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2 <> bHeight) Then
+                bHeight = tmpFont.GetHeightOfString(Me.Caption) + FixDPI(vTextPadding) * 2
+                ucSupport.RequestNewSize bWidth, bHeight, False
+            End If
+            
         End If
         
-        'The control and backbuffer are now guaranteed to be the proper size.
-        
+        'The control and backbuffer are now guaranteed to be the proper size.  Update our internal trackers.
+        bWidth = ucSupport.GetBackBufferWidth
+        bHeight = ucSupport.GetBackBufferHeight
+    
         'For caption rendering purposes, we need to determine a target rectangle for the caption itself.  The ucSupport class
         ' will automatically fit the caption within this area, regardless of the currently selected font size.
         With m_CaptionRect
@@ -390,6 +438,7 @@ Private Sub UpdateControlLayout()
             
             'The right measurement is the only complicated one, as it requires padding so we have room to render the drop-down arrow.
             .Right = bWidth - FixDPI(hTextPadding) * 2 - bHeight
+            If (.Right < .Left) Then .Right = .Left + 1
             
             'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
             ucSupport.SetCaptionCustomPosition .Left, .Top, .Right - .Left, .Bottom - .Top
@@ -505,6 +554,10 @@ Private Sub RedrawBackBuffer()
         cPen.SetPenWidth 1#
         cPen.CreatePenFromBrush cBrush
         m_Painter.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
+        
+        'For convenience, you can uncomment this line to also paint the bottom boundary of the control.
+        ' I've used this while trying to perfect rendering layouts.
+        'm_Painter.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
         
         ctlRect.Top = ctlRect.Top - 1
         ctlRect.Width = ctlRect.Width - 1

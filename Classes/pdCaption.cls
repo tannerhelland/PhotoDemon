@@ -281,7 +281,7 @@ Friend Sub SetControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
 End Sub
 
 'Returns the width of the current caption, in pixels, with autofit active.  No padding is applied.
-' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously)s affect the width of the string, but because the width
+' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously) affects the width of the string, but because the width
 ' of a wordwrap string is simply the container width - which the caller must specify - there's no point in returning it here.
 Friend Function GetCaptionWidth() As Single
     
