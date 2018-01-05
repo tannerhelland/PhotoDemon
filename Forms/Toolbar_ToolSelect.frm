@@ -586,28 +586,7 @@ Private Sub ReflowToolboxLayout()
         rightBoundPadding = Interface.FixDPI(3)
         m_rightBoundary = g_WindowManager.GetClientWidth(Me.hWnd) - rightBoundPadding
         
-        'Reflow label width first; they are easy because they simply match the width of the form
-        Dim i As Long
-        For i = 0 To ttlCategories.UBound
-            ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
-        Next i
-        
-        lblRecording.SetWidth m_rightBoundary - (lblRecording.Left + FixDPI(2))
-        
-        'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
-        ' they are actual buttons and not persistent toggles), then the toolbox buttons.
-        
-        'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
-        ' according to a few simple rules:
-        ' 1) Title labels are handled first.  They always receive their own row.
-        ' 2) Buttons are laid out in groups.  The groups are hand-coded.
-        ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
-        '     pushed down to a new row.
-        ' 4) We repeat the pattern until all buttons and labels have been dealt with.
-        
-        Dim hOffset As Long, vOffset As Long
-        
-        'Start by establishing default values
+        'Establish default positioning values (some of which are dependent on screen DPI)
         m_hOffsetDefaultLabel = FixDPI(4) 'Left-position of labels
         m_hOffsetDefaultButton = 0        'Left-position of left-most buttons
         m_labelMarginBottom = FixDPI(4)   'Distance between the bottom of labels and the top of buttons
@@ -619,7 +598,7 @@ Private Sub ReflowToolboxLayout()
         ' for our current button size.  Said another way, we want to force the toolbox's width to a clean multiple of
         ' the current button size. (This minimizes dead space on the bar's right margin.)
         Dim newWidth As Long
-        newWidth = g_WindowManager.GetClientWidth(Me.hWnd) - (m_hOffsetDefaultButton + rightBoundPadding)
+        newWidth = g_WindowManager.GetClientWidth(Me.hWnd) - (m_hOffsetDefaultButton + rightBoundPadding) + 1
         newWidth = Int(newWidth \ m_ButtonWidth) * m_ButtonWidth
         newWidth = newWidth + (m_hOffsetDefaultButton + rightBoundPadding)
         
@@ -635,6 +614,27 @@ Private Sub ReflowToolboxLayout()
         
     Loop While (Not continueWithReflow)
     
+    'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
+    ' they are actual buttons and not persistent toggles), then the toolbox buttons.
+    
+    'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
+    ' according to a few simple rules:
+    ' 1) Title labels are handled first.  They always receive their own row.
+    ' 2) Buttons are laid out in groups.  The groups are hand-coded.
+    ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
+    '     pushed down to a new row.
+    ' 4) We repeat the pattern until all buttons and labels have been dealt with.
+    
+    Dim hOffset As Long, vOffset As Long
+        
+    'Reflow label width first; they are easy because they simply match the width of the form
+    Dim i As Long
+    For i = 0 To ttlCategories.UBound
+        ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
+    Next i
+    
+    lblRecording.SetWidth m_rightBoundary - (lblRecording.GetLeft + FixDPI(2))
+        
     'If category labels are displayed, make them visible now
     For i = 0 To ttlCategories.UBound
         ttlCategories(i).Visible = m_ShowCategoryLabels

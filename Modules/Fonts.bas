@@ -634,11 +634,10 @@ End Sub
 
 Public Function ConvertToGDIFontSize(ByVal srcFontSize As Single) As Long
     If (m_LogPixelsY = 0#) Then UpdateLogFontValues
-    ConvertToGDIFontSize = -1# * Internal_MulDiv(srcFontSize, m_LogPixelsY, 72#)
+    ConvertToGDIFontSize = -1# * Internal_MulDiv(srcFontSize, m_LogPixelsY, 72!)
 End Function
 
-'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
-' MulDiv's rounding behavior as well.
+'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.
 Private Function Internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
     Internal_MulDiv = Int((srcNumber * srcNumerator) / srcDenominator)
 End Function
