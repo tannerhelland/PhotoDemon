@@ -3,10 +3,10 @@ Begin VB.Form FormBatchWizard
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Batch Process Wizard"
-   ClientHeight    =   9060
+   ClientHeight    =   8190
    ClientLeft      =   45
-   ClientTop       =   315
-   ClientWidth     =   15360
+   ClientTop       =   390
+   ClientWidth     =   13200
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,15 +19,15 @@ Begin VB.Form FormBatchWizard
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   604
+   ScaleHeight     =   546
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1024
+   ScaleWidth      =   880
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButton cmdPrevious 
       Height          =   615
-      Left            =   8160
+      Left            =   6060
       TabIndex        =   0
-      Top             =   8355
+      Top             =   7530
       Width           =   2700
       _ExtentX        =   4763
       _ExtentY        =   1085
@@ -36,9 +36,9 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
-      Left            =   10920
+      Left            =   8820
       TabIndex        =   1
-      Top             =   8355
+      Top             =   7530
       Width           =   2700
       _ExtentX        =   4763
       _ExtentY        =   1085
@@ -46,22 +46,22 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
-      Left            =   13860
+      Left            =   11760
       TabIndex        =   2
-      Top             =   8355
+      Top             =   7530
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   1085
       Caption         =   "&Cancel"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
-      Height          =   7365
+      Height          =   6705
       Index           =   0
       Left            =   120
-      Top             =   780
-      Width           =   3135
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   720
+      Width           =   2940
+      _ExtentX        =   5186
+      _ExtentY        =   11827
       Caption         =   "(text populated at run-time)"
       ForeColor       =   4210752
       Layout          =   1
@@ -74,25 +74,213 @@ Begin VB.Form FormBatchWizard
       _ExtentX        =   26167
       _ExtentY        =   714
       Caption         =   "Step 1: select the photo editing action(s) to apply to each image"
+      FontBold        =   -1  'True
       FontSize        =   12
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
+      Height          =   6780
+      Index           =   3
+      Left            =   3300
+      TabIndex        =   8
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdDropDown cmbOutputOptions 
+         Height          =   375
+         Left            =   480
+         TabIndex        =   46
+         Top             =   1680
+         Width           =   9255
+         _ExtentX        =   16325
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButton cmdSelectOutputPath 
+         Height          =   615
+         Left            =   6600
+         TabIndex        =   26
+         Top             =   330
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "Select destination folder..."
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdTextBox txtRenameRemove 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   27
+         Top             =   4440
+         Width           =   4695
+         _ExtentX        =   8281
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendBack 
+         Height          =   315
+         Left            =   5640
+         TabIndex        =   28
+         Top             =   3360
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendFront 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   29
+         Top             =   3360
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+         Text            =   "NEW_"
+      End
+      Begin PhotoDemon.pdTextBox txtOutputPath 
+         Height          =   315
+         Left            =   480
+         TabIndex        =   30
+         Top             =   480
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   556
+         Text            =   "C:\"
+      End
+      Begin PhotoDemon.pdRadioButton optCase 
+         Height          =   330
+         Index           =   0
+         Left            =   840
+         TabIndex        =   15
+         Top             =   5520
+         Width           =   2250
+         _ExtentX        =   3969
+         _ExtentY        =   582
+         Caption         =   "lowercase"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkRenamePrefix 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   11
+         Top             =   2880
+         Width           =   4365
+         _ExtentX        =   7699
+         _ExtentY        =   582
+         Caption         =   "add a prefix to each filename:"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameSuffix 
+         Height          =   330
+         Left            =   5280
+         TabIndex        =   12
+         Top             =   2880
+         Width           =   4530
+         _ExtentX        =   7990
+         _ExtentY        =   582
+         Caption         =   "add a suffix to each filename:"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameRemove 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   13
+         Top             =   3960
+         Width           =   9225
+         _ExtentX        =   16272
+         _ExtentY        =   582
+         Caption         =   "remove the following text (if found) from each filename:"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameCase 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   14
+         Top             =   5040
+         Width           =   9165
+         _ExtentX        =   16166
+         _ExtentY        =   582
+         Caption         =   "force each filename, including extension, to the following case:"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdRadioButton optCase 
+         Height          =   330
+         Index           =   1
+         Left            =   3240
+         TabIndex        =   16
+         Top             =   5520
+         Width           =   2625
+         _ExtentX        =   4630
+         _ExtentY        =   582
+         Caption         =   "UPPERCASE"
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameSpaces 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   17
+         Top             =   6060
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   582
+         Caption         =   "replace spaces in filenames with underscores"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
+         Height          =   330
+         Left            =   5760
+         TabIndex        =   18
+         Top             =   4440
+         Width           =   3885
+         _ExtentX        =   6853
+         _ExtentY        =   582
+         Caption         =   "use case-sensitive matching"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdLabel lblDstFilename 
+         Height          =   285
+         Left            =   120
+         Top             =   1200
+         Width           =   9555
+         _ExtentX        =   16854
+         _ExtentY        =   503
+         Caption         =   "after images are processed, save them with the following name:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblOptionalText 
+         Height          =   285
+         Left            =   120
+         Top             =   2400
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   503
+         Caption         =   "additional rename options"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblDstFolder 
+         Height          =   285
+         Left            =   120
+         Top             =   0
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   503
+         Caption         =   "output images to this folder:"
+         ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
       Index           =   2
-      Left            =   3480
+      Left            =   3300
       TabIndex        =   5
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
       Begin PhotoDemon.pdButton cmdExportSettings 
          Height          =   735
          Left            =   720
          TabIndex        =   48
-         Top             =   2520
-         Width           =   7335
-         _ExtentX        =   12938
+         Top             =   2400
+         Width           =   8895
+         _ExtentX        =   15690
          _ExtentY        =   1296
          Caption         =   "set export settings for this format..."
       End
@@ -100,9 +288,9 @@ Begin VB.Form FormBatchWizard
          Height          =   375
          Left            =   720
          TabIndex        =   47
-         Top             =   1920
-         Width           =   7335
-         _ExtentX        =   12938
+         Top             =   1800
+         Width           =   8895
+         _ExtentX        =   15690
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdRadioButton optFormat 
@@ -110,10 +298,10 @@ Begin VB.Form FormBatchWizard
          Index           =   0
          Left            =   120
          TabIndex        =   9
-         Top             =   120
-         Width           =   10515
-         _ExtentX        =   18547
-         _ExtentY        =   582
+         Top             =   0
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   661
          Caption         =   "keep images in their original format"
          Value           =   -1  'True
       End
@@ -122,63 +310,63 @@ Begin VB.Form FormBatchWizard
          Index           =   1
          Left            =   120
          TabIndex        =   10
-         Top             =   1320
-         Width           =   10515
-         _ExtentX        =   18547
-         _ExtentY        =   582
+         Top             =   1200
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   661
          Caption         =   "convert all images to a new format"
       End
       Begin PhotoDemon.pdLabel lblExplanationFormat 
          Height          =   600
          Left            =   720
-         Top             =   540
-         Width           =   10980
-         _ExtentX        =   0
-         _ExtentY        =   0
+         Top             =   420
+         Width           =   8880
+         _ExtentX        =   15663
+         _ExtentY        =   1058
          Caption         =   ""
          ForeColor       =   4210752
          Layout          =   1
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
+      Height          =   6780
       Index           =   0
-      Left            =   3480
+      Left            =   3300
       TabIndex        =   4
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
       Begin PhotoDemon.pdButtonStrip btsPhotoOps 
          Height          =   975
          Left            =   120
          TabIndex        =   31
-         Top             =   120
-         Width           =   5775
-         _ExtentX        =   10186
+         Top             =   0
+         Width           =   9615
+         _ExtentX        =   16960
          _ExtentY        =   1720
          Caption         =   "apply photo editing actions"
       End
       Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   720
          Index           =   1
-         Left            =   360
-         Top             =   1320
-         Width           =   10815
-         _ExtentX        =   19076
+         Left            =   240
+         Top             =   1200
+         Width           =   9360
+         _ExtentX        =   16510
          _ExtentY        =   1270
          Caption         =   "if you only want to rename images or change image formats, use this option "
          ForeColor       =   4210752
          Layout          =   1
       End
       Begin PhotoDemon.pdContainer picPhotoEdits 
-         Height          =   6135
+         Height          =   5400
          Left            =   120
          TabIndex        =   32
          Top             =   1200
-         Width           =   11175
-         _ExtentX        =   19711
-         _ExtentY        =   10821
+         Width           =   9735
+         _ExtentX        =   17171
+         _ExtentY        =   9525
          Begin VB.PictureBox picResizeDemo 
             Appearance      =   0  'Flat
             AutoRedraw      =   -1  'True
@@ -186,32 +374,32 @@ Begin VB.Form FormBatchWizard
             BorderStyle     =   0  'None
             ForeColor       =   &H80000008&
             Height          =   750
-            Left            =   7200
+            Left            =   6720
             ScaleHeight     =   50
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   191
             TabIndex        =   36
-            Top             =   3945
+            Top             =   2880
             Width           =   2865
          End
          Begin PhotoDemon.pdDropDown cmbResizeFit 
             Height          =   615
             Left            =   720
             TabIndex        =   33
-            Top             =   3960
-            Width           =   6255
-            _ExtentX        =   11033
+            Top             =   2850
+            Width           =   5895
+            _ExtentX        =   10398
             _ExtentY        =   1085
             Caption         =   "resize image by"
-            FontSizeCaption =   11
+            FontSizeCaption =   10
          End
          Begin PhotoDemon.pdButton cmdSelectMacro 
             Height          =   615
-            Left            =   8160
+            Left            =   6960
             TabIndex        =   34
-            Top             =   5370
-            Width           =   3015
-            _ExtentX        =   5318
+            Top             =   4170
+            Width           =   2775
+            _ExtentX        =   4895
             _ExtentY        =   1085
             Caption         =   "Select macro..."
             FontSize        =   9
@@ -220,9 +408,9 @@ Begin VB.Form FormBatchWizard
             Height          =   315
             Left            =   600
             TabIndex        =   35
-            Top             =   5520
-            Width           =   7335
-            _ExtentX        =   12938
+            Top             =   4320
+            Width           =   6255
+            _ExtentX        =   11033
             _ExtentY        =   556
             Text            =   "no macro selected"
          End
@@ -231,10 +419,10 @@ Begin VB.Form FormBatchWizard
             Index           =   2
             Left            =   120
             TabIndex        =   37
-            Top             =   4950
-            Width           =   10020
-            _ExtentX        =   17674
-            _ExtentY        =   582
+            Top             =   3840
+            Width           =   9540
+            _ExtentX        =   16828
+            _ExtentY        =   529
             Caption         =   "apply other actions from a saved macro file"
             Value           =   0
          End
@@ -243,7 +431,7 @@ Begin VB.Form FormBatchWizard
             Index           =   1
             Left            =   120
             TabIndex        =   38
-            Top             =   600
+            Top             =   480
             Width           =   10020
             _ExtentX        =   17674
             _ExtentY        =   582
@@ -255,7 +443,7 @@ Begin VB.Form FormBatchWizard
             Index           =   0
             Left            =   120
             TabIndex        =   39
-            Top             =   120
+            Top             =   0
             Width           =   10020
             _ExtentX        =   17674
             _ExtentY        =   582
@@ -263,84 +451,95 @@ Begin VB.Form FormBatchWizard
             Value           =   0
          End
          Begin PhotoDemon.pdResize ucResize 
-            Height          =   2850
-            Left            =   600
+            Height          =   1650
+            Left            =   360
             TabIndex        =   40
-            Top             =   1080
-            Width           =   8775
-            _ExtentX        =   15478
-            _ExtentY        =   5027
+            Top             =   960
+            Width           =   9255
+            _ExtentX        =   16325
+            _ExtentY        =   2910
             UnknownSizeMode =   -1  'True
          End
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7500
+      Height          =   6780
       Index           =   1
-      Left            =   3480
+      Left            =   3300
       TabIndex        =   3
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdLabel lblCurrentFile 
+         Height          =   285
+         Left            =   330
+         Top             =   3570
+         Width           =   9405
+         _ExtentX        =   16589
+         _ExtentY        =   503
+         Caption         =   ""
+         FontSize        =   9
+      End
       Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
          Height          =   375
-         Left            =   240
+         Left            =   225
          TabIndex        =   44
-         Top             =   6435
-         Width           =   3500
-         _ExtentX        =   6165
+         Top             =   5670
+         Width           =   3255
+         _ExtentX        =   5741
          _ExtentY        =   661
          Caption         =   "include subfolders"
          Value           =   0
       End
       Begin PhotoDemon.pdListBox lstFiles 
-         Height          =   4335
+         Height          =   3405
          Left            =   120
          TabIndex        =   42
-         Top             =   120
-         Width           =   8295
-         _ExtentX        =   14631
-         _ExtentY        =   7646
+         Top             =   0
+         Width           =   6465
+         _ExtentX        =   11404
+         _ExtentY        =   6006
          Caption         =   "current batch list"
+         FontSize        =   9
       End
       Begin PhotoDemon.pdButton cmdSaveList 
          Height          =   615
-         Left            =   8040
+         Left            =   6960
          TabIndex        =   19
-         Top             =   5760
-         Width           =   3500
-         _ExtentX        =   6165
+         Top             =   4995
+         Width           =   2775
+         _ExtentX        =   5318
          _ExtentY        =   1085
          Caption         =   "save list..."
       End
       Begin PhotoDemon.pdButton cmdLoadList 
          Height          =   615
-         Left            =   8040
+         Left            =   6960
          TabIndex        =   20
-         Top             =   5040
-         Width           =   3500
-         _ExtentX        =   6165
+         Top             =   4290
+         Width           =   2775
+         _ExtentX        =   5318
          _ExtentY        =   1085
          Caption         =   "load list..."
       End
       Begin PhotoDemon.pdButton cmdRemoveAll 
          Height          =   615
-         Left            =   4200
+         Left            =   3600
          TabIndex        =   21
-         Top             =   6840
-         Width           =   3495
-         _ExtentX        =   6165
+         Top             =   6045
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   1085
          Caption         =   "erase entire list"
       End
       Begin PhotoDemon.pdButton cmdRemove 
          Height          =   615
-         Left            =   4200
+         Left            =   3600
          TabIndex        =   22
-         Top             =   5040
-         Width           =   3495
-         _ExtentX        =   6165
+         Top             =   4290
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   1085
          Caption         =   "remove selected image"
       End
@@ -348,9 +547,9 @@ Begin VB.Form FormBatchWizard
          Height          =   615
          Left            =   240
          TabIndex        =   23
-         Top             =   5040
-         Width           =   3500
-         _ExtentX        =   6165
+         Top             =   4290
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   1085
          Caption         =   "add individual images..."
       End
@@ -368,20 +567,20 @@ Begin VB.Form FormBatchWizard
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00FFFFFF&
-         Height          =   3405
-         Left            =   8520
-         ScaleHeight     =   225
+         Height          =   2925
+         Left            =   6600
+         ScaleHeight     =   193
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   207
          TabIndex        =   6
-         Top             =   600
+         Top             =   465
          Width           =   3135
       End
       Begin PhotoDemon.pdCheckBox chkEnablePreview 
          Height          =   330
-         Left            =   8520
+         Left            =   6600
          TabIndex        =   7
-         Top             =   4080
+         Top             =   0
          Width           =   3150
          _ExtentX        =   5556
          _ExtentY        =   582
@@ -390,9 +589,9 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdLabel lblFiles 
          Height          =   285
          Left            =   120
-         Top             =   4680
-         Width           =   3555
-         _ExtentX        =   6271
+         Top             =   3930
+         Width           =   3315
+         _ExtentX        =   5847
          _ExtentY        =   503
          Caption         =   "add images"
          FontSize        =   12
@@ -400,10 +599,10 @@ Begin VB.Form FormBatchWizard
       End
       Begin PhotoDemon.pdLabel lblModify 
          Height          =   285
-         Left            =   4080
-         Top             =   4680
-         Width           =   3525
-         _ExtentX        =   6218
+         Left            =   3480
+         Top             =   3930
+         Width           =   3285
+         _ExtentX        =   5794
          _ExtentY        =   503
          Caption         =   "modify list"
          FontSize        =   12
@@ -411,10 +610,10 @@ Begin VB.Form FormBatchWizard
       End
       Begin PhotoDemon.pdLabel lblLoadSaveList 
          Height          =   285
-         Left            =   7920
-         Top             =   4680
-         Width           =   3705
-         _ExtentX        =   6535
+         Left            =   6840
+         Top             =   3930
+         Width           =   2970
+         _ExtentX        =   5239
          _ExtentY        =   503
          Caption         =   "load / save list"
          FontSize        =   12
@@ -424,43 +623,43 @@ Begin VB.Form FormBatchWizard
          Height          =   615
          Left            =   240
          TabIndex        =   41
-         Top             =   5760
-         Width           =   3500
-         _ExtentX        =   6165
+         Top             =   4995
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   1085
          Caption         =   "add entire folder(s)..."
       End
       Begin PhotoDemon.pdButton cmdRemoveFolder 
          Height          =   615
-         Left            =   4200
+         Left            =   3600
          TabIndex        =   43
-         Top             =   5760
-         Width           =   3495
-         _ExtentX        =   6165
+         Top             =   4995
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   1085
          Caption         =   "remove all images in this folder"
       End
       Begin PhotoDemon.pdCheckBox chkRemoveSubfolders 
          Height          =   375
-         Left            =   4200
+         Left            =   3585
          TabIndex        =   45
-         Top             =   6435
-         Width           =   3495
-         _ExtentX        =   6165
+         Top             =   5670
+         Width           =   3135
+         _ExtentX        =   5530
          _ExtentY        =   661
          Caption         =   "include subfolders"
          Value           =   0
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
+      Height          =   6780
       Index           =   4
-      Left            =   3480
+      Left            =   3300
       TabIndex        =   24
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
       Begin VB.PictureBox picBatchProgress 
          Appearance      =   0  'Flat
          BackColor       =   &H8000000D&
@@ -470,209 +669,22 @@ Begin VB.Form FormBatchWizard
          Left            =   240
          ScaleHeight     =   25
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   753
+         ScaleWidth      =   629
          TabIndex        =   25
-         Top             =   3360
-         Width           =   11295
+         Top             =   3120
+         Width           =   9435
       End
       Begin PhotoDemon.pdLabel lblBatchProgress 
          Height          =   645
          Left            =   285
-         Top             =   2640
-         Width           =   11205
+         Top             =   2400
+         Width           =   9435
          _ExtentX        =   0
          _ExtentY        =   0
          Alignment       =   2
          Caption         =   "(batch conversion process will appear here at run-time)"
          ForeColor       =   -2147483640
          Layout          =   1
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
-      Index           =   3
-      Left            =   3480
-      TabIndex        =   8
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cmbOutputOptions 
-         Height          =   375
-         Left            =   480
-         TabIndex        =   46
-         Top             =   1800
-         Width           =   7455
-         _ExtentX        =   13150
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButton cmdSelectOutputPath 
-         Height          =   615
-         Left            =   8280
-         TabIndex        =   26
-         Top             =   435
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "Select destination folder..."
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdTextBox txtRenameRemove 
-         Height          =   315
-         Left            =   840
-         TabIndex        =   27
-         Top             =   4560
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   556
-      End
-      Begin PhotoDemon.pdTextBox txtAppendBack 
-         Height          =   315
-         Left            =   6120
-         TabIndex        =   28
-         Top             =   3480
-         Width           =   4575
-         _ExtentX        =   8070
-         _ExtentY        =   556
-      End
-      Begin PhotoDemon.pdTextBox txtAppendFront 
-         Height          =   315
-         Left            =   840
-         TabIndex        =   29
-         Top             =   3480
-         Width           =   4335
-         _ExtentX        =   7646
-         _ExtentY        =   556
-         Text            =   "NEW_"
-      End
-      Begin PhotoDemon.pdTextBox txtOutputPath 
-         Height          =   315
-         Left            =   480
-         TabIndex        =   30
-         Top             =   600
-         Width           =   7455
-         _ExtentX        =   13150
-         _ExtentY        =   556
-         Text            =   "C:\"
-      End
-      Begin PhotoDemon.pdRadioButton optCase 
-         Height          =   330
-         Index           =   0
-         Left            =   840
-         TabIndex        =   15
-         Top             =   5640
-         Width           =   2250
-         _ExtentX        =   3969
-         _ExtentY        =   582
-         Caption         =   "lowercase"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkRenamePrefix 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   11
-         Top             =   3000
-         Width           =   4650
-         _ExtentX        =   8202
-         _ExtentY        =   582
-         Caption         =   "add a prefix to each filename:"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameSuffix 
-         Height          =   330
-         Left            =   5760
-         TabIndex        =   12
-         Top             =   3000
-         Width           =   4650
-         _ExtentX        =   8202
-         _ExtentY        =   582
-         Caption         =   "add a suffix to each filename:"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameRemove 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   13
-         Top             =   4080
-         Width           =   6780
-         _ExtentX        =   11959
-         _ExtentY        =   582
-         Caption         =   "remove the following text (if found) from each filename:"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameCase 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   14
-         Top             =   5160
-         Width           =   11205
-         _ExtentX        =   19764
-         _ExtentY        =   582
-         Caption         =   "force each filename, including extension, to the following case:"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdRadioButton optCase 
-         Height          =   330
-         Index           =   1
-         Left            =   3240
-         TabIndex        =   16
-         Top             =   5640
-         Width           =   2625
-         _ExtentX        =   4630
-         _ExtentY        =   582
-         Caption         =   "UPPERCASE"
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameSpaces 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   17
-         Top             =   6240
-         Width           =   11205
-         _ExtentX        =   19764
-         _ExtentY        =   582
-         Caption         =   "replace spaces in filenames with underscores"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
-         Height          =   330
-         Left            =   7560
-         TabIndex        =   18
-         Top             =   4560
-         Width           =   4125
-         _ExtentX        =   7276
-         _ExtentY        =   582
-         Caption         =   "use case-sensitive matching"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdLabel lblDstFilename 
-         Height          =   285
-         Left            =   120
-         Top             =   1320
-         Width           =   11235
-         _ExtentX        =   19817
-         _ExtentY        =   503
-         Caption         =   "after images are processed, save them with the following name:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblOptionalText 
-         Height          =   285
-         Left            =   120
-         Top             =   2520
-         Width           =   10440
-         _ExtentX        =   18415
-         _ExtentY        =   503
-         Caption         =   "additional rename options"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblDstFolder 
-         Height          =   285
-         Left            =   120
-         Top             =   120
-         Width           =   7815
-         _ExtentX        =   13785
-         _ExtentY        =   503
-         Caption         =   "output images to this folder:"
-         ForeColor       =   4210752
       End
    End
 End
@@ -760,6 +772,7 @@ Private Sub chkEnablePreview_Click()
         
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     If CBool(chkEnablePreview) Then
+        
         If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex), True
         
     'If the user is disabling previews, clear the picture box and display a notice
@@ -1572,6 +1585,8 @@ End Sub
 'Update the active image preview in the top-right
 Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpdate As Boolean = False)
     
+    lblCurrentFile.Caption = srcImagePath
+    
     'Only redraw the preview if it doesn't match the last image we previewed
     If (CBool(chkEnablePreview) And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True) Or forceUpdate)) Then
     
@@ -1939,3 +1954,4 @@ Private Sub UpdatePhotoOpVisibility()
         picPhotoEdits.Visible = True
     End If
 End Sub
+
