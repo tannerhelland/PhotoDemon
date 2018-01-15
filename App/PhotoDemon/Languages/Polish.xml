@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4962,13 +4962,13 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Spłaszczony obraz</translation>
+<original>Merge visible layers</original>
+<translation>Scalanie widocznych warstw</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Scalanie widocznych warstw</translation>
+<original>Flatten image</original>
+<translation>Spłaszczony obraz</translation>
 </phrase>
 
 <phrase>
@@ -10771,6 +10771,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Wybierz folder docelowy</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>małe</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>dodać przedrostek do każdego pliku</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>dodać przyrostek do każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>usuń następujący tekst (jeśli znaleziona) z każdego pliku</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>zmusić każdego pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>DUŻE LITERY</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>zastąpienie spacji w nazwach plików z podkreśleniami</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>używać liter przy dopasowanie</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>po zdjęcia są przetwarzane, zapisz je z następującą nazwą</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Dodatkowe opcje Rename</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>obrazy wyjściowe do tego folderu</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>ustawienia eksportu do tego formatu</translation>
 </phrase>
@@ -10883,66 +10943,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Pojawi się tutaj proces przekształcenia partii w czasie wykonywania)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Wybierz folder docelowy</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>małe</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>dodać przedrostek do każdego pliku</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>dodać przyrostek do każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>usuń następujący tekst (jeśli znaleziona) z każdego pliku</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>zmusić każdego pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>DUŻE LITERY</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>zastąpienie spacji w nazwach plików z podkreśleniami</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>używać liter przy dopasowanie</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>po zdjęcia są przetwarzane, zapisz je z następującą nazwą</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Dodatkowe opcje Rename</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>obrazy wyjściowe do tego folderu</translation>
 </phrase>
 
 <phrase>
@@ -11309,7 +11309,7 @@ Would chcesz zapisać swoją listę partii przed wyjściem?</translation>
 <translation>przetwarzane przed anulowaniem. Ostatni przetwarzany obraz był " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12354,8 +12354,8 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15039,8 +15039,8 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

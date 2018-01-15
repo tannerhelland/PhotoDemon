@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.0.3379</langversion>
+<langversion>7.0.3381</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4975,13 +4975,13 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Bild vereinen</translation>
+<original>Merge visible layers</original>
+<translation>Sichtbare Layer zusammenführen</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Sichtbare Layer zusammenführen</translation>
+<original>Flatten image</original>
+<translation>Bild vereinen</translation>
 </phrase>
 
 <phrase>
@@ -10786,6 +10786,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Zielordner auswählen</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>kleinbuchstaben</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>Einen Präfix zu jedem Dateinamen hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>Einen Suffix zu jedem Dateinamen hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>Den folgenden Text (falls vorhanden) aus jedem Dateinamen entfernen</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>Jeden Dateinamen erzwingen, einschließlich Erweiterung in folgendem Fall</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>GROSSBUCHSTABEN</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>Leerzeichen in Dateinamen durch Unterstriche ersetzen</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Groß- und Kleinschreibung verwenden</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>Nachdem Bilder verarbeitet sind, diese mit dem folgenden Namen speichern</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Weitere Umbenennungsoptionen</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Bilder in diesen Ordner ausgeben</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Exporteinstellungen für dieses Format festlegen</translation>
 </phrase>
@@ -10898,66 +10958,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Batch-Konvertierungsprozess wird hier bei Laufzeit erscheinen)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Zielordner auswählen</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>kleinbuchstaben</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>Einen Präfix zu jedem Dateinamen hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>Einen Suffix zu jedem Dateinamen hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>Den folgenden Text (falls vorhanden) aus jedem Dateinamen entfernen</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>Jeden Dateinamen erzwingen, einschließlich Erweiterung in folgendem Fall</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>GROSSBUCHSTABEN</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>Leerzeichen in Dateinamen durch Unterstriche ersetzen</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Groß- und Kleinschreibung verwenden</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>Nachdem Bilder verarbeitet sind, diese mit dem folgenden Namen speichern</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Weitere Umbenennungsoptionen</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Bilder in diesen Ordner ausgeben</translation>
 </phrase>
 
 <phrase>
@@ -11324,7 +11324,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Verarbeitet vor Abbruch. Letztes verarbeitetes Bild war "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12369,8 +12369,8 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15059,8 +15059,8 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

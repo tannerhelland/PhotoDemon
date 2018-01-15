@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.105</langversion>
+<langversion>1.0.107</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4974,13 +4974,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Израмни слика</translation>
+<original>Merge visible layers</original>
+<translation>Спојување видливи слоеви</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Спојување видливи слоеви</translation>
+<original>Flatten image</original>
+<translation>Израмни слика</translation>
 </phrase>
 
 <phrase>
@@ -10787,6 +10787,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Изберете папка дестинација</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>мали букви</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>додадете префиксот на секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>додадете наставката на секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>отстранување на следниов текст (доколку постои) од секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>сила секое име на датотека, вклучувајќи ги и проширувањето, до следниот случај</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>ГОЛЕМИТЕ</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>замени простори во имиња на датотеки со Долни</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>користат мали букви појавување</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>по сликите се обработуваат, спаси ги со следново име</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>дополнителни опции преименување</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>излез слики во оваа папка</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>поставете поставки за извоз за овој формат</translation>
 </phrase>
@@ -10899,66 +10959,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Изберете папка дестинација</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>мали букви</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>додадете префиксот на секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>додадете наставката на секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>отстранување на следниов текст (доколку постои) од секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>сила секое име на датотека, вклучувајќи ги и проширувањето, до следниот случај</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>ГОЛЕМИТЕ</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>замени простори во имиња на датотеки со Долни</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>користат мали букви појавување</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>по сликите се обработуваат, спаси ги со следново име</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>дополнителни опции преименување</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>излез слики во оваа папка</translation>
 </phrase>
 
 <phrase>
@@ -11325,7 +11325,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>обработи пред отказ. Последните преработени сликата е " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12370,8 +12370,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon е авторски права %1 2001-2017 од страна на Tanner Helland и соработници</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15060,8 +15060,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

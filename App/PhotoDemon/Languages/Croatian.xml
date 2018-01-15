@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4971,13 +4971,13 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Poravnajte sliku</translation>
+<original>Merge visible layers</original>
+<translation>Spoji vidljive slojeve</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Spoji vidljive slojeve</translation>
+<original>Flatten image</original>
+<translation>Poravnajte sliku</translation>
 </phrase>
 
 <phrase>
@@ -10783,6 +10783,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Odaberite odredišnu mapu</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>malim slovima</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>Dodajte prefiks svakom nazivu datoteke</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>Dodajte sufiks svakom nazivu datoteke</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>Uklonite sljedeći tekst (ako je pronađen) iz svakog naziva datoteke</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>Prisiliti svaki naziv datoteke, uključujući proširenje, na sljedeći slučaj</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>Velika Slova</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>Zamijenite mjesta u imenima s podvlascima</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Upotrijebite podudaranje osjetljivom na veličinu slova</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>Nakon što se slike obrađuju, spremite ih sljedećim nazivom</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Dodatne opcije preimenovanja</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Izlazne slike u ovu mapu</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Postavite postavke izvoza za ovaj format</translation>
 </phrase>
@@ -10895,66 +10955,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Proces pretvorbe serije pojavit će se ovdje u vrijeme pokretanja)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Odaberite odredišnu mapu</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>malim slovima</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>Dodajte prefiks svakom nazivu datoteke</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>Dodajte sufiks svakom nazivu datoteke</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>Uklonite sljedeći tekst (ako je pronađen) iz svakog naziva datoteke</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>Prisiliti svaki naziv datoteke, uključujući proširenje, na sljedeći slučaj</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>Velika Slova</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>Zamijenite mjesta u imenima s podvlascima</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Upotrijebite podudaranje osjetljivom na veličinu slova</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>Nakon što se slike obrađuju, spremite ih sljedećim nazivom</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Dodatne opcije preimenovanja</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Izlazne slike u ovu mapu</translation>
 </phrase>
 
 <phrase>
@@ -11321,7 +11321,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Obraditi prije otkazivanja. Posljednja obrada slike bila je " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12366,8 +12366,8 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon je Copyright %1 2001-2017 Tanner Helland i suradnici</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15056,8 +15056,8 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3388</langversion>
+<langversion>7.0.3390</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4965,13 +4965,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>拼合图像</translation>
+<original>Merge visible layers</original>
+<translation>合并可见图层</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>合并可见图层</translation>
+<original>Flatten image</original>
+<translation>拼合图像</translation>
 </phrase>
 
 <phrase>
@@ -10776,6 +10776,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>选择目录文件夹</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>小写</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>为每个文件名添加一个前缀</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>为每个文件名添加后缀</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>从每个文件名中删除以下文本（如果找到）</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>强制每个文件名，包括扩展名，以下情况</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>大写</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>在文件名用下划线代替空格</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>区分大小写</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>图像处理后，将它们保存具有以下名称</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>重命名选项</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>输出图像到这个文件夹</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>设置此格式的导出设置</translation>
 </phrase>
@@ -10888,66 +10948,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>（批量转换过程中运行时会出现在这里）</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>选择目录文件夹</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>小写</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>为每个文件名添加一个前缀</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>为每个文件名添加后缀</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>从每个文件名中删除以下文本（如果找到）</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>强制每个文件名，包括扩展名，以下情况</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>大写</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>在文件名用下划线代替空格</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>区分大小写</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>图像处理后，将它们保存具有以下名称</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>重命名选项</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>输出图像到这个文件夹</translation>
 </phrase>
 
 <phrase>
@@ -11313,7 +11313,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12356,8 +12356,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon  Copyright %1 2001-2017  版权属于 Tanner Helland 和贡献者</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15043,8 +15043,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4970,13 +4970,13 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Platta bild</translation>
+<original>Merge visible layers</original>
+<translation>Sammanfoga synliga lager</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Sammanfoga synliga lager</translation>
+<original>Flatten image</original>
+<translation>Platta bild</translation>
 </phrase>
 
 <phrase>
@@ -10782,6 +10782,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Välj målmapp</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>gemener</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>lägga till ett prefix till varje filnamn</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>lägga till ett suffix till varje filnamn</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>ta bort följande text (om den hittas) från varje filnamn</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>tvinga varje filnamn, inklusive förlängning, till följande fall</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>VERSALER</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>byt mellanslag i filnamn med understreck</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>använd små bokstäver matchning</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>efter bilderna bearbetas, spara dem med följande namn</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>ytterligare byta namn alternativ</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>ut bilder till den här mappen</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>som exportinställningar  för detta format</translation>
 </phrase>
@@ -10894,66 +10954,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(batch konverteringen kommer att visas här på run-time)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Välj målmapp</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>gemener</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>lägga till ett prefix till varje filnamn</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>lägga till ett suffix till varje filnamn</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>ta bort följande text (om den hittas) från varje filnamn</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>tvinga varje filnamn, inklusive förlängning, till följande fall</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>VERSALER</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>byt mellanslag i filnamn med understreck</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>använd små bokstäver matchning</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>efter bilderna bearbetas, spara dem med följande namn</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>ytterligare byta namn alternativ</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>ut bilder till den här mappen</translation>
 </phrase>
 
 <phrase>
@@ -11320,7 +11320,7 @@ Would du spara din satslistan innan du avslutar?</translation>
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12365,8 +12365,8 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15055,8 +15055,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

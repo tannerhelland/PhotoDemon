@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4968,13 +4968,13 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Tasoita kuva</translation>
+<original>Merge visible layers</original>
+<translation>Yhdistä näkyvä kerrokset</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Yhdistä näkyvä kerrokset</translation>
+<original>Flatten image</original>
+<translation>Tasoita kuva</translation>
 </phrase>
 
 <phrase>
@@ -10781,6 +10781,66 @@ Korjatut tiedostot on tallennettu kohdekansioon. Korjaamatta tiedostot säilyvä
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Valitse kohdekansio</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>pieniä</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>lisätä etuliite kuhunkin tiedostonimi</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>lisää päätteinen jokainen tiedostonimi</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>poista seuraava teksti (jos löytyy) kustakin tiedostonimi</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>pakottaa jokaisen tiedostonimen, kuten laajennus seuraavaan asia</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>ISOILLA</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>korvaavat tilat tiedostonimissä alaviivoilla</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Käytä kirjainkoko matching</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>kun kuvia käsitellään, tallenna ne seuraavat nimi</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>ylimääräisiä uudelleennimeämisvaihtoehdot</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>tulostaa kuvia tähän kansioon</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>asettaa vienti asetukset tätä muotoa</translation>
 </phrase>
@@ -10893,66 +10953,6 @@ Korjatut tiedostot on tallennettu kohdekansioon. Korjaamatta tiedostot säilyvä
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Erän muuntaminen prosessi näkyvät täällä ajon aikana)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Valitse kohdekansio</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>pieniä</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>lisätä etuliite kuhunkin tiedostonimi</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>lisää päätteinen jokainen tiedostonimi</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>poista seuraava teksti (jos löytyy) kustakin tiedostonimi</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>pakottaa jokaisen tiedostonimen, kuten laajennus seuraavaan asia</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>ISOILLA</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>korvaavat tilat tiedostonimissä alaviivoilla</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Käytä kirjainkoko matching</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>kun kuvia käsitellään, tallenna ne seuraavat nimi</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>ylimääräisiä uudelleennimeämisvaihtoehdot</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>tulostaa kuvia tähän kansioon</translation>
 </phrase>
 
 <phrase>
@@ -11319,7 +11319,7 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 <translation>käsitellään ennen peruuttamista. Viime käsitelty kuva oli " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12364,8 +12364,8 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15054,8 +15054,8 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

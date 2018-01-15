@@ -231,7 +231,7 @@ Private Sub Form_Load()
     UpdateVisiblePanel
     
     'Fill any custom "About" panel text
-    lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2001-2018 by Tanner Helland and Contributors", ChrW$(169))
+    lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors", ChrW$(169), Year(Now))
     lblAbout(1).Caption = Updates.GetPhotoDemonNameAndVersion()
     
     'Fill the "Contributor" panel text

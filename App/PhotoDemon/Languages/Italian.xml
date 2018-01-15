@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.309</langversion>
+<langversion>6.7.311</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4973,13 +4973,13 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Appiattisci l'immagine</translation>
+<original>Merge visible layers</original>
+<translation>Unisci i livelli visibili</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Unisci i livelli visibili</translation>
+<original>Flatten image</original>
+<translation>Appiattisci l'immagine</translation>
 </phrase>
 
 <phrase>
@@ -10785,6 +10785,66 @@ VBCRLI file danneggiati sono stati salvati nella cartella di destinazione. I fil
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Seleziona la cartella di destinazione</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>minuscolo</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>aggiungi un prefisso ad ogni nome di file</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>aggiungi un suffisso ad ogni nome di file</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>rimuovi il testo seguente (se trovato) da ogni nome di file</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>forza ogni nome di file, compresa l'estensione, a seguire il seguente caso</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>MAIUSCOLO</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>sostituisci gli spazi nei nomi di file con un trattino in basso</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>usa la corrispondenza esatta</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>dopo che le immagini sono processate, salvale con il seguente nome</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>opzioni addizionali di rinomina</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>salva le immagini in questa cartella</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>imposta le impostazioni di esportazione per questo formato</translation>
 </phrase>
@@ -10897,66 +10957,6 @@ VBCRLI file danneggiati sono stati salvati nella cartella di destinazione. I fil
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(il processo di conversione autoamatico comparirà qui in esecuzione)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Seleziona la cartella di destinazione</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>minuscolo</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>aggiungi un prefisso ad ogni nome di file</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>aggiungi un suffisso ad ogni nome di file</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>rimuovi il testo seguente (se trovato) da ogni nome di file</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>forza ogni nome di file, compresa l'estensione, a seguire il seguente caso</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>MAIUSCOLO</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>sostituisci gli spazi nei nomi di file con un trattino in basso</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>usa la corrispondenza esatta</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>dopo che le immagini sono processate, salvale con il seguente nome</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>opzioni addizionali di rinomina</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>salva le immagini in questa cartella</translation>
 </phrase>
 
 <phrase>
@@ -11323,7 +11323,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>processata(e) prima della cancellazione. L'ultima immagine processata è stata "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12368,8 +12368,8 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon è Copyright %1 2001-2017 di Tanner Helland e Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15057,8 +15057,8 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.309</langversion>
+<langversion>6.7.311</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4974,13 +4974,13 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Afbeelding afvlakken</translation>
+<original>Merge visible layers</original>
+<translation>Zichtbare lagen samenvoegen</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Zichtbare lagen samenvoegen</translation>
+<original>Flatten image</original>
+<translation>Afbeelding afvlakken</translation>
 </phrase>
 
 <phrase>
@@ -10787,6 +10787,66 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Selecteer doelmap</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>kleine letters</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>voeg een voorvoegsel toe aan elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>voeg een achtervoegsel toe aan elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>verwijder de volgende tekst (indien gevonden) van elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>forceer elke bestandsnaam, inclusief de extensie, tot het volgende geval</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>GROTE LETTERS</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>vervang spaties in bestandsnamen met onderstrepingstekens</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>gebruik lettergevoelige matching</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met volgende naam</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>bijkomende hernoemen opties</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Bewaar afbeeldingen in deze map</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>stel exportinstellingen voor dit formaat in</translation>
 </phrase>
@@ -10899,66 +10959,6 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(batch-conversie proces zal hier verschijnen in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Selecteer doelmap</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>kleine letters</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>voeg een voorvoegsel toe aan elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>voeg een achtervoegsel toe aan elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>verwijder de volgende tekst (indien gevonden) van elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>forceer elke bestandsnaam, inclusief de extensie, tot het volgende geval</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>GROTE LETTERS</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>vervang spaties in bestandsnamen met onderstrepingstekens</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>gebruik lettergevoelige matching</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met volgende naam</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>bijkomende hernoemen opties</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Bewaar afbeeldingen in deze map</translation>
 </phrase>
 
 <phrase>
@@ -11325,7 +11325,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>verwerkt voor annulering. Laatst bewerkte afbeelding was "%1"</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12370,8 +12370,8 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland en Medewerkers</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15060,8 +15060,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

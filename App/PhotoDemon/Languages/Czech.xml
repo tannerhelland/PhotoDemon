@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4970,13 +4970,13 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Ztlumte obraz</translation>
+<original>Merge visible layers</original>
+<translation>Sloučit viditelné vrstvy</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Sloučit viditelné vrstvy</translation>
+<original>Flatten image</original>
+<translation>Ztlumte obraz</translation>
 </phrase>
 
 <phrase>
@@ -10782,6 +10782,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Vyberte cílovou složku</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>Malá</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>Přidat předponu pro každý název souboru</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>Přidat příponu každému názvu souboru</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>Odeberte následující text (pokud je nalezen) z každého názvu souboru</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>Vynucení každého názvu souboru, včetně rozšíření, do následujícího případu</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>UPPERCASE</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>Nahradit mezery v názvech souborů podtržítky</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Použijte párování citlivé na velikost písmen</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>Po zpracování obrázků je uložte s následujícím názvem</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Další možnosti přejmenování</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Výstupní snímky do této složky</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>Nastavte exportní nastavení pro tento formát</translation>
 </phrase>
@@ -10894,66 +10954,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(V běhu se zde objeví proces převodu dávky)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Vyberte cílovou složku</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>Malá</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>Přidat předponu pro každý název souboru</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>Přidat příponu každému názvu souboru</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>Odeberte následující text (pokud je nalezen) z každého názvu souboru</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>Vynucení každého názvu souboru, včetně rozšíření, do následujícího případu</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>UPPERCASE</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>Nahradit mezery v názvech souborů podtržítky</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Použijte párování citlivé na velikost písmen</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>Po zpracování obrázků je uložte s následujícím názvem</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Další možnosti přejmenování</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Výstupní snímky do této složky</translation>
 </phrase>
 
 <phrase>
@@ -11320,7 +11320,7 @@ Chcete uložit seznam dávky před ukončením?</translation>
 <translation>Zpracovány před zrušením. Poslední zpracovaný snímek byl " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12365,8 +12365,8 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon je Copyright %1 2001-2017 od Tanner Helland a přispěvatelů</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15053,8 +15053,8 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

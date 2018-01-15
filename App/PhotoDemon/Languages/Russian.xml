@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3292</langversion>
+<langversion>6.8.3294</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4974,13 +4974,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Свести изображение</translation>
+<original>Merge visible layers</original>
+<translation>Объединить видимые слои</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Объединить видимые слои</translation>
+<original>Flatten image</original>
+<translation>Свести изображение</translation>
 </phrase>
 
 <phrase>
@@ -10787,6 +10787,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Выберите папку назначения</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>в нижнем регистре</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>добавить префикс к каждому имени файла</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>добавить суффикс к каждому имени файла</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>удалите следующий текст (если он найден) из каждого файла</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>заставить каждое имя файла, включая расширение, на следующий случай</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>ВЕРХНИЙ РЕГИСТР</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>заменить пробелы в именах файлов с подчеркиванием</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>использование регистрозависимое согласование</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>после того, как изображения обрабатываются, сохраните их со следующим именем</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>дополнительные опции переименования</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>вывода изображений в этой папке</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>установить параметры экспорта для этого формата</translation>
 </phrase>
@@ -10899,66 +10959,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Процесс пакетного преобразования появится здесь во время выполнения)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Выберите папку назначения</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>в нижнем регистре</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>добавить префикс к каждому имени файла</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>добавить суффикс к каждому имени файла</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>удалите следующий текст (если он найден) из каждого файла</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>заставить каждое имя файла, включая расширение, на следующий случай</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>ВЕРХНИЙ РЕГИСТР</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>заменить пробелы в именах файлов с подчеркиванием</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>использование регистрозависимое согласование</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>после того, как изображения обрабатываются, сохраните их со следующим именем</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>дополнительные опции переименования</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>вывода изображений в этой папке</translation>
 </phrase>
 
 <phrase>
@@ -11325,7 +11325,7 @@ Would вы хотите сохранить список партии перед 
 <translation>обрабатывается до отмены. Последнее обработанное изображение было " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12370,8 +12370,8 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15060,8 +15060,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.0</langversion>
+<langversion>1.0.2</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4970,13 +4970,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>画像を平ら</translation>
+<original>Merge visible layers</original>
+<translation>可視のレイヤーを結合する</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>可視のレイヤーを結合する</translation>
+<original>Flatten image</original>
+<translation>画像を平ら</translation>
 </phrase>
 
 <phrase>
@@ -10782,6 +10782,66 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>コピー先フォルダを選択</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>小文字</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>各ファイル名にプレフィックスを追加する</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>各ファイル名に接尾辞を追加する</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>各ファイル名から次のテキスト（見つかった場合）を削除します</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>拡張子を含む各ファイル名を次のように強制します</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>大文字</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>ファイル名のスペースをアンダースコアに置き換える</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>大文字と小文字を区別するマッチング</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>イメージが処理された後、次の名前で保存します</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>追加の名前変更オプション</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>このフォルダに画像を出力する</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>この形式のエクスポート設定を設定する</translation>
 </phrase>
@@ -10894,66 +10954,6 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>（バッチ変換プロセスは実行時にここに表示されます）</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>コピー先フォルダを選択</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>小文字</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>各ファイル名にプレフィックスを追加する</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>各ファイル名に接尾辞を追加する</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>各ファイル名から次のテキスト（見つかった場合）を削除します</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>拡張子を含む各ファイル名を次のように強制します</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>大文字</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>ファイル名のスペースをアンダースコアに置き換える</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>大文字と小文字を区別するマッチング</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>イメージが処理された後、次の名前で保存します</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>追加の名前変更オプション</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>このフォルダに画像を出力する</translation>
 </phrase>
 
 <phrase>
@@ -11320,7 +11320,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>キャンセルの前に処理されます。 最後に処理された画像は "％1"でした。</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12365,8 +12365,8 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemonはTanner Hellandと貢献者による著作権％1 2001-2017です</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15054,8 +15054,8 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>

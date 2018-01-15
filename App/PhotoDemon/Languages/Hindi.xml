@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.12</langversion>
+<langversion>1.0.14</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4970,13 +4970,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>फ़्लैटन इमेज</translation>
+<original>Merge visible layers</original>
+<translation>दृश्य परतें मर्ज करें</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>दृश्य परतें मर्ज करें</translation>
+<original>Flatten image</original>
+<translation>फ़्लैटन इमेज</translation>
 </phrase>
 
 <phrase>
@@ -10783,6 +10783,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>गंतव्य फ़ोल्डर चुनें</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>लोअरकेस</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>प्रत्येक फ़ाइल नाम के लिए एक उपसर्ग जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>प्रत्येक फ़ाइल नाम के लिए एक प्रत्यय जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>प्रत्येक फ़ाइल नाम से निम्न टेक्स्ट को हटा दें (यदि मिले तो)</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>निम्नलिखित फ़ाइल को प्रत्येक फ़ाइल नाम, विस्तार सहित, बल दें</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>अपरकेस</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>अंडरस्कोर के साथ फाइलनामों में रिक्त स्थान की जगह</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>मामले-संवेदनशील मिलान का उपयोग करें</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>छवियों को संसाधित करने के बाद, उन्हें निम्न नाम से बचाएं</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>अतिरिक्त नाम बदलें विकल्प</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>इस फ़ोल्डर में आउटपुट छवियाँ</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>इस प्रारूप के लिए निर्यात सेटिंग्स सेट करें</translation>
 </phrase>
@@ -10895,66 +10955,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(बैच रूपांतरण प्रक्रिया यहां रन-टाइम पर दिखाई जाएगी)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>गंतव्य फ़ोल्डर चुनें</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>लोअरकेस</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>प्रत्येक फ़ाइल नाम के लिए एक उपसर्ग जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>प्रत्येक फ़ाइल नाम के लिए एक प्रत्यय जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>प्रत्येक फ़ाइल नाम से निम्न टेक्स्ट को हटा दें (यदि मिले तो)</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>निम्नलिखित फ़ाइल को प्रत्येक फ़ाइल नाम, विस्तार सहित, बल दें</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>अपरकेस</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>अंडरस्कोर के साथ फाइलनामों में रिक्त स्थान की जगह</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>मामले-संवेदनशील मिलान का उपयोग करें</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>छवियों को संसाधित करने के बाद, उन्हें निम्न नाम से बचाएं</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>अतिरिक्त नाम बदलें विकल्प</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>इस फ़ोल्डर में आउटपुट छवियाँ</translation>
 </phrase>
 
 <phrase>
@@ -11321,7 +11321,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>रद्द करने से पहले संसाधित अंतिम संसाधित छवि " %1" थी</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12366,8 +12366,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>फोटोडीन कॉपीराइट 1 %2001-2017 है टानर हेलैंड और योगदानकर्ताओं द्वारा</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15055,8 +15055,8 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <phrasecount>2524</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4557 phrases. -->
+<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
 <!-- These 2524 phrases contain approximately 12127 total words. -->
 
 </pdData>
