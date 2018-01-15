@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Replace color dialog
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 29/October/13
 'Last updated: 11/June/16
 'Last update: add a LittleCMS path for the algorithm; this improves performance by ~30%

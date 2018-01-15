@@ -1,7 +1,7 @@
 Attribute VB_Name = "Histograms"
 '***************************************************************************
 'Histogram Analysis tools
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 07/September/15
 'Last update: start collecting all of PD's various histogram-specific tools into a single location.
@@ -38,7 +38,7 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     
     'Create a local array and point it at the pixel data we want to scan
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, , , , True
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -150,7 +150,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
     'The DIBs, however, are fully under our control
     ReDim dstDIBs(0 To 3) As pdDIB
     
-    Dim tmpPath As pd2DPath, histogramShape() As POINTFLOAT
+    Dim tmpPath As pd2DPath, histogramShape() As PointFloat
     Dim hColor As Long
     Dim i As Long, j As Long
     Dim yMax As Double
@@ -198,7 +198,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
                 
         'New strategy!  Use the awesome pd2DPath class to construct a matching polygon for each histogram.
         ' Then, stroke and fill the polygon in one fell swoop (much faster).
-        ReDim histogramShape(0 To 260) As POINTFLOAT
+        ReDim histogramShape(0 To 260) As PointFloat
         
         For j = 0 To 255
             histogramShape(j).x = hLookupX(j)

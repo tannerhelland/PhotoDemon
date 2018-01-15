@@ -79,7 +79,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Imitation HDR Tool
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 09/July/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params, minor performance improvements
@@ -129,7 +129,7 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
     blendStrength = cParams.GetDouble("strength", 20#)
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -184,7 +184,7 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
+        Dim srcSA As SafeArray2D
         PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         

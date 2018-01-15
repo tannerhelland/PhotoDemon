@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo History dialog
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 22/May/16
 'Last update: overhaul UI to use new owner-drawn pdListBox
@@ -108,20 +108,20 @@ Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UndoType, Optional 
     
     Select Case typeOfUndo
     
-        Case UNDO_EVERYTHING
+        Case UNDO_Everything
             newText = vbNullString
             
-        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
+        Case UNDO_Image, UNDO_Image_VectorSafe, UNDO_ImageHeader
             newText = vbNullString
             
-        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
+        Case UNDO_Layer, UNDO_Layer_VectorSafe, UNDO_LayerHeader
             If Not (pdImages(g_CurrentImage).GetLayerByID(layerID) Is Nothing) Then
                 newText = g_Language.TranslateMessage("layer: %1", pdImages(g_CurrentImage).GetLayerByID(layerID).GetLayerName())
             Else
                 newText = vbNullString
             End If
         
-        Case UNDO_SELECTION
+        Case UNDO_Selection
             newText = g_Language.TranslateMessage("selection shape shown")
         
     End Select
@@ -134,7 +134,7 @@ Private Sub cmdBar_OKClick()
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.AddParam "UndoHistoryPoint", lstUndo.ListIndex + 1
-    Process "Undo history", , cParams.GetParamString(), UNDO_NOTHING
+    Process "Undo history", , cParams.GetParamString(), UNDO_Nothing
 End Sub
 
 Private Sub Form_Load()
@@ -178,7 +178,7 @@ End Sub
 Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
     'Retrieve the boundary region for this list entry
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single

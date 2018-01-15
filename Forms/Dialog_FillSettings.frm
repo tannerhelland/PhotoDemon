@@ -243,7 +243,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brush Selection Dialog
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 16/June/16
 'Last update: overhaul UI to make better use of available space
@@ -534,7 +534,7 @@ Private Sub UpdatePreview()
         UpdateFillObject
         
         'Retrieve a matching brush handle
-        Dim gdipBrush As Long, cBounds As RECTF
+        Dim gdipBrush As Long, cBounds As RectF
         
         With cBounds
             .Left = 0
@@ -581,7 +581,7 @@ End Sub
 
 Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     Dim itemBackColor As Long, itemTextColor As Long, itemBorderColor As Long, hatchBorderColor As Long
@@ -618,7 +618,7 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
         Set tmpFont = Nothing
         
         'Finally, draw the hatch
-        Dim hatchRect As RECTF
+        Dim hatchRect As RectF
         
         With hatchRect
             .Left = tmpRectF.Left + FixDPI(4) + m_LargestWidth

@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Box Blur Tool
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: some time 2000
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -128,7 +128,7 @@ Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview 
     
     'Create a local array and point it at the pixel data of the current image.  (Note that we deliberately
     ' leave alpha byte premultiplied!)
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -158,7 +158,7 @@ Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Box blur", , GetLocalParamString(), UNDO_LAYER
+    Process "Box blur", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

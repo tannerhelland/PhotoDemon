@@ -76,7 +76,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Symmetric Nearest-Neighbor dialog
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 15/December/15
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params

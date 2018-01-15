@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 06/February/17
 'Last update: add support for window subclassing via built-in WAPI functions; I'm migrating PD to this faster

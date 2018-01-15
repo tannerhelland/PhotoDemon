@@ -65,7 +65,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 24/August/13
 'Last update: added command bar
@@ -90,7 +90,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "White balance", , GetLocalParamString(), UNDO_LAYER
+    Process "White balance", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright 2013-2017 by Tanner Helland, first build Copyright 2014 Audioglider
+'Copyright 2013-2018 by Tanner Helland, first build Copyright 2014 Audioglider
 'Created: 08/June/13
 'Last updated: 23/September/14
 'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
@@ -314,7 +314,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -447,7 +447,7 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     UpdateStoredValues
-    Process "Channel mixer", , GetLocalParamString(), UNDO_LAYER
+    Process "Channel mixer", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RandomizeClick()

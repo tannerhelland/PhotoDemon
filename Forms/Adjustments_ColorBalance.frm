@@ -178,7 +178,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 02/August/17
 'Last update: revert changes from an outside contributor that may have carried licensing issues
@@ -234,7 +234,7 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -351,7 +351,7 @@ Private Sub chkLuminance_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , GetLocalParamString(), UNDO_LAYER
+    Process "Color balance", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

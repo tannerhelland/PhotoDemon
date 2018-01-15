@@ -33,7 +33,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Radio Button control
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 15/February/16
 'Last update: finalize theming support
@@ -79,15 +79,15 @@ Private m_Value As Boolean
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
-Private m_CaptionRect As RECTF
+Private m_CaptionRect As RectF
 
 'Similar rect for the radio button itself
-Private m_RadioButtonRect As RECTF
+Private m_RadioButtonRect As RectF
 
 'Whenever the caption changes or the control is resized, the "clickable" rect must be updated.  (This control allows the user
 ' to click on either the radio button, or the caption itself.)  It's tracked separately, because there's some fairly messy
 ' padding calculations involved in positioning the radio button and caption relative to the control as a whole.
-Private m_ClickableRect As RECTF, m_MouseInsideClickableRect As Boolean
+Private m_ClickableRect As RectF, m_MouseInsideClickableRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.

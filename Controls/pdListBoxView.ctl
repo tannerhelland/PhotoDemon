@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box View control (e.g. the list part of a list box, not including the scroll bar)
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 18/February/16
 'Last update: continued work on initial build
@@ -67,7 +67,7 @@ Private Const LIST_PADDING_HORIZONTAL As Single = 4#
 Private Const LIST_PADDING_VERTICAL As Single = 2#
 
 'The rectangle where the list is actually rendered
-Private m_ListRect As RECTF
+Private m_ListRect As RectF
 
 'List box support class.  Handles data storage and coordinate math for rendering.
 Private WithEvents listSupport As pdListSupport
@@ -490,7 +490,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             
             Dim tmpTop As Long, tmpHeight As Long, tmpHeightWithoutSeparator As Long
             Dim lineY As Single
-            Dim tmpListItem As PD_LISTITEM, tmpRect As RECTF
+            Dim tmpListItem As PD_LISTITEM, tmpRect As RectF
             
             'Left and Width are the same for all list entries
             If listHasFocus Then

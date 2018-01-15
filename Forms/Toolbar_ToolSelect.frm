@@ -352,7 +352,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Primary Toolbar
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 26/October/17
 'Last update: add hotkeys for tool selection

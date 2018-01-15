@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn List Box control
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 26/March/16
 'Last updated: 27/March/16
 'Last update: continued migrating code from the default list box to this instance
@@ -83,7 +83,7 @@ Attribute ucSupport.VB_VarHelpID = -1
 
 'Because this control supports captions, the main interaction area (list + scrollbar) may be shifted slightly downward.
 ' The usable space of both objects is defined by this rect.
-Private m_InteractiveRect As RECTF
+Private m_InteractiveRect As RectF
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS"
 '***************************************************************************
 'OS-specific specific features
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 21/November/13
 'Last updated: 18/July/17
 'Last update: migrate various OS-specific bits to this module

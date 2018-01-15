@@ -590,7 +590,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection Tool Panel
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 06/June/17
 'Last update: allow selection property changes even if the current tool and shape don't match; however, these are

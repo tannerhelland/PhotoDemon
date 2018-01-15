@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Preview custom control
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 13/February/16
 'Last update: migrated large portions of the fxPreview control into this new pdPreview control; this allows for

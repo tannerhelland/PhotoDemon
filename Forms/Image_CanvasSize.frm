@@ -152,7 +152,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Canvas Size Handler
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 09/January/17
 'Last update: overhaul anchor point code to use arrows rendered at run-time (instead of fixed resources)
@@ -268,7 +268,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Canvas size", , GetCurrentParams, UNDO_IMAGEHEADER
+    Process "Canvas size", , GetCurrentParams, UNDO_ImageHeader
 End Sub
 
 Private Function GetCurrentParams() As String
@@ -364,7 +364,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
     
     'Based on the anchor position, determine x and y locations for the image on the new canvas

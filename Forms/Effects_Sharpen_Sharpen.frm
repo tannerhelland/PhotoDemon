@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sharpen Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params
@@ -125,7 +125,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sharpen", , GetLocalParamString(), UNDO_LAYER
+    Process "Sharpen", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

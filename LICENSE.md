@@ -1,4 +1,4 @@
-PhotoDemon is copyright © 2017 by Tanner Helland and Contributors.
+PhotoDemon is copyright © 2018 by Tanner Helland and Contributors.
 
 PhotoDemon is released under a BSD license.  A full copy of the BSD license is included below.
 
@@ -23,7 +23,7 @@ Full text of PhotoDemon and third-party plugin licenses follow.
 
 **PhotoDemon license (BSD)**
 
-PhotoDemon is Copyright (c) 2017, Tanner Helland and Contributors.
+PhotoDemon is Copyright (c) 2018, Tanner Helland and Contributors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

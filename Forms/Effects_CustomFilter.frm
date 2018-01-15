@@ -445,7 +445,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 31/July/17
 'Last update: performance improvements, migrate to XML params
@@ -466,7 +466,7 @@ Private Sub chkNormalize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Custom filter", , GetLocalParamString(), UNDO_LAYER
+    Process "Custom filter", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

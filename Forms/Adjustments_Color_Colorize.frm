@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright 2006-2017 by Tanner Helland
+'Copyright 2006-2018 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 22/June/14
 'Last update: replace old scroll bar with slider/text combo
@@ -91,7 +91,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Colorize", , GetLocalParamString(), UNDO_LAYER
+    Process "Colorize", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -122,7 +122,7 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4

@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font-specific Drop Down control 2.0
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 01/June/16
 'Last updated: 09/February/17
 'Last update: migrate to safer comctl32 subclassing technique
@@ -65,7 +65,7 @@ Public Event LostFocusAPI()
 
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
 Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
@@ -113,7 +113,7 @@ Private Const COMBO_PADDING_VERTICAL As Single = 2#
 Private Const NUM_ITEMS_VISIBLE As Long = 10
 
 'The rectangle where the combo portion of the control is actually rendered
-Private m_ComboRect As RECTF, m_MouseInComboRect As Boolean
+Private m_ComboRect As RectF, m_MouseInComboRect As Boolean
 
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
@@ -462,7 +462,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     itemFontColor = m_Colors.RetrieveColor(PDDD_ListCaption, Me.Enabled, itemIsSelected, itemIsHovered)
     
     'Grab the rendering rect
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     'Paint the fill and border
@@ -774,13 +774,13 @@ Private Sub RaiseListBox()
     
     'We first want to retrieve this control instance's window coordinates *in the screen's coordinate space*.
     ' (We need this to know how to position the listbox element.)
-    Dim myRect As RECTL
+    Dim myRect As RectL
     GetWindowRect Me.hWnd, myRect
     
     'We now want to figure out the idealized coordinates for the pop-up rect.  I prefer an OSX / Windows 10 approach to
     ' positioning, where the currently selected item (.ListIndex) is positioned directly over the underlying combo box,
     ' with neighboring entries positioned above and/or below, as relevant.
-    Dim popupRect As RECTF, topOfListIndex As Single
+    Dim popupRect As RectF, topOfListIndex As Single
     
     'To construct this rect, we start by calculating the position of the .ListIndex item itself
     With popupRect
@@ -1124,7 +1124,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, GP_LJ_Miter
         
         'Next, the right-aligned arrow.  (We need its measurements to know where to restrict the caption's length.)
-        Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+        Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
         buttonPt1.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(16)
         buttonPt1.y = m_ComboRect.Top + (m_ComboRect.Height / 2) - FixDPIFloat(1)
         

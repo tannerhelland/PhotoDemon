@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Automatic History control
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 16/October/16
 'Last updated: 27/October/16
 'Last update: add "rows" property, which allows for cramming more history blocks into a small space
@@ -61,11 +61,11 @@ Public Event LostFocusAPI()
 'To simplify rendering, we pre-calculate a rectangle for the "history" area of the control.  (Individual items
 ' within the history control can be resolved on-the-fly).  This rect is calculated by UpdateControlLayout,
 ' and it must be recalculated if the control size changes.
-Private m_HistoryRect As RECTF
+Private m_HistoryRect As RectF
 
 Private Type PD_HistoryItem
     ItemString As String
-    ItemRect As RECTF
+    ItemRect As RectF
 End Type
 
 Private m_HistoryItems() As PD_HistoryItem
@@ -621,7 +621,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         'Because this control is owner-drawn, our owner is responsible for drawing the individual history samples.
         If (m_HistoryCount > 0) Then
             
-            Dim tmpRectF As RECTF
+            Dim tmpRectF As RectF
             
             For i = 0 To m_HistoryCount - 1
                 

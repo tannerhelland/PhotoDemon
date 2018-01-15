@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Glass Tiles Filter Dialog
-'Copyright 2014-2017 by dotPDN LLC, Rick Brewster, Tom Jackson, Audioglider, and Tanner Helland (see details below)
+'Copyright 2014-2018 by dotPDN LLC, Rick Brewster, Tom Jackson, Audioglider, and Tanner Helland (see details below)
 'Created: 23/May/14
 'Last updated: 01/August/17
 'Last update: migrate to PD's internal filter support engine, including internal supersampling techniques
@@ -171,14 +171,14 @@ Public Sub GlassTiles(ByVal effectParams As String, Optional ByVal toPreview As 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -389,7 +389,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Glass tiles", , GetLocalParamString(), UNDO_LAYER
+    Process "Glass tiles", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

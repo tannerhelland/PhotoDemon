@@ -182,7 +182,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon About Dialog
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 14/June/17
 'Last update: update contributor list
@@ -221,10 +221,6 @@ Private Sub UpdateVisiblePanel()
     Next i
 End Sub
 
-Private Sub CmdOK_Click()
-    Unload Me
-End Sub
-
 Private Sub Form_Load()
     
     lstContributors.ListItemHeight = FixDPI(BLOCKHEIGHT)
@@ -235,8 +231,8 @@ Private Sub Form_Load()
     UpdateVisiblePanel
     
     'Fill any custom "About" panel text
-    lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors", ChrW$(169))
-    lblAbout(1).Caption = GetPhotoDemonNameAndVersion()
+    lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2001-2018 by Tanner Helland and Contributors", ChrW$(169))
+    lblAbout(1).Caption = Updates.GetPhotoDemonNameAndVersion()
     
     'Fill the "Contributor" panel text
     ReDim m_contributorList(0 To 31) As PD_Contributor

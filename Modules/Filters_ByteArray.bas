@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_ByteArray"
 '***************************************************************************
 'Byte Array Filters Module
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 02/April/15
 'Last updated: 02/April/15
 'Last update: start assembling byte-array-specific filter collection

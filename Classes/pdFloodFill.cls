@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flood Fill Engine
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 11/October/14
 'Last updated: 13/May/17
 'Last update: myriad performance improvements
@@ -316,7 +316,7 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB) As Boolean
     Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
@@ -468,7 +468,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
@@ -530,7 +530,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     'To improve performance, we're going to point transient 1D arrays at certain 2D array rows during processing.
     ' This requires unsafe array manipulation, but it can be significantly faster than 2D array accesses (and because
     ' this function is scanline-oriented, the gains are even more significant).
-    Dim tmpImageLine() As Byte, tmpImageSA As SAFEARRAY1D
+    Dim tmpImageLine() As Byte, tmpImageSA As SafeArray1D
     
     'Populate the safearray struct's unchanging values
     Dim srcImageBasePointer As Long, srcImageStride As Long
@@ -553,7 +553,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     PutMem4 VarPtrArray(tmpImageLine()), VarPtr(tmpImageSA)
     
     'Repeat the above steps, but for a 1D array that points at the "already checked" tracking array
-    Dim tmpTrackingLine() As Byte, tmpTrackingSA As SAFEARRAY1D
+    Dim tmpTrackingLine() As Byte, tmpTrackingSA As SafeArray1D
     Dim srcTrackingBasePointer As Long, srcTrackingStride As Long
     srcTrackingBasePointer = VarPtr(m_AlreadyChecked(0, 0))
     srcTrackingStride = m_BoundsX + 1
@@ -570,7 +570,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     PutMem4 VarPtrArray(tmpTrackingLine()), VarPtr(tmpTrackingSA)
     
     'And finally, repeat the above steps, but for a 1D array that points at the "fill results" tracking array
-    Dim tmpFillLine() As Byte, tmpFillSA As SAFEARRAY1D
+    Dim tmpFillLine() As Byte, tmpFillSA As SafeArray1D
     Dim srcFillBasePointer As Long, srcFillStride As Long
     srcFillBasePointer = VarPtr(m_FillResults(0, 0))
     srcFillStride = m_BoundsX + 1
@@ -809,7 +809,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 25/June/14
 'Last update: add new makeQuickFixesPermanent() function
@@ -32,8 +32,8 @@ Private m_InitHScroll As Long, m_InitVScroll As Long
 'Finally, the initial mouse x/y values are also supplied, in case they are needed later on.  (We call these m_InitImageX/Y as a
 ' reminder that they exist in the *image* coordinate space, not the *canvas* coordinate space.)  We also make a copy of these values
 ' in the current layer's coordinate space (e.g. with affine transforms considered)
-Private m_InitLayerCoords_Transformed(0 To 3) As POINTFLOAT
-Private m_InitLayerCoords_Pure(0 To 3) As POINTFLOAT
+Private m_InitLayerCoords_Transformed(0 To 3) As PointFloat
+Private m_InitLayerCoords_Pure(0 To 3) As PointFloat
 Private m_LayerAspectRatio As Double
 Private m_InitImageX As Double, m_InitImageY As Double, m_InitLayerX As Single, m_InitLayerY As Single
 Private m_InitLayerRotateCenterX As Single, m_InitLayerRotateCenterY As Single
@@ -292,7 +292,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
-                Dim ptIntersect As POINTFLOAT, pt1 As POINTFLOAT, pt2 As POINTFLOAT
+                Dim ptIntersect As PointFloat, pt1 As PointFloat, pt2 As PointFloat
                 
                 'The intersect point is the center of the image.  This point is the same for all rotation nodes.
                 ptIntersect.x = m_InitLayerCoords_Pure(0).x + (m_InitLayerCoords_Pure(3).x - m_InitLayerCoords_Pure(0).x) / 2
@@ -394,11 +394,11 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             If finalizeTransform Then
             
                 'Note the layer's "proper" center of rotation, in absolute image coordinates
-                Dim tmpPoints() As POINTFLOAT
-                ReDim tmpPoints(0 To 3) As POINTFLOAT
+                Dim tmpPoints() As PointFloat
+                ReDim tmpPoints(0 To 3) As PointFloat
                 srcLayer.GetLayerCornerCoordinates tmpPoints
                 
-                Dim curCenter As POINTFLOAT
+                Dim curCenter As PointFloat
                 PDMath.FindCenterOfFloatPoints curCenter, tmpPoints
                 
                 'Reset the layer's center of rotation
@@ -408,7 +408,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'Resetting the rotational point will cause the layer to "jump" to a new position.  Retrieve the
                 ' layer's new center of rotation, in absolute coordinates.
                 srcLayer.GetLayerCornerCoordinates tmpPoints
-                Dim newCenter As POINTFLOAT
+                Dim newCenter As PointFloat
                 PDMath.FindCenterOfFloatPoints newCenter, tmpPoints
                 
                 'Apply new (x, y) layer offsets to ensure that the layer's on-screen position hasn't changed

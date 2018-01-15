@@ -133,7 +133,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Smoothing Form
-'Copyright 2014-2017 by Tanner Helland, first build Copyright 2014 by Audioglider
+'Copyright 2014-2018 by Tanner Helland, first build Copyright 2014 by Audioglider
 'Created: 19/June/14
 'Last updated: 02/August/17
 'Last update: migrate to XML params, minor performance improvements
@@ -256,14 +256,14 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     'If this is a preview, we need to adjust the kernal
     If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
@@ -433,7 +433,7 @@ Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional By
     End With
     
     'PrepImageData generates a working copy of the current filter target
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust kernel size to match
@@ -469,7 +469,7 @@ Private Sub chkSeparable_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smoothing", , GetLocalParamString(), UNDO_LAYER
+    Process "Bilateral smoothing", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

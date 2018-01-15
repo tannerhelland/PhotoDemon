@@ -261,7 +261,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2017 by Tanner Helland
+'Copyright 2006-2018 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 19/July/17
 'Last update: rewrite against XML param strings
@@ -378,7 +378,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
 
     'Create a local array and point it at the source DIB's pixel data
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -625,7 +625,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Levels", , GetLevelsParamString(), UNDO_LAYER
+    Process "Levels", , GetLevelsParamString(), UNDO_Layer
 End Sub
 
 'Randomize button (command bar)
@@ -1155,7 +1155,7 @@ Private Sub Form_Load()
     
     'Render sample gradients for input/output levels
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
-    Dim boundsRectF As RECTF
+    Dim boundsRectF As RectF
     With boundsRectF
         .Left = 0
         .Top = 0
@@ -1188,7 +1188,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4

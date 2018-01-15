@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Transformation manager
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 09/May/15 (though assembled from various parts written much earlier)
 'Last updated: 22/June/15
 'Last update: add x/y shear support
@@ -207,7 +207,7 @@ Friend Function ApplyTransformToPointFs(ByVal ptrToFirstPointF As Long, ByVal nu
     End Select
 End Function
 
-Friend Function ApplyTransformToPointF(ByRef srcPoint As POINTFLOAT) As Boolean
+Friend Function ApplyTransformToPointF(ByRef srcPoint As PointFloat) As Boolean
     If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -223,7 +223,7 @@ Friend Function ApplyTransformToXY(ByRef srcX As Single, ByRef srcY As Single) A
         Case P2_DefaultBackend, P2_GDIPlusBackend
     
             'Create a temporary POINTFLOAT struct
-            Dim tmpPoint As POINTFLOAT
+            Dim tmpPoint As PointFloat
             tmpPoint.x = srcX
             tmpPoint.y = srcY
             

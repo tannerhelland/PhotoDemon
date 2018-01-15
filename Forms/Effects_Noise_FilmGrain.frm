@@ -78,7 +78,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Add Film Grain Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 07/August/17
 'Last update: convert to XML params, large performance improvements
@@ -111,7 +111,7 @@ Public Sub AddFilmGrain(ByVal effectParams As String, Optional ByVal toPreview A
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -194,7 +194,7 @@ Public Sub AddFilmGrain(ByVal effectParams As String, Optional ByVal toPreview A
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Add film grain", , GetLocalParamString(), UNDO_LAYER
+    Process "Add film grain", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

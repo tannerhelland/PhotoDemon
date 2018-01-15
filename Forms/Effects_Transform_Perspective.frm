@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params
@@ -142,8 +142,8 @@ Private m_srcDIB As pdDIB
 
 'We track two sets of control point coordinates - the original points, and the new points.  The difference between
 ' these is passed to the perspective function.
-Private m_oPoints(0 To 3) As POINTFLOAT
-Private m_nPoints(0 To 3) As POINTFLOAT
+Private m_oPoints(0 To 3) As PointFloat
+Private m_nPoints(0 To 3) As PointFloat
 
 'Track mouse status between MouseDown and MouseMove events
 Private m_isMouseDown As Boolean
@@ -170,14 +170,14 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent translated pixels from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     If (m_srcDIB Is Nothing) Then Set m_srcDIB = New pdDIB
     m_srcDIB.CreateFromExistingDIB workingDIB
@@ -604,7 +604,7 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which is needed to map between the on-screen interactive UI area,
     ' and the final transform.
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, True, pdFxPreview, , , True
     m_PreviewWidth = curDIBValues.Width
     m_PreviewHeight = curDIBValues.Height
@@ -677,7 +677,7 @@ Private Sub RedrawPreviewBox()
         Next i
     Else
         If cmdBar.PreviewsAllowed Then
-            Dim tmpSA As SAFEARRAY2D
+            Dim tmpSA As SafeArray2D
             EffectPrep.PrepImageData tmpSA, True, pdFxPreview
             StretchBlt picDraw.hDC, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
         End If

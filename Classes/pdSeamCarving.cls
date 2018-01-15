@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image seam carving (smart resize/"content-aware scale"/"liquid rescale") Engine
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
@@ -92,7 +92,7 @@ Public Sub SetEnergyImage(ByRef srcDIB As pdDIB)
     
     'To speed up processing, we are going to store all energy data in the blue channel of the image.
     Dim energyData() As Byte
-    Dim energySA As SAFEARRAY2D
+    Dim energySA As SafeArray2D
     PrepSafeArray energySA, m_EnergyImage
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
@@ -434,12 +434,12 @@ Private Function GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, m_SourceImage
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, tmpImage
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -816,12 +816,12 @@ Private Function GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, m_SourceImage
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     PrepSafeArray dstSA, tmpImage
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     

@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 8/14/01
 'Last updated: 08/August/17
 'Last update: migrate to XML params, large performance improvements
@@ -108,7 +108,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Diffuse", , GetLocalParamString(), UNDO_LAYER
+    Process "Diffuse", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -155,7 +155,7 @@ Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview 
     yDiffuseRatio = 0.01 * yDiffuseRatio
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Long, dstSA As SAFEARRAY2D
+    Dim dstImageData() As Long, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     workingDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
@@ -165,7 +165,7 @@ Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview 
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    Dim srcImageData() As Long, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Long, srcSA As SafeArray2D
     srcDIB.WrapLongArrayAroundDIB srcImageData, srcSA
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here

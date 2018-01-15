@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pen Selection Dialog
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 30/June/15
 'Last update: start migrating pen creation bits into this singular dialog
@@ -410,7 +410,7 @@ Private Sub UpdatePreview()
         End If
         
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
-        Dim tmpRect As RECTF, hPadding As Single, vPadding As Single
+        Dim tmpRect As RectF, hPadding As Single, vPadding As Single
         
         hPadding = m_PenPreview.GetPenProperty(P2_PenWidth) * 2
         If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)

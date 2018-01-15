@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 08/August/17
 'Last update: finish migrating *every last damn function* to XML params.  For the first time in history,

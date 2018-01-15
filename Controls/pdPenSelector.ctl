@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pen Selector custom control
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 04/July/15
 'Last updated: 20/June/16
 'Last update: migrate to pd2D for all UI rendering
@@ -69,7 +69,7 @@ Private m_PreviewPath As pd2DPath
 Private m_IsDialogLive As Boolean
 
 'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_PenRect As RECTF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
+Private m_PenRect As RectF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
 
 '2D painting support classes
 Private m_Painter As pd2DPainter

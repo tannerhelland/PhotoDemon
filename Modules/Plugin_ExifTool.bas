@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExifTool"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 08/April/16
 'Last update: mass overhaul in conjunction with building the Metadata Editor dialog

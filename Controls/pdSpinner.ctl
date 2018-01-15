@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 27/February/17
 'Last update: extend "significant digits" property to support any arbitrary precision

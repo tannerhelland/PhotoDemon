@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Selector custom control
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 01/February/16
 'Last update: finalize theming support
@@ -68,7 +68,7 @@ Private m_Brush As pd2DBrush
 Private isDialogLive As Boolean
 
 'The rectangle where the gradient preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_GradientRect As RECTF, m_MouseInsideGradientRect As Boolean, m_MouseDownGradientRect As Boolean
+Private m_GradientRect As RectF, m_MouseInsideGradientRect As Boolean, m_MouseDownGradientRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.

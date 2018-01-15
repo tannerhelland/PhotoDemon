@@ -187,7 +187,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Printer Interface (including Print Preview)
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 22/September/17
 'Last update: emergency fixes to restore printing support on XP.  Some features were stripped to enable compatibility

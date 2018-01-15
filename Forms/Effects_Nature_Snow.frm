@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Nature > "Snow" Effect Dialog
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 03/August/17
 'Last updated: 04/August/17
 'Last update: wrap up initial build
@@ -179,7 +179,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     End With
     
     'Generate a source image matching the current preview area
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , True
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -259,8 +259,8 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     Dim centerX As Double, centerY As Double
     Dim ptAngle As Single
     
-    Dim shapeCorners() As POINTFLOAT
-    ReDim shapeCorners(0 To 3) As POINTFLOAT
+    Dim shapeCorners() As PointFloat
+    ReDim shapeCorners(0 To 3) As PointFloat
     
     If (Not toPreview) Then ProgressBars.SetProgBarVal 1
     

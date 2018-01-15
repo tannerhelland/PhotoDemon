@@ -1,7 +1,7 @@
 Attribute VB_Name = "ColorManagement"
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Support Module
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 05/September/14
 'Last update: tie the multiprofile transform quality to the new Color Management Performance preference
@@ -725,7 +725,7 @@ End Sub
 
 'Transform some region of a given DIB from the specified working space (or sRGB, if no index is supplied) to the current display space.
 ' Do not call this if you don't know what you're doing, as it is *not* reversible.
-Public Sub ApplyDisplayColorManagement_RectF(ByRef srcDIB As pdDIB, ByRef srcRectF As RECTF, Optional ByVal srcWorkingSpaceIndex As Long = -1, Optional ByVal checkPremultiplication As Boolean = True)
+Public Sub ApplyDisplayColorManagement_RectF(ByRef srcDIB As pdDIB, ByRef srcRectF As RectF, Optional ByVal srcWorkingSpaceIndex As Long = -1, Optional ByVal checkPremultiplication As Boolean = True)
     
     'Note that this function does nothing if the display is not currently color managed
     If (Not srcDIB Is Nothing) And (m_DisplayCMMPolicy <> DCM_NoManagement) Then
@@ -763,7 +763,7 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
         'Apply the transformation to the source color, with special handling if the source is a long created by VB's RGB() function
         If srcIsRGBLong Then
             
-            Dim tmpRGBASrc As RGBQUAD, tmpRGBADst As RGBQUAD
+            Dim tmpRGBASrc As RGBQuad, tmpRGBADst As RGBQuad
             With tmpRGBASrc
                 .Alpha = 255
                 .Red = Colors.ExtractRed(srcColor)
@@ -880,7 +880,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
     'Next, calculate xyz triplets that correspond to the incoming RGB endpoints, using the same xyz to XYZ conversion as the white point.
     Dim Xr As Double, Yr As Double, Zr As Double
     Dim Xg As Double, Yg As Double, Zg As Double
-    Dim Xb As Double, Yb As Double, Zb As Double
+    Dim xb As Double, yb As Double, Zb As Double
     
     Xr = RedX / RedY
     Yr = 1
@@ -890,8 +890,8 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
     Yg = 1
     Zg = (1 - GreenX - GreenY) / GreenY
     
-    Xb = BlueX / BlueY
-    Yb = 1
+    xb = BlueX / BlueY
+    yb = 1
     Zb = (1 - BlueX - BlueY) / BlueY
     
     'Now comes the ugly stuff.  We can think of the calculated XYZ values (for each of RGB) as a conversion matrix, which looks like this:
@@ -912,10 +912,10 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
     
     srcMatrix(0, 0) = Xr
     srcMatrix(0, 1) = Xg
-    srcMatrix(0, 2) = Xb
+    srcMatrix(0, 2) = xb
     srcMatrix(1, 0) = Yr
     srcMatrix(1, 1) = Yg
-    srcMatrix(1, 2) = Yb
+    srcMatrix(1, 2) = yb
     srcMatrix(2, 0) = Zr
     srcMatrix(2, 1) = Zg
     srcMatrix(2, 2) = Zb
@@ -936,10 +936,10 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         ReDim mFinal(0 To 2, 0 To 2) As Double
         mFinal(0, 0) = Sr * Xr
         mFinal(0, 1) = Sg * Xg
-        mFinal(0, 2) = Sb * Xb
+        mFinal(0, 2) = Sb * xb
         mFinal(1, 0) = Sr * Yr
         mFinal(1, 1) = Sg * Yg
-        mFinal(1, 2) = Sb * Yb
+        mFinal(1, 2) = Sb * yb
         mFinal(2, 0) = Sr * Zr
         mFinal(2, 1) = Sg * Zg
         mFinal(2, 2) = Sb * Zb
@@ -1011,7 +1011,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
             

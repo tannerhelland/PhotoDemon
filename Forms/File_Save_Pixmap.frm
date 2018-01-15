@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portable Pixmap Export Dialog
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 01/May/16
 'Last updated: 11/August/17
 'Last update: improve flow of export dialog (by auto-hiding the background color selector when the source
@@ -358,7 +358,7 @@ Private Sub UpdatePreviewSource()
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'PNM formats don't support transparency, so we can save some time by forcibly converting to 24-bpp in advance

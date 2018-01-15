@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Hyperlink (clickable label) control
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 18/April/16
 'Last update: fix double-painting issue on MouseLeave events
@@ -490,7 +490,7 @@ Private Sub UpdateControlLayout()
     ' Right-aligned labels in particular must have their .Left property modified, any time the .Width property is modified.
     ' To facilitate this behavior, we'll store the original label's width and height; this will let us know how far we
     ' need to move the label, if any.
-    Dim controlRect As RECTL, controlWidth As Long, controlHeight As Long
+    Dim controlRect As RectL, controlWidth As Long, controlHeight As Long
     ucSupport.GetControlRect controlRect
     controlWidth = controlRect.Right - controlRect.Left
     controlHeight = controlRect.Bottom - controlRect.Top

@@ -95,7 +95,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 19/September/12
 'Last updated: 16/December/15
 'Last update: overhaul from the ground up so we can support local histogram operations, multiple luminance types,
@@ -128,7 +128,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     

@@ -76,7 +76,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Scrollbar control
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 07/October/15
 'Last updated: 11/October/15
 'Last update: wrap up initial build
@@ -136,11 +136,11 @@ Private m_SignificantDigits As Long
 
 'To simplify mouse_down handling, resize events fill three rects: one for the "up" or "left" scroll button, one for
 ' the "down" or "right" scroll button, and a third one, for the track rect between the buttons.
-Private upLeftRect As RECTL, downRightRect As RECTL, trackRect As RECTL
+Private upLeftRect As RectL, downRightRect As RectL, trackRect As RectL
 
 'Max/min property changes fill a third rect - the "thumb" rect - which is the bar in the middle of the scroll bar.
 ' Note that the thumb rect is a RECTF, because it supports subpixel positioning.
-Private thumbRect As RECTF
+Private thumbRect As RectF
 
 'To simplify thumb calculations, we calculate its size only when necessary, and cache it.  Note that the size
 ' is directionless (e.g. it represents the height for a vertical Thumb, and the width for a horizontal one).
@@ -1046,7 +1046,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         End If
         
         'Finally, paint the arrows themselves
-        Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+        Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
                     
         'Start with the up/left arrow
         If m_OrientationHorizontal Then

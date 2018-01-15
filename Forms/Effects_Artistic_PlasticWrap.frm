@@ -118,7 +118,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Plastic Wrap" Image effect
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 03/August/17
 'Last updated: 07/August/17
 'Last update: put finishing touches on the algorithm
@@ -176,7 +176,7 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the smoothness (kernel radius) to match the size of the preview box
@@ -204,8 +204,8 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     'We will be using pdFilterLUT to generate corresponding RGB lookup tables, which means we need to use
     ' POINTFLOAT arrays
-    Dim gCurve() As POINTFLOAT
-    ReDim gCurve(0 To wrapDetail) As POINTFLOAT
+    Dim gCurve() As PointFloat
+    ReDim gCurve(0 To wrapDetail) As PointFloat
     
     Dim detailModifier As Double
     detailModifier = 1# / CDbl(wrapDetail)

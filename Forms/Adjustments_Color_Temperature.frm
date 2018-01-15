@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Temperature Adjustment Form
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 16/September/12
 'Last updated: 10/September/16
 'Last update: total overhaul.  Among other things, a new "basic" temperature adjustment method is available, and the "advanced"
@@ -245,7 +245,7 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -362,7 +362,7 @@ Private Sub btsMethod_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Temperature", , GetLocalParamString(), UNDO_LAYER
+    Process "Temperature", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

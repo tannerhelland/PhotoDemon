@@ -1,7 +1,7 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
 'Automatic Software Updater
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 13/December/17
 'Last update: clean up code, improve debug reporting, switch to https for patch downloads
@@ -676,6 +676,7 @@ Public Function GetPhotoDemonVersion() As String
     'Even-numbered releases are "official" releases, so simply return the full version string
     If (CLng(App.Minor) Mod 2 = 0) Then
         GetPhotoDemonVersion = App.Major & "." & App.Minor
+        If (App.Revision <> 0) Then GetPhotoDemonVersion = GetPhotoDemonVersion & "." & App.Revision
         
     Else
     

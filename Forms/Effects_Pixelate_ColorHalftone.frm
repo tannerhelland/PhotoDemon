@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Halftone Effect Interface
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 01/April/15
 'Last updated: 01/April/15
 'Last update: initial build
@@ -167,7 +167,7 @@ Public Sub ColorHalftoneFilter(ByVal effectParams As String, Optional ByVal toPr
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -191,7 +191,7 @@ Public Sub ColorHalftoneFilter(ByVal effectParams As String, Optional ByVal toPr
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color halftone", , GetLocalParamString(), UNDO_LAYER
+    Process "Color halftone", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

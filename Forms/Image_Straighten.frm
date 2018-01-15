@@ -65,7 +65,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 11/May/14
 'Last update: initial build, based heavily off PD's existing Rotate dialog
@@ -151,7 +151,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     Dim cTransform As pd2DTransform
     Set cTransform = New pd2DTransform
     
-    Dim rotatePoints() As POINTFLOAT
+    Dim rotatePoints() As PointFloat
     
     'Normally, I like to use identical code for previews and actual effects.  However, rotating is completely different
     ' for previews (where we do a single rotation of the composited image) vs the full images (independently rotating
@@ -288,7 +288,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
             
             'Notify the parent of the change
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
                             
         'Continue with the next layer
         Next i
@@ -317,9 +317,9 @@ Private Sub cmdBar_OKClick()
 
     Select Case m_StraightenTarget
         Case PD_AT_WHOLEIMAGE
-            Process "Straighten image", , GetLocalParamString(), UNDO_IMAGE
+            Process "Straighten image", , GetLocalParamString(), UNDO_Image
         Case PD_AT_SINGLELAYER
-            Process "Straighten layer", , GetLocalParamString(), UNDO_LAYER
+            Process "Straighten layer", , GetLocalParamString(), UNDO_Layer
     End Select
     
 End Sub
@@ -375,7 +375,7 @@ Private Sub Form_Load()
         
             Case PD_AT_WHOLEIMAGE
             
-                Dim dstRectF As RECTF, srcRectF As RECTF
+                Dim dstRectF As RectF, srcRectF As RectF
                 With dstRectF
                     .Left = 0#
                     .Top = 0#

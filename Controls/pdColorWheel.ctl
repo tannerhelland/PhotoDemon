@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Color Wheel" color selector
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 19/October/15
 'Last updated: 15/February/16
 'Last update: implement theming and a few new features
@@ -80,7 +80,7 @@ Private m_HueRadiusInner As Single, m_HueRadiusOuter As Single
 
 'Various saturation + value box positioning values.  These are calculated by the CreateSVSquare function and cached here, as a
 ' convenience for subsequent hit-testing and rendering.
-Private m_SVRectF As RECTF
+Private m_SVRectF As RectF
 
 'Current control HSV values, on the range [0, 1].  Make sure to update these if a new color is supplied externally.
 Private m_Hue As Double, m_Saturation As Double, m_Value As Double
@@ -578,7 +578,7 @@ Private Sub CreateColorWheel()
     'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
     ' For convenience, we will place hue 0 at angle 0.
     Dim hPixels() As Byte
-    Dim hueSA As SAFEARRAY2D
+    Dim hueSA As SafeArray2D
     PrepSafeArray hueSA, m_WheelBuffer
     CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
     
@@ -687,7 +687,7 @@ Private Sub CreateSVSquare()
     ' - The y-axis position determines value (1 -> 0)
     ' - The x-axis position determines saturation (1 -> 0)
     Dim svPixels() As Byte
-    Dim svSA As SAFEARRAY2D
+    Dim svSA As SafeArray2D
     PrepSafeArray svSA, m_SquareBuffer
     CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
     

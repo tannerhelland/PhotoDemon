@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Display Device Manager (child class)
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 18/September/15
 'Last update: add additional failsafes just in case core display APIs fail
@@ -40,7 +40,7 @@ Private m_Primary As Boolean
 Private m_AdapterName As String, m_FriendlyName As String, m_Description As String, m_DeviceID As String
 
 'Display rect and working rect.  (Working rect does not include chrome like taskbars.)
-Private m_MonitorRect As RECTL, m_WorkingRect As RECTL
+Private m_MonitorRect As RectL, m_WorkingRect As RectL
 
 'Settings related to the monitor's EDID.  These are only available on Vista+.
 Private m_hasEDID As Boolean
@@ -96,19 +96,19 @@ Public Sub SetDeviceID(ByRef newDeviceID As String)
     m_DeviceID = newDeviceID
 End Sub
 
-Friend Sub GetRect(ByRef dstRect As RECTL)
+Friend Sub GetRect(ByRef dstRect As RectL)
     dstRect = m_MonitorRect
 End Sub
 
-Friend Sub SetRect(ByRef srcRect As RECTL)
+Friend Sub SetRect(ByRef srcRect As RectL)
     m_MonitorRect = srcRect
 End Sub
 
-Friend Sub GetWorkingRect(ByRef dstRect As RECTL)
+Friend Sub GetWorkingRect(ByRef dstRect As RectL)
     dstRect = m_WorkingRect
 End Sub
 
-Friend Sub SetWorkingRect(ByRef srcRect As RECTL)
+Friend Sub SetWorkingRect(ByRef srcRect As RectL)
     m_WorkingRect = srcRect
 End Sub
 

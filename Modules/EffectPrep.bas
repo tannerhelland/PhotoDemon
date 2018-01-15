@@ -1,7 +1,7 @@
 Attribute VB_Name = "EffectPrep"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 25/July/17
 'Last update: greatly optimize effects when an active selection is present
@@ -100,7 +100,7 @@ Public Sub ResetPreviewIDs()
 End Sub
 
 'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
-Public Sub PrepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
+Public Sub PrepSafeArray(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
     'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
@@ -118,7 +118,7 @@ End Sub
 'This function can be used to populate a valid SAFEARRAY2D structure against any DIB, but instead of using bytes, each pixel
 ' is represented by a full LONG.
 ' DO NOT USE THIS ON 24-BPP DIBS, OBVIOUSLY!
-Public Sub PrepSafeArray_Long(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
+Public Sub PrepSafeArray_Long(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
     'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
@@ -136,7 +136,7 @@ End Sub
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
 ' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
 ' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
-Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
+Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
     'Before doing anything else, see if we can simply re-use our previous preview image
     If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (m_PreviousPreviewID <> 0) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
@@ -295,7 +295,7 @@ End Sub
 '
 'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
 ' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
-Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
+Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     g_cancelCurrentAction = False
@@ -304,7 +304,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' (For example: a selected area that extends outside the boundary of the current image.)  When this
     ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
     ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
-    Dim tmpLayer As pdLayer, selBounds As RECTF
+    Dim tmpLayer As pdLayer, selBounds As RectF
     If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         Set tmpLayer = New pdLayer
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
@@ -602,7 +602,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         
         'Retrieve the current selection boundaries
-        Dim selBounds As RECTF
+        Dim selBounds As RectF
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
         
         'Before continuing further, create a copy of the selection mask at the relevant image size.
@@ -667,17 +667,17 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         ' between the original copy, and the new effect-processed copy.)
         
         'Prepare a few image arrays (and array headers) in advance.
-        Dim pxEffect() As Byte, saEffect As SAFEARRAY1D, ptrWD As Long, strideWD As Long
+        Dim pxEffect() As Byte, saEffect As SafeArray1D, ptrWD As Long, strideWD As Long
         workingDIB.WrapArrayAroundScanline pxEffect, saEffect, 0
         ptrWD = saEffect.pvData
         strideWD = saEffect.cElements
         
-        Dim pxSelection() As Byte, saSelection As SAFEARRAY1D, ptrSel As Long, strideSel As Long
+        Dim pxSelection() As Byte, saSelection As SafeArray1D, ptrSel As Long, strideSel As Long
         selMaskCopy.WrapArrayAroundScanline pxSelection, saSelection, 0
         ptrSel = saSelection.pvData
         strideSel = saSelection.cElements
         
-        Dim pxDst() As Byte, saDst As SAFEARRAY1D, ptrDst As Long, strideDst As Long
+        Dim pxDst() As Byte, saDst As SafeArray1D, ptrDst As Long, strideDst As Long
         workingDIBBackup.WrapArrayAroundScanline pxDst, saDst, 0
         ptrDst = saDst.pvData
         strideDst = saDst.cElements
@@ -801,7 +801,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         ReleaseProgressBar
         
         'Notify the parent of the target layer of our changes
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Pass control to the viewport renderer, which will perform the actual rendering
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

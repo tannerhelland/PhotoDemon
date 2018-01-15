@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Region Class
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 18/June/16 (but assembled from many bits written earlier)
 'Last updated: 19/June/16
 'Last update: continue expanding functionality
@@ -50,7 +50,7 @@ Friend Function AddRectangleF(ByVal rLeft As Single, ByVal rTop As Single, ByVal
     
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     tmpRectF.Left = rLeft
     tmpRectF.Top = rTop
     tmpRectF.Width = rWidth
@@ -63,7 +63,7 @@ Friend Function AddRectangleF(ByVal rLeft As Single, ByVal rTop As Single, ByVal
     
 End Function
 
-Friend Function AddRectangle_FromRectF(ByRef srcRectF As RECTF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+Friend Function AddRectangle_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -74,7 +74,7 @@ Friend Function AddRectangle_FromRectF(ByRef srcRectF As RECTF, Optional ByVal u
     
 End Function
 
-Friend Function AddRectangle_FromRectL(ByRef srcRectL As RECTL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+Friend Function AddRectangle_FromRectL(ByRef srcRectL As RectL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -118,7 +118,7 @@ Friend Function CloneRegion(ByRef srcRegion As pd2DRegion) As Boolean
     
 End Function
 
-Friend Function GetRegionBoundsF() As RECTF
+Friend Function GetRegionBoundsF() As RectF
     If (m_RegionHandle <> 0) Then
         Select Case m_RegionBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -127,7 +127,7 @@ Friend Function GetRegionBoundsF() As RECTF
     End If
 End Function
 
-Friend Function GetRegionBoundsL() As RECTL
+Friend Function GetRegionBoundsL() As RectL
     If (m_RegionHandle <> 0) Then
         Select Case m_RegionBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend

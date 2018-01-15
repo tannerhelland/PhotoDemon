@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Uniscribe API Interface
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 19/May/15
 'Last update: migrate everything from a module to a class; there's enough useful code in here that we may want to
@@ -57,7 +57,7 @@ Private Declare Function ScriptLayout Lib "usp10" (ByVal cRuns As Long, ByVal pt
 Private Declare Function ScriptPlace Lib "usp10" (ByVal srcDC As Long, ByRef psc As SCRIPT_CACHE, ByVal ptrToIntpwGlyphs As Long, ByVal cGlyphs As Long, ByVal ptrToSVpsva As Long, ByVal ptrTopsa As Long, ByVal ptrToLngpiAdvance As Long, ByVal ptrTopGoffset As Long, ByRef pABC As ABC) As Long
 Private Declare Function ScriptRecordDigitSubstitution Lib "usp10" (ByVal Locale As Long, psds As SCRIPT_DIGITSUBSTITUTE) As Long
 Private Declare Function ScriptShape Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToSApas As Long, ByVal ptrToIntpwOutGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
-Private Declare Function ScriptTextOut Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal x As Long, ByVal y As Long, ByVal fuOptions As Long, lprc As RECTL, psa As SCRIPT_ANALYSIS, ByVal pwcReserved As Long, ByVal iReserved As Long, pwGlyphs() As Integer, ByVal cGlyphs As Long, piAdvance() As Long, piJustify As Any, pGoffset As GOFFSET) As Long
+Private Declare Function ScriptTextOut Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal x As Long, ByVal y As Long, ByVal fuOptions As Long, lprc As RectL, psa As SCRIPT_ANALYSIS, ByVal pwcReserved As Long, ByVal iReserved As Long, pwGlyphs() As Integer, ByVal cGlyphs As Long, piAdvance() As Long, piJustify As Any, pGoffset As GOFFSET) As Long
 Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, piCP As Long, piTrailing As Long) As Long
 
 'Some Uniscribe features weren't added until Vista; these enable all kinds of neat behavior, but we must call them conditionally

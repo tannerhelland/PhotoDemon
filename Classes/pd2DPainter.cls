@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Painting class (interface for using pd2dBrush and pd2dPen on pd2dSurface objects)
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 28/June/16
 'Last update: implement additional surface-to-surface rendering functions
@@ -171,7 +171,7 @@ Public Function DrawEllipseF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByR
     DrawEllipseF_AbsoluteCoords = Me.DrawEllipseF(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
 End Function
 
-Friend Function DrawEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF) As Boolean
+Friend Function DrawEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RectF) As Boolean
     DrawEllipseF_FromRectF = Me.DrawEllipseF(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
 End Function
 
@@ -188,7 +188,7 @@ Public Function DrawEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByR
     DrawEllipseI_AbsoluteCoords = Me.DrawEllipseI(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
 End Function
 
-Friend Function DrawEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTL) As Boolean
+Friend Function DrawEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RectL) As Boolean
     DrawEllipseI_FromRectL = Me.DrawEllipseI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
@@ -321,8 +321,8 @@ Public Function DrawSurfaceRotatedF(ByRef dstSurface As pd2DSurface, ByVal dstCe
     
     'Translate the corner points of the image to match.  (Note that the order of points is important; GDI+ requires points
     ' in top-left, top-right, bottom-left order, with the fourth point being optional.)
-    Dim imgCorners() As POINTFLOAT
-    ReDim imgCorners(0 To 3) As POINTFLOAT
+    Dim imgCorners() As PointFloat
+    ReDim imgCorners(0 To 3) As PointFloat
     imgCorners(0).x = srcX
     imgCorners(0).y = srcY
     imgCorners(1).x = srcX + srcWidth
@@ -341,8 +341,8 @@ Public Function DrawSurfaceTransformedF(ByRef dstSurface As pd2DSurface, ByRef s
     
     'Translate the corner points of the image to match.  (Note that the order of points is important; GDI+ requires points
     ' in top-left, top-right, bottom-left order, with the fourth point being optional.)
-    Dim imgCorners() As POINTFLOAT
-    ReDim imgCorners(0 To 3) As POINTFLOAT
+    Dim imgCorners() As PointFloat
+    ReDim imgCorners(0 To 3) As PointFloat
     imgCorners(0).x = srcX
     imgCorners(0).y = srcY
     imgCorners(1).x = srcX + srcWidth
@@ -367,7 +367,7 @@ Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DP
     End If
 End Function
 
-Friend Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As POINTFLOAT, ByRef srcPoint2 As POINTFLOAT) As Boolean
+Friend Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As PointFloat, ByRef srcPoint2 As PointFloat) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -398,7 +398,7 @@ Public Function DrawLineI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DP
     End If
 End Function
 
-Friend Function DrawLineI_FromPtL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As POINTLONG, ByRef srcPoint2 As POINTLONG) As Boolean
+Friend Function DrawLineI_FromPtL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As PointLong, ByRef srcPoint2 As PointLong) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -481,7 +481,7 @@ Public Function DrawRectangleF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, B
     DrawRectangleF_AbsoluteCoords = Me.DrawRectangleF(dstSurface, srcPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
 End Function
 
-Friend Function DrawRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF) As Boolean
+Friend Function DrawRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RectF) As Boolean
     DrawRectangleF_FromRectF = Me.DrawRectangleF(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
 End Function
 
@@ -498,11 +498,11 @@ Public Function DrawRectangleI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, B
     DrawRectangleI_AbsoluteCoords = Me.DrawRectangleI(dstSurface, srcPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
 End Function
 
-Friend Function DrawRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTL) As Boolean
+Friend Function DrawRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RectL) As Boolean
     DrawRectangleI_FromRectL = Me.DrawRectangleI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
-Friend Function DrawRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF, ByVal cornerRadius As Single) As Boolean
+Friend Function DrawRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RectF, ByVal cornerRadius As Single) As Boolean
         
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
     Dim tmpPath As pd2DPath
@@ -542,7 +542,7 @@ Public Function FillEllipseF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByR
     FillEllipseF_AbsoluteCoords = Me.FillEllipseF(dstSurface, srcBrush, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
 End Function
 
-Friend Function FillEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF) As Boolean
+Friend Function FillEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectF) As Boolean
     FillEllipseF_FromRectF = Me.FillEllipseF(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
 End Function
 
@@ -559,7 +559,7 @@ Public Function FillEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByR
     FillEllipseI_AbsoluteCoords = Me.FillEllipseI(dstSurface, srcBrush, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
 End Function
 
-Friend Function FillEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
+Friend Function FillEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectL) As Boolean
     FillEllipseI_FromRectL = Me.FillEllipseI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
@@ -611,7 +611,7 @@ Public Function FillRectangleF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, B
     FillRectangleF_AbsoluteCoords = Me.FillRectangleF(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
 End Function
 
-Friend Function FillRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF) As Boolean
+Friend Function FillRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectF) As Boolean
     FillRectangleF_FromRectF = Me.FillRectangleF(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
 End Function
 
@@ -628,7 +628,7 @@ Public Function FillRectangleI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, B
     FillRectangleI_AbsoluteCoords = Me.FillRectangleI(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
 End Function
 
-Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
+Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectL) As Boolean
     FillRectangleI_FromRectL = Me.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
@@ -649,7 +649,7 @@ Friend Function FillRoundRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBr
     
 End Function
 
-Friend Function FillRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF, ByVal cornerRadius As Single) As Boolean
+Friend Function FillRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectF, ByVal cornerRadius As Single) As Boolean
         
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
     Dim tmpPath As pd2DPath

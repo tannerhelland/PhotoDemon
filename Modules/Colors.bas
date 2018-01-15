@@ -1,7 +1,7 @@
 Attribute VB_Name = "Colors"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/August/13
 'Last update: added XYZ and CieLAB color conversions

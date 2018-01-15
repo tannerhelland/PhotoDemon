@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Viewport Support Class
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 13/September/15
 'Last update: overhaul the class completely as part of prepping for paint tools
@@ -40,88 +40,88 @@ Option Explicit
 
 'As of version 7.0, the first stage of the viewport pipeline uses RectF structs to store the calculated
 ' coordinate regions.  See the ViewportEngine module for more details on how these structs are used.
-Private m_ImageRect_CanvasCoords As RECTF
-Private m_ImageRect_TranslatedCanvasCoords As RECTF
-Private m_CanvasRect_ImageCoords As RECTF
-Private m_CanvasRect_ActualPixels As RECTF
+Private m_ImageRect_CanvasCoords As RectF
+Private m_ImageRect_TranslatedCanvasCoords As RectF
+Private m_CanvasRect_ImageCoords As RectF
+Private m_CanvasRect_ActualPixels As RectF
 
 'The area of the canvas covered by the image is stored here.  Note that a separate boolean is also stored,
 ' on the off chance that the canvas and image do not currently intersect.
 Private m_CanvasAndImageIntersect As Boolean
-Private m_CanvasImageIntersectRect As RECTF
-Private m_SrcImageIntersectRect As RECTF
+Private m_CanvasImageIntersectRect As RectF
+Private m_SrcImageIntersectRect As RectF
 
 'Current scroll bar values.  These are saved/restored when the active image changes.
-Private m_hScrollValue As Long, m_vScrollValue As Long
+Private m_HScrollValue As Long, m_VScrollValue As Long
 
 Public Sub SetHScrollValue(ByVal newValue As Long)
-    m_hScrollValue = newValue
+    m_HScrollValue = newValue
 End Sub
 
 Public Sub SetVScrollValue(ByVal newValue As Long)
-    m_vScrollValue = newValue
+    m_VScrollValue = newValue
 End Sub
 
 Friend Sub SetIntersectState(ByRef newState As Boolean)
     m_CanvasAndImageIntersect = newState
 End Sub
 
-Friend Sub SetIntersectRectCanvas(ByRef srcRectF As RECTF)
+Friend Sub SetIntersectRectCanvas(ByRef srcRectF As RectF)
     m_CanvasImageIntersectRect = srcRectF
 End Sub
 
-Friend Sub SetIntersectRectImage(ByRef srcRectF As RECTF)
+Friend Sub SetIntersectRectImage(ByRef srcRectF As RectF)
     m_SrcImageIntersectRect = srcRectF
 End Sub
 
-Friend Sub SetImageRectCanvasCoords(ByRef srcRectF As RECTF)
+Friend Sub SetImageRectCanvasCoords(ByRef srcRectF As RectF)
     m_ImageRect_CanvasCoords = srcRectF
 End Sub
 
-Friend Sub SetImageRectTranslated(ByRef srcRectF As RECTF)
+Friend Sub SetImageRectTranslated(ByRef srcRectF As RectF)
     m_ImageRect_TranslatedCanvasCoords = srcRectF
 End Sub
 
-Friend Sub SetCanvasRectImageCoords(ByRef srcRectF As RECTF)
+Friend Sub SetCanvasRectImageCoords(ByRef srcRectF As RectF)
     m_CanvasRect_ImageCoords = srcRectF
 End Sub
 
-Friend Sub SetCanvasRectActualPixels(ByRef srcRectF As RECTF)
+Friend Sub SetCanvasRectActualPixels(ByRef srcRectF As RectF)
     m_CanvasRect_ActualPixels = srcRectF
 End Sub
 
 Public Function GetHScrollValue() As Long
-    GetHScrollValue = m_hScrollValue
+    GetHScrollValue = m_HScrollValue
 End Function
 
 Public Function GetVScrollValue() As Long
-    GetVScrollValue = m_vScrollValue
+    GetVScrollValue = m_VScrollValue
 End Function
 
 Friend Function GetIntersectState() As Boolean
     GetIntersectState = m_CanvasAndImageIntersect
 End Function
 
-Friend Sub GetIntersectRectCanvas(ByRef dstRectF As RECTF)
+Friend Sub GetIntersectRectCanvas(ByRef dstRectF As RectF)
     dstRectF = m_CanvasImageIntersectRect
 End Sub
 
-Friend Sub GetIntersectRectImage(ByRef dstRectF As RECTF)
+Friend Sub GetIntersectRectImage(ByRef dstRectF As RectF)
     dstRectF = m_SrcImageIntersectRect
 End Sub
 
-Friend Sub GetImageRectCanvasCoords(ByRef dstRectF As RECTF)
+Friend Sub GetImageRectCanvasCoords(ByRef dstRectF As RectF)
     dstRectF = m_ImageRect_CanvasCoords
 End Sub
 
-Friend Sub GetImageRectTranslated(ByRef dstRectF As RECTF)
+Friend Sub GetImageRectTranslated(ByRef dstRectF As RectF)
     dstRectF = m_ImageRect_TranslatedCanvasCoords
 End Sub
 
-Friend Sub GetCanvasRectImageCoords(ByRef dstRectF As RECTF)
+Friend Sub GetCanvasRectImageCoords(ByRef dstRectF As RectF)
     dstRectF = m_CanvasRect_ImageCoords
 End Sub
 
-Friend Sub GetCanvasRectActualPixels(ByRef dstRectF As RECTF)
+Friend Sub GetCanvasRectActualPixels(ByRef dstRectF As RectF)
     dstRectF = m_CanvasRect_ActualPixels
 End Sub

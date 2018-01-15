@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Performance Profiler - Long-term Tracking
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 28/August/17
 'Last update: code clean-up in preparation for splitting some functionality into a short-term class

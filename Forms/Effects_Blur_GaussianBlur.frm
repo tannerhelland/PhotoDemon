@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright 2010-2017 by Tanner Helland
+'Copyright 2010-2018 by Tanner Helland
 'Created: 01/July/10
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -128,7 +128,7 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
     If (gaussQuality > 1) Then gaussQuality = 1
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -168,7 +168,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , GetLocalParamString(), UNDO_LAYER
+    Process "Gaussian blur", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

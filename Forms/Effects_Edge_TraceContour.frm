@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Trace Contour (Outline) Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 15/Feb/13
 'Last updated: 30/July/17
 'Last update: performance improvements, migrate to XML params
@@ -125,7 +125,7 @@ Public Sub TraceContour(ByVal effectParams As String, Optional ByVal toPreview A
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -184,7 +184,7 @@ Public Sub TraceContour(ByVal effectParams As String, Optional ByVal toPreview A
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Trace contour", , GetLocalParamString(), UNDO_LAYER
+    Process "Trace contour", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

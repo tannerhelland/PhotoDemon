@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rainbow Effect dialog
-'Copyright 2003-2017 by Tanner Helland
+'Copyright 2003-2018 by Tanner Helland
 'Created: sometime 2003
 'Last updated: 01/August/17
 'Last update: performance improvements, migrate to XML params
@@ -141,7 +141,7 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -268,7 +268,7 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rainbow", , GetLocalParamString(), UNDO_LAYER
+    Process "Rainbow", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

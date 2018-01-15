@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 15/August/15
 'Last update: convert the old cCommonDialog references to the newer, lighter pdOpenSaveDialog instance

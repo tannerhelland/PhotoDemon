@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 06/June/16
 'Last update: total overhaul to improve performance, quality, and feature set.  FreeImage is no longer involved.
@@ -279,7 +279,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             End If
             
             'Notify the parent of the change
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
             
         'Continue with the next layer
         Next i
@@ -328,10 +328,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_RotateTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Arbitrary image rotation", , GetFunctionParamString(), UNDO_IMAGE
+            Process "Arbitrary image rotation", , GetFunctionParamString(), UNDO_Image
             
         Case PD_AT_SINGLELAYER
-            Process "Arbitrary layer rotation", , GetFunctionParamString(), UNDO_LAYER
+            Process "Arbitrary layer rotation", , GetFunctionParamString(), UNDO_Layer
             
     End Select
     
@@ -428,7 +428,7 @@ Private Sub Form_Load()
         
             Case PD_AT_WHOLEIMAGE
             
-                Dim dstRectF As RECTF, srcRectF As RECTF
+                Dim dstRectF As RectF, srcRectF As RectF
                 With dstRectF
                     .Left = 0#
                     .Top = 0#

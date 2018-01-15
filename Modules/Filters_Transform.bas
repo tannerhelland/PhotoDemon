@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Transform"
 '***************************************************************************
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
-'Copyright 2003-2017 by Tanner Helland
+'Copyright 2003-2018 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 13/June/17
 'Last update: routine code-cleanup, minor optimizations

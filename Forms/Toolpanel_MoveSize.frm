@@ -295,7 +295,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Move/Size Tool Panel
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 06/November/17
 'Last update: improve the rate at which things like taskbar icons are refreshed during non-destructive modifications

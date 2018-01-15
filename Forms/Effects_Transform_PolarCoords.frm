@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Polar Coordinate Conversion Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params
@@ -167,7 +167,7 @@ Public Sub ConvertToPolar(ByVal effectParams As String, Optional ByVal toPreview
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -192,7 +192,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , GetLocalParamString(), UNDO_LAYER
+    Process "Polar conversion", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -39,7 +39,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Splash Screen
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 02/September/17
 'Last update: handle paint messages internally, rather than leaning on AutoRedraw
@@ -51,8 +51,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECTL) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECTL) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
 
 'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once m_splashDIB (below)
 ' has been successfully assembled.
@@ -109,7 +109,7 @@ Public Sub PrepareRestOfSplash()
     
         'Use the GetDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
-        Dim captureRect As RECTL
+        Dim captureRect As RectL
         GetWindowRect Me.hWnd, captureRect
         ScreenCapture.GetPartialDesktopAsDIB m_splashDIB, captureRect
         

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Red-eye Detection Engine
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 31/December/16
 'Last updated: 06/January/16
 'Last update: rework flood fill functionality into red-eye region detection
@@ -39,12 +39,12 @@ Private Const INITIAL_STACK_HEIGHT As Long = 4096
 'Red-eye detection requires two input arrays.  In the first array, we will search already identified red-eye,
 ' eye-highlight, and non-skin pixels to determine potentially valid eye regions.  This array must have already
 ' been filled by the user.
-Private m_HighlightData() As Byte, m_HighlightSA As SAFEARRAY2D
+Private m_HighlightData() As Byte, m_HighlightSA As SafeArray2D
 
 '...The second input array is of INTEGER type.  It must be dimensioned to the size of the target image, and it will
 ' store unique region IDs for each pixel.  Because there may be more than 255 unique regions, a byte array won't work.
 ' Pixels that do not belong to any regions are marked as 0.
-Private m_RegionIDs() As Integer, m_RegionSA As SAFEARRAY2D
+Private m_RegionIDs() As Integer, m_RegionSA As SafeArray2D
 
 'Width and height of the target image.
 Private m_Width As Long, m_Height As Long

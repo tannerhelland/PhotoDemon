@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: some time 2001
 'Last updated: 01/October/13
 'Last update: use a floating-point slider for more precise results
@@ -94,7 +94,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -171,7 +171,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Black light", , GetLocalParamString, UNDO_LAYER
+    Process "Black light", , GetLocalParamString, UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
