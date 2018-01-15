@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
-'Copyright 2013-2017 by Tanner Helland and contributors
+'Copyright 2013-2018 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon
 'Last updated: 08/December/17
 'Last update by: jpbro (https://github.com/jpbro)

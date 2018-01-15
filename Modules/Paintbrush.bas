@@ -1,7 +1,7 @@
 Attribute VB_Name = "Paintbrush"
 '***************************************************************************
 'Paintbrush tool interface
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 15/December/16
 'Last update: ongoing performance improvements
@@ -123,7 +123,7 @@ Private m_BrushSpacingCheck As Long
 'If you want the absolute modified area since the stroke began, you can use m_TotalModifiedRectF, which is not
 ' cleared until the current stroke is released.
 Private m_UnionRectRequired As Boolean
-Private m_ModifiedRectF As RECTF, m_TotalModifiedRectF As RECTF
+Private m_ModifiedRectF As RectF, m_TotalModifiedRectF As RectF
 
 'The number of mouse events in the *current* brush stroke.  This value is reset after every mouse release.
 ' The compositor uses this to know when to fully regenerate the paint cache from scratch.
@@ -460,7 +460,7 @@ Private Sub CreateSoftBrushReference_MyPaint()
     
     'Prep manual per-pixel loop variables
     Dim dstImageData() As Long
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray_Long tmpSA, m_SrcPenDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
     
@@ -588,7 +588,7 @@ Private Sub CreateSoftBrushReference_PD()
         
         'Prep manual per-pixel loop variables
         Dim dstImageData() As Long
-        Dim tmpSA As SAFEARRAY2D
+        Dim tmpSA As SafeArray2D
         
         If tmpBrushRequired Then
             Set tmpDIB = New pdDIB
@@ -1183,7 +1183,7 @@ End Sub
 Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal isFirstStroke As Boolean)
 
     'Start by calculating the affected rect for just this stroke.
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     If (newX < m_MouseX) Then
         tmpRectF.Left = newX
         tmpRectF.Width = m_MouseX - newX
@@ -1212,7 +1212,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     tmpRectF.Width = tmpRectF.Width + halfBrushSize
     tmpRectF.Height = tmpRectF.Height + halfBrushSize
     
-    Dim tmpOldRectF As RECTF
+    Dim tmpOldRectF As RectF
     
     'If this is *not* the first modified rect calculation, union this rect with our previous update rect
     If m_UnionRectRequired And (Not isFirstStroke) Then
@@ -1237,7 +1237,7 @@ End Sub
 ' this function, but this behavior can be toggled by resetRectAfter.  Also, if you want to get the full modified rect since this
 ' paint stroke began, you can set the GetModifiedRectSinceStrokeBegan parameter to TRUE.  Note that when
 ' GetModifiedRectSinceStrokeBegan is TRUE, the resetRectAfter parameter is ignored.
-Public Function GetModifiedUpdateRectF(Optional ByVal resetRectAfter As Boolean = True, Optional ByVal GetModifiedRectSinceStrokeBegan As Boolean = False) As RECTF
+Public Function GetModifiedUpdateRectF(Optional ByVal resetRectAfter As Boolean = True, Optional ByVal GetModifiedRectSinceStrokeBegan As Boolean = False) As RectF
     If GetModifiedRectSinceStrokeBegan Then
         GetModifiedUpdateRectF = m_TotalModifiedRectF
     Else
@@ -1257,7 +1257,7 @@ Public Sub CommitBrushResults()
     m_NumOfMouseEvents = 0
     
     'Make a local copy of the paintbrush's bounding rect, and clip it to the layer's boundaries
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     tmpRectF = m_TotalModifiedRectF
     
     With tmpRectF
@@ -1279,10 +1279,10 @@ Public Sub CommitBrushResults()
         End With
         
         pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Paint stroke", , , UNDO_LAYER, g_CurrentTool
+        Processor.Process "Paint stroke", , , UNDO_Layer, g_CurrentTool
         
         'Reset the scratch layer
         pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
@@ -1313,13 +1313,13 @@ Public Sub CommitBrushResults()
         pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
         
         'Notify the parent image of the new layer
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
         
         'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Paint stroke", , , UNDO_IMAGE_VECTORSAFE, g_CurrentTool
+        Processor.Process "Paint stroke", , , UNDO_Image_VectorSafe, g_CurrentTool
         
         'Create a new scratch layer
         Tools.InitializeToolsDependentOnImage

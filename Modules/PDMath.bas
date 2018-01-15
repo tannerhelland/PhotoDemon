@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMath"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 12/January/17
 'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.
@@ -25,7 +25,7 @@ Public Const PI_14 As Double = 0.785398163397448
 Public Const PI_34 As Double = 2.35619449019234
 
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RECTL, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RectL, ByVal x As Long, ByVal y As Long) As Long
 
 'See if a point lies inside a rect (integer)
 Public Function IsPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
@@ -33,12 +33,12 @@ Public Function IsPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRec
 End Function
 
 'See if a point lies inside a RectL struct
-Public Function IsPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTL) As Boolean
+Public Function IsPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RectL) As Boolean
     IsPointInRectL = (PtInRectL(srcRect, ptX, ptY) <> 0)
 End Function
 
 'See if a point lies inside a rect (float)
-Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTF) As Boolean
+Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RectF) As Boolean
     With srcRect
         If (ptX >= .Left) And (ptX <= (.Left + .Width)) Then
             IsPointInRectF = ((ptY >= .Top) And (ptY <= (.Top + .Height)))
@@ -49,7 +49,7 @@ Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRe
 End Function
 
 'Find the union rect of two floating-point rects.  (This is the smallest rect that contains both rects.)
-Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcRect2 As RECTF, Optional ByVal widthAndHeightAreReallyRightAndBottom As Boolean = False)
+Public Sub UnionRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByRef srcRect2 As RectF, Optional ByVal widthAndHeightAreReallyRightAndBottom As Boolean = False)
 
     'Union rects are easy: find the min top/left, and the max bottom/right
     With dstRect
@@ -111,7 +111,7 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
 
 End Sub
 
-Public Function AreRectFsEqual(ByRef srcRectF1 As RECTF, ByRef srcRectf2 As RECTF) As Boolean
+Public Function AreRectFsEqual(ByRef srcRectF1 As RectF, ByRef srcRectf2 As RectF) As Boolean
     AreRectFsEqual = VBHacks.MemCmp(VarPtr(srcRectF1), VarPtr(srcRectf2), LenB(srcRectF1))
 End Function
 
@@ -263,7 +263,7 @@ Public Function Distance3D_FastFloat(ByRef x1 As Single, ByRef y1 As Single, ByR
 End Function
 
 'Given two intersecting lines, return the angle between them (e.g. the inner product: https://en.wikipedia.org/wiki/Inner_product_space)
-Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT, ByRef pt1 As POINTFLOAT, ByRef pt2 As POINTFLOAT, Optional ByVal returnResultInDegrees As Boolean = True) As Double
+Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As PointFloat, ByRef pt1 As PointFloat, ByRef pt2 As PointFloat, Optional ByVal returnResultInDegrees As Boolean = True) As Double
     
     Dim dx1i As Double, dy1i As Double, dx2i As Double, dy2i As Double
     dx1i = pt1.x - ptIntersect.x
@@ -471,7 +471,7 @@ End Function
 
 'Given an array of points (in floating-point format), find the closest one to a target location.  If none fall below a minimum distance threshold,
 ' return -1.  (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targetY As Single, ByVal minAllowedDistance As Single, ByRef poiArray() As POINTFLOAT) As Long
+Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targetY As Single, ByVal minAllowedDistance As Single, ByRef poiArray() As PointFloat) As Long
 
     Dim curMinDistance As Double, curMinIndex As Long
     curMinDistance = &HFFFFFFF
@@ -516,12 +516,12 @@ Public Function Min2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
     If (l1 < l2) Then Min2Int = l1 Else Min2Int = l2
 End Function
 
-Public Function Max2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
-    If (f1 > f2) Then Max2Float_Single = f1 Else Max2Float_Single = f2
+Public Function Max2Float_Single(ByVal f1 As Single, ByVal F2 As Single) As Single
+    If (f1 > F2) Then Max2Float_Single = f1 Else Max2Float_Single = F2
 End Function
 
-Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
-    If (f1 < f2) Then Min2Float_Single = f1 Else Min2Float_Single = f2
+Public Function Min2Float_Single(ByVal f1 As Single, ByVal F2 As Single) As Single
+    If (f1 < F2) Then Min2Float_Single = f1 Else Min2Float_Single = F2
 End Function
 
 'Return the maximum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
@@ -645,7 +645,7 @@ Public Function NearestInt(ByVal srcFloat As Single) As Long
 End Function
 
 'Given an array of points (in floating-point format), calculate the center point of the bounding rect.
-Public Sub FindCenterOfFloatPoints(ByRef dstPoint As POINTFLOAT, ByRef srcPoints() As POINTFLOAT)
+Public Sub FindCenterOfFloatPoints(ByRef dstPoint As PointFloat, ByRef srcPoints() As PointFloat)
 
     Dim curMinX As Single, curMinY As Single, curMaxX As Single, curMaxY As Single
     curMinX = 9999999:   curMaxX = -9999999:   curMinY = 9999999:   curMaxY = -9999999
@@ -725,7 +725,7 @@ Public Sub FindBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeig
 End Sub
 
 'Given a rectangle (as defined by width and height, not position), calculate new corner positions as an array of PointF structs.
-Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As POINTFLOAT, Optional ByVal arrayAlreadyDimmed As Boolean = False)
+Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As PointFloat, Optional ByVal arrayAlreadyDimmed As Boolean = False)
 
     'Convert the rotation angle to radians
     rotateAngle = rotateAngle * (PI_DIV_180)
@@ -767,7 +767,7 @@ Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As
     y41 = -x4 * sinTheta + y4 * cosTheta
     
     'Fill the destination array with the rotated points, translated back into the original coordinate space for convenience
-    If (Not arrayAlreadyDimmed) Then ReDim dstPoints(0 To 3) As POINTFLOAT
+    If (Not arrayAlreadyDimmed) Then ReDim dstPoints(0 To 3) As PointFloat
     dstPoints(0).x = x11 + halfWidth
     dstPoints(0).y = y11 + halfHeight
     dstPoints(1).x = x21 + halfWidth
@@ -807,7 +807,7 @@ End Function
 'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed
 ' to encompass the entire original rect.  (Said another way, the modified rect will *never* be smaller
 ' than the original rect.)
-Public Sub GetIntClampedRectF(ByRef srcRectF As RECTF)
+Public Sub GetIntClampedRectF(ByRef srcRectF As RectF)
     Dim xOffset As Single, yOffset As Single
     xOffset = srcRectF.Left - Int(srcRectF.Left)
     yOffset = srcRectF.Top - Int(srcRectF.Top)
@@ -820,7 +820,7 @@ End Sub
 'Given a RectF object, adjust the boundaries to produce an integer-only RectF that approximates the
 ' original rect as closely as possible.  (This rect *may* be smaller than the original; for a rect
 ' guaranteed to encompass the entire original area, use GetIntClampedRectF(), above.)
-Public Sub GetNearestIntRectF(ByRef srcRectF As RECTF)
+Public Sub GetNearestIntRectF(ByRef srcRectF As RectF)
     Dim xOffset As Single, yOffset As Single
     xOffset = PDMath.Frac(srcRectF.Left)
     yOffset = PDMath.Frac(srcRectF.Top)

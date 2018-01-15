@@ -83,7 +83,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Nature > "Atmosphere" Effect Form
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: some time 2001
 'Last updated: 03/August/17
 'Last update: expand function into full-featured dialog
@@ -121,7 +121,7 @@ Public Sub ApplyAtmosphereEffect(ByVal effectParams As String, Optional ByVal to
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Create a copy of the working data

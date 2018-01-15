@@ -1,7 +1,7 @@
 Attribute VB_Name = "Strings"
 '***************************************************************************
 'Additional string support functions
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 13/June/17
 'Last updated: 24/October/17
 'Last update: fix some inexplicable issues with WideCharToMultiByte(); comments are in the UTF-8 conversion functions

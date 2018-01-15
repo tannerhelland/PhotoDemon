@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portrait glow (sometimes called "soft glow") image effect
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 20/Dec/15
 'Last updated: 20/Dec/15
 'Last update: initial build
@@ -133,7 +133,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     If (Not toPreview) Then Message "Applying petroleum jelly to camera lens..."
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a copy of the image.  "Portrait glow" requires a blurred image copy as part of the effect, and we maintain

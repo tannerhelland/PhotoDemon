@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Vignette tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 27/February/17
 'Last update: large performance improvements; added "custom shape" mode
@@ -246,7 +246,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     'Prep a working copy of the source image, and note that we leave the color data premultiplied.
     ' (We're only going to be blending atop the source, so we don't need to un-premultiply it.)
     Dim dstImageData() As Long
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -336,7 +336,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     ' fast to apply.
     Dim vLookup() As Long
     ReDim vLookup(0 To 255) As Long
-    Dim tmpQuad As RGBQUAD
+    Dim tmpQuad As RGBQuad
     
     'Extract the RGB values of the vignetting color
     Dim newR As Byte, newG As Byte, newB As Byte

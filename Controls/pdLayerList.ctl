@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer List  control
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 18/September/15
 'Last updated: 18/September/15
 'Last update: wrap the pdLayerListInner object with this control

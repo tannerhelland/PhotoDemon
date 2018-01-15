@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Unsharp Masking Tool
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 03/March/01
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -149,7 +149,7 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
     umThreshold = umThreshold \ 5
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -203,8 +203,8 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
     If (gaussBlurSuccess <> 0) Then
     
         'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
-        Dim dstImageData() As Byte, dstSA1D As SAFEARRAY1D
-        Dim srcImageData() As Byte, srcSA1D As SAFEARRAY1D
+        Dim dstImageData() As Byte, dstSA1D As SafeArray1D
+        Dim srcImageData() As Byte, srcSA1D As SafeArray1D
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)

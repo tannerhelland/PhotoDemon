@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Custom Debug helper class
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 17/July/14
 'Last updated: 28/August/17
 'Last update: heavily optimized file writes by using pdFSO and a persistent append handle

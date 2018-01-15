@@ -89,7 +89,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 05/October/12
 'Last updated: 20/July/17
 'Last update: migrate to XML params, minor performance improvements
@@ -129,7 +129,7 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4

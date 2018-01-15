@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Master Palette Interface
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 15/January/17
 'Last update: add the WAPI palette matching function, which is quite a bit faster than our naive version.

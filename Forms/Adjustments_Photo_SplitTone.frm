@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright 2015-2017 by Tanner Helland, first build Copyright 2014 by Audioglider
+'Copyright 2015-2018 by Tanner Helland, first build Copyright 2014 by Audioglider
 'Created: 07/May/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params
@@ -177,7 +177,7 @@ Public Sub SplitTone(ByVal effectParams As String, Optional ByVal toPreview As B
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here

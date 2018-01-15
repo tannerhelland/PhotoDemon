@@ -77,7 +77,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Photo Filter Application Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 06/June/13
 'Last updated: 02/August/16
 'Last update: totally overhaul UI
@@ -145,7 +145,7 @@ Private Sub cmdBar_AddCustomPresetData()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Photo filter", , GetLocalParamString(), UNDO_LAYER
+    Process "Photo filter", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
@@ -272,7 +272,7 @@ End Sub
 Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
     'Retrieve the boundary region for this list entry
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
@@ -297,7 +297,7 @@ Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
     End If
     
     'Render a color box that represents the color of this filter
-    Dim colorRectF As RECTF
+    Dim colorRectF As RectF
     With colorRectF
         .Width = FixDPIFloat(64)
         .Height = FixDPIFloat(42)
@@ -376,7 +376,7 @@ Public Sub ApplyPhotoFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4

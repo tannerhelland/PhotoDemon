@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Navigation custom control (inner panel)
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 16/October/15
 'Last updated: 16/February/16
 'Last update: migrate portions of the navigator control into this standalone inner panel; this frees us up to add
@@ -72,7 +72,7 @@ Private Const THUMB_PADDING As Long = 3
 Private m_ThumbEventX As Single, m_ThumbEventY As Single
 
 'The rect where the image thumbnail has been drawn.  This is calculated by the RedrawBackBuffer function.
-Private m_ThumbRect As RECTF, m_ImageRegion As RECTF
+Private m_ThumbRect As RectF, m_ImageRegion As RectF
 
 'Last mouse (x, y) values.  We track these so we know whether to highlight the region box inside the navigator.
 Private m_LastMouseX As Single, m_LastMouseY As Single
@@ -363,7 +363,7 @@ Private Sub RedrawBackBuffer()
                         
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
             ' in image coordinate space
-            Dim viewportRect As RECTF
+            Dim viewportRect As RectF
             pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage viewportRect
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the
@@ -374,7 +374,7 @@ Private Sub RedrawBackBuffer()
                 widthDivisor = 1# / pdImages(g_CurrentImage).Width
                 heightDivisor = 1# / pdImages(g_CurrentImage).Height
                 
-                Dim relativeRect As RECTF
+                Dim relativeRect As RectF
                 With relativeRect
                     .Left = viewportRect.Left * widthDivisor
                     .Top = viewportRect.Top * heightDivisor

@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Modern Art Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 09/Feb/13
 'Last updated: 23/November/15
 'Last update: convert to XML parameter list
@@ -132,7 +132,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     

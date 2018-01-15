@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
@@ -123,9 +123,9 @@ Private Sub cmdBar_OKClick()
     End With
     
     If (m_ResizeTarget = PD_AT_WHOLEIMAGE) Then
-        Process "Content-aware image resize", , cParams.GetParamString(), UNDO_IMAGE
+        Process "Content-aware image resize", , cParams.GetParamString(), UNDO_Image
     ElseIf (m_ResizeTarget = PD_AT_SINGLELAYER) Then
-        Process "Content-aware layer resize", , cParams.GetParamString(), UNDO_LAYER
+        Process "Content-aware layer resize", , cParams.GetParamString(), UNDO_Layer
     End If
 
 End Sub
@@ -265,7 +265,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
                    
         'Flatten the image; note that we route this through the central processor, so that a proper Undo/Redo entry
         ' is created.  (This is especially important if the user presses ESC to cancel the seam-carving step.)
-        Process "Flatten image", , , UNDO_IMAGE
+        Process "Flatten image", , , UNDO_Image
         
     End If
 
@@ -292,7 +292,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         Set tmpDIB = Nothing
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then

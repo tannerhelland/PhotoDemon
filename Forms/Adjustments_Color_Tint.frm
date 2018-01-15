@@ -67,7 +67,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tint Dialog
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 03/July/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params
@@ -103,7 +103,7 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -181,7 +181,7 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Tint", , GetLocalParamString(), UNDO_LAYER
+    Process "Tint", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

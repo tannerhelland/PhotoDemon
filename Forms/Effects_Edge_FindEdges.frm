@@ -117,7 +117,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Detection Interface
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 1/11/02
 'Last updated: 30/July/17
 'Last update: performance improvements, migrate to XML params
@@ -166,7 +166,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Find edges", , GetLocalParamString(), UNDO_LAYER
+    Process "Find edges", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -236,7 +236,7 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
             
             'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
             ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
-            Dim dstSA As SAFEARRAY2D
+            Dim dstSA As SafeArray2D
             EffectPrep.PrepImageData dstSA, toPreview, dstPic
             
             'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -529,7 +529,7 @@ Private Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = Fals
     If (Not toPreview) Then Message "Tracing image edges with virtual paintbrush..."
         
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference

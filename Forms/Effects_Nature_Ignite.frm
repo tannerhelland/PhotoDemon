@@ -94,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Burn" Fire FX Form
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: some time 2001
 'Last updated: 03/August/17
 'Last update: migrate to XML params, performance improvements
@@ -141,7 +141,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Radius is simply a proportion of the current image's height
@@ -310,7 +310,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Ignite", , GetLocalParamString(), UNDO_LAYER
+    Process "Ignite", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

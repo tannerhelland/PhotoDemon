@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 17/June/17
 'Last update: attempted fix for issues reported at https://github.com/tannerhelland/PhotoDemon/commit/25870dd93ae74e79fa146e88ee66989dd0223312
@@ -237,13 +237,6 @@ Private m_ParentHasBeenSubclassed As Boolean, m_ParentHWnd As Long
 'Dynamic hooking requires us to track focus events with care.  When focus is lost, we must relinquish control of the keyboard.
 ' This value will be set to TRUE if the API edit box currently has focus.
 Private m_HasFocus As Boolean
-
-'Because our API edit box is not tied into VB's default tab stop handling, we must jump through some hoops to forward focus correctly.
-' Our hook proc will capture the Tab key that causes focus to enter the control, and mistakenly assume it is a Tab keypress from
-' *within* the control.  To prevent this from happening, we enforce a slight time delay from when our hook procedure begins, to when
-' we capture Tab keypresses.  This prevents faulty Tab-key handling.
-' 10/Aug/2017: disabled pending further testing; our new hook solution may not require this trickery
-' Private m_TimeAtFocusEnter As Long
 
 'The system handles drawing of the edit box.  These persistent brush and font handles are passed to the relevant
 ' window messages, and WAPI uses them when rendering the edit box and associated text.

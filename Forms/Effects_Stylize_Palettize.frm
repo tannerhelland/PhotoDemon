@@ -184,7 +184,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Palettize" (e.g. reduce image color count) Dialog
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 11/September/17
 'Last update: update default quality mode (via pdMedianCut)
@@ -388,7 +388,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     Dim alphaCutoff As Long
     alphaCutoff = cParams.GetLong("alphacutoff", 64)
     
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
     
     If (Not toPreview) Then
@@ -424,7 +424,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     
     'Branch according to internal or plugin-based quantization methods.  Note that if the user does *NOT* want
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
-    Dim finalPalette() As RGBQUAD, finalPaletteCount As Long
+    Dim finalPalette() As RGBQuad, finalPaletteCount As Long
     
     If (quantMethod = PDCQ_MedianCut) Then
     
@@ -484,7 +484,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
         
             'Retrieve the generated palette, then free the FreeImage source
             finalPaletteCount = Plugin_FreeImage.GetFreeImagePalette(fi_DIB8, finalPalette)
-            ReDim Preserve finalPalette(0 To paletteSize - 1) As RGBQUAD
+            ReDim Preserve finalPalette(0 To paletteSize - 1) As RGBQuad
             FreeImage_Unload fi_DIB8
             
             'Preserve black and white, as necessary

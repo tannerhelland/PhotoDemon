@@ -41,7 +41,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Navigation/Overview Tool Panel
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 15/October/15
 'Last updated: 15/October/15
 'Last update: initial build
@@ -146,7 +146,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
             thumbY = 0!
         End If
         
-        Dim dstRectF As RECTF
+        Dim dstRectF As RectF
         With dstRectF
             .Left = thumbX
             .Top = thumbY

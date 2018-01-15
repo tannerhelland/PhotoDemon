@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pixel Iterator class
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 04/December/14
 'Last updated: 07/June/17
 'Last update: add support for generic byte-array traversal
@@ -64,15 +64,15 @@ Private m_YBTop As Long, m_YBBottom As Long, m_YBSize As Long
 Private m_DibPointer As Long, m_dibHeight As Long, m_dibStride As Long, m_dibColorDepth As Long, m_PixelWidth As Long
 
 'Some functions may choose to use a byte array target instead of a DIB.  That's fine!
-Private m_BytesSA2D As SAFEARRAY2D, m_Bytes() As Byte
-Private m_BytesSA1D As SAFEARRAY1D, m_ByteLine() As Byte
+Private m_BytesSA2D As SafeArray2D, m_Bytes() As Byte
+Private m_BytesSA1D As SafeArray1D, m_ByteLine() As Byte
 Private m_ByteArrayPtr As Long, m_ArrayWidth As Long, m_ArrayHeight As Long
 
 'Pixel array (alias only; the actual pixel bits are stored by the caller, and treated as read-only by this class).
 ' In some situations it is advantageous to address the pixels using a 1D array, as VB is significantly slower when
 ' addressing 2D pixel positions.
-Private m_PixelSA2D As SAFEARRAY2D, m_Pixels() As Byte
-Private m_PixelSA1D As SAFEARRAY1D, m_PixelLine() As Byte
+Private m_PixelSA2D As SafeArray2D, m_Pixels() As Byte
+Private m_PixelSA1D As SafeArray1D, m_PixelLine() As Byte
 
 'If the function wants alpha tracked, this will be set to TRUE.
 ' (NOTE: this tracker has been manually disabled, because no PD functions use it as present.  Skipping it on inner
@@ -88,12 +88,12 @@ Private m_LuminanceMode As PD_LUMINANCE_MODE
 
 'Histogram arrays.  Managing these are a bit tricky, because these are simply "trick" wrappers against arrays
 ' provided by the caller.
-Private m_RedSA As SAFEARRAY1D, m_GreenSA As SAFEARRAY1D, m_BlueSA As SAFEARRAY1D, m_AlphaSA As SAFEARRAY1D
+Private m_RedSA As SafeArray1D, m_GreenSA As SafeArray1D, m_BlueSA As SafeArray1D, m_AlphaSA As SafeArray1D
 Private m_Red() As Long, m_Green() As Long, m_Blue() As Long, m_Alpha() As Long
 
 'Note that the caller can also use the pixel iterator in luminance mode.  This relies on only a single destination
 ' luminance array, and dedicated movement/calculation functions are used.
-Private m_LuminanceSA As SAFEARRAY1D
+Private m_LuminanceSA As SafeArray1D
 Private m_Luminance() As Long
 
 'Number of pixels in the histogram.  This is required for things like median calculations.
@@ -346,7 +346,7 @@ End Function
 
 'Point an internal 1D array at some other 1D array.  Any arrays aliased this way must be freed via Unalias1DArray,
 ' or VB will crash.
-Private Sub Alias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long, ByRef newArraySA As SAFEARRAY1D)
+Private Sub Alias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long, ByRef newArraySA As SafeArray1D)
     
     'Retrieve a copy of the original 1D array's SafeArray struct
     Dim ptrSrc As Long

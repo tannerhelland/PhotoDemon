@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Self-pruning Octree-based Color Lookup Class
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 14/January/17
 'Last updated: 15/January/17
 'Last update: implement the self-pruning behavior, by only passing colors down branches as absolutely necessary.
@@ -54,7 +54,7 @@ Private Sub Class_Initialize()
     Set m_RootNode = New pdColorSearchNode
 End Sub
 
-Friend Sub CreateColorTree(ByRef srcPalette() As RGBQUAD)
+Friend Sub CreateColorTree(ByRef srcPalette() As RGBQuad)
     
     'Start by creating the root node
     m_RootNode.NodeInitialize 0, srcPalette
@@ -67,7 +67,7 @@ Friend Sub CreateColorTree(ByRef srcPalette() As RGBQUAD)
     
 End Sub
 
-Friend Function GetNearestPaletteIndex(ByRef srcColor As RGBQUAD) As Long
+Friend Function GetNearestPaletteIndex(ByRef srcColor As RGBQuad) As Long
     Dim tmpDistance As Long
     GetNearestPaletteIndex = m_RootNode.GetNearestColorIndex(srcColor, tmpDistance)
 End Function

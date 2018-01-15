@@ -199,7 +199,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
 'Last updated: 24/May/16
 'Last update: implement .Reset functionality for the spinner controls

@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Range filter edge detection tool
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 23/November/15
 'Last updated: 23/November/15
 'Last update: initial build
@@ -140,7 +140,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     

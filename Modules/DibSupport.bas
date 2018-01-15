@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIBs"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 27/March/15 (though many of the individual functions are much older!)
 'Last updated: 10/August/17
 'Last update: new performance improvements, with a special focus on DIB functions called during startup

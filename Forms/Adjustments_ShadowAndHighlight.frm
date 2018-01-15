@@ -196,7 +196,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Shadow / Midtone / Highlight Adjustment Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 17/February/13
 'Last updated: 20/July/17
 'Last update: migrate to XML parameters
@@ -222,7 +222,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shadow and highlight", , GetLocalParamString(), UNDO_LAYER
+    Process "Shadow and highlight", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -259,7 +259,7 @@ Public Sub ApplyShadowHighlight(ByVal effectParams As String, Optional ByVal toP
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     AdjustDIBShadowHighlight shadowAmount, midtoneContrast, highlightAmount, shadowWidth, shadowRadius * curDIBValues.previewModifier, highlightWidth, highlightRadius * curDIBValues.previewModifier, workingDIB, toPreview

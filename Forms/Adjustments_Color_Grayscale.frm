@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright 2002-2017 by Tanner Helland
+'Copyright 2002-2018 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 20/July/17
 'Last update: migrate to XML params, simplify a bunch of code
@@ -164,7 +164,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Black and white", False, GetLocalParamString(), UNDO_LAYER
+    Process "Black and white", False, GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -201,7 +201,7 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
     End With
     
     'Create a working copy of the relevant pixel data (with all selection transforms applied)
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Based on the options the user has provided, figure out a maximum progress bar value.  This changes depending on:
@@ -265,7 +265,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -353,7 +353,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
 
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -715,7 +715,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -792,7 +792,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
     
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -864,7 +864,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
         
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -935,7 +935,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
 
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         
@@ -1006,7 +1006,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
 
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
         

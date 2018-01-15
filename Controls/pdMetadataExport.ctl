@@ -105,7 +105,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Metadata Export control group
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 18/March/16
 'Last updated: 13/June/16
 'Last update: minor code clean-up

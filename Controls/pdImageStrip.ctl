@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Strip control (e.g. a scrollable line of image thumbnails)
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 15/October/13
 'Last updated: 05/January/17
 'Last update: delay resource loading until absolutely required
@@ -1107,7 +1107,7 @@ Private Sub RedrawBackBuffer()
         End If
         
         'Render each thumbnail block
-        Dim thumbRect As RECTF
+        Dim thumbRect As RectF
         thumbRect.Width = m_ThumbWidth
         thumbRect.Height = m_ThumbHeight
         
@@ -1159,7 +1159,7 @@ Private Sub RedrawBackBuffer()
 End Sub
 
 'Render a given thumbnail onto the background form at the specified offset
-Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByRef thumbRectF As RECTF)
+Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByRef thumbRectF As RectF)
     
     Dim isSelected As Boolean, isHovered As Boolean, isEnabled As Boolean
     isSelected = (thumbIndex = m_CurrentThumb)

@@ -112,7 +112,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params
@@ -136,7 +136,7 @@ Private Sub chkSmartColors_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Posterize", , GetLocalParamString(), UNDO_LAYER
+    Process "Posterize", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -191,7 +191,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -359,7 +359,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4

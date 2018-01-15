@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon New/Old comparison control
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 14/October/16
 'Last updated: 14/October/16
 'Last update: initial build
@@ -61,8 +61,8 @@ Public Event LostFocusAPI()
 ' control size or current language changes (as the new translations may be longer/shorter).
 Private m_FontSize As Single
 Private m_NewCaptionTranslated As String, m_OldCaptionTranslated As String
-Private m_NewCaptionPt As POINTFLOAT, m_OldCaptionPt As POINTFLOAT
-Private m_NewItemRect As RECTF, m_OldItemRect As RECTF
+Private m_NewCaptionPt As PointFloat, m_OldCaptionPt As PointFloat
+Private m_NewItemRect As RectF, m_OldItemRect As RectF
 
 'The only hoverable item in this control is the "old" item rect
 Private m_OldItemIsHovered As Boolean
@@ -303,7 +303,7 @@ Private Sub UpdateControlLayout()
     
     'Next, we need to calculate the size of the "new" and "old" captions.  We want to align these within the
     ' same column, so we need to know which is larger (in terms of pixels).
-    Dim newCaptionRect As RECTF, oldCaptionRect As RECTF
+    Dim newCaptionRect As RectF, oldCaptionRect As RectF
     Dim tmpFont As pdFont
     Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
     

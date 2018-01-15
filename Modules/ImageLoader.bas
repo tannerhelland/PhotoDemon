@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 09/March/16
 'Last update: migrate various functions out of the high-level "Loading" module and into this new, format-specific module

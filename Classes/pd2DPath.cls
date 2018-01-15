@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Path Wrapper
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
 'Last updated: 18/June/16
 'Last update: continued work on bringing this class into the pd2D fold
@@ -154,7 +154,7 @@ Friend Sub AddEllipse_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal ell
     End Select
 End Sub
 
-Friend Sub AddEllipse_RectF(ByRef srcRect As RECTF)
+Friend Sub AddEllipse_RectF(ByRef srcRect As RectF)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -196,7 +196,7 @@ Friend Sub AddLinesInt(ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long)
     End Select
 End Sub
 
-Friend Sub AddArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, ByVal sweepAngle As Single)
+Friend Sub AddArc(ByRef ellipseBoundRect As RectF, ByVal startAngle As Single, ByVal sweepAngle As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -284,8 +284,8 @@ Friend Sub AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single,
         If (m_PathHandle = 0) Then CreatePath
         
         'Regardless of backend, we start by establishing the polygon's points using basic geometry.
-        Dim polyPoints() As POINTFLOAT
-        ReDim polyPoints(0 To numOfSides - 1) As POINTFLOAT
+        Dim polyPoints() As PointFloat
+        ReDim polyPoints(0 To numOfSides - 1) As PointFloat
         
         Dim i As Long
         For i = 0 To numOfSides - 1
@@ -334,7 +334,7 @@ Friend Sub AddRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal r
     End Select
 End Sub
 
-Friend Sub AddRectangle_RectF(ByRef srcRect As RECTF)
+Friend Sub AddRectangle_RectF(ByRef srcRect As RectF)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -344,7 +344,7 @@ Friend Sub AddRectangle_RectF(ByRef srcRect As RECTF)
     End Select
 End Sub
 
-Friend Sub AddRoundedRectangle_RectF(ByRef srcRect As RECTF, ByVal cornerRadius As Single)
+Friend Sub AddRoundedRectangle_RectF(ByRef srcRect As RectF, ByVal cornerRadius As Single)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -410,8 +410,8 @@ Friend Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Singl
     If (m_PathHandle = 0) Then CreatePath
     
     'Convert the incoming points to a float array and use the generic polygon wrapper to add 'em
-    Dim tmpPoints() As POINTFLOAT
-    ReDim tmpPoints(0 To 2) As POINTFLOAT
+    Dim tmpPoints() As PointFloat
+    ReDim tmpPoints(0 To 2) As PointFloat
     
     tmpPoints(0).x = x1
     tmpPoints(0).y = y1
@@ -482,15 +482,15 @@ End Sub
 
 'This is a little silly, but this function creates a squiggly line inside the target rectangle.  It provides a nice shorthand
 ' method for previewing something like a pen against an arbitrary path.
-Friend Sub CreateSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPadding As Single = 0, Optional ByVal vPadding As Single = 0)
+Friend Sub CreateSamplePathForRect(ByRef srcRect As RectF, Optional ByVal hPadding As Single = 0, Optional ByVal vPadding As Single = 0)
     
     If (m_PathHandle = 0) Then CreatePath
     
     'A sample path is just a nice little curve that demonstrates a few obvious path elements for the user
-    Dim samplePoints() As POINTFLOAT
-    ReDim samplePoints(0 To 8) As POINTFLOAT
+    Dim samplePoints() As PointFloat
+    ReDim samplePoints(0 To 8) As PointFloat
     
-    Dim sampleRect As RECTF
+    Dim sampleRect As RectF
     With sampleRect
         .Left = srcRect.Left + hPadding
         .Top = srcRect.Top + vPadding
@@ -589,7 +589,7 @@ Friend Function RotatePathAroundItsCenter(ByRef rotateAngle As Single) As Boolea
     ResetInternalTransform
     
     'Figure out the path's center
-    Dim pathRect As RECTF
+    Dim pathRect As RectF
     pathRect = Me.GetPathBoundariesF()
     
     'Update the transformation matrix with a matching rotation
@@ -610,7 +610,7 @@ Friend Function MirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByV
     ResetInternalTransform
     
     'Figure out the path's center
-    Dim pathRect As RECTF
+    Dim pathRect As RectF
     pathRect = Me.GetPathBoundariesF()
     
     'Update the transformation matrix with a matching mirror operation
@@ -776,7 +776,7 @@ End Function
 
 'Retrieve this path's boundaries.  Optionally, you can also receive the path's boundaries as if they were drawn with
 ' a particular pen.  (All pen settings are considered, including tricky things like corner mitering.)
-Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, Optional ByVal testTransform As pd2DTransform = Nothing) As RECTF
+Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, Optional ByVal testTransform As pd2DTransform = Nothing) As RectF
     
     If (m_PathHandle <> 0) Then
     
@@ -810,7 +810,7 @@ Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, 
     
 End Function
 
-Friend Function GetPathBoundariesL(Optional ByRef testPen As pd2DPen = Nothing, Optional ByVal testTransform As pd2DTransform = Nothing) As RECTL
+Friend Function GetPathBoundariesL(Optional ByRef testPen As pd2DPen = Nothing, Optional ByVal testTransform As pd2DTransform = Nothing) As RectL
         
     If (m_PathHandle <> 0) Then
     

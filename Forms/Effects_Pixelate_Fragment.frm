@@ -117,7 +117,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fragment Filter Dialog
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 01/August/17
 'Last updated: 01/August/17
 'Last update: complete rewrite using new, original algorithm.  (Performance increase is ~20x over the old method,
@@ -153,7 +153,7 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     End With
     
     'Request a working copy of the current layer
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Make a copy of said working data
@@ -209,7 +209,7 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Set cTransform = New pd2DTransform
     cTransform.ApplyTranslation_Polar startingAngle, fragmentDistance, True
     
-    Dim topLeft As POINTFLOAT
+    Dim topLeft As PointFloat
     
     'Starting at the user's specified initial angle, superimpose copies of the image at the specified intervals
     Dim i As Long

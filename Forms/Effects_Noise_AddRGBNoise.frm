@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 15/March/01
 'Last updated: 07/August/17
 'Last update: large performance and quality improvements, Gaussian noise option, convert to XML params
@@ -121,7 +121,7 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -244,7 +244,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add RGB noise", , GetLocalParamString(), UNDO_LAYER
+    Process "Add RGB noise", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

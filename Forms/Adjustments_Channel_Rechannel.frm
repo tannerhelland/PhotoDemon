@@ -105,7 +105,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rechannel Interface
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: original rechannel algorithm - sometimes 2001, this form 28/September/12
 'Last updated: 04/December/15
 'Last update: overhaul interface, switch to new XML parameter class
@@ -211,7 +211,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         

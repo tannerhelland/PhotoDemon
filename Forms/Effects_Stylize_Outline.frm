@@ -94,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Outline Effect Dialog
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 05/January/17
 'Last updated: 01/August/17
 'Last update: fix potential OOB error on "alpha" edge mode
@@ -147,7 +147,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     'For now, transparency is the only way to define an image edge.  Use the passed threshold to generate
     ' a 1bpp array that we can pass to the edge detector.
     Dim srcImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , CBool(edgeType = 0)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4

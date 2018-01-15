@@ -252,7 +252,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 14/May/16
 'Last update: improve real-time handling of hex input
@@ -502,7 +502,7 @@ Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue A
     
     If (Len(histValue) <> 0) And MainModule.IsProgramRunning() And (targetDC <> 0) Then
     
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
         If (Not m_Painter Is Nothing) Then
@@ -627,7 +627,7 @@ End Sub
 
 Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
     If MainModule.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
@@ -648,7 +648,7 @@ End Sub
 
 Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
-    Dim tmpRectF As RECTF
+    Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
     If MainModule.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then

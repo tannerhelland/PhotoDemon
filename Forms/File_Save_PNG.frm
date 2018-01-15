@@ -408,7 +408,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PNG export dialog
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 15/March/17
 'Last update: finally solve (I hope?) persistent layout reflow issues
@@ -678,7 +678,7 @@ Private Sub cmdUpdateLossyPreview_Click()
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
         'Create a FreeImage copy of the current preview image
@@ -789,7 +789,7 @@ Private Sub UpdatePreviewSource()
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core PNG encoder

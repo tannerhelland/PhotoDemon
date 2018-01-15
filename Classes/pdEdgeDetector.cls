@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Edge Detector ("Marching squares") Engine
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 05/January/17
 'Last updated: 09/May/17
 'Last update: add comprehensive edge detection (e.g. edges of *multiple* objects in one image)
@@ -69,7 +69,7 @@ Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As L
 Private Declare Function GdipIsVisibleRegionPointI Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipGetRegionScansCount Lib "gdiplus" (ByVal hRegion As Long, ByRef dstRectCount As Long, ByVal optTransformMatrix As Long) As GP_Result
 Private Declare Function GdipGetRegionScansI Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrToRectLArray As Long, ByRef dstNumOfRects As Long, ByVal optTransformMatrix As Long) As GP_Result
-Private m_RectLCache() As RECTL, m_SizeOfRectCache As Long
+Private m_RectLCache() As RectL, m_SizeOfRectCache As Long
 
 'If you don't want to find a starting point yourself, use this helper function to do it for you.
 ' The starting point is searched for starting in the top-left corner and moving LTR.
@@ -191,11 +191,11 @@ End Sub
 
 'After the path algorithm finishes, the caller needs to retrieve the final point list.  Because PD performs
 ' all rendering in floating-point coordinates, this function exists to make transfers easier.
-Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As POINTFLOAT, ByRef numOfPoints As Long)
+Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As PointFloat, ByRef numOfPoints As Long)
     
     numOfPoints = m_StackPosition
     
-    ReDim dstPoints(0 To numOfPoints - 1) As POINTFLOAT
+    ReDim dstPoints(0 To numOfPoints - 1) As PointFloat
     
     Dim i As Long
     For i = 0 To numOfPoints - 1
@@ -254,7 +254,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     
     'To improve performance, we're going to point a transient 1D array at certain rows during processing.
     ' This requires unsafe array manipulation, but it can be meaningfully faster than 2D array accesses.
-    Dim tmpArray() As Byte, tmpSA As SAFEARRAY1D
+    Dim tmpArray() As Byte, tmpSA As SafeArray1D
     
     'Populate the safearray struct's unchanging values
     Dim srcArrayBasePointer As Long, srcArrayStride As Long
@@ -277,7 +277,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     PutMem4 VarPtrArray(tmpArray()), VarPtr(tmpSA)
     
     'And now, a duplicate of the above steps, but designed for the outer loop
-    Dim tmpMasterArray() As Byte, tmpMasterSA As SAFEARRAY1D
+    Dim tmpMasterArray() As Byte, tmpMasterSA As SafeArray1D
     Dim srcMasterPointer As Long, srcMasterStride As Long
     srcMasterPointer = VarPtr(srcArray(0, 0))
     srcMasterStride = UBound(srcArray(), 1) + 1
@@ -431,7 +431,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
                 ' nothing but basic rectangles.
                 If (numOfRects > m_SizeOfRectCache) Then
                     m_SizeOfRectCache = numOfRects
-                    ReDim m_RectLCache(0 To m_SizeOfRectCache - 1) As RECTL
+                    ReDim m_RectLCache(0 To m_SizeOfRectCache - 1) As RectL
                 End If
             
                 If (GdipGetRegionScansI(tmpGdipHandle, VarPtr(m_RectLCache(0)), numOfRects, tmpMatrix) = GP_OK) Then

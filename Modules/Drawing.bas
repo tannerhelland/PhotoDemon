@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright 2001-2017 by Tanner Helland
+'Copyright 2001-2018 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 01/December/12
 'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog
@@ -108,7 +108,7 @@ End Sub
 'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
 Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Single, ByVal xRight As Single, ByVal colorLeft As Long, ByVal colorRight As Long)
     
-    Dim boundsRectF As RECTF
+    Dim boundsRectF As RectF
     With boundsRectF
         .Left = (xLeft - 1)
         .Width = (xRight - xLeft) + 2
@@ -174,7 +174,7 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     Next x
     
     'Point a temporary array directly at the source DIB's bitmap bits.
-    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     'Fill the source DIB with the checkerboard pattern
@@ -219,7 +219,7 @@ Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
-        Dim translatedImageRect As RECTF
+        Dim translatedImageRect As RectF
         srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Subtract the top/left offset,
@@ -256,7 +256,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
-        Dim translatedImageRect As RECTF
+        Dim translatedImageRect As RectF
         srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
@@ -268,7 +268,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         If forceInBounds Then
         
             'Get a copy of the current viewport intersection rect, which determines bounds of this function
-            Dim vIntersectRect As RECTF
+            Dim vIntersectRect As RectF
             srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
             
             If (canvasX < vIntersectRect.Left) Then canvasX = vIntersectRect.Left
@@ -283,7 +283,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
 End Sub
 
 'Given a RectF containing image-space coordinates, produce a new RectF with coordinates translated to the specified viewport canvas.
-Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcRectF As RECTF, ByRef dstRectF As RECTF, Optional ByVal forceInBounds As Boolean = False)
+Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcRectF As RectF, ByRef dstRectF As RectF, Optional ByVal forceInBounds As Boolean = False)
 
     If (Not srcImage.ImgViewport Is Nothing) Then
     
@@ -295,7 +295,7 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
         ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
         ' so we can ignore their value(s) here.
-        Dim translatedImageRect As RECTF
+        Dim translatedImageRect As RectF
         srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
         
         'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
@@ -311,7 +311,7 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
         If forceInBounds Then
         
             'Get a copy of the current viewport intersection rect, which determines bounds of this function
-            Dim vIntersectRect As RECTF
+            Dim vIntersectRect As RectF
             srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
             
             If (dstRectF.Left < vIntersectRect.Left) Then dstRectF.Left = vIntersectRect.Left
@@ -433,7 +433,7 @@ Public Function ConvertImageCoordsToLayerCoords_Full(ByRef srcImage As pdImage, 
 End Function
 
 'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
-Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
+Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As PointFloat, Optional ByVal forceInBounds As Boolean = False)
 
     If (srcImage.ImgViewport Is Nothing) Then Exit Sub
     
@@ -445,12 +445,12 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
     ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
     ' so we can ignore their value(s) here.
-    Dim translatedImageRect As RECTF
+    Dim translatedImageRect As RectF
     srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
     
     'If the caller wants the coordinates bound-checked, we also need to grab a copy of the viewport
     ' intersection rect, which controls boundaries
-    Dim vIntersectRect As RECTF
+    Dim vIntersectRect As RectF
     If forceInBounds Then srcImage.ImgViewport.GetIntersectRectCanvas vIntersectRect
     
     Dim canvasX As Double, canvasY As Double
@@ -521,7 +521,7 @@ Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, By
     ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
     ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
     ' so we can ignore their value(s) here.
-    Dim translatedImageRect As RECTF
+    Dim translatedImageRect As RectF
     srcImage.ImgViewport.GetImageRectTranslated translatedImageRect
     
     'Apply scaling for zoom
@@ -557,7 +557,7 @@ Public Sub GetCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
 End Sub
 
 'Same as above, but using floating-point values
-Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False)
+Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RectF, Optional ByVal useCanvasModifiers As Boolean = False)
 
     Dim tmpX As Double, tmpY As Double
     
@@ -584,8 +584,8 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     ' mean this is no longer guaranteed.
     '
     'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
-    Dim layerCorners() As POINTFLOAT
-    ReDim layerCorners(0 To 3) As POINTFLOAT
+    Dim layerCorners() As PointFloat
+    ReDim layerCorners(0 To 3) As PointFloat
     
     srcLayer.GetLayerCornerCoordinates layerCorners
     
@@ -619,8 +619,8 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     ' mean this is no longer guaranteed.
     '
     'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
-    Dim layerCorners() As POINTFLOAT
-    ReDim layerCorners(0 To 3) As POINTFLOAT
+    Dim layerCorners() As PointFloat
+    ReDim layerCorners(0 To 3) As PointFloat
     
     srcLayer.GetLayerCornerCoordinates layerCorners
     
@@ -665,8 +665,8 @@ End Sub
 Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     
     'Retrieve the layer rotate node position from the specified layer, and convert it into the canvas coordinate space
-    Dim layerRotateNodes() As POINTFLOAT
-    ReDim layerRotateNodes(0 To 4) As POINTFLOAT
+    Dim layerRotateNodes() As PointFloat
+    ReDim layerRotateNodes(0 To 4) As PointFloat
     
     srcLayer.GetLayerRotationNodeCoordinates layerRotateNodes
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
@@ -711,7 +711,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             rRadius = PDMath.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y)
             
             'From there, bounds are easy-peasy
-            Dim rotateBoundRect As RECTF
+            Dim rotateBoundRect As RectF
             With rotateBoundRect
                 .Left = layerRotateNodes(0).x - rRadius
                 .Top = layerRotateNodes(0).y - rRadius

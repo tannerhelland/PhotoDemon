@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median-Cut Color Quantization Class
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 11/September/17
 'Last update: new support for variance and variance + median modes, which are slightly slower but offer better quality
@@ -536,8 +536,8 @@ Private Sub UpdateVarianceTrackers()
 
 End Sub
 
-Friend Sub CopyStackToRGBQuad(ByRef dstArray() As RGBQUAD)
-    ReDim dstArray(0 To m_NumOfColors - 1) As RGBQUAD
+Friend Sub CopyStackToRGBQuad(ByRef dstArray() As RGBQuad)
+    ReDim dstArray(0 To m_NumOfColors - 1) As RGBQuad
     Dim i As Long
     For i = 0 To m_NumOfColors - 1
         dstArray(i).Red = m_Colors(i).Red

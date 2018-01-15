@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 01/December/16
 'Last update: start migrating ICC profile stuff from pdDIB to pdLayer (and the ColorManagement module)
@@ -243,7 +243,7 @@ Private m_DIBChangedSinceLastHash() As Boolean
 
 'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
-Private m_PlgPoints() As POINTFLOAT
+Private m_PlgPoints() As PointFloat
 
 'Layers can be tagged with ICC profiles.  These profiles do not need to match the current image's working profile.  Before making
 ' color management decisions, make *certain* to note whether this layer is just tagged with a given profile, or whether it was
@@ -929,7 +929,7 @@ End Function
 ' 1) Top-Right
 ' 2) Bottom-Left
 ' 3) (optionally) Bottom-Right.  This point is optional because it can be inferred from the previous three
-Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT)
+Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As PointFloat)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
     Dim tmpMatrix As pd2DTransform
@@ -970,7 +970,7 @@ End Sub
 ' rotation node *IN IMAGE COORDINATES*.  Note that an array is required, and it must be at least (0, 4) in size.  The first point contains
 ' the center point of the rotation node (e.g. the center of the current image), while subsequent points contain valid rotation nodes, which
 ' sit on the halfway point at each image boundary.
-Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT)
+Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As PointFloat)
     
     'Retrieve a copy of the current layer transform matrix
     Dim tmpMatrix As pd2DTransform
@@ -1055,11 +1055,11 @@ End Sub
 
 'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
 ' layer boundaries with all affine transform operations considered, use this function.
-Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF)
+Friend Sub GetLayerBoundaryRect(ByRef dstRect As RectF)
     
     'Get a copy of the current layer coordinates
-    Dim layerCorners() As POINTFLOAT
-    ReDim layerCorners(0 To 3) As POINTFLOAT
+    Dim layerCorners() As PointFloat
+    ReDim layerCorners(0 To 3) As PointFloat
     
     Me.GetLayerCornerCoordinates layerCorners
     
@@ -1101,7 +1101,7 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     FindMaxMinOfPointFs m_PlgPoints, 4, minX, minY, maxX, maxY
     
     'Copy those values into a RECTF struct, for convenience
-    Dim layerRect As RECTF
+    Dim layerRect As RectF
     With layerRect
         .Left = minX
         .Top = minY
@@ -1204,7 +1204,7 @@ End Function
 ' of the layer *IN IMAGE COORDINATES*.
 
 'Given an array with at least upper bound 2, find the max and min x/y values.
-Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
+Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As PointFloat, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
     
     If (srcPoints(0).x < srcPoints(1).x) Then
         minX = srcPoints(0).x
@@ -1295,7 +1295,7 @@ Private Sub Class_Initialize()
     m_VectorDIBSynched = False
     
     'Prep a default set of parallelogram corner points, in case the user decides to activate non-destructive transforms
-    ReDim m_PlgPoints(0 To 3) As POINTFLOAT
+    ReDim m_PlgPoints(0 To 3) As PointFloat
     
     'Set default color management settings
     m_ICCProfileIndex = -1
@@ -1705,7 +1705,7 @@ Friend Function CropNullPaddedLayer() As Boolean
     
         'Point an array at the layer's DIB data
         Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
+        Dim srcSA As SafeArray2D
         PrepInternalSafeArray srcSA
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
@@ -2003,7 +2003,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
     ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
     Else
-        Dim tmpRectF As RECTF
+        Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
         GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_LayerThumbnail, 0!, 0!, m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
     End If
@@ -2016,7 +2016,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
 End Function
 
 'This function can be used to populate a valid SAFEARRAY2D structure against the layer's current DIB
-Private Sub PrepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
+Private Sub PrepInternalSafeArray(ByRef srcSA As SafeArray2D)
     
     'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
@@ -2059,7 +2059,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     'To facilitate the notion of "generalized point of interest" handling, coordinate checks are performed against
     ' an array of potential POI targets.  While arrays may not make as much sense as something like a RECT (when
     ' working with standard layers), it lets us generalize all coordinate checks into a single function, which is awesome!
-    Dim poiList() As POINTFLOAT
+    Dim poiList() As PointFloat
     
     'Points of interest are sorted by layer type.  In most cases, only the corners of a layer are interesting (as they control
     ' the layer's bounding box), but in the future, things like a Pen tool could have tons of points of interest.
@@ -2069,7 +2069,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
         Case PDL_IMAGE, PDL_TEXT, PDL_TYPOGRAPHY
             
             'Manually populate the point of interest array with the layer's corner coordinates.
-            ReDim poiList(0 To 7) As POINTFLOAT
+            ReDim poiList(0 To 7) As PointFloat
             poiList(0).x = 0!
             poiList(0).y = 0!
             poiList(1).x = Me.GetLayerWidth(False)

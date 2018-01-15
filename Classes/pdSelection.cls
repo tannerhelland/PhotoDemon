@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 09/August/17
 'Last update: tons of bug-fixes and performance improvements; still more work to do (as always), but this class is slowly stabilizing

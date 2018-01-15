@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Self-pruning Octree-based Color Lookup Class (Node only)
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 14/January/17
 'Last updated: 15/January/17
 'Last update: implement self-pruning behavior, by only passing colors down branches as absolutely necessary.
@@ -36,7 +36,7 @@ Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114
 'Local copy of the master palette.  By caching this, we can perform all internal comparisons via palette
 ' index instead of by color.  This provides a meaningful performance boost, given that we'll traverse the
 ' tree millions of times on a typical image.
-Private m_ColorList() As RGBQUAD
+Private m_ColorList() As RGBQuad
 
 'Depth of this node.  Nodes on the outermost level of the tree return their color directly,
 ' rather than querying child nodes.
@@ -55,13 +55,13 @@ Private m_BitShiftMasks() As Long
 Private m_ChildNodes(0 To 7) As pdColorSearchNode
 
 'Constructor
-Friend Sub NodeInitialize(ByVal nodeDepth As Long, ByRef masterColorList() As RGBQUAD)
+Friend Sub NodeInitialize(ByVal nodeDepth As Long, ByRef masterColorList() As RGBQuad)
 
     m_Depth = nodeDepth
     
     'Caching the full color list in each node requires little memory, and it potentially accelerates
     ' a number of search-related functions.
-    ReDim m_ColorList(0 To UBound(masterColorList)) As RGBQUAD
+    ReDim m_ColorList(0 To UBound(masterColorList)) As RGBQuad
     CopyMemory ByVal VarPtr(m_ColorList(0)), ByVal VarPtr(masterColorList(0)), UBound(masterColorList) * 4 + 4
 
 End Sub
@@ -125,7 +125,7 @@ Friend Sub AddColor(ByVal colorIndex As Long)
     
 End Sub
 
-Friend Function GetNearestColorIndex(ByRef srcColor As RGBQUAD, ByRef dstToColor As Long) As Long
+Friend Function GetNearestColorIndex(ByRef srcColor As RGBQuad, ByRef dstToColor As Long) As Long
     
     'There are two reasons to return a color immediately, rather than further traversing the tree.
     ' 1) This node directly stores a color (meaning it has no child nodes)
@@ -201,7 +201,7 @@ End Function
 'Note that RGB order does not actually matter, meaning you could map RGB channels to any particular
 ' bit-order.  They are always mapped to identical subtrees (e.g. changing the order of the subtrees
 ' doesn't actually change the colors returned).
-Private Function GetOctIndex(ByRef srcColor As RGBQUAD, ByVal treeDepth As Long) As Long
+Private Function GetOctIndex(ByRef srcColor As RGBQuad, ByVal treeDepth As Long) As Long
     If (srcColor.Red And m_BitShiftMasks(treeDepth)) <> 0 Then GetOctIndex = 1
     If (srcColor.Green And m_BitShiftMasks(treeDepth)) <> 0 Then GetOctIndex = GetOctIndex Or 2
     If (srcColor.Blue And m_BitShiftMasks(treeDepth)) <> 0 Then GetOctIndex = GetOctIndex Or 4

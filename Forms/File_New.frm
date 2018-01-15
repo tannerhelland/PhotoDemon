@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'New Image Dialog
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 29/December/14
 'Last updated: 31/December/14
 'Last update: wrap up initial build
@@ -210,7 +210,7 @@ Private Sub CalculateDefaultSize()
         Dim pDisplay As pdDisplay
         Set pDisplay = g_Displays.PrimaryDisplay
                 
-        Dim pDisplayRect As RECTL
+        Dim pDisplayRect As RectL
         If (Not pDisplay Is Nothing) Then
             pDisplay.GetRect pDisplayRect
         Else

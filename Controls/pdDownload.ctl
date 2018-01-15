@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Asynchronous Download control
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 24/January/15
 'Last updated: 26/January/15
 'Last update: wrapped up initial build
@@ -149,6 +149,7 @@ Private m_ResetActive As Boolean
 'Canceled downloads are released using a failsafe timer; this prevents issues where internal functions are working with
 ' an array that a pending Reset command is attempting to erase.
 Private WithEvents m_ResetTimer As pdTimer
+Attribute m_ResetTimer.VB_VarHelpID = -1
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Download

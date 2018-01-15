@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Previous Action Dialog
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 08/August/17
 'Last update: migrate to XML params
@@ -113,7 +113,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Fade", , GetLocalParamString(), UNDO_LAYER
+    Process "Fade", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -182,7 +182,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
     
     'During a preview, we only retrieve the portion of each layer that's visible in the current preview box
     If toPreview Then
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         
         'Retrieve the preview box portion of the previous layer image
         EffectPrep.ResetPreviewIDs
@@ -219,7 +219,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
         pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

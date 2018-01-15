@@ -171,7 +171,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'TIFF export dialog
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 29/April/16
 'Last update: repurpose old color-depth dialog into a TIFF-specific one
@@ -428,7 +428,7 @@ Private Sub UpdatePreviewSource()
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
+        Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core TIFF encoder

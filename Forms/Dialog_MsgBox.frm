@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Homebrew Message Box Replacement
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 15/August/17
 'Last updated: 17/August/17
 'Last update: wrap up initial build
@@ -349,7 +349,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     
     'We also want to know some basic metrics of the dialog itself, specifically how large we are allowed to
     ' physically make it.
-    Dim finalFormWidth As Long, curCanvasWidth As Long, curScreenWidth As Long, curScreenRect As RECTL
+    Dim finalFormWidth As Long, curCanvasWidth As Long, curScreenWidth As Long, curScreenRect As RectL
     
     'At present, the largest allowable size for a message box is the smaller of:
     ' 1) the primary canvas size, or...

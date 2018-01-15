@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer Listbox (inner portion only)
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 11/September/16
 'Last update: isolate the old layer toolbox code inside its own control.  This greatly simplifies theming,
@@ -78,7 +78,7 @@ Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
 'The rectangle where the list is actually rendered
-Private m_ListRect As RECTF
+Private m_ListRect As RectF
 
 '2D painting support classes
 Private m_Painter As pd2DPainter
@@ -998,7 +998,7 @@ Private Sub RedrawBackBuffer()
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
                         ' layout decisions.
-                        Dim blockRect As RECTF
+                        Dim blockRect As RectF
                         With blockRect
                             .Left = offsetX
                             .Top = offsetY

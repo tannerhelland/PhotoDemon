@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2014-2017 by Tanner Helland, first build Copyright 2013 Audioglider
+'Copyright 2014-2018 by Tanner Helland, first build Copyright 2013 Audioglider
 'Created: 26/June/13
 'Last updated: 02/August/17
 'Last update: rewrite against entirely new, improved algorithm
@@ -104,7 +104,7 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D, tmpSA1D As SAFEARRAY1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -134,8 +134,8 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     'If (vibranceAdjustment <> 0#) Then vibranceAdjustment = 1# / vibranceAdjustment
     
     'Construct a curve-based lookup table
-    Dim sCurve() As POINTFLOAT
-    ReDim sCurve(0 To 2) As POINTFLOAT
+    Dim sCurve() As PointFloat
+    ReDim sCurve(0 To 2) As PointFloat
     sCurve(0).x = 0
     sCurve(0).y = 0
     sCurve(2).x = 255

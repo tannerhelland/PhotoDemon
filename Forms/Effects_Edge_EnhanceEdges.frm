@@ -109,7 +109,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Enhancement Interface
-'Copyright 2002-2017 by Tanner Helland
+'Copyright 2002-2018 by Tanner Helland
 'Created: sometimes 2002
 'Last updated: 29/July/17
 'Last update: performance improvements, migrate to XML params
@@ -152,7 +152,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Enhance edges", , GetLocalParamString(), UNDO_LAYER
+    Process "Enhance edges", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -216,7 +216,7 @@ Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toP
     If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", "1", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
     
     'Use PD's central image handler to populate the public workingDIB object.
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second DIB copy.  This will receive the edge-detection copy of the image.

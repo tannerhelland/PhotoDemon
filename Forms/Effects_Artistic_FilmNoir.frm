@@ -118,7 +118,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Film Noir Effect Interface
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: some time 2013
 'Last updated: 04/October/15
 'Last update: rewrite the old "one-click" filter from scratch, and completely rethink the algorithm while I'm at it.
@@ -177,7 +177,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -262,7 +262,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Film noir", , GetLocalParamString(), UNDO_LAYER
+    Process "Film noir", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

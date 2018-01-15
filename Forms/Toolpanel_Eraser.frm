@@ -136,7 +136,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Eraser Tool Panel
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 31/Oct/16
 'Last updated: 24/August/17
 'Last update: first build (although most settings were copied over from the paintbrush tool)

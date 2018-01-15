@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Color Variants" color selector
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 22/October/15
 'Last updated: 23/October/15
 'Last update: switch to a pure path-based system for rendering and hit-detection
@@ -475,8 +475,8 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     
     'For this control layout, we are going to use a temporary rect collection to define the position of all color variants.
     ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the master pd2DPath array.
-    Dim colorRects() As RECTF
-    ReDim colorRects(0 To NUM_OF_VARIANTS - 1) As RECTF
+    Dim colorRects() As RectF
+    ReDim colorRects(0 To NUM_OF_VARIANTS - 1) As RectF
     
     'Start by calculating the primary color rect.  It is the focus of the control, and its position affects all
     ' subsequent controls.

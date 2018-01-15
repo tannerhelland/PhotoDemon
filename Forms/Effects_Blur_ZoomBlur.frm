@@ -119,7 +119,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Zoom Blur Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 27/August/13
 'Last updated: 11/June/16
 'Last update: rewrite algorithm to support variable center positioning
@@ -150,7 +150,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -160,7 +160,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     srcDIB.WrapArrayAroundDIB srcImageData, srcSA
        
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -328,7 +328,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , GetFilterParamString(), UNDO_LAYER
+    Process "Zoom blur", , GetFilterParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

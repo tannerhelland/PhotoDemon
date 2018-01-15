@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2017 by Tanner Helland
+'Copyright 2002-2018 by Tanner Helland
 'Created: some time 2002
 'Last updated: 07/June/16
 'Last update: add option for stripping transparency from the image
@@ -243,7 +243,7 @@ Private Function CalculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -335,7 +335,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
     Dim alphaAlreadyPremultiplied As Boolean: alphaAlreadyPremultiplied = False

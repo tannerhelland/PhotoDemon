@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Resource Manager
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 13/December/16
 'Last updated: 11/August/17
 'Last update: use class-level caches for loading resources, which should reduce memory churn

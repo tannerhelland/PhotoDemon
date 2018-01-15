@@ -260,7 +260,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color-Picker Tool Panel
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 27/September/17
 'Last update: finish repurposing the UI for the new color picker
@@ -388,7 +388,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
                 If (m_SampleDIB Is Nothing) Then Set m_SampleDIB = New pdDIB
                 m_SampleDIB.CreateBlank sampleWidth, sampleHeight, 32, 0, 0
                 
-                Dim dstRectF As RECTF, srcRectF As RECTF
+                Dim dstRectF As RectF, srcRectF As RectF
                 With dstRectF
                     .Left = 0
                     .Top = 0
@@ -416,7 +416,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
             Dim layerX As Single, layerY As Single
             Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
             
-            Dim srcRGBA As RGBQUAD
+            Dim srcRGBA As RGBQuad
             If Layers.GetRGBAPixelFromLayer(pdImages(g_CurrentImage).GetActiveLayerIndex, layerX, layerY, srcRGBA, False) Then
             
                 'A valid color was found!  Fill our module-level color values.
@@ -487,7 +487,7 @@ Private Sub FindAverageValues()
     xFinal = (m_SampleDIB.GetDIBWidth - 1) * 4
     yFinal = m_SampleDIB.GetDIBHeight - 1
     
-    Dim lineOfPixels() As Byte, tmpSA As SAFEARRAY1D
+    Dim lineOfPixels() As Byte, tmpSA As SafeArray1D
     m_SampleDIB.WrapArrayAroundScanline lineOfPixels, tmpSA, 0
     
     Dim pxPtr As Long, pxWidth As Long

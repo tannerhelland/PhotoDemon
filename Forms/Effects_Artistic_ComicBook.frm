@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Comic Book Image Effect
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
 'Last updated: 23/May/16
 'Last update: optimize function a bit
@@ -127,7 +127,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
     If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
     
     'Initiate PhotoDemon's central image handler
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'During a preview, the smudge radius must be reduced to match the preview size
@@ -216,7 +216,7 @@ Private Sub btsStrength_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Comic book", , GetLocalParamString(), UNDO_LAYER
+    Process "Comic book", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selections"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 03/March/17
 'Last update: large-scale overhaul to match new 7.0 features and changes in pdSelection.

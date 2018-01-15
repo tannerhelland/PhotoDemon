@@ -150,7 +150,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automated Red Eye Correction Tool
-'Copyright 2015-2017 by Tanner Helland
+'Copyright 2015-2018 by Tanner Helland
 'Created: 29/December/15
 'Last updated: 29/December/15
 'Last update: initial build
@@ -216,7 +216,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -643,7 +643,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         Next y
         
         Dim correctionFactor As Double
-        Dim regionRectF As RECTF
+        Dim regionRectF As RectF
         
         Dim innerInitX As Long, innerInitY As Long, innerFinalX As Long, innerFinalY As Long
         

@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pixelate/Mosaic filter interface
-'Copyright 2000-2017 by Tanner Helland
+'Copyright 2000-2018 by Tanner Helland
 'Created: 08/May/00
 'Last updated: 08/August/17
 'Last update: convert to XML params, minor performance improvements
@@ -140,7 +140,7 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
     
     'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Make a note of the original image's size; we need this so we can restore the image to its original angle after
@@ -152,7 +152,7 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-mosaic'ed pixels from affecting the results of later pixels.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -322,7 +322,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mosaic", , GetLocalParamString(), UNDO_LAYER
+    Process "Mosaic", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -342,7 +342,7 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).IsSelectionActive Then
-        Dim selBounds As RECTF
+        Dim selBounds As RectF
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
         sltWidth.Max = selBounds.Width
         sltHeight.Max = selBounds.Height

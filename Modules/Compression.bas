@@ -1,7 +1,7 @@
 Attribute VB_Name = "Compression"
 '***************************************************************************
 'Unified Compression Interface for PhotoDemon
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 02/December/16
 'Last updated: 12/December/16
 'Last update: add support for Windows Compression API, available on Win 8+

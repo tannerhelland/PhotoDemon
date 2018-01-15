@@ -97,7 +97,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Motion Blur Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 26/August/13
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -136,7 +136,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     End With
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -209,7 +209,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , GetLocalParamString(), UNDO_LAYER
+    Process "Motion blur", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

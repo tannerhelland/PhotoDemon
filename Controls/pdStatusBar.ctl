@@ -138,7 +138,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon primary canvas status bar control
-'Copyright 2002-2017 by Tanner Helland
+'Copyright 2002-2018 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 03/March/16
 'Last update: migrate status bar into its own dedicated control

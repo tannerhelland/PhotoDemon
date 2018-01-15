@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Rendering Surface class
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 10/May/16
 'Last update: split surface-specific capabilities out from GDI+ and into a safe wrapper
@@ -54,7 +54,7 @@ Private m_SurfaceDC As Long
 'The caller can optionally provide the hWnd, if any, associated with the DC above.  This allows us to automagically
 ' detect size changes.
 Private m_SurfaceHWnd As Long
-Private m_ClientRect As RECTL
+Private m_ClientRect As RectL
 
 'If the caller does *not* supply an hWnd, they need to pass surface dimensions.  (DCs are dimension-less.)
 Private m_SurfaceWidthCaller As Single, m_SurfaceHeightCaller As Single
@@ -267,13 +267,13 @@ Friend Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rec
         
 End Function
 
-Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RECTF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     With srcRectF
         SetSurfaceClip_FromRectF = SetSurfaceClip_FromRectangle(.Left, .Top, .Width, .Height)
     End With
 End Function
 
-Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RECTL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RectL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     With srcRectL
         SetSurfaceClip_FromRectL = SetSurfaceClip_FromRectangle(.Left, .Top, .Right - .Left, .Bottom - .Top)
     End With
@@ -585,7 +585,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
             End With
             
             'Next, prepare a clipping rect
-            Dim tmpRect As RECTL
+            Dim tmpRect As RectL
             With tmpRect
                 .Left = 0
                 .Top = 0

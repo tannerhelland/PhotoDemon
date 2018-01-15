@@ -89,7 +89,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median Filter Tool
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 08/Feb/13
 'Last updated: 23/August/13
 'Last update: added a mode-tracking variable to help with the new command bar addition
@@ -145,7 +145,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     End If
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -175,7 +175,7 @@ Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Median", , GetLocalParamString(), UNDO_LAYER
+    Process "Median", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 'Because this dialog can be used for multiple tools, we need to clarify some behavior when resetting and randomizing

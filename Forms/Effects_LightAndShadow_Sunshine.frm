@@ -223,7 +223,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sunshine Effect Form
-'Copyright 2017-2017 by Tanner Helland
+'Copyright 2017-2018 by Tanner Helland
 'Created: 31/July/17
 'Created: 01/August/17
 'Last update: finish work on new implementation
@@ -278,7 +278,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the radius to match the size of the preview box
@@ -305,7 +305,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
         m_RayOverlay.ResetDIB 0
     End If
     
-    Dim pxOverlay() As Byte, pxSA As SAFEARRAY1D
+    Dim pxOverlay() As Byte, pxSA As SafeArray1D
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long

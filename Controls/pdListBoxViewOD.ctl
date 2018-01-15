@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn List Box View control (e.g. the list part of a list box, not including the scroll bar)
-'Copyright 2016-2017 by Tanner Helland
+'Copyright 2016-2018 by Tanner Helland
 'Created: 26/March/16
 'Last updated: 04/January/17
 'Last update: added support for a "borderless" rendering mode
@@ -68,7 +68,7 @@ Public Event LostFocusAPI()
 Private m_ListItemHeight As Long
 
 'The rectangle where the list is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_ListRect As RECTF
+Private m_ListRect As RectF
 
 'List box support class.  Handles data storage and coordinate math for rendering.
 Private WithEvents listSupport As pdListSupport
@@ -490,7 +490,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             Dim itemIsSelected As Boolean, itemIsHovered As Boolean, itemHasSeparator As Boolean
             Dim tmpTop As Long, tmpHeight As Long, tmpHeightWithoutSeparator As Long
             Dim lineY As Single
-            Dim tmpListItem As PD_LISTITEM, tmpRect As RECTF
+            Dim tmpListItem As PD_LISTITEM, tmpRect As RectF
             
             Dim i As Long
             For i = firstItemIndex To lastItemIndex

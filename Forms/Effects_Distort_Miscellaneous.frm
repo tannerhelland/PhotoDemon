@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Miscellaneous Distort Tools
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 07/June/13
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -128,14 +128,14 @@ Public Sub ApplyMiscDistort(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
     Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
+    Dim srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -394,7 +394,7 @@ Public Sub ApplyMiscDistort(ByVal effectParams As String, Optional ByVal toPrevi
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , GetLocalParamString(), UNDO_LAYER
+    Process "Miscellaneous distort", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

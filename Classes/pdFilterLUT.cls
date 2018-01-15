@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter LUT (Look Up Table) Support Class
-'Copyright 2014-2017 by Tanner Helland
+'Copyright 2014-2018 by Tanner Helland
 'Created: 15/January/15
 'Last updated: 16/January/15
 'Last update: continue fleshing out features
@@ -225,7 +225,7 @@ End Sub
 '     before exiting, but I mention this because it will cause any cached unsafe array pointers (e.g. VarPtr) to be invalid.
 '
 ' 3) srcArray doesn't have to be initialized.  This function will do it for you.
-Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTFLOAT)
+Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As PointFloat)
 
     'Start by setting up default parameters for the source array
     FillLUT_Default srcArray
@@ -239,7 +239,7 @@ Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     
     'To prevent errors in the curve generation function, we will actually pad the curve point array with some dummy entries.
     ' These entries will be removed at the end of the function.
-    ReDim Preserve curvePoints(0 To numOfPoints + 1) As POINTFLOAT
+    ReDim Preserve curvePoints(0 To numOfPoints + 1) As PointFloat
     
     Dim i As Long
     Dim p() As Double, u() As Double
@@ -285,7 +285,7 @@ Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     Next i
     
     'Restore the original array bounds before exiting
-    ReDim Preserve curvePoints(0 To numOfPoints - 1) As POINTFLOAT
+    ReDim Preserve curvePoints(0 To numOfPoints - 1) As PointFloat
     
 End Sub
 
@@ -383,7 +383,7 @@ Public Sub FillLUT_Threshold(ByRef srcArray() As Byte, Optional ByVal thresholdC
 End Sub
 
 'Spline initialization function used by the Curve LUT generator.  Call this function once prior to generating a curve.
-Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As POINTFLOAT, ByRef p() As Double, ByRef u() As Double)
+Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As PointFloat, ByRef p() As Double, ByRef u() As Double)
     
     Dim i As Long
     Dim d() As Double, w() As Double
@@ -426,7 +426,7 @@ Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As POINTFLOAT,
 End Sub
 
 'Spline retrieval functions
-Private Function GetCurvePoint(ByVal i As Long, ByVal v As Double, ByRef srcPoints() As POINTFLOAT, ByRef p() As Double, ByRef u() As Double) As Double
+Private Function GetCurvePoint(ByVal i As Long, ByVal v As Double, ByRef srcPoints() As PointFloat, ByRef p() As Double, ByRef u() As Double) As Double
     Dim t As Double
     t = (v - srcPoints(i).x) / u(i)
     GetCurvePoint = t * srcPoints(i + 1).y + (1 - t) * srcPoints(i).y + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
@@ -443,14 +443,14 @@ End Function
 'Sample usage would be something like this, for a dramatic S-curve:
 ' Dim curvePoints() As POINTFLOAT
 ' pdFilterLUTInstance.helper_QuickCreateCurveArray curvePoints, 0, 0, 96, 72, 192, 160, 255, 255
-Friend Sub Helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
+Friend Sub Helper_QuickCreateCurveArray(ByRef curvePoints() As PointFloat, ParamArray listOfPoints() As Variant)
 
     If UBound(listOfPoints) >= LBound(listOfPoints) Then
                     
         Dim i As Long, numOfPoints As Long
         
         numOfPoints = (UBound(listOfPoints) - LBound(listOfPoints) + 1) \ 2
-        ReDim curvePoints(0 To numOfPoints - 1) As POINTFLOAT
+        ReDim curvePoints(0 To numOfPoints - 1) As PointFloat
         
         For i = 0 To numOfPoints - 1
             curvePoints(i).x = listOfPoints(i * 2)
@@ -508,7 +508,7 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -588,7 +588,7 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte)
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -660,7 +660,7 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         

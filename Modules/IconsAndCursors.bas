@@ -1,7 +1,7 @@
 Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2017 by Tanner Helland
+'Copyright 2012-2018 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 03/February/17
 'Last update: add automatic high-DPI cursor support for custom cursors created from PNGs

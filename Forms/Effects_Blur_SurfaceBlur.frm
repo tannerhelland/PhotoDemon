@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Surface Blur Tool (formerly "Smart Blur")
-'Copyright 2013-2017 by Tanner Helland
+'Copyright 2013-2018 by Tanner Helland
 'Created: 17/January/13
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params
@@ -148,7 +148,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
     Dim tDelta As Long
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
+    Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -207,12 +207,12 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
+        Dim srcSA As SafeArray2D
         PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
-        Dim gaussSA As SAFEARRAY2D
+        Dim gaussSA As SafeArray2D
         PrepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
                 
@@ -306,7 +306,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Surface blur", , GetLocalParamString(), UNDO_LAYER
+    Process "Surface blur", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -550,7 +550,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright 2013-2017 by Frank Donckers and Tanner Helland
+'Copyright 2013-2018 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 15/February/17
 'Last update: attempt to improve titlecase handling
