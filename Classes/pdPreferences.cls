@@ -62,6 +62,7 @@ Private m_IconPath As String
 
 Private m_UserLanguagePath As String
 Private m_SelectionPath As String
+Private m_PalettePath As String
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
                                     ' are automatically placed here.
@@ -142,12 +143,21 @@ Friend Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean =
     If getUserThemePathInstead Then GetThemePath = m_UserThemePath Else GetThemePath = m_ThemePath
 End Function
 
-'Get the current Debug path
+'Get/set subfolders from the user's /Data folder.  These paths may not exist at run-time; ensure code works even if these
+' paths are not available!  Similarly, not all folders support a /Set
 Friend Function GetDebugPath() As String
     GetDebugPath = m_DebugPath
 End Function
 
-'Get the current Preset path
+Friend Function GetPalettePath() As String
+    GetPalettePath = m_PalettePath
+End Function
+
+Friend Sub SetPalettePath(ByRef newPalettePath As String)
+    m_PalettePath = Files.PathAddBackslash(Files.FileGetPath(newPalettePath))
+    SetPref_String "Paths", "Palettes", m_PalettePath
+End Sub
+
 Friend Function GetPresetPath() As String
     GetPresetPath = m_PresetPath
 End Function
@@ -375,23 +385,26 @@ Friend Function InitializePaths() As Boolean
     #End If
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
-    m_MacroPath = m_DataPath & "Macros\"
-    If (Not Files.PathExists(m_MacroPath)) Then Files.PathCreate m_MacroPath
-            
-    m_SelectionPath = m_DataPath & "Selections\"
-    If (Not Files.PathExists(m_SelectionPath)) Then Files.PathCreate m_SelectionPath
+    m_DebugPath = m_DataPath & "Debug\"
+    If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
+    
+    m_IconPath = m_DataPath & "Icons\"
+    If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
     
     m_UserLanguagePath = m_DataPath & "Languages\"
     If (Not Files.PathExists(m_UserLanguagePath)) Then Files.PathCreate m_UserLanguagePath
     
+    m_MacroPath = m_DataPath & "Macros\"
+    If (Not Files.PathExists(m_MacroPath)) Then Files.PathCreate m_MacroPath
+    
+    m_PalettePath = m_DataPath & "Palettes\"
+    If (Not Files.PathExists(m_PalettePath)) Then Files.PathCreate m_PalettePath
+    
     m_PresetPath = m_DataPath & "Presets\"
     If (Not Files.PathExists(m_PresetPath)) Then Files.PathCreate m_PresetPath
     
-    m_IconPath = m_DataPath & "Icons\"
-    If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
-        
-    m_DebugPath = m_DataPath & "Debug\"
-    If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
+    m_SelectionPath = m_DataPath & "Selections\"
+    If (Not Files.PathExists(m_SelectionPath)) Then Files.PathCreate m_SelectionPath
     
     m_UserThemePath = m_DataPath & "Themes\"
     If (Not Files.PathExists(m_UserThemePath)) Then Files.PathCreate m_UserThemePath
@@ -475,6 +488,7 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
         
     'Pull all other stored paths
     m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
+    m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
     m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)
         
     'Check if the user wants us to prompt them about closing unsaved images
@@ -591,11 +605,12 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Paths", "", True
-        m_XMLEngine.WriteTag "TempFiles", OS.SystemTempPath()
-        m_XMLEngine.WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "SaveImage", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Macro", m_MacroPath
+        m_XMLEngine.WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "Palettes", m_DataPath & "Palettes\"
+        m_XMLEngine.WriteTag "SaveImage", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Selections", m_SelectionPath
+        m_XMLEngine.WriteTag "TempFiles", OS.SystemTempPath()
     m_XMLEngine.CloseTag "Paths"
     m_XMLEngine.WriteBlankLine
     

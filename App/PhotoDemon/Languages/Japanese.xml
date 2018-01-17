@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.2</langversion>
+<langversion>1.0.3</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1583,7 +1583,17 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10326,6 +10336,11 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>ディザリング</translation>
 </phrase>
@@ -10333,6 +10348,16 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <phrase>
 <original>reduce color bleed</original>
 <translation>色のにじみを減らす</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>基本設定</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>高度な設定</translation>
 </phrase>
 
 <phrase>
@@ -10348,6 +10373,16 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <phrase>
 <original>alpha cut-off</original>
 <translation>アルファカットオフ</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10380,7 +10415,22 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <translation>画像に新しいパレットを適用する</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>palette name: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12132,16 +12182,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>基本設定</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>高度な設定</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>メタデータ設定</translation>
 </phrase>
@@ -12241,7 +12281,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>これらの損失の多い最適化設定は、ファイルサイズを％1減らしました。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15050,12 +15090,18 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<!-- pdPalette.cls contains 0 phrases. -->
+
+<!-- END text for pdPalette.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4577 phrases. -->
+<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12148 total words. -->
 
 </pdData>

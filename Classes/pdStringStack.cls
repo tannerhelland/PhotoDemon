@@ -473,6 +473,13 @@ Friend Sub CreateFromStringArray(ByRef srcStringArray() As String)
     Next i
 End Sub
 
+'Fill this stack by parsing a string.  VBA.Split() is currently used; obviously a faster solution could be implemented.
+Friend Sub CreateFromMultilineString(ByRef srcString As String)
+    Dim tmpArray() As String
+    tmpArray = Split(srcString, vbCrLf, , vbBinaryCompare)
+    Me.CreateFromStringArray tmpArray
+End Sub
+
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
 Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     

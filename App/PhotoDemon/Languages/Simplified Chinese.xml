@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3390</langversion>
+<langversion>7.0.3391</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1576,7 +1576,17 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10321,6 +10331,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>抖动</translation>
 </phrase>
@@ -10328,6 +10343,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>reduce color bleed</original>
 <translation>减少颜色渗色</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>基本设置</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>高级设置</translation>
 </phrase>
 
 <phrase>
@@ -10343,6 +10368,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>alpha cut-off</original>
 <translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10375,7 +10410,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>将新调色板应用于图像</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>palette name: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12123,16 +12173,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>基本设置</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>高级设置</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>元数据设置</translation>
 </phrase>
@@ -12232,7 +12272,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15039,12 +15079,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<!-- pdPalette.cls contains 0 phrases. -->
+
+<!-- END text for pdPalette.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4577 phrases. -->
+<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12148 total words. -->
 
 </pdData>

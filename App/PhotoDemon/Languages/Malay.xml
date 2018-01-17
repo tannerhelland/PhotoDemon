@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3294</langversion>
+<langversion>6.8.3295</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1583,7 +1583,17 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10331,6 +10341,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>penggetaran</translation>
 </phrase>
@@ -10338,6 +10353,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>reduce color bleed</original>
 <translation>mengurangkan pendarahan warna</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>tetapan asas</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>tetapan lanjutan</translation>
 </phrase>
 
 <phrase>
@@ -10353,6 +10378,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>alpha cut-off</original>
 <translation>alpha potong</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10385,7 +10420,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon palet baru kepada imej</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>palette name: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12137,16 +12187,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>tetapan asas</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>tetapan lanjutan</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>tetapan metadata</translation>
 </phrase>
@@ -12246,7 +12286,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Tetapan pengoptimuman lossy mengurangkan saiz fail dengan %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15056,12 +15096,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<!-- pdPalette.cls contains 0 phrases. -->
+
+<!-- END text for pdPalette.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4577 phrases. -->
+<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12148 total words. -->
 
 </pdData>

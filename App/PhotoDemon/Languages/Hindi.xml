@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.14</langversion>
+<langversion>1.0.15</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1584,7 +1584,17 @@ In संस्करण 6.0 के द्वारा समर्थित न
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10327,6 +10337,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>कटौती</translation>
 </phrase>
@@ -10334,6 +10349,16 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <phrase>
 <original>reduce color bleed</original>
 <translation>रंग खून कम करें</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>मूल सेटिंग्स</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>एडवांस सेटिंग</translation>
 </phrase>
 
 <phrase>
@@ -10349,6 +10374,16 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <phrase>
 <original>alpha cut-off</original>
 <translation>अल्फा कट-ऑफ</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10381,7 +10416,22 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>छवि में नई पैलेट को लागू करना</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>palette name: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12133,16 +12183,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>मूल सेटिंग्स</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>एडवांस सेटिंग</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>मेटाडेटा सेटिंग्स</translation>
 </phrase>
@@ -12242,7 +12282,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>इन हानिपूर्ण अनुकूलन सेटिंग्स ने फ़ाइल आकार %1 से घटा दिया।</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15051,12 +15091,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<!-- pdPalette.cls contains 0 phrases. -->
+
+<!-- END text for pdPalette.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4577 phrases. -->
+<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12148 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3294</langversion>
+<langversion>6.8.3295</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1583,7 +1583,17 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10331,6 +10341,11 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>Pontilhamento</translation>
 </phrase>
@@ -10338,6 +10353,16 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <phrase>
 <original>reduce color bleed</original>
 <translation>Reduzir o sangramento da cor</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>configurações básicas</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>configurações avançadas</translation>
 </phrase>
 
 <phrase>
@@ -10353,6 +10378,16 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <phrase>
 <original>alpha cut-off</original>
 <translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10385,7 +10420,22 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <translation>Aplicando nova paleta à imagem</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>palette name: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12136,16 +12186,6 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>configurações básicas</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>configurações avançadas</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>Configurações de metadados</translation>
 </phrase>
@@ -12245,7 +12285,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>Essas configurações de otimização com perdas reduzir o tamanho do arquivo %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15055,12 +15095,18 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<!-- pdPalette.cls contains 0 phrases. -->
+
+<!-- END text for pdPalette.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4557 phrases. -->
-<!-- 2033 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4577 phrases. -->
+<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12148 total words. -->
 
 </pdData>
