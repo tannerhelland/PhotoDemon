@@ -79,8 +79,73 @@ End Function
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
 Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
 
-    'Branch according to format; at present, only .gpl files are supported
-    LoadPaletteFromFile = LoadPaletteFromGIMPFile(srcFile)
+    'Branch according to format; on failure, attempt the next mechanism.  Note that some formats
+    ' do enforce set file extensions, and we attempt to honor that here.
+    
+    'Look for Adobe's basic color table file (*much* simpler than swatches)
+    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then LoadPaletteFromFile = LoadPaletteFromAdobeColorTable(srcFile)
+    
+    'Finish with the ubiquitous GIMP palette format
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteFromGIMPFile(srcFile)
+    
+End Function
+
+'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
+Private Function LoadPaletteFromAdobeColorTable(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+    
+    On Error GoTo BadACTData
+    
+    'Because ACT files don't have a header, we must test byte length.  They are only allowed to be
+    ' 768 or 772 bytes, per the spec at http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_pgfId-1070626
+    If (Files.FileLenW(srcFile) = 768) Or (Files.FileLenW(srcFile) = 772) Then
+    
+        'For now, also test file extension (as a failsafe)
+        If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then
+        
+            'File size and extension match.  Start retrieving colors!
+            Dim srcBytes() As Byte
+            If Files.FileLoadAsByteArray(srcFile, srcBytes) Then
+                
+                'Prep our internal palette structs
+                ReDim m_PaletteColors(0 To 255) As RGBQuad
+                m_PaletteColorCount = 0
+                
+                Dim i As Long
+                For i = 0 To 255
+                    With m_PaletteColors(i)
+                        .Red = srcBytes(i * 3)
+                        .Green = srcBytes(i * 3 + 1)
+                        .Blue = srcBytes(i * 3 + 2)
+                        .Alpha = 255
+                    End With
+                Next i
+                
+                'ACT files always contain 256 colors
+                m_PaletteColorCount = 256
+                
+                'Duplicates must always be removed, as ACT files don't guarantee a descriptor for
+                ' "how many relevant colors exist"
+                FindAndRemoveDuplicates
+                
+                'If we haven't errored out, consider this a successful parse
+                m_PaletteName = Files.FileGetName(srcFile, True)
+                m_PaletteFilename = srcFile
+                LoadPaletteFromAdobeColorTable = True
+                
+            End If
+        
+        End If
+        
+        
+    End If
+    
+    Exit Function
+    
+BadACTData:
+    m_PaletteName = vbNullString
+    m_PaletteColorCount = 0
+    m_PaletteFilename = vbNullString
+    LoadPaletteFromAdobeColorTable = False
     
 End Function
 
@@ -208,6 +273,8 @@ BadLineColor:
             ' do with it?) we can pre-sort the palette to improve matching performance.
             If optimizeForPerformance Then SortByLuminance
             
+        Else
+            LoadPaletteFromGIMPFile = False
         End If
     
     End If

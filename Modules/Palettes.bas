@@ -74,7 +74,7 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     Dim pxSize As Long
     pxSize = srcDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.GetDIBStride - 1
@@ -89,11 +89,11 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ' highest-quality "variance + median split" algorithm is used, however.
     pxStack(0).SetQuantizeMode pdqs_VarPlusMedian
     
-    For Y = 0 To finalY
-    For X = 0 To finalX Step pxSize
-        pxStack(0).AddColor_RGB srcPixels(X + 2, Y), srcPixels(X + 1, Y), srcPixels(X, Y)
-    Next X
-    Next Y
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
+        pxStack(0).AddColor_RGB srcPixels(x + 2, y), srcPixels(x + 1, y), srcPixels(x, y)
+    Next x
+    Next y
     
     srcDIB.UnwrapArrayFromDIB srcPixels
     
@@ -237,7 +237,7 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
             Dim pxSize As Long
             pxSize = srcDIB.GetDIBColorDepth \ 8
             
-            Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
             initX = 0
             initY = 0
             finalX = srcDIB.GetDIBStride - 1
@@ -246,11 +246,11 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
             Dim r As Long, g As Long, b As Long
             Dim blackFound As Boolean, whiteFound As Boolean
             
-            For Y = 0 To finalY
-            For X = 0 To finalX Step pxSize
-                b = srcPixels(X, Y)
-                g = srcPixels(X + 1, Y)
-                r = srcPixels(X + 2, Y)
+            For y = 0 To finalY
+            For x = 0 To finalX Step pxSize
+                b = srcPixels(x, y)
+                g = srcPixels(x + 1, y)
+                r = srcPixels(x + 2, y)
                 
                 If (Not blackFound) Then
                     If (r = 0) And (g = 0) And (b = 0) Then blackFound = True
@@ -261,9 +261,9 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
                 End If
                 
                 If (blackFound And whiteFound) Then Exit For
-            Next X
+            Next x
                 If (blackFound And whiteFound) Then Exit For
-            Next Y
+            Next y
             
             srcDIB.UnwrapArrayFromDIB srcPixels
             
@@ -307,7 +307,7 @@ Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = dstDIB.GetDIBStride - 1
@@ -323,11 +323,11 @@ Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As
     Dim numOfColors As Long
     numOfColors = UBound(srcPalette)
     
-    For Y = 0 To finalY
-    For X = 0 To finalX Step pxSize
-        b = srcPixels(X, Y)
-        g = srcPixels(X + 1, Y)
-        r = srcPixels(X + 2, Y)
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
         
         'If this color matches the last color we tested, reuse our previous palette match
         If (RGB(r, g, b) <> lastColor) Then
@@ -357,12 +357,12 @@ Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As
         End If
         
         'Apply this color to the target image
-        srcPixels(X, Y) = srcPalette(minIndex).Blue
-        srcPixels(X + 1, Y) = srcPalette(minIndex).Green
-        srcPixels(X + 2, Y) = srcPalette(minIndex).Red
+        srcPixels(x, y) = srcPalette(minIndex).Blue
+        srcPixels(x + 1, y) = srcPalette(minIndex).Green
+        srcPixels(x + 2, y) = srcPalette(minIndex).Red
         
-    Next X
-    Next Y
+    Next x
+    Next y
     
     dstDIB.UnwrapArrayFromDIB srcPixels
     
@@ -386,7 +386,7 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = dstDIB.GetDIBStride - 1
@@ -408,13 +408,13 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
     Dim pSort() As PaletteSort
     ReDim pSort(0 To numOfColors) As PaletteSort
     
-    For X = 0 To numOfColors
-        pSort(X).pOrigIndex = X
-        r = srcPalette(X).Red
-        g = srcPalette(X).Green
-        b = srcPalette(X).Blue
-        pSort(X).pSortCriteria = r * r + g * g + b * b
-    Next X
+    For x = 0 To numOfColors
+        pSort(x).pOrigIndex = x
+        r = srcPalette(x).Red
+        g = srcPalette(x).Green
+        b = srcPalette(x).Blue
+        pSort(x).pSortCriteria = r * r + g * g + b * b
+    Next x
     
     SortPalette pSort
     
@@ -432,28 +432,28 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
     Dim bucketList() As Single, bucketCount() As Long
     ReDim bucketList(0 To numOfBuckets) As Single
     ReDim bucketCount(0 To numOfBuckets) As Long
-    For X = 0 To numOfColors - 1
-        r = X \ bucketSize
-        bucketList(r) = bucketList(r) + pSort(X).pSortCriteria
+    For x = 0 To numOfColors - 1
+        r = x \ bucketSize
+        bucketList(r) = bucketList(r) + pSort(x).pSortCriteria
         bucketCount(r) = bucketCount(r) + 1
-    Next X
+    Next x
     
     'Normalize bucket range values
-    For X = 0 To numOfBuckets
-        bucketList(X) = bucketList(X) \ bucketCount(X)
-    Next X
+    For x = 0 To numOfBuckets
+        bucketList(x) = bucketList(x) \ bucketCount(x)
+    Next x
     
     Erase bucketCount
     
     'Start matching pixels
     Dim startSearch As Long, endSearch As Long
     
-    For Y = 0 To finalY
-    For X = 0 To finalX Step pxSize
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
     
-        b = srcPixels(X, Y)
-        g = srcPixels(X + 1, Y)
-        r = srcPixels(X + 2, Y)
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
         
         'If this pixel matches the last pixel we tested, reuse our previous match results
         If (RGB(r, g, b) <> lastColor) Then
@@ -515,12 +515,12 @@ Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef 
         End If
         
         'Apply the closest discovered color to this pixel.
-        srcPixels(X, Y) = srcPalette(minIndex).Blue
-        srcPixels(X + 1, Y) = srcPalette(minIndex).Green
-        srcPixels(X + 2, Y) = srcPalette(minIndex).Red
+        srcPixels(x, y) = srcPalette(minIndex).Blue
+        srcPixels(x + 1, y) = srcPalette(minIndex).Green
+        srcPixels(x + 2, y) = srcPalette(minIndex).Red
         
-    Next X
-    Next Y
+    Next x
+    Next y
     
     dstDIB.UnwrapArrayFromDIB srcPixels
     
@@ -613,7 +613,7 @@ Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalet
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = dstDIB.GetDIBStride - 1
@@ -651,12 +651,12 @@ Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalet
     '(Obviously, for this to work, you'd need to updated the tmpQuad assignments in the inner loop, below.)
     
     'Start matching pixels
-    For Y = 0 To finalY
-    For X = 0 To finalX Step pxSize
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
     
-        b = srcPixels(X, Y)
-        g = srcPixels(X + 1, Y)
-        r = srcPixels(X + 2, Y)
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
         
         'If this pixel matches the last pixel we tested, reuse our previous match results
         If (RGB(r, g, b) <> lastColor) Then
@@ -676,12 +676,12 @@ Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalet
         End If
         
         'Apply the closest discovered color to this pixel.
-        srcPixels(X, Y) = srcPalette(minIndex).Blue
-        srcPixels(X + 1, Y) = srcPalette(minIndex).Green
-        srcPixels(X + 2, Y) = srcPalette(minIndex).Red
+        srcPixels(x, y) = srcPalette(minIndex).Blue
+        srcPixels(x + 1, y) = srcPalette(minIndex).Green
+        srcPixels(x + 2, y) = srcPalette(minIndex).Red
         
-    Next X
-    Next Y
+    Next x
+    Next y
     
     dstDIB.UnwrapArrayFromDIB srcPixels
     
@@ -699,7 +699,7 @@ Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalet
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = dstDIB.GetDIBStride - 1
@@ -725,12 +725,12 @@ Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalet
     hPal = CreatePalette(VarPtr(tmpPalette))
     
     'Start matching pixels
-    For Y = 0 To finalY
-    For X = 0 To finalX Step pxSize
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
     
-        b = srcPixels(X, Y)
-        g = srcPixels(X + 1, Y)
-        r = srcPixels(X + 2, Y)
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
         
         'If this pixel matches the last pixel we tested, reuse our previous match results
         If (RGB(r, g, b) <> lastColor) Then
@@ -746,12 +746,12 @@ Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalet
         End If
         
         'Apply the closest discovered color to this pixel.
-        srcPixels(X, Y) = srcPalette(minIndex).Blue
-        srcPixels(X + 1, Y) = srcPalette(minIndex).Green
-        srcPixels(X + 2, Y) = srcPalette(minIndex).Red
+        srcPixels(x, y) = srcPalette(minIndex).Blue
+        srcPixels(x + 1, y) = srcPalette(minIndex).Green
+        srcPixels(x + 2, y) = srcPalette(minIndex).Red
         
-    Next X
-    Next Y
+    Next x
+    Next y
     
     dstDIB.UnwrapArrayFromDIB srcPixels
     
@@ -771,7 +771,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = dstDIB.GetDIBStride - 1
@@ -835,11 +835,11 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             DitherTable(3, 3) = 6
     
             'Convert the dither entries to absolute offsets (meaning half are positive, half are negative)
-            For X = 0 To 3
-            For Y = 0 To 3
-                DitherTable(X, Y) = DitherTable(X, Y) * 2 - 16
-            Next Y
-            Next X
+            For x = 0 To 3
+            For y = 0 To 3
+                DitherTable(x, y) = DitherTable(x, y) * 2 - 16
+            Next y
+            Next x
             
         ElseIf (DitherMethod = PDDM_Ordered_Bayer8x8) Then
         
@@ -921,26 +921,26 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             DitherTable(7, 7) = 22
             
             'Convert the dither entries to 255-based values
-            For X = 0 To 7
-            For Y = 0 To 7
-                DitherTable(X, Y) = DitherTable(X, Y) - 32
-            Next Y
-            Next X
+            For x = 0 To 7
+            For y = 0 To 7
+                DitherTable(x, y) = DitherTable(x, y) - 32
+            Next y
+            Next x
         
         End If
         
         'Apply the finished dither table to the image
         Dim ditherAmt As Long
         
-        For Y = 0 To finalY
-        For X = 0 To finalX Step pxSize
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
         
-            b = srcPixels(X, Y)
-            g = srcPixels(X + 1, Y)
-            r = srcPixels(X + 2, Y)
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
             
             'Add dither to each component
-            ditherAmt = DitherTable((X \ 4) And ditherRows, Y And ditherColumns)
+            ditherAmt = DitherTable((x \ 4) And ditherRows, y And ditherColumns)
             If reduceBleed Then ditherAmt = ditherAmt * 0.33
             
             r = r + ditherAmt
@@ -967,12 +967,12 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             'Ask the system to find the nearest color
             minIndex = GetNearestPaletteIndex(hPal, RGB(r, g, b))
             
-            srcPixels(X, Y) = srcPalette(minIndex).Blue
-            srcPixels(X + 1, Y) = srcPalette(minIndex).Green
-            srcPixels(X + 2, Y) = srcPalette(minIndex).Red
+            srcPixels(x, y) = srcPalette(minIndex).Blue
+            srcPixels(x + 1, y) = srcPalette(minIndex).Green
+            srcPixels(x + 2, y) = srcPalette(minIndex).Red
             
-        Next X
-        Next Y
+        Next x
+        Next y
     
     'All error-diffusion dither methods are handled similarly
     Else
@@ -999,15 +999,15 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         Dim newR As Long, newG As Long, newB As Long
         
         'Start calculating pixels.
-        For Y = 0 To finalY
-        For X = 0 To finalX Step pxSize
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
         
-            b = srcPixels(X, Y)
-            g = srcPixels(X + 1, Y)
-            r = srcPixels(X + 2, Y)
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
             
             'Add our running errors to the original colors
-            xNonStride = X * 0.25
+            xNonStride = x * 0.25
             newR = r + rErrors(xNonStride, 0)
             newG = g + gErrors(xNonStride, 0)
             newB = b + bErrors(xNonStride, 0)
@@ -1036,9 +1036,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             With srcPalette(minIndex)
             
                 'Apply the closest discovered color to this pixel.
-                srcPixels(X, Y) = .Blue
-                srcPixels(X + 1, Y) = .Green
-                srcPixels(X + 2, Y) = .Red
+                srcPixels(x, y) = .Blue
+                srcPixels(x + 1, y) = .Green
+                srcPixels(x + 2, y) = .Red
             
                 'Calculate new errors
                 rError = r - CLng(.Red)
@@ -1083,7 +1083,7 @@ NextDitheredPixel:
             Next j
             Next i
             
-        Next X
+        Next x
         
             'When moving to the next line, we need to "shift" all accumulated errors upward.
             ' (Basically, what was previously the "next" line, is now the "current" line.
@@ -1106,7 +1106,7 @@ NextDitheredPixel:
                 FillMemory VarPtr(bErrors(0, 2)), (xWidth + 1) * 4, 0
             End If
             
-        Next Y
+        Next y
     
     End If
     
@@ -1308,7 +1308,9 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     Interface.DisableUserInput
     
     Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
+    cdFilter = g_Language.TranslateMessage("All supported palettes") & "|*.act;*.gpl|"
+    cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
+    cdFilter = cdFilter & g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
     cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
