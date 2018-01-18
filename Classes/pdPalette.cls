@@ -36,6 +36,14 @@ Private m_PaletteName As String
 Private m_PaletteColorCount As Long
 Private m_PaletteColors() As RGBQuad
 
+'A specially designed QuickSort algorithm is used to sort palettes.  We define our own internal sort criteria
+' using this custom type, which allows us to implement different types of palette sorts "on the fly" by simply
+' plugging-in different sort criterias.
+Private Type PaletteSort
+    pSortCriteria As Single
+    pOrigIndex As Long
+End Type
+
 Friend Function GetPaletteColorCount() As Long
     GetPaletteColorCount = m_PaletteColorCount
 End Function
@@ -77,7 +85,7 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
 End Function
 
 'Given a valid path to a GIMP-format .gpl file, return an array of RGBQuad entries
-Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String) As Boolean
+Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
     
     On Error GoTo InvalidPalette
     
@@ -194,7 +202,11 @@ BadLineColor:
             
             'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format, GIMP makes
             ' no guarantees about this, but we don't want to waste time palette-matching duplicate entries.)
-            FindAndRemoveDuplicates
+            If removeDuplicateColors Then FindAndRemoveDuplicates
+            
+            'If the user plans to use this palette for color-matching (and really, what else are they gonna
+            ' do with it?) we can pre-sort the palette to improve matching performance.
+            If optimizeForPerformance Then SortByLuminance
             
         End If
     
@@ -266,3 +278,118 @@ Private Sub FindAndRemoveDuplicates()
     End If
     
 End Sub
+
+'When constructing palette matching trees, it is often useful to sort a palette by luminance
+' (e.g. along the diagonal of the RGB cube).  This makes it easier to produce a balanced nearest-neighbor
+' structure for color-matching.
+Friend Sub SortByLuminance()
+
+    'We don't actually use true "luminance" for the sort; instead, we treat RGB coordinates as literal
+    ' positions within a 3D RGB cube, and we use their positions to sort along the cube's diagonal.
+    ' (Note that alpha is *not* considered during the sort, by design.)
+    Dim pSort() As PaletteSort
+    ReDim pSort(0 To m_PaletteColorCount - 1) As PaletteSort
+    
+    Dim r As Long, g As Long, b As Long
+    
+    Dim i As Long
+    For i = 0 To m_PaletteColorCount - 1
+        
+        With m_PaletteColors(i)
+            r = .Red
+            g = .Green
+            b = .Blue
+        End With
+        
+        pSort(i).pOrigIndex = i
+        pSort(i).pSortCriteria = r * r + g * g + b * b
+        
+    Next i
+    
+    'We can now use the sort criteria to perform a normal quicksort
+    SortPalette pSort
+    
+    'The pSort() array has now been sorted according to its pSortCriteria contents.  We want to rebuild
+    ' our palette array in a matching order.
+    Dim newPalette() As RGBQuad
+    ReDim newPalette(0 To m_PaletteColorCount - 1) As RGBQuad
+    For i = 0 To m_PaletteColorCount - 1
+        newPalette(i) = m_PaletteColors(pSort(i).pOrigIndex)
+    Next i
+    
+    'Release the old array in favor of the newly sorted one
+    m_PaletteColors = newPalette
+    
+End Sub
+
+'Use QuickSort to sort a palette.  The srcPaletteSort must be assembled by the caller, with the .pSortCriteria
+' filled with a Single that represents "color order".  (Not defining this strictly allows for many different types
+' of palette sorts, based on the caller's needs.)
+Private Sub SortPalette(ByRef srcPaletteSort() As PaletteSort)
+    SortInner srcPaletteSort, 0, UBound(srcPaletteSort)
+End Sub
+
+'Basic QuickSort function.  Recursive calls will sort the palette on the range [lowVal, highVal].  The first
+' call must be on the range [0, UBound(srcPaletteSort)].
+Private Sub SortInner(ByRef srcPaletteSort() As PaletteSort, ByVal lowVal As Long, ByVal highVal As Long)
+    
+    'Ignore the search request if the bounds are mismatched
+    If (lowVal < highVal) Then
+        
+        'Sort some sub-portion of the list, and use the returned pivot to repeat the sort process
+        Dim j As Long
+        j = SortPartition(srcPaletteSort, lowVal, highVal)
+        SortInner srcPaletteSort, lowVal, j - 1
+        SortInner srcPaletteSort, j + 1, highVal
+    End If
+    
+End Sub
+
+'Basic QuickSort partition function.  All values in the range [lowVal, highVal] are sorted against a pivot value, j.
+' The final pivot position is returned, and our caller can use that to request two new sorts on either side of the pivot.
+Private Function SortPartition(ByRef srcPaletteSort() As PaletteSort, ByVal lowVal As Long, ByVal highVal As Long) As Long
+    
+    Dim i As Long, j As Long
+    i = lowVal
+    j = highVal + 1
+    
+    Dim v As Single
+    v = srcPaletteSort(lowVal).pSortCriteria
+    
+    Dim tmpSort As PaletteSort
+    
+    Do
+        
+        'Compare the pivot against points beneath it
+        Do
+            i = i + 1
+            If (i = highVal) Then Exit Do
+        Loop While (srcPaletteSort(i).pSortCriteria < v)
+        
+        'Compare the pivot against points above it
+        Do
+            j = j - 1
+            
+            'A failsafe exit check here would be redundant, since we already check this state above
+            'If (j = lowVal) Then Exit Do
+        Loop While (v < srcPaletteSort(j).pSortCriteria)
+        
+        'If the pivot has arrived at its final location, exit
+        If (i >= j) Then Exit Do
+        
+        'Swap the values at indexes i and j
+        tmpSort = srcPaletteSort(j)
+        srcPaletteSort(j) = srcPaletteSort(i)
+        srcPaletteSort(i) = tmpSort
+        
+    Loop
+    
+    'Move the pivot value into its final location
+    tmpSort = srcPaletteSort(j)
+    srcPaletteSort(j) = srcPaletteSort(lowVal)
+    srcPaletteSort(lowVal) = tmpSort
+    
+    'Return the pivot's final position
+    SortPartition = j
+    
+End Function
