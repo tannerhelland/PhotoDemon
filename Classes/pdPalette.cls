@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 17/January/18
-'Last update: finish .gpl parser (GIMP palette format)
+'Last updated: 18/January/18
+'Last update: forcibly remove duplicate entries from imported palettes
 '
 'This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -174,6 +174,9 @@ Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String) As Boolean
                         On Error GoTo 0
                         m_PaletteColors(m_PaletteColorCount).Blue = targetColorInt
                         
+                        'GIMP palettes do not support alpha channels.  Forcibly set a value of 255.
+                        m_PaletteColors(m_PaletteColorCount).Alpha = 255
+                        
                         'If we made it all the way here, this line was successfully parsed for color data.
                         ' Advance the color count tracker and resume the line parser.
                         m_PaletteColorCount = m_PaletteColorCount + 1
@@ -188,6 +191,10 @@ BadLineColor:
             
             'If we haven't errored out, consider this a valid parse
             LoadPaletteFromGIMPFile = True
+            
+            'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format, GIMP makes
+            ' no guarantees about this, but we don't want to waste time palette-matching duplicate entries.)
+            FindAndRemoveDuplicates
             
         End If
     
@@ -206,3 +213,56 @@ InvalidPalette:
 
 End Function
 
+'Many palette files are text-based, and nothing prevents problematic situations like duplicate colors.
+' (In fact, some shitty formats *cough* Paint.NET *cough* require a *fiex* number of colors, which practically
+' guarantees duplicate entries for small palettes.)  After loading a palette from file, I recommend calling this
+' function to remove any duplicate palette entries.  It is *not* well-optimized (potentially O(n^2)) but seeing
+' as PD only supports 8-bit palettes, I have not yet found it worth the trouble to optimize further.
+Private Sub FindAndRemoveDuplicates()
+
+    'Only palettes with multiple entries need to be searched for duplicates
+    If (m_PaletteColorCount <= 1) Then Exit Sub
+    
+    Dim needsRemoval() As Byte
+    ReDim needsRemoval(0 To 255) As Byte
+    
+    Dim i As Long, j As Long, targetValue As RGBQuad, duplicatesFound As Boolean
+    For i = 0 To m_PaletteColorCount - 2
+        
+        'Array accesses are slow in VB; use a local value instead
+        targetValue = m_PaletteColors(i)
+        
+        For j = i + 1 To m_PaletteColorCount - 1
+            With m_PaletteColors(j)
+                If (.Red = targetValue.Red) And (.Green = targetValue.Green) And (.Blue = targetValue.Blue) And (.Alpha = targetValue.Alpha) Then
+                    needsRemoval(j) = 1
+                    duplicatesFound = True
+                End If
+            End With
+        Next j
+        
+    Next i
+    
+    'Remove all flagged entries
+    If duplicatesFound Then
+    
+        Dim numRemoved As Long
+        
+        For i = 1 To m_PaletteColorCount - 1
+            If (needsRemoval(i) = 0) Then
+                m_PaletteColors(i - numRemoved) = m_PaletteColors(i)
+            Else
+                numRemoved = numRemoved + 1
+            End If
+        Next i
+        
+        m_PaletteColorCount = m_PaletteColorCount - numRemoved
+        ReDim Preserve m_PaletteColors(0 To m_PaletteColorCount - 1) As RGBQuad
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_PaletteColorCount + numRemoved) & " to " & CStr(m_PaletteColorCount) & " colors."
+        #End If
+        
+    End If
+    
+End Sub
