@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 18/January/18
-'Last update: forcibly remove duplicate entries from imported palettes
+'Last updated: 19/January/18
+'Last update: add support for Paint.NET palettes
 '
 'This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -85,9 +85,110 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     'Look for Adobe's basic color table file (*much* simpler than swatches)
     If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then LoadPaletteFromFile = LoadPaletteFromAdobeColorTable(srcFile)
     
-    'Finish with the ubiquitous GIMP palette format
+    'Look for GIMP palettes next
     If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteFromGIMPFile(srcFile)
     
+    'Look for Paint.NET palettes next
+    If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile)
+    
+End Function
+
+'Paint.NET palettes are just text files with a list of hex chars.  Unlike other palette formats,
+' they *do* support alpha values.
+Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+
+    On Error GoTo BadPaintDotNetPalette
+    
+    'Paint.NET palettes don't have a header for guaranteed byte length.  Instead, we simply look for valid
+    ' ARGB hex descriptors inside a plain text file.
+    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True) Then
+        
+        'Dump the full file into a string
+        Dim rawFileString As String
+        LoadPalettePaintDotNet = Files.FileLoadAsString(srcFile, rawFileString, True)
+        
+        If LoadPalettePaintDotNet Then
+    
+            'Prep our internal palette structs.  Note that Paint.NET palettes have a maximum size
+            ' of 96 colors (per https://www.getpaint.net/doc/latest/WorkingWithPalettes.html),
+            ' but we will automatically resize the collection to remove duplicate entries after
+            ' all colors are loaded.
+            ReDim m_PaletteColors(0 To 255) As RGBQuad
+            m_PaletteColorCount = 0
+            
+            'To simplify processing, split the string by lines.
+            Dim fileLines As pdStringStack
+            Set fileLines = New pdStringStack
+            fileLines.CreateFromMultilineString rawFileString
+            
+            'Parse each line in turn.  (Normally we would pop lines like a stack, but the user may want
+            ' to preserve the original palette order - in which case we need to also process the text
+            ' lines in their original order.)
+            Dim curLine As String, i As Long
+            For i = 0 To fileLines.GetNumOfStrings - 1
+                
+                curLine = Trim$(LCase$(fileLines.GetString(i)))
+                
+                'Comment lines start with a ";" - these can be completely ignored
+                If Strings.StringsEqual(Left$(curLine, 1), ";", False) Then
+                    'Do nothing
+                
+                'Any other line should be treated as an ARGB hex entry.  There is no prepended
+                ' #, 0x, or other indicator.
+                ElseIf (Len(curLine) = 8) Then
+                    
+                    On Error GoTo BadLineColor
+                    
+                    'Fill the RGBA entries directly
+                    With m_PaletteColors(m_PaletteColorCount)
+                        .Alpha = CByte("&h" & Left$(curLine, 2))
+                        .Red = CByte("&h" & Mid$(curLine, 3, 2))
+                        .Green = CByte("&h" & Mid$(curLine, 5, 2))
+                        .Blue = CByte("&h" & Right$(curLine, 2))
+                    End With
+                    
+                    On Error GoTo 0
+                    
+                    m_PaletteColorCount = m_PaletteColorCount + 1
+                    
+BadLineColor:
+                
+                End If
+            
+            Next i
+            
+            'If we haven't errored out, consider this a valid parse if we found any valid colors
+            LoadPalettePaintDotNet = (m_PaletteColorCount > 0)
+            
+            'If the load was successful, assign a fake palette name using the filename
+            If LoadPalettePaintDotNet Then
+                m_PaletteName = Files.FileGetName(srcFile, True)
+                m_PaletteFilename = srcFile
+            End If
+            
+            'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format,
+            ' Paint.NET makes no guarantees, but we don't want to waste time palette-matching
+            ' duplicate entries.)
+            FindAndRemoveDuplicates
+            
+            'If the user plans to use this palette for color-matching (and really, what else are they gonna
+            ' do with it?) we can pre-sort the palette to improve matching performance.
+            If optimizeForPerformance Then SortByLuminance
+            
+        Else
+            LoadPalettePaintDotNet = False
+        End If
+        
+    End If
+    
+    Exit Function
+    
+BadPaintDotNetPalette:
+    m_PaletteName = vbNullString
+    m_PaletteColorCount = 0
+    m_PaletteFilename = vbNullString
+    LoadPalettePaintDotNet = False
+
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
@@ -136,7 +237,6 @@ Private Function LoadPaletteFromAdobeColorTable(ByRef srcFile As String, Optiona
         
         End If
         
-        
     End If
     
     Exit Function
@@ -181,9 +281,13 @@ Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String, Optional ByVal
             
             Const SPACE_CHAR As String = " "
             
-            'Parse each line in turn
-            Dim curLine As String
-            Do While fileLines.PopString(curLine)
+            'Parse each line in turn.  (Normally we would pop lines like a stack, but the user may want
+            ' to preserve the original palette order - in which case we need to also process the text
+            ' lines in their original order.)
+            Dim curLine As String, i As Long
+            For i = 0 To fileLines.GetNumOfStrings - 1
+                
+                curLine = fileLines.GetString(i)
                 
                 'AFAIK, there is no formal GIMP spec for palette files.  As such, they can come in a variety
                 ' of shapes and sizes.  One thing we want to standardize (to simplify parsing) is replacing
@@ -260,7 +364,7 @@ BadLineColor:
                     
                 End If
             
-            Loop
+            Next i
             
             'If we haven't errored out, consider this a valid parse
             LoadPaletteFromGIMPFile = True

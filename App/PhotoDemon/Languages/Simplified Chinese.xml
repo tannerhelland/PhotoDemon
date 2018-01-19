@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3391</langversion>
+<langversion>7.0.3393</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1577,7 +1577,22 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- BEGIN text for Palettes.bas -->
 
 <phrase>
+<original>All supported palettes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Table</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint.NET Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1586,7 +1601,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Palettes.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -15087,10 +15102,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4577 phrases. -->
-<!-- 2045 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12148 total words. -->
+<!-- As of this build, PhotoDemon contains 4583 phrases. -->
+<!-- 2048 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12156 total words. -->
 
 </pdData>
