@@ -83,14 +83,132 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     ' do enforce set file extensions, and we attempt to honor that here.
     
     'Look for Adobe's basic color table file (*much* simpler than swatches)
-    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then LoadPaletteFromFile = LoadPaletteFromAdobeColorTable(srcFile)
+    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile)
     
     'Look for GIMP palettes next
-    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteFromGIMPFile(srcFile)
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteGIMP(srcFile)
+    
+    'Look for PaintShop Pro palettes next
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile)
     
     'Look for Paint.NET palettes next
     If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile)
     
+End Function
+
+'PaintShop Pro palettes use multiple extensions, but all are just text files with a line-delimited list of
+' RGB triples.
+Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+
+    On Error GoTo BadPaintShopProPalette
+    
+    'PaintShop Pro palettes have a very basic header, and they use the standardized file extensions
+    ' ".pal" (old format) and ".psppalette" (new format).  To my knowledge, the file contents themselves
+    ' are identical for both formats.
+    If (Strings.StringsEqual(Files.FileGetExtension(srcFile), "pal", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "psppalette", True)) Then
+        
+        'Dump the full file into a string
+        Dim rawFileString As String
+        LoadPalettePaintShopPro = Files.FileLoadAsString(srcFile, rawFileString, True)
+        
+        If LoadPalettePaintShopPro Then
+    
+            'Prep our internal palette structs.  Note that PaintShop Pro palettes have a maximum size
+            ' of 96 colors (per https://www.getpaint.net/doc/latest/WorkingWithPalettes.html),
+            ' but we will automatically resize the collection to remove duplicate entries after
+            ' all colors are loaded.
+            ReDim m_PaletteColors(0 To 255) As RGBQuad
+            m_PaletteColorCount = 0
+            
+            'To simplify processing, split the string by lines.
+            Dim fileLines As pdStringStack
+            Set fileLines = New pdStringStack
+            fileLines.CreateFromMultilineString rawFileString
+            
+            'Parse each line in turn.  (Normally we would pop lines like a stack, but the user may want
+            ' to preserve the original palette order - in which case we need to also process the text
+            ' lines in their original order.)
+            Const SPACE_CHAR As String = " "
+            Dim curLine As String, i As Long
+            For i = 0 To fileLines.GetNumOfStrings - 1
+                
+                curLine = Trim$(LCase$(fileLines.GetString(i)))
+                
+                If (m_PaletteColorCount < 256) Then
+                    
+                    'Start by looking for at least two spaces in the trimmed string (indicating at least three unique entries)
+                    If (InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) <> InStrRev(curLine, SPACE_CHAR, -1, vbBinaryCompare)) Then
+                    
+                        'This string contains two spaces.  Extract the first string-delimited entry.
+                        Dim targetColor As String, targetColorInt As Long
+                        targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
+                        
+                        'Attempt to convert this to a number; if it fails, that's okay; this is some kind of invalid line
+                        ' and we can ignore further parsing.
+                        On Error GoTo BadLineColor
+                        m_PaletteColors(m_PaletteColorCount).Red = CByte(targetColor)
+                        On Error GoTo 0
+                        
+                        'Trim the color we've parsed out of the string, then repeat the above steps
+                        curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare)))
+                        targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
+                        On Error GoTo BadLineColor
+                        m_PaletteColors(m_PaletteColorCount).Green = CByte(targetColor)
+                        On Error GoTo 0
+                        
+                        '...and one last time, for the blue component.  Note that the resulting string may not
+                        ' have a trailing space, so we forcibly add one to simplify the parser.
+                        curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare))) & SPACE_CHAR
+                        targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
+                        On Error GoTo BadLineColor
+                        m_PaletteColors(m_PaletteColorCount).Blue = CByte(targetColor)
+                        On Error GoTo 0
+                        
+                        'PSP palettes do not support alpha channels.  Forcibly set a value of 255.
+                        m_PaletteColors(m_PaletteColorCount).Alpha = 255
+                        
+                        'If we made it all the way here, this line was successfully parsed for color data.
+                        ' Advance the color count tracker and resume the line parser.
+                        m_PaletteColorCount = m_PaletteColorCount + 1
+BadLineColor:
+                    End If
+                    
+                End If
+            
+            Next i
+            
+            'If we haven't errored out, consider this a valid parse if we found any valid colors
+            LoadPalettePaintShopPro = (m_PaletteColorCount > 0)
+            
+            'If the load was successful, assign a fake palette name using the filename
+            If LoadPalettePaintShopPro Then
+                m_PaletteName = Files.FileGetName(srcFile, True)
+                m_PaletteFilename = srcFile
+            End If
+            
+            'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format,
+            ' PSP palettes make no guarantees, and we don't want to waste time palette-matching
+            ' duplicate entries.)
+            FindAndRemoveDuplicates
+            
+            'If the user plans to use this palette for color-matching (and really, what else are they gonna
+            ' do with it?) we can pre-sort the palette to improve matching performance.
+            If optimizeForPerformance Then SortByLuminance
+            
+        Else
+            LoadPalettePaintShopPro = False
+        End If
+        
+    End If
+    
+    Exit Function
+    
+BadPaintShopProPalette:
+    m_PaletteName = vbNullString
+    m_PaletteColorCount = 0
+    m_PaletteFilename = vbNullString
+    LoadPalettePaintShopPro = False
+
 End Function
 
 'Paint.NET palettes are just text files with a list of hex chars.  Unlike other palette formats,
@@ -109,10 +227,10 @@ Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal 
         
         If LoadPalettePaintDotNet Then
     
-            'Prep our internal palette structs.  Note that Paint.NET palettes have a maximum size
-            ' of 96 colors (per https://www.getpaint.net/doc/latest/WorkingWithPalettes.html),
-            ' but we will automatically resize the collection to remove duplicate entries after
-            ' all colors are loaded.
+            'Prep our internal palette structs.  Note that Paint.NET palettes are technically limited
+            ' to 16 or 256 colors (https://www.codeproject.com/articles/31964/palettes-you-ve-gotta-love-them)
+            ' but we follow the modern convention and basically ignore that number completely in favor
+            ' of just parsing as many colors as we find in the file.
             ReDim m_PaletteColors(0 To 255) As RGBQuad
             m_PaletteColorCount = 0
             
@@ -121,11 +239,43 @@ Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal 
             Set fileLines = New pdStringStack
             fileLines.CreateFromMultilineString rawFileString
             
-            'Parse each line in turn.  (Normally we would pop lines like a stack, but the user may want
-            ' to preserve the original palette order - in which case we need to also process the text
-            ' lines in their original order.)
-            Dim curLine As String, i As Long
-            For i = 0 To fileLines.GetNumOfStrings - 1
+            'Before continuing, let's parse a few basic header lines (which are standard across all
+            ' PSP palette formats).
+            
+            'First up is the JASC identifier
+            Dim curLine As String
+            curLine = Trim$(fileLines.GetString(0))
+            
+            Dim okayToParseColors As Boolean
+            okayToParseColors = False
+            
+            If Strings.StringsEqual(curLine, "JASC-PAL", True) Then
+                
+                okayToParseColors = True
+                
+                'Next, check the version.  To my knowledge, this never varies from 0100
+                curLine = Trim$(fileLines.GetString(1))
+                #If DEBUGMODE = 1 Then
+                    If Strings.StringsNotEqual(curLine, "0100", False) Then pdDebug.LogAction "WARNING!  JASC palette contains unexpected version number: " & curLine
+                #End If
+                
+                'Finally, retrieve line 3.  This line should be some number on the range [1, 256].
+                curLine = Trim$(fileLines.GetString(2))
+                If (CLng(curLine) < 1 Or CLng(curLine) > 256) Then
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  JASC palette contains invalid color count: " & curLine
+                    #End If
+                    okayToParseColors = False
+                End If
+                
+            End If
+            
+            'If we're allowed to continue parsing the file, parse each line in turn.
+            ' (Normally we would pop lines like a stack, but the user may want to preserve the
+            ' original palette order - in which case we need to also process the text lines in
+            ' their original file order.)
+            Dim i As Long
+            For i = 3 To fileLines.GetNumOfStrings - 1
                 
                 curLine = Trim$(LCase$(fileLines.GetString(i)))
                 
@@ -192,7 +342,7 @@ BadPaintDotNetPalette:
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
-Private Function LoadPaletteFromAdobeColorTable(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
     
     On Error GoTo BadACTData
     
@@ -231,7 +381,7 @@ Private Function LoadPaletteFromAdobeColorTable(ByRef srcFile As String, Optiona
                 'If we haven't errored out, consider this a successful parse
                 m_PaletteName = Files.FileGetName(srcFile, True)
                 m_PaletteFilename = srcFile
-                LoadPaletteFromAdobeColorTable = True
+                LoadPaletteAdobeColorTable = True
                 
             End If
         
@@ -245,12 +395,12 @@ BadACTData:
     m_PaletteName = vbNullString
     m_PaletteColorCount = 0
     m_PaletteFilename = vbNullString
-    LoadPaletteFromAdobeColorTable = False
+    LoadPaletteAdobeColorTable = False
     
 End Function
 
 'Given a valid path to a GIMP-format .gpl file, return an array of RGBQuad entries
-Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
     
     On Error GoTo InvalidPalette
     
@@ -259,9 +409,9 @@ Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String, Optional ByVal
     
     'Dump the full file into a string
     Dim rawFileString As String
-    LoadPaletteFromGIMPFile = Files.FileLoadAsString(srcFile, rawFileString, True)
+    LoadPaletteGIMP = Files.FileLoadAsString(srcFile, rawFileString, True)
     
-    If LoadPaletteFromGIMPFile Then
+    If LoadPaletteGIMP Then
     
         'GIMP palette files always start with the text "GIMP Palette"
         If Strings.StringsEqual(Left$(rawFileString, 12), "GIMP Palette", True) Then
@@ -327,29 +477,23 @@ Private Function LoadPaletteFromGIMPFile(ByRef srcFile As String, Optional ByVal
                         'Attempt to convert this to a number; if it fails, that's okay; this is some kind of invalid line
                         ' and we can ignore further parsing.
                         On Error GoTo BadLineColor
-                        targetColorInt = CLng(targetColor)
+                        m_PaletteColors(m_PaletteColorCount).Red = CByte(targetColor)
                         On Error GoTo 0
-                        
-                        'If we're still here, the color was parsed correctly.  Store it as the red component of the
-                        ' current palette entry.
-                        m_PaletteColors(m_PaletteColorCount).Red = targetColorInt
                         
                         'Trim the color we've parsed out of the string, then repeat the above steps
                         curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare)))
                         targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
                         On Error GoTo BadLineColor
-                        targetColorInt = CLng(targetColor)
+                        m_PaletteColors(m_PaletteColorCount).Green = CByte(targetColor)
                         On Error GoTo 0
-                        m_PaletteColors(m_PaletteColorCount).Green = targetColorInt
                         
                         '...and one last time, for the blue component.  Note that the resulting string may not
                         ' have a trailing space, so we forcibly add one to simplify the parser.
                         curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare))) & SPACE_CHAR
                         targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
                         On Error GoTo BadLineColor
-                        targetColorInt = CLng(targetColor)
+                        m_PaletteColors(m_PaletteColorCount).Blue = CByte(targetColor)
                         On Error GoTo 0
-                        m_PaletteColors(m_PaletteColorCount).Blue = targetColorInt
                         
                         'GIMP palettes do not support alpha channels.  Forcibly set a value of 255.
                         m_PaletteColors(m_PaletteColorCount).Alpha = 255
@@ -367,7 +511,7 @@ BadLineColor:
             Next i
             
             'If we haven't errored out, consider this a valid parse
-            LoadPaletteFromGIMPFile = True
+            LoadPaletteGIMP = True
             
             'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format, GIMP makes
             ' no guarantees about this, but we don't want to waste time palette-matching duplicate entries.)
@@ -378,12 +522,12 @@ BadLineColor:
             If optimizeForPerformance Then SortByLuminance
             
         Else
-            LoadPaletteFromGIMPFile = False
+            LoadPaletteGIMP = False
         End If
     
     End If
     
-    If LoadPaletteFromGIMPFile Then m_PaletteFilename = srcFile
+    If LoadPaletteGIMP Then m_PaletteFilename = srcFile
     
     Exit Function
 
@@ -392,7 +536,7 @@ InvalidPalette:
     m_PaletteName = vbNullString
     m_PaletteColorCount = 0
     m_PaletteFilename = vbNullString
-    LoadPaletteFromGIMPFile = False
+    LoadPaletteGIMP = False
 
 End Function
 

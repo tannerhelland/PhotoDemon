@@ -809,7 +809,7 @@ Private Sub UpdatePaletteFileInfo()
             
             'Pull core information from the file
             lblPaletteInfo(0).Caption = g_Language.TranslateMessage("palette name: %1", m_Palette.GetPaletteName())
-            lblPaletteInfo(1).Caption = g_Language.TranslateMessage("color count: %1", CStr(m_Palette.GetPaletteColorCount()))
+            lblPaletteInfo(1).Caption = g_Language.TranslateMessage("unique colors: %1", CStr(m_Palette.GetPaletteColorCount()))
             
         Else
             lblPaletteInfo(0).Caption = g_Language.TranslateMessage("WARNING!  Palette file invalid.")

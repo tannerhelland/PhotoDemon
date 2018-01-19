@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3297</langversion>
+<langversion>6.8.3298</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1595,6 +1595,11 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
+<original>PaintShop Pro Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Paint.NET Palette</original>
 <translation></translation>
 </phrase>
@@ -1604,7 +1609,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Palettes.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -10434,7 +10439,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>color count: %1</original>
+<original>unique colors: %1</original>
 <translation></translation>
 </phrase>
 
@@ -15106,10 +15111,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4583 phrases. -->
-<!-- 2048 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12156 total words. -->
+<!-- As of this build, PhotoDemon contains 4585 phrases. -->
+<!-- 2049 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12159 total words. -->
 
 </pdData>
