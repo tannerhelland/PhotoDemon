@@ -274,6 +274,10 @@ Public Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As
     If InitializeFSO Then FileLoadAsByteArray = m_FSO.FileLoadAsByteArray(srcFile, dstArray)
 End Function
 
+Public Function FileLoadAsPDStream(ByRef srcFile As String, ByRef dstStream As pdStream) As Boolean
+    If InitializeFSO Then FileLoadAsPDStream = m_FSO.FileLoadAsPDStream(srcFile, dstStream)
+End Function
+
 Public Function FileLoadAsString(ByRef srcFile As String, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
     If InitializeFSO Then FileLoadAsString = m_FSO.FileLoadAsString(srcFile, dstString, forceWindowsLineEndings)
 End Function

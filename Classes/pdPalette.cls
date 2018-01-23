@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 19/January/18
-'Last update: add support for Paint.NET palettes
+'Last updated: 23/January/18
+'Last update: add support for Adobe color swatches (.aco format)
 '
 'This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -30,6 +30,28 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+
+'Adobe swatch format requires custom color space enums
+Private Enum AdobeSwatchColorSpace
+    
+    ASCS_RGB = 0
+    ASCS_HSB = 1
+    ASCS_CMYK = 2
+    ASCS_Lab = 7
+    ASCS_Gray = 8
+    
+    'The following color spaces are not publicly documented.  We cannot currently decode them.
+    ASCS_Pantone = 3
+    ASCS_Focoltone = 4
+    ASCS_Trumatch = 5
+    ASCS_Toyo88 = 6
+    ASCS_HKS = 10
+
+End Enum
+
+#If False Then
+    Private Const ASCS_RGB = 0, ASCS_HSB = 1, ASCS_CMYK = 2, ASCS_Lab = 7, ASCS_Gray = 8, ASCS_Pantone = 3, ASCS_Focoltone = 4, ASCS_Trumatch = 5, ASCS_Toyo88 = 6, ASCS_HKS = 10
+#End If
 
 Private m_PaletteFilename As String
 Private m_PaletteName As String
@@ -85,6 +107,9 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     'Look for Adobe's basic color table file (*much* simpler than swatches)
     If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile)
     
+    'Look for Adobe color swatches next
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile)
+    
     'Look for GIMP palettes next
     If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteGIMP(srcFile)
     
@@ -93,6 +118,212 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     
     'Look for Paint.NET palettes next
     If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile)
+    
+End Function
+
+'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
+Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+    
+    On Error GoTo BadSwatchData
+    
+    'This function references the Adobe spec frequently, particularly for things like magic numbers.  Here is the
+    ' link I used (good as of Jan '18): http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_31265
+    
+    'ACO files contain no validation entries in their header, so we use the file extension as initial validation.
+    ' (We also check file size to ensure that the file is large enough to contain at least one color entry.
+    ' The "magic number" file size is calculated using data from the spec.)
+    If (Strings.StringsEqual(Files.FileGetExtension(srcFile), "aco", True) And (Files.FileLenW(srcFile) >= 14)) Then
+        
+        'Retrieve the file as a pdStream object (which makes traversal *much* easier).
+        Dim srcData As pdStream
+        If Files.FileLoadAsPDStream(srcFile, srcData) Then
+            
+            'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
+            ' non-standard data retrieval calls from our pdStream object.
+            
+            'Note also that per the spec, swatch files are just long lists of 16-bit words.  This makes
+            ' traversal straightforward.
+            
+            'Start by ensuring that the initial version number is good.  It needs to be 1(Apparently version "0" and "1" are both
+            ' valid descriptors for version 1 files - go figure?)
+            Dim srcInt As Integer
+            srcInt = srcData.ReadInt_BE()
+            If ((srcInt = 1) Or (srcInt = 0)) Then
+                
+                'Read the number of colors stored in the file
+                Dim numOfColors As Long
+                numOfColors = srcData.ReadIntUnsigned_BE()
+                If (numOfColors > 0) Then
+                    
+                    Debug.Print "Adobe swatch contains " & CStr(numOfColors) & " colors."
+                    
+                    'Prep our internal palette structs to match the number of retrieved colors.  Note that we currently
+                    ' limit the retrieved color count to 256 (although Adobe swatch counts can be 16-bits!).
+                    Dim limitedMax As Long
+                    limitedMax = numOfColors
+                    
+                    If (limitedMax > 256) Then limitedMax = 256
+                    ReDim m_PaletteColors(0 To limitedMax - 1) As RGBQuad
+                    m_PaletteColorCount = 0
+                    
+                    Dim i As Long
+                    For i = 0 To numOfColors - 1
+                        
+                        If (m_PaletteColorCount < 256) Then
+                        
+                            'We now want to retrieve each color in turn.  Color swatches use a standardized 10-byte format,
+                            ' comprised of five unsigned 16-bit entries:
+                            ' 1) Color space (an internal Adobe enum)
+                            ' 2) w, x, y, z values, which must be post-processed differently depending on (1)
+                            
+                            'Start by retrieving the color space
+                            Dim curSpace As AdobeSwatchColorSpace
+                            curSpace = srcData.ReadInt_BE()
+                            
+                            'A dummy int can be used to advance the file pointer
+                            Dim dummyInt As Integer
+                            
+                            Select Case curSpace
+                            
+                                Case ASCS_RGB
+                                    
+                                    'RGB constants are stored as 16-bit unsigned ints, plus an empty two bytes at the end.
+                                    ' (PD downconverts the 16-bit ints to 8-bit.)
+                                    Dim r As Long, g As Long, b As Long
+                                    r = srcData.ReadIntUnsigned_BE()
+                                    g = srcData.ReadIntUnsigned_BE()
+                                    b = srcData.ReadIntUnsigned_BE()
+                                    dummyInt = srcData.ReadInt()
+                                    
+                                    'Downconvert the 16-bit entries to 8-bit
+                                    r = (r \ 256)
+                                    g = (g \ 256)
+                                    b = (b \ 256)
+                                    
+                                    'Failsafe checks
+                                    If (r > 255) Then r = 255
+                                    If (g > 255) Then g = 255
+                                    If (b > 255) Then b = 2555
+                                    
+                                    With m_PaletteColors(m_PaletteColorCount)
+                                        .Red = r
+                                        .Green = g
+                                        .Blue = b
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_PaletteColorCount = m_PaletteColorCount + 1
+                                    
+                                Case ASCS_CMYK
+                                    Dim c As Long, m As Long, y As Long, k As Long
+                                    c = srcData.ReadIntUnsigned_BE()
+                                    m = srcData.ReadIntUnsigned_BE()
+                                    y = srcData.ReadIntUnsigned_BE()
+                                    k = srcData.ReadIntUnsigned_BE()
+                                    
+                                    'Downconvert the 16-bit entries to 8-bit and invert
+                                    c = 255 - (c \ 256)
+                                    m = 255 - (m \ 256)
+                                    y = 255 - (y \ 256)
+                                    k = 255 - (k \ 256)
+                                    
+                                    'Convert these to RGB literals using an entirely different spec as our guide
+                                    ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
+                                    r = 255 - PDMath.Min2Int(255, c + k)
+                                    g = 255 - PDMath.Min2Int(255, m + k)
+                                    b = 255 - PDMath.Min2Int(255, y + k)
+                                    
+                                    'Failsafe checks
+                                    If (r > 255) Then r = 255
+                                    If (g > 255) Then g = 255
+                                    If (b > 255) Then b = 2555
+                                    
+                                    With m_PaletteColors(m_PaletteColorCount)
+                                        .Red = r
+                                        .Green = g
+                                        .Blue = b
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_PaletteColorCount = m_PaletteColorCount + 1
+                                
+                                'Grayscale is inexplicably stored on the range [0, 10000]
+                                Case ASCS_Gray
+                                    g = srcData.ReadIntUnsigned_BE()
+                                    dummyInt = srcData.ReadInt()
+                                    dummyInt = srcData.ReadInt()
+                                    dummyInt = srcData.ReadInt()
+                                
+                                    'Translate gray into a usable RGB space
+                                    g = CLng(CStr(g) / 39.0625)
+                                    
+                                    'Failsafe checks
+                                    If (g > 255) Then g = 255
+                                    
+                                    With m_PaletteColors(m_PaletteColorCount)
+                                        .Red = g
+                                        .Green = g
+                                        .Blue = b
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_PaletteColorCount = m_PaletteColorCount + 1
+                                    
+                                'These two spaces could be implemented without too much trouble, but I don't currently have
+                                ' swatches available to test their correctness:
+                                'Case ASCS_HSB
+                                'Case ASCS_Lab
+                                                            
+                                'All other color spaces are undocumented and unsupported
+                                Case Else
+                                    InternalProblem "Adobe Swatch color space is unsupported (" & CStr(curSpace) & ")"
+                                    
+                                    'Advance the pointer to the next color
+                                    srcData.SetPosition 8, FILE_CURRENT
+                            
+                            End Select
+                            
+                        'End (palette count < 256)
+                        End If
+                        
+                    Next i
+                    
+                    'TODO: look for a v2 swatch following the v1 entry.  All data will be identical, except colors
+                    ' can also provide name descriptors.
+                    
+                    'Make sure at least one valid color was found
+                    If (m_PaletteColorCount > 0) Then
+                    
+                        'As a failsafe, remove duplicate entries
+                        FindAndRemoveDuplicates
+                        
+                        'If we haven't errored out, consider this a successful parse
+                        m_PaletteName = Files.FileGetName(srcFile, True)
+                        m_PaletteFilename = srcFile
+                        LoadPaletteAdobeSwatch = True
+                        
+                    End If
+                
+                Else
+                    InternalProblem "ACO file reported empty palette (" & CStr(numOfColors) & ")"
+                End If
+                
+            Else
+                InternalProblem "ACO file reported bad version number (" & CStr(srcInt) & ")"
+            End If
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+BadSwatchData:
+    InternalProblem "LoadPaletteAdobeSwatch error # " & CStr(Err.Number) & ": " & Err.Description
+    m_PaletteName = vbNullString
+    m_PaletteColorCount = 0
+    m_PaletteFilename = vbNullString
+    LoadPaletteAdobeSwatch = False
     
 End Function
 
@@ -708,3 +939,11 @@ Private Function SortPartition(ByRef srcPaletteSort() As PaletteSort, ByVal lowV
     SortPartition = j
     
 End Function
+
+Private Sub InternalProblem(ByRef errMsg As String)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdPalette returned an error: " & errMsg
+    #Else
+        Debug.Print "WARNING!  pdPalette returned an error: " & errMsg
+    #End If
+End Sub

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.0.3385</langversion>
+<langversion>7.2.51</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1586,35 +1586,40 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>All supported palettes</original>
+<translation>Alle unterstützten Paletten</translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Swatch</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation></translation>
+<translation>Adobe-Farbtabelle</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Palette</original>
-<translation></translation>
+<translation>GIMP-Palette</translation>
 </phrase>
 
 <phrase>
 <original>PaintShop Pro Palette</original>
-<translation></translation>
+<translation>PaintShop Pro-Palette</translation>
 </phrase>
 
 <phrase>
 <original>Paint.NET Palette</original>
-<translation></translation>
+<translation>Paint.NET-Palette</translation>
 </phrase>
 
 <phrase>
 <original>Select a palette</original>
-<translation></translation>
+<translation>Eine Palette auswählen</translation>
 </phrase>
 
-<!-- Palettes.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Palettes.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -4906,7 +4911,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Hidden layers</original>
-<translation>Ausgeblendete Layer</translation>
+<translation>Verborgene Layer</translation>
 </phrase>
 
 <phrase>
@@ -6029,7 +6034,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation>Ausgeblendete Layer löschen</translation>
+<translation>Verborgene Layer löschen</translation>
 </phrase>
 
 <phrase>
@@ -10013,7 +10018,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>spatial power (currently hidden)</original>
-<translation>Räumliche Kraft (derzeit ausgeblendet)</translation>
+<translation>Räumliche Kraft (derzeit verborgen)</translation>
 </phrase>
 
 <phrase>
@@ -10363,7 +10368,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>choose a palette file</original>
-<translation></translation>
+<translation>Eine Palettendatei wählen</translation>
 </phrase>
 
 <phrase>
@@ -10403,12 +10408,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>optimal</original>
-<translation></translation>
+<translation>Optimal</translation>
 </phrase>
 
 <phrase>
 <original>from file</original>
-<translation></translation>
+<translation>Aus Datei</translation>
 </phrase>
 
 <phrase>
@@ -10438,22 +10443,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation>Neue Palette wird auf das Bild angewendet</translation>
+<translation>Neue Palette wird auf Bild angewendet</translation>
 </phrase>
 
 <phrase>
 <original>palette name: %1</original>
-<translation></translation>
+<translation>Palettenname: %1</translation>
 </phrase>
 
 <phrase>
 <original>unique colors: %1</original>
-<translation></translation>
+<translation>Eindeutige Farben: %1</translation>
 </phrase>
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation></translation>
+<translation>WARNUNG! Palette ist ungültig.</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
@@ -12430,7 +12435,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -15123,10 +15128,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4585 phrases. -->
-<!-- 2049 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 4587 phrases. -->
+<!-- 2050 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12162 total words. -->
 
 </pdData>

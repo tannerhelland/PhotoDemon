@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3298</langversion>
+<langversion>6.8.3299</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1589,6 +1589,11 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Adobe Color Swatch</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Adobe Color Table</original>
 <translation></translation>
 </phrase>
@@ -1613,7 +1618,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Palettes.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -15123,10 +15128,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4585 phrases. -->
-<!-- 2049 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 4587 phrases. -->
+<!-- 2050 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12162 total words. -->
 
 </pdData>

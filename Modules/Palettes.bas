@@ -1308,7 +1308,8 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     Interface.DisableUserInput
     
     Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("All supported palettes") & "|*.act;*.gpl;*.pal;*.psppalette;*.txt|"
+    cdFilter = g_Language.TranslateMessage("All supported palettes") & "|*.aco;*.act;*.gpl;*.pal;*.psppalette;*.txt|"
+    cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Color Swatch") & " (.aco)|*.aco|"
     cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
     cdFilter = cdFilter & g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
     cdFilter = cdFilter & g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal, .psppalette)|*.pal;*.psppalette|"

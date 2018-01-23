@@ -50,6 +50,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrToDestination As Long, ByVal ptrToSource As Long, ByVal memLength As Long)
+Private Declare Function ntohs Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 
 Public Enum PD_STREAM_MODE
     PD_SM_MemoryBacked = 0
@@ -229,7 +230,7 @@ End Sub
 Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone, Optional ByVal reuseExistingBuffer As Boolean = False) As Boolean
     
     'If we're already open, close the current stream before starting a new one.
-    If m_Open Then Me.StopStream (Not reuseExistingBuffer)
+    If m_Open Then Me.StopStream Not reuseExistingBuffer
     
     m_StreamMode = streamType
     m_StreamAccess = streamAccess
@@ -446,6 +447,48 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
         
     End If
     
+End Function
+
+'Retrieve a 16-bit word from the source data.  There is no way to return success or failure from this function,
+' so you will need to manually validate things like stream position vs length when using this.
+Friend Function ReadInt() As Integer
+    If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict VarPtr(ReadInt), VarPtr(m_MemBuffer(m_Pointer)), 2&
+            m_Pointer = m_Pointer + 2&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt), 2&
+        End If
+    End If
+End Function
+
+'Same as ReadInt(), above, but with endianness conversion.
+Friend Function ReadInt_BE() As Integer
+    Dim tmpInteger As Integer
+    tmpInteger = Me.ReadInt()
+    ReadInt_BE = ntohs(tmpInteger)
+End Function
+
+'Retrieve an unsigned 16-bit integer from the source data, but copy it into a VB Long to make processing easier.
+' Note that there is no way to return success or failure from this function, so you will need to manually validate
+' things like stream position vs length.
+Friend Function ReadIntUnsigned() As Long
+    If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict VarPtr(ReadIntUnsigned) + 2&, VarPtr(m_MemBuffer(m_Pointer)), 2&
+            m_Pointer = m_Pointer + 2&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt) + 2&, 2&
+        End If
+    End If
+End Function
+
+'Same as ReadIntUnsigned(), above, but with endianness conversion.
+Friend Function ReadIntUnsigned_BE() As Long
+    Dim tmpInteger As Integer, tmpInteger2 As Integer
+    tmpInteger = Me.ReadInt()
+    tmpInteger2 = ntohs(tmpInteger)
+    ReadIntUnsigned_BE = (tmpInteger2 And &HFFFF&)
 End Function
 
 'Reduce the buffer to its exact size.  This is *strongly* discouraged if you intend on writing more data to the stream,

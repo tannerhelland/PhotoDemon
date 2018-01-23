@@ -992,6 +992,25 @@ StopFileLoad:
     FileLoadAsByteArray = False
 End Function
 
+'Convenience wrapper to pdStream's file load functions.  For file-backed access (where the original bytes are
+' *not* loaded into memory) you must manually invoke the pdStream object, as this function - by design -
+' loads the entire source file into memory.
+Friend Function FileLoadAsPDStream(ByRef srcFile As String, ByRef dstStream As pdStream) As Boolean
+    
+    If (dstStream Is Nothing) Then Set dstStream = New pdStream Else dstStream.StopStream True
+    Dim streamSize As Long
+    streamSize = Me.FileLenW(srcFile)
+    FileLoadAsPDStream = dstStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , streamSize)
+    
+    Dim tmpHandle As Long
+    If Me.FileCreateHandle(srcFile, tmpHandle, True, False, OptimizeSequentialAccess) Then
+        Me.FileReadData tmpHandle, dstStream.Peek_PointerOnly(0), streamSize
+        Me.FileCloseHandle tmpHandle
+        dstStream.SetSizeExternally streamSize
+    End If
+    
+End Function
+
 'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
 ' BOM and other markers are unclear.
 '
