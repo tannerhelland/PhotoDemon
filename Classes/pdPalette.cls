@@ -30,14 +30,15 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+Private Declare Function ArrPtr Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'Adobe swatch format requires custom color space enums
 Private Enum AdobeSwatchColorSpace
     
     ASCS_RGB = 0
-    ASCS_HSB = 1
+    ASCS_HSB = 1    'Support TODO; I need .aco files for testing!
     ASCS_CMYK = 2
-    ASCS_Lab = 7
+    ASCS_Lab = 7    'Support TODO; I need .aco files for testing!
     ASCS_Gray = 8
     
     'The following color spaces are not publicly documented.  We cannot currently decode them.
@@ -82,15 +83,21 @@ Friend Sub SetPaletteName(ByRef newPaletteName As String)
     m_PaletteName = newPaletteName
 End Sub
 
+Private Function PeekPtr(ByVal lPtr As Long) As Long
+    CopyMemory_Strict VarPtr(PeekPtr), lPtr, 4&
+End Function
+
 Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad) As Boolean
 
     CopyPaletteToArray = (m_PaletteColorCount > 0)
     
     If CopyPaletteToArray Then
         
-        On Error Resume Next
-        If (LBound(dstPalette) <> 0) Or (UBound(dstPalette) <> m_PaletteColorCount - 1) Then ReDim dstPalette(0 To m_PaletteColorCount - 1) As RGBQuad
-        On Error GoTo 0
+        'Check for undeclared arrays
+        Dim needToRedim As Boolean
+        needToRedim = (PeekPtr(ArrPtr(dstPalette)) = 0)
+        If (Not needToRedim) Then needToRedim = (LBound(dstPalette) <> 0) Or (UBound(dstPalette) <> m_PaletteColorCount - 1)
+        If needToRedim Then ReDim dstPalette(0 To m_PaletteColorCount - 1) As RGBQuad
         
         CopyMemory_Strict VarPtr(dstPalette(0)), VarPtr(m_PaletteColors(0)), m_PaletteColorCount * 4
     
@@ -139,16 +146,24 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
         If Files.FileLoadAsPDStream(srcFile, srcData) Then
             
             'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
-            ' non-standard data retrieval calls from our pdStream object.
+            ' _BE suffixed retrieval functions from the pdStream object.
             
             'Note also that per the spec, swatch files are just long lists of 16-bit words.  This makes
             ' traversal straightforward.
             
-            'Start by ensuring that the initial version number is good.  It needs to be 1(Apparently version "0" and "1" are both
-            ' valid descriptors for version 1 files - go figure?)
-            Dim srcInt As Integer
-            srcInt = srcData.ReadInt_BE()
-            If ((srcInt = 1) Or (srcInt = 0)) Then
+            'Start by ensuring that the initial version number is good.  It needs to be 1 or 2; I've seen 3rd-parties
+            ' state that "0" is also an option, but the official Adobe spec doesn't allow this, and I haven't encountered
+            ' any palettes "in the wild" that do this, so we require "1" or "2" for now.
+            Dim curSwatchVersion As Integer
+            curSwatchVersion = srcData.ReadInt_BE()
+            If (curSwatchVersion <= 0) Or (curSwatchVersion > 2) Then InternalProblem "ACO file reported bad version number (" & CStr(curSwatchVersion) & ")"
+            
+            'Now comes something kinda strange.  The spec says that Version 2 swatches should always include a full
+            ' Version 1 swatch, followed by an identical Version 2 swatch (plus the features Version 2 allows).
+            ' This means that files *should* always start with a version 1 swatch, but as usual, there are swatch
+            ' writers that ignore this and just dump a version 2 swatch into the file.  To cover both cases,
+            ' we loop our check.
+            Do While (curSwatchVersion = 1) Or (curSwatchVersion = 2)
                 
                 'Read the number of colors stored in the file
                 Dim numOfColors As Long
@@ -166,7 +181,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                     ReDim m_PaletteColors(0 To limitedMax - 1) As RGBQuad
                     m_PaletteColorCount = 0
                     
-                    Dim i As Long
+                    Dim i As Long, j As Long
                     For i = 0 To numOfColors - 1
                         
                         If (m_PaletteColorCount < 256) Then
@@ -236,7 +251,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                                     'Failsafe checks
                                     If (r > 255) Then r = 255
                                     If (g > 255) Then g = 255
-                                    If (b > 255) Then b = 2555
+                                    If (b > 255) Then b = 255
                                     
                                     With m_PaletteColors(m_PaletteColorCount)
                                         .Red = r
@@ -273,7 +288,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                                 ' swatches available to test their correctness:
                                 'Case ASCS_HSB
                                 'Case ASCS_Lab
-                                                            
+                                
                                 'All other color spaces are undocumented and unsupported
                                 Case Else
                                     InternalProblem "Adobe Swatch color space is unsupported (" & CStr(curSpace) & ")"
@@ -283,13 +298,39 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                             
                             End Select
                             
+                            'If this is a v2 swatch, the color definition is followed by a color name.  Names are actually
+                            ' very similar to BSTRs: prefaced by a 4-byte length field, representing the number of characters
+                            ' in the string (not bytes), followed by the string of Unicode values, two bytes per character.
+                            ' (Again, these are big-endian however, so we need to manually reverse all bytes as we go.)
+                            If (curSwatchVersion = 2) Then
+                                
+                                'Retrieve the color size
+                                Dim colorLen As Long
+                                colorLen = srcData.ReadLong_BE()
+                                
+                                'If the length is non-zero, resize the string to match
+                                If (colorLen > 0) Then
+                                
+                                    Dim srcColorName As String
+                                    srcColorName = String$(colorLen, 0)
+                                    
+                                    'Retrieve each character in turn, then add it to the string
+                                    Dim tmpChar As Integer
+                                    For j = 1 To colorLen
+                                        tmpChar = srcData.ReadInt_BE()
+                                        Mid$(srcColorName, j, 1) = ChrW(tmpChar)
+                                    Next j
+                                    
+                                    Debug.Print srcColorName
+                                    
+                                End If
+                            
+                            End If
+                            
                         'End (palette count < 256)
                         End If
                         
                     Next i
-                    
-                    'TODO: look for a v2 swatch following the v1 entry.  All data will be identical, except colors
-                    ' can also provide name descriptors.
                     
                     'Make sure at least one valid color was found
                     If (m_PaletteColorCount > 0) Then
@@ -308,9 +349,13 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                     InternalProblem "ACO file reported empty palette (" & CStr(numOfColors) & ")"
                 End If
                 
-            Else
-                InternalProblem "ACO file reported bad version number (" & CStr(srcInt) & ")"
-            End If
+                'If we haven't reached the end of the file, this is a hybrid swatch (where a v2 swatch follows the
+                ' existing v1 version).  If the version 2 swatch validates, let's erase our existing swatch data and
+                ' use the v2 entries instead.  (They *should* be identical, but better safe than sorry.)
+                If (srcData.GetPosition < srcData.GetStreamSize) Then curSwatchVersion = srcData.ReadInt_BE() Else curSwatchVersion = 0
+                
+            'If a v2 swatch follows the v1 swatch, retrieve it next
+            Loop
             
         End If
         

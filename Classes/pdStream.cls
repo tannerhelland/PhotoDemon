@@ -50,6 +50,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrToDestination As Long, ByVal ptrToSource As Long, ByVal memLength As Long)
+Private Declare Function ntohl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function ntohs Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 
 Public Enum PD_STREAM_MODE
@@ -489,6 +490,24 @@ Friend Function ReadIntUnsigned_BE() As Long
     tmpInteger = Me.ReadInt()
     tmpInteger2 = ntohs(tmpInteger)
     ReadIntUnsigned_BE = (tmpInteger2 And &HFFFF&)
+End Function
+
+Friend Function ReadLong() As Long
+    If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict VarPtr(ReadLong), VarPtr(m_MemBuffer(m_Pointer)), 4&
+            m_Pointer = m_Pointer + 4&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadLong), 4&
+        End If
+    End If
+End Function
+
+'Same as ReadLong(), above, but with endianness conversion.
+Friend Function ReadLong_BE() As Long
+    Dim tmpLong As Long
+    tmpLong = Me.ReadLong()
+    ReadLong_BE = ntohl(tmpLong)
 End Function
 
 'Reduce the buffer to its exact size.  This is *strongly* discouraged if you intend on writing more data to the stream,
