@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.316</langversion>
+<langversion>6.7.317</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1599,6 +1599,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Adobe Swatch Exchange</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>GIMP Palette</original>
 <translation></translation>
 </phrase>
@@ -1618,7 +1623,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Palettes.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -15126,10 +15131,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4587 phrases. -->
-<!-- 2050 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12162 total words. -->
+<!-- As of this build, PhotoDemon contains 4589 phrases. -->
+<!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12165 total words. -->
 
 </pdData>

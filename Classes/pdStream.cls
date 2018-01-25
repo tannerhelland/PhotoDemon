@@ -510,6 +510,66 @@ Friend Function ReadLong_BE() As Long
     ReadLong_BE = ntohl(tmpLong)
 End Function
 
+Friend Function ReadFloat() As Single
+    If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict VarPtr(ReadFloat), VarPtr(m_MemBuffer(m_Pointer)), 4&
+            m_Pointer = m_Pointer + 4&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadFloat), 4&
+        End If
+    End If
+End Function
+
+'Same as ReadFloat(), above, but with endianness conversion.
+Friend Function ReadFloat_BE() As Single
+    Dim tmpLong As Long
+    tmpLong = ntohl(Me.ReadLong())
+    CopyMemory_Strict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
+End Function
+
+'Read a series of one-byte values from the stream, and treat the chars as if they are individual ASCII codes.
+' A proper BSTR is returned.  If the requested length is invalid (i.e. it extends beyond the end of the stream),
+' a null string will be returned, *not* a partial string.
+Friend Function ReadString_ASCII(ByVal numOfChars As Long) As String
+
+    If m_Open And (Me.GetPosition() + numOfChars <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), False, numOfChars)
+            m_Pointer = m_Pointer + numOfChars
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then
+                Dim tmpBytes() As Byte
+                ReDim tmpBytes(0 To numOfChars - 1) As Byte
+                m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars
+                ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), False, numOfChars)
+            End If
+        End If
+    End If
+
+End Function
+
+'Read a series of two-byte values from the stream, and treat each 16-bit word as a UTF-16 code.
+' If the requested length is invalid (i.e. it extends beyond the end of the stream), a null string
+' will be returned, *not* a partial string.
+Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
+
+    If m_Open And (Me.GetPosition() + numOfChars * 2 <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), True, numOfChars)
+            m_Pointer = m_Pointer + numOfChars * 2
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then
+                Dim tmpBytes() As Byte
+                ReDim tmpBytes(0 To numOfChars * 2 - 1) As Byte
+                m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars * 2
+                ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), True, numOfChars)
+            End If
+        End If
+    End If
+
+End Function
+
 'Reduce the buffer to its exact size.  This is *strongly* discouraged if you intend on writing more data to the stream,
 ' as extra allocations are guaranteed after a trim.
 '
