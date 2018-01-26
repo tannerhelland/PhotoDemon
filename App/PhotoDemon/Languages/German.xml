@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.52</langversion>
+<langversion>7.2.53</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -15130,6 +15130,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 

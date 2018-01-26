@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.259</langversion>
+<langversion>6.6.260</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -15137,6 +15137,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 

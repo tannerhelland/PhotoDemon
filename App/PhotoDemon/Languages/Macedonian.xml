@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.113</langversion>
+<langversion>1.0.114</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -15131,6 +15131,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 

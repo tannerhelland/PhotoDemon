@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3300</langversion>
+<langversion>6.8.3301</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15129,6 +15129,12 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 

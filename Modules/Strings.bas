@@ -557,25 +557,29 @@ End Function
 Public Function StringsEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
     'Cheat and compare length first
-    If (Len(firstString) <> Len(secondString)) Then
+    If (LenB(firstString) <> LenB(secondString)) Then
         StringsEqual = False
     Else
-        If ignoreCase Then
-            If OS.IsVistaOrLater Then
-                StringsEqual = (CompareStringOrdinal(StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString), 1&) = 2&)
-            Else
-                
-                'It's weird to treat the strings as null-terminated when we have known lengths, but MSDN says:
-                ' "Both CompareString and CompareStringEx are optimized to run at the highest speed when
-                '  dwCmpFlags is set to 0 or NORM_IGNORECASE, cchCount1 and cchCount2 are set to -1, and
-                '  the locale does not support any linguistic compressions, as when traditional Spanish
-                '  sorting treats "ch" as a single character."
-                ' (https://msdn.microsoft.com/en-us/library/windows/desktop/dd317761%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396)
-                StringsEqual = (CompareStringW(pdli_SystemDefault, NORM_IGNORECASE, StrPtr(firstString), -1&, StrPtr(secondString), -1&) = 2&)
-                
-            End If
+        If (LenB(firstString) = 0) Then
+            StringsEqual = True
         Else
-            StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), Len(firstString) * 2)
+            If ignoreCase Then
+                If OS.IsVistaOrLater Then
+                    StringsEqual = (CompareStringOrdinal(StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString), 1&) = 2&)
+                Else
+                    
+                    'It's weird to treat the strings as null-terminated when we have known lengths, but MSDN says:
+                    ' "Both CompareString and CompareStringEx are optimized to run at the highest speed when
+                    '  dwCmpFlags is set to 0 or NORM_IGNORECASE, cchCount1 and cchCount2 are set to -1, and
+                    '  the locale does not support any linguistic compressions, as when traditional Spanish
+                    '  sorting treats "ch" as a single character."
+                    ' (https://msdn.microsoft.com/en-us/library/windows/desktop/dd317761%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396)
+                    StringsEqual = (CompareStringW(pdli_SystemDefault, NORM_IGNORECASE, StrPtr(firstString), -1&, StrPtr(secondString), -1&) = 2&)
+                    
+                End If
+            Else
+                StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), Len(firstString) * 2)
+            End If
         End If
     End If
     

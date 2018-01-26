@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.317</langversion>
+<langversion>6.7.318</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -15131,6 +15131,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 

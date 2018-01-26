@@ -56,6 +56,16 @@ Private Type PaletteSort
     pOrigIndex As Byte
 End Type
 
+'When interacting with a pdPalette class instance, additional options are available.  In particular,
+' pdPalette-based palettes support the following per-color features:
+' - RGBA color descriptors (including alpha, although in many places PD does *not* guarantee that
+'   alpha values for a given palette entry will be respected during matching).
+' - Color name.  Some palette formats provide per-color names; some do not.  This value may be null.
+Public Type PDPaletteEntry
+    ColorValue As RGBQuad
+    ColorName As String
+End Type
+
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.

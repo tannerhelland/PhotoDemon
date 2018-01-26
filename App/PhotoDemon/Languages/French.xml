@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.317</langversion>
+<langversion>6.7.318</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -15131,6 +15131,12 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <!-- pdPalette.cls contains 0 phrases. -->
 
 <!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- Automatic text extraction complete. -->
 
