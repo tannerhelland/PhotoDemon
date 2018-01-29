@@ -381,7 +381,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                                 ' reset it after processing this block.
                                 
                                 'Assign this name to the current group.
-                                m_Palettes(m_NumOfGroups).SetPaletteName curGroupName
+                                m_Palettes(m_NumOfGroups).SetPaletteName Trim$(curGroupName)
                                 
                                 'Note that we've found a group in this file
                                 numGroupsFound = numGroupsFound + 1

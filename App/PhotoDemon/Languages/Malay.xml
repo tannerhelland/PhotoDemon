@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3301</langversion>
+<langversion>6.8.3302</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10371,6 +10371,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>choose a palette file</original>
 <translation></translation>
 </phrase>
@@ -10451,12 +10456,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>palette name: %1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>unique colors: %1</original>
+<original>%1 (%2 colors)</original>
 <translation></translation>
 </phrase>
 
@@ -15144,6 +15144,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- As of this build, PhotoDemon contains 4589 phrases. -->
 <!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12165 total words. -->
+<!-- These 2538 phrases contain approximately 12166 total words. -->
 
 </pdData>

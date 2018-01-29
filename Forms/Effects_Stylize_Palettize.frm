@@ -60,21 +60,21 @@ Begin VB.Form FormPalettize
       Width           =   6375
       _ExtentX        =   11245
       _ExtentY        =   9128
-      Begin PhotoDemon.pdLabel lblPaletteInfo 
-         Height          =   375
-         Index           =   0
-         Left            =   360
-         Top             =   960
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
-         Caption         =   ""
+      Begin PhotoDemon.pdListBox lstPalettes 
+         Height          =   2775
+         Left            =   120
+         TabIndex        =   21
+         Top             =   840
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   4895
+         Caption         =   "palettes in this file:"
       End
       Begin PhotoDemon.pdButton cmdLoadPalette 
          Height          =   495
          Left            =   5400
          TabIndex        =   18
-         Top             =   285
+         Top             =   345
          Width           =   615
          _ExtentX        =   1085
          _ExtentY        =   873
@@ -84,7 +84,7 @@ Begin VB.Form FormPalettize
          Height          =   375
          Left            =   360
          TabIndex        =   17
-         Top             =   360
+         Top             =   390
          Width           =   4815
          _ExtentX        =   8493
          _ExtentY        =   661
@@ -97,23 +97,14 @@ Begin VB.Form FormPalettize
          _ExtentX        =   10610
          _ExtentY        =   450
          Caption         =   "choose a palette file:"
-      End
-      Begin PhotoDemon.pdLabel lblPaletteInfo 
-         Height          =   375
-         Index           =   1
-         Left            =   360
-         Top             =   1320
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
-         Caption         =   ""
+         FontSize        =   12
       End
       Begin PhotoDemon.pdDropDown cboDither 
          Height          =   855
          Index           =   1
          Left            =   120
          TabIndex        =   19
-         Top             =   1800
+         Top             =   3720
          Width           =   6015
          _ExtentX        =   10610
          _ExtentY        =   1508
@@ -124,7 +115,7 @@ Begin VB.Form FormPalettize
          Index           =   1
          Left            =   240
          TabIndex        =   20
-         Top             =   2700
+         Top             =   4680
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   661
@@ -312,6 +303,9 @@ Private m_ActiveTitleBar As Long, m_PanelChangesActive As Boolean
 'When loading a palette from file, the pdPalette class handles all the actual parsing
 Private m_Palette As pdPalette
 
+'To reduce redraws when interacting with the UI, we manually track changes to the palette filename
+Private m_PalettePath As String, m_PaletteFileSize As Long
+
 Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
     UpdateTransparencyOptions
     UpdatePreview
@@ -471,6 +465,7 @@ Private Function GetToolParamString() As String
         
         '"From file" data comes next
         .AddParam "palettefile", txtPalette.Text
+        .AddParam "palettefileindex", lstPalettes.ListIndex
         
         'Some options are shared between the two methods
         .AddParam "dithering", cboDither(btsOptions.ListIndex).ListIndex
@@ -663,6 +658,13 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
         m_Palette.LoadPaletteFromFile srcPaletteFile
     End If
     
+    'Make sure the passed palette group ID is valid.  (Some palette file formats support multiple palettes
+    ' within a single file; as such, filename alone may not be enough to identify the palette we need.)
+    Dim srcPaletteIndex As Long
+    srcPaletteIndex = cParams.GetLong("palettefileindex", 0)
+    If (srcPaletteIndex < 0) Then srcPaletteIndex = 0
+    If (srcPaletteIndex > m_Palette.GetPaletteGroupCount - 1) Then srcPaletteIndex = m_Palette.GetPaletteGroupCount - 1
+    
     Dim DitherMethod As PD_DITHER_METHOD
     DitherMethod = cParams.GetLong("dithering", 0)
     
@@ -680,9 +682,9 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     'Branch according to internal or plugin-based quantization methods.  Note that if the user does *NOT* want
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
     Dim finalPalette() As RGBQuad
-    If (m_Palette.GetPaletteColorCount > 0) Then
+    If (m_Palette.GetPaletteColorCount(srcPaletteIndex) > 0) Then
         
-        m_Palette.CopyPaletteToArray finalPalette
+        m_Palette.CopyPaletteToArray finalPalette, srcPaletteIndex
         
         If (Not toPreview) Then
             SetProgBarVal 2
@@ -707,6 +709,10 @@ Private Sub UpdateColorBleedVisibility()
     For i = cboDither.lBound To cboDither.UBound
         chkReduceBleed(i).Visible = (cboDither(i).ListIndex <> 0)
     Next i
+End Sub
+
+Private Sub lstPalettes_Click()
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -804,19 +810,35 @@ Private Sub UpdatePaletteFileInfo()
     'Try to load the palette into a dedicated class
     If (m_Palette Is Nothing) Then Set m_Palette = New pdPalette
     If Files.FileExists(txtPalette.Text) Then
-    
-        If m_Palette.LoadPaletteFromFile(txtPalette.Text) Then
-            
-            'Pull core information from the file
-            lblPaletteInfo(0).Caption = g_Language.TranslateMessage("palette name: %1", m_Palette.GetPaletteName())
-            lblPaletteInfo(1).Caption = g_Language.TranslateMessage("unique colors: %1", CStr(m_Palette.GetPaletteColorCount()))
-            
-        Else
-            lblPaletteInfo(0).Caption = g_Language.TranslateMessage("WARNING!  Palette file invalid.")
-            lblPaletteInfo(1).Caption = vbNullString
-        End If
         
-        UpdatePreview
+        'See if the palette file has changed since our last attempt at loading.
+        If Strings.StringsNotEqual(m_PalettePath, txtPalette.Text) Or (m_PaletteFileSize <> Files.FileLenW(txtPalette.Text)) Then
+            
+            m_PalettePath = txtPalette.Text
+            m_PaletteFileSize = Files.FileLenW(m_PalettePath)
+            
+            lstPalettes.Clear
+            lstPalettes.SetAutomaticRedraws False, False
+            
+            If m_Palette.LoadPaletteFromFile(txtPalette.Text) Then
+                
+                Dim i As Long, palText As String
+                For i = 0 To m_Palette.GetPaletteGroupCount - 1
+                    palText = g_Language.TranslateMessage("%1 (%2 colors)", m_Palette.GetPaletteName(i), m_Palette.GetPaletteColorCount(i))
+                    lstPalettes.AddItem palText, i
+                Next i
+                
+                If (lstPalettes.ListCount > 0) Then lstPalettes.ListIndex = 0
+                
+            Else
+                lstPalettes.AddItem g_Language.TranslateMessage("WARNING!  Palette file invalid.")
+            End If
+            
+            lstPalettes.SetAutomaticRedraws True, True
+            
+            UpdatePreview
+            
+        End If
         
     End If
         
@@ -826,5 +848,4 @@ End Sub
 Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then Me.ApplyPalettizeEffect GetToolParamString, True, pdFxPreview
 End Sub
-
 

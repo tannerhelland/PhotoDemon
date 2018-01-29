@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.21</langversion>
+<langversion>1.0.22</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10367,6 +10367,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>choose a palette file</original>
 <translation></translation>
 </phrase>
@@ -10447,12 +10452,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 </phrase>
 
 <phrase>
-<original>palette name: %1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>unique colors: %1</original>
+<original>%1 (%2 colors)</original>
 <translation></translation>
 </phrase>
 
@@ -15139,6 +15139,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- As of this build, PhotoDemon contains 4589 phrases. -->
 <!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12165 total words. -->
+<!-- These 2538 phrases contain approximately 12166 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3301</langversion>
+<langversion>6.8.3302</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10354,6 +10354,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>choose a palette file</original>
 <translation></translation>
 </phrase>
@@ -10434,12 +10439,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
-<original>palette name: %1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>unique colors: %1</original>
+<original>%1 (%2 colors)</original>
 <translation></translation>
 </phrase>
 
@@ -15121,6 +15121,6 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- As of this build, PhotoDemon contains 4589 phrases. -->
 <!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12165 total words. -->
+<!-- These 2538 phrases contain approximately 12166 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.318</langversion>
+<langversion>6.7.319</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -10371,6 +10371,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>choose a palette file</original>
 <translation></translation>
 </phrase>
@@ -10451,12 +10456,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>palette name: %1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>unique colors: %1</original>
+<original>%1 (%2 colors)</original>
 <translation></translation>
 </phrase>
 
@@ -15144,6 +15144,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- As of this build, PhotoDemon contains 4589 phrases. -->
 <!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12165 total words. -->
+<!-- These 2538 phrases contain approximately 12166 total words. -->
 
 </pdData>

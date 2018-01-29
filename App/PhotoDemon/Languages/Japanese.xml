@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.9</langversion>
+<langversion>1.0.10</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10366,6 +10366,11 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>choose a palette file</original>
 <translation></translation>
 </phrase>
@@ -10446,12 +10451,7 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 </phrase>
 
 <phrase>
-<original>palette name: %1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>unique colors: %1</original>
+<original>%1 (%2 colors)</original>
 <translation></translation>
 </phrase>
 
@@ -15138,6 +15138,6 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- As of this build, PhotoDemon contains 4589 phrases. -->
 <!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12165 total words. -->
+<!-- These 2538 phrases contain approximately 12166 total words. -->
 
 </pdData>
