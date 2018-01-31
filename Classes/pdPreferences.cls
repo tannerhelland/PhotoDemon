@@ -472,7 +472,12 @@ End Sub
 Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
     
     'If no preferences file exists, build a default one
-    If (Not Files.FileExists(m_PreferencesPath)) Then CreateNewPreferencesFile
+    If (Not Files.FileExists(m_PreferencesPath)) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdPreferences.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
+        #End If
+        CreateNewPreferencesFile
+    End If
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
@@ -516,6 +521,9 @@ End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Friend Sub ResetPreferences()
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
+    #End If
     Files.FileDeleteIfExists m_PreferencesPath
     CreateNewPreferencesFile
     LoadUserSettings

@@ -631,8 +631,10 @@ Friend Function WriteXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     Exit Function
     
 CouldNotWriteXML:
-
-    Debug.Print "WARNING! A request to pdXML.writeXMLToFile failed for unknown reasons.  Please investigate."
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING! A request to pdXML.writeXMLToFile failed for unknown reasons (#" & Err.Number & ").  Please investigate."
+    #End If
     WriteXMLToFile = False
 
 End Function

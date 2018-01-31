@@ -1351,6 +1351,8 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
             Me.FileCloseHandle hFile
             FileSaveAsText = True
             
+        Else
+            FSOError "FileSaveAsText", "could not create file handle"
         End If
                 
     'If UTF-8 is not requested, allow VB to perform its own innate SBCS conversion
