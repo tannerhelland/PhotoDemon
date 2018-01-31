@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3398</langversion>
+<langversion>7.0.3399</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -15120,6 +15120,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- pdPaletteChild.cls contains 0 phrases. -->
 
 <!-- END text for pdPaletteChild.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- Automatic text extraction complete. -->
 

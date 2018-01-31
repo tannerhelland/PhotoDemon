@@ -79,6 +79,26 @@ Friend Function CopyRGBQuadsToArray(ByRef dstArray() As RGBQuad) As Boolean
     
 End Function
 
+'Create a new palette instance from a source RGB quad collection.  The source array must be 0-based.
+Friend Sub CreateFromRGBQuads(ByRef srcArray() As RGBQuad, Optional ByVal paletteName As String = vbNullString, Optional ByVal paletteFilename As String = vbNullString)
+    
+    If (UBound(srcArray) >= LBound(srcArray)) Then
+        
+        ReDim m_Palette(0 To UBound(srcArray)) As PDPaletteEntry
+        m_NumOfColors = UBound(srcArray) + 1
+        
+        Dim i As Long
+        For i = 0 To m_NumOfColors - 1
+            m_Palette(i).ColorValue = srcArray(i)
+        Next i
+        
+        m_PaletteName = paletteName
+        m_PaletteFilename = paletteFilename
+        
+    End If
+    
+End Sub
+
 Friend Function GetNumOfColors() As Long
     GetNumOfColors = m_NumOfColors
 End Function
@@ -185,6 +205,29 @@ Friend Sub FindAndRemoveDuplicates()
     
 End Sub
 
+'Some palette sort methods are better when order is randomized.  (Note that we use a fixed key
+' for debugging and profiling purposes.)
+Friend Sub RandomizeOrder()
+    
+    If (m_NumOfColors <= 1) Then Exit Sub
+    
+    Randomize -1
+    Randomize 1234567
+    
+    Dim rndLimit As Long
+    rndLimit = (m_NumOfColors - 1)
+    
+    Dim i As Long, firstIndex As Long, secondIndex As Long, tmpEntry As PDPaletteEntry
+    For i = 0 To m_NumOfColors * 2 - 1
+        firstIndex = Rnd * rndLimit
+        secondIndex = Rnd * rndLimit
+        tmpEntry = m_Palette(firstIndex)
+        m_Palette(firstIndex) = m_Palette(secondIndex)
+        m_Palette(secondIndex) = tmpEntry
+    Next i
+
+End Sub
+
 'When constructing palette matching trees, it is often useful to sort a palette by luminance
 ' (e.g. along the diagonal of the RGB cube).  This makes it easier to produce a balanced nearest-neighbor
 ' structure for color-matching.
@@ -212,15 +255,62 @@ Friend Sub SortByLuminance()
         
     Next i
     
+    FinishSort pSort
+    
+End Sub
+
+'When constructing KD-trees specifically, sorting along a single channel (likely red?) can lead to a more
+' balanced tree than a luminance sort, as it's more likely to spread the palette contents over the entire
+' RGB cube, instead of concentrating them along a lone diagonal.
+Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
+
+    Dim pSort() As PaletteSort
+    ReDim pSort(0 To m_NumOfColors - 1) As PaletteSort
+    
+    Dim r As Long, g As Long, b As Long
+    
+    Dim i As Long
+    For i = 0 To m_NumOfColors - 1
+        
+        With m_Palette(i).ColorValue
+            r = .Red
+            g = .Green
+            b = .Blue
+        End With
+        
+        pSort(i).pOrigIndex = i
+        
+        If (channelIndex = 0) Then
+            pSort(i).pSortCriteria = r
+        ElseIf (channelIndex = 1) Then
+            pSort(i).pSortCriteria = g
+        Else
+            pSort(i).pSortCriteria = b
+        End If
+        
+    Next i
+    
+    FinishSort pSort
+    
+End Sub
+
+'After assembling a PaletteSort array (which contains sort keys for palette entries), call this function
+' assemble a new palette based on that sort criteria.
+Private Sub FinishSort(ByRef srcPaletteSort() As PaletteSort)
+    
+    If (m_NumOfColors <= 1) Then Exit Sub
+    
     'We can now use the sort criteria to perform a normal quicksort
-    SortPalette pSort
+    SortPalette srcPaletteSort
     
     'The pSort() array has now been sorted according to its pSortCriteria contents.  We want to rebuild
     ' our palette array in a matching order.
     Dim newPalette() As PDPaletteEntry
     ReDim newPalette(0 To m_NumOfColors - 1) As PDPaletteEntry
+    
+    Dim i As Long
     For i = 0 To m_NumOfColors - 1
-        newPalette(i) = m_Palette(pSort(i).pOrigIndex)
+        newPalette(i) = m_Palette(srcPaletteSort(i).pOrigIndex)
     Next i
     
     'Release the old array in favor of the newly sorted one

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.22</langversion>
+<langversion>1.0.23</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15132,6 +15132,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- pdPaletteChild.cls contains 0 phrases. -->
 
 <!-- END text for pdPaletteChild.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- Automatic text extraction complete. -->
 

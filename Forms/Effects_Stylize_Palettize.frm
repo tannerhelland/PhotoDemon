@@ -430,53 +430,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Function GetToolParamString() As String
-
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    
-    With cParams
-        
-        .AddParam "mode", btsOptions.ListIndex
-        
-        Select Case btsMethod.ListIndex
-            Case 0
-                .AddParam "method", "MedianCut"
-            Case 1
-                .AddParam "method", "Wu"
-            Case 2
-                .AddParam "method", "NeuQuant"
-        End Select
-        
-        .AddParam "palettesize", sldPalette.Value
-        .AddParam "preservewhiteblack", CBool(chkPreserveWB.Value)
-        .AddParam "backgroundcolor", clsBackground.Color
-        
-        Select Case btsAlpha.ListIndex
-            Case 0
-                .AddParam "alphamode", "full"
-            Case 1
-                .AddParam "alphamode", "binary"
-            Case 2
-                .AddParam "alphamode", "none"
-        End Select
-        
-        .AddParam "alphacutoff", sldAlphaCutoff.Value
-        
-        '"From file" data comes next
-        .AddParam "palettefile", txtPalette.Text
-        .AddParam "palettefileindex", lstPalettes.ListIndex
-        
-        'Some options are shared between the two methods
-        .AddParam "dithering", cboDither(btsOptions.ListIndex).ListIndex
-        .AddParam "reducebleed", CBool(chkReduceBleed(btsOptions.ListIndex).Value)
-        
-    End With
-    
-    GetToolParamString = cParams.GetParamString
-
-End Function
-
 'Automatic 8-bit color reduction.  Some option combinations require the FreeImage plugin.
 Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
@@ -500,8 +453,8 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     Dim preserveWhiteBlack As Boolean
     preserveWhiteBlack = cParams.GetBool("preservewhiteblack", False)
     
-    Dim DitherMethod As PD_DITHER_METHOD
-    DitherMethod = cParams.GetLong("dithering", 0)
+    Dim ditherMethod As PD_DITHER_METHOD
+    ditherMethod = cParams.GetLong("dithering", 0)
     
     Dim reduceBleed As Boolean
     reduceBleed = cParams.GetBool("reducebleed", False)
@@ -577,10 +530,10 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         End If
         
         'Apply said palette to the image
-        If (DitherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_SysAPI workingDIB, finalPalette
+        If (ditherMethod = PDDM_None) Then
+            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, DitherMethod, reduceBleed
+            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
         End If
     
     Else
@@ -600,7 +553,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
         'If the caller does *not* want dithering, copy the (already palettized) FreeImage DIB over our
         ' original DIB.
-        If (DitherMethod = PDDM_None) And (Not preserveWhiteBlack) Then
+        If (ditherMethod = PDDM_None) And (Not preserveWhiteBlack) Then
         
             'Convert that DIB to 32-bpp
             Dim fi_DIB As Long
@@ -625,10 +578,10 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
             
             'Apply the generated palette to our target image, using the method requested
             If (finalPaletteCount <> 0) Then
-                If (DitherMethod = PDDM_None) Then
-                    Palettes.ApplyPaletteToImage_SysAPI workingDIB, finalPalette
+                If (ditherMethod = PDDM_None) Then
+                    Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
                 Else
-                    Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, DitherMethod, reduceBleed
+                    Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
                 End If
             End If
             
@@ -665,8 +618,8 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     If (srcPaletteIndex < 0) Then srcPaletteIndex = 0
     If (srcPaletteIndex > m_Palette.GetPaletteGroupCount - 1) Then srcPaletteIndex = m_Palette.GetPaletteGroupCount - 1
     
-    Dim DitherMethod As PD_DITHER_METHOD
-    DitherMethod = cParams.GetLong("dithering", 0)
+    Dim ditherMethod As PD_DITHER_METHOD
+    ditherMethod = cParams.GetLong("dithering", 0)
     
     Dim reduceBleed As Boolean
     reduceBleed = cParams.GetBool("reducebleed", False)
@@ -692,10 +645,10 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
         End If
         
         'Apply said palette to the image
-        If (DitherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_SysAPI workingDIB, finalPalette
+        If (ditherMethod = PDDM_None) Then
+            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, DitherMethod, reduceBleed
+            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
         End If
         
     End If
@@ -843,6 +796,53 @@ Private Sub UpdatePaletteFileInfo()
     End If
         
 End Sub
+
+Private Function GetToolParamString() As String
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        
+        .AddParam "mode", btsOptions.ListIndex
+        
+        Select Case btsMethod.ListIndex
+            Case 0
+                .AddParam "method", "MedianCut"
+            Case 1
+                .AddParam "method", "Wu"
+            Case 2
+                .AddParam "method", "NeuQuant"
+        End Select
+        
+        .AddParam "palettesize", sldPalette.Value
+        .AddParam "preservewhiteblack", CBool(chkPreserveWB.Value)
+        .AddParam "backgroundcolor", clsBackground.Color
+        
+        Select Case btsAlpha.ListIndex
+            Case 0
+                .AddParam "alphamode", "full"
+            Case 1
+                .AddParam "alphamode", "binary"
+            Case 2
+                .AddParam "alphamode", "none"
+        End Select
+        
+        .AddParam "alphacutoff", sldAlphaCutoff.Value
+        
+        '"From file" data comes next
+        .AddParam "palettefile", txtPalette.Text
+        .AddParam "palettefileindex", lstPalettes.ListIndex
+        
+        'Some options are shared between the two methods
+        .AddParam "dithering", cboDither(btsOptions.ListIndex).ListIndex
+        .AddParam "reducebleed", CBool(chkReduceBleed(btsOptions.ListIndex).Value)
+        
+    End With
+    
+    GetToolParamString = cParams.GetParamString
+
+End Function
 
 'Use this sub to update the on-screen preview
 Private Sub UpdatePreview()

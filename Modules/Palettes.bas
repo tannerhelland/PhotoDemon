@@ -3,9 +3,8 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Master Palette Interface
 'Copyright 2017-2018 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 17/January/18
-'Last update: add new "Palette import dialog" helper function, which will be useful as we add support for more
-'             palette file formats
+'Last updated: 31/January/18
+'Last update: finish work on KD-tree palette matcher, which is both faster and more accurate than GDI matching
 '
 'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary source images,
 ' and also applying arbitrary palettes to images.  In the future, I expect it to include a lot more interesting
@@ -63,7 +62,7 @@ End Type
 ' - Color name.  Some palette formats provide per-color names; some do not.  This value may be null.
 Public Type PDPaletteEntry
     ColorValue As RGBQuad
-    ColorName As String
+    colorName As String
 End Type
 
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
@@ -171,7 +170,9 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         Loop While (stackCount < numOfColors)
         
         'We now have [numOfColors] unique color stacks.  Each of these represents a set of similar colors.
-        ' Generate a final palette by requesting the weighted average of each stack.
+        ' Generate a final palette by requesting the weighted average of each stack.  (As an alternate solution,
+        ' you could also request the most "populous" color; this would preserve precise tones from the image,
+        ' but rarely-appearing colors would never influence the final output.  Trade-offs!
         Dim newR As Long, newG As Long, newB As Long
         
         ReDim dstPalette(0 To numOfColors - 1) As RGBQuad
@@ -194,8 +195,8 @@ End Function
 
 'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
 ' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
-' from any source, even ones that have already contain 256 entries.)  No difference is made to the palette
-' if it already contains black and white.
+' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that
+' already contain black and white.
 Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
     
     Dim minLuminance As Long, minLuminanceIndex As Long
@@ -306,10 +307,9 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
 
 End Function
 
-'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
-' Dithering is *not* used.  Colors are matched exhaustively, meaning this function is slow but produces the smallest
-' possible RMSD result for this palette (when matching in the RGB color space, anyway).
-Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+'Given an arbitrary source palette, apply said palette to the target image.  Dithering is *not* used.
+' Colors are matched exhaustively, meaning this function slows significantly as palette size increases.
+Public Function ApplyPaletteToImage_Naive(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
@@ -376,237 +376,7 @@ Public Function ApplyPaletteToImage(ByRef dstDIB As pdDIB, ByRef srcPalette() As
     
     dstDIB.UnwrapArrayFromDIB srcPixels
     
-    ApplyPaletteToImage = True
-    
-End Function
-
-'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
-' Dithering is *not* used.  Colors are matched using an optimized bucket-search strategy (where the palette is
-' pre-sorted by distance from black, and color-matching only occurs across a small range of neighboring buckets).
-' Increasing the bucket count improves performance at some trade-off to quality, while the opposite occurs when
-' decreasing bucket count.  If the source palette is small (e.g. 32 colors or less), you'd be better off just
-' calling the lossless ApplyPaletteToImage() or ApplyPaletteToImage_SysAPI() functions, as this function won't
-' provide much of a performance gain, and you risk potentially mismatched colors because the optimization range
-' for the hash table is so small.
-Public Function ApplyPaletteToImage_LossyHashTable(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal numOfBuckets As Long = 16) As Boolean
-
-    Dim srcPixels() As Byte, tmpSA As SafeArray2D
-    dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
-    
-    Dim pxSize As Long
-    pxSize = dstDIB.GetDIBColorDepth \ 8
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = dstDIB.GetDIBStride - 1
-    finalY = dstDIB.GetDIBHeight - 1
-    
-    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
-    ' searching for contiguous matching colors.
-    Dim lastColor As Long: lastColor = -1
-    Dim lastPaletteColor As Long
-    Dim r As Long, g As Long, b As Long
-    Dim i As Long
-    Dim minDistance As Single, calcDistance As Single, lastDistance As Single, minIndex As Long
-    Dim rDist As Long, gDist As Long, bDist As Long
-    Dim numOfColors As Long
-    numOfColors = UBound(srcPalette)
-    
-    'Start by sorting the palette by each color's distance from black.  A specially designed QuickSort
-    ' function is used for the sort.
-    Dim pSort() As PaletteSort
-    ReDim pSort(0 To numOfColors) As PaletteSort
-    
-    For x = 0 To numOfColors
-        pSort(x).pOrigIndex = x
-        r = srcPalette(x).Red
-        g = srcPalette(x).Green
-        b = srcPalette(x).Blue
-        pSort(x).pSortCriteria = r * r + g * g + b * b
-    Next x
-    
-    SortPalette pSort
-    
-    'pSort now represents the final, sorted palette.  Instead of applying the sort results to the palette
-    ' entries themselves, we will instead use the pSort data directly, as it maintains its mapping into
-    ' the original palette indices.
-    
-    'From the pSort list, calculate [numOfBuckets] unique "buckets".  Each bucket will contain a series of
-    ' similarly-distanced colors.  During the palette matching step, we will only match colors in a small
-    ' range of related buckets, which reduces our search space significantly (thus improving performance).
-    Dim bucketSize As Long
-    numOfBuckets = (numOfColors + 1) \ numOfBuckets - 1
-    bucketSize = (numOfColors + 1) \ (numOfBuckets + 1)
-    
-    Dim bucketList() As Single, bucketCount() As Long
-    ReDim bucketList(0 To numOfBuckets) As Single
-    ReDim bucketCount(0 To numOfBuckets) As Long
-    For x = 0 To numOfColors - 1
-        r = x \ bucketSize
-        bucketList(r) = bucketList(r) + pSort(x).pSortCriteria
-        bucketCount(r) = bucketCount(r) + 1
-    Next x
-    
-    'Normalize bucket range values
-    For x = 0 To numOfBuckets
-        bucketList(x) = bucketList(x) \ bucketCount(x)
-    Next x
-    
-    Erase bucketCount
-    
-    'Start matching pixels
-    Dim startSearch As Long, endSearch As Long
-    
-    For y = 0 To finalY
-    For x = 0 To finalX Step pxSize
-    
-        b = srcPixels(x, y)
-        g = srcPixels(x + 1, y)
-        r = srcPixels(x + 2, y)
-        
-        'If this pixel matches the last pixel we tested, reuse our previous match results
-        If (RGB(r, g, b) <> lastColor) Then
-            
-            'Find the bucket with the average distance from black closest to this color's distance
-            ' from black.
-            calcDistance = r * r + g * g + b * b
-            minDistance = Abs(bucketList(0) - calcDistance)
-            minIndex = 0
-            
-            For i = 1 To numOfBuckets
-                lastDistance = Abs(bucketList(i) - calcDistance)
-                If (lastDistance < minDistance) Then
-                    minDistance = lastDistance
-                    minIndex = i
-                End If
-            Next i
-            
-            'From the identified bucket, determine a range of palette entries to search.
-            ' (Note that the range is necessarily larger than just a single bucket; this is necessary
-            '  because the RGB color space is not perceptually uniform.)
-            If (minIndex = numOfBuckets) Then
-                startSearch = numOfColors - bucketSize * 2
-                endSearch = numOfColors
-            ElseIf (minIndex = 0) Then
-                startSearch = 0
-                endSearch = bucketSize * 2
-            Else
-                startSearch = (minIndex * (bucketSize - 2))
-                endSearch = (minIndex * (bucketSize + 2))
-            End If
-            
-            If (startSearch < 0) Then startSearch = 0
-            If (endSearch > numOfColors) Then endSearch = numOfColors
-            
-            'Now that we have a range of possible colors to search, look for the closest color match
-            ' inside that range of palette entries.
-            minIndex = 0
-            minDistance = 9.99999E+15
-            
-            For i = startSearch To endSearch
-                With srcPalette(pSort(i).pOrigIndex)
-                    rDist = r - .Red
-                    gDist = g - .Green
-                    bDist = b - .Blue
-                End With
-                calcDistance = (rDist * rDist) * CUSTOM_WEIGHT_RED + (gDist * gDist) * CUSTOM_WEIGHT_GREEN + (bDist * bDist) * CUSTOM_WEIGHT_BLUE
-                If (calcDistance < minDistance) Then
-                    minDistance = calcDistance
-                    minIndex = pSort(i).pOrigIndex
-                End If
-            Next i
-            
-            lastColor = RGB(r, g, b)
-            lastPaletteColor = minIndex
-            
-        Else
-            minIndex = lastPaletteColor
-        End If
-        
-        'Apply the closest discovered color to this pixel.
-        srcPixels(x, y) = srcPalette(minIndex).Blue
-        srcPixels(x + 1, y) = srcPalette(minIndex).Green
-        srcPixels(x + 2, y) = srcPalette(minIndex).Red
-        
-    Next x
-    Next y
-    
-    dstDIB.UnwrapArrayFromDIB srcPixels
-    
-    ApplyPaletteToImage_LossyHashTable = True
-    
-End Function
-
-'Use QuickSort to sort a palette.  The srcPaletteSort must be assembled by the caller, with the .pSortCriteria
-' filled with a Single that represents "color order".  (Not defining this strictly allows for many different types
-' of palette sorts, based on the caller's needs.)
-Private Sub SortPalette(ByRef srcPaletteSort() As PaletteSort)
-    SortInner srcPaletteSort, 0, UBound(srcPaletteSort)
-End Sub
-
-'Basic QuickSort function.  Recursive calls will sort the palette on the range [lowVal, highVal].  The first
-' call must be on the range [0, UBound(srcPaletteSort)].
-Private Sub SortInner(ByRef srcPaletteSort() As PaletteSort, ByVal lowVal As Long, ByVal highVal As Long)
-    
-    'Ignore the search request if the bounds are mismatched
-    If (lowVal < highVal) Then
-        
-        'Sort some sub-portion of the list, and use the returned pivot to repeat the sort process
-        Dim j As Long
-        j = SortPartition(srcPaletteSort, lowVal, highVal)
-        SortInner srcPaletteSort, lowVal, j - 1
-        SortInner srcPaletteSort, j + 1, highVal
-    End If
-    
-End Sub
-
-'Basic QuickSort partition function.  All values in the range [lowVal, highVal] are sorted against a pivot value, j.
-' The final pivot position is returned, and our caller can use that to request two new sorts on either side of the pivot.
-Private Function SortPartition(ByRef srcPaletteSort() As PaletteSort, ByVal lowVal As Long, ByVal highVal As Long) As Long
-    
-    Dim i As Long, j As Long
-    i = lowVal
-    j = highVal + 1
-    
-    Dim v As Single
-    v = srcPaletteSort(lowVal).pSortCriteria
-    
-    Dim tmpSort As PaletteSort
-    
-    Do
-        
-        'Compare the pivot against points beneath it
-        Do
-            i = i + 1
-            If (i = highVal) Then Exit Do
-        Loop While (srcPaletteSort(i).pSortCriteria < v)
-        
-        'Compare the pivot against points above it
-        Do
-            j = j - 1
-            
-            'A failsafe exit check here would be redundant, since we already check this state above
-            'If (j = lowVal) Then Exit Do
-        Loop While (v < srcPaletteSort(j).pSortCriteria)
-        
-        'If the pivot has arrived at its final location, exit
-        If (i >= j) Then Exit Do
-        
-        'Swap the values at indexes i and j
-        tmpSort = srcPaletteSort(j)
-        srcPaletteSort(j) = srcPaletteSort(i)
-        srcPaletteSort(i) = tmpSort
-        
-    Loop
-    
-    'Move the pivot value into its final location
-    tmpSort = srcPaletteSort(j)
-    srcPaletteSort(j) = srcPaletteSort(lowVal)
-    srcPaletteSort(lowVal) = tmpSort
-    
-    'Return the pivot's final position
-    SortPartition = j
+    ApplyPaletteToImage_Naive = True
     
 End Function
 
@@ -699,8 +469,77 @@ Public Function ApplyPaletteToImage_Octree(ByRef dstDIB As pdDIB, ByRef srcPalet
     
 End Function
 
+'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), apply said palette to the
+' target image.  Dithering is *not* used.  Colors are matched using a KD-tree (where the palette is pre-loaded into
+' a tree, and colors are matched via that tree).
+Public Function ApplyPaletteToImage_KDTree(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
+    
+    Dim pxSize As Long
+    pxSize = dstDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBStride - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim minIndex As Long, lastPaletteColor As Long
+    Dim r As Long, g As Long, b As Long
+    
+    Dim tmpQuad As RGBQuad, newQuad As RGBQuad, lastQuad As RGBQuad
+    
+    'Build the initial tree
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
+    
+    'Start matching pixels
+    For y = 0 To finalY
+    For x = 0 To finalX Step pxSize
+    
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
+        
+        'If this pixel matches the last pixel we tested, reuse our previous match results
+        If (RGB(r, g, b) <> lastColor) Then
+            
+            tmpQuad.Red = r
+            tmpQuad.Green = g
+            tmpQuad.Blue = b
+            
+            'Ask the tree for its best match
+            newQuad = kdTree.GetNearestColor(tmpQuad)
+            
+            lastColor = RGB(r, g, b)
+            lastQuad = newQuad
+            
+        Else
+            newQuad = lastQuad
+        End If
+        
+        'Apply the closest discovered color to this pixel.
+        srcPixels(x, y) = newQuad.Blue
+        srcPixels(x + 1, y) = newQuad.Green
+        srcPixels(x + 2, y) = newQuad.Red
+        
+    Next x
+    Next y
+    
+    dstDIB.UnwrapArrayFromDIB srcPixels
+    
+    ApplyPaletteToImage_KDTree = True
+    
+End Function
+
 'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
-' Dithering is *not* used.  Colors are matched using System APIs.
+' Dithering is *not* used.  Colors are matched using Windows APIs.
 Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
@@ -771,9 +610,9 @@ Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalet
     
 End Function
 
-'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
-' Dithering *is* used.  Colors are matched using System APIs.
-Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal DitherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False) As Boolean
+'Given an arbitrary source palette, apply said palette to the target image.
+' Dithering *is* used.  Colors are matched using a KD-tree.
+Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False) As Boolean
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
@@ -787,28 +626,18 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     finalX = dstDIB.GetDIBStride - 1
     finalY = dstDIB.GetDIBHeight - 1
     
-    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
-    ' searching for contiguous matching colors.
-    Dim minIndex As Long
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, i As Long, j As Long
+    Dim newQuad As RGBQuad, tmpQuad As RGBQuad
     
-    Dim tmpPalette As GDI_LOGPALETTE256
-    tmpPalette.palNumEntries = UBound(srcPalette) + 1
-    tmpPalette.palVersion = &H300
-    Dim i As Long, j As Long
-    For i = 0 To UBound(srcPalette)
-        tmpPalette.palEntry(i).peR = srcPalette(i).Red
-        tmpPalette.palEntry(i).peG = srcPalette(i).Green
-        tmpPalette.palEntry(i).peB = srcPalette(i).Blue
-    Next i
-    
-    Dim hPal As Long
-    hPal = CreatePalette(VarPtr(tmpPalette))
+    'Build A KD-tree for fast palette matching
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
     
     'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
-    Dim DitherTable() As Long
+    Dim ditherTable() As Long
     Dim orderedDitherInUse As Boolean
-    orderedDitherInUse = CBool(DitherMethod = PDDM_Ordered_Bayer4x4) Or CBool(DitherMethod = PDDM_Ordered_Bayer8x8)
+    orderedDitherInUse = (ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8)
     
     If orderedDitherInUse Then
     
@@ -817,123 +646,123 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         ' threshold values on-the-fly.
         Dim ditherRows As Long, ditherColumns As Long
         
-        If (DitherMethod = PDDM_Ordered_Bayer4x4) Then
+        If (ditherMethod = PDDM_Ordered_Bayer4x4) Then
             
             'First, prepare a Bayer dither table
             ditherRows = 3
             ditherColumns = 3
-            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 9
-            DitherTable(0, 2) = 3
-            DitherTable(0, 3) = 11
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 9
+            ditherTable(0, 2) = 3
+            ditherTable(0, 3) = 11
             
-            DitherTable(1, 0) = 13
-            DitherTable(1, 1) = 5
-            DitherTable(1, 2) = 15
-            DitherTable(1, 3) = 7
+            ditherTable(1, 0) = 13
+            ditherTable(1, 1) = 5
+            ditherTable(1, 2) = 15
+            ditherTable(1, 3) = 7
             
-            DitherTable(2, 0) = 4
-            DitherTable(2, 1) = 12
-            DitherTable(2, 2) = 2
-            DitherTable(2, 3) = 10
+            ditherTable(2, 0) = 4
+            ditherTable(2, 1) = 12
+            ditherTable(2, 2) = 2
+            ditherTable(2, 3) = 10
             
-            DitherTable(3, 0) = 16
-            DitherTable(3, 1) = 8
-            DitherTable(3, 2) = 14
-            DitherTable(3, 3) = 6
+            ditherTable(3, 0) = 16
+            ditherTable(3, 1) = 8
+            ditherTable(3, 2) = 14
+            ditherTable(3, 3) = 6
     
             'Convert the dither entries to absolute offsets (meaning half are positive, half are negative)
             For x = 0 To 3
             For y = 0 To 3
-                DitherTable(x, y) = DitherTable(x, y) * 2 - 16
+                ditherTable(x, y) = ditherTable(x, y) * 2 - 16
             Next y
             Next x
             
-        ElseIf (DitherMethod = PDDM_Ordered_Bayer8x8) Then
+        ElseIf (ditherMethod = PDDM_Ordered_Bayer8x8) Then
         
             'First, prepare a Bayer dither table
             ditherRows = 7
             ditherColumns = 7
-            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 49
-            DitherTable(0, 2) = 13
-            DitherTable(0, 3) = 61
-            DitherTable(0, 4) = 4
-            DitherTable(0, 5) = 52
-            DitherTable(0, 6) = 16
-            DitherTable(0, 7) = 64
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 49
+            ditherTable(0, 2) = 13
+            ditherTable(0, 3) = 61
+            ditherTable(0, 4) = 4
+            ditherTable(0, 5) = 52
+            ditherTable(0, 6) = 16
+            ditherTable(0, 7) = 64
             
-            DitherTable(1, 0) = 33
-            DitherTable(1, 1) = 17
-            DitherTable(1, 2) = 45
-            DitherTable(1, 3) = 29
-            DitherTable(1, 4) = 36
-            DitherTable(1, 5) = 20
-            DitherTable(1, 6) = 48
-            DitherTable(1, 7) = 32
+            ditherTable(1, 0) = 33
+            ditherTable(1, 1) = 17
+            ditherTable(1, 2) = 45
+            ditherTable(1, 3) = 29
+            ditherTable(1, 4) = 36
+            ditherTable(1, 5) = 20
+            ditherTable(1, 6) = 48
+            ditherTable(1, 7) = 32
             
-            DitherTable(2, 0) = 9
-            DitherTable(2, 1) = 57
-            DitherTable(2, 2) = 5
-            DitherTable(2, 3) = 53
-            DitherTable(2, 4) = 12
-            DitherTable(2, 5) = 60
-            DitherTable(2, 6) = 8
-            DitherTable(2, 7) = 56
+            ditherTable(2, 0) = 9
+            ditherTable(2, 1) = 57
+            ditherTable(2, 2) = 5
+            ditherTable(2, 3) = 53
+            ditherTable(2, 4) = 12
+            ditherTable(2, 5) = 60
+            ditherTable(2, 6) = 8
+            ditherTable(2, 7) = 56
             
-            DitherTable(3, 0) = 41
-            DitherTable(3, 1) = 25
-            DitherTable(3, 2) = 37
-            DitherTable(3, 3) = 21
-            DitherTable(3, 4) = 44
-            DitherTable(3, 5) = 28
-            DitherTable(3, 6) = 40
-            DitherTable(3, 7) = 24
+            ditherTable(3, 0) = 41
+            ditherTable(3, 1) = 25
+            ditherTable(3, 2) = 37
+            ditherTable(3, 3) = 21
+            ditherTable(3, 4) = 44
+            ditherTable(3, 5) = 28
+            ditherTable(3, 6) = 40
+            ditherTable(3, 7) = 24
             
-            DitherTable(4, 0) = 3
-            DitherTable(4, 1) = 51
-            DitherTable(4, 2) = 15
-            DitherTable(4, 3) = 63
-            DitherTable(4, 4) = 2
-            DitherTable(4, 5) = 50
-            DitherTable(4, 6) = 14
-            DitherTable(4, 7) = 62
+            ditherTable(4, 0) = 3
+            ditherTable(4, 1) = 51
+            ditherTable(4, 2) = 15
+            ditherTable(4, 3) = 63
+            ditherTable(4, 4) = 2
+            ditherTable(4, 5) = 50
+            ditherTable(4, 6) = 14
+            ditherTable(4, 7) = 62
             
-            DitherTable(5, 0) = 35
-            DitherTable(5, 1) = 19
-            DitherTable(5, 2) = 47
-            DitherTable(5, 3) = 31
-            DitherTable(5, 4) = 34
-            DitherTable(5, 5) = 18
-            DitherTable(5, 6) = 46
-            DitherTable(5, 7) = 30
+            ditherTable(5, 0) = 35
+            ditherTable(5, 1) = 19
+            ditherTable(5, 2) = 47
+            ditherTable(5, 3) = 31
+            ditherTable(5, 4) = 34
+            ditherTable(5, 5) = 18
+            ditherTable(5, 6) = 46
+            ditherTable(5, 7) = 30
     
-            DitherTable(6, 0) = 11
-            DitherTable(6, 1) = 59
-            DitherTable(6, 2) = 7
-            DitherTable(6, 3) = 55
-            DitherTable(6, 4) = 10
-            DitherTable(6, 5) = 58
-            DitherTable(6, 6) = 6
-            DitherTable(6, 7) = 54
+            ditherTable(6, 0) = 11
+            ditherTable(6, 1) = 59
+            ditherTable(6, 2) = 7
+            ditherTable(6, 3) = 55
+            ditherTable(6, 4) = 10
+            ditherTable(6, 5) = 58
+            ditherTable(6, 6) = 6
+            ditherTable(6, 7) = 54
             
-            DitherTable(7, 0) = 43
-            DitherTable(7, 1) = 27
-            DitherTable(7, 2) = 39
-            DitherTable(7, 3) = 23
-            DitherTable(7, 4) = 42
-            DitherTable(7, 5) = 26
-            DitherTable(7, 6) = 38
-            DitherTable(7, 7) = 22
+            ditherTable(7, 0) = 43
+            ditherTable(7, 1) = 27
+            ditherTable(7, 2) = 39
+            ditherTable(7, 3) = 23
+            ditherTable(7, 4) = 42
+            ditherTable(7, 5) = 26
+            ditherTable(7, 6) = 38
+            ditherTable(7, 7) = 22
             
-            'Convert the dither entries to 255-based values
+            'Convert the dither entries to [-32, 32] range
             For x = 0 To 7
             For y = 0 To 7
-                DitherTable(x, y) = DitherTable(x, y) - 32
+                ditherTable(x, y) = ditherTable(x, y) - 32
             Next y
             Next x
         
@@ -950,7 +779,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             r = srcPixels(x + 2, y)
             
             'Add dither to each component
-            ditherAmt = DitherTable((x \ 4) And ditherRows, y And ditherColumns)
+            ditherAmt = ditherTable((x \ 4) And ditherRows, y And ditherColumns)
             If reduceBleed Then ditherAmt = ditherAmt * 0.33
             
             r = r + ditherAmt
@@ -974,12 +803,15 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
                 b = 0
             End If
             
-            'Ask the system to find the nearest color
-            minIndex = GetNearestPaletteIndex(hPal, RGB(r, g, b))
+            'Retrieve the best-match color
+            tmpQuad.Blue = b
+            tmpQuad.Green = g
+            tmpQuad.Red = r
+            newQuad = kdTree.GetNearestColor(tmpQuad)
             
-            srcPixels(x, y) = srcPalette(minIndex).Blue
-            srcPixels(x + 1, y) = srcPalette(minIndex).Green
-            srcPixels(x + 2, y) = srcPalette(minIndex).Red
+            srcPixels(x, y) = newQuad.Blue
+            srcPixels(x + 1, y) = newQuad.Green
+            srcPixels(x + 2, y) = newQuad.Red
             
         Next x
         Next y
@@ -994,7 +826,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         Dim ditherDivisor As Single
         
         'Retrieve a hard-coded dithering table matching the requested dither type
-        Palettes.GetDitherTable DitherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
         
         'Next, build an error tracking array.  Some diffusion methods require three rows worth of others;
         ' others require two.  Note that errors must be tracked separately for each color component.
@@ -1041,9 +873,12 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             End If
             
             'Find the best palette match
-            minIndex = GetNearestPaletteIndex(hPal, RGB(newR, newG, newB))
+            tmpQuad.Blue = newB
+            tmpQuad.Green = newG
+            tmpQuad.Red = newR
+            newQuad = kdTree.GetNearestColor(tmpQuad)
             
-            With srcPalette(minIndex)
+            With newQuad
             
                 'Apply the closest discovered color to this pixel.
                 srcPixels(x, y) = .Blue
@@ -1121,8 +956,6 @@ NextDitheredPixel:
     End If
     
     dstDIB.UnwrapArrayFromDIB srcPixels
-    
-    If (hPal <> 0) Then DeleteObject hPal
     
     ApplyPaletteToImage_Dithered = True
     

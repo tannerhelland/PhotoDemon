@@ -99,7 +99,7 @@ Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad, Optional ByVal
 End Function
 
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
-Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
+Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicates As Boolean = True, Optional ByVal sortForPerformance As Boolean = False) As Boolean
     
     Me.Reset
     
@@ -108,18 +108,18 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     '  mid-way through a load attempt.)
     
     'Look for Adobe's basic color table format
-    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile)
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, sortForPerformance)
     
     'Look for Adobe color swatches next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile)
+        LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, sortForPerformance)
     End If
     
     'Look for the new-ish Adobe swatch exchange fromat next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile)
+        LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, sortForPerformance)
     End If
     
     'Look for GIMP palettes next.  Note that GIMP palettes are supposed to have the .gpl extension,
@@ -128,19 +128,19 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String) As Boolean
     ' source file is binary, but these issues are handled safely.
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteGIMP(srcFile)
+        LoadPaletteFromFile = LoadPaletteGIMP(srcFile, removeDuplicates, sortForPerformance)
     End If
     
     'Look for PaintShop Pro palettes next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile)
+        LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, sortForPerformance)
     End If
     
     'Look for Paint.NET palettes next
     If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile)
+        LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, sortForPerformance)
     End If
     
     'If all palette parsers failed, reset our internals

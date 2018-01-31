@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.319</langversion>
+<langversion>6.7.320</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -15134,6 +15134,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- pdPaletteChild.cls contains 0 phrases. -->
 
 <!-- END text for pdPaletteChild.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- Automatic text extraction complete. -->
 

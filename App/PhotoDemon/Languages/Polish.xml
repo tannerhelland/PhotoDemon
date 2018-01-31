@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>6.8.3302</langversion>
+<langversion>6.8.3303</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15116,6 +15116,18 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 <!-- pdPaletteChild.cls contains 0 phrases. -->
 
 <!-- END text for pdPaletteChild.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- Automatic text extraction complete. -->
 

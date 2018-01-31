@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.322</langversion>
+<langversion>6.7.323</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -15135,6 +15135,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- pdPaletteChild.cls contains 0 phrases. -->
 
 <!-- END text for pdPaletteChild.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- Automatic text extraction complete. -->
 
