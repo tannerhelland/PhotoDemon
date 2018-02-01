@@ -283,8 +283,8 @@ Attribute VB_Exposed = False
 '"Palettize" (e.g. reduce image color count) Dialog
 'Copyright 2000-2018 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 17/January/18
-'Last update: add rudimentary support for "import palette from file"
+'Last updated: 01/February/18
+'Last update: improve progress bar reporting
 '
 'This dialog allows the user to reduce the number of colors in the current image.  In the future, it would be nice
 ' to allow palettes loaded from file or selected from an internal swatch manager (and in fact, the code is already
@@ -478,8 +478,8 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
     
     If (Not toPreview) Then
-        SetProgBarMax 3
-        SetProgBarVal 1
+        SetProgBarMax workingDIB.GetDIBHeight * 2
+        SetProgBarVal 0
         Message "Generating optimal palette..."
     End If
     
@@ -512,6 +512,11 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
     Dim finalPalette() As RGBQuad, finalPaletteCount As Long
     
+    If (Not toPreview) Then
+        SetProgBarVal workingDIB.GetDIBHeight
+        Message "Applying new palette to image..."
+    End If
+    
     If (quantMethod = PDCQ_MedianCut) Then
     
         'Resize the target DIB to a smaller size
@@ -524,16 +529,11 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         'Preserve black and white, as necessary
         If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, smallDIB
         
-        If (Not toPreview) Then
-            SetProgBarVal 2
-            Message "Applying new palette to image..."
-        End If
-        
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
+            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
+            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
         End If
     
     Else
@@ -545,11 +545,6 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         Dim fi_DIB8 As Long
         fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, outputAlphaMode, currentAlphaState, alphaCutoff, finalBackColor, , paletteSize, , , fiQuantMode)
         FreeImage_FlipVertically fi_DIB8
-        
-        If (Not toPreview) Then
-            SetProgBarVal 2
-            Message "Applying new palette to image..."
-        End If
         
         'If the caller does *not* want dithering, copy the (already palettized) FreeImage DIB over our
         ' original DIB.
@@ -579,9 +574,9 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
             'Apply the generated palette to our target image, using the method requested
             If (finalPaletteCount <> 0) Then
                 If (ditherMethod = PDDM_None) Then
-                    Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
+                    Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
                 Else
-                    Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
+                    Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
                 End If
             End If
             
@@ -628,7 +623,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
     
     If (Not toPreview) Then
-        SetProgBarMax 2
+        SetProgBarMax workingDIB.GetDIBHeight
         SetProgBarVal 0
     End If
     
@@ -639,16 +634,13 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
         
         m_Palette.CopyPaletteToArray finalPalette, srcPaletteIndex
         
-        If (Not toPreview) Then
-            SetProgBarVal 2
-            Message "Applying new palette to image..."
-        End If
+        If (Not toPreview) Then Message "Applying new palette to image..."
         
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette
+            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed
+            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, reduceBleed, toPreview, workingDIB.GetDIBHeight
         End If
         
     End If
