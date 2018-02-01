@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Child Container (see pdPalette for additional details)
 'Copyright 2018-2018 by Tanner Helland
 'Created: 25/January/18
-'Last updated: 26/January/18
-'Last update: split RGBA management into a child class, so a single pdPalette instance can
-'             properly support multiple independent palette groups.
+'Last updated: 01/Feburary/18
+'Last update: remove 256 color limit on palettes; size is now unrestricted
 '
 'Please the pdPalette class for additional details on how this child class works.  Individual palette files
 ' (Adobe Swatch Exchange files, in particular) can actually contain multiple independent palette groups.
@@ -36,13 +35,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'PD is presently designed around 8-bit palettes, but with some tweaking, we could probably increase this
-' amount in the future.  Our biggest problem at present is that we lean on built-in WAPI functions for
-' palette matching, as they work just as fast in the IDE when I'm testing various bits of palette code.
-' If I ever get around to understanding how VP trees work, I'd like to move to them as a solution for
-' faster palette matching on our own, which would make performance feasible for palettes larger than
-' 256 colors.
-Private Const MAX_PALETTE_SIZE As Long = 256
+'If you want to restrict palettes to a maximum count (e.g. 256 colors), set this value to 256
+' or any other limit.  PD has its own internal palette matchers that support color indices > 8-bits,
+' so we don't need this feature, but some GDI functions and/or image formats won't work with large
+' color counts and this can be a helpful way to restrict color count.
+Private Const MAX_PALETTE_SIZE As Long = LONG_MAX
 
 'This initial palette size is always allocated by default on a new class instance.  Make it smaller
 ' to conserve memory; make it larger to improve performance when adding new colors to the palette.
@@ -205,6 +202,58 @@ Friend Sub FindAndRemoveDuplicates()
     
 End Sub
 
+'As a faster option, if you first sort the palette by RGB order, removing duplicates is a piece of cake as
+' we can simply check neighboring entries for matches.  Thanks to our nice QuickSort implementation, this
+' is a much faster O(nLog(n)) operation (compared to O(n^2) for the regular remove duplicates function).
+Friend Sub FindAndRemoveDuplicates_Fast()
+
+    'Only palettes with multiple entries need to be searched for duplicates
+    If (m_NumOfColors <= 1) Then Exit Sub
+    
+    Dim needsRemoval() As Byte
+    ReDim needsRemoval(0 To UBound(m_Palette)) As Byte
+    
+    Dim i As Long, j As Long, targetValue As RGBQuad, duplicatesFound As Boolean
+    For i = 0 To UBound(m_Palette) - 1
+        
+        'Because the palette is sorted, we only need to compare neighboring entries
+        targetValue = m_Palette(i).ColorValue
+        
+        With m_Palette(i + 1)
+            If (.ColorValue.Red = targetValue.Red) And (.ColorValue.Green = targetValue.Green) And (.ColorValue.Blue = targetValue.Blue) And (.ColorValue.Alpha = targetValue.Alpha) Then
+                If Strings.StringsEqual(.colorName, m_Palette(i).colorName) Then
+                    needsRemoval(i + 1) = 1
+                    duplicatesFound = True
+                End If
+            End If
+        End With
+        
+    Next i
+    
+    'Remove all flagged entries
+    If duplicatesFound Then
+    
+        Dim numRemoved As Long
+        
+        For i = 1 To m_NumOfColors - 1
+            If (needsRemoval(i) = 0) Then
+                m_Palette(i - numRemoved) = m_Palette(i)
+            Else
+                numRemoved = numRemoved + 1
+            End If
+        Next i
+        
+        m_NumOfColors = m_NumOfColors - numRemoved
+        ReDim Preserve m_Palette(0 To m_NumOfColors - 1) As PDPaletteEntry
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
+        #End If
+        
+    End If
+    
+End Sub
+
 'Some palette sort methods are better when order is randomized.  (Note that we use a fixed key
 ' for debugging and profiling purposes.)
 Friend Sub RandomizeOrder()
@@ -226,37 +275,6 @@ Friend Sub RandomizeOrder()
         m_Palette(secondIndex) = tmpEntry
     Next i
 
-End Sub
-
-'When constructing palette matching trees, it is often useful to sort a palette by luminance
-' (e.g. along the diagonal of the RGB cube).  This makes it easier to produce a balanced nearest-neighbor
-' structure for color-matching.
-Friend Sub SortByLuminance()
-
-    'We don't actually use true "luminance" for the sort; instead, we treat RGB coordinates as literal
-    ' positions within a 3D RGB cube, and we use their positions to sort along the cube's diagonal.
-    ' (Note that alpha is *not* considered during the sort, by design.)
-    Dim pSort() As PaletteSort
-    ReDim pSort(0 To m_NumOfColors - 1) As PaletteSort
-    
-    Dim r As Long, g As Long, b As Long
-    
-    Dim i As Long
-    For i = 0 To m_NumOfColors - 1
-        
-        With m_Palette(i).ColorValue
-            r = .Red
-            g = .Green
-            b = .Blue
-        End With
-        
-        pSort(i).pOrigIndex = i
-        pSort(i).pSortCriteria = r * r + g * g + b * b
-        
-    Next i
-    
-    FinishSort pSort
-    
 End Sub
 
 'When constructing KD-trees specifically, sorting along a single channel (likely red?) can lead to a more
@@ -287,6 +305,68 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
         Else
             pSort(i).pSortCriteria = b
         End If
+        
+    Next i
+    
+    FinishSort pSort
+    
+End Sub
+
+'When removing duplicates from a large palette, it will go much faster if you first sort the array
+' into its literal RGB order (e.g. from lowest combined long value to highest).  Then you can remove
+' duplicate entries by simply checking neighbors.
+Friend Sub SortFixedOrder()
+
+    'We don't actually use true "luminance" for the sort; instead, we treat RGB coordinates as literal
+    ' positions within a 3D RGB cube, and we use their positions to sort along the cube's diagonal.
+    ' (Note that alpha is *not* considered during the sort, by design.)
+    Dim pSort() As PaletteSort
+    ReDim pSort(0 To m_NumOfColors - 1) As PaletteSort
+    
+    Dim r As Long, g As Long, b As Long
+    
+    Dim i As Long
+    For i = 0 To m_NumOfColors - 1
+        
+        With m_Palette(i).ColorValue
+            r = .Red
+            g = .Green
+            b = .Blue
+        End With
+        
+        pSort(i).pOrigIndex = i
+        pSort(i).pSortCriteria = RGB(r, g, b)
+        
+    Next i
+    
+    FinishSort pSort
+    
+End Sub
+
+'When constructing palette matching trees, it is often useful to sort a palette by luminance
+' (e.g. along the diagonal of the RGB cube).  This makes it easier to produce a balanced nearest-neighbor
+' structure for color-matching.
+Friend Sub SortByLuminance()
+
+    'We don't actually use true "luminance" for the sort; instead, we treat RGB coordinates as literal
+    ' positions within a 3D RGB cube, and we use their positions to sort along the cube's diagonal.
+    ' (Note that alpha is *not* considered during the sort, by design.)
+    Dim pSort() As PaletteSort
+    ReDim pSort(0 To m_NumOfColors - 1) As PaletteSort
+    
+    Dim r As Long, g As Long, b As Long
+    
+    Dim i As Long
+    For i = 0 To m_NumOfColors - 1
+        
+        With m_Palette(i).ColorValue
+            r = .Red
+            g = .Green
+            b = .Blue
+        End With
+        
+        pSort(i).pOrigIndex = i
+        pSort(i).pSortCriteria = r * r + g * g + b * b
         
     Next i
     

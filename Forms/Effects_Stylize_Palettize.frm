@@ -608,7 +608,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     If (Not m_Palette Is Nothing) Then mustLoadPalette = Strings.StringsNotEqual(srcPaletteFile, m_Palette.GetPaletteFilename())
     If mustLoadPalette Then
         Set m_Palette = New pdPalette
-        m_Palette.LoadPaletteFromFile srcPaletteFile
+        m_Palette.LoadPaletteFromFile srcPaletteFile, True, False
     End If
     
     'Make sure the passed palette group ID is valid.  (Some palette file formats support multiple palettes
@@ -773,7 +773,7 @@ Private Sub UpdatePaletteFileInfo()
             lstPalettes.Clear
             lstPalettes.SetAutomaticRedraws False, False
             
-            If m_Palette.LoadPaletteFromFile(txtPalette.Text) Then
+            If m_Palette.LoadPaletteFromFile(txtPalette.Text, True, False) Then
                 
                 Dim i As Long, palText As String
                 For i = 0 To m_Palette.GetPaletteGroupCount - 1

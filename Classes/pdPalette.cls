@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 26/January/18
-'Last update: large code clean-up, migrate palette-specific details to a child class, add support for embedded
-'             groups inside ASE files
+'Last updated: 01/February/18
+'Last update: standardize LoadFromFile() signatures, implement much faster duplicate color removal technique
 '
 '(This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -99,7 +98,7 @@ Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad, Optional ByVal
 End Function
 
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
-Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicates As Boolean = True, Optional ByVal sortForPerformance As Boolean = False) As Boolean
+Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     Me.Reset
     
@@ -108,18 +107,18 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
     '  mid-way through a load attempt.)
     
     'Look for Adobe's basic color table format
-    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, sortForPerformance)
+    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     
     'Look for Adobe color swatches next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, sortForPerformance)
+        LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     End If
     
     'Look for the new-ish Adobe swatch exchange fromat next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, sortForPerformance)
+        LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     End If
     
     'Look for GIMP palettes next.  Note that GIMP palettes are supposed to have the .gpl extension,
@@ -128,19 +127,19 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
     ' source file is binary, but these issues are handled safely.
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPaletteGIMP(srcFile, removeDuplicates, sortForPerformance)
+        LoadPaletteFromFile = LoadPaletteGIMP(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     End If
     
     'Look for PaintShop Pro palettes next
     If (Not LoadPaletteFromFile) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, sortForPerformance)
+        LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     End If
     
     'Look for Paint.NET palettes next
     If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then
         Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, sortForPerformance)
+        LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, removeDuplicateColors, retainOriginalColorOrder)
     End If
     
     'If all palette parsers failed, reset our internals
@@ -149,7 +148,7 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
-Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
     
@@ -417,9 +416,17 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                         If (Not m_Palettes(i) Is Nothing) Then
                         
                             m_Palettes(i).SetPaletteFilename srcFile
-                        
-                            'As a failsafe, remove duplicate entries
-                            m_Palettes(i).FindAndRemoveDuplicates
+                            
+                            'If original color order is not required, we can sort the palette prior to removing
+                            ' duplicate palette entries; this makes the process much faster.
+                            If removeDuplicateColors Then
+                                If retainOriginalColorOrder Then
+                                    m_Palettes(i).FindAndRemoveDuplicates
+                                Else
+                                    m_Palettes(i).SortFixedOrder
+                                    m_Palettes(i).FindAndRemoveDuplicates_Fast
+                                End If
+                            End If
                             
                         End If
                         
@@ -457,7 +464,7 @@ BadSwatchData:
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
-Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
     
@@ -665,8 +672,16 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                     'Make sure at least one valid color was found
                     If (m_Palettes(m_NumOfGroups).GetNumOfColors() > 0) Then
                         
-                        'As a failsafe, remove duplicate entries
-                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                        'If original color order is not required, we can sort the palette prior to removing
+                        ' duplicate palette entries; this makes the process much faster.
+                        If removeDuplicateColors Then
+                            If retainOriginalColorOrder Then
+                                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                            Else
+                                m_Palettes(m_NumOfGroups).SortFixedOrder
+                                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                            End If
+                        End If
                         
                         'If we haven't errored out, consider this a successful parse
                         m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
@@ -709,7 +724,7 @@ End Function
 
 'PaintShop Pro palettes use multiple extensions, but all are just text files with a line-delimited list of
 ' RGB triples.
-Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
 
     On Error GoTo BadPaintShopProPalette
     
@@ -823,14 +838,16 @@ BadLineColor:
                 m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
                 m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
                 
-                'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format,
-                ' PSP palettes make no guarantees, and we don't want to waste time palette-matching
-                ' duplicate entries.)
-                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
-                
-                'If the user plans to use this palette for color-matching (and really, what else are they gonna
-                ' do with it?) we can pre-sort the palette to improve matching performance.
-                If optimizeForPerformance Then m_Palettes(m_NumOfGroups).SortByLuminance
+                'If original color order is not required, we can sort the palette prior to removing
+                ' duplicate palette entries; this makes the process much faster.
+                If removeDuplicateColors Then
+                    If retainOriginalColorOrder Then
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                    Else
+                        m_Palettes(m_NumOfGroups).SortFixedOrder
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                    End If
+                End If
                 
                 'Finally, increment our group count
                 m_NumOfGroups = m_NumOfGroups + 1
@@ -852,7 +869,7 @@ End Function
 
 'Paint.NET palettes are just text files with a list of hex chars.  Unlike other palette formats,
 ' they *do* support alpha values.
-Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
 
     On Error GoTo BadPaintDotNetPalette
     
@@ -908,7 +925,6 @@ Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal 
                     m_Palettes(m_NumOfGroups).AddColor tmpQuad
                     
 BadLineColor:
-                
                 End If
             
             Next i
@@ -922,14 +938,16 @@ BadLineColor:
                 m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
                 m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
                 
-                'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format,
-                ' Paint.NET makes no guarantees, but we don't want to waste time palette-matching
-                ' duplicate entries.)
-                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
-                
-                'If the user plans to use this palette for color-matching (and really, what else are they gonna
-                ' do with it?) we can pre-sort the palette to improve matching performance.
-                If optimizeForPerformance Then m_Palettes(m_NumOfGroups).SortByLuminance
+                'If original color order is not required, we can sort the palette prior to removing
+                ' duplicate palette entries; this makes the process much faster.
+                If removeDuplicateColors Then
+                    If retainOriginalColorOrder Then
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                    Else
+                        m_Palettes(m_NumOfGroups).SortFixedOrder
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                    End If
+                End If
             
                 m_NumOfGroups = m_NumOfGroups + 1
                 
@@ -949,7 +967,7 @@ BadPaintDotNetPalette:
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
-Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadACTData
     
@@ -975,9 +993,16 @@ Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, Optional By
                     m_Palettes(m_NumOfGroups).AddColor tmpQuad
                 Next i
                 
-                'Duplicates must always be removed, as ACT files don't guarantee a descriptor for
-                ' "how many relevant colors exist"
-                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                'If original color order is not required, we can sort the palette prior to removing
+                ' duplicate palette entries; this makes the process much faster.
+                If removeDuplicateColors Then
+                    If retainOriginalColorOrder Then
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                    Else
+                        m_Palettes(m_NumOfGroups).SortFixedOrder
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                    End If
+                End If
                 
                 'If we haven't errored out, consider this a successful parse
                 m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
@@ -999,7 +1024,7 @@ BadACTData:
 End Function
 
 'Given a valid path to a GIMP-format .gpl file, return an array of RGBQuad entries
-Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal optimizeForPerformance As Boolean = False) As Boolean
+Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo InvalidPalette
     
@@ -1109,13 +1134,16 @@ BadLineColor:
             'If we haven't errored out, consider this a valid parse
             LoadPaletteGIMP = True
             
-            'On valid loads, check and remove any duplicate palette entries.  (As an ASCII format, GIMP makes
-            ' no guarantees about this, but we don't want to waste time palette-matching duplicate entries.)
-            If removeDuplicateColors Then m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
-            
-            'If the user plans to use this palette for color-matching (and really, what else are they gonna
-            ' do with it?) we can pre-sort the palette to improve matching performance.
-            If optimizeForPerformance Then m_Palettes(m_NumOfGroups).SortByLuminance
+            'If original color order is not required, we can sort the palette prior to removing
+            ' duplicate palette entries; this makes the process much faster.
+            If removeDuplicateColors Then
+                If retainOriginalColorOrder Then
+                    m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                Else
+                    m_Palettes(m_NumOfGroups).SortFixedOrder
+                    m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                End If
+            End If
             
         Else
             LoadPaletteGIMP = False
