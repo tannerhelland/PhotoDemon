@@ -2761,6 +2761,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
     #End If
     
+    g_UserPreferences.StartBatchPreferenceMode
     FormMain.mainCanvas(0).WriteUserPreferences
     Toolboxes.SaveToolboxData
     
@@ -2963,6 +2964,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
+    g_UserPreferences.EndBatchPreferenceMode
     
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
     #If DEBUGMODE = 1 Then
@@ -4112,50 +4114,6 @@ End Sub
 Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
-    
-    Dim testPalette As pdPalette
-    Set testPalette = New pdPalette
-    If testPalette.LoadPaletteFromFile("C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Web.gpl") Then
-        
-        'Copy the palette into a bare RGBQuad array
-        Dim listColors() As RGBQuad
-        testPalette.CopyPaletteToArray listColors
-        
-        'We now want to test KDTree matching.  Construct a KDTree for this palette
-        Dim kdTree As pdKDTree
-        Set kdTree = New pdKDTree
-        kdTree.BuildTree listColors, testPalette.GetPaletteColorCount()
-        
-        'Try finding a nearest color?
-        Dim NearestColor As RGBQuad, testColor As RGBQuad
-        
-        Randomize -1
-        Randomize Timer
-        
-        With testColor
-            .Red = Rnd * 256: .Green = Rnd * 256: .Blue = Rnd * 256
-        End With
-        
-        NearestColor = kdTree.GetNearestColor(testColor)
-        
-        Debug.Print "KD", NearestColor.Red, NearestColor.Green, NearestColor.Blue
-        
-        Dim bestMatch As RGBQuad, bestDistance As Double, testDistance As Double
-        bestDistance = DOUBLE_MAX
-        
-        Dim i As Long
-        For i = LBound(listColors) To UBound(listColors)
-            testDistance = PDMath.DistanceThreeDimensions(listColors(i).Red, listColors(i).Green, listColors(i).Blue, testColor.Red, testColor.Green, testColor.Blue)
-            If (testDistance < bestDistance) Then
-                bestDistance = testDistance
-                bestMatch = listColors(i)
-            End If
-        Next i
-        
-        Debug.Print "RAW", bestMatch.Red, bestMatch.Green, bestMatch.Blue
-        
-    End If
-    
 End Sub
 
 'All tool menu items are launched from here
