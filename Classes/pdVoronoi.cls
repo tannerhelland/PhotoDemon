@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Voronoi class
 'Copyright 2014-2018 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 08/August/17
-'Last update: minor code cleanup
+'Last updated: 02/February/18
+'Last update: fix potential crash on very small input images (thank you to GioRock for reporting)
 'Dependencies: pdRandomize (for randomizing point distribution)
 '
 'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (http://en.wikipedia.org/wiki/Worley_noise),
@@ -133,6 +133,10 @@ Friend Sub InitPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     'Calculate the number of rows and columns in the array, as a function of cell size and image size
     m_numRows = m_imgHeight \ m_cellSize
     m_numColumns = m_imgWidth \ m_cellSize
+    
+    'Enforce a minimum row and column size
+    If (m_numRows < 1) Then m_numRows = 1
+    If (m_numColumns < 1) Then m_numColumns = 1
     
     'Resize all arrays to match
     ReDim m_vPoints(0 To m_numColumns - 1, 0 To m_numRows - 1) As POINTAPI
