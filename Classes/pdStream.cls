@@ -50,6 +50,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrToDestination As Long, ByVal ptrToSource As Long, ByVal memLength As Long)
+Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
+Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 Private Declare Function ntohl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function ntohs Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 
@@ -666,6 +668,41 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
     
 End Function
 
+'Write a single integer to the stream.
+Friend Function WriteInt(ByVal srcInt As Integer) As Boolean
+    WriteInt = WriteBytesFromPointer(VarPtr(srcInt), 2)
+End Function
+
+'Write a single integer to the stream, *after* converting it to big-endian format.
+Friend Function WriteInt_BE(ByVal srcInt As Integer) As Boolean
+    WriteInt_BE = WriteInt(htons(srcInt))
+End Function
+
+'Unsigned int writes; pass a Long, per PD convention.
+Friend Function WriteIntU(ByVal srcInt As Long) As Boolean
+    Dim tmpInteger As Integer
+    CopyMemory_Strict VarPtr(tmpInteger), VarPtr(srcInt) + 2, 2
+    WriteIntU = WriteBytesFromPointer(VarPtr(tmpInteger), 2)
+End Function
+
+'Big-endian unsigned int writes
+Friend Function WriteIntU_BE(ByVal srcInt As Long) As Boolean
+    Dim tmpInteger As Integer
+    CopyMemory_Strict VarPtr(tmpInteger), VarPtr(srcInt), 2
+    tmpInteger = htons(tmpInteger)
+    WriteIntU_BE = WriteBytesFromPointer(VarPtr(tmpInteger), 2)
+End Function
+
+'Write a single long to the stream.
+Friend Function WriteLong(ByVal srcLong As Long) As Boolean
+    WriteLong = WriteBytesFromPointer(VarPtr(srcLong), 4)
+End Function
+
+'Write a single long to the stream, *after* converting it to big-endian format.
+Friend Function WriteLong_BE(ByVal srcLong As Long) As Boolean
+    WriteLong_BE = WriteLong(htonl(srcLong))
+End Function
+
 'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.
 ' Unlike the various ReadXYZ() functions, this function does *not* modify the current stream pointer.
 '
@@ -702,8 +739,8 @@ End Function
 '
 'This function is currently designed against PhotoDemon's unique needs, where stream objects tend to wrap very large
 ' targets (like image files).  If you only use this class for very small streams, you may want to change the allocation
-' strategy to better support tiny objects.  (Also, you'll want to look at the .StartStream function - by default, streams
-' are allocated as 4k to start.  That may be too big for something like a string builder.)
+' strategy to better support tiny objects.  (Also, you'll want to look at the .StartStream function - by default,
+' memory streams are allocated as 4k to start.  That may be too big for something like a string builder.)
 '
 'Returns: TRUE if the buffer was successfully resized to ensure (n) bytes are available; FALSE otherwise.  If this stream
 '         is not open, returns FALSE.  If this stream was opened in file-backed mode, this function does nothing.

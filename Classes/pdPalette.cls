@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 01/February/18
-'Last update: standardize LoadFromFile() signatures, implement much faster duplicate color removal technique
+'Last updated: 02/February/18
+'Last update: add support for writing Photoshop Swatch files (.aco)
 '
 '(This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -380,7 +380,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                                 ' reset it after processing this block.
                                 
                                 'Assign this name to the current group.
-                                m_Palettes(m_NumOfGroups).SetPaletteName Trim$(curGroupName)
+                                m_Palettes(m_NumOfGroups).SetPaletteName Trim$(Strings.TrimNull(curGroupName))
                                 
                                 'Note that we've found a group in this file
                                 numGroupsFound = numGroupsFound + 1
@@ -463,7 +463,7 @@ BadSwatchData:
     
 End Function
 
-'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
+'Given a valid path to a Photoshop-format .aco file (Adobe Photoshop Swatch), return an array of RGBQuad entries
 Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
@@ -544,9 +544,9 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                                 dummyInt = srcData.ReadInt()
                                 
                                 'Downconvert the 16-bit entries to 8-bit
-                                r = (r \ 256)
-                                g = (g \ 256)
-                                b = (b \ 256)
+                                r = (r \ 257)
+                                g = (g \ 257)
+                                b = (b \ 257)
                                 
                                 'Failsafe checks
                                 If (r > 255) Then r = 255
@@ -570,10 +570,10 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                                 k = srcData.ReadIntUnsigned_BE()
                                 
                                 'Downconvert the 16-bit entries to 8-bit and invert
-                                c = 255! - (c / 256!)
-                                m = 255! - (m / 256!)
-                                y = 255! - (y / 256!)
-                                k = 255! - (k / 256!)
+                                c = 255! - (c / 257!)
+                                m = 255! - (m / 257!)
+                                y = 255! - (y / 257!)
+                                k = 255! - (k / 257!)
                                 
                                 'Convert these to RGB literals using an entirely different spec as our guide
                                 ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
@@ -661,6 +661,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                             'If we were able to retrieve RGBA components, add both this color and its name
                             ' to the running collection.
                             If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
+                            If Len(srcColorName) <> 0 Then Debug.Print srcColorName
                         
                         'On v1 swatches, color names are not supported; just add the RGBA components
                         Else
@@ -1161,6 +1162,122 @@ BadLineColor:
 InvalidPalette:
     LoadPaletteGIMP = False
 
+End Function
+
+'Given a path to an .aco file (Adobe Photoshop Swatch extension), write the designated palette group to the file.
+' - An existing .aco file with the same name, if one exists, will be overwritten.
+' - Swatch version can be specified.  By default (-1), PhotoDemon will choose the best format for you.  If the
+'    source palette does not contain color names, a v1 swatch will be written.  If the source palette *does* contain
+'    color names, PD will write a v2 version.  You can override this by specifying the version you want.
+Friend Function SavePaletteAdobeSwatch(ByRef dstFile As String, Optional ByVal swatchVersion As Long = -1, Optional ByVal useGroupIndex As Long = 0) As Boolean
+    
+    On Error GoTo BadSwatchData
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'This function references the Adobe spec frequently, particularly for things like magic numbers.  Here is the
+    ' link I used (good as of Jan '18): http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_31265
+    
+    'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll use a pdStream object
+    ' with its _BE suffixed functions to greatly simplify the write process.
+    Dim dstData As pdStream
+    Set dstData = New pdStream
+    If dstData.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, , , OptimizeSequentialAccess) Then
+    
+        'Per the Adobe spec, swatch files are just long lists of 16-bit words.  This makes writing them straightforward.
+        
+        'Start by writing the version number we're using.  Version 2 allows us to also write color names.
+        ' (If the user passed -1, choose a version for them.  Palettes without color names will be preferentially written
+        '  in the v1 format.)
+        If (swatchVersion < 1) Then
+            If m_Palettes(useGroupIndex).DoesPaletteUseColorNames Then swatchVersion = 2 Else swatchVersion = 1
+        ElseIf (swatchVersion > 2) Then
+            swatchVersion = 2
+        End If
+        
+        Dim swatchIterate As Long
+        For swatchIterate = 1 To swatchVersion
+        
+            dstData.WriteInt_BE swatchIterate
+            
+            'Regardless of swatch version, we always write a v1 swatch first.  v2 swatches are simply v1 swatches with
+            ' a special trailer.
+            
+            'Next, we need to write the number of colors in the palette
+            Dim numOfColors As Long
+            numOfColors = m_Palettes(useGroupIndex).GetNumOfColors()
+            Debug.Print "writing " & numOfColors & " colors to file..."
+            dstData.WriteIntU_BE numOfColors
+            
+            'PD always writes colors as RGB
+            Dim targetColorSpace As AdobeSwatchColorSpace
+            targetColorSpace = ASCS_RGB
+            
+            'Loop through all colors and write them as we go!
+            Dim tmpPalEntry As PDPaletteEntry
+            Dim r As Long, g As Long, b As Long
+            
+            Dim i As Long
+            For i = 0 To numOfColors - 1
+                
+                tmpPalEntry = m_Palettes(useGroupIndex).GetPaletteEntry(i)
+                
+                'Write the color space identifier
+                dstData.WriteInt_BE targetColorSpace
+                
+                'Write RGB values, but convert them to unsigned Ints on the range [0, 65535] first
+                With tmpPalEntry.ColorValue
+                    r = .Red
+                    g = .Green
+                    b = .Blue
+                End With
+                
+                dstData.WriteIntU_BE r * 257
+                dstData.WriteIntU_BE g * 257
+                dstData.WriteIntU_BE b * 257
+                dstData.WriteIntU_BE 0
+                
+                'If this is a v2 swatch, we also want to write this color's name out to file.
+                If (swatchIterate = 2) Then
+                    
+                    'Retrieve the color name, if any
+                    Dim srcColorName As String
+                    srcColorName = tmpPalEntry.colorName
+                    
+                    'Write the length of this color's name
+                    Dim colorLen As Long
+                    colorLen = Len(srcColorName)
+                    dstData.WriteLong_BE colorLen
+                    
+                    'If the length is non-zero, write each string char in turn, converting to big-endian as we go
+                    If (colorLen > 0) Then
+                        
+                        Dim j As Long
+                        For j = 1 To colorLen
+                            dstData.WriteIntU_BE AscW(Mid$(srcColorName, j, 1))
+                        Next j
+                        
+                    End If
+                    
+                End If
+                
+            Next i
+            
+        Next swatchIterate
+        
+        'That's all!
+        dstData.StopStream
+        
+        SavePaletteAdobeSwatch = True
+        
+    End If
+    
+    Exit Function
+    
+BadSwatchData:
+    InternalProblem "SavePaletteAdobeSwatch error # " & CStr(Err.Number) & ": " & Err.Description
+    SavePaletteAdobeSwatch = False
+    
 End Function
 
 Friend Sub Reset()

@@ -96,8 +96,29 @@ Friend Sub CreateFromRGBQuads(ByRef srcArray() As RGBQuad, Optional ByVal palett
     
 End Sub
 
+'If at least one color has a name, this function will return TRUE.
+Friend Function DoesPaletteUseColorNames() As Boolean
+    
+    If (Me.GetNumOfColors > 0) Then
+        
+        Dim i As Long
+        For i = 0 To Me.GetNumOfColors - 1
+            DoesPaletteUseColorNames = (Len(m_Palette(i).colorName) <> 0)
+            If DoesPaletteUseColorNames Then Exit Function
+        Next i
+        
+    Else
+        DoesPaletteUseColorNames = False
+    End If
+    
+End Function
+
 Friend Function GetNumOfColors() As Long
     GetNumOfColors = m_NumOfColors
+End Function
+
+Friend Function GetPaletteEntry(ByVal palIndex As Long) As PDPaletteEntry
+    GetPaletteEntry = m_Palette(palIndex)
 End Function
 
 Friend Function GetPaletteFilename() As String
