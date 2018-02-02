@@ -652,6 +652,8 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                                     Mid$(srcColorName, j, 1) = ChrW(tmpChar)
                                 Next j
                                 
+                                srcColorName = Strings.TrimNull(srcColorName)
+                                
                             Else
                                 srcColorName = vbNullString
                             End If
@@ -1026,10 +1028,7 @@ Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeD
     
     On Error GoTo InvalidPalette
     
-    'GIMP palettes contain extra information that PD doesn't currently have a way to use.  We only parse the
-    ' information we require, so you may need to look elsewhere for a full parsing.
-    
-    'Dump the full file into a string
+    'Dump the full file into a VB string
     Dim rawFileString As String
     LoadPaletteGIMP = Files.FileLoadAsString(srcFile, rawFileString, True)
     
@@ -1121,7 +1120,7 @@ Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeD
                         ' of the sample palettes I downloaded from the Internet came with names, so we support 'em here.
                         Dim srcColorName As String
                         srcColorName = vbNullString
-                        If (InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) <> 0) Then
+                        If (InStr(1, Trim$(curLine), SPACE_CHAR, vbBinaryCompare) <> 0) Then
                             curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare))) & SPACE_CHAR
                             If (Len(curLine) <> 0) Then srcColorName = curLine
                         End If
@@ -1282,6 +1281,67 @@ BadSwatchData:
     InternalProblem "SavePaletteAdobeSwatch error # " & CStr(Err.Number) & ": " & Err.Description
     SavePaletteAdobeSwatch = False
     
+End Function
+
+'Given a path to a .gpl file (GIMP Palette), write the designated palette group to the file.
+' - An existing .gpl file with the same name, if one exists, will be overwritten.
+Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroupIndex As Long = 0, Optional ByVal addPDCredit As Boolean = True) As Boolean
+    
+    On Error GoTo InvalidPalette
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'GIMP palettes are just text files, and pdString makes it easy to efficiently assemble an in-memory string
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'Start by writing a few standard lines, kind of like a header
+    With dstText
+        .AppendLine "GIMP Palette"
+        If (Len(m_Palettes(useGroupIndex).GetPaletteName()) <> 0) Then .AppendLine "Name: " & m_Palettes(useGroupIndex).GetPaletteName()
+        .AppendLine "#"
+        If addPDCredit Then
+            .AppendLine "# " & g_Language.TranslateMessage("Palette exported by PhotoDemon - %1", "http://photodemon.org")
+            .AppendLine "#"
+        End If
+    End With
+    
+    Const SPACE_CHAR As String = " "
+            
+    'Next come all the colors.  Color names, if they exist, will be written automatically.
+    Dim i As Long, tmpPaletteEntry As PDPaletteEntry, colorLine As String
+    For i = 0 To m_Palettes(useGroupIndex).GetNumOfColors() - 1
+        
+        tmpPaletteEntry = m_Palettes(useGroupIndex).GetPaletteEntry(i)
+        
+        With tmpPaletteEntry
+            colorLine = GIMPColorHelper(.ColorValue.Red) & SPACE_CHAR & GIMPColorHelper(.ColorValue.Green) & SPACE_CHAR & GIMPColorHelper(.ColorValue.Blue)
+            
+            'I realize that use of a tab char here is odd, but the palette files that ship with GIMP files
+            ' all use tab delimiters (instead of spaces) before the color name.  I don't know why.
+            If (Len(.colorName) <> 0) Then colorLine = colorLine & vbTab & .colorName
+        End With
+        
+        dstText.AppendLine colorLine
+        
+    Next i
+    
+    'That's all there is to it!  Write the finished text out to file.
+    Dim finalText As String
+    finalText = dstText.ToString()
+    SavePaletteGIMP = Files.FileSaveAsText(finalText, dstFile, True, False)
+    
+    Exit Function
+
+InvalidPalette:
+    SavePaletteGIMP = False
+
+End Function
+
+'GIMP palette files like to format colors as strings with guaranteed length 3; spaces are prepended as necessary.
+Private Function GIMPColorHelper(ByVal srcColor As Long) As String
+    GIMPColorHelper = CStr(srcColor)
+    If (Len(GIMPColorHelper) < 3) Then GIMPColorHelper = String$(3 - Len(GIMPColorHelper), " ") & GIMPColorHelper
 End Function
 
 Friend Sub Reset()
