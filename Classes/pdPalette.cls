@@ -512,8 +512,6 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                     ' ending up with two of every color!
                     If dualSwatchFile Then Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
                     
-                    Debug.Print "Adobe swatch contains " & CStr(numOfColors) & " colors."
-                    
                     Dim i As Long, j As Long
                     For i = 0 To numOfColors - 1
                         
@@ -661,8 +659,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal 
                             'If we were able to retrieve RGBA components, add both this color and its name
                             ' to the running collection.
                             If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
-                            If Len(srcColorName) <> 0 Then Debug.Print srcColorName
-                        
+                            
                         'On v1 swatches, color names are not supported; just add the RGBA components
                         Else
                             If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad
@@ -1119,11 +1116,19 @@ Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeD
                         'GIMP palettes do not support alpha channels.  Forcibly set a value of 255.
                         tmpQuad.Alpha = 255
                         
-                        'TODO: retrieve color name, if any?
+                        'If any text remains in this row, we can treat it as this color's name.  Color names are not
+                        ' guaranteed to exist inside GIMP palettes (and they may not even be part of the spec), but many
+                        ' of the sample palettes I downloaded from the Internet came with names, so we support 'em here.
+                        Dim srcColorName As String
+                        srcColorName = vbNullString
+                        If (InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) <> 0) Then
+                            curLine = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, SPACE_CHAR, vbBinaryCompare))) & SPACE_CHAR
+                            If (Len(curLine) <> 0) Then srcColorName = curLine
+                        End If
                         
                         'If we made it all the way here, this line was successfully parsed for color data.
                         ' Advance the color count tracker and resume the line parser.
-                        m_Palettes(m_NumOfGroups).AddColor tmpQuad
+                        m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
                         
 BadLineColor:
                     End If
@@ -1206,7 +1211,6 @@ Friend Function SavePaletteAdobeSwatch(ByRef dstFile As String, Optional ByVal s
             'Next, we need to write the number of colors in the palette
             Dim numOfColors As Long
             numOfColors = m_Palettes(useGroupIndex).GetNumOfColors()
-            Debug.Print "writing " & numOfColors & " colors to file..."
             dstData.WriteIntU_BE numOfColors
             
             'PD always writes colors as RGB
