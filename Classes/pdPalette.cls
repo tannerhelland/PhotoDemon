@@ -1301,7 +1301,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
         If (Len(m_Palettes(useGroupIndex).GetPaletteName()) <> 0) Then .AppendLine "Name: " & m_Palettes(useGroupIndex).GetPaletteName()
         .AppendLine "#"
         If addPDCredit Then
-            .AppendLine "# " & g_Language.TranslateMessage("Palette exported by PhotoDemon - %1", "http://photodemon.org")
+            .AppendLine "# " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(http://photodemon.org)")
             .AppendLine "#"
         End If
     End With
@@ -1342,6 +1342,68 @@ End Function
 Private Function GIMPColorHelper(ByVal srcColor As Long) As String
     GIMPColorHelper = CStr(srcColor)
     If (Len(GIMPColorHelper) < 3) Then GIMPColorHelper = String$(3 - Len(GIMPColorHelper), " ") & GIMPColorHelper
+End Function
+
+'Paint.NET palettes (.txt extension) are just text files with a list of hex chars.  Unlike other palette formats,
+' they *do* support alpha values (although PD defaults to writing all-255s).  Note that Paint.NET palettes are
+' primarily intended as swatches for use in that program's color selector tool, so they are limited to 96 colors.
+Friend Function SavePalettePaintDotNet(ByRef dstFile As String, Optional ByVal useGroupIndex As Long = 0, Optional ByVal addPDCredit As Boolean = True, Optional ByVal forceAlphaTo255 As Boolean = True) As Boolean
+
+    On Error GoTo BadPaintDotNetPalette
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'Paint.NET palettes are just text files, and pdString makes it easy to efficiently assemble an in-memory string
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'Start by writing a few standard lines, kind of like a header
+    With dstText
+        .AppendLine "; paint.net palette file"
+        If addPDCredit Then .AppendLine ";  " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(http://photodemon.org)")
+    End With
+    
+    'Next come all the colors.  Paint.NET does not support color names, so only RGB values will be written.
+    Dim i As Long, tmpPaletteEntry As PDPaletteEntry, colorLine As String
+    
+    'Note that Paint.NET palettes also top out at 96 colors; < 96 colors are okay (as the remaining entries
+    ' will be filled with white by Paint.NET, but > 96 is disallowed.
+    Dim numColorsBound As Long
+    numColorsBound = m_Palettes(useGroupIndex).GetNumOfColors()
+    If (numColorsBound > 96) Then numColorsBound = 96
+    
+    For i = 0 To numColorsBound - 1
+        
+        tmpPaletteEntry = m_Palettes(useGroupIndex).GetPaletteEntry(i)
+        colorLine = String$(8, 0)
+        
+        'Per the "spec" (https://www.getpaint.net/doc/latest/WorkingWithPalettes.html),
+        ' Paint.NET palette files are text files where all colors are defined as AARRGGBB hex entries.
+        ' In the example file they provide, the hex chars are uppercase - so we mimic that here.
+        If forceAlphaTo255 Then
+            Mid$(colorLine, 1, 2) = "FF"
+        Else
+            Mid$(colorLine, 1, 2) = UCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Alpha))
+        End If
+        
+        Mid$(colorLine, 3, 2) = UCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Red))
+        Mid$(colorLine, 5, 2) = UCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Green))
+        Mid$(colorLine, 7, 2) = UCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Blue))
+        
+        dstText.AppendLine colorLine
+        
+    Next i
+    
+    'That's all there is to it!  Write the finished text out to file.
+    Dim finalText As String
+    finalText = dstText.ToString()
+    SavePalettePaintDotNet = Files.FileSaveAsText(finalText, dstFile, True, False)
+    
+    Exit Function
+    
+BadPaintDotNetPalette:
+    SavePalettePaintDotNet = False
+
 End Function
 
 Friend Sub Reset()

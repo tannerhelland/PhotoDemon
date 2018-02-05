@@ -728,15 +728,16 @@ End Function
 'Given an RGB triplet (Long-type), return a matching hex representation.
 Public Function GetHexStringFromRGB(ByVal srcRGB As Long) As String
     srcRGB = Colors.ConvertSystemColor(srcRGB)
-    GetHexStringFromRGB = GetHexFromByte(Colors.ExtractRed(srcRGB)) & GetHexFromByte(Colors.ExtractGreen(srcRGB)) & GetHexFromByte(Colors.ExtractBlue(srcRGB))
+    GetHexStringFromRGB = GetTwoCharHexFromByte(Colors.ExtractRed(srcRGB)) & GetTwoCharHexFromByte(Colors.ExtractGreen(srcRGB)) & GetTwoCharHexFromByte(Colors.ExtractBlue(srcRGB))
 End Function
 
-'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
-Private Function GetHexFromByte(ByVal srcByte As Byte) As String
+'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function doesn't add a leading 0.
+' We can handle this case manually.
+Public Function GetTwoCharHexFromByte(ByVal srcByte As Byte) As String
     If (srcByte < 16) Then
-        GetHexFromByte = "0" & LCase(Hex$(srcByte))
+        GetTwoCharHexFromByte = "0" & LCase$(Hex$(srcByte))
     Else
-        GetHexFromByte = LCase(Hex$(srcByte))
+        GetTwoCharHexFromByte = LCase$(Hex$(srcByte))
     End If
 End Function
 
