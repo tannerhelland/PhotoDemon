@@ -232,61 +232,54 @@ End Function
 ' range [0, 9].  If there are already 10 debug files present, steal the ID of the oldest file.
 Private Function GetLogID() As Long
 
-    'Start by assembling a list of matching files
-    Dim logFiles() As String
-    ReDim logFiles(0 To 9) As String
-    
+    'Start by assembling a list of existing debug files
     Dim numFiles As Long
     numFiles = 0
     
-    'Retrieve the first matching file from the folder (if any)
-    Dim chkFile As String
-    chkFile = m_FSO.DirW(m_logPath & "DebugReport_*.log")
+    Dim logFiles As pdStringStack
+    If m_FSO.FileFind(m_logPath & "DebugReport_*.log", logFiles) Then
     
-    'Continue checking potential autosave XML entries until all have been analyzed
-    Do While (Len(chkFile) <> 0)
+        numFiles = logFiles.GetNumOfStrings()
+        Debug.Print "NUMFILES: " & numFiles
+        'logFiles contains a list of all debug logs in the current folder.  If there are already
+        ' 10 entries, we want to find the oldest file in the list, and steal its ID number.
+        If (numFiles = 10) Then
         
-        'Log this file and increment the file counter
-        logFiles(numFiles) = m_logPath & chkFile
-        numFiles = numFiles + 1
+            Dim minDate As Date, minID As Long, tmpDate As Date
+            
+            'Grab the date of the first file.
+            minDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(0), PDFT_WriteTime)
+            minID = 0
+            
+            'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
+            Dim i As Long
+            For i = 1 To 9
+                tmpDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(i), PDFT_WriteTime)
+                If (tmpDate < minDate) Then
+                    minDate = tmpDate
+                    minID = i
+                End If
+            Next i
+            
+            'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
+            GetLogID = minID
+            Me.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
         
-        'Check the next file in the folder
-        chkFile = m_FSO.DirW
+        Else
         
-    Loop
+            'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
+            For i = 0 To 9
+                If (Not Files.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
+                    GetLogID = i
+                    Exit For
+                End If
+            Next i
+            
+        End If
     
-    'logFiles() will now contain a list of all debug logs in the current folder.  If there are already 10 entries, we want
-    ' to find the oldest file in the list, and steal its ID number.
-    If (numFiles = 10) Then
-    
-        Dim minDate As Date, minID As Long
-        
-        'Grab the date of the first file.
-        minDate = Files.FileGetTimeAsDate(logFiles(0), PDFT_WriteTime)
-        minID = 0
-        
-        'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
-        Dim i As Long
-        For i = 1 To 9
-            If (Files.FileGetTimeAsDate(logFiles(i), PDFT_WriteTime) < minDate) Then
-                minDate = Files.FileGetTimeAsDate(logFiles(i), PDFT_WriteTime)
-                minID = i
-            End If
-        Next i
-        
-        'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
-        GetLogID = minID
-    
+    'If the search function fails, start over with debug log 0
     Else
-    
-        'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
-        For i = 0 To 9
-            If (Not Files.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
-                GetLogID = i
-                Exit For
-            End If
-        Next i
-    
+        GetLogID = 0
     End If
     
 End Function

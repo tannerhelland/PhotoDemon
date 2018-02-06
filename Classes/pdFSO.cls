@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2018 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 17/July/17
-'Last update: large code cleanup
+'Last updated: 06/July/18
+'Last update: rewrite file and folder search code for improved performance
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '              Strings module (handles lots of Unicode-related transforms)
 '
@@ -209,12 +209,6 @@ Private Declare Function GetFileVersionInfoW Lib "version" (ByVal ptrToFilename 
 Private Declare Function GetFileVersionInfoSizeW Lib "version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
 Private Declare Function VerQueryValueW Lib "version" (ByVal ptrToSrcBlock As Long, ByVal ptrToSubblockName As Long, ByRef dstBufferPtr As Long, ByRef dstBufferSize As Long) As Long
 
-'Our Unicode-friendly DirW function may be iterated many many times.  To prevent the reallocation of huge WIN32_FIND_DATA structs,
-' we use a single module-level entry.
-Private m_FileDataReturn As WIN32_FIND_DATA
-Private m_FileDataReturnPtr As Long
-Private m_SearchHandle As Long
-
 'Use the API to retrieve a Unicode-friendly version of App.Path
 Friend Function AppPathW() As String
     
@@ -244,121 +238,6 @@ Friend Function AppPathW() As String
         End If
         
     End If
-    
-End Function
-
-'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
-' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
-' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
-Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
-    
-    Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
-    Dim retValue As Long
-    Dim retString As String
-    
-    'IMPORTANT NOTE!  Because this function has been designed to work like VB's Dir() function, it has an important caveat:
-    ' you should continue to call it until no more files exist.  (Unlike VB's Dir() function, it can't auto-detect when its
-    ' caller goes out of scope, so its file handle will remain open.)  As a failsafe, any open file handles will be released
-    ' when the class is closed, but it's not ideal to leave search handles open any longer than you need them.
-
-    'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() does not.
-    If (Len(sParam) <> 0) Then
-    
-        'First, prepend "\\?\" to sParam.  This enables long file paths.
-        If (Not Strings.StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
-    
-        'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
-        ' want to iterate all files and folders within that folder.
-        If (Strings.StringsEqual(Right$(sParam, 1), "\") Or Strings.StringsEqual(Right$(sParam, 1), "/")) Then sParam = sParam & "*"
-        
-    End If
-    
-    'Next, we need to separate our handling into two cases: when a parameter is passed (meaning initiate a search),
-    ' vs no parameter (meaning iterate upon the previous search).
-    
-    'Parameter provided: initiate a new search
-    If (Len(sParam) <> 0) Then
-        
-        'Close any previous searches
-        If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
-        
-        'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
-        handleJustCreated = True
-        m_SearchHandle = FindFirstFileW(StrPtr(sParam), m_FileDataReturnPtr)
-        
-        'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
-        If (m_SearchHandle = INVALID_HANDLE_VALUE) Then
-            
-            'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
-            If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "DirW", "possibly handed a bad path (" & sParam & "). Please investigate."
-            Exit Function
-        
-        End If
-        
-    End If
-      
-    'Now it's time to return an actual file to the caller.
-    
-    'Make sure a valid search handle exists
-    If (m_SearchHandle <> 0) Then
-        
-        'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
-        ' not relevant for PD's purposes.
-        allFilesFound = False
-        keepSearching = False
-                    
-        Do
-            
-            'FindNextFile will return a non-zero value if successful, but in the case of the *first* retrieved file,
-            ' we already pulled its info from FindFirstFileW, above.
-            If handleJustCreated Then
-                retValue = 1
-                handleJustCreated = False
-            Else
-                retValue = FindNextFileW(m_SearchHandle, m_FileDataReturnPtr)
-            End If
-                
-            If (retValue <> 0) Then
-                
-                'If the return value is "." or "..", ignore it and keep looking for the next file
-                retString = Strings.TrimNull(m_FileDataReturn.cFileName)
-                
-                If (Len(retString) <= 2) Then
-                    keepSearching = False
-                    keepSearching = Strings.StringsEqual(retString, ".")
-                    If (Not keepSearching) Then keepSearching = Strings.StringsEqual(retString, "..")
-                Else
-                    keepSearching = False
-                End If
-                
-            Else
-                keepSearching = False
-                allFilesFound = True
-            End If
-        
-        Loop While keepSearching
-        
-        'If all files were found, it's time to exist.  (Note that this value is triggered by a 0 return from FindNextFileW,
-        ' which can indicate other error states as well - we'll check this momentarily.)
-        If allFilesFound Then
-            
-            'Close the search handle and report any irregularities
-            FindClose m_SearchHandle
-            m_SearchHandle = 0
-            
-            'Check for unexpected errors
-            Dim lastDllErr As Long
-            lastDllErr = Err.LastDllError
-            If (lastDllErr <> ERROR_NO_MORE_FILES) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
-            
-        Else
-            DirW = retString
-        End If
-    
-    Else
-        FSOError "DirW", "tried to iterate a previous search, but no search handle exists.  Please investigate."
-    End If
-    
     
 End Function
 
@@ -676,6 +555,75 @@ Friend Function FileExists(ByRef srcFile As String) As Boolean
     Else
         FileExists = (Err.LastDllError = ERROR_SHARING_VIOLATION)
     End If
+End Function
+
+'Unicode-aware wrapper to FindFirst/NextFileW APIs.  Search parameters should match inputs to VB's Dir() function,
+' and return values are also compatible with VB's Dir function.  Said another way, this is a loop-free, Unicode-aware
+' replacement for VB's Dir() function.
+'
+'Results, if any, are returned as a stack of strings (via pdStringStack).
+' Returns TRUE if FindFirst/NextFileW were invoked successfully; FALSE otherwise.
+' Note that some special handling exists - e.g. "."/".." are *not* returned, by design.
+Friend Function FileFind(ByRef searchParam As String, ByRef dstStack As pdStringStack) As Boolean
+    
+    'Start by applying some modifications to the incoming search parameter string.
+    ' (FindFirstFile fails under conditions that VB's Dir() does not.)
+    If (Len(searchParam) <> 0) Then
+    
+        If (dstStack Is Nothing) Then Set dstStack = New pdStringStack Else dstStack.ResetStack
+    
+        'First, prepend "\\?\" to sParam.  This enables long file paths.
+        If (Not Strings.StringsEqual(Left$(searchParam, 4), "\\?\")) Then searchParam = "\\?\" & searchParam
+    
+        'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path,
+        ' assume that they want to iterate all files and folders within that folder.
+        If (Strings.StringsEqual(Right$(searchParam, 1), "\") Or Strings.StringsEqual(Right$(searchParam, 1), "/")) Then searchParam = searchParam & "*"
+            
+        'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
+        Dim searchHandle As Long, findResult As WIN32_FIND_DATA
+        searchHandle = FindFirstFileW(StrPtr(searchParam), VarPtr(findResult))
+            
+        'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
+        If (searchHandle = INVALID_HANDLE_VALUE) Then
+            
+            'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
+            If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "FileFind", "possibly handed a bad path (" & searchParam & "). Please investigate."
+            Exit Function
+        
+        'We obtained a good handle.  Store the first result, and continue searching until all results are discovered.
+        Else
+            
+            Do
+                
+                Dim retString As String
+                retString = Strings.TrimNull(findResult.cFileName)
+                
+                Const STR_DOT As String = "."
+                Const STR_DOTDOT As String = ".."
+                
+                'Look for "." and ".." returns; these are *not* returned, by design.
+                If (Len(retString) <> 0) And (Strings.StringsNotEqual(retString, STR_DOT, True) And Strings.StringsNotEqual(retString, STR_DOTDOT, True)) Then
+                    dstStack.AddString retString
+                End If
+                
+            Loop While (FindNextFileW(searchHandle, VarPtr(findResult)) <> 0)
+                
+            'Close the search handle and report any irregularities
+            FindClose searchHandle
+            searchHandle = 0
+            
+            'Check for unexpected errors
+            Dim lastDllErr As Long
+            lastDllErr = Err.LastDllError
+            FileFind = (lastDllErr = 0) Or (lastDllErr = ERROR_NO_MORE_FILES)
+            If (Not FileFind) Then FSOError "FileFind", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
+            
+        End If
+        
+    Else
+        FSOError "FileFind", "null search string!"
+    End If
+    
 End Function
 
 'After a file has been opened, you can use this function to query the current file pointer position
@@ -1480,7 +1428,7 @@ End Function
 
 'Given a base folder and some other path (with or without filename), generate a relative path between the two.
 ' It's assumed that thisFolder contains baseFolder within its path; if it doesn't, a copy of the full thisFolder string is returned.
-Friend Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
+Friend Function GenerateRelativePath(ByVal baseFolder As String, ByRef thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
     
     'Start by forcing each string to have a trailing path
     If (Not normalizationCanBeSkipped) Then baseFolder = Me.PathAddBackslash(baseFolder)
@@ -1501,12 +1449,6 @@ Friend Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolde
         GenerateRelativePath = thisFolder
     End If
 
-End Function
-
-'Return the .dwFileAttributes parameter of the last DirW() return.  This provides on-demand file attribute access, without any
-' performance penalty to the DirW loop.
-Friend Function GetAttributesOfLastDirWReturn() As Long
-    GetAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
 End Function
 
 'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
@@ -1793,40 +1735,43 @@ End Function
 '
 'Obviously, you should use either the whitelist or the blacklist option, but never both.
 Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
-        
+    
+    On Error GoTo RetrievalProblem
+    
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = Me.PathAddBackslash(srcFolder)
         
-    'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized; this is by design, so the caller
-    ' can concatenate multiple search results together if desired.
+    'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized;
+    ' this is by design, so the caller can concatenate multiple search results together if desired.
     If (dstFiles Is Nothing) Then Set dstFiles = New pdStringStack
     
-    'This function was first used in PD as part of pdPackage's zip-like interface.  The goal was to create a convenient way
-    ' to generate a folder-preserved list of files.  Consider a file tree like the following:
+    'This function was first used in PD as part of pdPackage's zip-like interface.  The goal was to create a
+    ' convenient way to generate a folder-preserved list of files.  Consider a file tree like the following:
     ' C:\Folder\file.txt
     ' C:\Folder\SubFolder\subfile1.txt
     ' C:\Folder\SubFolder\AnotherFolder\subfile2.txt
     '
-    'By calling this function with "C:\Folder\" as the base, this function can return an array with the following entries:
+    'By calling this function with "C:\Folder\" as the base, this function will return a pdStringStack containing
+    ' the following strings:
     ' file.txt
     ' SubFolder\subfile1.txt
     ' SubFolder\AnotherFolder\subfile2.txt
     '
-    'This structure makes it very easy to duplicate a full file and folder structure in a new directory, which is exactly
-    ' what pdPackage does when behaving like a .zip container.
+    'This structure makes it very easy to duplicate a full file and folder structure into a new directory,
+    ' which is exactly what pdPackage does when behaving like a .zip container.
     '
-    'To that end, this function uses DirW to assemble a list of files relative to some base folder.  Subfolders are not explicitly
-    ' returned; the hope is that you can implicitly determine them from the relative filenames provided.  If you want a list of
-    ' subfolders, make a separate call to RetrieveAllFolders, below.
+    'To that end, this function uses FindFirst/NextFileW to assemble a list of files relative to some base folder.
+    ' Subfolders are not explicitly returned; the hope is that you can implicitly determine them from the relative
+    ' filenames provided.  If you want a list of subfolders only, make a separate call to RetrieveAllFolders, below.
     '
     'Finally, two optional pattern parameters are available.  Use one or the other (or neither), but not both.
     '
-    'onlyAllowTheseExtensions: used when the set of desired files uses a small subset of extensions.  Separate valid extensions
-    ' by pipe, e.g. "exe|txt".  Do not include ".".  If non-extension files are desired, YOU CANNOT USE THIS PARAMETER, as "||" doesn't
-    ' parse correctly.
+    'onlyAllowTheseExtensions: used when the set of desired files uses a small subset of extensions.
+    ' Separate valid extensions by pipe, e.g. "exe|txt".  Do not include ".".  If non-extension files are desired,
+    ' YOU CANNOT USE THIS PARAMETER, as "||" doesn't parse correctly.
     '
-    'doNotAllowTheseExtensions: used to blacklist unwanted file types.  Same rules as onlyAllowTheseExtensions applies, e.g.
-    ' "bak|tmp" would be used to exclude .bak and .tmp files.
+    'doNotAllowTheseExtensions: used to blacklist unwanted file types.  Same rules as onlyAllowTheseExtensions applies,
+    ' e.g. "bak|tmp" would be used to exclude .bak and .tmp files.
     
     'Because white/blacklisting is computationally expensive, we prepare separate boolean checks in advance
     Dim whiteListInUse As Boolean, blackListInUse As Boolean
@@ -1852,57 +1797,99 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     'Add the base folder to the collection, then start searching for subfolders.
     cFoldersToCheck.AddString srcFolder
         
-    Dim curFolder As String, chkFile As String
+    Dim curFolder As String, chkFile As String, modifiedPath As String
     Dim fileValid As Boolean
     
+    Dim searchHandle As Long, findResult As WIN32_FIND_DATA
+    Const STR_DOT As String = "."
+    Const STR_DOTDOT As String = ".."
+    Const LONG_PATH_PREPEND As String = "\\?\"
+                            
     'The first folder doesn't get added to the destination collection, but all other folders do.
     Dim isNotFirstFolder As Boolean
     isNotFirstFolder = False
         
     Do While cFoldersToCheck.PopString(curFolder)
         
-        'DirW does all the heavy lifting on the actual folder iteration steps
-        chkFile = Me.DirW(curFolder)
-    
-        Do While (Len(chkFile) <> 0)
+        If (LenB(curFolder) <> 0) Then
+        
+            'Prepend "\\?\" to sParam.  This enables long file paths.
+            If Strings.StringsEqual(Left$(curFolder, 4), LONG_PATH_PREPEND) Then modifiedPath = curFolder Else modifiedPath = LONG_PATH_PREPEND & curFolder
             
-            'See if this chkFile iteration contains a folder
-            If ((GetAttributesOfLastDirWReturn And vbDirectory) <> 0) Then
+            'FindFirstFile fails if the requested path has a trailing slash.
+            If (Strings.StringsEqual(Right$(modifiedPath, 1), "\") Or Strings.StringsEqual(Right$(modifiedPath, 1), "/")) Then modifiedPath = modifiedPath & "*"
             
-                'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
-                If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
+            'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
+            searchHandle = FindFirstFileW(StrPtr(modifiedPath), VarPtr(findResult))
+            
+            'Ensure the search was initiated correctly.
+            If (searchHandle = INVALID_HANDLE_VALUE) Then
                 
-            'This is not a folder, but a file.  Add it to the destination file list if it meets any white/blacklisted criteria.
+                'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
+                If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "RetrieveAllFiles", "possibly handed a bad path (" & modifiedPath & "). Please investigate."
+                Exit Function
+            
+            'We obtained a good handle.  Store the first result, and continue searching until all results are discovered.
             Else
-                
-                'White-listing check required
-                If whiteListInUse Then
-                    fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) <> 0)
+        
+                Do
                     
-                'Black-listing check required
-                ElseIf blackListInUse Then
-                    fileValid = (InStr(1, doNotAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) = 0)
+                    chkFile = Strings.TrimNull(findResult.cFileName)
                     
-                'All files are allowed
-                Else
-                    fileValid = True
-                End If
-                
-                'If we are allowed to add this file, do so now
-                If fileValid Then
-                    If returnRelativeStrings Then
-                        dstFiles.AddString Me.GenerateRelativePath(srcFolder, curFolder & chkFile, True)
-                    Else
-                        dstFiles.AddString curFolder & chkFile
+                    'Ignore empty, ".", and ".." returns.
+                    If (LenB(chkFile) <> 0) And (Strings.StringsNotEqual(chkFile, STR_DOT, True) And Strings.StringsNotEqual(chkFile, STR_DOTDOT, True)) Then
+                    
+                        'See if this chkFile iteration contains a folder
+                        If ((findResult.dwFileAttributes And vbDirectory) <> 0) Then
+                        
+                            'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
+                            If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
+                            
+                        'This is not a folder, but a file.  Add it to the destination file list if it meets any white/blacklisted criteria.
+                        Else
+                        
+                            'White-listing check required
+                            If whiteListInUse Then
+                                fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) <> 0)
+                                
+                            'Black-listing check required
+                            ElseIf blackListInUse Then
+                                fileValid = (InStr(1, doNotAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) = 0)
+                                
+                            'All files are allowed
+                            Else
+                                fileValid = True
+                            End If
+                        
+                            'If we are allowed to add this file, perform a few final checks
+                            If fileValid Then
+                                If returnRelativeStrings Then
+                                    dstFiles.AddString Me.GenerateRelativePath(srcFolder, curFolder & chkFile, True)
+                                Else
+                                    dstFiles.AddString curFolder & chkFile
+                                End If
+                            End If
+                        
+                        'End file vs folder check
+                        End If
+                    
+                    'End null, ".", ".." check
                     End If
-                End If
+                    
+                Loop While (FindNextFileW(searchHandle, VarPtr(findResult)) <> 0)
+                    
+                'Close the search handle for this folder and report any irregularities
+                If (searchHandle <> 0) Then FindClose searchHandle
+                searchHandle = 0
+                
+                'Check for unexpected errors
+                Dim lastDllErr As Long
+                lastDllErr = Err.LastDllError
+                If (lastDllErr <> 0) And (lastDllErr <> ERROR_NO_MORE_FILES) Then FSOError "RetrieveAllFiles", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
             
             End If
-            
-            'Get the next file
-            chkFile = Me.DirW()
         
-        Loop
+        End If
         
         'If recursion is enabled, any subfolders in this folder have now been added to cFolderToCheck, while all files in this folder
         ' are already present in the dstFiles collection.
@@ -1913,7 +1900,15 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     ' If at least one file was found, return TRUE. (Note that this value might be incorrect if the user sent us an already-populated
     ' string stack, but that's okay - the assumption is that they'll be processing the stack as one continuous list, so this return
     ' value won't be relevant anyway.)
-    RetrieveAllFiles = CBool(dstFiles.GetNumOfStrings > 0)
+    RetrieveAllFiles = (dstFiles.GetNumOfStrings > 0)
+    Exit Function
+    
+RetrievalProblem:
+    
+    'Clean up any outstanding handles
+    If (searchHandle <> 0) Then FindClose searchHandle
+    searchHandle = 0
+    FSOError "RetrieveAllFiles", "VB error occurred: " & Err.Description, Err.Number
     
 End Function
 
@@ -1922,10 +1917,12 @@ End Function
 'If returnRelativeStrings is true, strings are (obviously) returned relative to the base folder.  So for e.g. base folder "C:\Folder",
 ' "C:\Folder\Subfolder" will be returned as just "Subfolder", while "C:\Folder\Subfolder\etc\" will return as "Subfolder\etc".
 '
-'Returns TRUE if at least one subfolder is found; FALSE otherwise.  If the incoming dstFolders parameter already contains strings, TRUE will
-' always be returned.
+'Returns TRUE if at least one subfolder is found; FALSE otherwise.  If the incoming dstFolders parameter already contains strings,
+' TRUE will always be returned.
 Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders As pdStringStack, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal returnRelativeStrings As Boolean = True) As Boolean
-
+    
+    On Error GoTo RetrievalProblem
+    
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = Me.PathAddBackslash(srcFolder)
     
@@ -1940,7 +1937,11 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     'Add the base folder to the collection, then start searching for subfolders.
     cFoldersToCheck.AddString srcFolder
     
-    Dim curFolder As String, chkFile As String
+    Dim curFolder As String, chkFile As String, modifiedPath As String
+    Dim searchHandle As Long, findResult As WIN32_FIND_DATA
+    Const STR_DOT As String = "."
+    Const STR_DOTDOT As String = ".."
+    Const LONG_PATH_PREPEND As String = "\\?\"
     
     'The first folder doesn't get added to the destination collection, but all other folders do.
     Dim isNotFirstFolder As Boolean
@@ -1948,44 +1949,82 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     
     Do While cFoldersToCheck.PopString(curFolder)
         
-        'DirW does all the heavy lifting on the actual folder iteration steps
-        chkFile = Me.DirW(curFolder)
-    
-        Do While (Len(chkFile) <> 0)
+        If (LenB(curFolder) <> 0) Then
+        
+            'Prepend "\\?\" to enable long file paths.
+            If Strings.StringsEqual(Left$(curFolder, 4), LONG_PATH_PREPEND) Then modifiedPath = curFolder Else modifiedPath = LONG_PATH_PREPEND & curFolder
             
-            'See if this chkFile iteration contains a folder
-            If ((GetAttributesOfLastDirWReturn And vbDirectory) <> 0) Then
+            'FindFirstFile fails if the requested path has a trailing slash.
+            If (Strings.StringsEqual(Right$(modifiedPath, 1), "\") Or Strings.StringsEqual(Right$(modifiedPath, 1), "/")) Then modifiedPath = modifiedPath & "*"
             
-                'This is a folder.  Add it to the "folders to check" collection.
-                If recurseSubfolders Then
-                    cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
-                Else
+            'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
+            searchHandle = FindFirstFileW(StrPtr(modifiedPath), VarPtr(findResult))
+            
+            'Ensure the search was initiated correctly.
+            If (searchHandle = INVALID_HANDLE_VALUE) Then
+                
+                'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
+                If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then FSOError "RetrieveAllFolders", "possibly handed a bad path (" & modifiedPath & "). Please investigate."
+                Exit Function
+            
+            'We obtained a good handle.  Store the first result, and continue searching until all results are discovered.
+            Else
+        
+                Do
+                    
+                    chkFile = Strings.TrimNull(findResult.cFileName)
+                    
+                    'Ignore empty, ".", and ".." returns.
+                    If (LenB(chkFile) <> 0) And (Strings.StringsNotEqual(chkFile, STR_DOT, True) And Strings.StringsNotEqual(chkFile, STR_DOTDOT, True)) Then
+                        
+                        'See if this chkFile iteration contains a folder
+                        If ((findResult.dwFileAttributes And vbDirectory) <> 0) Then
+                            
+                            'This is a folder.  Add it to the "folders to check" collection.
+                            If recurseSubfolders Then
+                                cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
+                            Else
+                                If returnRelativeStrings Then
+                                    dstFolders.AddString Me.GenerateRelativePath(srcFolder, Me.PathAddBackslash(curFolder & chkFile), True)
+                                Else
+                                    dstFolders.AddString Me.PathAddBackslash(curFolder & chkFile)
+                                End If
+                            End If
+                            
+                        End If
+                        
+                    'End null, ".", ".." check
+                    End If
+                    
+                Loop While (FindNextFileW(searchHandle, VarPtr(findResult)) <> 0)
+                    
+                'Close the search handle for this folder and report any irregularities
+                If (searchHandle <> 0) Then FindClose searchHandle
+                searchHandle = 0
+                
+                'Check for unexpected errors
+                Dim lastDllErr As Long
+                lastDllErr = Err.LastDllError
+                If (lastDllErr <> 0) And (lastDllErr <> ERROR_NO_MORE_FILES) Then FSOError "RetrieveAllFolders", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
+                
+                'Any subfolders in this folder have now been added to cFolderToCheck.  With this folder successfully processed, we can move it to
+                ' the "folders checked" stack.
+                If isNotFirstFolder Then
+                    
                     If returnRelativeStrings Then
                         dstFolders.AddString Me.GenerateRelativePath(srcFolder, Me.PathAddBackslash(curFolder & chkFile), True)
                     Else
-                        dstFolders.AddString Me.PathAddBackslash(curFolder & chkFile)
+                        dstFolders.AddString curFolder
                     End If
+                    
+                Else
+                    isNotFirstFolder = True
                 End If
             
+            'End valid FindFirstFileW handle check
             End If
-            
-            'Get the next file
-            chkFile = Me.DirW()
         
-        Loop
-        
-        'Any subfolders in this folder have now been added to cFolderToCheck.  With this folder successfully processed, we can move it to
-        ' the "folders checked" stack.
-        If isNotFirstFolder Then
-            
-            If returnRelativeStrings Then
-                dstFolders.AddString Me.GenerateRelativePath(srcFolder, Me.PathAddBackslash(curFolder & chkFile), True)
-            Else
-                dstFolders.AddString curFolder
-            End If
-            
-        Else
-            isNotFirstFolder = True
+        'End null path check
         End If
         
     Loop
@@ -1994,6 +2033,14 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     ' (Note that this value might be incorrect if the user sent us an already-populated string stack, but that's okay -
     ' the assumption is they'll process the stack as one continuous list, so individual returns don't matter.)
     RetrieveAllFolders = (dstFolders.GetNumOfStrings > 0)
+    Exit Function
+    
+RetrievalProblem:
+    
+    'Clean up any outstanding handles
+    If (searchHandle <> 0) Then FindClose searchHandle
+    searchHandle = 0
+    FSOError "RetrieveAllFolders", "VB error occurred: " & Err.Description, Err.Number
     
 End Function
 
@@ -2050,18 +2097,4 @@ Private Sub FSOFeedback(ByVal functionName As String, ByVal msgFeedback As Strin
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
     #End If
-End Sub
-
-Private Sub Class_Initialize()
-    
-    'Search functions require a pointer to a WIN32_FIND_DATA struct.  Generate a persistent pointer now.
-    m_FileDataReturnPtr = VarPtr(m_FileDataReturn)
-    
-End Sub
-
-Private Sub Class_Terminate()
-    
-    'If an active search is still in progress, terminate it now
-    If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
-    
 End Sub
