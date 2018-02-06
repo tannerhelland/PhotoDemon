@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2018 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 08/November/17
-'Last update: remove potential duplicate README and LICENSE files after an in-place upgrade
+'Last updated: 06/February/17
+'Last update: minor performance improvements
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
 ' with persistent user settings.
@@ -719,11 +719,11 @@ Friend Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If (Len(tmpString) = 0) Then
+    If (LenB(tmpString) = 0) Then
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue))
-        SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
+        Me.SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
         GetPref_Boolean = prefDefaultValue
             
     'If the requested value DOES exist, convert it to boolean type and return it
@@ -743,9 +743,9 @@ End Function
 Friend Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
 
     If boolVal Then
-        WritePreference preferenceSection, preferenceName, "True"
+        Me.WritePreference preferenceSection, preferenceName, "True"
     Else
-        WritePreference preferenceSection, preferenceName, "False"
+        Me.WritePreference preferenceSection, preferenceName, "False"
     End If
 
 End Sub
@@ -758,11 +758,11 @@ Friend Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If (Len(tmpString) = 0) Then
+    If (LenB(tmpString) = 0) Then
     
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue ))
-        SetPref_Long preferenceSection, preferenceName, prefDefaultValue
+        Me.SetPref_Long preferenceSection, preferenceName, prefDefaultValue
         GetPref_Long = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -774,7 +774,7 @@ End Function
 
 'Set a Long-type value to the preferences file.
 Friend Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
-    WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
+    Me.WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
 End Sub
 
 'Get a Float-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
@@ -785,10 +785,10 @@ Friend Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenc
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If (Len(tmpString) = 0) Then
+    If (LenB(tmpString) = 0) Then
     
         'To prevent future blank results, write out a default value
-        SetPref_Float preferenceSection, preferenceName, prefDefaultValue
+        Me.SetPref_Float preferenceSection, preferenceName, prefDefaultValue
         GetPref_Float = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -800,7 +800,7 @@ End Function
 
 'Set a Float-type value to the preferences file.
 Friend Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal floatVal As Double)
-    WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
+    Me.WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
@@ -811,11 +811,11 @@ Friend Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If (Len(tmpString) = 0) Then
+    If (LenB(tmpString) = 0) Then
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & prefDefaultValue
-        SetPref_String preferenceSection, preferenceName, prefDefaultValue
+        Me.SetPref_String preferenceSection, preferenceName, prefDefaultValue
         GetPref_String = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -827,14 +827,14 @@ End Function
 
 'Set a String-type value to the INI file.
 Friend Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
-    WritePreference preferenceSection, preferenceName, stringVal
+    Me.WritePreference preferenceSection, preferenceName, stringVal
 End Sub
 
 'Sometimes we want to know if a value exists at all.  This function handles that.
 Friend Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
-    DoesValueExist = CBool(Len(tmpString) <> 0)
+    DoesValueExist = (LenB(tmpString) <> 0)
 End Function
 
 'Read a value from the preferences file and return it (as a string)
@@ -842,8 +842,9 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
-    If InStr(1, strSectionHeader, " ", vbBinaryCompare) Then strSectionHeader = Replace$(strSectionHeader, " ", "", , , vbBinaryCompare)
-    If InStr(1, strVariableName, " ", vbBinaryCompare) Then strVariableName = Replace$(strVariableName, " ", "", , , vbBinaryCompare)
+    Const SPACE_CHAR As String = " "
+    If InStr(1, strSectionHeader, " ", vbBinaryCompare) Then strSectionHeader = Replace$(strSectionHeader, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
+    If InStr(1, strVariableName, " ", vbBinaryCompare) Then strVariableName = Replace$(strVariableName, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
     
     'Create an XML object and load the XML settings file
     Dim prefFileOK As Boolean
@@ -869,8 +870,9 @@ Friend Function WritePreference(ByVal strSectionHeader As String, ByVal strVaria
 
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
-    strSectionHeader = Replace$(strSectionHeader, " ", "")
-    strVariableName = Replace$(strVariableName, " ", "")
+    Const SPACE_CHAR As String = " "
+    strSectionHeader = Replace$(strSectionHeader, SPACE_CHAR, vbNullString)
+    strVariableName = Replace$(strVariableName, SPACE_CHAR, vbNullString)
     
     'Create an XML object and load the XML settings file
     If (Not m_BatchModeActive) Then

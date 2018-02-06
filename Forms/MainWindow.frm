@@ -2732,6 +2732,14 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Shutdown initiated"
+    #End If
+    
+    'As part of the shutdown process, we're gonna be saving a lot of session data to the user's pref file.  Rather than
+    ' save/load the file on each request, activate "batch preference mode", which caches the user's prefs in-memory
+    ' and only dumps them to file once, when batch mode ends.
+    g_UserPreferences.StartBatchPreferenceMode
     
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
@@ -2742,10 +2750,6 @@ Private Sub Form_Unload(Cancel As Integer)
     g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
     
     'Hide the main window to make it appear as if we shut down quickly
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown initiated"
-    #End If
-    
     Me.Visible = False
     Interface.ReleaseResources
     
@@ -2761,7 +2765,6 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
     #End If
     
-    g_UserPreferences.StartBatchPreferenceMode
     FormMain.mainCanvas(0).WriteUserPreferences
     Toolboxes.SaveToolboxData
     
