@@ -1406,6 +1406,56 @@ BadPaintDotNetPalette:
 
 End Function
 
+'PaintShop Pro palettes use multiple extensions, but all are just text files with a line-delimited list of
+' RGB triples.
+Friend Function SavePalettePaintShopPro(ByRef dstFile As String, Optional ByVal useGroupIndex As Long = 0) As Boolean
+
+    On Error GoTo BadPaintShopProPalette
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'PSP palettes are just text files, and pdString makes it easy to efficiently assemble an in-memory string
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'Note that the PSP spec supposedly restricts palettes to 16 or 256 colors, but there are many palettes
+    ' "in the wild" that don't abide these conditions - so we just write out the size of the palette as-is,
+    ' with a hard limit of 256 colors in case the source palette is very large.
+    Dim numColorsBound As Long
+    numColorsBound = m_Palettes(useGroupIndex).GetNumOfColors()
+    If (numColorsBound > 256) Then numColorsBound = 256
+    
+    'Start by writing the basic JASC header
+    With dstText
+        .AppendLine "JASC-PAL"
+        .AppendLine "0100"
+        .AppendLine CStr(numColorsBound)
+    End With
+    
+    'Next come all the colors.  PSP palettes don't support color names, so only RGB values will be written.
+    Const SPACE_CHAR As String = " "
+    Dim i As Long, tmpPaletteEntry As PDPaletteEntry, colorLine As String
+    For i = 0 To numColorsBound - 1
+        
+        tmpPaletteEntry = m_Palettes(useGroupIndex).GetPaletteEntry(i)
+        With tmpPaletteEntry.ColorValue
+            colorLine = CStr(.Red) & SPACE_CHAR & CStr(.Green) & SPACE_CHAR & CStr(.Blue)
+        End With
+        dstText.AppendLine colorLine
+        
+    Next i
+    
+    'That's all there is to it!  Write the finished text out to file.
+    Dim finalText As String
+    finalText = dstText.ToString()
+    SavePalettePaintShopPro = Files.FileSaveAsText(finalText, dstFile, True, False)
+    
+    Exit Function
+    
+BadPaintShopProPalette:
+   SavePalettePaintShopPro = False
+
+End Function
+
 Friend Sub Reset()
     m_NumOfGroups = 0
     ReDim m_Palettes(0) As pdPaletteChild

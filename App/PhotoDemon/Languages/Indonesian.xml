@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.262</langversion>
+<langversion>6.6.263</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -10471,7 +10471,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 49 phrases. 30 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15134,7 +15134,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- BEGIN text for pdPalette.cls -->
 
-<!-- pdPalette.cls contains 0 phrases. -->
+<phrase>
+<original>palette exported by PhotoDemon %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -15158,10 +15163,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2539</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4589 phrases. -->
-<!-- 2051 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12166 total words. -->
+<!-- As of this build, PhotoDemon contains 4592 phrases. -->
+<!-- 2053 are duplicates, so only 2539 unique phrases have been written to file. -->
+<!-- These 2539 phrases contain approximately 12170 total words. -->
 
 </pdData>
