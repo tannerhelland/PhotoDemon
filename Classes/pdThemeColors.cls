@@ -81,7 +81,7 @@ End Function
 '   - Next, we search for the Disabled, Active, and Hover variants of the color.
 '       - If a variant exists, it is stored in its respective position.
 '       - If a variant does not exist, the BaseColor value is plugged in instead.
-Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As String, ByVal IDE_FailsafeColor As String) As Boolean
+Public Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As String, ByRef IDE_FailsafeColor As String) As Boolean
     
     LoadThemeColor = False
     
@@ -97,7 +97,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         If MainModule.IsProgramRunning() And (Not g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
-            If g_Themer.RetrieveColorFromCache(m_ObjectName, colorName, m_ColorList(colorIndex)) Then
+            If g_Themer.RetrieveColorFromCache(m_ObjectName, srcColorName, m_ColorList(colorIndex)) Then
                 colorLookupSuccessful = True
                 
             'If this color does not exist in the central cache, we need to parse the original XML file for it
@@ -106,10 +106,10 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                 'Ask the central themer to look up this color.  It handles most the cumbersome work, like mapping color
                 ' definition trees back to their source.
                 Dim colorString As String
-                colorString = g_Themer.LookUpColor(m_ObjectName, colorName)
+                colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName)
                 
                 'If the color lookup was successful, colorString will be non-null.
-                If (Len(colorString) <> 0) Then
+                If (LenB(colorString) <> 0) Then
                     
                     'Attempt to convert the string into an RGB long
                     colorLookupSuccessful = Colors.GetColorFromString(colorString, baseColorValue, ColorHex)
@@ -122,21 +122,21 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                         ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
                         ' optional variant is missing, we'll just plug in the base color value, with the exception of
                         ' active+hovered which gets the active color by default.)
-                        FillInColorVariant m_ObjectName, colorName, "disabled", m_ColorList(colorIndex).disabledColor, baseColorValue
-                        FillInColorVariant m_ObjectName, colorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
-                        FillInColorVariant m_ObjectName, colorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
-                        FillInColorVariant m_ObjectName, colorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
+                        FillInColorVariant m_ObjectName, srcColorName, "disabled", m_ColorList(colorIndex).disabledColor, baseColorValue
+                        FillInColorVariant m_ObjectName, srcColorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
+                        FillInColorVariant m_ObjectName, srcColorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
+                        FillInColorVariant m_ObjectName, srcColorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
                         
                         'With the color table successfully populated, cache its values in the central themer.  This spares
                         ' future requests for this color from having to repeat these steps from scratch.
-                        g_Themer.AddColorToCache m_ObjectName, colorName, m_ColorList(colorIndex)
+                        g_Themer.AddColorToCache m_ObjectName, srcColorName, m_ColorList(colorIndex)
                         
                     Else
-                        pdDebug.LogAction "WARNING!  The themed color for " & m_ObjectName & ":" & colorName & " couldn't be converted into a valid RGB value."
+                        pdDebug.LogAction "WARNING!  Theme color for " & m_ObjectName & ":" & srcColorName & " couldn't be converted to a valid RGB value."
                     End If
                      
                 Else
-                    pdDebug.LogAction "WARNING!  The themed color lookup for " & m_ObjectName & ":" & colorName & " failed."
+                    pdDebug.LogAction "WARNING!  Theme color lookup for " & m_ObjectName & ":" & srcColorName & " failed."
                 End If
             
             End If
@@ -170,22 +170,18 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
 End Function
 
 'Once a base color has been successfully retrieved, you can use this function to plug in any/all variant values
-Private Sub FillInColorVariant(ByRef objectName As String, ByRef colorName As String, ByRef variantStringTag As String, ByRef dstColor As Long, ByVal failsafeColor As Long)
+Private Sub FillInColorVariant(ByRef objectName As String, ByRef srcColorName As String, ByRef variantStringTag As String, ByRef dstColor As Long, ByVal failsafeColor As Long)
     
     'By default, assign the fallback color value.  If the rest of this function is successful, it will overwrite this
     ' value with a new, custom value.
     dstColor = failsafeColor
     
-    Dim colorVariantName As String
-    colorVariantName = colorName & "-" & variantStringTag
-    
-    Dim colorString As String
+    Dim colorVariantName As String, colorString As String
+    colorVariantName = srcColorName & "-" & variantStringTag
     colorString = g_Themer.LookUpColor(objectName, colorVariantName)
     
-    If (Len(colorString) <> 0) Then
-        If (Not Colors.GetColorFromString(colorString, dstColor)) Then
-            dstColor = failsafeColor
-        End If
+    If (LenB(colorString) <> 0) Then
+        If (Not Colors.GetColorFromString(colorString, dstColor)) Then dstColor = failsafeColor
     End If
     
 End Sub

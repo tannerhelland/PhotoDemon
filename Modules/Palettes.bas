@@ -62,7 +62,7 @@ End Type
 ' - Color name.  Some palette formats provide per-color names; some do not.  This value may be null.
 Public Type PDPaletteEntry
     ColorValue As RGBQuad
-    colorName As String
+    ColorName As String
 End Type
 
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using

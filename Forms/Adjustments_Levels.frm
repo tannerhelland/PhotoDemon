@@ -1563,26 +1563,26 @@ Private Function GetLevelsParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    Dim i As Long, colorName As String
+    Dim i As Long, thisColorName As String
     For i = 0 To 3
     
         'Determine a name for this type of level adjustment
         If (i = 0) Then
-            colorName = "red"
+            thisColorName = "red"
         ElseIf (i = 1) Then
-            colorName = "green"
+            thisColorName = "green"
         ElseIf (i = 2) Then
-            colorName = "blue"
+            thisColorName = "blue"
         ElseIf (i = 3) Then
-            colorName = "rgb"
+            thisColorName = "rgb"
         End If
         
         With cParams
-            .AddParam colorName & "inputmin", m_LevelValues(i, 0)
-            .AddParam colorName & "inputmid", m_LevelValues(i, 1)
-            .AddParam colorName & "inputmax", m_LevelValues(i, 2)
-            .AddParam colorName & "outputmin", m_LevelValues(i, 3)
-            .AddParam colorName & "outputmax", m_LevelValues(i, 4)
+            .AddParam thisColorName & "inputmin", m_LevelValues(i, 0)
+            .AddParam thisColorName & "inputmid", m_LevelValues(i, 1)
+            .AddParam thisColorName & "inputmax", m_LevelValues(i, 2)
+            .AddParam thisColorName & "outputmin", m_LevelValues(i, 3)
+            .AddParam thisColorName & "outputmax", m_LevelValues(i, 4)
         End With
         
     Next i
@@ -1598,26 +1598,26 @@ Private Sub FillLevelsFromParamString(ByVal paramString As String, ByRef dstLeve
     Set cParams = New pdParamXML
     cParams.SetParamString paramString
     
-    Dim i As Long, colorName As String
+    Dim i As Long, thisColorName As String
     For i = 0 To 3
     
         'Determine a name for this type of level adjustment
         If (i = 0) Then
-            colorName = "red"
+            thisColorName = "red"
         ElseIf (i = 1) Then
-            colorName = "green"
+            thisColorName = "green"
         ElseIf (i = 2) Then
-            colorName = "blue"
+            thisColorName = "blue"
         ElseIf (i = 3) Then
-            colorName = "rgb"
+            thisColorName = "rgb"
         End If
         
         With cParams
-            dstLevels(i, 0) = .GetDouble(colorName & "inputmin", 0#)
-            dstLevels(i, 1) = .GetDouble(colorName & "inputmid", 0.5)
-            dstLevels(i, 2) = .GetDouble(colorName & "inputmax", 255#)
-            dstLevels(i, 3) = .GetDouble(colorName & "outputmin", 0#)
-            dstLevels(i, 4) = .GetDouble(colorName & "outputmax", 255#)
+            dstLevels(i, 0) = .GetDouble(thisColorName & "inputmin", 0#)
+            dstLevels(i, 1) = .GetDouble(thisColorName & "inputmid", 0.5)
+            dstLevels(i, 2) = .GetDouble(thisColorName & "inputmax", 255#)
+            dstLevels(i, 3) = .GetDouble(thisColorName & "outputmin", 0#)
+            dstLevels(i, 4) = .GetDouble(thisColorName & "outputmax", 255#)
         End With
         
     Next i

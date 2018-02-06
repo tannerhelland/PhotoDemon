@@ -656,7 +656,7 @@ End Function
 ' to the Default namespace as necessary.  Also, colors described by definition will automatically be tracked back to their
 ' source.  (Note, however, that this function has no way to deal with circular references, so please avoid that.)
 ' RETURNS: a color hexadecimal value if successful; a null-string otherwise.
-Friend Function LookUpColor(ByVal objectName As String, ByRef colorName As String) As String
+Friend Function LookUpColor(ByVal objectName As String, ByRef srcColorName As String) As String
 
     'First things first: see if the object name exists in the theme file.  If it doesn't, we need to fall back to the
     ' "default" namespace.
@@ -672,11 +672,11 @@ Friend Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         
         'Inside the current object's color definition block, retrieve the specified color
         Dim colorDescription As String, finalColor As String
-        colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName, , , , objPosition)
+        colorDescription = m_XML.GetNonUniqueTag_String(srcColorName, objectName, , , , objPosition)
         
         'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
         ' may just be a variable instead of an actual hex value.)
-        If (Len(colorDescription) <> 0) Then
+        If (LenB(colorDescription) <> 0) Then
             finalColor = ResolveColor(colorDescription)
         
         'If we used a custom object name, but no color is defined for that value, try a new retrieval from
@@ -685,8 +685,8 @@ Friend Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
             If Strings.StringsNotEqual(objectName, DEFAULT_NAMESPACE, False) Then
                 objectName = DEFAULT_NAMESPACE
                 If m_XML.DoesTagExist(objectName, , , objPosition) Then
-                    colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName, , , , objPosition)
-                    If (Len(colorDescription) <> 0) Then finalColor = ResolveColor(colorDescription)
+                    colorDescription = m_XML.GetNonUniqueTag_String(srcColorName, objectName, , , , objPosition)
+                    If (LenB(colorDescription) <> 0) Then finalColor = ResolveColor(colorDescription)
                 End If
             End If
         End If
@@ -739,11 +739,11 @@ End Sub
 'After the external pdThemeColors class has properly resolved a base color (and all its variants) to final RGB longs,
 ' it will cache the newly created variable via this function.  This allows subsequent color requests to bypass the
 ' XML data entirely.
-Friend Sub AddColorToCache(ByRef objectName As String, ByRef colorName As String, ByRef srcColorEntry As PDThemeColor)
+Friend Sub AddColorToCache(ByRef objectName As String, ByRef srcColorName As String, ByRef srcColorEntry As PDThemeColor)
     
     With m_ColorCache(m_NumColorsCached)
         .OrigObjectName = objectName
-        .OrigColorName = colorName
+        .OrigColorName = srcColorName
         .OrigColorValues = srcColorEntry
     End With
     
@@ -754,14 +754,14 @@ End Sub
 
 'Look up a color in the color cache.  If it exists, the function returns TRUE, and the destination PDThemeColor struct
 ' is filled with the matching cache values.
-Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef colorName As String, ByRef dstColorEntry As PDThemeColor) As Boolean
+Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef srcColorName As String, ByRef dstColorEntry As PDThemeColor) As Boolean
 
     RetrieveColorFromCache = False
     
     Dim i As Long
     For i = 0 To m_NumColorsCached - 1
         If Strings.StringsEqual(objectName, m_ColorCache(i).OrigObjectName, False) Then
-            If Strings.StringsEqual(colorName, m_ColorCache(i).OrigColorName, False) Then
+            If Strings.StringsEqual(srcColorName, m_ColorCache(i).OrigColorName, False) Then
                 RetrieveColorFromCache = True
                 dstColorEntry = m_ColorCache(i).OrigColorValues
                 Exit For

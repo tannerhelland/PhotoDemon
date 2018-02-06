@@ -117,6 +117,10 @@ Friend Function GetNumOfColors() As Long
     GetNumOfColors = m_NumOfColors
 End Function
 
+Friend Function GetPaletteColor(ByVal palIndex As Long) As RGBQuad
+    GetPaletteColor = m_Palette(palIndex).ColorValue
+End Function
+
 Friend Function GetPaletteEntry(ByVal palIndex As Long) As PDPaletteEntry
     GetPaletteEntry = m_Palette(palIndex)
 End Function
