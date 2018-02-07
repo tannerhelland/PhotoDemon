@@ -1182,7 +1182,7 @@ Public Function FixDPI(ByVal pxMeasurement As Long) As Long
     
     End If
     
-    FixDPI = CLng(m_DPIRatio * CDbl(pxMeasurement))
+    FixDPI = Int(m_DPIRatio * CDbl(pxMeasurement) + 0.5)
     
 End Function
 

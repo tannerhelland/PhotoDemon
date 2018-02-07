@@ -994,7 +994,7 @@ End Function
 ' (IMPORTANT NOTE: per Windows rules, a parentHwnd is required.  We can't request the parent hWnd at creation time,
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
-Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
     If MainModule.IsProgramRunning() Then
     
@@ -1012,7 +1012,7 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, O
         End If
         
         'If the tooltip is empty, release any existing tooltips
-        If (Len(m_TTCaption) = 0) Then
+        If (LenB(m_TTCaption) = 0) Then
             HideTooltip True
         Else
             'If a tooltip is already active, update it immediately

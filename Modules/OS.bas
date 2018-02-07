@@ -692,7 +692,7 @@ End Function
 
 'Is this program instance compiled, or running from the IDE?
 Public Function IsProgramCompiled() As Boolean
-    IsProgramCompiled = CBool(App.LogMode = 1)
+    IsProgramCompiled = (App.LogMode = 1)
 End Function
 
 'Check for a version >= the specified version.

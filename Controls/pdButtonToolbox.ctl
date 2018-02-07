@@ -251,7 +251,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
     If (useImgHeight = 0) Then useImgHeight = (ucSupport.GetBackBufferHeight \ 8) * 8
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
+    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
     If (srcDIB Is Nothing) Then Exit Sub
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
@@ -279,7 +279,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         
         'Reset alpha premultiplication
         m_ButtonImages.SetAlphaPremultiplication True
-        If (Len(resName) = 0) Then
+        If (LenB(resName) = 0) Then
             If initAlphaState Then srcDIB.SetAlphaPremultiplication True
         End If
         
@@ -735,6 +735,6 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

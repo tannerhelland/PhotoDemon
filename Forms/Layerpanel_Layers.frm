@@ -206,6 +206,9 @@ End Enum
 ' such functions to ignore their automatic redrawing.
 Private m_DisableRedraws As Boolean
 
+'To prevent unnecessary redraws, we check for repeat calls and ignore accordingly
+Private m_WidthAtLastResize As Long, m_HeightAtLastResize As Long
+
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
 Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
@@ -365,7 +368,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Resize()
-    ReflowInterface
+    If (Me.ScaleWidth <> m_WidthAtLastResize) Or (Me.ScaleHeight <> m_HeightAtLastResize) Then ReflowInterface
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -408,7 +411,10 @@ End Sub
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
 Private Sub ReflowInterface()
-
+    
+    m_WidthAtLastResize = Me.ScaleWidth
+    m_HeightAtLastResize = Me.ScaleHeight
+    
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
     
@@ -416,11 +422,11 @@ Private Sub ReflowInterface()
     Dim sizeCheck As Long
     
     'Start by moving the button box to the bottom of the available area
-    sizeCheck = Me.ScaleHeight - ctlGroupLayerButtons.GetHeight - FixDPI(7)
+    sizeCheck = Me.ScaleHeight - ctlGroupLayerButtons.GetHeight - Interface.FixDPI(7)
     If (sizeCheck > 0) Then ctlGroupLayerButtons.SetTop sizeCheck Else Exit Sub
     
     'Next, stretch the layer box to fill the available space
-    sizeCheck = (ctlGroupLayerButtons.GetTop - lstLayers.GetTop) - FixDPI(7)
+    sizeCheck = (ctlGroupLayerButtons.GetTop - lstLayers.GetTop) - Interface.FixDPI(7)
     If (sizeCheck > 0) Then
             
         If (lstLayers.GetHeight <> sizeCheck) Then lstLayers.SetHeight sizeCheck
@@ -428,8 +434,8 @@ Private Sub ReflowInterface()
         'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
         
         'Left-align the opacity, blend and alpha mode controls against their respective labels.
-        sltLayerOpacity.SetLeft lblLayerSettings(0).GetLeft + lblLayerSettings(0).GetWidth + FixDPI(4)
-        cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + FixDPI(12)
+        sltLayerOpacity.SetLeft lblLayerSettings(0).GetLeft + lblLayerSettings(0).GetWidth + Interface.FixDPI(4)
+        cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + Interface.FixDPI(12)
         
         'So this is kind of funny, but in English, the "blend mode" and "alpha mode" layers are offset
         ' by 1 px due to the different pixel lengths of the "blend" and "alpha" labels.  To make them
@@ -441,15 +447,15 @@ Private Sub ReflowInterface()
             alphaOffset = 13
         End If
         
-        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + FixDPI(13)
+        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + Interface.FixDPI(13)
         
         'Horizontally stretch the opacity, blend, and alpha mode UI inputs
-        sltLayerOpacity.SetWidth Me.ScaleWidth - (sltLayerOpacity.GetLeft + FixDPI(3))
-        cboBlendMode.SetWidth Me.ScaleWidth - (cboBlendMode.GetLeft + FixDPI(4))
-        cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + FixDPI(4))
+        sltLayerOpacity.SetWidth Me.ScaleWidth - (sltLayerOpacity.GetLeft + Interface.FixDPI(3))
+        cboBlendMode.SetWidth Me.ScaleWidth - (cboBlendMode.GetLeft + Interface.FixDPI(4))
+        cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + Interface.FixDPI(4))
         
         'Resize the layer box and associated scrollbar
-        If (lstLayers.GetWidth <> Me.ScaleWidth - (lstLayers.GetLeft + FixDPI(4))) Then lstLayers.SetWidth Me.ScaleWidth - (lstLayers.GetLeft + FixDPI(4))
+        If (lstLayers.GetWidth <> Me.ScaleWidth - (lstLayers.GetLeft + Interface.FixDPI(4))) Then lstLayers.SetWidth Me.ScaleWidth - (lstLayers.GetLeft + Interface.FixDPI(4))
         
         'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
         ctlGroupLayerButtons.SetLeft lstLayers.GetLeft
@@ -458,12 +464,12 @@ Private Sub ReflowInterface()
         '44px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 8px for spacing.
         ' The total size of the button area of the box is thus 4 * 36 + 3 * 8, for FOUR buttons and THREE spacers.
         Dim buttonAreaWidth As Long, buttonAreaLeft As Long
-        buttonAreaWidth = FixDPI(4 * 36 + 3 * 8)
+        buttonAreaWidth = Interface.FixDPI(4 * 36 + 3 * 8)
         buttonAreaLeft = (ctlGroupLayerButtons.GetWidth - buttonAreaWidth) \ 2
         
         Dim i As Long
         For i = 0 To cmdLayerAction.Count - 1
-            cmdLayerAction(i).SetLeft buttonAreaLeft + (i * FixDPIFloat(44))
+            cmdLayerAction(i).SetLeft buttonAreaLeft + (i * Interface.FixDPIFloat(44))
         Next i
     
     End If
@@ -480,16 +486,16 @@ Public Sub UpdateAgainstCurrentTheme()
         
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
-    buttonSize = FixDPI(26)
+    buttonSize = Interface.FixDPI(26)
     cmdLayerAction(0).AssignImage "layer_add", , buttonSize, buttonSize
     cmdLayerAction(1).AssignImage "layer_delete", , buttonSize, buttonSize
     cmdLayerAction(2).AssignImage "layer_up", , buttonSize, buttonSize
     cmdLayerAction(3).AssignImage "layer_down", , buttonSize, buttonSize
-        
+    
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
-        
+    
     'Recreate tooltips (necessary to support run-time language changes)
     'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
     cmdLayerAction(0).AssignTooltip "Add a blank layer to the image.", "New layer"

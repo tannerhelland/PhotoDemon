@@ -69,15 +69,15 @@ Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
 End Function
 
 'Extract the red, green, or blue value from an RGB() Long
-Public Function ExtractRed(ByVal currentColor As Long) As Integer
+Public Function ExtractRed(ByVal currentColor As Long) As Long
     ExtractRed = currentColor And 255
 End Function
 
-Public Function ExtractGreen(ByVal currentColor As Long) As Integer
+Public Function ExtractGreen(ByVal currentColor As Long) As Long
     ExtractGreen = (currentColor \ 256) And 255
 End Function
 
-Public Function ExtractBlue(ByVal currentColor As Long) As Integer
+Public Function ExtractBlue(ByVal currentColor As Long) As Long
     ExtractBlue = (currentColor \ 65536) And 255
 End Function
 
@@ -693,32 +693,38 @@ End Function
 Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'To make things simpler, remove variability from the source string
-    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then srcHex = Right$(srcHex, Len(srcHex) - 1)
-    srcHex = LCase(srcHex)
+    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then
+        srcHex = LCase$(Right$(srcHex, Len(srcHex) - 1))
+    Else
+        srcHex = LCase$(srcHex)
+    End If
     
     Dim txtLen As Long
     txtLen = Len(srcHex)
     
     'If short-hand length is in use, expand it to 6 chars now
-    If (txtLen = 6) Then
-        '6 characters is what we want; do nothing
-    ElseIf (txtLen = 3) Then
-        'Three characters is standard shorthand hex; expand each character as a pair
-        srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
-    ElseIf (txtLen = 1) Then
-        'One character is treated as a shade of gray; extend it to six characters.
-        srcHex = String$(6, srcHex)
-    Else
-        'We can't handle this character string!
-        Debug.Print "WARNING! Invalid hex passed to getRGBLongFromHex: " & srcHex
-        Exit Function
+    If (txtLen < 6) Then
+        
+        If (txtLen = 3) Then
+            'Three characters is standard shorthand hex; expand each character as a pair
+            srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
+        ElseIf (txtLen = 1) Then
+            'One character is treated as a shade of gray; extend it to six characters.
+            srcHex = String$(6, srcHex)
+        Else
+            'We can't handle this character string!
+            Debug.Print "WARNING! Invalid hex passed to GetRGBLongFromHex: " & srcHex
+            Exit Function
+        End If
+        
     End If
     
     'Parse the string to calculate actual numeric values; we can use VB's Val() function for this.
     Dim r As Long, g As Long, b As Long
-    r = Val("&H" & Left$(srcHex, 2))
-    g = Val("&H" & Mid$(srcHex, 3, 2))
-    b = Val("&H" & Right$(srcHex, 2))
+    Const HEX_PREFIX As String = "&H"
+    r = Val(HEX_PREFIX & Left$(srcHex, 2))
+    g = Val(HEX_PREFIX & Mid$(srcHex, 3, 2))
+    b = Val(HEX_PREFIX & Right$(srcHex, 2))
     
     'Return the RGB Long
     GetRGBLongFromHex = RGB(r, g, b)
@@ -838,3 +844,4 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     End Select
     
 End Function
+

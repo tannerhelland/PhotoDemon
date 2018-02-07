@@ -1775,19 +1775,22 @@ Friend Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional By
     nodeName32 = targetNodeName
     
     'Search the node array for a matching name
-    Dim i As Long, nodeIndex As Long
-    nodeIndex = -1
+    GetNodeIndexFromName = -1
     
     If (m_numOfNodes > 0) Then
+    
+        Dim caseInsensitiveMatching As Boolean
+        caseInsensitiveMatching = (compareMode = vbTextCompare)
+        
+        Dim i As Long
         For i = 0 To UBound(m_NodeDirectory)
-            If Strings.StringsEqual(nodeName32, m_NodeDirectory(i).nodeName, (compareMode = vbTextCompare)) Then
-                nodeIndex = i
+            If Strings.StringsEqual(nodeName32, m_NodeDirectory(i).nodeName, caseInsensitiveMatching) Then
+                GetNodeIndexFromName = i
                 Exit For
             End If
         Next i
+        
     End If
-    
-    GetNodeIndexFromName = nodeIndex
     
 End Function
 

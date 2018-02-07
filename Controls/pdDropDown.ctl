@@ -850,7 +850,7 @@ Private Sub UpdateControlLayout()
         
         'The dropdown area is placed relative to the caption
         With m_ComboRect
-            .Left = FixDPI(8)
+            .Left = Interface.FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 3
             .Width = (bWidth - 2) - .Left
             .Height = (bHeight - 2) - .Top
@@ -994,7 +994,7 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 

@@ -226,7 +226,7 @@ End Function
 Friend Function DoesTagExist(ByRef tagName As String, Optional ByRef attributeName As String = vbNullString, Optional ByRef attributeValue As String = vbNullString, Optional ByRef foundPosition As Long = 0) As Boolean
 
     'If an attribute is provided, finding the tag is a bit messier
-    If (Len(attributeName) <> 0) Then
+    If (LenB(attributeName) <> 0) Then
         foundPosition = InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode)
         
     'If no attribute is provided, finding the tag is simple
@@ -645,9 +645,9 @@ Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If (Len(xmlSection) <> 0) Then
+    If (LenB(xmlSection) <> 0) Then
     
-        If (Len(xmlSectionAttribute) <> 0) Then
+        If (LenB(xmlSectionAttribute) <> 0) Then
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
         Else
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
@@ -663,7 +663,7 @@ Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_String = Trim$(tmpString)
     Else
         GetUniqueTag_String = defaultReturn
@@ -676,7 +676,7 @@ Friend Function GetUniqueTag_Long(ByRef tagName As String, Optional ByVal defaul
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_Long = CLng(tmpString)
     Else
         GetUniqueTag_Long = defaultReturn
@@ -689,7 +689,7 @@ Friend Function GetUniqueTag_Boolean(ByRef tagName As String, Optional ByVal def
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_Boolean = CBool(tmpString)
     Else
         GetUniqueTag_Boolean = defaultReturn
@@ -702,7 +702,7 @@ Friend Function GetUniqueTag_Double(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_Double = CDblCustom(tmpString)
     Else
         GetUniqueTag_Double = defaultReturn
@@ -715,7 +715,7 @@ Friend Function GetUniqueTag_Currency(ByRef tagName As String, Optional ByVal de
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
         GetUniqueTag_Currency = CCur(tmpString)
     Else
         GetUniqueTag_Currency = defaultReturn
@@ -731,9 +731,9 @@ Friend Function GetNonUniqueTag_String(ByRef tagName As String, ByRef xmlSection
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If (Len(xmlSection) <> 0) Then
+    If (LenB(xmlSection) <> 0) Then
     
-        If (Len(xmlSectionAttribute) <> 0) Then
+        If (LenB(xmlSectionAttribute) <> 0) Then
             searchStartLocation = InStr(defaultStartPosition, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
             If (searchStartLocation <> 0) Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
         Else
@@ -755,7 +755,7 @@ Friend Function GetNonUniqueTag_String(ByRef tagName As String, ByRef xmlSection
     Dim tmpString As String, foundLocation As Long
     tmpString = GetTextBetweenTags(tagName, searchStartLocation, foundLocation)
     
-    If (Len(tmpString) <> 0) And (foundLocation < searchEndLocation) Then
+    If (LenB(tmpString) <> 0) And (foundLocation < searchEndLocation) Then
         GetNonUniqueTag_String = Trim$(tmpString)
     Else
         GetNonUniqueTag_String = defaultReturn
@@ -775,10 +775,10 @@ Friend Function GetTagValueAtPreciseLocation(ByVal startPosition As Long) As Str
     endPos = InStr(startPos + 1, m_xmlContents, "<", vbBinaryCompare)
     
     'Return the value between the two positions
-    If endPos > startPos Then
+    If (endPos > startPos) Then
         GetTagValueAtPreciseLocation = Mid$(m_xmlContents, startPos + 1, (endPos - startPos) - 1)
     Else
-        GetTagValueAtPreciseLocation = ""
+        GetTagValueAtPreciseLocation = vbNullString
     End If
 
 End Function

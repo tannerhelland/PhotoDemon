@@ -49,7 +49,7 @@ Private m_ObjectName As String
 
 'Initialize a color list for a given object.  This preps a number of structures, but DOESN'T ACTUALLY RETRIEVE COLORS.
 ' (Colors must be retrieved individually.)
-Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRequiredColors As Long) As Boolean
+Friend Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRequiredColors As Long) As Boolean
     
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
     ' (Note that this step will fail inside the IDE; a workaround is provided.)
@@ -65,7 +65,7 @@ Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
         m_NumOfColors = numOfRequiredColors
         ReDim m_ColorList(0 To m_NumOfColors - 1) As PDThemeColor
     Else
-        Debug.Print "WARNING!  You can't request zero colors from pdThemeColors.InitializeColorList()!"
+        InternalProblem "WARNING!  You can't request zero colors from pdThemeColors.InitializeColorList()!"
     End If
     
 End Function
@@ -81,7 +81,7 @@ End Function
 '   - Next, we search for the Disabled, Active, and Hover variants of the color.
 '       - If a variant exists, it is stored in its respective position.
 '       - If a variant does not exist, the BaseColor value is plugged in instead.
-Public Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As String, ByRef IDE_FailsafeColor As String) As Boolean
+Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As String, ByRef IDE_FailsafeColor As String) As Boolean
     
     LoadThemeColor = False
     
@@ -121,22 +121,52 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
                         'Because this color successfully exists, we are now going to check for disabled, active, hovered,
                         ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
                         ' optional variant is missing, we'll just plug in the base color value, with the exception of
-                        ' active+hovered which gets the active color by default.)
-                        FillInColorVariant m_ObjectName, srcColorName, "disabled", m_ColorList(colorIndex).disabledColor, baseColorValue
-                        FillInColorVariant m_ObjectName, srcColorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
-                        FillInColorVariant m_ObjectName, srcColorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
-                        FillInColorVariant m_ObjectName, srcColorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
+                        ' active+hovered which gets the *active* color by default.)
+                        
+                        'Note that this step was previously split into a separate function, but for performance reasons,
+                        ' it's been moved in-line.
+                        With m_ColorList(colorIndex)
+                        
+                            colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-disabled")
+                            If (LenB(colorString) = 0) Then
+                                .disabledColor = baseColorValue
+                            Else
+                                If (Not Colors.GetColorFromString(colorString, .disabledColor, ColorHex)) Then .disabledColor = baseColorValue
+                            End If
+                            
+                            colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-active")
+                            If (LenB(colorString) = 0) Then
+                                .ActiveColor = baseColorValue
+                            Else
+                                If (Not Colors.GetColorFromString(colorString, .ActiveColor, ColorHex)) Then .ActiveColor = baseColorValue
+                            End If
+                            
+                            colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-hover")
+                            If (LenB(colorString) = 0) Then
+                                .HoverColor = baseColorValue
+                            Else
+                                If (Not Colors.GetColorFromString(colorString, .HoverColor, ColorHex)) Then .HoverColor = baseColorValue
+                            End If
+                            
+                            colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-activehover")
+                            If (LenB(colorString) = 0) Then
+                                .ActiveHoverColor = .ActiveColor
+                            Else
+                                If (Not Colors.GetColorFromString(colorString, .ActiveHoverColor, ColorHex)) Then .ActiveHoverColor = .ActiveColor
+                            End If
+                            
+                        End With
                         
                         'With the color table successfully populated, cache its values in the central themer.  This spares
                         ' future requests for this color from having to repeat these steps from scratch.
                         g_Themer.AddColorToCache m_ObjectName, srcColorName, m_ColorList(colorIndex)
                         
                     Else
-                        pdDebug.LogAction "WARNING!  Theme color for " & m_ObjectName & ":" & srcColorName & " couldn't be converted to a valid RGB value."
+                        InternalProblem "WARNING!  Theme color for " & m_ObjectName & ":" & srcColorName & " couldn't be converted to a valid RGB value."
                     End If
                      
                 Else
-                    pdDebug.LogAction "WARNING!  Theme color lookup for " & m_ObjectName & ":" & srcColorName & " failed."
+                    InternalProblem "WARNING!  Theme color lookup for " & m_ObjectName & ":" & srcColorName & " failed."
                 End If
             
             End If
@@ -155,7 +185,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
                     .HoverColor = baseColorValue
                 End With
             Else
-                Debug.Print "WARNING!  Your IDE failsafe color (" & IDE_FailsafeColor & ") is invalid.  Fix it!"
+                InternalProblem "WARNING!  Your IDE failsafe color (" & IDE_FailsafeColor & ") is invalid.  Fix it!"
             End If
             
         End If
@@ -164,9 +194,9 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
         LoadThemeColor = colorLookupSuccessful
         
     Else
-        Debug.Print "WARNING!  You've requested an invalid color index from pdThemeColors.LoadThemeColor()!"
+        InternalProblem "WARNING!  You've requested an invalid color index from pdThemeColors.LoadThemeColor()!"
     End If
-
+    
 End Function
 
 'Once a base color has been successfully retrieved, you can use this function to plug in any/all variant values
@@ -175,20 +205,19 @@ Private Sub FillInColorVariant(ByRef objectName As String, ByRef srcColorName As
     'By default, assign the fallback color value.  If the rest of this function is successful, it will overwrite this
     ' value with a new, custom value.
     dstColor = failsafeColor
-    
-    Dim colorVariantName As String, colorString As String
-    colorVariantName = srcColorName & "-" & variantStringTag
-    colorString = g_Themer.LookUpColor(objectName, colorVariantName)
-    
+
+    Dim colorString As String
+    colorString = g_Themer.LookUpColor(objectName, srcColorName & "-" & variantStringTag)
+
     If (LenB(colorString) <> 0) Then
-        If (Not Colors.GetColorFromString(colorString, dstColor)) Then dstColor = failsafeColor
+        If (Not Colors.GetColorFromString(colorString, dstColor, ColorHex)) Then dstColor = failsafeColor
     End If
     
 End Sub
 
 'Once all colors have been populated, this function is used to return actual color values.  It's all lookup-table based,
 ' so feel free to use it inside actual rendering functions.
-Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
+Friend Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
 
     'Before doing anything else, validate the color index
     If (colorIndex >= 0) And (colorIndex < m_NumOfColors) Then
@@ -213,7 +242,15 @@ Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
         End If
     
     Else
-        Debug.Print "WARNING!  You've requested an invalid color index from pdThemeColors.RetrieveColor()!"
+        InternalProblem "WARNING!  You've requested an invalid color index from pdThemeColors.RetrieveColor()!"
     End If
 
 End Function
+
+Private Sub InternalProblem(ByRef errMsg As String)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdThemeColors returned an error: " & errMsg
+    #Else
+        Debug.Print "WARNING!  pdThemeColors returned an error: " & errMsg
+    #End If
+End Sub

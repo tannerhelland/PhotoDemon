@@ -861,14 +861,14 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
         'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
         ' even if translation text is missing.
-        If (Len(newString) = 0) Then
+        If (LenB(newString) = 0) Then
             
             'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-            If (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
+            If (InStr(1, searchString, vbCrLf, vbBinaryCompare) <> 0) Then
                 
                 newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
                 
-                If (Len(newString) = 0) Then
+                If (LenB(newString) = 0) Then
                     newString = srcMessage
                 Else
                 
@@ -895,7 +895,7 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
-            newString = Replace$(newString, "%" & i + 1, ExtraText(i), , , vbBinaryCompare)
+            newString = Replace$(newString, "%" & CStr(i + 1), ExtraText(i), , , vbBinaryCompare)
         Next i
     
     End If

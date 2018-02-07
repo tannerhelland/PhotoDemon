@@ -1022,13 +1022,15 @@ Public Sub UpdateAgainstCurrentTheme()
             m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
             
             Dim i As Long
-            For i = 0 To m_NumOfItems - 1
-                If g_Language.TranslationActive Then
+            If g_Language.TranslationActive Then
+                For i = 0 To m_NumOfItems - 1
                     m_Items(i).textTranslated = g_Language.TranslateMessage(m_Items(i).textEn)
-                Else
+                Next i
+            Else
+                For i = 0 To m_NumOfItems - 1
                     m_Items(i).textTranslated = m_Items(i).textEn
-                End If
-            Next i
+                Next i
+            End If
         
             m_RenderDataCorrect = False
             

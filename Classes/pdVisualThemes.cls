@@ -96,7 +96,7 @@ Private Const DEFAULT_NAMESPACE As String = "Default"
 ' especially for generic colors (e.g. "Background") which are retrieved by multiple controls.
 Private m_NumColorsCached As Long
 Private m_ColorCache() As PDCachedColor
-Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
+Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 64
 
 'For the most part, we leave individual controls to manage their own color lists.  This provides excellent flexibility
 ' with UI rendering.  However, there are some colors that appear so frequently throughout PD that it makes more sense
@@ -706,7 +706,7 @@ Private Function ResolveColor(ByVal initialColorValue As String) As String
     Do
         
         'First, reject any empty strings (to prevent subsequent parse errors)
-        If (Len(initialColorValue) = 0) Then
+        If (LenB(initialColorValue) = 0) Then
             ResolveColor = vbNullString
             Exit Function
         End If
