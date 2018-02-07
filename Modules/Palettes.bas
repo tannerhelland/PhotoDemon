@@ -631,6 +631,8 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
     
+    Dim srcPixels1D() As Byte, tmpSA1D As SafeArray1D, srcPtr As Long, srcStride As Long
+    
     Dim pxSize As Long
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
@@ -657,7 +659,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
     
     'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
-    Dim DitherTable() As Long
+    Dim ditherTable() As Long
     Dim orderedDitherInUse As Boolean
     orderedDitherInUse = (ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8)
     
@@ -673,32 +675,32 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             'First, prepare a Bayer dither table
             ditherRows = 3
             ditherColumns = 3
-            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 9
-            DitherTable(0, 2) = 3
-            DitherTable(0, 3) = 11
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 9
+            ditherTable(0, 2) = 3
+            ditherTable(0, 3) = 11
             
-            DitherTable(1, 0) = 13
-            DitherTable(1, 1) = 5
-            DitherTable(1, 2) = 15
-            DitherTable(1, 3) = 7
+            ditherTable(1, 0) = 13
+            ditherTable(1, 1) = 5
+            ditherTable(1, 2) = 15
+            ditherTable(1, 3) = 7
             
-            DitherTable(2, 0) = 4
-            DitherTable(2, 1) = 12
-            DitherTable(2, 2) = 2
-            DitherTable(2, 3) = 10
+            ditherTable(2, 0) = 4
+            ditherTable(2, 1) = 12
+            ditherTable(2, 2) = 2
+            ditherTable(2, 3) = 10
             
-            DitherTable(3, 0) = 16
-            DitherTable(3, 1) = 8
-            DitherTable(3, 2) = 14
-            DitherTable(3, 3) = 6
+            ditherTable(3, 0) = 16
+            ditherTable(3, 1) = 8
+            ditherTable(3, 2) = 14
+            ditherTable(3, 3) = 6
     
             'Convert the dither entries to absolute offsets (meaning half are positive, half are negative)
             For x = 0 To 3
             For y = 0 To 3
-                DitherTable(x, y) = DitherTable(x, y) * 2 - 16
+                ditherTable(x, y) = ditherTable(x, y) * 2 - 16
             Next y
             Next x
             
@@ -707,84 +709,84 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             'First, prepare a Bayer dither table
             ditherRows = 7
             ditherColumns = 7
-            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 49
-            DitherTable(0, 2) = 13
-            DitherTable(0, 3) = 61
-            DitherTable(0, 4) = 4
-            DitherTable(0, 5) = 52
-            DitherTable(0, 6) = 16
-            DitherTable(0, 7) = 64
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 49
+            ditherTable(0, 2) = 13
+            ditherTable(0, 3) = 61
+            ditherTable(0, 4) = 4
+            ditherTable(0, 5) = 52
+            ditherTable(0, 6) = 16
+            ditherTable(0, 7) = 64
             
-            DitherTable(1, 0) = 33
-            DitherTable(1, 1) = 17
-            DitherTable(1, 2) = 45
-            DitherTable(1, 3) = 29
-            DitherTable(1, 4) = 36
-            DitherTable(1, 5) = 20
-            DitherTable(1, 6) = 48
-            DitherTable(1, 7) = 32
+            ditherTable(1, 0) = 33
+            ditherTable(1, 1) = 17
+            ditherTable(1, 2) = 45
+            ditherTable(1, 3) = 29
+            ditherTable(1, 4) = 36
+            ditherTable(1, 5) = 20
+            ditherTable(1, 6) = 48
+            ditherTable(1, 7) = 32
             
-            DitherTable(2, 0) = 9
-            DitherTable(2, 1) = 57
-            DitherTable(2, 2) = 5
-            DitherTable(2, 3) = 53
-            DitherTable(2, 4) = 12
-            DitherTable(2, 5) = 60
-            DitherTable(2, 6) = 8
-            DitherTable(2, 7) = 56
+            ditherTable(2, 0) = 9
+            ditherTable(2, 1) = 57
+            ditherTable(2, 2) = 5
+            ditherTable(2, 3) = 53
+            ditherTable(2, 4) = 12
+            ditherTable(2, 5) = 60
+            ditherTable(2, 6) = 8
+            ditherTable(2, 7) = 56
             
-            DitherTable(3, 0) = 41
-            DitherTable(3, 1) = 25
-            DitherTable(3, 2) = 37
-            DitherTable(3, 3) = 21
-            DitherTable(3, 4) = 44
-            DitherTable(3, 5) = 28
-            DitherTable(3, 6) = 40
-            DitherTable(3, 7) = 24
+            ditherTable(3, 0) = 41
+            ditherTable(3, 1) = 25
+            ditherTable(3, 2) = 37
+            ditherTable(3, 3) = 21
+            ditherTable(3, 4) = 44
+            ditherTable(3, 5) = 28
+            ditherTable(3, 6) = 40
+            ditherTable(3, 7) = 24
             
-            DitherTable(4, 0) = 3
-            DitherTable(4, 1) = 51
-            DitherTable(4, 2) = 15
-            DitherTable(4, 3) = 63
-            DitherTable(4, 4) = 2
-            DitherTable(4, 5) = 50
-            DitherTable(4, 6) = 14
-            DitherTable(4, 7) = 62
+            ditherTable(4, 0) = 3
+            ditherTable(4, 1) = 51
+            ditherTable(4, 2) = 15
+            ditherTable(4, 3) = 63
+            ditherTable(4, 4) = 2
+            ditherTable(4, 5) = 50
+            ditherTable(4, 6) = 14
+            ditherTable(4, 7) = 62
             
-            DitherTable(5, 0) = 35
-            DitherTable(5, 1) = 19
-            DitherTable(5, 2) = 47
-            DitherTable(5, 3) = 31
-            DitherTable(5, 4) = 34
-            DitherTable(5, 5) = 18
-            DitherTable(5, 6) = 46
-            DitherTable(5, 7) = 30
+            ditherTable(5, 0) = 35
+            ditherTable(5, 1) = 19
+            ditherTable(5, 2) = 47
+            ditherTable(5, 3) = 31
+            ditherTable(5, 4) = 34
+            ditherTable(5, 5) = 18
+            ditherTable(5, 6) = 46
+            ditherTable(5, 7) = 30
     
-            DitherTable(6, 0) = 11
-            DitherTable(6, 1) = 59
-            DitherTable(6, 2) = 7
-            DitherTable(6, 3) = 55
-            DitherTable(6, 4) = 10
-            DitherTable(6, 5) = 58
-            DitherTable(6, 6) = 6
-            DitherTable(6, 7) = 54
+            ditherTable(6, 0) = 11
+            ditherTable(6, 1) = 59
+            ditherTable(6, 2) = 7
+            ditherTable(6, 3) = 55
+            ditherTable(6, 4) = 10
+            ditherTable(6, 5) = 58
+            ditherTable(6, 6) = 6
+            ditherTable(6, 7) = 54
             
-            DitherTable(7, 0) = 43
-            DitherTable(7, 1) = 27
-            DitherTable(7, 2) = 39
-            DitherTable(7, 3) = 23
-            DitherTable(7, 4) = 42
-            DitherTable(7, 5) = 26
-            DitherTable(7, 6) = 38
-            DitherTable(7, 7) = 22
+            ditherTable(7, 0) = 43
+            ditherTable(7, 1) = 27
+            ditherTable(7, 2) = 39
+            ditherTable(7, 3) = 23
+            ditherTable(7, 4) = 42
+            ditherTable(7, 5) = 26
+            ditherTable(7, 6) = 38
+            ditherTable(7, 7) = 22
             
             'Convert the dither entries to [-32, 32] range
             For x = 0 To 7
             For y = 0 To 7
-                DitherTable(x, y) = DitherTable(x, y) - 32
+                ditherTable(x, y) = ditherTable(x, y) - 32
             Next y
             Next x
         
@@ -793,15 +795,20 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         'Apply the finished dither table to the image
         Dim ditherAmt As Long
         
+        dstDIB.WrapArrayAroundScanline srcPixels1D, tmpSA1D, 0
+        srcPtr = tmpSA1D.pvData
+        srcStride = tmpSA1D.cElements
+        
         For y = 0 To finalY
+            tmpSA1D.pvData = srcPtr + (srcStride * y)
         For x = 0 To finalX Step pxSize
         
-            b = srcPixels(x, y)
-            g = srcPixels(x + 1, y)
-            r = srcPixels(x + 2, y)
+            b = srcPixels1D(x)
+            g = srcPixels1D(x + 1)
+            r = srcPixels1D(x + 2)
             
             'Add dither to each component
-            ditherAmt = DitherTable((x \ 4) And ditherRows, y And ditherColumns)
+            ditherAmt = ditherTable((x \ 4) And ditherRows, y And ditherColumns)
             If reduceBleed Then ditherAmt = ditherAmt * 0.33
             
             r = r + ditherAmt
@@ -831,9 +838,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             tmpQuad.Red = r
             newQuad = kdTree.GetNearestColor(tmpQuad)
             
-            srcPixels(x, y) = newQuad.Blue
-            srcPixels(x + 1, y) = newQuad.Green
-            srcPixels(x + 2, y) = newQuad.Red
+            srcPixels1D(x) = newQuad.Blue
+            srcPixels1D(x + 1) = newQuad.Green
+            srcPixels1D(x + 2) = newQuad.Red
             
         Next x
             If (Not suppressMessages) Then
@@ -843,6 +850,8 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
                 End If
             End If
         Next y
+        
+        dstDIB.UnwrapArrayFromDIB srcPixels1D
     
     'All error-diffusion dither methods are handled similarly
     Else
@@ -855,6 +864,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         
         'Retrieve a hard-coded dithering table matching the requested dither type
         Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        If (ditherDivisor <> 0!) Then ditherDivisor = 1! / ditherDivisor
         
         'Next, build an error tracking array.  Some diffusion methods require three rows worth of others;
         ' others require two.  Note that errors must be tracked separately for each color component.
@@ -868,16 +878,21 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         Dim xNonStride As Long, xQuickInner As Long
         Dim newR As Long, newG As Long, newB As Long
         
+        dstDIB.WrapArrayAroundScanline srcPixels1D, tmpSA1D, 0
+        srcPtr = tmpSA1D.pvData
+        srcStride = tmpSA1D.cElements
+        
         'Start calculating pixels.
         For y = 0 To finalY
+            tmpSA1D.pvData = srcPtr + (srcStride * y)
         For x = 0 To finalX Step pxSize
         
-            b = srcPixels(x, y)
-            g = srcPixels(x + 1, y)
-            r = srcPixels(x + 2, y)
+            b = srcPixels1D(x)
+            g = srcPixels1D(x + 1)
+            r = srcPixels1D(x + 2)
             
             'Add our running errors to the original colors
-            xNonStride = x * 0.25
+            xNonStride = x \ 4
             newR = r + rErrors(xNonStride, 0)
             newG = g + gErrors(xNonStride, 0)
             newB = b + bErrors(xNonStride, 0)
@@ -909,9 +924,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             With newQuad
             
                 'Apply the closest discovered color to this pixel.
-                srcPixels(x, y) = .Blue
-                srcPixels(x + 1, y) = .Green
-                srcPixels(x + 2, y) = .Red
+                srcPixels1D(x) = .Blue
+                srcPixels1D(x + 1) = .Green
+                srcPixels1D(x + 2) = .Red
             
                 'Calculate new errors
                 rError = r - CLng(.Red)
@@ -931,28 +946,25 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             For i = xLeft To xRight
             For j = 0 To yDown
                 
-                'First, ignore already processed pixels
-                If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
+                If (ditherTableI(i, j) <> 0) Then
                     
-                'Second, ignore pixels that have a zero in the dither table
-                If (ditherTableI(i, j) = 0) Then GoTo NextDitheredPixel
+                    xQuickInner = xNonStride + i
                     
-                xQuickInner = xNonStride + i
-                
-                'Next, ignore target pixels that are off the image boundary
-                If (xQuickInner < initX) Then
-                    GoTo NextDitheredPixel
-                ElseIf (xQuickInner > xWidth) Then
-                    GoTo NextDitheredPixel
+                    'Next, ignore target pixels that are off the image boundary
+                    If (xQuickInner >= initX) Then
+                        If (xQuickInner < xWidth) Then
+                        
+                            'If we've made it all the way here, we are able to actually spread the error to this location
+                            errorMult = CSng(ditherTableI(i, j)) * ditherDivisor
+                            rErrors(xQuickInner, j) = rErrors(xQuickInner, j) + (rError * errorMult)
+                            gErrors(xQuickInner, j) = gErrors(xQuickInner, j) + (gError * errorMult)
+                            bErrors(xQuickInner, j) = bErrors(xQuickInner, j) + (bError * errorMult)
+                            
+                        End If
+                    End If
+                    
                 End If
                 
-                'If we've made it all the way here, we are able to actually spread the error to this location
-                errorMult = CSng(ditherTableI(i, j)) / ditherDivisor
-                rErrors(xQuickInner, j) = rErrors(xQuickInner, j) + (rError * errorMult)
-                gErrors(xQuickInner, j) = gErrors(xQuickInner, j) + (gError * errorMult)
-                bErrors(xQuickInner, j) = bErrors(xQuickInner, j) + (bError * errorMult)
-                
-NextDitheredPixel:
             Next j
             Next i
             
@@ -988,6 +1000,8 @@ NextDitheredPixel:
             End If
             
         Next y
+        
+        dstDIB.UnwrapArrayFromDIB srcPixels1D
     
     End If
     
