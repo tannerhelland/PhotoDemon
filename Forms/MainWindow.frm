@@ -2614,7 +2614,6 @@ Private Sub Form_Load()
         '*************************************************************************************************************************************
         
         Message ""
-        g_UserPreferences.EndBatchPreferenceMode
         FormMain.Refresh
         DoEvents
         
@@ -2640,7 +2639,12 @@ Private Sub Form_Load()
         #End If
         
         'Because people may be using this code in the IDE, warn them about the consequences of doing so
-        If (Not OS.IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
+        If (Not OS.IsProgramCompiled) Then
+            If (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
+        End If
+        
+        'With all preferences successfully handled, we can shut down batch preference mode
+        g_UserPreferences.EndBatchPreferenceMode
         
         'In debug mode, note that we are about to turn control over to the user
         #If DEBUGMODE = 1 Then

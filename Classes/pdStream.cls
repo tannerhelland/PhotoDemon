@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2018 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 25/October/17
-'Last update: add "DeleteFromStart" function, as part of integration with our asynchronous ExifTool interface
+'Last updated: 07/February/18
+'Last update: continue expanding the available "Write" commands, to make it easier to write Adobe-format files
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -668,6 +668,18 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
     
 End Function
 
+'Write a single (pun?) 32-bit float to the stream
+Friend Function WriteFloat(ByVal srcSingle As Single) As Boolean
+    WriteFloat = WriteBytesFromPointer(VarPtr(srcSingle), 4)
+End Function
+
+'Write a single 32-bit float to the stream, *after* converting it to big-endian format
+Friend Function WriteFloat_BE(ByVal srcSingle As Single) As Boolean
+    Dim tmpLong As Long
+    CopyMemory_Strict VarPtr(tmpLong), VarPtr(srcSingle), 4
+    WriteFloat_BE = Me.WriteLong_BE(tmpLong)
+End Function
+
 'Write a single integer to the stream.
 Friend Function WriteInt(ByVal srcInt As Integer) As Boolean
     WriteInt = WriteBytesFromPointer(VarPtr(srcInt), 2)
@@ -701,6 +713,36 @@ End Function
 'Write a single long to the stream, *after* converting it to big-endian format.
 Friend Function WriteLong_BE(ByVal srcLong As Long) As Boolean
     WriteLong_BE = WriteLong(htonl(srcLong))
+End Function
+
+'Given a source VB string, write each char to the stream as if it were a one-byte ASCII value.
+Friend Function WriteString_ASCII(ByRef srcString As String) As Boolean
+    If (LenB(srcString) <> 0) Then
+        Dim tmpBytes() As Byte
+        tmpBytes = StrConv(srcString, vbFromUnicode)
+        WriteString_ASCII = Me.WriteBytesFromPointer(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1)
+    End If
+End Function
+
+'Given a source VB string, write each char to the stream as a two-byte UTF-16 character.
+Friend Function WriteString_Unicode(ByRef srcString As String, Optional ByVal addTrailingNull As Boolean = False) As Boolean
+    WriteString_Unicode = Me.WriteBytesFromPointer(StrPtr(srcString), LenB(srcString))
+    If addTrailingNull And WriteString_Unicode Then WriteString_Unicode = Me.WriteInt(0)
+End Function
+
+'Given a source VB string, write each char to the stream as a two-byte UTF-16 character,
+' using big-endian storage.
+Friend Function WriteString_UnicodeBE(ByRef srcString As String, Optional ByVal addTrailingNull As Boolean = False) As Boolean
+    
+    'There's no good way to do this, but since performance isn't a huge deal in PD's current use-cases,
+    ' just write each char one at a time.
+    Dim i As Long
+    For i = 1 To Len(srcString)
+        WriteString_UnicodeBE = Me.WriteInt_BE(AscW(Mid$(srcString, i, 1)))
+    Next i
+    
+    If addTrailingNull Then WriteString_UnicodeBE = Me.WriteInt(0)
+    
 End Function
 
 'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 16/January/18
-'Last updated: 02/February/18
-'Last update: add support for writing Photoshop Swatch files (.aco)
+'Last updated: 07/February/18
+'Last update: add support for writing Adobe Swatch Exchange files (.ase)
 '
 '(This class currently has some non-obvious overlap with the Palettes module.  In the future, it would be nice to
 ' compartmentalize more palette-specific functionality within this class, then pass around class instances instead
@@ -469,7 +469,7 @@ BadSwatchData:
     
 End Function
 
-'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
+'Given a valid path to a modern ASE file (Adobe Swatch Exchange), extract and process all swatches inside the file.
 Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
@@ -502,8 +502,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
             
             'If all validation checks have passed, we have one final one to perform before proceeding.
             ' The next entry is a 4-byte integer defining the number of blocks in the file.  Blocks come in
-            ' three types: group start, group end, and color entry.  Even though PD doesn't use groups
-            ' (at present), we need to know the full block count so we can skip unnecessary entries.
+            ' three types: group start, group end, and color entry.
             Dim numOfBlocks As Long
             If headerValidated Then
                 numOfBlocks = srcData.ReadLong_BE()
@@ -517,7 +516,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                 ' reported in advance.  The only way to know this is to actually parse each block in turn.
                 
                 'Iterate through all blocks.  We may skip certain block types as they are not currently useful
-                ' (or even decode-able, in the case of 3rd-party extensions).
+                ' (or even decodable, in the case of 3rd-party extensions).
                 Dim i As Long, j As Long
                 For i = 1 To numOfBlocks
                     
@@ -528,9 +527,8 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                     blockType = srcData.ReadIntUnsigned_BE()
                     blockLength = srcData.ReadLong_BE()
                     
-                    'Group end blocks have zero-length, by design.  If we decide to process groups in the future,
-                    ' we will need to handle 0-length blocks differently (by using them to denote the end of the
-                    ' current group, if any.)
+                    'Group end blocks have zero-length, by design.  We process them implicitly (whenever a
+                    ' new group is encountered or the file ends), so we can ignore them here.
                     If (blockLength > 0) Then
                     
                         'Because we're going to be poking around inside this block, let's make a note of the
@@ -543,11 +541,10 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                         Dim curGroupName As String, curColorName As String, nameLength As Long, tmpChar As Long
                         Dim numGroupsFound As Long
                         
-                        'Next, split processing according to block type.  At present, we ignore group descriptors and
-                        ' only retrieve color data.
+                        'Next, split processing according to block type.
                         Select Case blockType
                             
-                            'Color descriptor (e.g. the block we care most about!)
+                            'Color descriptor
                             Case 1
                             
                                 'Color descriptors start with this color's name.  For additional details, see the
@@ -561,6 +558,8 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                                         tmpChar = srcData.ReadIntUnsigned_BE()
                                         Mid$(curColorName, j, 1) = ChrW(tmpChar)
                                     Next j
+                                    
+                                    curColorName = Trim$(Strings.TrimNull(curColorName))
                                     
                                     'Manually advance the pointer by one 16-bit word to account for the null
                                     ' string terminator we didn't retrieve.
@@ -685,7 +684,6 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                                 'Next, retrieve the string, and manually remove 1 from its length (as VB will add
                                 ' its own null-pointer at the end of the BSTR).  Note also that we can't rely on
                                 ' convenient WAPI functions here, because the string chars are big-endian.
-                                'If the length is non-zero, resize the string to match
                                 If (nameLength > 0) Then
                                 
                                     curGroupName = String$(nameLength, 0)
@@ -754,8 +752,11 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                         
                     Next i
                         
-                    'If this swatch file contained no groups, substitute the filename as the palette name
-                    If (m_NumOfGroups = 1) Then m_Palettes(0).SetPaletteName Files.FileGetName(srcFile, True)
+                    'If this swatch file contained only one group, and that group didn't have a name,
+                    ' substitute the filename as the palette name.
+                    If (m_NumOfGroups = 1) Then
+                        If (LenB(m_Palettes(0).GetPaletteName) = 0) Then m_Palettes(0).SetPaletteName Files.FileGetName(srcFile, True)
+                    End If
                     
                     'If we haven't errored out, consider this a successful parse
                     LoadPaletteAdobeSwatchExchange = True
@@ -1333,6 +1334,158 @@ Friend Function SavePaletteAdobeSwatch(ByRef dstFile As String, Optional ByVal s
 BadSwatchData:
     InternalProblem "SavePaletteAdobeSwatch error # " & CStr(Err.Number) & ": " & Err.Description
     SavePaletteAdobeSwatch = False
+    
+End Function
+
+'Given a path to an .ase file (Adobe Swatch Exchange), write all existing palette groups to the file.
+' (ASE files are the only format that supports multiple palettes within a single file.)
+' - An existing .ase file with the same name, if one exists, will be overwritten.
+Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boolean
+    
+    On Error GoTo BadSwatchData
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'Adobe has not publicly documented the ASE format, which means we have to rely on reverse-engineering to decode
+    ' the format.  Several links proved very useful in this regard; thank you to each of them:
+    ' http://www.selapa.net/swatches/colors/fileformats.php#adobe_ase
+    ' https://www.cyotek.com/blog/reading-adobe-swatch-exchange-ase-files-using-csharp
+    
+    'As usual, pdStream saves the day by making it very easy to stream arbitrary bytes out to file
+    Dim dstData As pdStream
+    Set dstData = New pdStream
+    SavePaletteAdobeSwatchExchange = dstData.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, , , OptimizeSequentialAccess)
+    
+    If SavePaletteAdobeSwatchExchange Then
+    
+        'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
+        ' many _BE suffixed write functions with the pdStream object.
+                
+        'Start by writing the required four-char "ASEF" descriptor.
+        dstData.WriteString_ASCII "ASEF"
+                
+        'Next comes file version number.  Version is defined as major/minor, two 16-bit integers.
+        ' (The only currently supported version is 1.0.)
+        dstData.WriteInt_BE 1
+        dstData.WriteInt_BE 0
+                
+        ' The next entry is a 4-byte integer defining the number of blocks in the file.  Blocks come in
+        ' three types: group start, group end, and color entry.  We can figure out this number by counting
+        ' each unique group as two blocks (start/end) plus one block for each color in each palette.
+        Dim numOfBlocks As Long
+        Dim i As Long, j As Long
+        For i = 0 To Me.GetPaletteGroupCount() - 1
+            If (Me.GetPaletteGroupCount > 0) Or (LenB(m_Palettes(i).GetPaletteName) <> 0) Then numOfBlocks = numOfBlocks + 2
+            numOfBlocks = numOfBlocks + m_Palettes(i).GetNumOfColors
+        Next i
+        
+        dstData.WriteLong_BE numOfBlocks
+        
+        'Time to write each palette!
+        For i = 0 To Me.GetPaletteGroupCount() - 1
+        
+            'Each block uses a standardized header:
+            ' - 2 bytes to define the block "type"
+            ' - 4 bytes to define the block "length", which does *not* include these 6 bytes in the header.
+            ' The important thing to note when calculating block "length" is that it includes the length of
+            ' any text stored in the block - such as group and/or color names.
+            
+            'We'll only divide palettes into groups if this palettte has a name, or if there are multiple palette
+            ' groups in this object.
+            Dim wroteAGroup As Boolean
+            wroteAGroup = (LenB(m_Palettes(i).GetPaletteName) <> 0) Or (Me.GetPaletteGroupCount() > 1)
+            
+            If wroteAGroup Then
+            
+                'Start by writing a "group start" block for this palette.  (This magic number comes from Adobe.)
+                dstData.WriteInt_BE &HC001
+                
+                'This block only contains a group name, and its length is calculated as:
+                ' - LenB(m_palettes(i).GetPaletteName)
+                ' - If the above is non-zero, we need 2-bytes to define string length, and two extra bytes for a
+                '   trailing null WCHAR.
+                If (LenB(m_Palettes(i).GetPaletteName) = 0) Then
+                    dstData.WriteLong_BE 0
+                Else
+                    
+                    dstData.WriteLong_BE LenB(m_Palettes(i).GetPaletteName) + 4
+                    
+                    'Time to write a Unicode string for this palette.  Start by writing a 2-byte string length
+                    ' (the length *IN WCHARS*, confusingly), and include an extra byte for the trailing null char.
+                    dstData.WriteInt_BE Len(m_Palettes(i).GetPaletteName) + 1
+                    
+                    'Next, write the string, and explicitly request a trailing null
+                    dstData.WriteString_UnicodeBE m_Palettes(i).GetPaletteName, True
+                    
+                End If
+                
+            End If
+            
+            'Next, we need to write out all colors in this palette.
+            For j = 0 To m_Palettes(i).GetNumOfColors - 1
+            
+                'Write a color block indicator (magic number comes from Adobe)
+                dstData.WriteInt_BE &H1
+                
+                'Color block length is contingent on the presence of color names.  By default, RGB colors
+                ' always require 18 bytes: 4 for the color descriptor ("RGB "), 12 for 3 RGB values, stored as
+                ' 32-bit floats, then 2 bytes for the color "type" (global, spot, normal).  Those 18 bytes
+                ' are further increased by 2 bytes for name length, plus LenB(colorname) + 2 if a name exists.
+                Dim nameLengthInBytes As Long, colorBlockLength As Long, tmpPaletteEntry As PDPaletteEntry
+                tmpPaletteEntry = m_Palettes(i).GetPaletteEntry(j)
+                
+                nameLengthInBytes = 2
+                If (LenB(tmpPaletteEntry.ColorName) <> 0) Then nameLengthInBytes = nameLengthInBytes + LenB(tmpPaletteEntry.ColorName) + 2
+                colorBlockLength = 18 + nameLengthInBytes
+                
+                'Write our calculated block length
+                dstData.WriteLong_BE colorBlockLength
+                
+                'Write name length and the name itself, if any.  (Confusingly, note that the name length is
+                ' in *WCHARS*, not BYTES.
+                If (nameLengthInBytes > 2) Then
+                    dstData.WriteInt_BE Len(tmpPaletteEntry.ColorName) + 1
+                    dstData.WriteString_UnicodeBE tmpPaletteEntry.ColorName, True
+                Else
+                    dstData.WriteInt_BE 0
+                End If
+                
+                'Write the color space identifier
+                dstData.WriteString_ASCII "RGB "
+                
+                'Write individual RGB values as 32-bit floats on the range [0, 1]
+                dstData.WriteFloat_BE CSng(tmpPaletteEntry.ColorValue.Red) / 255#
+                dstData.WriteFloat_BE CSng(tmpPaletteEntry.ColorValue.Green) / 255#
+                dstData.WriteFloat_BE CSng(tmpPaletteEntry.ColorValue.Blue) / 255#
+                
+                'Write two empty bytes as the color "type"
+                dstData.WriteInt_BE 0
+                
+            Next j
+            
+            'If we wrote a "group start" block, we need to mirror it with a "group end" block.
+            If wroteAGroup Then
+                
+                'Again, use Adobe's magic number
+                dstData.WriteInt_BE &HC002
+                
+                'Close-group blocks are always 0-length
+                dstData.WriteLong_BE 0
+                
+            End If
+            
+        Next i
+    
+        'That's everything!
+        dstData.StopStream
+        
+    End If
+    
+    Exit Function
+    
+BadSwatchData:
+    InternalProblem "SavePaletteAdobeSwatchExchange error # " & CStr(Err.Number) & ": " & Err.Description
+    SavePaletteAdobeSwatchExchange = False
     
 End Function
 
