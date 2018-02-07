@@ -86,8 +86,13 @@ Private Declare Function LCMapStringEx Lib "kernel32" (ByVal lpLocaleNameStringP
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal dstCodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As Long, ByVal cbMultiByte As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
-Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As Long, ByVal strLength As Long) As String
 Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal dstCodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
+
+Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As Long, ByVal strLength As Long) As String
+
+'While shlwapi provides StrStr and StrStrI functions, they are dog-slow - so avoid them as much as possible!
+Private Declare Function StrStrIW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+Private Declare Function StrStrW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
 
 'Apply basic heuristics to the first (n) bytes of a potentially UTF-8 source, and return a "best-guess" on whether the bytes
 ' represent valid UTF-8 data.
@@ -553,6 +558,18 @@ Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringP
     
 End Function
 
+'Wrappers for shlwapi's StrStrW and StrStrIW functions.  These are much slower than VB's built-in InStr function,
+' so don't use them on bare VB strings!
+Public Function StrStr(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+    StrStr = StrStrW(ptrHaystack, ptrNeedle)
+    If (StrStr <> 0) Then StrStr = (StrStr - ptrHaystack) \ 2 + 1
+End Function
+
+Public Function StrStrI(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+    StrStrI = StrStrIW(ptrHaystack, ptrNeedle)
+    If (StrStrI <> 0) Then StrStrI = (StrStrI - ptrHaystack) \ 2 + 1
+End Function
+
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
 Public Function StringsEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
@@ -694,4 +711,3 @@ Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber A
         End If
     #End If
 End Sub
-
