@@ -321,7 +321,12 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
 'If something went horribly wrong during the download process, this chunk of code will be triggered
 DownloadError:
     
-    Debug.Print "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
+    m_LastErrorNumber = Err.Number
+    m_LastErrorDescription = Err.Description
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
+    #End If
     
     'Download failed.  Populate struct elements anyway, then raise a completion event with the FAIL flag set.
     With m_DownloadList(itemIndex)
