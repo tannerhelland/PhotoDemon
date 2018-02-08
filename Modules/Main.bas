@@ -301,7 +301,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Initialize a new language engine.
     Set g_Language = New pdTranslate
-        
+    
     LoadMessage "Scanning for language files..."
     
     'Before doing anything else, check to see what languages are available in the language folder.
@@ -738,8 +738,12 @@ Public Sub FinalShutdown()
         End If
     Next i
     
-    'Report final viewport profiling data
+    'Report final profiling data
     ViewportEngine.ReportViewportProfilingData
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
+    #End If
     
     'Free any ugly VB-specific workaround data
     #If DEBUGMODE = 1 Then

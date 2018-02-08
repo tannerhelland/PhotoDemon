@@ -6,6 +6,9 @@ Attribute VB_Name = "Strings"
 'Last updated: 24/October/17
 'Last update: fix some inexplicable issues with WideCharToMultiByte(); comments are in the UTF-8 conversion functions
 '
+'Special thank-yous go out to some valuable references while developing this class:
+' - fast Boyer-Moore string comparisons: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -81,6 +84,7 @@ Private Declare Function CryptStringToBinary Lib "crypt32" Alias "CryptStringToB
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Function CompareStringW Lib "kernel32" (ByVal lcID As PD_LocaleIdentifier, ByVal cmpFlags As StrCmpFlags, ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long) As Long
 Private Declare Function CompareStringOrdinal Lib "kernel32" (ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long, ByVal bIgnoreCase As Long) As Long
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function LCMapStringW Lib "kernel32" (ByVal localeID As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long) As Long
 Private Declare Function LCMapStringEx Lib "kernel32" (ByVal lpLocaleNameStringPt As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long, ByVal lpVersionInformationPtr As Long, ByVal lpReserved As Long, ByVal sortHandle As Long) As Long 'Vista+ only!  (Note the lack of a trailing W in the function name.)
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
@@ -93,6 +97,10 @@ Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As L
 'While shlwapi provides StrStr and StrStrI functions, they are dog-slow - so avoid them as much as possible!
 Private Declare Function StrStrIW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
 Private Declare Function StrStrW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+
+'To improve performance when using our internal Boyer-Moore string matcher, we maintain certain comparison caches.
+' This reduces the overhead required between calls.
+Private m_HighestChar As Long, m_lastAlphabetSize As Long, m_charOccur() As Long
 
 'Apply basic heuristics to the first (n) bytes of a potentially UTF-8 source, and return a "best-guess" on whether the bytes
 ' represent valid UTF-8 data.
@@ -558,18 +566,6 @@ Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringP
     
 End Function
 
-'Wrappers for shlwapi's StrStrW and StrStrIW functions.  These are much slower than VB's built-in InStr function,
-' so don't use them on bare VB strings!
-Public Function StrStr(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
-    StrStr = StrStrW(ptrHaystack, ptrNeedle)
-    If (StrStr <> 0) Then StrStr = (StrStr - ptrHaystack) \ 2 + 1
-End Function
-
-Public Function StrStrI(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
-    StrStrI = StrStrIW(ptrHaystack, ptrNeedle)
-    If (StrStrI <> 0) Then StrStrI = (StrStrI - ptrHaystack) \ 2 + 1
-End Function
-
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
 Public Function StringsEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
@@ -605,6 +601,181 @@ End Function
 'Convenience not-wrapper to StringsEqual, above
 Public Function StringsNotEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     StringsNotEqual = Not StringsEqual(firstString, secondString, ignoreCase)
+End Function
+
+'Wrappers for shlwapi's StrStrW and StrStrIW functions.  These are much slower than VB's built-in InStr function,
+' so don't use them on bare VB strings!
+Public Function StrStr(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+    StrStr = StrStrW(ptrHaystack, ptrNeedle)
+    If (StrStr <> 0) Then StrStr = (StrStr - ptrHaystack) \ 2 + 1
+End Function
+
+Public Function StrStrI(ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
+    StrStrI = StrStrIW(ptrHaystack, ptrNeedle)
+    If (StrStrI <> 0) Then StrStrI = (StrStrI - ptrHaystack) \ 2 + 1
+End Function
+
+'Boyer-Moore substitute for VB's InStr function.  Outperforms InStr significantly as needle and/or haystack
+' string lengths increase.  Returns are 100% compatible with InStr.  This version is case-sensitive.
+'
+'Special thanks to HW Lang of Germany for his helpful explanation of Boyer-Moore.  This implementation is heavily
+' influenced by his example implementation at: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
+Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String, Optional ByVal startSearchPos As Long = 1, Optional ByVal useFullUnicodeSet As Boolean = False) As Long
+    
+    'Boyer-Moore allows us to skip substring lengths during favorable comparison steps; as such,
+    ' we'll be referring to string lengths often.
+    Dim lenNeedle As Long, lenHaystack As Long
+    lenNeedle = Len(strNeedle)
+    lenHaystack = Len(strHaystack)
+    
+    'If either the needle or the haystack is small (or zero!), fall back on VB's built-in InStr function;
+    ' it will be faster.
+    If (lenNeedle < 3) Or (lenHaystack < 100) Then
+        StrStrBM = InStr(startSearchPos, strHaystack, strNeedle, vbBinaryCompare)
+        Exit Function
+    
+    'Perform any additional length-based failsafe checks
+    Else
+        If (LenB(strNeedle) > LenB(strHaystack)) Then Exit Function
+    End If
+    
+    'If full Unicode matching is required, we need a bigger table for char comparisons
+    Dim alphabetSize As Long
+    If useFullUnicodeSet Then alphabetSize = 65535 Else alphabetSize = 256
+    If (alphabetSize <> m_lastAlphabetSize) Then
+        m_lastAlphabetSize = alphabetSize
+        ReDim m_charOccur(0 To alphabetSize - 1) As Long
+    End If
+    
+    'Initialize the occurrence table.  Note that we don't need to reinitialize anything past our highest
+    ' previous character (as those spots will already be set to zero).
+    If (m_HighestChar = 0) Then
+        FillMemory VarPtr(m_charOccur(0)), alphabetSize * 4, &HFF
+    Else
+        If (m_HighestChar > alphabetSize) Then m_HighestChar = alphabetSize
+        FillMemory VarPtr(m_charOccur(0)), m_HighestChar * 4, &HFF
+    End If
+    
+    'Wrap VB arrays around the needle and haystack strings.  This allows for faster traversal.
+    Dim needle() As Integer, needleSA As SafeArray1D
+    With needleSA
+        .cbElements = 2
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = lenNeedle
+        .pvData = StrPtr(strNeedle)
+    End With
+    CopyMemory ByVal VarPtrArray(needle()), VarPtr(needleSA), 4&
+    
+    Dim haystack() As Integer, haystackSA As SafeArray1D
+    With haystackSA
+        .cbElements = 2
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = lenHaystack
+        .pvData = StrPtr(strHaystack)
+    End With
+    CopyMemory ByVal VarPtrArray(haystack()), VarPtr(haystackSA), 4&
+    
+    'Boyer-Moore requires lookup tables for the needle string.  These lookup tables tell us how far
+    ' we can skip ahead during favorable comparisons.  Two tables are used: one for shift lengths of
+    ' entire substrings (required when an identical substring appears multiple places within the
+    ' needle string; this is required when we match a partial substring, because we cannot jump
+    ' forward the entire needle string length - instead, we must jump to the nearest match of the
+    ' partial substring we've already found), and a second table where a portion of the matched
+    ' substring occurs at the very start of the needle string; this lets us shift our current offset
+    ' just enough to match the partial substring, and potentially discover a match very near our
+    ' current position.  (It is also relevant when detecting multiple substring occurrences, e.g.
+    ' finding the number of "abab" occurrences inside "ababab".)
+    Dim wholeSuffix() As Integer, partialSuffix() As Integer
+    ReDim wholeSuffix(0 To lenNeedle + 1) As Integer
+    ReDim partialSuffix(0 To lenNeedle + 1) As Integer
+    
+    'With all arrays declared, we can now populate them accordingly.
+    
+    'Start by marking the last position of each char inside the needle string.  Characters that do
+    ' not appear in the needle string should be specially marked (as -1 in our case).
+    Dim j As Long, a As Long
+    For j = 0 To lenNeedle - 1
+        a = needle(j) And &HFFFF&
+        If (a > m_HighestChar) Then m_HighestChar = a
+        m_charOccur(a) = j
+    Next j
+    
+    'Next, calculate suffix match tables
+    Dim i As Long, okToLoop As Boolean
+    i = lenNeedle
+    j = lenNeedle + 1
+    wholeSuffix(i) = j
+    
+    Do While (i > 0)
+        
+        'Normally you could perform this comparison right there in the Do While... check,
+        ' but because VB is stupid and doesn't short-circuit comparisons, we can get OOB errors.
+        ' As such, we have to split the check out into a specially constructed If/Then line.
+        If (j <= lenNeedle) Then okToLoop = (needle(i - 1) <> needle(j - 1)) Else okToLoop = False
+        
+        Do While okToLoop
+            If (partialSuffix(j) = 0) Then partialSuffix(j) = j - i
+            j = wholeSuffix(j)
+            If (j <= lenNeedle) Then okToLoop = (needle(i - 1) <> needle(j - 1)) Else okToLoop = False
+        Loop
+        
+        i = i - 1
+        j = j - 1
+        wholeSuffix(i) = j
+        
+    Loop
+    
+    j = wholeSuffix(0)
+    For i = 0 To lenNeedle
+        If (partialSuffix(i) = 0) Then partialSuffix(i) = j
+        If (i = j) Then j = wholeSuffix(j)
+    Next i
+    
+    'All preprocessing is complete.  Time to actually perform the search!
+    ' (Importantly, note that the preprocessing steps can be ignored if the needle string hasn't changed;
+    '  this provides a nice performance boost when the same needle is being searched across multiple haystacks.)
+    
+    'Set the initial start position according to the user's input
+    i = startSearchPos - 1
+    
+    Do While (i <= lenHaystack - lenNeedle)
+        
+        j = lenNeedle - 1
+        
+        'Again, we're screwed by the lack of short-circuiting (sigh).  The goal here is to move backward (RTL)
+        ' through the current position, comparing chars as we go.  If we move all the way through the needle
+        ' string, we've found the substring!
+        If (j >= 0) Then okToLoop = (needle(j) = haystack(i + j)) Else okToLoop = False
+        Do While okToLoop
+            j = j - 1
+            If (j >= 0) Then okToLoop = (needle(j) = haystack(i + j)) Else Exit Do
+        Loop
+        
+        'If j < 0, it means we found the needle!  Mark the position and exit.
+        If (j < 0) Then
+            StrStrBM = i + 1
+            Exit Do
+        
+        'The substring wasn't found.  Jump ahead as far as possible, based on how much of the
+        ' current substring *was* matched.
+        Else
+            If (partialSuffix(j + 1) >= j - m_charOccur(haystack(i + j) And &HFFFF&)) Then
+                i = i + partialSuffix(j + 1)
+            Else
+                i = i + (j - m_charOccur(haystack(i + j) And &HFFFF&))
+            End If
+        End If
+        
+    Loop
+    
+    'Before exiting, free all temp arrays
+    CopyMemory ByVal VarPtrArray(needle()), 0&, 4&
+    CopyMemory ByVal VarPtrArray(haystack()), 0&, 4&
+
 End Function
 
 'When passing file and path strings among API calls, they often have to be pre-initialized to some arbitrary buffer length

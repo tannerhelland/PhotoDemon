@@ -4121,6 +4121,50 @@ End Sub
 Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
+    
+    'Boyer-Moore StrStr test
+    Dim strNeedle As String, strHaystack As String
+    Files.FileLoadAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\Italian.xml", strHaystack
+    
+    Dim numLoops As Long
+    If OS.IsProgramCompiled Then numLoops = 1000 Else numLoops = 1
+    
+    'Test when the desired needle is at the end of the haystack
+    strNeedle = "<original>not installed</original>"
+    PerformStringComparison strNeedle, strHaystack, numLoops - 1
+    
+    'Test when the needle is both short, and near the middle of the haystack
+    strNeedle = "<original>CMY</original>"
+    PerformStringComparison strNeedle, strHaystack, numLoops - 1
+    
+    'Test when the needle is near the beginning of the haystack
+    strNeedle = "<original>Save an image</original>"
+    PerformStringComparison strNeedle, strHaystack, numLoops - 1
+    
+End Sub
+
+Private Sub PerformStringComparison(ByRef strNeedle As String, ByRef strHaystack As String, ByVal numLoops As Long)
+    
+    Dim i As Long, result As Long, startTime As Currency
+    
+    VBHacks.GetHighResTime startTime
+    For i = 0 To numLoops
+        result = Strings.StrStrBM(strHaystack, strNeedle, 1, True)
+    Next i
+    pdDebug.LogAction VBHacks.GetTimeDiffNowAsString(startTime) & ", " & result & ", Boyer-Moore"
+    
+    VBHacks.GetHighResTime startTime
+    For i = 0 To numLoops
+        result = InStr(1, strHaystack, strNeedle, vbBinaryCompare)
+    Next i
+    pdDebug.LogAction VBHacks.GetTimeDiffNowAsString(startTime) & ", " & result & ", InStr"
+    
+    VBHacks.GetHighResTime startTime
+    For i = 0 To numLoops
+        result = Strings.StrStr(StrPtr(strHaystack), StrPtr(strNeedle))
+    Next i
+    pdDebug.LogAction VBHacks.GetTimeDiffNowAsString(startTime) & ", " & result & ", WAPI"
+    
 End Sub
 
 'All tool menu items are launched from here
