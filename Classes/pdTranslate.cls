@@ -93,6 +93,11 @@ Private m_Crypto As pdCrypto
 'The language file cache is handled inside this XML object.
 Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
 
+'To try and improve performance, we profile translation times inside developer builds
+#If DEBUGMODE = 1 Then
+    Private m_NetTranslateTime As Double
+#End If
+
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from Checkm_availableLanguages().
 Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As PDLanguageFile)
@@ -853,9 +858,14 @@ End Function
 ' If a translation cannot be found, return the original string.
 Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+    #End If
+    
     Dim searchString As String, newString As String
     If Me.TranslationActive() Then
-    
+        
         searchString = srcMessage
         newString = GetTranslationTagFromCaption(searchString)
     
@@ -902,6 +912,10 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     'Return the fully translated string
     TranslateMessage = newString
+    
+    #If DEBUGMODE = 1 Then
+        m_NetTranslateTime = m_NetTranslateTime + VBHacks.GetTimerDifferenceNow(startTime)
+    #End If
     
 End Function
 
@@ -1015,6 +1029,13 @@ Friend Sub ApplyTranslations(ByRef srcForm As Form)
     End If
     
 End Sub
+
+'In developer builds, net translation engine time is tracked for perf reasons
+#If DEBUGMODE = 1 Then
+Friend Function GetNetTranslationTime() As Double
+    GetNetTranslationTime = m_NetTranslateTime
+End Function
+#End If
 
 Private Sub Class_Initialize()
     Set m_FSO = New pdFSO

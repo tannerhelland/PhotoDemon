@@ -893,10 +893,14 @@ Friend Function GetLocationOfParentTag(ByRef parentTagName As String, ByRef tagN
 
     'First, find the requested tag's location
     Dim searchLocation As Long
-    searchLocation = InStr(1, m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", m_TextCompareMode)
+    If (m_TextCompareMode = vbBinaryCompare) Then
+        searchLocation = Strings.StrStrBM(m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", , True)
+    Else
+        searchLocation = InStr(1, m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", m_TextCompareMode)
+    End If
     
     'Assuming that tag was found, look for the nearest parent tag occurrence
-    If searchLocation > 0 Then
+    If (searchLocation > 0) Then
         GetLocationOfParentTag = InStrRev(m_xmlContents, "<" & parentTagName & ">", searchLocation, m_TextCompareMode)
     Else
         GetLocationOfParentTag = 0
