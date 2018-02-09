@@ -133,9 +133,9 @@ Private m_WindowSync As pdWindowSync
 ' This variable is then checked before requesting additional redraws during our resize event.
 Private m_WeAreResponsibleForResize As Boolean
 
-'How close does the mouse have to be to the form border to allow resizing? Currently we use 7 pixels, while accounting
-' for DPI variance (e.g. 7 pixels at 96 dpi)
-Private Const RESIZE_BORDER As Long = 7
+'How close does the mouse have to be to the form border to allow resizing? Currently we use this constant,
+' while accounting for DPI variance (e.g. this value represents (n) pixels *at 96 dpi*)
+Private Const RESIZE_BORDER As Long = 5
 
 'A dedicated mouse handler helps provide cursor handling
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -271,7 +271,16 @@ End Sub
 Private Sub ReflowInterface()
     
     'If the form is invisible (due to minimize or something else), just exit now
-    If (Me.ScaleHeight = 0) Or (Me.ScaleWidth = 0) Then Exit Sub
+    Dim formWidth As Long, formHeight As Long
+    If (g_WindowManager Is Nothing) Then
+        formWidth = Me.ScaleWidth
+        formHeight = Me.ScaleHeight
+    Else
+        formWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+        formHeight = g_WindowManager.GetClientHeight(Me.hWnd)
+    End If
+    
+    If (formWidth = 0) Or (formHeight = 0) Then Exit Sub
     
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
@@ -280,7 +289,7 @@ Private Sub ReflowInterface()
     lnSeparatorLeft.x1 = 0
     lnSeparatorLeft.y1 = 0
     lnSeparatorLeft.x2 = 0
-    lnSeparatorLeft.y2 = Me.ScaleHeight
+    lnSeparatorLeft.y2 = formHeight
     
     'Next, we want to resize all subpanel picture boxes, so that their size reflects the new form size.  This is a
     ' bit complicated, as each form has a different base size, and the user can toggle panel visibility at any time.
@@ -289,7 +298,7 @@ Private Sub ReflowInterface()
     Dim yOffset As Long, xOffset As Long, xWidth As Long
     xOffset = FixDPI(RESIZE_BORDER)
     yOffset = FixDPI(2)
-    xWidth = Me.ScaleWidth - xOffset
+    xWidth = formWidth - xOffset
     
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
@@ -306,11 +315,11 @@ Private Sub ReflowInterface()
             'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
             If (xWidth - xOffset > 0) Then
                 If i < (m_NumOfPanels - 1) Then
-                    ctlContainer(i).SetPositionAndSize xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
+                    ctlContainer(i).SetPositionAndSize Int(CSng(xOffset) * 1.5 + 0.5), yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
                     
-                'The layers panel is unique, because it shrinks to fit all available space.
+                'The layers panel is unique, because it shrinks to fit all available vertical space.
                 Else
-                    If (Me.ScaleHeight - yOffset > 0) Then ctlContainer(i).SetPositionAndSize xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+                    If (formHeight - yOffset > 0) Then ctlContainer(i).SetPositionAndSize Int(CSng(xOffset) * 1.5 + 0.5), yOffset, xWidth - xOffset, formHeight - yOffset
                 End If
             End If
             
@@ -324,7 +333,7 @@ Private Sub ReflowInterface()
         End If
         
         'Regardless of visibility, always add some padding to the running offset
-        yOffset = yOffset + FixDPI(4)
+        yOffset = yOffset + FixDPI(3)
         
     Next i
     

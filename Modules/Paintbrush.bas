@@ -778,8 +778,11 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_MouseX = srcX
         m_MouseY = srcY
         
+        'Notify the central "color history" manager of the color currently being used
+        If (m_BrushSource = BS_Color) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
+        
         'Initialize any relevant GDI+ objects for the current brush
-        Drawing2D.QuickCreateSurfaceFromDC m_Surface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, CBool(m_BrushAntialiasing = P2_AA_HighQuality)
+        Drawing2D.QuickCreateSurfaceFromDC m_Surface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
         
         'If we're directly using GDI+ for painting (by calling various GDI+ line commands), we need to explicitly set
         ' half-pixel offsets, so each pixel "coordinate" is treated as the *center* of the pixel instead of the top-left corner.

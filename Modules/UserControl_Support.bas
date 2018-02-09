@@ -394,7 +394,7 @@ End Function
 
 'PD's various user controls sometimes like to share data via custom window messages.  Instead of calling PostMessage directly,
 ' use this wrapper function, which may perform additional maintenance.
-Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&, Optional ByVal lParam As Long = 0&)
+Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&, Optional ByVal lParam As Long = 0&, Optional ByVal usePostMessageInstead As Boolean = False)
     
     Dim pmReturn As Long
     pmReturn = 1
@@ -404,7 +404,11 @@ Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&,
     For i = 0 To m_windowMsgCount - 1
         If (m_wMsgList(i) = wMsg) Then
             If (m_windowList(i) <> 0) Then
-                pmReturn = pmReturn And SendNotifyMessage(m_windowList(i), wMsg, wParam, lParam)
+                If usePostMessageInstead Then
+                    pmReturn = pmReturn And PostMessage(m_windowList(i), wMsg, wParam, lParam)
+                Else
+                    pmReturn = pmReturn And SendNotifyMessage(m_windowList(i), wMsg, wParam, lParam)
+                End If
             End If
         End If
     Next i

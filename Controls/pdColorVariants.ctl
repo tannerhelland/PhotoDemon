@@ -191,7 +191,7 @@ Public Property Get WheelShape() As COLOR_WHEEL_SHAPE
 End Property
 
 Public Property Let WheelShape(ByVal newShape As COLOR_WHEEL_SHAPE)
-    If m_ControlShape <> newShape Then
+    If (m_ControlShape <> newShape) Then
         m_ControlShape = newShape
         UpdateControlLayout
         PropertyChanged "WheelShape"
@@ -468,7 +468,7 @@ End Sub
 
 'Create a rectangular grid-based variant control
 Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Long, ByVal ucBottom As Long, ByVal ucRight As Long)
-
+    
     'First, make sure our border size is DPI-aware
     Dim dpiAwareBorderSize As Long
     dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
@@ -567,7 +567,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     For i = CV_Primary To NUM_OF_VARIANTS - 1
         m_ColorRegions(i).AddRectangle_RectF colorRects(i)
     Next i
-
+    
 End Sub
 
 Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long, ByVal ucBottom As Long, ByVal ucRight As Long)
@@ -581,7 +581,7 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     
     'Start by calculating basic arc and circle values
     Dim minDimension As Single
-    If ucRight - ucLeft < ucBottom - ucTop Then
+    If (ucRight - ucLeft < ucBottom - ucTop) Then
         minDimension = ucRight - ucLeft
     Else
         minDimension = ucBottom - ucTop
@@ -594,6 +594,9 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     Dim innerRadius As Double, outerRadius As Double
     outerRadius = (minDimension / 2)
     innerRadius = (minDimension / 2) - dpiAwareBorderSize
+    
+    'Failsafe check
+    If (innerRadius <= 0) Then Exit Sub
     
     'The primary circle is the only subregion that receives a special construction method.
     m_ColorRegions(CV_Primary).AddCircle centerX, centerY, innerRadius
@@ -626,7 +629,7 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
         startAngle = startAngle + sweepAngle
         
     Next i
-
+    
 End Sub
 
 'Any time the primary color changes (for whatever reason, external or internal), new variant colors must be calculated.
@@ -651,16 +654,18 @@ Private Sub CalculateVariantColors()
     svChange = 0.08
     hChange = 0.03
     
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     Dim i As COLOR_VARIANTS
     For i = CV_HueUp To CV_RedDown
         
         rNew = rPrimary: gNew = gPrimary: bNew = bPrimary
-        rFloat = rNew / 255: gFloat = gNew / 255: bFloat = bNew / 255
+        rFloat = rNew * ONE_DIV_255: gFloat = gNew * ONE_DIV_255: bFloat = bNew * ONE_DIV_255
         hNew = hPrimary: sNew = sPrimary: vNew = vPrimary
         
         If (i = CV_HueUp) Then
             hNew = hNew + hChange
-            If (hNew > 1) Then hNew = 1 - hNew
+            If (hNew > 1#) Then hNew = 1# - hNew
             Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
                 
         ElseIf (i = CV_SaturationUp) Then
@@ -738,7 +743,7 @@ End Sub
 
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
 Private Sub RedrawBackBuffer()
-
+    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCV_Background, Me.Enabled))
@@ -787,7 +792,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-
+    
 End Sub
 
 'When the currently hovered color variant changes, we want to assign a new tooltip to the control
@@ -847,7 +852,7 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
             Me.AssignTooltip toolString, "Decrease red"
         
         Case Else
-            Me.AssignTooltip ""
+            Me.AssignTooltip vbNullString
                 
     End Select
     

@@ -6,7 +6,7 @@ Begin VB.Form layerpanel_Colors
    ClientHeight    =   3015
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4560
+   ClientWidth     =   2850
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,18 @@ Begin VB.Form layerpanel_Colors
    LinkTopic       =   "Form1"
    ScaleHeight     =   201
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   304
+   ScaleWidth      =   190
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdHistory clrHistory 
+      Height          =   195
+      Left            =   0
+      TabIndex        =   2
+      Top             =   2520
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   344
+   End
    Begin PhotoDemon.pdColorVariants clrVariants 
       Height          =   975
       Left            =   120
@@ -41,6 +50,7 @@ Begin VB.Form layerpanel_Colors
       Width           =   1215
       _ExtentX        =   2143
       _ExtentY        =   1720
+      WheelWidth      =   13
    End
 End
 Attribute VB_Name = "layerpanel_Colors"
@@ -74,6 +84,140 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 'To avoid nested resize calls, trackers are used
 Private m_ResizeInProgress As Boolean
 
+'We do some custom rendering in this panel (for the color history dialog), so it's helpful to cache a
+' pd2DPainter object.
+Private m_Painter As pd2DPainter
+
+'When various paint tools are used on the main window, they will notify us (via window message) of what
+' color was used.  We will add those colors to our history list.
+Private Sub clrHistory_CustomWindowMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_PRIMARY_COLOR_APPLIED) Then clrHistory.PushNewHistoryItem CStr(wParam), , True
+End Sub
+
+Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
+    
+    If (Len(histValue) <> 0) And MainModule.IsProgramRunning() And (targetDC <> 0) Then
+        
+        If MainModule.IsProgramRunning Then
+        
+            Dim tmpRectF As RectF
+            If (ptrToRectF <> 0) Then
+            
+                CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+                
+                'Note that this control *is* color-managed
+                Dim cmResult As Long
+                ColorManagement.ApplyDisplayColorManagement_SingleColor CLng(histValue), cmResult
+            
+                Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+                Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+                Drawing2D.QuickCreateSolidBrush cBrush, cmResult
+                m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+                
+                Set cSurface = Nothing: Set cBrush = Nothing
+            
+            End If
+            
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub clrHistory_HistoryDoesntExist(ByVal histIndex As Long, histValue As String)
+
+    Dim newColor As Long
+    
+    Select Case histIndex
+    
+        Case 0
+            newColor = RGB(0, 0, 0)
+        Case 1
+            newColor = RGB(34, 32, 52)
+        Case 2
+            newColor = RGB(69, 40, 60)
+        Case 3
+            newColor = RGB(102, 57, 49)
+        Case 4
+            newColor = RGB(143, 86, 59)
+        Case 5
+            newColor = RGB(223, 113, 38)
+        Case 6
+            newColor = RGB(217, 160, 102)
+        Case 7
+            newColor = RGB(238, 195, 154)
+        Case 8
+            newColor = RGB(251, 242, 54)
+        Case 9
+            newColor = RGB(153, 229, 80)
+        Case 10
+            newColor = RGB(106, 190, 48)
+        Case 11
+            newColor = RGB(55, 148, 110)
+        Case 12
+            newColor = RGB(75, 105, 47)
+        Case 13
+            newColor = RGB(82, 75, 36)
+        Case 14
+            newColor = RGB(50, 60, 57)
+        Case 15
+            newColor = RGB(63, 63, 116)
+        Case 16
+            newColor = RGB(48, 96, 130)
+        Case 17
+            newColor = RGB(91, 110, 225)
+        Case 18
+            newColor = RGB(99, 155, 255)
+        Case 19
+            newColor = RGB(95, 205, 228)
+        Case 20
+            newColor = RGB(203, 219, 252)
+        Case 21
+            newColor = RGB(255, 255, 255)
+        Case 22
+            newColor = RGB(155, 173, 183)
+        Case 23
+            newColor = RGB(132, 126, 135)
+        Case 24
+            newColor = RGB(105, 106, 106)
+        Case 25
+            newColor = RGB(89, 86, 82)
+        Case 26
+            newColor = RGB(118, 66, 138)
+        Case 27
+            newColor = RGB(172, 50, 50)
+        Case 28
+            newColor = RGB(217, 87, 99)
+        Case 29
+            newColor = RGB(215, 123, 186)
+        Case 30
+            newColor = RGB(143, 151, 74)
+        Case 31
+            newColor = RGB(138, 111, 48)
+        Case Else
+            newColor = RGB(255, 255, 255)
+            
+    End Select
+    
+    histValue = CStr(newColor)
+    
+End Sub
+
+Private Sub clrHistory_HistoryItemClicked(ByVal histIndex As Long, ByVal histValue As String)
+    
+    If (LenB(histValue) <> 0) Then
+    
+        Dim clickedColor As Long
+        clickedColor = CLng(histValue)
+        
+        'Update the other color selectors with this color value
+        clrWheel.Color = clickedColor
+        clrVariants.Color = clickedColor
+        
+    End If
+    
+End Sub
+
 Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
     
     'If the clrVariant control is where the color was actually changed (and it's not just syncing itself to some
@@ -105,6 +249,10 @@ Private Sub Form_Load()
     
     m_ResizeInProgress = True
     
+    'Prep some items related to the color history UI
+    Set m_Painter = New pd2DPainter
+    clrHistory.RequestCustomSubclassing WM_PD_PRIMARY_COLOR_APPLIED, True
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.SetParentForm Me
@@ -120,19 +268,37 @@ End Sub
 
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
 Private Sub ReflowInterface()
-
+    
     Dim curFormWidth As Long, curFormHeight As Long
-    curFormWidth = Me.ScaleWidth
-    curFormHeight = Me.ScaleHeight
+    If (g_WindowManager Is Nothing) Then
+        curFormWidth = Me.ScaleWidth
+        curFormHeight = Me.ScaleHeight
+    Else
+        curFormWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+        curFormHeight = g_WindowManager.GetClientHeight(Me.hWnd)
+    End If
     
     'Failsafe to prevent IDE errors
-    If (curFormWidth > 10) Then
+    If (curFormWidth > 10) And (curFormHeight > 10) Then
         
-        'Right-align the color wheel
-        clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + FixDPI(10)), 0, curFormHeight, curFormHeight
+        'Bottom-align the color history panel
+        clrHistory.SetPositionAndSize 0, curFormHeight - clrHistory.GetHeight, curFormWidth, clrHistory.GetHeight
         
-        'Fit the variant selector into the remaining area
-        clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - FixDPI(10), curFormHeight
+        'Calculate a new height available to the other controls on this panel
+        curFormHeight = curFormHeight - (clrHistory.GetHeight + Interface.FixDPI(2))
+        
+        'Before rendering other elements, enforce a minimum size.  During startup, form size vacillates
+        ' several times as this window is "fit" against its neighbors.  This can throw GDI+ rendering
+        ' error messages until a final size is arrived at.
+        If (curFormHeight > 50) And (curFormWidth > 50) Then
+            
+            'Right-align the color wheel
+            clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(10)), 0, curFormHeight, curFormHeight
+            
+            'Fit the variant selector into the remaining area.
+            clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - Interface.FixDPI(10), curFormHeight
+            
+        End If
         
     End If
 
@@ -180,4 +346,5 @@ End Function
 Public Sub SetCurrentColor(ByVal newR As Long, ByVal newG As Long, ByVal newB As Long)
     clrVariants.Color = RGB(newR, newG, newB)
     clrWheel.Color = RGB(newR, newG, newB)
+    clrHistory.PushNewHistoryItem RGB(newR, newG, newB), , True
 End Sub

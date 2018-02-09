@@ -240,7 +240,7 @@ Private Function GetLogID() As Long
     If m_FSO.FileFind(m_logPath & "DebugReport_*.log", logFiles) Then
     
         numFiles = logFiles.GetNumOfStrings()
-        Debug.Print "NUMFILES: " & numFiles
+        
         'logFiles contains a list of all debug logs in the current folder.  If there are already
         ' 10 entries, we want to find the oldest file in the list, and steal its ID number.
         If (numFiles = 10) Then

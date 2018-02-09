@@ -52,6 +52,7 @@ Option Explicit
 Public Event HistoryItemClicked(ByVal histIndex As Long, ByVal histValue As String)
 Public Event HistoryDoesntExist(ByVal histIndex As Long, ByRef histValue As String)
 Public Event DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
+Public Event CustomWindowMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -289,8 +290,19 @@ Public Sub PushNewHistoryItem(ByVal newItemValue As String, Optional ByVal lookF
     'Insert the new history item at the start
     m_HistoryItems(0).ItemString = newItemValue
     
-    If redrawImmediately Then Me.RequestRedraw True
+    'NOTE: before pdHistory was used in the main color selector area, this was set to immediately
+    ' invalidate and repaint the entire control (which is somewhat time-consuming, depending on
+    ' what kind of history is being rendered).  I have since changed this to simply post a paint
+    ' message to the back of the queue, and have not noticed any problems... yet.  Add "True" to
+    ' the line below to restore the old behavior,
+    If redrawImmediately Then Me.RequestRedraw
 
+End Sub
+
+'Some history items can be notified of new history events from far-away parts of the program.  PD handles these
+' via window messages (as they're async-ish, and VB plays nicely with them).
+Public Sub RequestCustomSubclassing(ByVal msgID As Long, Optional ByVal msgIsInternalToPD As Boolean = True)
+    ucSupport.SubclassCustomMessage msgID, msgIsInternalToPD
 End Sub
 
 'To support high-DPI settings properly, we expose some specialized move+size functions
@@ -333,6 +345,10 @@ End Sub
 'If our parent control needs a redraw for some reason, it can request one here
 Public Sub RequestRedraw(Optional ByVal paintImmediately As Boolean = False)
     RedrawBackBuffer paintImmediately
+End Sub
+
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    RaiseEvent CustomWindowMessage(wMsg, wParam, lParam, bHandled, lReturn)
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

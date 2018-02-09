@@ -112,6 +112,10 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         
         If (Not allowedToFill) Then Exit Sub
         
+        'We are allowed to perform a fill.  Notify the central "color history" manager of the color currently
+        ' being used (so it can be added to the dynamic color history list).
+        If (m_FillSource = fts_ColorOpacity) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_FillColor, , True
+        
         'Start by grabbing (or producing) the source DIB required for the fill.  (If the user wants us to
         ' sample all layers, we need to generate a composite image.)
         

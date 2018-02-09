@@ -67,7 +67,7 @@ Private m_MouseDownWheel As Boolean, m_MouseDownBox As Boolean
 'Padding (in pixels) between the edges of the user control and the color wheel.  Automatically adjusted for DPI
 ' at run-time.  Note that this needs to be non-zero, because the padding area is used to render the "slice" overlay
 ' showing the user's current hue selection.
-Private Const WHEEL_PADDING As Long = 3
+Private Const WHEEL_PADDING As Long = 2
 
 'Width (in pixels) of the hue wheel.  This width is applied along the radial axis.
 Private Const WHEEL_WIDTH_DEFAULT As Single = 15#
@@ -393,7 +393,7 @@ Private Function IsMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Opt
     pxRadius = Sqr(x * x + y * y)
     
     'If the radius lies between the outer and inner hue wheel radii, return true.
-    IsMouseInsideHueWheel = CBool((pxRadius <= m_HueRadiusOuter) And (pxRadius >= m_HueRadiusInner))
+    IsMouseInsideHueWheel = ((pxRadius <= m_HueRadiusOuter) And (pxRadius >= m_HueRadiusInner))
     
     'If the caller wants us to calculate hue for them, do so now.  Note that we can successfully do this, even if the mouse is
     ' outside the hue wheel - this is important for enabling convenient click-drag behavior!
@@ -534,12 +534,11 @@ End Sub
 Private Sub UpdateControlLayout()
     
     'Recreate all individual components, as their size is dependent on the container size
-    If MainModule.IsProgramRunning() Then
+    If MainModule.IsProgramRunning() And ucSupport.AmIVisible Then
         CreateColorWheel
         CreateSVSquare
+        RedrawBackBuffer
     End If
-    
-    RedrawBackBuffer
     
 End Sub
 
@@ -662,7 +661,7 @@ Private Sub CreateColorWheel()
     
     'Mark the wheel DIB's premultiplied alpha state
     m_WheelBuffer.SetInitialAlphaPremultiplicationState True
-        
+    
 End Sub
 
 'Create a new Saturation + Value square (the square in the middle of the UC).  The square must be redrawn whenever
@@ -681,7 +680,7 @@ Private Sub CreateSVSquare()
     End If
     
     'To prevent IDE crashes, bail now during compilation
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not MainModule.IsProgramRunning()) Or (Not ucSupport.AmIVisible) Then Exit Sub
     
     'We now need to fill the square with all possible saturation and value variants, in a pattern where...
     ' - The y-axis position determines value (1 -> 0)
@@ -764,7 +763,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     boxBorderColor = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, m_MouseInsideBox)
     colorPreviewBorder = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, False)
     
-    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
+    If MainModule.IsProgramRunning() And (bufferDC <> 0) And (m_HueRadiusInner > 0) Then
         
         'Paint the hue wheel (currently left-aligned)
         If (Not m_WheelBuffer Is Nothing) Then

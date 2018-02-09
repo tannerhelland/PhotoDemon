@@ -909,7 +909,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
 CouldNotCreateDIB:
     
     'Return success contingent on whether we have a DIB pointer or not
-    CreateBlank = CBool(m_dibHandle <> 0)
+    CreateBlank = (m_dibHandle <> 0)
     
 End Function
 
