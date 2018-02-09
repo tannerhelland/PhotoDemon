@@ -128,12 +128,8 @@ Friend Function SetCaption(ByRef newCaption As String) As Boolean
             'See if translations are necessary.
             Dim isTranslationActive As Boolean
                 
-            If Not (g_Language Is Nothing) Then
-                If g_Language.TranslationActive Then
-                    isTranslationActive = True
-                Else
-                    isTranslationActive = False
-                End If
+            If (Not g_Language Is Nothing) Then
+                isTranslationActive = g_Language.TranslationActive
             Else
                 isTranslationActive = False
             End If
@@ -522,7 +518,6 @@ Private Sub VerifyFontSize()
         m_FontSizeVerified = True
         
     Else
-        'Debug.Print "WARNING!  pdCaption.verifyFontSize was called, but the container width is unknown!"
         m_FontSizeVerified = False
     End If
 

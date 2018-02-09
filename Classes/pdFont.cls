@@ -523,7 +523,7 @@ Friend Sub SetTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     'All alignment settings are handled via flags to DrawText.  For DrawText flags to work, the alignment of the current DC must be
     ' set to TA_LEFT, TA_TOP, and TA_NOUPDATECP (see http://msdn.microsoft.com/en-us/library/dd162498.aspx)
-    If curDC <> 0 Then SetTextAlign curDC, TA_LEFT Or TA_TOP Or TA_NOUPDATECP
+    If (curDC <> 0) Then SetTextAlign curDC, TA_LEFT Or TA_TOP Or TA_NOUPDATECP
     
 End Sub
 
@@ -793,7 +793,7 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     Dim targetDC As Long, backupDC As Long
     backupDC = curDC
     
-    If curDC = 0 Then
+    If (curDC = 0) Then
         targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
@@ -806,7 +806,7 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     
     'Create the font anew, using the default string size we were passed
     If (startingFontSize <> m_origFontSize) Or (curFont = 0) Then
-        If curFont <> 0 Then DeleteCurrentFont
+        If (curFont <> 0) Then DeleteCurrentFont
         m_origFontSize = startingFontSize
         SetFontSize m_origFontSize
         CreateFontObject
@@ -843,7 +843,7 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     'Before exiting, restore any parameters we changed
     ReleaseFromDC
     
-    If m_origFontSize <> backupFontSize Then
+    If (m_origFontSize <> backupFontSize) Then
         DeleteCurrentFont
         SetFontSize backupFontSize
         CreateFontObject
@@ -870,7 +870,7 @@ Friend Function GetMaxFontSizeToFitWordWrap(ByRef srcString As String, ByVal des
     Dim targetDC As Long, backupDC As Long
     backupDC = curDC
     
-    If curDC = 0 Then
+    If (curDC = 0) Then
         targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
@@ -915,18 +915,18 @@ Friend Function GetMaxFontSizeToFitWordWrap(ByRef srcString As String, ByVal des
     'Before exiting, restore any parameters we changed
     ReleaseFromDC
     
-    If m_origFontSize <> backupFontSize Then
+    If (m_origFontSize <> backupFontSize) Then
         SetFontSize backupFontSize
         CreateFontObject
     End If
     
     'If we created a temporary DC, free it now
-    If targetDC <> backupDC Then
+    If (targetDC <> backupDC) Then
         GDI.FreeMemoryDC targetDC
     
     'Conversely, if we were originally selected into a DC, restore that DC now
     Else
-        If backupDC <> 0 Then AttachToDC backupDC
+        If (backupDC <> 0) Then AttachToDC backupDC
     End If
     
 End Function

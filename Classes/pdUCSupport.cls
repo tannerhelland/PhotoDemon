@@ -369,7 +369,7 @@ Friend Function GetCaptionTextTranslated() As String
     GetCaptionTextTranslated = m_Caption.GetCaptionTranslated()
 End Function
 
-Friend Sub SetCaptionText(Optional ByVal newCaption As String = "")
+Friend Sub SetCaptionText(Optional ByRef newCaption As String = vbNullString)
     
     'Pass the string to the pdCaption instance; it handles the actual mess of sizing and rendering text
     If m_Caption.SetCaption(newCaption) Then

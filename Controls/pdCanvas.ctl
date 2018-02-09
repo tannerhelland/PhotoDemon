@@ -963,6 +963,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Color picker
             Case COLOR_PICKER
+                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
                 ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
             
             'Selection tools
@@ -1777,11 +1778,10 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
             End If
             
-        
         'The color-picker custom-draws its own outline.
         Case COLOR_PICKER
             CanvasView.RequestCursor_System IDC_ICON
-            If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
             
         Case SELECT_RECT, SELECT_CIRC
         

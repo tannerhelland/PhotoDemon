@@ -157,13 +157,18 @@ End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    ucSupport.SetCaptionText newCaption
+    If (newCaption <> ucSupport.GetCaptionText) Then
     
-    'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
-    ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update.
-    UpdateControlLayout
-    
-    PropertyChanged "Caption"
+        ucSupport.SetCaptionText newCaption
+        
+        'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
+        ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update
+        ' for certain layout types.
+        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then UpdateControlLayout
+        
+        PropertyChanged "Caption"
+        
+    End If
     
 End Property
 
@@ -246,7 +251,7 @@ Public Property Get UseCustomForeColor() As Boolean
 End Property
 
 Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
-    If newSetting <> m_UseCustomForeColor Then
+    If (newSetting <> m_UseCustomForeColor) Then
         m_UseCustomForeColor = newSetting
         RedrawBackBuffer
     End If
@@ -438,11 +443,7 @@ Private Sub UpdateControlLayout()
             
             'If the caption still does not fit within the available area (because it's so damn large that we can't physically
             ' shrink the font enough to compensate), set the failure state to TRUE.
-            If stringWidth > controlWidth Then
-                m_FitFailure = True
-            Else
-                m_FitFailure = False
-            End If
+            m_FitFailure = (stringWidth > controlWidth)
             
         'Identical to the auto-fit steps above, but instead of fitting the caption horizontally, we fit it vertically.
         Case AutoFitCaptionPlusWordWrap
@@ -458,8 +459,8 @@ Private Sub UpdateControlLayout()
             stringWidth = ucSupport.GetCaptionWidth(False)
             stringHeight = ucSupport.GetCaptionHeight(False)
             
-            If stringWidth = 0 Then stringWidth = 1
-            If stringHeight = 0 Then stringHeight = 1
+            If (stringWidth < 1) Then stringWidth = 1
+            If (stringHeight < 1) Then stringHeight = 1
             
             'Request a matching size from the support class.
             ucSupport.RequestNewSize stringWidth, stringHeight
@@ -472,8 +473,8 @@ Private Sub UpdateControlLayout()
             stringWidth = controlWidth
             stringHeight = ucSupport.GetCaptionHeight(False)
             
-            If stringWidth = 0 Then stringWidth = 1
-            If stringHeight = 0 Then stringHeight = 1
+            If (stringWidth < 1) Then stringWidth = 1
+            If (stringHeight < 1) Then stringHeight = 1
             
             'Request a matching size from the support class.
             ucSupport.RequestNewSize stringWidth, stringHeight
@@ -530,16 +531,16 @@ Private Sub RedrawBackBuffer()
     Select Case m_Layout
     
         Case AutoFitCaption
-            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, m_FitFailure, False
+            ucSupport.PaintCaptionManually_Clipped 0, 0, bWidth, bHeight, targetColor, m_FitFailure, False
             
         Case AutoSizeControl
-            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, True
+            ucSupport.PaintCaptionManually_Clipped 0, 0, bWidth, bHeight, targetColor, False, True
             
         Case AutoFitCaptionPlusWordWrap
-            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, m_FitFailure, False
+            ucSupport.PaintCaptionManually_Clipped 0, 0, bWidth, bHeight, targetColor, m_FitFailure, False
             
         Case AutoSizeControlPlusWordWrap
-            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, True
+            ucSupport.PaintCaptionManually_Clipped 0, 0, bWidth, bHeight, targetColor, False, True
             
     End Select
     

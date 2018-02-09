@@ -383,7 +383,7 @@ End Function
 
 'If functions want their own copy of all available fonts on this PC, call this function
 Public Function GetCopyOfSystemFontList(ByRef dstStringStack As pdStringStack) As Boolean
-    If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
+    If (dstStringStack Is Nothing) Then Set dstStringStack = New pdStringStack
     dstStringStack.CloneStack m_PDFontCache
 End Function
 
