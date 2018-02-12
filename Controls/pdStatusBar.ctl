@@ -282,7 +282,7 @@ End Sub
 Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Double, Optional ByVal clearCoords As Boolean = False)
     
     If clearCoords Then
-        lblCoordinates.Caption = ""
+        lblCoordinates.Caption = vbNullString
     Else
         lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
     End If
@@ -307,7 +307,7 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
     
     'The size display is cleared whenever the user has no images loaded
     If clearSize Then
-        lblImgSize.Caption = ""
+        lblImgSize.Caption = vbNullString
         FitMessageArea
         
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
@@ -559,7 +559,7 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         lblImgSize.Visible = False
         cmbSizeUnit.Visible = False
         lblCoordinates.Visible = False
-        lblMessages.Caption = ""
+        lblMessages.Caption = vbNullString
     End If
     
     'We only establish positions up to the mouse coordinate label.  All items *past* that point are positioned by

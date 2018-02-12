@@ -33,7 +33,7 @@ Option Explicit
 ' the current version (and compile date) over stdout.
 Public Function GetPngQuantVersion() As String
     
-    GetPngQuantVersion = ""
+    GetPngQuantVersion = vbNullString
     
     If PluginManager.IsPluginCurrentlyInstalled(CCP_PNGQuant) Then
         

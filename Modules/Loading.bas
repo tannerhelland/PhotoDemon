@@ -67,7 +67,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
         pdDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
-        pdDebug.LogAction "", PDM_Mem_Report
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
     #End If
     
     'Display a busy cursor
@@ -463,7 +463,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "New memory report after loading image """ & Files.FileGetName(srcFile) & """:"
-            pdDebug.LogAction "", PDM_Mem_Report
+            pdDebug.LogAction vbNullString, PDM_Mem_Report
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
             ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.

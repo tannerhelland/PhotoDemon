@@ -617,7 +617,7 @@ Private Sub cmdBar_ResetClick()
     
     'Reset our master gradient object; everything else derives from it
     Set m_NodePreview = New pd2DGradient
-    m_NodePreview.CreateGradientFromString ""
+    m_NodePreview.CreateGradientFromString vbNullString
     
     m_NumOfGradientPoints = 2
     ReDim m_GradientPoints(0 To 1) As GradientPoint

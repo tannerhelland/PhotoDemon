@@ -133,7 +133,7 @@ Public Property Let Caption(ByRef newCaption As String)
         UserControl.AccessKeys = accessKeyChar
     
     Else
-        UserControl.AccessKeys = ""
+        UserControl.AccessKeys = vbNullString
     End If
     
 End Property
@@ -327,7 +327,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = ""
+    Caption = vbNullString
     FontBold = False
     FontSize = 10
     Value = True
@@ -340,7 +340,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
         Value = .ReadProperty("Value", True)
@@ -353,7 +353,7 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontBold", ucSupport.GetCaptionFontBold, False
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
         .WriteProperty "Value", m_TitleState, True

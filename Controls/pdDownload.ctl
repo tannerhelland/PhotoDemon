@@ -210,7 +210,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                 .DataBytes = AsyncProp.Value
                 
                 'Raise a failure event
-                RaiseEvent FinishedOneItem(False, .Key, .DownloadTypeOptional, .DataBytes, "")
+                RaiseEvent FinishedOneItem(False, .Key, .DownloadTypeOptional, .DataBytes, vbNullString)
                 
             End With
             
@@ -337,7 +337,7 @@ DownloadError:
     End With
     
     'Raise a failure event
-    RaiseEvent FinishedOneItem(False, m_DownloadList(itemIndex).Key, m_DownloadList(itemIndex).DownloadTypeOptional, m_DownloadList(itemIndex).DataBytes, "")
+    RaiseEvent FinishedOneItem(False, m_DownloadList(itemIndex).Key, m_DownloadList(itemIndex).DownloadTypeOptional, m_DownloadList(itemIndex).DataBytes, vbNullString)
     
     'Increment the "download finished" counter by 1.
     m_NumOfFilesFinishedDownloading = m_NumOfFilesFinishedDownloading + 1
@@ -522,7 +522,7 @@ End Sub
 '    of the file immediately.
 '
 'Returns: success/fail.  Fail is unlikely, unless the caller does something stupid like specifying a duplicate key.
-Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
+Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = vbNullString, Optional ByVal checksumToVerify As Long = 0) As Boolean
 
     'Make sure this key is unique in the collection
     If (DoesKeyExist(downloadKey) >= 0) Then

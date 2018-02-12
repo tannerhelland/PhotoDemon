@@ -964,8 +964,8 @@ Private Sub UpdateAspectRatio()
         End If
     
     Else
-        lblAspectRatio(1).Caption = ""
-        lblDimensions(1).Caption = ""
+        lblAspectRatio(1).Caption = vbNullString
+        lblDimensions(1).Caption = vbNullString
     End If
 
 End Sub

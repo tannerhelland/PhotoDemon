@@ -431,15 +431,15 @@ Private Sub Form_Load()
     'Load default source/dest folders.  If previously saved paths are not found, default to the user's current
     ' open/save image paths.
     If g_UserPreferences.DoesValueExist("BatchProcess", "RepairSrcFolder") Then
-        txtSrcFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairSrcFolder", g_UserPreferences.GetPref_String("Paths", "Open Image", ""))
+        txtSrcFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairSrcFolder", g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString))
     Else
-        txtSrcFolder.Text = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+        txtSrcFolder.Text = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
     End If
     
     If g_UserPreferences.DoesValueExist("BatchProcess", "RepairDstFolder") Then
-        txtDstFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairDstFolder", g_UserPreferences.GetPref_String("Paths", "Save Image", ""))
+        txtDstFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairDstFolder", g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString))
     Else
-        txtDstFolder.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+        txtDstFolder.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
     End If
     
     Interface.ApplyThemeAndTranslations Me

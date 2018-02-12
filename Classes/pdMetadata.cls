@@ -350,7 +350,7 @@ Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
     'Because PD intercepts metadata asynchronously, the returned string will contain trailing text similar to {ready123},
     ' where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
     ' parentImageID to find and remove the trailing synchronizer bit.
-    If (InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
+    If (InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", vbNullString)
     
     'We now have a (potentially very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of
     ' that string.  We need this backup when it comes time to write the metadata back out to file.
@@ -407,11 +407,11 @@ Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
             ' When it does this, it will post a comment similar to "(binary data 12345 bytes, use -b option to extract)".  We want to find
             ' any entries like this and remove the developer-centric "use -b option..." instructions.
             If (InStr(1, m_Tags(i).TagValue, ", use -b option to extract") <> 0) Then
-                m_Tags(i).TagValue = Replace$(m_Tags(i).TagValue, ", use -b option to extract", "", , , vbBinaryCompare)
+                m_Tags(i).TagValue = Replace$(m_Tags(i).TagValue, ", use -b option to extract", vbNullString, , , vbBinaryCompare)
             End If
             
             If (InStr(1, m_Tags(i).TagValueFriendly, ", use -b option to extract") <> 0) Then
-                m_Tags(i).TagValueFriendly = Replace$(m_Tags(i).TagValueFriendly, ", use -b option to extract", "", , , vbBinaryCompare)
+                m_Tags(i).TagValueFriendly = Replace$(m_Tags(i).TagValueFriendly, ", use -b option to extract", vbNullString, , , vbBinaryCompare)
             End If
             
             'Next, look for GPS coordinate tags.  If found, we can enable some fun bonus metadata options (like pulling up Google Maps
@@ -1157,7 +1157,7 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
             
             'Strip any vbCrLfs in the data and store the raw Base64 data.  (Without additional semantics, it's hard to know what format
             ' the data actually represents.)
-            'If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            'If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, vbNullString, , , vbBinaryCompare)
             dstMetadata.TagBase64Value = fullTagValue
             dstMetadata.TagValueFriendly = fullTagValue
             dstMetadata.WasBinaryExtracted = True
@@ -1237,7 +1237,7 @@ Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagSta
             
             'Strip any vbCrLfs in the data and store the raw Base64 data.  (Without additional semantics, it's hard to know what format
             ' the data actually represents.)
-            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, vbNullString, , , vbBinaryCompare)
             dstMetadata.TagBase64Value = fullTagValue
             dstMetadata.WasBinaryExtracted = True
             
@@ -1344,9 +1344,9 @@ Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tag
             Next i
             
             'Strip any vbCrLfs in the data, then remove the opening/closing tags
-            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
-            fullTagValue = Replace$(fullTagValue, "<et:prt>", "", , , vbBinaryCompare)
-            fullTagValue = Replace$(fullTagValue, "</et:prt>", "", , , vbBinaryCompare)
+            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, vbNullString, , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "<et:prt>", vbNullString, , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "</et:prt>", vbNullString, , , vbBinaryCompare)
             
             'Store the result as a normal tag.
             dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)

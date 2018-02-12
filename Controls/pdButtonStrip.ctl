@@ -617,7 +617,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = ""
+    Caption = vbNullString
     ColorScheme = CM_DEFAULT
     FontBold = False
     FontSize = 10
@@ -632,7 +632,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         ColorScheme = .ReadProperty("ColorScheme", CM_DEFAULT)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
@@ -648,7 +648,7 @@ End Sub
 'Store all associated properties
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10

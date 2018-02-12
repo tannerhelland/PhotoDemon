@@ -614,7 +614,6 @@ Private Sub Form_Load()
     
     'Populate the explanation label
     Dim addInstructions As String
-    addInstructions = ""
     addInstructions = g_Language.TranslateMessage("instructions:")
     addInstructions = addInstructions & vbCrLf
     addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("left-click to add new nodes or drag existing nodes")
@@ -668,7 +667,7 @@ Private Sub RedrawPreviewBox()
 
     If (Not cmdBar.PreviewsAllowed) Or (Not MainModule.IsProgramRunning()) Then Exit Sub
 
-    picDraw.Picture = LoadPicture("")
+    picDraw.Picture = LoadPicture(vbNullString)
     
     'Prepare a target DIB at the same dimensions as the on-screen picture box
     Dim dstDIB As pdDIB

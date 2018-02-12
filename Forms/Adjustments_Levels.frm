@@ -338,7 +338,7 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     
     'Draw the relevant histogram onto the histogram box
     On Error GoTo IgnoreChannelRender
-    picHistogram.Picture = LoadPicture("")
+    picHistogram.Picture = LoadPicture(vbNullString)
     If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
     
@@ -1140,7 +1140,7 @@ Private Sub Form_Load()
     m_DisableMaxMinLimits = False
     
     'Draw the default histogram onto the histogram box
-    picHistogram.Picture = LoadPicture("")
+    picHistogram.Picture = LoadPicture(vbNullString)
     If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
     
@@ -1370,8 +1370,8 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         cmdBar.MarkPreviewStatus False
         
         'Erase the picture boxes
-        picInputArrows.Picture = LoadPicture("")
-        picOutputArrows.Picture = LoadPicture("")
+        picInputArrows.Picture = LoadPicture(vbNullString)
+        picOutputArrows.Picture = LoadPicture(vbNullString)
         
         'Synchronize the arrow offsets with the values of the corresponding text boxes
         ' (input levels)

@@ -170,7 +170,7 @@ SaveMacroAgain:
                 numOfValidProcesses = numOfValidProcesses + 1
                 
                 'Start each process entry with a unique identifier
-                xmlEngine.WriteTagWithAttribute "processEntry", "index", numOfValidProcesses, "", True
+                xmlEngine.WriteTagWithAttribute "processEntry", "index", numOfValidProcesses, vbNullString, True
                 
                 'Write out all the properties of this entry.  (Note that some properties can be inferred, so we don't
                 ' need to actually store them inside the file.)

@@ -150,7 +150,7 @@ Private Sub Form_Load()
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL
     Else
-        lblReleaseAnnouncement.Caption = ""
+        lblReleaseAnnouncement.Caption = vbNullString
         lblReleaseAnnouncement.Visible = False
     End If
     

@@ -138,7 +138,7 @@ Public Function GetMonitorSizeAsString() As String
     If m_hasEDID Then
         GetMonitorSizeAsString = Format$(m_EDIDDiagonalInches, "#0.0") & """"
     Else
-        GetMonitorSizeAsString = ""
+        GetMonitorSizeAsString = vbNullString
     End If
 
 End Function
@@ -295,17 +295,17 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
                 If (m_EDID(startOffset + 3) = &HFC) Then
                 
                     'Retrieve the monitor name and trim any null bytes
-                    monName = ""
+                    monName = vbNullString
                     For i = (startOffset + 4) To (startOffset + 17)
                         If (m_EDID(i) <> 0) Then
-                            monChar = Chr(m_EDID(i))
+                            monChar = ChrW(m_EDID(i))
                             If (monChar = vbLf) Or (monChar = vbCr) Then monChar = " "
                             monName = monName & monChar
                         End If
                     Next i
                     
                     'Save the retrieved monitor name now
-                    If Len(monName) > 0 Then m_EDIDModelName = Trim$(monName)
+                    If (LenB(monName) > 0) Then m_EDIDModelName = Trim$(monName)
                     
                 'While we're parsing descriptor blocks, we may as well parse for serial numbers, too.  This could be very helpful
                 ' in the future as a unique ID for storing extra color management data on a per-monitor basis, with a better
@@ -313,7 +313,7 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
                 ElseIf (m_EDID(startOffset + 3) = &HFF) Then
                 
                     'Retrieve the monitor name and trim any null bytes
-                    monSerial = ""
+                    monSerial = vbNullString
                     For i = (startOffset + 4) To (startOffset + 17)
                         If (m_EDID(i) <> 0) Then
                             monChar = Chr(m_EDID(i))
@@ -323,7 +323,7 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
                     Next i
                     
                     'Save the retrieved monitor name in its parent object
-                    If Len(monSerial) > 0 Then m_EDIDSerialNumber = Trim$(monSerial)
+                    If (LenB(monSerial) > 0) Then m_EDIDSerialNumber = Trim$(monSerial)
                 
                 End If
             

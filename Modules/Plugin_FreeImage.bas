@@ -2645,11 +2645,11 @@ Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean
     listOfFreeImageErrors = """"
     
     'Condense all recorded errors into a single string
-    If UBound(g_FreeImageErrorMessages) > 0 Then
+    If (UBound(g_FreeImageErrorMessages) > 0) Then
         Dim i As Long
         For i = 0 To UBound(g_FreeImageErrorMessages)
             listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(i)
-            If i < UBound(g_FreeImageErrorMessages) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
+            If (i < UBound(g_FreeImageErrorMessages)) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
         Next i
     Else
         listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(0)

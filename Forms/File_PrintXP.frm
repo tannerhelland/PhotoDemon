@@ -450,14 +450,14 @@ Private Sub RebuildPreview()
         ' picture box.
         
         'First is the easy one - Portrait Mode
-        picThumb.Picture = LoadPicture("")
+        picThumb.Picture = LoadPicture(vbNullString)
         picThumb.Width = iSrc.Width
         picThumb.Height = iSrc.Height
         DrawPreviewImage picThumb, , , True
         
         'Now we need to get the source image at the size expected post-rotation
-        picThumb90.Picture = LoadPicture("")
-        picThumbFinal.Picture = LoadPicture("")
+        picThumb90.Picture = LoadPicture(vbNullString)
+        picThumbFinal.Picture = LoadPicture(vbNullString)
         picThumb90.Width = iSrc.Height
         picThumb90.Height = iSrc.Width
         picThumbFinal.Width = iSrc.Width

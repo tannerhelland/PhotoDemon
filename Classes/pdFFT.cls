@@ -357,12 +357,12 @@ End Sub
 Private Sub DumpDebugDataToScreen(ByRef srcArray() As Single)
     
     Dim tmpString As String
-    tmpString = ""
+    tmpString = vbNullString
     
     Dim i As Long
     For i = LBound(srcArray) To UBound(srcArray)
         tmpString = tmpString & CStr(srcArray(i))
-        If i < UBound(srcArray) Then tmpString = tmpString & ", "
+        If (i < UBound(srcArray)) Then tmpString = tmpString & ", "
     Next i
     
     Debug.Print tmpString

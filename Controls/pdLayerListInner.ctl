@@ -284,7 +284,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         
         'Hide the text box
         txtLayerName.Visible = False
-        txtLayerName.Text = ""
+        txtLayerName.Text = vbNullString
         
         'Transfer focus back to the layer box itself (instead of letting Windows forward it somewhere random)
         g_WindowManager.SetFocusAPI Me.hWnd
@@ -293,7 +293,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         preventFurtherHandling = True
         
         If txtLayerName.Visible Then txtLayerName.Visible = False
-        txtLayerName.Text = ""
+        txtLayerName.Text = vbNullString
         g_WindowManager.SetFocusAPI Me.hWnd
         m_LayerNameEditMode = False
         
@@ -644,7 +644,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
             
             'If the new position differs from the layer's original position, call a dummy Processor call, which will create
             ' an Undo/Redo entry at this point.
-            If (m_InitialLayerIndex <> layerIndexUnderMouse) Then Process "Rearrange layers", False, "", UNDO_ImageHeader
+            If (m_InitialLayerIndex <> layerIndexUnderMouse) Then Process "Rearrange layers", False, vbNullString, UNDO_ImageHeader
         
         End If
         

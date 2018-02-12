@@ -405,7 +405,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its
             ' temporary file location!)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "CurrentLocationOnDisk", ""
+            pdImages(g_CurrentImage).ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
             pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(fullXMLList(i).friendlyName, True)
             pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(fullXMLList(i).friendlyName)
             

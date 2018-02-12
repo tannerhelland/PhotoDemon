@@ -3372,7 +3372,7 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
         tmpString = "WARNING!  GDI+ module error, """ & errName & """"
     End If
     
-    If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
+    If (LenB(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction tmpString, PDM_External_Lib
     #End If

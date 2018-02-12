@@ -174,7 +174,7 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     
     'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
     Dim reportString As String
-    reportString = ""
+    reportString = vbNullString
     
     'Give the report a title
     reportString = reportString & vbCrLf & "-- pdProfile report for " & Chr(34) & m_Events(0).Name & Chr(34) & " --" & vbCrLf
@@ -346,7 +346,7 @@ Private Sub WriteUpdatedDatabase()
     For i = 0 To m_CurrentEventIndex - 1
     
         'Write a header for each entry
-        xmlEngine.WriteTagWithAttribute "profileEvent", "name", Replace(m_Events(i).Name, " ", "_"), "", True
+        xmlEngine.WriteTagWithAttribute "profileEvent", "name", Replace(m_Events(i).Name, " ", "_"), vbNullString, True
         
         'Before writing anything, if this is the first time writing the database, update each entry's historical values
         ' to match the current entry.

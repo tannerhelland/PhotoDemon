@@ -201,7 +201,6 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
     'Prepare a title string (with an asterisk added to the "current" image state title)
     Dim drawString As String
-    drawString = ""
     If (itemIndex + 1) = m_curUndoIndex Then drawString = "* "
     drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).processID)
     

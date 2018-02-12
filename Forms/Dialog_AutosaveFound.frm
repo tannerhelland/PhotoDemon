@@ -255,7 +255,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     If tmpDIB.CreateFromFile(srcImagePath) Then
         tmpDIB.RenderToPictureBox picPreview
     Else
-        picPreview.Picture = LoadPicture("")
+        picPreview.Picture = LoadPicture(vbNullString)
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Preview not available")
         picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2

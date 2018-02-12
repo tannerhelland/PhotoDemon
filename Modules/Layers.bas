@@ -74,7 +74,7 @@ Public Sub AddNewLayer_XML(ByVal processParameters As String)
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerType, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
+Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerType, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = vbNullString, Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -246,7 +246,7 @@ Public Sub AddLayerFromVisibleLayers()
 End Sub
 
 'Load an image file, and add it to the current image as a new layer
-Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "", Optional ByVal createUndo As Boolean = False)
+Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -291,7 +291,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", "", UNDO_Image_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerID, -1
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", vbNullString, UNDO_Image_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerID, -1
             End If
             
             'Render the new image to screen
@@ -328,7 +328,7 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
             ' while retaining all text settings... I'm not sure of a better solution at present.)
             Case PDL_TEXT, PDL_TYPOGRAPHY
                 With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
-                    .SetTextLayerProperty ptp_Text, ""
+                    .SetTextLayerProperty ptp_Text, vbNullString
                 End With
         
         End Select

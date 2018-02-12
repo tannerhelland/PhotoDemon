@@ -1286,9 +1286,9 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     
         'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
         ' dialog in the future by not specifying a location on disk
-        targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", ""
+        targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
         targetImage.ImgStorage.AddEntry "OriginalFileName", suggestedFilename
-        targetImage.ImgStorage.AddEntry "OriginalFileExtension", ""
+        targetImage.ImgStorage.AddEntry "OriginalFileExtension", vbNullString
         
         'For this special case, mark the image as being totally unsaved; this forces us to eventually show a save prompt
         targetImage.SetSaveState False, pdSE_AnySave
@@ -1341,7 +1341,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     ' data bits from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1594,7 +1594,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1711,7 +1711,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib "", True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.

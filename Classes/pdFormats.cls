@@ -106,7 +106,7 @@ Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatDescription = inputDescriptions(dIndex)
     Else
-        GetInputFormatDescription = ""
+        GetInputFormatDescription = vbNullString
     End If
 End Function
 
@@ -115,7 +115,7 @@ Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatExtensions = inputExtensions(dIndex)
     Else
-        GetInputFormatExtensions = ""
+        GetInputFormatExtensions = vbNullString
     End If
 End Function
 
@@ -128,7 +128,7 @@ Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = "
     GetListOfInputFormats = inputExtensions(0)
     
     If Strings.StringsNotEqual(listDelimiter, ";", False) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, ";", listDelimiter)
-    If (Not includeStarDot) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, "*.", "")
+    If (Not includeStarDot) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, "*.", vbNullString)
     
 End Function
 
@@ -172,7 +172,7 @@ Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatDescription = outputDescriptions(dIndex)
     Else
-        GetOutputFormatDescription = ""
+        GetOutputFormatDescription = vbNullString
     End If
 End Function
 
@@ -181,7 +181,7 @@ Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatExtension = outputExtensions(dIndex)
     Else
-        GetOutputFormatExtension = ""
+        GetOutputFormatExtension = vbNullString
     End If
 End Function
 
@@ -520,7 +520,7 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "xpm"
         
         Case Else
-            GetExtensionFromPDIF = ""
+            GetExtensionFromPDIF = vbNullString
     
     End Select
 

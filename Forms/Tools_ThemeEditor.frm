@@ -775,10 +775,10 @@ Private Sub Form_Load()
     
     'Load the last-edited resource file (if any)
     If g_UserPreferences.DoesValueExist("Themes", "LastResourceFile") Then
-        txtResourcePath.Text = g_UserPreferences.GetPref_String("Themes", "LastResourceFile", "")
+        txtResourcePath.Text = g_UserPreferences.GetPref_String("Themes", "LastResourceFile", vbNullString)
         LoadResourceFromFile
     Else
-        txtResourcePath.Text = ""
+        txtResourcePath.Text = vbNullString
         
         m_NumOfResources = 0
         ReDim m_Resources(0 To 15) As PD_Resource

@@ -456,7 +456,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = ""
+    Caption = vbNullString
     FontSizeCaption = 12#
     ListIndex = 0
 End Sub
@@ -468,7 +468,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
         ListIndex = .ReadProperty("ListIndex", 0)
     End With
@@ -481,7 +481,7 @@ End Sub
 'Store all associated properties
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12#
         .WriteProperty "ListIndex", ListIndex, 0
     End With

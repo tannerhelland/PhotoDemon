@@ -207,7 +207,7 @@ RetryTranslation:
         If (InStr(processedHTML, "&gt;") <> 0) Then processedHTML = Replace$(processedHTML, "&gt;", ">", 1, , vbTextCompare)
         If (InStr(processedHTML, "&lt;") <> 0) Then processedHTML = Replace$(processedHTML, "&lt;", "<", 1, , vbTextCompare)
         If (InStr(processedHTML, "&amp;") <> 0) Then processedHTML = Replace$(processedHTML, "&amp;", "&", 1, , vbTextCompare)
-        If (InStr(processedHTML, vbTab) <> 0) Then processedHTML = Replace$(processedHTML, vbTab, "", 1, , vbTextCompare)
+        If (InStr(processedHTML, vbTab) <> 0) Then processedHTML = Replace$(processedHTML, vbTab, vbNullString, 1, , vbTextCompare)
         If (InStr(processedHTML, "( ") <> 0) Then processedHTML = Replace$(processedHTML, "( ", "(", 1, , vbTextCompare)
         If (InStr(processedHTML, " )") <> 0) Then processedHTML = Replace$(processedHTML, " )", ")", 1, , vbTextCompare)
         If (InStr(processedHTML, " ,") <> 0) Then processedHTML = Replace$(processedHTML, " ,", ",", 1, , vbTextCompare)

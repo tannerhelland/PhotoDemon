@@ -31,7 +31,7 @@ Option Explicit
 ' the current version (and compile date) over stdout.
 Public Function GetOptiPNGVersion() As String
     
-    GetOptiPNGVersion = ""
+    GetOptiPNGVersion = vbNullString
     
     If PluginManager.IsPluginCurrentlyInstalled(CCP_OptiPNG) Then
         
@@ -53,7 +53,7 @@ Public Function GetOptiPNGVersion() As String
                 versionParts = Split(versionLines(0), " ")
                 
                 If VBHacks.IsArrayInitialized(versionParts) Then
-                    If UBound(versionParts) >= 2 Then GetOptiPNGVersion = versionParts(2) & ".0"
+                    If (UBound(versionParts) >= 2) Then GetOptiPNGVersion = versionParts(2) & ".0"
                 End If
             
             End If

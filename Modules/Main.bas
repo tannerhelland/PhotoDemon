@@ -703,7 +703,7 @@ Public Function ContinueLoadingProgram() As Boolean
     'In debug mode, make a baseline memory reading here, before the main form is displayed.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
-        pdDebug.LogAction "", PDM_Mem_Report
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
         pdDebug.LogAction "Proceeding to load main window..."
     #End If
     

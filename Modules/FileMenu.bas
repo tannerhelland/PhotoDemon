@@ -42,7 +42,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
     
     'Prep a common dialog interface
     Dim openDialog As pdOpenSaveDialog
@@ -136,7 +136,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
         
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
     If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
@@ -228,7 +228,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '1) Determine an initial folder.  This is easy, as we will just grab the last "save image" path from the preferences file.
     '   (The preferences engine will automatically pass us the user's Pictures folder if no "last path" entry exists.)
     Dim initialSaveFolder As String
-    initialSaveFolder = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    initialSaveFolder = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
     
     '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
     '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)
@@ -426,7 +426,7 @@ Public Sub MenuCloseAll()
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately
         ' (e.g. stop unloading images)
         If (Not g_ClosingAllImages) Then
-            If (g_OpenImageCount <> 0) Then Message ""
+            If (g_OpenImageCount <> 0) Then Message vbNullString
             Exit Do
             
         'If the unload process hasn't been canceled, move to the next image
@@ -529,9 +529,9 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         
         'Similarly, because this image does not exist on the user's hard-drive, we want to force use of a full Save As dialog
         ' in the future.  (PD detects this state if a pdImage object does not supply an on-disk location)
-        newImage.ImgStorage.AddEntry "CurrentLocationOnDisk", ""
+        newImage.ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
         newImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
-        newImage.ImgStorage.AddEntry "OriginalFileExtension", ""
+        newImage.ImgStorage.AddEntry "OriginalFileExtension", vbNullString
         newImage.SetSaveState False, pdSE_AnySave
         
         'Add the finished image to the master collection, and ensure that the newly created layer is the active layer

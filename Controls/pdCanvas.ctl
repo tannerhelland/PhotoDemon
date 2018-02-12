@@ -864,9 +864,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
                     ' want the delay associated with full Undo/Redo creation.
                     If (g_CurrentTool = VECTOR_TEXT) Then
-                        Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
+                        Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, imgX, imgY, True
                     ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
-                        Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", imgX, imgY, True
+                        Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, imgX, imgY, True
                     End If
                     
                     'Use a special initialization command that basically copies all existing text properties into the newly created layer.
@@ -1036,7 +1036,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 'Auto-activation is disabled.  Don't bother reporting the layer beneath the mouse to the user, as actions can
                 ' only affect the active layer!
                 Else
-                    Message ""
+                    Message vbNullString
                     m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
                 End If
             

@@ -65,7 +65,7 @@ Private m_ActivePresetName As String
 
 'The caller must specify a preset path prior to any other interactions.
 ' Note that this function ALSO LOADS THE PRESET FILE.  (It seemed redundant to force separate handling for that step.)
-Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = "")
+Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = vbNullString)
     
     m_PresetFilePath = srcPresetFilePath
     m_ToolName = toolName
@@ -151,8 +151,8 @@ Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue
     If (Len(m_ActivePresetName) <> 0) Then
     
         'Retrieve said value, and return TRUE if a non-zero length string is found
-        dstObjectValue = m_XMLEngine.GetUniqueTag_String(objectName, "", , "presetEntry", "id", m_ActivePresetName)
-        ReadPresetValue = CBool(Len(dstObjectValue) <> 0)
+        dstObjectValue = m_XMLEngine.GetUniqueTag_String(objectName, vbNullString, , "presetEntry", "id", m_ActivePresetName)
+        ReadPresetValue = CBool(LenB(dstObjectValue) <> 0)
         
     Else
         

@@ -2309,17 +2309,14 @@ Private Sub MnuPixelate_Click(Index As Integer)
 End Sub
 
 Private Sub mnuRecentMacros_Click(Index As Integer)
+    
     'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
     Dim tmpString As String
     tmpString = g_RecentMacros.GetSpecificMRU(Index)
     
     'Check - just in case - to make sure the path isn't empty
-    If tmpString <> "" Then
-        
-        ' Play the macro
-        Macros.PlayMacroFromFile tmpString
-        
-    End If
+    If (LenB(tmpString) <> 0) Then Macros.PlayMacroFromFile tmpString
+    
 End Sub
 
 Private Sub MnuRecordMacro_Click(Index As Integer)
@@ -2613,7 +2610,7 @@ Private Sub Form_Load()
         ' Display any final messages and/or warnings
         '*************************************************************************************************************************************
         
-        Message ""
+        Message vbNullString
         FormMain.Refresh
         DoEvents
         
@@ -2649,7 +2646,7 @@ Private Sub Form_Load()
         'In debug mode, note that we are about to turn control over to the user
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
-            pdDebug.LogAction "", PDM_Mem_Report
+            pdDebug.LogAction vbNullString, PDM_Mem_Report
         #End If
         
         'Finally, return focus to the main form

@@ -597,12 +597,12 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
                 'Parse out the URL between the img src quotes
                 Dim urlStart As Long, urlEnd As Long
                 urlStart = InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare)
-                If urlStart > 0 Then urlStart = InStr(urlStart, UCase$(htmlString), "SRC=", vbBinaryCompare)
-                If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
+                If (urlStart > 0) Then urlStart = InStr(urlStart, UCase$(htmlString), "SRC=", vbBinaryCompare)
+                If (urlStart > 0) Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
                 
                 'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
                 ' character immediately following the quotation mark.
-                If urlStart > 0 Then urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
+                If (urlStart > 0) Then urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
                 
                 'As a failsafe, make sure a valid URL was actually found
                 If (urlStart > 0) And (urlEnd > 0) Then

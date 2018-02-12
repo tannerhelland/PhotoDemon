@@ -270,8 +270,8 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Brush = ""
-    Caption = ""
+    Brush = vbNullString
+    Caption = vbNullString
     FontSize = 12
 End Sub
 
@@ -282,8 +282,8 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Brush = .ReadProperty("curBrush", "")
-        Caption = .ReadProperty("Caption", "")
+        Brush = .ReadProperty("curBrush", vbNullString)
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
     End With
 End Sub
@@ -294,8 +294,8 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "curBrush", m_curBrush, ""
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "curBrush", m_curBrush, vbNullString
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
     End With
 End Sub

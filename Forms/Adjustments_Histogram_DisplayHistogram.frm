@@ -441,7 +441,7 @@ Public Sub DrawHistogram()
     If Not histogramGenerated Then Exit Sub
     
     'Clear out whatever was there before
-    picH.Picture = LoadPicture("")
+    picH.Picture = LoadPicture(vbNullString)
     
     'tHeight is used to determine the height of the maximum value in the histogram.  We want it to be slightly
     ' shorter than the height of the picture box; this way the tallest histogram value fills the entire box
@@ -613,7 +613,7 @@ Private Sub Form_Load()
     Dim i As Long
     For i = 0 To lblValue.Count - 1
         lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + FixDPI(8)
-        lblValue(i).Caption = ""
+        lblValue(i).Caption = vbNullString
     Next i
     
     If Not histogramGenerated Then TallyHistogramValues
@@ -875,7 +875,7 @@ Public Sub TallyHistogramValues()
     'Blank the red, green, blue, and luminance count text boxes
     Dim i As Long
     For i = 0 To lblValue.Count - 1
-        lblValue(i).Caption = ""
+        lblValue(i).Caption = vbNullString
     Next i
     
     'Use our new external function to fill the important histogram arrays

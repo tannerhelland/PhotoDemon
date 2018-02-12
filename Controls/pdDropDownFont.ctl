@@ -722,7 +722,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     BackgroundColor = vbWhite
     UseCustomBackgroundColor = False
-    Caption = ""
+    Caption = vbNullString
     Enabled = True
     FontSize = 10
     FontSizeCaption = 12
@@ -737,7 +737,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
         UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
@@ -759,7 +759,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
         .WriteProperty "UseCustomBackgroundColor", m_UseCustomBackgroundColor, False
-        .WriteProperty "Caption", Me.Caption, ""
+        .WriteProperty "Caption", Me.Caption, vbNullString
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", Me.FontSize, 10
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12

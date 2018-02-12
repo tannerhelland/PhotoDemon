@@ -205,10 +205,10 @@ Friend Sub DetermineLanguage()
     Else
     
         Dim curLangFile As String
-        curLangFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
+        curLangFile = g_UserPreferences.GetPref_String("Language", "Current Language File", vbNullString)
         
         'If no specific file has been named, use the default language
-        If (Len(curLangFile) = 0) Then
+        If (LenB(curLangFile) = 0) Then
             m_currentLanguage = m_defaultLanguage
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
@@ -337,7 +337,7 @@ Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
     If (sRet > 0) Then
         GetSpecificLocaleInfo = Left$(sBuffer, sRet - 1)
     Else
-        GetSpecificLocaleInfo = ""
+        GetSpecificLocaleInfo = vbNullString
     End If
 End Function
 

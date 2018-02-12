@@ -440,7 +440,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = ""
+    Caption = vbNullString
     FontSize = 12
     HistoryRows = 1
 End Sub
@@ -452,7 +452,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
         HistoryRows = .ReadProperty("HistoryRows", 1)
     End With
@@ -464,7 +464,7 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
         .WriteProperty "HistoryRows", m_NumHistoryRows, 1
     End With

@@ -906,8 +906,8 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             
             Dim pcLength As Double, wWidth As Double, wHeight As Double
             wWidth = m_WheelBuffer.GetDIBWidth - 1: wHeight = m_WheelBuffer.GetDIBHeight - 1
-            pcLength = Sqr(wWidth * wWidth + wHeight * wHeight) / 2
-            pcLength = (pcLength - (wWidth / 2)) * (PI_HALF * 0.8)
+            pcLength = Sqr(wWidth * wWidth + wHeight * wHeight) * 0.5
+            pcLength = (pcLength - (wWidth * 0.5)) * (PI_HALF * 0.8)
             pcPath.AddTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
             Drawing2D.QuickCreateSolidBrush cBrush, proposedColor

@@ -30,8 +30,8 @@ Begin VB.UserControl pdCommandBar
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      UseCustomBackgroundColor=   -1  'True
       Caption         =   "&OK"
+      UseCustomBackgroundColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -87,8 +87,8 @@ Begin VB.UserControl pdCommandBar
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      UseCustomBackgroundColor=   -1  'True
       Caption         =   "&Cancel"
+      UseCustomBackgroundColor=   -1  'True
    End
 End
 Attribute VB_Name = "pdCommandBar"
@@ -820,7 +820,7 @@ Private Sub UserControl_Show()
     If MainModule.IsProgramRunning() Then
                 
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
-        m_parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
+        m_parentToolName = Replace$(UserControl.Parent.Name, "Form", vbNullString, , , vbTextCompare)
         
         '...but the caller can also specify a custom name.  This is used when a single PD form handled multiple effects,
         ' like PD's Median/Dilate/Erode implementation.
@@ -909,7 +909,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
         If VBHacks.InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
         
         'Reset our control value checker
-        controlValue = ""
+        controlValue = vbNullString
             
         'Value retrieval must be handled uniquely for each possible control type (including custom PD-specific controls).
         controlType = TypeName(eControl)

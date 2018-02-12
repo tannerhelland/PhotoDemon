@@ -247,7 +247,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
@@ -318,7 +318,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, recommend PNG as the save format
     Dim saveFormat As Long

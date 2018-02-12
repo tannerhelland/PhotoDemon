@@ -341,9 +341,9 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     BorderlessMode = False
-    Caption = ""
-    ListItemHeight = 36
+    Caption = vbNullString
     FontSizeCaption = 12
+    ListItemHeight = 36
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -354,9 +354,9 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         BorderlessMode = .ReadProperty("BorderlessMode", False)
-        Caption = .ReadProperty("Caption", "")
-        ListItemHeight = .ReadProperty("ListItemHeight", 36)
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
+        ListItemHeight = .ReadProperty("ListItemHeight", 36)
     End With
 End Sub
 
@@ -367,9 +367,9 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BorderlessMode", lbView.BorderlessMode, False
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
-        .WriteProperty "ListItemHeight", lbView.ListItemHeight, 36
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12
+        .WriteProperty "ListItemHeight", lbView.ListItemHeight, 36
     End With
 End Sub
 

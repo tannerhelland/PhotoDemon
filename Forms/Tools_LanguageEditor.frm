@@ -1084,7 +1084,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                     txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-") + 1, Len(.langID) - InStr(1, .langID, "-"))
                 Else
                     txtLangID(0) = .langID
-                    txtLangID(1) = ""
+                    txtLangID(1) = vbNullString
                 End If
                 
                 'Everything else can be copied directly
@@ -1241,9 +1241,9 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
-                    If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, "")
-                    If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, "")
-                    If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, "")
+                    If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, vbNullString)
+                    If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, vbNullString)
+                    If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, vbNullString)
                     m_AllPhrases(i).ListBoxEntry = tmpString
                     
                     'I don't like using DoEvents, but we need a way to refresh the progress bar.
@@ -1299,14 +1299,14 @@ Private Sub lstPhrases_Click()
             Dim retString As String
             retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
             If (Len(retString) <> 0) Then
-                txtTranslation = ""
+                txtTranslation = vbNullString
                 txtTranslation = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
             Else
-                txtTranslation = ""
+                txtTranslation = vbNullString
                 txtTranslation = g_Language.TranslateMessage("translation failed!")
             End If
         Else
-            txtTranslation = ""
+            txtTranslation = vbNullString
         End If
             
     End If
@@ -1367,45 +1367,46 @@ Private Sub PopulateAvailableLanguages()
     
     'We now do a bit of additional work.  Look for any autosave files (with extension .tmpxml) in the user language folder.  Allow the
     ' user to load these if available.
-    Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.GetLanguagePath(True) & "*.tmpxml", vbNormal)
+    Dim listOfTmpXML As pdStringStack
+    Set listOfTmpXML = New pdStringStack
+    If Files.RetrieveAllFiles(g_UserPreferences.GetLanguagePath(True), listOfTmpXML, False, True, "tmpxml") Then
         
-    Do While (chkFile <> "")
-        
-        'Use PD's XML engine to load the file
-        Dim tmpm_xmlEngine As pdXML
-        Set tmpm_xmlEngine = New pdXML
-        If tmpm_xmlEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
-        
-            'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-            If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
+        Dim chkFile As String
+        Do While listOfTmpXML.PopString(chkFile)
             
-                ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As PDLanguageFile
+            'Use PD's XML engine to load the file
+            Dim tmpm_xmlEngine As pdXML
+            Set tmpm_xmlEngine = New pdXML
+            If tmpm_xmlEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
+            
+                'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+                If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
                 
-                With m_ListOfLanguages(UBound(m_ListOfLanguages))
-                    'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-                    .langID = tmpm_xmlEngine.GetUniqueTag_String("langid")
-                    .LangName = tmpm_xmlEngine.GetUniqueTag_String("langname")
-    
-                    'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-                    .langVersion = tmpm_xmlEngine.GetUniqueTag_String("langversion")
-                    .LangStatus = tmpm_xmlEngine.GetUniqueTag_String("langstatus")
-                    .Author = tmpm_xmlEngine.GetUniqueTag_String("author")
+                    ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As PDLanguageFile
                     
-                    'Finally, add some internal metadata
-                    .FileName = g_UserPreferences.GetLanguagePath(True) & chkFile
-                    .LangType = "Autosave"
+                    With m_ListOfLanguages(UBound(m_ListOfLanguages))
+                        'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
+                        .langID = tmpm_xmlEngine.GetUniqueTag_String("langid")
+                        .LangName = tmpm_xmlEngine.GetUniqueTag_String("langname")
+        
+                        'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
+                        .langVersion = tmpm_xmlEngine.GetUniqueTag_String("langversion")
+                        .LangStatus = tmpm_xmlEngine.GetUniqueTag_String("langstatus")
+                        .Author = tmpm_xmlEngine.GetUniqueTag_String("author")
+                        
+                        'Finally, add some internal metadata
+                        .FileName = g_UserPreferences.GetLanguagePath(True) & chkFile
+                        .LangType = "Autosave"
+                        
+                    End With
                     
-                End With
+                End If
                 
             End If
             
-        End If
+        Loop
         
-        'Retrieve the next file and repeat
-        chkFile = Dir
-    
-    Loop
+    End If
     
     'All autosave files have now been loaded as well
     

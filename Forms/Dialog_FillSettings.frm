@@ -411,7 +411,7 @@ Private Sub cmdBar_ResetClick()
     
     'Reset our generic fill object
     Set m_Filler = New pd2DBrush
-    m_Filler.SetBrushPropertiesFromXML ""
+    m_Filler.SetBrushPropertiesFromXML vbNullString
     
     'Synchronize all controls to the updated settings
     SyncControlsToFillObject

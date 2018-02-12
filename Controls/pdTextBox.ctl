@@ -475,7 +475,7 @@ Private Sub UserControl_InitProperties()
     Enabled = True
     FontSize = 10
     Multiline = False
-    Text = ""
+    Text = vbNullString
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -488,7 +488,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         Multiline = .ReadProperty("Multiline", False)
-        Text = .ReadProperty("Text", "")
+        Text = .ReadProperty("Text", vbNullString)
     End With
 End Sub
 
@@ -505,7 +505,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", Me.FontSize, 10
         .WriteProperty "Multiline", Me.Multiline, False
-        .WriteProperty "Text", Me.Text, ""
+        .WriteProperty "Text", Me.Text, vbNullString
     End With
 End Sub
 

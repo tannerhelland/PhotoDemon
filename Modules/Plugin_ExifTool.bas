@@ -28,7 +28,7 @@ Attribute VB_Name = "ExifTool"
 '
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
-'Those code modules have long since been replaced with a custom PD implementation, but I thought it worthwhile to
+'Those code modules have long since been replaced with custom PD implementations, but I thought it worthwhile to
 ' mention them in case others want a (much simpler!) look at how they might interact with ExifTool.
 '
 'This project was last tested against v10.24 of ExifTool (July '16).  While I do informally test newer versions,
@@ -100,7 +100,7 @@ Private Declare Function SetEnvironmentVariableW Lib "kernel32" (ByVal ptrToEnvN
 'A great deal of extra code is required for finding ExifTool instances left by previous unsafe shutdowns, and silently terminating them.
 Private Declare Function AdjustTokenPrivileges Lib "advapi32" (ByVal TokenHandle As Long, ByVal DisableAllPrivileges As Long, newState As TOKEN_PRIVILEGES, ByVal BufferLength As Long, PreviousState As Any, ReturnLength As Any) As Long
 Private Declare Function CreateToolhelpSnapshot Lib "kernel32" Alias "CreateToolhelp32Snapshot" (ByVal lFlags As Long, lProcessID As Long) As Long
-Private Declare Function LookupPrivilegeValue Lib "advapi32" Alias "LookupPrivilegeValueA" (ByVal lpSystemName As String, ByVal lpName As String, lpLuid As LUID) As Long
+Private Declare Function LookupPrivilegeValueW Lib "advapi32" (ByVal ptrSystemName As Long, ByVal ptrName As Long, ByRef lpLuid As LUID) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function OpenProcessToken Lib "advapi32" (ByVal ProcessHandle As Long, ByVal DesiredAccess As Long, TokenHandle As Long) As Long
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
@@ -397,7 +397,7 @@ Private Sub StopVerificationMode()
         If m_technicalReportModeActive Then
         
             'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
-            If (Len(m_VerificationString) <> 0) Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
+            If (LenB(m_VerificationString) <> 0) Then m_VerificationString = Replace$(m_VerificationString, "{ready}", vbNullString)
             
             'Write the completed technical report out to a temp file
             Dim tmpFilename As String
@@ -469,7 +469,7 @@ End Function
 'When metadata is ready (as determined by a call to isMetadataFinished), it can be retrieved via this function
 Public Function RetrieveMetadataString() As String
     
-    If Len(m_currentMetadataText) <> 0 Then
+    If (LenB(m_currentMetadataText) <> 0) Then
     
         'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
         ' to standard characters before returning the retrieved metadata.
@@ -483,7 +483,7 @@ Public Function RetrieveMetadataString() As String
         
     'Return the processed string, then erase our copy of it
     RetrieveMetadataString = m_currentMetadataText
-    m_currentMetadataText = ""
+    m_currentMetadataText = vbNullString
     
 End Function
 
@@ -505,7 +505,7 @@ Public Function GetExifToolVersion() As String
             'The output string will generally be a simple version number, e.g. "XX.YY", and it will be
             ' terminated by a vbCrLf character.  Remove vbCrLf now.
             outputString = Trim$(outputString)
-            If (InStr(1, outputString, vbCrLf, vbBinaryCompare) <> 0) Then outputString = Replace(outputString, vbCrLf, "")
+            If (InStr(1, outputString, vbCrLf, vbBinaryCompare) <> 0) Then outputString = Replace(outputString, vbCrLf, vbNullString)
             
             'Development versions of ExifTool (e.g. any version number that is not a multiple of 10) may include
             ' a warning about the current "official" version of the library.  This warning is placed at the end
@@ -541,7 +541,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master metadata string,
     '        as its construction may lag behind the rest of the image load process.  When a full metadata string is retrieved,
     '        the RetrieveMetadataString() function will handle clearing for us.
-    'm_currentMetadataText = ""
+    'm_currentMetadataText = vbNullString
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects them in
     ' ARGFILE format, e.g. each parameter on its own line.
@@ -645,7 +645,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
     If Files.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
-        cmdParams = ""
+        cmdParams = vbNullString
         
         'Add the htmldump command
         cmdParams = cmdParams & "-htmldump" & vbCrLf
@@ -689,7 +689,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
     If Files.FileExists(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
-        cmdParams = ""
+        cmdParams = vbNullString
         
         'Extract the icc profile
         cmdParams = cmdParams & "-icc_profile" & vbCrLf
@@ -899,14 +899,14 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
             tagGroupPrefix = "iptc:"
         
         Case Else
-            tagGroupPrefix = ""
+            tagGroupPrefix = vbNullString
             
     End Select
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects them in
     ' ARGFILE format, e.g. each parameter on its own line.
     Dim cmdParams As String
-    cmdParams = ""
+    cmdParams = vbNullString
     
     'Ignore minor errors and warnings
     cmdParams = cmdParams & "-m" & vbCrLf
@@ -1257,7 +1257,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
     Const BUFSIZE = 1024
 
-    dstString = ""
+    dstString = vbNullString
     
     ReDim baOutput(BUFSIZE - 1) As Byte
 
@@ -1396,7 +1396,10 @@ Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) 
      
     'Any number of things can cause the termination process to fail, unfortunately.  Check several known issues in advance.
     If OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, hToken) = 0 Then GoTo CleanUp
-    If LookupPrivilegeValue("", "SeDebugPrivilege", tp.LuidUDT) = 0 Then GoTo CleanUp
+    
+    Dim privName As String
+    privName = "SeDebugPrivilege"
+    If (LookupPrivilegeValueW(0, StrPtr(privName), tp.LuidUDT) = 0) Then GoTo CleanUp
     
     tp.PrivilegeCount = 1
     tp.Attributes = SE_PRIVILEGE_ENABLED
@@ -1408,10 +1411,8 @@ Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) 
     
     'Access granted!  Terminate the process
     If hProcess Then
-     
         KillProcess = (TerminateProcess(hProcess, exitCode) <> 0)
         CloseHandle hProcess
-        
     End If
     
     'Restore original privileges

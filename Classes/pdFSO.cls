@@ -1775,8 +1775,8 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     
     'Because white/blacklisting is computationally expensive, we prepare separate boolean checks in advance
     Dim whiteListInUse As Boolean, blackListInUse As Boolean
-    whiteListInUse = (Len(onlyAllowTheseExtensions) <> 0)
-    blackListInUse = (Len(doNotAllowTheseExtensions) <> 0)
+    whiteListInUse = (LenB(onlyAllowTheseExtensions) <> 0)
+    blackListInUse = (LenB(doNotAllowTheseExtensions) <> 0)
         
     'To further simplify searching for extension matches in the whitelist, we enforce strict formatting of the string
     If whiteListInUse Then

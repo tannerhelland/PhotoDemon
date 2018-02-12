@@ -1058,7 +1058,7 @@ Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
     GetFormattedStringValue = Format$(CStr(srcValue), formatString)
         
     'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
-    If (Not Me.Enabled) Then GetFormattedStringValue = ""
+    If (Not Me.Enabled) Then GetFormattedStringValue = vbNullString
 
 End Function
 

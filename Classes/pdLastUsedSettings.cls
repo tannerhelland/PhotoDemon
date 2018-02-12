@@ -70,13 +70,13 @@ Public Function LoadAllControlValues() As Boolean
     'To remedy this, v7.0 moved to a new system, where individual last-used values are all cached inside a single
     ' XML file.  This file is managed by the user preferences engine.
     If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
-    m_ParentID = Replace$(m_ParentForm.Name, "Form", "", , , vbTextCompare) & "-presets"
+    m_ParentID = Replace$(m_ParentForm.Name, "Form", vbNullString, , , vbTextCompare) & "-presets"
     
     Dim presetPacket As String
     If g_UserPreferences.GetDialogPresets(m_ParentID, presetPacket) Then
         m_Params.SetParamString presetPacket
     Else
-        If (Len(Trim$(m_ParentForm.Caption)) <> 0) Then m_Params.AddParam "ToolDescription", Trim$(m_ParentForm.Caption)
+        If (LenB(Trim$(m_ParentForm.Caption)) <> 0) Then m_Params.AddParam "ToolDescription", Trim$(m_ParentForm.Caption)
     End If
     
     'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.

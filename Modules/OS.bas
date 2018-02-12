@@ -676,7 +676,7 @@ Public Function GetArbitraryGUID(Optional ByVal stripNonHexCharacters As Boolean
         guidString = Mid$(guidString, 2, Len(guidString) - 2)
         
         'Trim dividers
-        guidString = Replace$(guidString, "-", "")
+        guidString = Replace$(guidString, "-", vbNullString)
         
     End If
     

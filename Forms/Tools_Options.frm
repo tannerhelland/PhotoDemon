@@ -1220,7 +1220,7 @@ Private Sub cmdColorProfilePath_Click()
     
     'Get the last color profile path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Color Profile", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Color Profile", vbNullString)
     
     'If no color profile path was found, populate it with the default system color profile path
     If (Len(tempPathString) = 0) Then tempPathString = GetSystemColorFolder()

@@ -452,7 +452,7 @@ Private Sub btsMethod_Click(ByVal buttonIndex As Long)
     
     Dim i As Long
     For i = 0 To picContainer.UBound
-        picContainer(i).Visible = CBool(i = buttonIndex)
+        picContainer(i).Visible = (i = buttonIndex)
     Next i
     
     UpdatePreview
@@ -465,7 +465,7 @@ End Sub
 
 'CANCEL button
 Private Sub cmdBar_CancelClick()
-    Message ""
+    Message vbNullString
     userAnswer = vbCancel
     Me.Hide
 End Sub

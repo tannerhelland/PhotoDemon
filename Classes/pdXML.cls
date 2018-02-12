@@ -155,7 +155,7 @@ Friend Function WriteTag(ByVal tagName As String, ByVal tagContents As String, O
         tagLocation = InStrRev(m_xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     End If
 
-    If tagLocation > 0 Then
+    If (tagLocation > 0) Then
     
         'Split the XML file into two halves: the half before the root tag, and the half after
         Dim topHalf As String, bottomHalf As String
@@ -169,7 +169,7 @@ Friend Function WriteTag(ByVal tagName As String, ByVal tagContents As String, O
         Dim newTagLine As String
         newTagLine = "<" & tagName & ">" & tagContents
         
-        If Not doNotCloseTag Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
+        If (Not doNotCloseTag) Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
         
         'Reassemble the primary string
         m_xmlContents = topHalf & newTagLine & bottomHalf
@@ -182,7 +182,7 @@ Friend Function WriteTag(ByVal tagName As String, ByVal tagContents As String, O
 End Function
 
 'Add a new section to the XML file.  To keep things simple, this is always done at the END of the file.
-Friend Function WriteNewSection(ByVal sectionName As String, Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "") As Boolean
+Friend Function WriteNewSection(ByVal sectionName As String, Optional ByVal sectionAttribute As String = vbNullString, Optional ByVal sectionAttributeValue As String = vbNullString) As Boolean
     
     'First, make sure the section does not already exist
     If InStr(1, m_xmlContents, "<" & sectionName & ">", m_TextCompareMode) > 0 Then
@@ -276,7 +276,7 @@ End Function
 
 'Update an already existant tag located within a specific subsection of the XML file.  If the tag is not found, it will be added
 ' at the end of the section.
-Friend Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
+Friend Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = vbNullString, Optional ByVal sectionAttribute As String = vbNullString, Optional ByVal sectionAttributeValue As String = vbNullString, Optional ByVal createIfMissing As Boolean = True) As Boolean
 
     'Create a start and end tag to search for, which will vary contingent on the presence of a section request
     Dim startTag As String, closingTag As String
@@ -641,7 +641,7 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "", Optional ByVal xmlSectionAttribute As String = "", Optional ByVal xmlSectionAttributeValue As String = "") As String
+Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defaultReturn As String = vbNullString, Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = vbNullString, Optional ByVal xmlSectionAttribute As String = vbNullString, Optional ByVal xmlSectionAttributeValue As String = vbNullString) As String
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
@@ -823,7 +823,7 @@ End Function
 
 'Return the valid range (character positions) of a given XML block.  Start and End position Long values must be provided by the caller.
 ' Unlike other functions, this returns a TRUE if successful; FALSE otherwise.
-Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByVal tagName As String, Optional ByVal tagAttribute As String = "", Optional ByVal tagAttributeValue As String = "", Optional ByVal searchStartPosition As Long = 1) As Boolean
+Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByVal tagName As String, Optional ByVal tagAttribute As String = vbNullString, Optional ByVal tagAttributeValue As String = vbNullString, Optional ByVal searchStartPosition As Long = 1) As Boolean
 
     Dim searchLocation As Long
     searchLocation = InStr(searchStartPosition, m_xmlContents, "<" & tagName & " ", m_TextCompareMode)

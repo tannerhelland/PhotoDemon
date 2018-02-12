@@ -326,7 +326,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     Color = RGB(255, 255, 255)
     FontSize = 12
-    Caption = ""
+    Caption = vbNullString
     ShowMainWindowColor = True
 End Sub
 
@@ -338,7 +338,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Color = .ReadProperty("curColor", RGB(255, 255, 255))
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
         ShowMainWindowColor = .ReadProperty("ShowMainWindowColor", True)
     End With
@@ -350,7 +350,7 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
         .WriteProperty "curColor", curColor, RGB(255, 255, 255)
         .WriteProperty "ShowMainWindowColor", m_ShowMainWindowColor, True

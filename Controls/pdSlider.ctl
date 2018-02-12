@@ -486,8 +486,8 @@ Private Sub UserControl_InitProperties()
     
     FontSizeTUD = 10
     FontSizeCaption = 12
-    Caption = ""
-        
+    Caption = vbNullString
+    
     Min = 0
     Max = 10
     SigDigits = 0
@@ -510,7 +510,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
         FontSizeTUD = .ReadProperty("FontSizeTUD", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
@@ -548,7 +548,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     With PropBag
-        .WriteProperty "Caption", Me.Caption, ""
+        .WriteProperty "Caption", Me.Caption, vbNullString
         .WriteProperty "FontSizeCaption", Me.FontSizeCaption, 12
         .WriteProperty "FontSizeTUD", Me.FontSizeTUD, 10
         .WriteProperty "Min", Me.Min, 0

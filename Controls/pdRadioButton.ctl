@@ -354,7 +354,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 10)
         Value = .ReadProperty("Value", False)
     End With

@@ -485,7 +485,7 @@ Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
         
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
-    m_TempPath = GetPref_String("Paths", "TempFiles", "")
+    m_TempPath = GetPref_String("Paths", "TempFiles", vbNullString)
     If (Not Files.PathExists(m_TempPath)) Then
         m_TempPath = OS.SystemTempPath()
         SetPref_String "Paths", "TempFiles", m_TempPath
@@ -554,7 +554,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "BatchProcess", "", True
+    m_XMLEngine.WriteTag "BatchProcess", vbNullString, True
         m_XMLEngine.WriteTag "InputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "ListFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "OutputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
@@ -562,7 +562,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     'Write out the "color management" block of preferences:
-    m_XMLEngine.WriteTag "ColorManagement", "", True
+    m_XMLEngine.WriteTag "ColorManagement", vbNullString, True
         m_XMLEngine.WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
         m_XMLEngine.WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
     m_XMLEngine.CloseTag "ColorManagement"
@@ -570,9 +570,9 @@ Private Sub CreateNewPreferencesFile()
     
     'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
-    m_XMLEngine.WriteTag "Core", "", True
+    m_XMLEngine.WriteTag "Core", vbNullString, True
         m_XMLEngine.WriteTag "DisplayIDEWarning", "True"
-        m_XMLEngine.WriteTag "HasGitHubAccount", ""
+        m_XMLEngine.WriteTag "HasGitHubAccount", vbNullString
         m_XMLEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
         m_XMLEngine.WriteTag "LastPreferencesPage", "0"
         m_XMLEngine.WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
@@ -586,23 +586,23 @@ Private Sub CreateNewPreferencesFile()
     
     'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
     ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
-    m_XMLEngine.WriteTag "Dialogs", "", True
+    m_XMLEngine.WriteTag "Dialogs", vbNullString, True
     m_XMLEngine.CloseTag "Dialogs"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Interface", "", True
+    m_XMLEngine.WriteTag "Interface", vbNullString, True
         m_XMLEngine.WriteTag "MRUCaptionLength", "0"
         m_XMLEngine.WriteTag "RecentFilesLimit", "10"
         m_XMLEngine.WriteTag "WindowCaptionLength", "0"
     m_XMLEngine.CloseTag "Interface"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Language", "", True
-        m_XMLEngine.WriteTag "CurrentLanguageFile", ""
+    m_XMLEngine.WriteTag "Language", vbNullString, True
+        m_XMLEngine.WriteTag "CurrentLanguageFile", vbNullString
     m_XMLEngine.CloseTag "Language"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Loading", "", True
+    m_XMLEngine.WriteTag "Loading", vbNullString, True
         m_XMLEngine.WriteTag "ExifAutoRotate", "True"
         m_XMLEngine.WriteTag "MetadataEstimateJPEG", "True"
         m_XMLEngine.WriteTag "MetadataExtractBinary", "False"
@@ -612,7 +612,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Loading"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Paths", "", True
+    m_XMLEngine.WriteTag "Paths", vbNullString, True
         m_XMLEngine.WriteTag "Macro", m_MacroPath
         m_XMLEngine.WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Palettes", m_DataPath & "Palettes\"
@@ -622,7 +622,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Paths"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Performance", "", True
+    m_XMLEngine.WriteTag "Performance", vbNullString, True
         m_XMLEngine.WriteTag "InterfaceDecorationPerformance", "1"
         m_XMLEngine.WriteTag "ThumbnailPerformance", "1"
         m_XMLEngine.WriteTag "ViewportRenderPerformance", "1"
@@ -630,7 +630,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Performance"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Plugins", "", True
+    m_XMLEngine.WriteTag "Plugins", vbNullString, True
         m_XMLEngine.WriteTag "ForceExifToolDisable", "False"
         m_XMLEngine.WriteTag "ForceEZTwainDisable", "False"
         m_XMLEngine.WriteTag "ForceFreeImageDisable", "False"
@@ -642,7 +642,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Plugins"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Saving", "", True
+    m_XMLEngine.WriteTag "Saving", vbNullString, True
         m_XMLEngine.WriteTag "ConfirmClosingUnsaved", "True"
         m_XMLEngine.WriteTag "OverwriteOrCopy", "0"
         m_XMLEngine.WriteTag "SuggestedFormat", "0"
@@ -650,7 +650,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Saving"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Themes", "", True
+    m_XMLEngine.WriteTag "Themes", vbNullString, True
         m_XMLEngine.WriteTag "CurrentTheme", "Dark"
         m_XMLEngine.WriteTag "CurrentAccent", "Blue"
         m_XMLEngine.WriteTag "HasSeenThemeDialog", "False"
@@ -659,11 +659,11 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     'Toolbox settings are automatically filled-in by the Toolboxes module
-    m_XMLEngine.WriteTag "Toolbox", "", True
+    m_XMLEngine.WriteTag "Toolbox", vbNullString, True
     m_XMLEngine.CloseTag "Toolbox"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Tools", "", True
+    m_XMLEngine.WriteTag "Tools", vbNullString, True
         m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
         m_XMLEngine.WriteTag "SelectionRenderMode", "0"
         m_XMLEngine.WriteTag "SelectionHighlightColor", "#FF3A48"
@@ -671,7 +671,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Tools"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Transparency", "", True
+    m_XMLEngine.WriteTag "Transparency", vbNullString, True
         m_XMLEngine.WriteTag "AlphaCheckMode", "0"
         m_XMLEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
         m_XMLEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
@@ -679,8 +679,8 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Transparency"
     m_XMLEngine.WriteBlankLine
     
-    m_XMLEngine.WriteTag "Updates", "", True
-        m_XMLEngine.WriteTag "LastUpdateCheck", ""
+    m_XMLEngine.WriteTag "Updates", vbNullString, True
+        m_XMLEngine.WriteTag "LastUpdateCheck", vbNullString
         m_XMLEngine.WriteTag "UpdateFrequency", PDUF_WEEKLY
         
         'The current update track is set according to the hard-coded build ID of this .exe instance.

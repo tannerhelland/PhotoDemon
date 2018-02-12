@@ -210,7 +210,7 @@ Public Function GetListOfAvailableFormatNames() As String
         GetListOfAvailableFormatNames = finalList
         
     Else
-        GetListOfAvailableFormatNames = ""
+        GetListOfAvailableFormatNames = vbNullString
     End If
     
 End Function
@@ -229,7 +229,7 @@ Public Function GetFormatNameByIndex(ByVal lIndex As Long) As String
     If ((lIndex >= 0) And (lIndex < m_NumOfClipboardFormats)) Then
         GetFormatNameByIndex = m_ClipboardNames(lIndex)
     Else
-        GetFormatNameByIndex = ""
+        GetFormatNameByIndex = vbNullString
     End If
 End Function
 
@@ -386,7 +386,7 @@ Public Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFor
         actualLength = GetClipboardFormatNameW(clipFormatID, StrPtr(tmpString), largestNameSize)
         
         'If a non-zero-length name is returned, trim it automatically
-        If (actualLength <> 0) Then GetFormatNameFromID = Left$(tmpString, actualLength) Else GetFormatNameFromID = ""
+        If (actualLength <> 0) Then GetFormatNameFromID = Left$(tmpString, actualLength) Else GetFormatNameFromID = vbNullString
         
     End If
     

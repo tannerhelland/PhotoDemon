@@ -209,7 +209,7 @@ Public Sub MRU_SaveToFile()
     
         Dim i As Long
         For i = 0 To m_NumEntries - 1
-            m_XMLEngine.WriteTagWithAttribute "mruEntry", "id", CStr(i), "", True
+            m_XMLEngine.WriteTagWithAttribute "mruEntry", "id", CStr(i), vbNullString, True
             m_XMLEngine.WriteTag "filePath", m_FileList(i)
             m_XMLEngine.CloseTag "mruEntry"
             m_XMLEngine.WriteBlankLine

@@ -385,7 +385,7 @@ Private Sub UserControl_InitProperties()
     FontItalic = False
     FontSize = 10
     
-    m_URL = ""
+    m_URL = vbNullString
     m_RaiseClickEvents = False
     
 End Sub
@@ -445,7 +445,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
         Layout = .ReadProperty("Layout", AutoFitCaption)
-        URL = .ReadProperty("URL", "")
+        URL = .ReadProperty("URL", vbNullString)
         UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
         UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
         RaiseClickEvent = .ReadProperty("RaiseClickEvent", False)
@@ -469,7 +469,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "FontSize", FontSize, 10
         .WriteProperty "ForeColor", m_ForeColor, RGB(96, 96, 96)
         .WriteProperty "Layout", m_Layout, AutoFitCaption
-        .WriteProperty "URL", m_URL, ""
+        .WriteProperty "URL", m_URL, vbNullString
         .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
         .WriteProperty "UseCustomForeColor", m_UseCustomForeColor, False
         .WriteProperty "RaiseClickEvent", m_RaiseClickEvents, False

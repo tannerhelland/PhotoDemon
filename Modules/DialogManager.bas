@@ -277,7 +277,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
     ' to actually loading an HDR image, argh), generate a default set of "good enough" parameters.
     Else
     
-        copyOfParamString = g_UserPreferences.GetPref_String("Loading", "Tone Mapping Settings", "")
+        copyOfParamString = g_UserPreferences.GetPref_String("Loading", "Tone Mapping Settings", vbNullString)
         
         'Check for an empty string; if found, build a default param string
         If (Len(copyOfParamString) = 0) Then copyOfParamString = BuildParamList("method", PDTM_DRAGO)

@@ -346,7 +346,7 @@ End Sub
 '
 'Importantly, this function returns the index of the added node, which external functions must then use to supply this node's
 ' actual data arrays.
-Friend Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
+Friend Function AddNode(Optional ByVal thisNodeName As String = vbNullString, Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
 
     'Increment our active node count
     m_numOfNodes = m_numOfNodes + 1
@@ -546,7 +546,7 @@ End Function
 ' extracting by filename, it can't differentiate between these two unless you provide the relative path too.
 '
 'Returns: TRUE if successful.
-Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
+Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal storeUsingThisRelativePathAndFilename As String = vbNullString) As Boolean
 
     'Attempt to load the file into a byte array
     Dim fileContents() As Byte
@@ -626,7 +626,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target folder(s) is restricted,
 ' or if memory runs out because the constructed package exceeds available memory.
-Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = vbNullString, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
 
     'As usual, our lovely pdFSO instance (m_File) is going to handle most the heavy lifting.  It will return the list of files to be added
     ' in a pdStringStack object, which we can then iterate at our leisure.
@@ -659,7 +659,7 @@ Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
                 
             'Folder preservation is inactive, so do not specify any relative paths whatsoever
             Else
-                relativeFilePath = ""
+                relativeFilePath = vbNullString
             End If
             
             'Add this node
@@ -711,7 +711,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target file(s) and/or folder(s)
 ' is restricted, or if memory runs out because the constructed package exceeds available memory.
-Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True) As Boolean
+Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = vbNullString, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True) As Boolean
     
     Dim autoAddSuccess As Boolean
     autoAddSuccess = True
@@ -1549,7 +1549,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                         'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                         ' to terminate prematurely.
                         Else
-                            fullDestinationPath = ""
+                            fullDestinationPath = vbNullString
                         End If
                     
                     End If
@@ -1697,7 +1697,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                     'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                                     ' to terminate prematurely.
                                     Else
-                                        fullDestinationPath = ""
+                                        fullDestinationPath = vbNullString
                                     End If
                                     
                             End Select

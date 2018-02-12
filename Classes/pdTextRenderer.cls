@@ -633,7 +633,7 @@ Public Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
     With cSerialize
         .SetParamString srcXMLString
         
-        SetGenericTextProperty ptp_Text, .GetString("TextLayerText", "")
+        SetGenericTextProperty ptp_Text, .GetString("TextLayerText", vbNullString)
         SetGenericTextProperty ptp_FontColor, .GetLong("TextLayerColor", 0)
         SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", g_InterfaceFont)
         SetGenericTextProperty ptp_FontSize, .GetDouble("TextLayerFontSize", 16#)
@@ -650,13 +650,13 @@ Public Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
         SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
         SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tre_AutoBreakWords)
         SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
-        SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", "")
+        SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
         SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)
-        SetGenericTextProperty ptp_OutlinePen, .GetString("TextOutlinePen", "")
+        SetGenericTextProperty ptp_OutlinePen, .GetString("TextOutlinePen", vbNullString)
         SetGenericTextProperty ptp_BackgroundActive, .GetBool("TextBackgroundActive", False)
-        SetGenericTextProperty ptp_BackgroundBrush, .GetString("TextBackgroundBrush", "")
+        SetGenericTextProperty ptp_BackgroundBrush, .GetString("TextBackgroundBrush", vbNullString)
         SetGenericTextProperty ptp_BackBorderActive, .GetBool("TextBackBorderActive", False)
-        SetGenericTextProperty ptp_BackBorderPen, .GetString("TextBackBorderPen", "")
+        SetGenericTextProperty ptp_BackBorderPen, .GetString("TextBackBorderPen", vbNullString)
         SetGenericTextProperty ptp_LineSpacing, .GetDouble("TextLineSpacing", 0)
         SetGenericTextProperty ptp_MarginLeft, .GetDouble("TextMarginLeft", 0)
         SetGenericTextProperty ptp_MarginTop, .GetDouble("TextMarginTop", 0)

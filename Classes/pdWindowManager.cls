@@ -650,7 +650,7 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
     
     'Check for this window preset in the file.  If it does not exist, add its section now
     If (Not m_XML.DoesTagExist("WindowEntry", "id", windowName)) Then
-        m_XML.WriteTagWithAttribute "WindowEntry", "id", windowName, "", True
+        m_XML.WriteTagWithAttribute "WindowEntry", "id", windowName, vbNullString, True
         m_XML.CloseTag "WindowEntry"
         m_XML.WriteBlankLine
     End If

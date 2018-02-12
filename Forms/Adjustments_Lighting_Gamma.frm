@@ -339,7 +339,7 @@ Private Sub UpdatePreview()
         yHeight = picChart.ScaleHeight
             
         'Clear out the old chart and draw a gray line across the diagonal for reference
-        picChart.Picture = LoadPicture("")
+        picChart.Picture = LoadPicture(vbNullString)
         picChart.ForeColor = RGB(127, 127, 127)
         GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
         

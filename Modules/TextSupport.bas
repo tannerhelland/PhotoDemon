@@ -248,7 +248,7 @@ BuildParamListFailure:
         pdDebug.LogAction "WARNING!  buildParamList failed to create a parameter string!"
     #End If
     
-    BuildParamList = ""
+    BuildParamList = vbNullString
     
 End Function
 

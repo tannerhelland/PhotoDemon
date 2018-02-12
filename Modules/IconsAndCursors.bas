@@ -655,7 +655,7 @@ End Sub
 
 'Set a single object to use the hand cursor
 Public Sub SetHandCursor(ByRef tControl As Object)
-    tControl.MouseIcon = LoadPicture("")
+    tControl.MouseIcon = LoadPicture(vbNullString)
     tControl.MousePointer = 99
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub

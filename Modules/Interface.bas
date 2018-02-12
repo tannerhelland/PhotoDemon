@@ -570,7 +570,7 @@ Private Sub SetUIMode_NoImages()
     End If
     
     'Forcibly blank out the current message if no images are loaded
-    Message ""
+    Message vbNullString
         
 End Sub
 

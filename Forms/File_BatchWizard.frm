@@ -768,7 +768,7 @@ End Sub
 
 Private Sub chkEnablePreview_Click()
     
-    picPreview.Picture = LoadPicture("")
+    picPreview.Picture = LoadPicture(vbNullString)
         
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     If CBool(chkEnablePreview) Then
@@ -832,7 +832,7 @@ Private Sub cmbResizeFit_Click()
     End Select
     
     'Paint the sample image to the screen
-    picResizeDemo.Picture = LoadPicture("")
+    picResizeDemo.Picture = LoadPicture(vbNullString)
     tmpDIB.AlphaBlendToDC picResizeDemo.hDC
     picResizeDemo.Picture = picResizeDemo.Image
 
@@ -866,7 +866,7 @@ End Sub
 
 Private Sub cmdAddFolders_Click()
     
-    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
     
     Dim folderPath As String
     folderPath = Files.PathBrowseDialog(Me.hWnd, m_LastBatchFolder)
@@ -992,7 +992,7 @@ Private Sub cmdLoadList_Click()
     
     'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", vbNullString)
     
     Dim cdFilter As String
     cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
@@ -1287,7 +1287,7 @@ End Sub
 Private Sub cmdRemoveAll_Click()
     
     lstFiles.Clear
-    UpdatePreview ""
+    UpdatePreview vbNullString
     
     'Because all entries have been removed, disable actions that require at least one image to be present
     cmdRemove.Enabled = False
@@ -1306,7 +1306,7 @@ Private Function SaveCurrentBatchList() As Boolean
 
     'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", vbNullString)
     
     Dim cdFilter As String
     cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
@@ -1419,7 +1419,7 @@ Private Sub cmdSelectMacro_Click()
     
     'Get the last macro-related path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Macro", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Macro", vbNullString)
     
     Dim cdFilter As String
     cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
@@ -1508,8 +1508,8 @@ Private Sub Form_Load()
     
     'Build default paths from preference file values
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
-    If (Len(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", vbNullString)
+    If (LenB(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -1599,7 +1599,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         If loadSuccessful Then
             tmpDIB.RenderToPictureBox picPreview
         Else
-            picPreview.Picture = LoadPicture("")
+            picPreview.Picture = LoadPicture(vbNullString)
             Dim strToPrint As String
             strToPrint = g_Language.TranslateMessage("Preview not available")
             picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
@@ -1685,7 +1685,7 @@ Private Sub PrepareForBatchConversion()
     lastTimeCalculation = &H7FFFFFFF
     
     timeStarted = GetTickCount
-    timeMsg = ""
+    timeMsg = vbNullString
     
     'This is where the fun begins.  Loop through every file in the list, and process them one-by-one using the options requested
     ' by the user.
@@ -1767,11 +1767,11 @@ Private Sub PrepareForBatchConversion()
                     'Use case-sensitive or case-insensitive matching as requested
                     If CBool(chkRenameCaseSensitive) Then
                         If InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) Then
-                            tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbBinaryCompare)
+                            tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
                         End If
                     Else
                         If InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) Then
-                            tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbTextCompare)
+                            tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbTextCompare)
                         End If
                     End If
                     
@@ -1795,7 +1795,7 @@ Private Sub PrepareForBatchConversion()
                 'Possibility 1: use original file format
                 If optFormat(0) Then
                     
-                    m_FormatParams = ""
+                    m_FormatParams = vbNullString
                     
                     'See if this image's file format is supported by the export engine
                     If (g_ImageFormats.GetIndexOfOutputPDIF(pdImages(g_CurrentImage).GetCurrentFileFormat) = -1) Then

@@ -1076,11 +1076,7 @@ End Sub
 Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
 
     'Erase any existing picture
-    If dstPicture.AutoRedraw Then
-        dstPicture.Picture = LoadPicture("")
-    Else
-        dstPicture.Cls
-    End If
+    If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture(vbNullString) Else dstPicture.Cls
     
     Dim dstWidth As Double, dstHeight As Double
     dstWidth = dstPicture.ScaleWidth

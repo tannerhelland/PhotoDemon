@@ -204,7 +204,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     Me.LogAction "Debugger initialized successfully"
     
     'Perform an initial memory check; this gives us a nice baseline measurement
-    Me.LogAction "", PDM_Mem_Report
+    Me.LogAction vbNullString, PDM_Mem_Report
     
     'If messages were logged prior to this class being formally initialized, dump them now
     If (m_numBackupMessages > 0) And (writeLogDataToFile) Then

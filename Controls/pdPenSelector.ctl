@@ -269,9 +269,9 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Caption = ""
+    Caption = vbNullString
     FontSize = 12
-    Pen = ""
+    Pen = vbNullString
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -281,9 +281,9 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
-        Pen = .ReadProperty("curPen", "")
+        Pen = .ReadProperty("curPen", vbNullString)
     End With
 End Sub
 
@@ -293,9 +293,9 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
-        .WriteProperty "curPen", m_curPen, ""
+        .WriteProperty "curPen", m_curPen, vbNullString
     End With
 End Sub
 
