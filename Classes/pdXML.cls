@@ -476,7 +476,7 @@ Friend Function ValidateLoadedXMLData(ParamArray expectedTags() As Variant) As B
     End If
 
     'Search the m_xmlContents string for each tag in the validation request
-    If UBound(expectedTags) >= LBound(expectedTags) Then
+    If (UBound(expectedTags) >= LBound(expectedTags)) Then
     
         Dim i As Long
         For i = LBound(expectedTags) To UBound(expectedTags)

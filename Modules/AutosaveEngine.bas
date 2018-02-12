@@ -68,7 +68,6 @@ Public Function WasLastShutdownClean() As Boolean
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     If Files.FileExists(safeShutdownPath) Then
-    
         WasLastShutdownClean = False
 
     'The previous shutdown was clean.  Write a new safe shutdown file.
@@ -183,20 +182,22 @@ Public Function SaveableImagesPresent() As Long
     
     'Retrieve the first matching file from the folder (if any)
     Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.GetTempPath & "~PDU_StackSummary_*_.pdtmp", vbNormal)
+    Dim listOfFiles As pdStringStack
     
-    'Continue checking potential autosave XML entries until all have been analyzed
-    Do While Len(chkFile) <> 0
+    If Files.RetrieveAllFiles(g_UserPreferences.GetTempPath & "~PDU_StackSummary_*_.pdtmp", listOfFiles, False, False) Then
     
+        'Continue checking potential autosave XML entries until all have been analyzed
+        Do While listOfFiles.PopString(chkFile)
+        
         'First, make sure the file actually contains XML data
-        If xmlEngine.LoadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then
+        If xmlEngine.LoadXMLFile(chkFile) Then
         
             'If it does, make sure the XML data is valid, and that at least one Undo entry is listed in the file
             If xmlEngine.IsPDDataType("Undo stack") And xmlEngine.ValidateLoadedXMLData("pdUndoVersion") Then
             
                 'The file checks out!  Add it to our XML entries array
                 With m_XmlEntries(m_numOfXMLFound)
-                    .xmlPath = g_UserPreferences.GetTempPath & chkFile
+                    .xmlPath = chkFile
                     .friendlyName = xmlEngine.GetUniqueTag_String("friendlyName")
                     .originalPath = xmlEngine.GetUniqueTag_String("originalPath")
                     .originalSessionID = xmlEngine.GetUniqueTag_String("OriginalSessionID")
@@ -215,13 +216,12 @@ Public Function SaveableImagesPresent() As Long
             
         End If
         
-        'Check the next file in the list
-        chkFile = Dir
+        Loop
         
-    Loop
+    End If
     
     'Trim the XML array to its smallest relevant size
-    If m_numOfXMLFound > 0 Then
+    If (m_numOfXMLFound > 0) Then
         ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As AutosaveXML
     Else
         ReDim m_XmlEntries(0) As AutosaveXML

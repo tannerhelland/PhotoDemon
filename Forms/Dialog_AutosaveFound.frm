@@ -58,7 +58,7 @@ Begin VB.Form dialog_AutosaveWarning
       Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
-      Caption         =   "Restore selected autosaves"
+      Caption         =   "Attempt to recover"
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -91,7 +91,7 @@ Begin VB.Form dialog_AutosaveWarning
       Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
-      Caption         =   "Discard all autosaves"
+      Caption         =   "Discard"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -112,7 +112,7 @@ Begin VB.Form dialog_AutosaveWarning
       Width           =   8745
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Warning"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End
@@ -236,8 +236,7 @@ Private Sub cmdCancel_Click()
 
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     userAnswer = vbYes
     Me.Hide
 End Sub

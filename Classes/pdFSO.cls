@@ -1577,6 +1577,17 @@ Friend Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Lon
     
 End Function
 
+'See if an arbitrary path contains a trailing filename.  Note that this *does not work* for detecting
+' extension-less files, as they will be treated as folder paths.  This function is for fast validation of
+' internal PD paths and files - if you are working with files directly, simply validate via FileExists().
+Friend Function PathContainsFilename(ByVal fullPath As String) As Boolean
+    
+    'Perform a quick and dirty check for a "." later in the path than a "\" character.
+    If (InStr(1, fullPath, "/", vbBinaryCompare) <> 0) Then fullPath = Replace$(fullPath, "/", "\", , , vbBinaryCompare)
+    PathContainsFilename = (InStrRev(fullPath, ".", , vbBinaryCompare) > InStrRev(fullPath, "\", , vbBinaryCompare))
+    
+End Function
+
 'Create a given directory.  Returns TRUE if folder already exists, or the folder was successfully created.  FALSE otherwise.
 '
 'An optional parameter, "createIntermediateFoldersAsNecessary", can be specified.  This instructs the function to create as many
@@ -1738,9 +1749,16 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     
     On Error GoTo RetrievalProblem
     
-    'Enforce strict trailing slash formatting of the base folder
-    srcFolder = Me.PathAddBackslash(srcFolder)
-        
+    'Retrieve just the base folder, and enforce strict trailing slash formatting if we were passed
+    ' a bare path.
+    Dim basePath As String
+    If (Not Me.PathContainsFilename(srcFolder)) Then
+        srcFolder = Me.PathAddBackslash(srcFolder)
+        basePath = srcFolder
+    Else
+        basePath = Me.FileGetPath(srcFolder)
+    End If
+    
     'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized;
     ' this is by design, so the caller can concatenate multiple search results together if desired.
     If (dstFiles Is Nothing) Then Set dstFiles = New pdStringStack
@@ -1808,7 +1826,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     'The first folder doesn't get added to the destination collection, but all other folders do.
     Dim isNotFirstFolder As Boolean
     isNotFirstFolder = False
-        
+    
     Do While cFoldersToCheck.PopString(curFolder)
         
         If (LenB(curFolder) <> 0) Then
@@ -1843,7 +1861,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                         If ((findResult.dwFileAttributes And vbDirectory) <> 0) Then
                         
                             'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
-                            If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
+                            If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(basePath & chkFile)
                             
                         'This is not a folder, but a file.  Add it to the destination file list if it meets any white/blacklisted criteria.
                         Else
@@ -1864,9 +1882,9 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                             'If we are allowed to add this file, perform a few final checks
                             If fileValid Then
                                 If returnRelativeStrings Then
-                                    dstFiles.AddString Me.GenerateRelativePath(srcFolder, curFolder & chkFile, True)
+                                    dstFiles.AddString Me.GenerateRelativePath(basePath, Me.FileGetPath(curFolder) & chkFile, True)
                                 Else
-                                    dstFiles.AddString curFolder & chkFile
+                                    dstFiles.AddString basePath & chkFile
                                 End If
                             End If
                         

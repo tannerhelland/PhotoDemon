@@ -981,7 +981,7 @@ End Function
 
 'Friendly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
-Friend Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
+Friend Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByRef originalSessionID As String) As String
     GenerateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
 End Function
 
@@ -989,7 +989,7 @@ End Function
 ' Undo number index.  The entire stack is written out to the header file, every time.
 Private Function GenerateUndoHeaderFilename() As String
     
-    If (Len(m_HeaderFilename) = 0) Then
+    If (LenB(m_HeaderFilename) = 0) Then
     
         'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The ClearUndos function requires this
         ' function to generate Undo filenames.  If our parent class was terminated properly, it will have already erased
@@ -1098,7 +1098,7 @@ Friend Function GetLastParamString(ByVal requestedUndoType As PD_UndoType) As St
     Dim i As Long
     
     For i = m_UndoNum - 1 To 0 Step -1
-        If m_UndoStack(i).undoType = requestedUndoType Then
+        If (m_UndoStack(i).undoType = requestedUndoType) Then
             GetLastParamString = m_UndoStack(i).processParamString
             Exit For
         End If
