@@ -184,8 +184,15 @@ End Sub
 Friend Function StrStr(ByRef strToLookFor As String, Optional ByVal searchStartPos As Long = 1) As Long
     
     If ((searchStartPos - 1) <= Len(m_Buffer)) Then
-        StrStr = StrStrW(StrPtr(m_Buffer) + (searchStartPos - 1) * 2, StrPtr(strToLookFor))
-        If (StrStr <> 0) Then StrStr = (StrStr - StrPtr(m_Buffer)) \ 2 + 1
+        
+        'Use PD's faster Boyer-Moore engine when comparing longer strings
+        If (LenB(strToLookFor) > 8) Then
+            StrStr = Strings.StrStrBM(m_Buffer, strToLookFor, searchStartPos, True, m_Length)
+        Else
+            StrStr = StrStrW(StrPtr(m_Buffer) + (searchStartPos - 1) * 2, StrPtr(strToLookFor))
+            If (StrStr <> 0) Then StrStr = (StrStr - StrPtr(m_Buffer)) \ 2 + 1
+        End If
+        
     End If
     
     'FYI, an equivalent VB-only implementation would be as simple as:
@@ -196,14 +203,14 @@ End Function
 'Case-insensitive InStr replacement.
 Friend Function StrStrI(ByRef strToLookFor As String, Optional ByVal searchStartPos As Long = 1) As Long
     If ((searchStartPos - 1) <= Len(m_Buffer)) Then
-        StrStrI = StrStrW(StrPtr(m_Buffer) + (searchStartPos - 1) * 2, StrPtr(strToLookFor))
+        StrStrI = StrStrIW(StrPtr(m_Buffer) + (searchStartPos - 1) * 2, StrPtr(strToLookFor))
         If (StrStrI <> 0) Then StrStrI = (StrStrI - StrPtr(m_Buffer)) \ 2 + 1
     End If
 End Function
 
 'Return a copy of our internal buffer, auto-trimmed to fit its current length.
 Friend Function ToString() As String
-    If (Len(m_Buffer) > 0) And (m_Length > 0) Then ToString = Left$(m_Buffer, m_Length) Else ToString = vbNullString
+    If (LenB(m_Buffer) > 0) And (m_Length > 0) Then ToString = Left$(m_Buffer, m_Length) Else ToString = vbNullString
 End Function
 
 'Because PD uses a ton of XML data, this class exposes some XML-specific operations.  These use a number of
@@ -212,7 +219,7 @@ End Function
 Friend Sub XMLAppend(ByRef appendTagName As String, ByRef appendTagValue As String)
     
     'Failsafe check for valid tag names
-    If (Len(appendTagName) = 0) Then Exit Sub
+    If (LenB(appendTagName) = 0) Then Exit Sub
     
     'We need 5 extra chars: "<></>" in addition to the length of the strings we're passed.  (Note also
     ' that we need 2x the length of the tag name - 1x for the opening tag, 1x for the closing tag.)
@@ -234,7 +241,7 @@ Friend Sub XMLAppend(ByRef appendTagName As String, ByRef appendTagValue As Stri
     targetPtr = targetPtr + 2
     
     'Tag value
-    If (Len(appendTagValue) > 0) Then
+    If (LenB(appendTagValue) > 0) Then
         CopyMemoryStrict targetPtr, StrPtr(appendTagValue), Len(appendTagValue) * 2
         targetPtr = targetPtr + Len(appendTagValue) * 2
     End If

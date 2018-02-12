@@ -79,7 +79,7 @@ Friend Function GetSerializedXMLData() As String
         
         Dim i As Long
         For i = 0 To m_NumOfTags - 1
-            cParams.AddParam "PDMD_TAG_NO_" & CStr(i), ExifTool.SerializeTagToString(m_Tags(i))
+            cParams.AddParam "PDMD_TAG_NO_" & CStr(i), ExifTool.SerializeTagToString(m_Tags(i)), True
         Next i
         
     End If

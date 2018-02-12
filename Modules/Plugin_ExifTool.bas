@@ -1941,7 +1941,7 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
         m_ParseXML.AddParam "PDMD_HasIndex", .HasIndex, True
         m_ParseXML.AddParam "PDMD_IsTagList", .IsTagList, True
         m_ParseXML.AddParam "PDMD_IsTagBinary", .IsTagBinary, True
-        If (Len(.TagBase64Value) <> 0) Then m_ParseXML.AddParam "PDMD_TagBase64", .TagBase64Value, True
+        If (LenB(.TagBase64Value) <> 0) Then m_ParseXML.AddParam "PDMD_TagBase64", .TagBase64Value, True
         m_ParseXML.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted, True
         m_ParseXML.AddParam "PDMD_InternalUseOnly", .InternalUseOnly, True
         m_ParseXML.AddParam "PDMD_TagIndexInternal", .TagIndexInternal, True

@@ -281,8 +281,8 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     End If
     
     'Make the parameter name and value XML-safe
-    If (Len(paramName) > 0) And (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
-    If (Len(strParamValue) > 0) And (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
+    If (LenB(paramName) <> 0) And (Not nameGuaranteedXMLSafe) Then paramName = Me.GetXMLSafeName(paramName)
+    If (LenB(strParamValue) <> 0) And (Not valueGuaranteedXMLSafe) Then strParamValue = DelimitParamValue(strParamValue)
     
     'Tack the parameter name and value we were passed onto the master string
     m_ParamString.XMLAppend paramName, strParamValue
@@ -397,14 +397,14 @@ End Function
 ' Note that we don't currently delimit other chars because PD uses only a subset of XML functionality, by design.
 Private Function DelimitParamValue(ByVal srcString As String) As String
     DelimitParamValue = srcString
-    If InStr(1, srcString, "<") Then DelimitParamValue = Replace$(DelimitParamValue, "<", "&lt;")
-    If InStr(1, srcString, ">") Then DelimitParamValue = Replace$(DelimitParamValue, ">", "&gt;")
+    If (InStr(1, srcString, "<") <> 0) Then DelimitParamValue = Replace$(DelimitParamValue, "<", "&lt;")
+    If (InStr(1, srcString, ">") <> 0) Then DelimitParamValue = Replace$(DelimitParamValue, ">", "&gt;")
 End Function
 
 Private Function UnDelimitParamValue(ByRef srcString As String) As String
     UnDelimitParamValue = srcString
-    If InStr(1, srcString, "&lt;") Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&lt;", "<")
-    If InStr(1, srcString, "&gt;") Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&gt;", ">")
+    If (InStr(1, srcString, "&lt;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&lt;", "<")
+    If (InStr(1, srcString, "&gt;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&gt;", ">")
 End Function
 
 'A custom CDbl function that accepts both commas and decimals as a separator; this is important when moving floating-point data,

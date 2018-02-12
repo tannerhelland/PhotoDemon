@@ -526,7 +526,7 @@ End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
 Friend Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
-    If (Len(srcDataString) <> 0) Then
+    If (LenB(srcDataString) <> 0) Then
         AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel)
     End If
 End Function

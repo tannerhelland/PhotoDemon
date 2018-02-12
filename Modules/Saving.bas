@@ -447,7 +447,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'Perform a few failsafe checks
     If (srcPDImage Is Nothing) Then Exit Function
-    If (Len(pdiPath) = 0) Then Exit Function
+    If (LenB(pdiPath) = 0) Then Exit Function
     
     'Want to time this function?  Here's your chance:
     Dim startTime As Currency

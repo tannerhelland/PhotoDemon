@@ -620,13 +620,13 @@ End Function
 '
 'Special thanks to HW Lang of Germany for his helpful explanation of Boyer-Moore.  This implementation is heavily
 ' influenced by his example implementation at: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
-Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String, Optional ByVal startSearchPos As Long = 1, Optional ByVal useFullUnicodeSet As Boolean = False) As Long
+Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String, Optional ByVal startSearchPos As Long = 1, Optional ByVal useFullUnicodeSet As Boolean = False, Optional ByVal terminalLengthHaystack As Long = -1) As Long
     
     'Boyer-Moore allows us to skip substring lengths during favorable comparison steps; as such,
     ' we'll be referring to string lengths often.
     Dim lenNeedle As Long, lenHaystack As Long
     lenNeedle = Len(strNeedle)
-    lenHaystack = Len(strHaystack)
+    If (terminalLengthHaystack <= 0) Then lenHaystack = Len(strHaystack) Else lenHaystack = terminalLengthHaystack
     
     'If either the needle or the haystack is small (or zero!), fall back on VB's built-in InStr function;
     ' it will be faster.
