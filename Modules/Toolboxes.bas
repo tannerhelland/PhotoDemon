@@ -151,8 +151,8 @@ Private Sub FillDefaultToolboxValues()
                     .MaxSize = FixDPI(100)      ' to the requirements of each tool, so these are basically just dummy values.
                 
                 Case PDT_RightToolbox
-                    .DefaultSize = FixDPI(200)
-                    .MinSize = FixDPI(180)
+                    .DefaultSize = FixDPI(190)
+                    .MinSize = FixDPI(174)
                     .MaxSize = FixDPI(360)
                     
             End Select

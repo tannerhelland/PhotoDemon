@@ -412,8 +412,17 @@ End Sub
 ' to fill whatever vertical space is available.
 Private Sub ReflowInterface()
     
-    m_WidthAtLastResize = Me.ScaleWidth
-    m_HeightAtLastResize = Me.ScaleHeight
+    Dim curFormWidth As Long, curFormHeight As Long
+    If (g_WindowManager Is Nothing) Then
+        curFormWidth = Me.ScaleWidth
+        curFormHeight = Me.ScaleHeight
+    Else
+        curFormWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+        curFormHeight = g_WindowManager.GetClientHeight(Me.hWnd)
+    End If
+    
+    m_WidthAtLastResize = curFormWidth
+    m_HeightAtLastResize = curFormHeight
     
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
@@ -422,7 +431,7 @@ Private Sub ReflowInterface()
     Dim sizeCheck As Long
     
     'Start by moving the button box to the bottom of the available area
-    sizeCheck = Me.ScaleHeight - ctlGroupLayerButtons.GetHeight - Interface.FixDPI(7)
+    sizeCheck = curFormHeight - ctlGroupLayerButtons.GetHeight - Interface.FixDPI(7)
     If (sizeCheck > 0) Then ctlGroupLayerButtons.SetTop sizeCheck Else Exit Sub
     
     'Next, stretch the layer box to fill the available space
@@ -435,27 +444,27 @@ Private Sub ReflowInterface()
         
         'Left-align the opacity, blend and alpha mode controls against their respective labels.
         sltLayerOpacity.SetLeft lblLayerSettings(0).GetLeft + lblLayerSettings(0).GetWidth + Interface.FixDPI(4)
-        cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + Interface.FixDPI(12)
+        cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + Interface.FixDPI(8)
         
         'So this is kind of funny, but in English, the "blend mode" and "alpha mode" layers are offset
         ' by 1 px due to the different pixel lengths of the "blend" and "alpha" labels.  To make them
         ' look a bit prettier, we manually pad the non-translated version.
         Dim alphaOffset As Long
         If (Not g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then alphaOffset = 12 Else alphaOffset = 13
+            If g_Language.TranslationActive Then alphaOffset = 8 Else alphaOffset = 9
         Else
-            alphaOffset = 13
+            alphaOffset = 9
         End If
         
-        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + Interface.FixDPI(13)
+        cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + Interface.FixDPI(alphaOffset)
         
         'Horizontally stretch the opacity, blend, and alpha mode UI inputs
-        sltLayerOpacity.SetWidth Me.ScaleWidth - (sltLayerOpacity.GetLeft + Interface.FixDPI(3))
-        cboBlendMode.SetWidth Me.ScaleWidth - (cboBlendMode.GetLeft + Interface.FixDPI(4))
-        cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + Interface.FixDPI(4))
+        sltLayerOpacity.SetWidth curFormWidth - sltLayerOpacity.GetLeft
+        cboBlendMode.SetWidth curFormWidth - cboBlendMode.GetLeft
+        cboAlphaMode.SetWidth curFormWidth - cboAlphaMode.GetLeft
         
         'Resize the layer box and associated scrollbar
-        If (lstLayers.GetWidth <> Me.ScaleWidth - (lstLayers.GetLeft + Interface.FixDPI(4))) Then lstLayers.SetWidth Me.ScaleWidth - (lstLayers.GetLeft + Interface.FixDPI(4))
+        If (lstLayers.GetWidth <> curFormWidth - lstLayers.GetLeft) Then lstLayers.SetWidth curFormWidth - lstLayers.GetLeft
         
         'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
         ctlGroupLayerButtons.SetLeft lstLayers.GetLeft

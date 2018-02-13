@@ -24,13 +24,23 @@ Begin VB.Form layerpanel_Colors
    ScaleWidth      =   190
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButton cmdSettings 
+      Height          =   255
+      Left            =   2280
+      TabIndex        =   3
+      Top             =   2520
+      Width           =   495
+      _ExtentX        =   873
+      _ExtentY        =   450
+      RenderMode      =   1
+   End
    Begin PhotoDemon.pdHistory clrHistory 
       Height          =   195
       Left            =   0
       TabIndex        =   2
       Top             =   2520
-      Width           =   4455
-      _ExtentX        =   7858
+      Width           =   2250
+      _ExtentX        =   3969
       _ExtentY        =   344
    End
    Begin PhotoDemon.pdColorVariants clrVariants 
@@ -245,6 +255,51 @@ Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As
     If srcIsInternal Then clrVariants.Color = newColor
 End Sub
 
+Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
+    
+    If MainModule.IsProgramRunning Then
+    
+        Dim cPainter As pd2DPainter
+        Drawing2D.QuickCreatePainter cPainter
+        
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        
+        Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreateSolidBrush cBrush, cmdSettings.GetCurrentCaptionColor()
+        
+        Dim btnRectF As RectF
+        With btnRectF
+            .Left = 0!
+            .Top = 0!
+            .Width = cmdSettings.GetWidth
+            .Height = cmdSettings.GetHeight
+        End With
+        
+        'We're now gonna create three small "dots" to render as a "..." caption
+        Dim dotRectF() As RectF
+        ReDim dotRectF(0 To 2) As RectF
+        
+        Dim i As Long
+        For i = 0 To 2
+            With dotRectF(i)
+                .Width = Interface.FixDPIFloat(1.75)
+                .Height = Interface.FixDPIFloat(1.75)
+                .Top = (btnRectF.Height * 0.5) - (.Height * 0.5)
+                .Left = (btnRectF.Width * 0.5) - (.Width * 0.5)
+                If (i = 0) Then .Left = .Left - .Width * 2.5
+                If (i = 2) Then .Left = .Left + .Width * 2.5
+            End With
+            cPainter.FillRectangleF_FromRectF cSurface, cBrush, dotRectF(i)
+        Next i
+        
+        Set cBrush = Nothing: Set cSurface = Nothing
+        
+    End If
+    
+End Sub
+
 Private Sub Form_Load()
     
     m_ResizeInProgress = True
@@ -279,10 +334,15 @@ Private Sub ReflowInterface()
     End If
     
     'Failsafe to prevent IDE errors
-    If (curFormWidth > 10) And (curFormHeight > 10) Then
+    If (curFormWidth > 50) And (curFormHeight > 10) Then
         
-        'Bottom-align the color history panel
-        clrHistory.SetPositionAndSize 0, curFormHeight - clrHistory.GetHeight, curFormWidth, clrHistory.GetHeight
+        'Bottom-align the color history panel, while leaving space for the "settings" button
+        Dim cmdSettingsWidth As Long
+        cmdSettingsWidth = Interface.FixDPI(28)
+        clrHistory.SetPositionAndSize 0, curFormHeight - clrHistory.GetHeight, curFormWidth - cmdSettingsWidth - Interface.FixDPI(4), clrHistory.GetHeight
+        
+        'Bottom-align the color settings button
+        cmdSettings.SetPositionAndSize clrHistory.GetLeft + clrHistory.GetWidth + Interface.FixDPI(4), clrHistory.GetTop, cmdSettingsWidth, clrHistory.GetHeight
         
         'Calculate a new height available to the other controls on this panel
         curFormHeight = curFormHeight - (clrHistory.GetHeight + Interface.FixDPI(2))
@@ -293,7 +353,7 @@ Private Sub ReflowInterface()
         If (curFormHeight > 50) And (curFormWidth > 50) Then
             
             'Right-align the color wheel
-            clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(10)), 0, curFormHeight, curFormHeight
+            clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(1)), 0, curFormHeight, curFormHeight
             
             'Fit the variant selector into the remaining area.
             clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - Interface.FixDPI(10), curFormHeight
