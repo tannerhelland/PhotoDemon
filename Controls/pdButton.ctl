@@ -66,6 +66,21 @@ Public Event Click()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'As of Feb 2018, pdButton now offers an "owner-drawn" rendering mode.  This was required for the color selector
+' panel on the main window, as the settings button is too short to support text display.
+Public Event DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
+
+Public Enum PDButton_RenderMode
+    BRM_Normal = 0
+    BRM_OwnerDrawn = 1
+End Enum
+
+#If False Then
+    Private Const BRM_Normal As Long = 0, BRM_OwnerDrawn As Long = 1
+#End If
+
+Private m_RenderMode As PDButton_RenderMode
+
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if either the caption
 ' or button images change.
 Private m_CaptionRect As RECT
@@ -144,6 +159,14 @@ Public Property Let BackColor(ByVal newBackColor As OLE_COLOR)
     End If
 End Property
 
+Public Property Get RenderMode() As PDButton_RenderMode
+    RenderMode = m_RenderMode
+End Property
+
+Public Property Let RenderMode(ByVal newRenderMode As PDButton_RenderMode)
+    m_RenderMode = newRenderMode
+End Property
+
 Public Property Get UseCustomBackColor() As Boolean
     UseCustomBackColor = m_UseCustomBackColor
 End Property
@@ -192,7 +215,7 @@ Public Property Let Caption(ByRef newCaption As String)
         UserControl.AccessKeys = accessKeyChar
     
     Else
-        UserControl.AccessKeys = ""
+        UserControl.AccessKeys = vbNullString
     End If
     
 End Property
@@ -265,6 +288,12 @@ End Sub
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
+
+'When creating owner-drawn buttons, I need to know the current caption color.  (Other color retrieval
+' functions could be added in the future, if useful.)
+Public Function GetCurrentCaptionColor() As Long
+    GetCurrentCaptionColor = m_Colors.RetrieveColor(PDB_Caption, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
+End Function
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
 Private Sub ucSupport_GotFocusAPI()
@@ -471,11 +500,12 @@ End Sub
 Private Sub UserControl_InitProperties()
     BackColor = vbWhite
     BackgroundColor = vbWhite
-    UseCustomBackColor = False
-    UseCustomBackgroundColor = False
-    Caption = ""
+    Caption = vbNullString
     Enabled = True
     FontSize = 10
+    RenderMode = BRM_Normal
+    UseCustomBackColor = False
+    UseCustomBackgroundColor = False
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -487,11 +517,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         BackColor = .ReadProperty("BackColor", vbWhite)
         BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
-        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
-        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
-        Caption = .ReadProperty("Caption", "")
+        Caption = .ReadProperty("Caption", vbNullString)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
+        RenderMode = .ReadProperty("RenderMode", 0)
+        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
     End With
 End Sub
 
@@ -503,11 +534,12 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
-        .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
-        .WriteProperty "UseCustomBackgroundColor", m_UseCustomBackgroundColor, False
-        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
+        .WriteProperty "RenderMode", Me.RenderMode, 0
+        .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
+        .WriteProperty "UseCustomBackgroundColor", m_UseCustomBackgroundColor, False
     End With
 End Sub
 
@@ -647,6 +679,11 @@ Private Sub RedrawBackBuffer()
         With m_CaptionRect
             ucSupport.PaintCaptionManually_Clipped .Left, .Top, .Right - .Left, .Bottom - .Top, btnColorText, True, , True
         End With
+    End If
+    
+    'If owner-drawn rendering is active, raise the corresponding event now
+    If (m_RenderMode = BRM_OwnerDrawn) Then
+        RaiseEvent DrawButton(bufferDC, m_MouseInsideUC Or m_FocusRectActive, VarPtr(m_CaptionRect))
     End If
     
     'Paint the final result to the screen, as relevant
