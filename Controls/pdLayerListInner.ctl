@@ -42,9 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layer Listbox (inner portion only)
 'Copyright 2014-2018 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 11/September/16
-'Last update: isolate the old layer toolbox code inside its own control.  This greatly simplifies theming,
-'             responsive UI support, high-DPI decisions, and translations.
+'Last updated: 13/February/17
+'Last update: fix layer name edit box's initial size when the layer name is a null string
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -1095,7 +1094,7 @@ Private Sub RedrawBackBuffer()
                         Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
                         xTextOffset = offsetX + HORIZONTAL_ITEM_PADDING
                         xTextWidth = m_ListRect.Width - (xTextOffset + HORIZONTAL_ITEM_PADDING)
-                        yTextHeight = layerFont.GetHeightOfString(drawString)
+                        If (LenB(drawString) <> 0) Then yTextHeight = layerFont.GetHeightOfString(drawString) Else yTextHeight = Fonts.GetDefaultStringHeight(layerFont.GetFontSize)
                         yTextOffset = offsetY + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - yTextHeight) \ 2
                         layerFont.FastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
                         layerFont.ReleaseFromDC

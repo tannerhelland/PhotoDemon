@@ -430,7 +430,7 @@ End Function
 'Note that (x, y) values for the edit box can be specified.  These are technically optional, but you DO need to supply
 ' a valid x2 and y2 if you want the edit box to actually be visible!  Alternatively, you can set the optional
 ' "determineHeightForMe" parameter to TRUE to have the edit box size itself vertically, according to the current font.
-Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Long = 0, Optional ByVal y1 As Long = 0, Optional ByVal xWidth As Long = 0, Optional ByVal yHeight As Long = 0, Optional ByVal determineHeightForMe As Boolean = True) As Boolean
+Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Long = 0, Optional ByVal y1 As Long = 0, Optional ByVal xWidth As Long = 0, Optional ByVal yHeight As Long = 0, Optional ByVal determineHeightForMe As Boolean = True) As Boolean
     
     'Ignore all creation requests until we receive one with a valid parent hWnd
     If (parentHwnd <> 0) Then
@@ -494,14 +494,14 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
             If (m_EditBoxFont <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
             
             'If the edit box had text before we killed it, restore that text now
-            If (Len(curText) <> 0) Then Me.Text = curText
+            If (LenB(curText) <> 0) Then Me.Text = curText
             
         End If
         
     End If
     
     'Return TRUE if we managed to create an API window
-    CreateEditBox = CBool(m_EditBoxHwnd <> 0)
+    CreateEditBox = (m_EditBoxHwnd <> 0)
     
 End Function
 
@@ -511,7 +511,7 @@ End Function
 '
 'NOTE: this function does not destroy associated resources, like GDI brushes or fonts.  Those are shared among all
 '      pdEditBox instances, so the only way to free them is to free all pdEditBox instances throughout PD.
-Public Function DestroyEditBox() As Boolean
+Friend Function DestroyEditBox() As Boolean
     
     ReleaseEditBoxGDIObjects
     
@@ -553,14 +553,14 @@ Friend Function GetPositionRect(ByRef dstPositionRect As winRect) As Boolean
     GetPositionRect = CBool(m_EditBoxHwnd <> 0)
 End Function
 
-Public Function GetWidth() As Long
+Friend Function GetWidth() As Long
     Dim tmpRect As winRect
     GetWindowRect m_EditBoxHwnd, tmpRect
     GetWidth = (tmpRect.x2 - tmpRect.x1)
 End Function
 
 'IMPORTANT NOTE: if the edit box has not yet been created, this function will return the control's *suggested* height, by default.
-Public Function GetHeight() As Long
+Friend Function GetHeight() As Long
     If (m_EditBoxHwnd <> 0) Then
         Dim tmpRect As winRect
         GetWindowRect m_EditBoxHwnd, tmpRect
@@ -571,13 +571,13 @@ Public Function GetHeight() As Long
 End Function
 
 'Change the edit box position and size in one fell swoop.  Coordinates are RELATIVE TO THE PARENT WINDOW.
-Public Sub Move(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+Friend Sub Move(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     If (m_EditBoxHwnd <> 0) Then MoveWindow m_EditBoxHwnd, newLeft, newTop, newWidth, newHeight, 1&
 End Sub
 
 'This function actually does two things: makes the edit box the foreground window, then assigns it keyboard focus.
 ' By design, all non-multiline edit boxes in PD select all their own text upon an initial click.
-Public Sub SetFocusToEditBox()
+Friend Sub SetFocusToEditBox()
     If (m_EditBoxHwnd <> 0) Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
@@ -586,7 +586,7 @@ End Sub
 
 'Given the current font size, return the suggested height of an edit box.  Parent controls can use this to auto-size
 ' themselves in preparation of actually creating the API window.
-Public Function SuggestedHeight() As Long
+Friend Function SuggestedHeight() As Long
     SuggestedHeight = Fonts.GetDefaultStringHeight(m_FontSize)
 End Function
 
@@ -597,15 +597,15 @@ Private Sub CreateEditBoxGDIObjects(Optional ByVal forceSync As Boolean = False)
     Dim RepaintRequired As Boolean
     
     If (m_EditBoxBrush <> UserControls.GetSharedGDIBrush(Me.BackColor)) Or forceSync Then
-        If m_EditBoxBrush <> 0 Then UserControls.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+        If (m_EditBoxBrush <> 0) Then UserControls.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = UserControls.GetSharedGDIBrush(Me.BackColor)
         RepaintRequired = True
     End If
     
     If (m_EditBoxFont <> UserControls.GetSharedGDIFont(m_FontSize)) Or RepaintRequired Or forceSync Then
-        If m_EditBoxFont <> 0 Then UserControls.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        If (m_EditBoxFont <> 0) Then UserControls.ReleaseSharedGDIFontByHandle m_EditBoxFont
         m_EditBoxFont = UserControls.GetSharedGDIFont(m_FontSize)
-        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+        If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
     End If
 
 End Sub

@@ -540,7 +540,7 @@ Private Sub RedrawBackBuffer()
         
         'The edit box doesn't actually have a border; we render a pseudo-border onto the underlying UC, as necessary.
         Dim halfPadding As Long
-        halfPadding = 1     'EDITBOX_BORDER_PADDING \ 2 - 1
+        halfPadding = 1
         
         Dim borderWidth As Single
         If Not (m_EditBox Is Nothing) Then
