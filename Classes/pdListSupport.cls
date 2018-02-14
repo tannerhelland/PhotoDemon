@@ -125,7 +125,7 @@ End Sub
 'Add an item to the list.  Note that all parameters are optional; if the owner is managing a list with custom data, for example,
 ' they do not need to pass strings to this function.  Similarly, things like separators and custom height can be happily
 ' ignored if those features are not required.
-Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
+Friend Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
     
     'Make sure there's room in the array for this item.
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
@@ -232,7 +232,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
 End Sub
 
 'Reset the current list.  An optional starting list size can be passed; if it is not passed, it will default to INITIAL_LIST_SIZE.
-Public Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
+Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     
     On Error GoTo FailsafeReset
     
@@ -352,12 +352,12 @@ End Function
 
 'Font size controls the default height of each list item.  When the font size changes, we need to recalculate a number of
 ' internal size metrics, so it's advisable to set this UP FRONT before doing anything else.
-Public Property Get DefaultItemHeight() As Single
+Friend Property Get DefaultItemHeight() As Single
     DefaultItemHeight = m_DefaultHeight
 End Property
 
-Public Property Let DefaultItemHeight(ByVal newHeight As Single)
-    If m_DefaultHeight <> newHeight Then
+Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
+    If (m_DefaultHeight <> newHeight) Then
         m_DefaultHeight = newHeight
         
         'If a non-standard size mode is in use, we technically need to calculate new positioning metrics for all list items.
@@ -367,22 +367,22 @@ Public Property Let DefaultItemHeight(ByVal newHeight As Single)
     End If
 End Property
 
-Public Function GetSeparatorHeight() As Single
+Friend Function GetSeparatorHeight() As Single
     GetSeparatorHeight = (m_DefaultHeight * SEPARATOR_LINE_HEIGHT)
 End Function
 
-Public Function DoesItemHaveSeparator(ByVal itemIndex As Long) As Boolean
+Friend Function DoesItemHaveSeparator(ByVal itemIndex As Long) As Boolean
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         DoesItemHaveSeparator = m_Items(itemIndex).isSeparator
     End If
 End Function
 
-Public Function IsMouseInsideListBox() As Boolean
+Friend Function IsMouseInsideListBox() As Boolean
     IsMouseInsideListBox = m_MouseInsideList
 End Function
 
 'Retrieve a specified list item
-Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
+Friend Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
     
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         If returnTranslatedText Then
@@ -396,17 +396,17 @@ Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedTex
     
 End Function
 
-Public Function ListCount() As Long
+Friend Function ListCount() As Long
     ListCount = m_NumOfItems
 End Function
 
-Public Property Get ListIndex() As Long
+Friend Property Get ListIndex() As Long
     ListIndex = m_ListIndex
 End Property
 
 'You can set the ListIndex to -1 to indicate "nothing is selected", but this is stupid for a whole bunch of reasons, so please
 ' don't do it.  (I mention this because this function rejects invalid ListIndex requests, with that sole exception.)
-Public Property Let ListIndex(ByVal newIndex As Long)
+Friend Property Let ListIndex(ByVal newIndex As Long)
 
     If (newIndex >= -1) And (newIndex < m_NumOfItems) Then
     
@@ -427,7 +427,7 @@ End Property
 
 'As a convenience, this function lets the caller retrieve a given ListIndex by associated string contents.
 ' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one matching the input string.
-Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
+Friend Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
     
     ListIndexByString = -1
     
@@ -452,7 +452,7 @@ End Function
 
 'As a convenience, this function lets the caller retrieve a given ListIndex by mouse position within the container.
 ' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one from position (x, y).
-Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
+Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
     
     ListIndexByPosition = -1
     
@@ -504,19 +504,19 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
 End Function
 
 'This property exists purely for improving UI feedback.  It may or may not be identical to the default .ListIndex value.
-Public Property Get ListIndexHovered() As Long
+Friend Property Get ListIndexHovered() As Long
     ListIndexHovered = m_ListIndexHover
 End Property
 
-Public Property Get ListSupportMode() As PD_LISTSUPPORT_MODE
+Friend Property Get ListSupportMode() As PD_LISTSUPPORT_MODE
     ListSupportMode = m_ListMode
 End Property
 
-Public Property Let ListSupportMode(ByVal newMode As PD_LISTSUPPORT_MODE)
+Friend Property Let ListSupportMode(ByVal newMode As PD_LISTSUPPORT_MODE)
     m_ListMode = newMode
 End Property
 
-Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
+Friend Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
 
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         
@@ -560,7 +560,7 @@ End Sub
 'Key events primarily affect the current .ListIndex property.  Note that some shortcuts (like PAGEDOWN/PAGEUP) require
 ' up-to-date rendering information, as we need to know which item lies on the next "page" of the listview - information that
 ' directly correlates to the on-screen size of the listbox's constraining rect.
-Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
     markEventHandled = False
     
@@ -650,13 +650,13 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     
 End Sub
 
-Public Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Friend Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
 End Sub
 
 'Mouse events control a whole bunch of possible things: hover state, .ListIndex, scroll.  As such, their handling is
 ' fairly involved, despite this class not doing any actual UI rendering.
-Public Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Friend Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If (Button And pdLeftButton) <> 0 Then
         Dim tmpListIndex As Long
         tmpListIndex = Me.ListIndexByPosition(x, y)
@@ -664,22 +664,22 @@ Public Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift 
     End If
 End Sub
 
-Public Sub NotifyMouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Friend Sub NotifyMouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateHoveredIndex x, y, True
 End Sub
 
-Public Sub NotifyMouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Friend Sub NotifyMouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateHoveredIndex -100, -100, True
 End Sub
 
-Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Friend Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_InitMouseX = x
     m_InitMouseY = y
     m_InitScroll = m_ScrollValue
     If ((Button And pdLeftButton) <> 0) Then m_LMBDown = True
 End Sub
 
-Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Friend Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If m_LMBDown Then
         ScrollListByDrag x, y
     Else
@@ -687,14 +687,14 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     End If
 End Sub
 
-Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean)
+Friend Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean)
     If ((Button And pdLeftButton) <> 0) And m_LMBDown Then
         m_LMBDown = False
         If (Not clickEventAlsoFiring) Then ScrollListByDrag x, y
     End If
 End Sub
 
-Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Friend Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     'The behavior of the mousewheel varies by the current "listmode", e.g. if our parent is a scrollable listview, we behave
     ' differently than if our parent is a closed dropdown box.
@@ -808,7 +808,7 @@ Private Sub UpdateHoveredIndex(ByVal x As Long, ByVal y As Long, Optional ByVal 
 End Sub
 
 'Remove an item from the combo box
-Public Sub RemoveItem(ByVal itemIndex As Long)
+Friend Sub RemoveItem(ByVal itemIndex As Long)
     
     'First, make sure the requested index is valid
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
@@ -844,10 +844,10 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
 End Sub
 
 'Need to render the list?  Call this first to get rendering limits.
-Public Sub GetRenderingLimits(ByRef firstRenderIndex As Long, ByRef lastRenderIndex As Long, ByRef listIsEmpty As Boolean)
+Friend Sub GetRenderingLimits(ByRef firstRenderIndex As Long, ByRef lastRenderIndex As Long, ByRef listIsEmpty As Boolean)
     firstRenderIndex = m_FirstRenderIndex
     lastRenderIndex = m_LastRenderIndex
-    listIsEmpty = CBool(m_NumOfItems = 0)
+    listIsEmpty = (m_NumOfItems = 0)
 End Sub
 
 'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data, plus
@@ -873,7 +873,7 @@ End Sub
 
 'Obviously, these values may not be correct if the class has not been notified of the list box size and/or not all of
 ' its contents have been loaded yet.
-Public Property Get ScrollMax() As Long
+Friend Property Get ScrollMax() As Long
     If m_RenderDataCorrect Then
         ScrollMax = m_ScrollMax
     Else
@@ -886,13 +886,13 @@ Public Property Get ScrollMax() As Long
     End If
 End Property
 
-Public Property Get ScrollValue() As Long
+Friend Property Get ScrollValue() As Long
     ScrollValue = m_ScrollValue
 End Property
 
 'When assigning a new scroll value, you should probably double-check the passed newValue.  This class will automatically reset the
 ' value to an appropriate range if it's too small or too large.
-Public Property Let ScrollValue(ByRef newValue As Long)
+Friend Property Let ScrollValue(ByRef newValue As Long)
     
     'Range-check the incoming value
     If (newValue < 0) Then newValue = 0
@@ -920,7 +920,7 @@ End Sub
 
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
-Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
+Friend Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
     
     m_RedrawAutomatically = newState
     
@@ -936,7 +936,7 @@ End Sub
 
 'Call this sub to request a full redraw of the list.  This sub doesn't actually perform any drawing; instead, it raises a series of
 ' RenderListItem() events, which the caller can then handle on their own terms.
-Public Sub CalculateRenderMetrics()
+Friend Sub CalculateRenderMetrics()
     
     'Prior to requesting a redraw, determine the indices of the first and last items our owner needs to draw.
     ' We'll cache these, so we don't have to calculate them again (until something changes, at least).
@@ -1013,7 +1013,7 @@ Public Sub CalculateRenderMetrics()
     
 End Sub
 
-Public Sub UpdateAgainstCurrentTheme()
+Friend Sub UpdateAgainstCurrentTheme()
     
     If (Not g_Language Is Nothing) Then
         

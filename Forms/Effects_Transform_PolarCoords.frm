@@ -259,7 +259,7 @@ Private Function GetLocalParamString() As String
         .AddParam "swapxy", CBool(chkSwapXY.Value)
         .AddParam "radius", sltRadius.Value
         .AddParam "edges", cboEdges.ListIndex
-        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
+        .AddParam "bilinear", (btsRender.ListIndex = 1)
     End With
     
     GetLocalParamString = cParams.GetParamString()

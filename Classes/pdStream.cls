@@ -263,7 +263,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
     
         If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
         
-        If m_FSO.FileCreateHandle(srcFilename, m_FileHandle, True, CBool(streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
+        If m_FSO.FileCreateHandle(srcFilename, m_FileHandle, True, (streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
             
             m_Open = True
             m_FilePointerOffset = baseFilePointerOffset

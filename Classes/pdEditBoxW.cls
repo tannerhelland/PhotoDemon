@@ -257,11 +257,11 @@ Private m_JustGotFocus As Boolean
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 Private m_HookID As Long
 
-Public Property Get BackColor() As Long
+Friend Property Get BackColor() As Long
     BackColor = m_BackColor
 End Property
 
-Public Property Let BackColor(ByVal newBackColor As Long)
+Friend Property Let BackColor(ByVal newBackColor As Long)
     newBackColor = Colors.ConvertSystemColor(newBackColor)
     If (newBackColor <> m_BackColor) Then
         m_BackColor = newBackColor
@@ -269,11 +269,11 @@ Public Property Let BackColor(ByVal newBackColor As Long)
     End If
 End Property
 
-Public Property Get Enabled() As Boolean
+Friend Property Get Enabled() As Boolean
     Enabled = m_Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Friend Property Let Enabled(ByVal newValue As Boolean)
     m_Enabled = newValue
     If (m_EditBoxHwnd <> 0) Then
         EnableWindow m_EditBoxHwnd, IIf(m_Enabled, 1, 0)
@@ -282,36 +282,36 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
-Public Property Get FontSize() As Single
+Friend Property Get FontSize() As Single
     FontSize = m_FontSize
 End Property
 
 'Edit box sizes and margins are typically enforced by the system, at creation time, so I do not advise changing the font size of an
 ' edit box *after* it's been created.
-Public Property Let FontSize(ByVal newSize As Single)
+Friend Property Let FontSize(ByVal newSize As Single)
     If (newSize <> m_FontSize) Then
         m_FontSize = newSize
         CreateEditBoxGDIObjects True
     End If
 End Property
 
-Public Property Get HasFocus() As Boolean
+Friend Property Get HasFocus() As Boolean
     HasFocus = m_HasFocus
 End Property
 
 'FYI: if the returned hWnd is zero, an API edit box has not been created yet
-Public Property Get hWnd() As Long
+Friend Property Get hWnd() As Long
     hWnd = m_EditBoxHwnd
 End Property
 
-Public Property Get Multiline() As Boolean
+Friend Property Get Multiline() As Boolean
     Multiline = m_Multiline
 End Property
 
 'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via
 ' window message alone).  Changing the multiline property enforces a number of different edit boxes behaviors,
 ' including non-obvious ones (like text margins), so avoid run-time changes if you can.
-Public Property Let Multiline(ByVal newState As Boolean)
+Friend Property Let Multiline(ByVal newState As Boolean)
     If (newState <> m_Multiline) Then
         m_Multiline = newState
         If (m_EditBoxHwnd <> 0) Then CreateEditBox m_ParentHWnd
@@ -319,12 +319,12 @@ Public Property Let Multiline(ByVal newState As Boolean)
 End Property
 
 'External functions can call this to fully select the text box's contents
-Public Sub SelectAll()
+Friend Sub SelectAll()
     If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
 End Sub
 
 'SelLength is currently treated as read-only
-Public Property Get SelLength() As Long
+Friend Property Get SelLength() As Long
     If (m_EditBoxHwnd <> 0) Then
         Dim startPos As Long, endPos As Long, retVal As Long
         retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
@@ -334,7 +334,7 @@ End Property
 
 'SelStart is used by some PD functions to control caret positioning after automatic text updates
 ' (as used in the spinner contol, for example)
-Public Property Get SelStart() As Long
+Friend Property Get SelStart() As Long
     If (m_EditBoxHwnd <> 0) Then
         Dim startPos As Long, endPos As Long, retVal As Long
         retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
@@ -342,12 +342,12 @@ Public Property Get SelStart() As Long
     End If
 End Property
 
-Public Property Let SelStart(ByVal newPosition As Long)
+Friend Property Let SelStart(ByVal newPosition As Long)
     If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, ByVal newPosition
 End Property
 
 'For performance reasons, the text is not always stored locally.  It is retrieved, as needed, from the common control instance.
-Public Property Get Text() As String
+Friend Property Get Text() As String
     
     'If the API edit box has been created, retrieve the latest text directly from it
     If (m_EditBoxHwnd <> 0) Then
@@ -375,7 +375,7 @@ Public Property Get Text() As String
     
 End Property
 
-Public Property Let Text(ByRef newString As String)
+Friend Property Let Text(ByRef newString As String)
 
     'Unfortunately, we cannot use SetWindowText here.  SetWindowText does not expand tab characters in a string,
     ' so our only option is to manually send a WM_SETTEXT message to the text box.
@@ -392,11 +392,11 @@ Public Property Let Text(ByRef newString As String)
     
 End Property
 
-Public Property Get TextColor() As Long
+Friend Property Get TextColor() As Long
     TextColor = m_TextColor
 End Property
 
-Public Property Let TextColor(ByVal newTextColor As Long)
+Friend Property Let TextColor(ByVal newTextColor As Long)
     newTextColor = Colors.ConvertSystemColor(newTextColor)
     If (newTextColor <> m_TextColor) Then
         m_TextColor = newTextColor
@@ -404,11 +404,11 @@ Public Property Let TextColor(ByVal newTextColor As Long)
     End If
 End Property
 
-Public Property Get Visible() As Boolean
+Friend Property Get Visible() As Boolean
     Visible = m_Visible
 End Property
 
-Public Property Let Visible(ByVal newVisibility As Boolean)
+Friend Property Let Visible(ByVal newVisibility As Boolean)
     m_Visible = newVisibility
     If m_Visible And MainModule.IsProgramRunning() Then
         If (m_EditBoxHwnd = 0) Then RaiseEvent CreateTextBoxNow
@@ -530,7 +530,7 @@ Friend Function DestroyEditBox() As Boolean
             m_ParentHWnd = 0
         End If
         
-        DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
+        DestroyEditBox = (DestroyWindow(m_EditBoxHwnd) <> 0)
         
         If DestroyEditBox Then
             UserControls.NotifyAPIWindowDestroyed
@@ -550,7 +550,7 @@ End Function
 
 Friend Function GetPositionRect(ByRef dstPositionRect As winRect) As Boolean
     GetWindowRect m_EditBoxHwnd, dstPositionRect
-    GetPositionRect = CBool(m_EditBoxHwnd <> 0)
+    GetPositionRect = (m_EditBoxHwnd <> 0)
 End Function
 
 Friend Function GetWidth() As Long

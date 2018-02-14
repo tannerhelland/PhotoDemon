@@ -416,7 +416,7 @@ Private Sub CmbZoom_Click()
         End If
         
         'Highlight the "zoom fit" button while fit mode is active
-        cmdZoomFit.Value = CBool(cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex)
+        cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex)
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)

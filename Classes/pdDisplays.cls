@@ -392,7 +392,7 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
             listOfDisplays(displayIndex).SetDescription tmpDescription
             
             'Also, if this is the primary monitor, mark it as such
-            listOfDisplays(displayIndex).IsPrimary = CBool(monitorInfoDetailed.StateFlags And DD_PRIMARY_DEVICE)
+            listOfDisplays(displayIndex).IsPrimary = (monitorInfoDetailed.StateFlags And DD_PRIMARY_DEVICE)
             
             'We've retrieved all we can from this enum.  Exit the do loop now.
             Exit Do
@@ -523,7 +523,7 @@ Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
         
             ReDim dstArray(0 To edidSize - 1) As Byte
             successCheck = RegQueryValueEx(regHandle, StrPtr(regString), 0&, 0&, VarPtr(dstArray(0)), edidSize)
-            RetrieveEDIDFromRegistry = CBool(successCheck = 0)
+            RetrieveEDIDFromRegistry = (successCheck = 0)
             
         Else
         

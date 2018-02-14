@@ -373,7 +373,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "radius", sltRadius.Value
         .AddParam "threshold", sltThreshold.Value
-        .AddParam "type", CBool(btsArea.ListIndex = 1)
+        .AddParam "type", (btsArea.ListIndex = 1)
         .AddParam "quality", btsQuality.ListIndex
     End With
     

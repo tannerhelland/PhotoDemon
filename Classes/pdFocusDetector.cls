@@ -66,7 +66,7 @@ End Sub
 
 'This function should be called in a UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Public Sub StartFocusTracking(ByVal srcHwnd As Long)
+Friend Sub StartFocusTracking(ByVal srcHwnd As Long)
     
     If MainModule.IsProgramRunning() Then
     
@@ -85,18 +85,18 @@ Public Sub StartFocusTracking(ByVal srcHwnd As Long)
 End Sub
 
 'Outside functions can use this to retrieve the current "has focus" state of the tracked control
-Public Function HasFocus() As Boolean
+Friend Function HasFocus() As Boolean
     HasFocus = m_HasFocus
 End Function
 
 'If an outside function received a mouse or keyboard event but the control does *not* have focus, they can call this function
 ' to force an immedate GotFocus event.  (Windows will process hooks prior to focus messages, so some of PD's controls may raise
 ' input events prior to receiving focus events; this function gives us a way to work around that.)
-Public Sub SetFocusManually()
+Friend Sub SetFocusManually()
     If (Not m_HasFocus) Then g_WindowManager.SetFocusAPI m_hWnd
 End Sub
 
-Public Sub ActivateManually()
+Friend Sub ActivateManually()
     g_WindowManager.ActivateWindowAPI m_hWnd
 End Sub
 

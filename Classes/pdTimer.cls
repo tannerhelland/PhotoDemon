@@ -53,22 +53,22 @@ Private Sub Class_Terminate()
     If (m_TimerID <> 0) Then Me.StopTimer
 End Sub
 
-Public Property Get Interval() As Long
+Friend Property Get Interval() As Long
     Interval = m_Interval
 End Property
 
-Public Property Let Interval(ByVal newInterval As Long)
+Friend Property Let Interval(ByVal newInterval As Long)
     If (newInterval <> m_Interval) Then
         m_Interval = newInterval
         If (m_TimerID <> 0) Then StartTimer
     End If
 End Property
 
-Public Property Get IsActive() As Boolean
-    IsActive = CBool(m_TimerID <> 0)
+Friend Property Get IsActive() As Boolean
+    IsActive = (m_TimerID <> 0)
 End Property
 
-Public Sub StartTimer()
+Friend Sub StartTimer()
 
     If (m_TimerID <> 0) Then StopTimer
     
@@ -88,7 +88,7 @@ Public Sub StartTimer()
     
 End Sub
 
-Public Sub StopTimer()
+Friend Sub StopTimer()
 
     If (m_TimerID <> 0) Then
     
@@ -110,6 +110,6 @@ End Sub
 
 'This sub will be called by the VBHacks module whenever a new timer event arrives.  Note that stopping a timer does not
 ' remove already-posted WM_TIMER messages from the message queue; to prevent those from firing, we check the timer ID here.
-Public Sub TimerEventArrived()
+Friend Sub TimerEventArrived()
     If (m_TimerID <> 0) Then RaiseEvent Timer
 End Sub

@@ -454,80 +454,80 @@ Private m_TmpGdiDIB As pdDIB
 
 'Get/set the current rendering string.  PD uses a lot of tricks to improve rendering performance, including ignoring redraw requests if none of the
 ' class's internals have changed, so the current text must be assigned via these functions prior to actual rendering.
-Public Function GetCurrentText() As String
+Friend Function GetCurrentText() As String
     GetCurrentText = m_CurrentText
 End Function
 
-Public Sub SetCurrentText(ByRef newText As String)
+Friend Sub SetCurrentText(ByRef newText As String)
     m_CurrentText = newText
 End Sub
 
 'Get functions for various font styles, and whether said styles are supported by the current font.
 ' (If no font name has been set, the function returns *will not be valid*)
-Public Function GetFontColor() As Long
+Friend Function GetFontColor() As Long
     GetFontColor = m_FontColor
 End Function
 
-Public Sub SetFontColor(ByVal newFontColor As Long)
+Friend Sub SetFontColor(ByVal newFontColor As Long)
     m_FontColor = newFontColor
 End Sub
 
-Public Function GetFontBold() As Boolean
+Friend Function GetFontBold() As Boolean
     GetFontBold = m_FontBold
 End Function
 
-Public Function IsFontBoldSupported() As Boolean
+Friend Function IsFontBoldSupported() As Boolean
     IsFontBoldSupported = m_BoldSupported
 End Function
 
-Public Function GetFontItalic() As Boolean
+Friend Function GetFontItalic() As Boolean
     GetFontItalic = m_FontItalic
 End Function
 
-Public Function IsFontItalicSupported() As Boolean
+Friend Function IsFontItalicSupported() As Boolean
     IsFontItalicSupported = m_ItalicSupported
 End Function
 
-Public Function GetFontUnderline() As Boolean
+Friend Function GetFontUnderline() As Boolean
     GetFontUnderline = m_FontUnderline
 End Function
 
-Public Function IsFontUnderlineSupported() As Boolean
+Friend Function IsFontUnderlineSupported() As Boolean
     IsFontUnderlineSupported = m_UnderlineSupported
 End Function
 
-Public Function GetFontStrikeout() As Boolean
+Friend Function GetFontStrikeout() As Boolean
     GetFontStrikeout = m_FontStrikeout
 End Function
 
-Public Function IsFontStrikeoutSupported() As Boolean
+Friend Function IsFontStrikeoutSupported() As Boolean
     IsFontStrikeoutSupported = m_StrikeoutSupported
 End Function
 
 'Set functions for various font styles.  Note that these functions reset the current font cache, so please use them
 ' only if necessary.
-Public Sub SetFontBold(ByVal newValue As Boolean)
+Friend Sub SetFontBold(ByVal newValue As Boolean)
     If newValue <> m_FontBold Then
         m_FontBold = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub SetFontItalic(ByVal newValue As Boolean)
+Friend Sub SetFontItalic(ByVal newValue As Boolean)
     If newValue <> m_FontItalic Then
         m_FontItalic = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub SetFontUnderline(ByVal newValue As Boolean)
+Friend Sub SetFontUnderline(ByVal newValue As Boolean)
     If newValue <> m_FontUnderline Then
         m_FontUnderline = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub SetFontStrikeout(ByVal newValue As Boolean)
+Friend Sub SetFontStrikeout(ByVal newValue As Boolean)
     If newValue <> m_FontStrikeout Then
         m_FontStrikeout = newValue
         m_FontCacheClean = False
@@ -536,11 +536,11 @@ End Sub
 
 'Get/set functions for font size and unit.  By default, this class uses pixels.  Other units may be supported
 ' in the future.
-Public Function GetFontSize() As Single
+Friend Function GetFontSize() As Single
     GetFontSize = m_FontSize
 End Function
 
-Public Sub SetFontSize(ByVal newValue As Single)
+Friend Sub SetFontSize(ByVal newValue As Single)
     If newValue <> m_FontSize Then
         m_FontSize = newValue
         m_FontCacheClean = False
@@ -562,16 +562,16 @@ End Sub
 ' which uses GDI and Uniscribe to retrieve individual glyphs, but then does all positioning and rendering manually.
 '
 'Note that this setting does not initiate a font refresh, as PD generates a GDI font copy by default, regardless of rendering engine or font backend.
-Public Function GetRenderingEngine() As TEXT_RENDERING_ENGINE
+Friend Function GetRenderingEngine() As TEXT_RENDERING_ENGINE
     GetRenderingEngine = m_RenderingEngine
 End Function
 
-Public Sub SetRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
+Friend Sub SetRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
     m_RenderingEngine = newEngine
 End Sub
 
 'XML get/set functions for getting/setting all parameters at once
-Public Function GetAllFontSettingsAsXML() As String
+Friend Function GetAllFontSettingsAsXML() As String
 
     'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
     Dim cSerialize As pdParamXML
@@ -624,7 +624,7 @@ End Function
 
 'Set all text and font parameters at once, using an XML string created by a previous call to getAllFontSettingsAsXML.
 ' (Note that this function manually marks the font cache as dirty, so you should only use it when loading a file for the first time.)
-Public Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
+Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
     
     'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
     Dim cSerialize As pdParamXML
@@ -1054,12 +1054,12 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
 End Function
 
 'Get/Set font face.  These are more cumbersome than other font settings.
-Public Function GetFontFace() As String
+Friend Function GetFontFace() As String
     GetFontFace = m_FontFace
 End Function
 
 'Set a given font face, as specified by a font name.
-Public Sub SetFontFace(ByVal fontName As String)
+Friend Sub SetFontFace(ByVal fontName As String)
     
     'If this font face has already been set, ignore this request
     If Strings.StringsNotEqual(fontName, m_FontFace, False) Then
@@ -1086,7 +1086,7 @@ Private Function ConvertPDFontUnitToGDIPlusFontUnit(ByRef srcPDFontUnit As pdFon
 End Function
 
 'When all font parameters have been set, we can actually create a font!
-Public Function CreateFontObject() As Boolean
+Friend Function CreateFontObject() As Boolean
     
     'If the font cache is clean, this request is redundant; ignore it
     If m_FontCacheClean Then
@@ -1185,16 +1185,16 @@ Private Function CreateGDIPlusFont() As Boolean
         'As a convenience for future efforts, cache the font styles supported by this font family
         Dim testResult As Long
         GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleBold, testResult
-        m_BoldSupported = CBool(testResult <> 0)
+        m_BoldSupported = (testResult <> 0)
         
         GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleItalic, testResult
-        m_ItalicSupported = CBool(testResult <> 0)
+        m_ItalicSupported = (testResult <> 0)
         
         GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleUnderline, testResult
-        m_UnderlineSupported = CBool(testResult <> 0)
+        m_UnderlineSupported = (testResult <> 0)
         
         GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleStrikeout, testResult
-        m_StrikeoutSupported = CBool(testResult <> 0)
+        m_StrikeoutSupported = (testResult <> 0)
         
         'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc) and the
         ' current font size.
@@ -1329,7 +1329,7 @@ End Function
 ' not currently offer a function for that, FYI.)
 '
 'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
-Public Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
@@ -1506,7 +1506,7 @@ Private Function GetStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString
         
         Dim gdipReturn As Long
         gdipReturn = GdipMeasureString(srcGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, srcLayoutRect, m_GDIPlusStringFormat, dstBoundRect, ByVal 0&, ByVal 0&)
-        GetStringBoundingBox = CBool(gdipReturn = 0)
+        GetStringBoundingBox = (gdipReturn = 0)
         
     Else
         GetStringBoundingBox = 0
@@ -1729,7 +1729,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     GDI_Plus.ReleaseGDIPlusGraphics dstGraphics
     
     'Return success/failure contingent on the return of the GDI+ rendering call
-    RenderTextToDIB_Glyphs = CBool(gdipReturn = 0)
+    RenderTextToDIB_Glyphs = (gdipReturn = 0)
     
 End Function
 
@@ -1858,7 +1858,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     retDrawText = DrawText(m_TmpGdiDIB.GetDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP Or GetDrawTextAlignmentFlags())
     
     'We can actually determine a return value now
-    RenderTextToDIB_GDI = CBool(retDrawText <> 0)
+    RenderTextToDIB_GDI = (retDrawText <> 0)
     
     'Remove the font, so we can use again it later!
     SelectObject m_TmpGdiDIB.GetDIBDC, oldFont
@@ -2083,7 +2083,7 @@ End Function
 
 'If this class is no longer required but the caller doesn't want to fully release it, they can call this sub to have us release all
 ' caches and system handles (hFonts, GDI+ fonts, etc).  Note that the class needs to be FULLY reinitialized after this function is called.
-Public Sub ReleaseAsManyResourcesAsPossible()
+Friend Sub ReleaseAsManyResourcesAsPossible()
     
     'Release any GDI+ objects that are easily re-created
     If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont

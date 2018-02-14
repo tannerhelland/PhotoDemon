@@ -518,7 +518,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     
     Dim overSlider As Boolean
     If (m_KnobStyle = DefaultKnobStyle) Then
-        overSlider = CBool(DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2))
+        overSlider = (DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2))
     Else
         Dim tmpRectF As RectF
         GetKnobRectF tmpRectF
@@ -1170,7 +1170,7 @@ Private Sub ApplyAlphaToGradientDIB()
     ' alpha bytes for the region of interest.
     If (alphaMask.GetDIBDC <> 0) Then
         
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, CBool(m_KnobStyle = DefaultKnobStyle)
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, (m_KnobStyle = DefaultKnobStyle)
         If (m_KnobStyle = DefaultKnobStyle) Then
             Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
             m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2

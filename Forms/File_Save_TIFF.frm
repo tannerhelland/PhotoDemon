@@ -542,7 +542,7 @@ Private Sub UpdateStandardTitlebars()
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
     For i = ttlStandard.lBound To ttlStandard.UBound
-        ttlStandard(i).Value = CBool(i = m_ActiveTitleBar)
+        ttlStandard(i).Value = (i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
     

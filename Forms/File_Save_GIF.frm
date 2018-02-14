@@ -325,7 +325,7 @@ End Sub
 Private Sub UpdatePanelVisibility()
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1
-        picContainer(i).Visible = CBool(i = btsCategory.ListIndex)
+        picContainer(i).Visible = (i = btsCategory.ListIndex)
     Next i
 End Sub
 
@@ -488,7 +488,7 @@ Private Sub UpdatePreviewSource()
         'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
         ' (Note that one way or another, we'll always be converting the image to an 8-bpp mode.)
         Dim forceGrayscale As Boolean
-        forceGrayscale = CBool(btsColorModel.ListIndex = 2)
+        forceGrayscale = (btsColorModel.ListIndex = 2)
         
         Dim paletteCount As Long
         If (btsColorModel.ListIndex = 0) Then

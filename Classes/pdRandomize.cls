@@ -66,20 +66,20 @@ Private iX As Long, iy As Long, iZ As Long
 Private m_WH_Float As Double
 
 'Helper functions for generating a new (predictable) seed from various inputs
-Public Sub SetSeed_Int(ByVal newSeed As Long)
+Friend Sub SetSeed_Int(ByVal newSeed As Long)
     m_Seed_Float = newSeed
     m_Seed_Int = newSeed
     ApplySeed
 End Sub
 
-Public Sub SetSeed_Float(ByVal newSeed As Double)
+Friend Sub SetSeed_Float(ByVal newSeed As Double)
     m_Seed_Float = newSeed
     m_Seed_Int = GetSafeIntFromDouble(m_Seed_Float)
     ApplySeed
 End Sub
 
 'Hash a given string into a pseudo-random seed, using the well-known djb2 hash function
-Public Sub SetSeed_String(ByRef seedString As String)
+Friend Sub SetSeed_String(ByRef seedString As String)
 
     'Basic djb2 string hash based on http://www.cse.yorku.ca/~oz/hash.html
     ' Thanks to Bob77 for a quick-and-dirty VB implementation (http://stackoverflow.com/questions/22384451/vb6-how-to-get-c-like-integer-overflow/22389687#22389687)
@@ -102,7 +102,7 @@ Public Sub SetSeed_String(ByRef seedString As String)
 
 End Sub
 
-Public Sub SetSeed_AutomaticAndRandom()
+Friend Sub SetSeed_AutomaticAndRandom()
     m_Seed_Float = Timer * Now
     m_Seed_Int = GetSafeIntFromDouble(m_Seed_Float)
     ApplySeed
@@ -145,7 +145,7 @@ Private Sub ApplySeed()
 End Sub
 
 'Set bounds for the integer Rnd functions
-Public Sub SetRndIntegerBounds(ByVal lowBound As Long, ByVal highBound As Long)
+Friend Sub SetRndIntegerBounds(ByVal lowBound As Long, ByVal highBound As Long)
     m_LowBound = lowBound
     m_HighBound = highBound
 End Sub

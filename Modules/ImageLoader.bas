@@ -31,7 +31,7 @@ Public Function GetImportPref_JPEGOrientation() As Boolean
     If (m_JpegObeyEXIFOrientation = PD_BOOL_UNKNOWN) Then
         If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then m_JpegObeyEXIFOrientation = PD_BOOL_TRUE Else m_JpegObeyEXIFOrientation = PD_BOOL_FALSE
     End If
-    GetImportPref_JPEGOrientation = CBool(m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
+    GetImportPref_JPEGOrientation = (m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are the only format PD supports for saving layered images.  PDI to PhotoDemon is like
@@ -708,7 +708,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
     verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstDIB)
     If verifyGDISuccess Then
         If (Not dstDIB Is Nothing) Then
-            LoadGDIPlusImage = CBool((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
+            LoadGDIPlusImage = ((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
         Else
             LoadGDIPlusImage = False
         End If
@@ -747,7 +747,7 @@ LoadVBImageFail:
 End Function
 
 Public Function IsFileSVGCandidate(ByVal imagePath As String) As Boolean
-    IsFileSVGCandidate = CBool(StrComp(LCase$(Right$(imagePath, 3)), "svg", vbBinaryCompare) = 0)
+    IsFileSVGCandidate = (StrComp(LCase$(Right$(imagePath, 3)), "svg", vbBinaryCompare) = 0)
     
     'Compressed SVG files are not currently supported.  (For them to work, we'd need to decompress to a temp file, which causes
     ' some messy interaction details with ExifTool - we'll deal with this in the future.)

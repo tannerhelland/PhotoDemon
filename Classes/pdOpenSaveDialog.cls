@@ -136,7 +136,7 @@ Private Const MAX_FILE As Long = 260
 
 'Display a system-specific Open File dialog.
 ' RETURNS: TRUE if one or more files was selected; FALSE if canceled.
-Public Function GetOpenFileName(ByRef FileName As String, _
+Friend Function GetOpenFileName(ByRef FileName As String, _
                            Optional ByRef FileTitle As String, _
                            Optional ByVal FileMustExist As Boolean = True, _
                            Optional ByVal MultiSelect As Boolean = False, _
@@ -269,7 +269,7 @@ End Function
 
 'Display a system-specific Save File dialog.
 ' RETURNS: TRUE if a valid save target was selected/created; FALSE if canceled.
-Public Function GetSaveFileName(ByRef FileName As String, _
+Friend Function GetSaveFileName(ByRef FileName As String, _
                            Optional ByRef FileTitle As String, _
                            Optional ByVal OverWritePrompt As Boolean = True, _
                            Optional ByRef Filter As String = "All (*.*)|*.*", _

@@ -683,12 +683,9 @@ End Sub
 
 'Retrieve a text metrics struct for a given DC.  Obviously, the desired font needs to be selected into the DC *prior* to calling this.
 Public Function FillTextMetrics(ByRef srcDC As Long, ByRef dstTextMetrics As TEXTMETRIC) As Boolean
-    
     Dim gtmReturn As Long
     gtmReturn = GetTextMetrics(srcDC, dstTextMetrics)
-    
-    FillTextMetrics = CBool(gtmReturn <> 0)
-    
+    FillTextMetrics = (gtmReturn <> 0)
 End Function
 
 Public Function FillOutlineTextMetrics(ByRef srcDC As Long, ByRef dstOutlineMetrics As OUTLINETEXTMETRIC) As Boolean
@@ -722,12 +719,12 @@ End Function
 ' Returns TRUE if successful; FALSE otherwise.
 Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
-    CreateGDIFont = CBool(dstFontHandle <> 0)
+    CreateGDIFont = (dstFontHandle <> 0)
 End Function
 
 'Delete a GDI font; returns TRUE if successful
 Public Function DeleteGDIFont(ByVal srcFontHandle As Long) As Boolean
-    DeleteGDIFont = CBool(DeleteObject(srcFontHandle) <> 0)
+    DeleteGDIFont = (DeleteObject(srcFontHandle) <> 0)
 End Function
 
 'Given a GDI font handle and a Unicode code point, return an ABC float for the corresponding glyph.
@@ -762,7 +759,7 @@ Public Function GetABCWidthOfGlyph(ByVal srcFontHandle As Long, ByVal charCodeIn
     End If
     
     'GetCharABCWidthsFloat() returns a non-zero value if successful
-    GetABCWidthOfGlyph = CBool(gdiReturn <> 0)
+    GetABCWidthOfGlyph = (gdiReturn <> 0)
     
 End Function
 

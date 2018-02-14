@@ -876,7 +876,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' image they might be entire useful pages!)
     Dim saveIsMultipage As Boolean, saveIsMultipageTIFF As Boolean
     saveIsMultipage = srcPDImage.ImgStorage.GetEntry_Boolean("MultipageExportActive", False)
-    If saveIsMultipage Then saveIsMultipageTIFF = CBool(srcPDImage.GetCurrentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
+    If saveIsMultipage Then saveIsMultipageTIFF = (srcPDImage.GetCurrentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
     
     'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
     ' processing instructions.
@@ -919,7 +919,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'If a temporary file was given, mark it now.  It serves as our initial source of all metadata operations.
     Dim srcFileAvailable As Boolean
-    srcFileAvailable = CBool(Len(srcMetadataFile) <> 0)
+    srcFileAvailable = (LenB(srcMetadataFile) <> 0)
     If srcFileAvailable Then
     
         'Copy all tags.  It is important to do this first, because ExifTool applies operations in a left-to-right order - so we must
@@ -1621,17 +1621,17 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         'Flag retrieval is a bit convoluted, as flags are presented as a comma-delimited list.
         tmpString = GetXMLAttribute(xmlLines(0), "flags")
         If Len(tmpString) <> 0 Then
-            dstMetadata.DBF_IsAvoid = CBool(InStr(1, tmpString, "Avoid", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsBag = CBool(InStr(1, tmpString, "Bag", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsBinary = CBool(InStr(1, tmpString, "Binary", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsFlattened = CBool(InStr(1, tmpString, "Flattened", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsList = CBool(InStr(1, tmpString, "List", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsMandatory = CBool(InStr(1, tmpString, "Mandatory", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsPermanent = CBool(InStr(1, tmpString, "Permanent", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsProtected = CBool(InStr(1, tmpString, "Protected", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsSequence = CBool(InStr(1, tmpString, "Sequence", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsUnknown = CBool(InStr(1, tmpString, "Unknown", vbBinaryCompare) <> 0)
-            dstMetadata.DBF_IsUnsafe = CBool(InStr(1, tmpString, "Unsafe", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsAvoid = (InStr(1, tmpString, "Avoid", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsBag = (InStr(1, tmpString, "Bag", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsBinary = (InStr(1, tmpString, "Binary", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsFlattened = (InStr(1, tmpString, "Flattened", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsList = (InStr(1, tmpString, "List", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsMandatory = (InStr(1, tmpString, "Mandatory", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsPermanent = (InStr(1, tmpString, "Permanent", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsProtected = (InStr(1, tmpString, "Protected", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsSequence = (InStr(1, tmpString, "Sequence", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsUnknown = (InStr(1, tmpString, "Unknown", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsUnsafe = (InStr(1, tmpString, "Unsafe", vbBinaryCompare) <> 0)
         End If
         
         'The second line is always a description

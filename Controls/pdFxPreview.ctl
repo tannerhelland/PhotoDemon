@@ -238,7 +238,7 @@ Public Property Get SelectedColor() As Long
 End Property
 
 Public Property Get ViewportFitFullImage() As Boolean
-    ViewportFitFullImage = CBool(btsZoom.ListIndex = 1)
+    ViewportFitFullImage = (btsZoom.ListIndex = 1)
 End Property
 
 Private Sub pdPreviewBox_ColorSelected()
@@ -306,12 +306,12 @@ Public Sub NotifyNonStandardSource(ByVal srcWidth As Long, ByVal srcHeight As Lo
 End Sub
 
 Private Sub btsState_Click(ByVal buttonIndex As Long)
-    pdPreviewBox.ShowOriginalInstead = CBool(buttonIndex = 0)
+    pdPreviewBox.ShowOriginalInstead = (buttonIndex = 0)
 End Sub
 
 'When zoom state changes, we must raise a viewport change event so the effect can be redrawn.
 Private Sub btsZoom_Click(ByVal buttonIndex As Long)
-    pdPreviewBox.ViewportFitFullImage = CBool(buttonIndex = 1)
+    pdPreviewBox.ViewportFitFullImage = (buttonIndex = 1)
 End Sub
 
 'When the control's access key is pressed (alt+t) , toggle the original/current image

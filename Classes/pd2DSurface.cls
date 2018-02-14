@@ -548,7 +548,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         'Check for the presence of an alpha channel
         Dim imgPixelFormat As GP_PixelFormat, hasAlpha As Boolean
         imgPixelFormat = GDI_Plus.GDIPlus_ImageGetPixelFormat(hGdipImage)
-        hasAlpha = CBool((imgPixelFormat And GP_PF_Alpha) <> 0) Or CBool((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
+        hasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0) Or ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
         
         'Metafiles require special handling on Vista and earlier
         Set m_SurfaceDIB = New pdDIB
@@ -943,9 +943,9 @@ End Function
 Friend Function GetSurfaceAlphaSupport() As Boolean
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
-        GetSurfaceAlphaSupport = CBool(m_SurfaceDCBitmap.BitsPerPixel = 32)
+        GetSurfaceAlphaSupport = (m_SurfaceDCBitmap.BitsPerPixel = 32)
     ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
-        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceAlphaSupport = CBool(m_SurfaceDIB.GetDIBColorDepth = 32)
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceAlphaSupport = (m_SurfaceDIB.GetDIBColorDepth = 32)
     Else
         GetSurfaceAlphaSupport = False
     End If
@@ -1010,12 +1010,12 @@ End Function
 
 'If this is an in-memory surface, you can directly access its underlying DIB via this function.  Note that the underlying DIB
 ' will be "Nothing" if this surface is not an in-memory surface (e.g. if it's just a wrapper around a DC).
-Public Property Get UnderlyingDIB() As pdDIB
+Friend Property Get UnderlyingDIB() As pdDIB
     Set UnderlyingDIB = m_SurfaceDIB
 End Property
 
 Friend Function HasSurface() As Boolean
-    HasSurface = CBool(m_SurfaceHandle <> 0)
+    HasSurface = (m_SurfaceHandle <> 0)
 End Function
 
 'You only need to manually initialize a surface backend if you plan on using a non-default backend.  (Surfaces with the

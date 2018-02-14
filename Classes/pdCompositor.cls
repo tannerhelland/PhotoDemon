@@ -99,7 +99,7 @@ End Sub
 '
 'The optional parameter, "bottomLayerIsFullSize", should be set to TRUE if the bottom layer is the size of the image.  This saves
 ' some processing time, because we don't have to check for rect intersection.
-Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
 
     Dim xOffset As Double, yOffset As Double
     Dim i As Long
@@ -274,7 +274,7 @@ End Sub
 '
 'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge,
 ' paint ops on a vector layer are placed into a completely new raster layer.
-Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
+Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
     
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
@@ -704,7 +704,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 
             'Painting is not active; apply a standard composite op
             Else
-                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
+                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, (i = 0), ignoreInternalCaches, levelOfDetail
             End If
             
         'END block for layer visibility toggle
@@ -1764,7 +1764,7 @@ End Function
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
 ' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
 ' being recreated, as necessary.)
-Public Sub AttemptToFreeMemory()
+Friend Sub AttemptToFreeMemory()
     
     'Start by clearing our own internal caches
     m_dstDIB.EraseDIB

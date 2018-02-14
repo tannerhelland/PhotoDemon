@@ -1468,7 +1468,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 nodeFound = True
                 
                 If (OptionalNodeType <> 0) Then
-                    nodeFound = CBool(m_NodeDirectory(i).OptionalNodeType = OptionalNodeType)
+                    nodeFound = (m_NodeDirectory(i).OptionalNodeType = OptionalNodeType)
                 End If
                 
                 'If the optional node type check succeeded, the last thing we need to do is check the actual filename of this node.
@@ -1647,7 +1647,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                 nodeFound = True
                 
                 If (OptionalNodeType <> 0) Then
-                    nodeFound = CBool(m_NodeDirectory(i).OptionalNodeType = OptionalNodeType)
+                    nodeFound = (m_NodeDirectory(i).OptionalNodeType = OptionalNodeType)
                 End If
                 
                 'If the optional node type check succeeded, this is a valid file.  Prepare to extract it.

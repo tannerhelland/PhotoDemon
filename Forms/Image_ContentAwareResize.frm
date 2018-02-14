@@ -196,7 +196,7 @@ Private Sub Form_Activate()
     End Select
     
     'Warn about flattening if the entire image is being content-aware-resized
-    lblFlatten.Visible = CBool(m_ResizeTarget = PD_AT_WHOLEIMAGE)
+    lblFlatten.Visible = (m_ResizeTarget = PD_AT_WHOLEIMAGE)
     
     ucResize.LockAspectRatio = False
 

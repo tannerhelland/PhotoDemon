@@ -253,7 +253,7 @@ Private Sub cmdBar_OKClick()
     cParams.AddParam "PNMColorModel", pnmColorModel
     cParams.AddParam "PNMColorDepth", pnmColorDepth
     cParams.AddParam "PNMChangeExtensionToMatch", CBool(chkFileExtension.Value)
-    cParams.AddParam "PNMUseASCII", CBool(btsFormat.ListIndex = 1)
+    cParams.AddParam "PNMUseASCII", (btsFormat.ListIndex = 1)
     cParams.AddParam "PNMBackgroundColor", clsBackground.Color
     
     m_FormatParamString = cParams.GetParamString

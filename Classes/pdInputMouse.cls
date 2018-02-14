@@ -274,7 +274,7 @@ Private m_StillUseDefWindowProc As Boolean
 '    available than VB does, but you're allowed to handle this manually if you desire.
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
+Friend Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
     
     If (MainModule.IsProgramRunning() And (targetHWnd <> 0)) Then
     
@@ -296,21 +296,21 @@ Public Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
 End Function
 
 'Use this function enable/disable automatic dropping of severely delayed events
-Public Sub SetAutoDropOfDelayedEvents(ByVal newMode As Boolean)
+Friend Sub SetAutoDropOfDelayedEvents(ByVal newMode As Boolean)
     m_DelayTrackingActive = newMode
 End Sub
 
 'Use this function to set the threshold, in milliseconds, after which a message is considered unacceptably delayed.
 ' NOTE: system timer resolution limits this value to roughly 16 ms, so setting a threshold below that point may cause
 '       nearly all events to be dropped.  Try to limit the requested value to > 100 ms for best results.
-Public Sub SetAutoDropDelayThreshold(ByVal newThreshold As Long)
+Friend Sub SetAutoDropDelayThreshold(ByVal newThreshold As Long)
     m_DelayThreshold = newThreshold
     If (m_DelayThreshold < 16) Then m_DelayThreshold = 16
 End Sub
 
 'User controls that implement custom drag/drop behavior may choose to manually disable cursor capture, as it prevents dragging outside
 ' a control's borders.
-Public Sub SetCaptureOverride(ByVal newCaptureMode As Boolean)
+Friend Sub SetCaptureOverride(ByVal newCaptureMode As Boolean)
     
     m_DoNotCaptureOnButtonPress = newCaptureMode
     
@@ -324,17 +324,17 @@ Public Sub SetCaptureOverride(ByVal newCaptureMode As Boolean)
 End Sub
 
 'Use this function to enable/disable high-resolution tracking (where mouse motions between WM_MOUSEMOVE events are manually reconstructed)
-Public Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
+Friend Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
     m_HighResModeActive = newMode
     If m_HighResModeActive Then ReDim m_MouseHistory(0 To MAX_MOUSE_HISTORY - 1) As MOUSEMOVEPOINT
 End Sub
 
 'Use this function to still call DefWindowProc after a mouse event occurs
-Public Sub SetDefWindowProcFallback(ByVal newMode As Boolean)
+Friend Sub SetDefWindowProcFallback(ByVal newMode As Boolean)
     m_StillUseDefWindowProc = newMode
 End Sub
 
-Public Sub ResetTracking()
+Friend Sub ResetTracking()
     ResetClassCursor
     m_CaptureCounter = 0
     m_MouseMoveCount = 0
@@ -344,7 +344,7 @@ End Sub
 
 'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
 ' to ensure immediately release of the subclasser.
-Public Sub Shutdown()
+Friend Sub Shutdown()
     If (m_hWnd <> 0) Then
         VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
@@ -352,7 +352,7 @@ Public Sub Shutdown()
 End Sub
 
 'Assign a system cursor to the underlying hWnd.  Call this function without a parameter to reset the cursor to the default arrow.
-Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal applyImmediately As Boolean = True)
+Friend Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal applyImmediately As Boolean = True)
     
     'Load the relevant cursor handle
     If (systemCursorType = IDC_DEFAULT) Then
@@ -371,7 +371,7 @@ End Sub
 ' there is a high probability of PNG icons being requested by more than one class in a given session, so rather than
 ' repeat all the steps for each request, we only do it once, then cache the results.  PD itself will handle unloading
 ' custom cursors at exit time, so this class need not concern itself with unloading requested cursors.
-Public Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+Friend Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
     Dim tmpCursorHandle As Long
     tmpCursorHandle = IconsAndCursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
@@ -412,7 +412,7 @@ Private Function RequestMouseTrackingForHwnd()
     End With
     
     'TrackMouseEvent returns non-zero values for success
-    RequestMouseTrackingForHwnd = CBool(TrackMouseEvent(eventTracker) <> 0)
+    RequestMouseTrackingForHwnd = (TrackMouseEvent(eventTracker) <> 0)
     
 End Function
 
@@ -482,7 +482,7 @@ Private Function GetCurrentCursorPosition(ByRef controlX As Long, ByRef controlY
 End Function
 
 'The primary hWnd can use this function to move the mouse to some new position.  (This is not currently used.)
-Public Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelativeToHwnd As Double)
+Friend Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelativeToHwnd As Double)
 
     'Retrieve the requested position, in screen coordinates
     Dim tmpPoint As POINTAPI
@@ -673,7 +673,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             'If automatic message dropping is active, make sure this message falls within the acceptable threshold
             ' before firing it.
             eventAllowed = True
-            If m_DelayTrackingActive Then eventAllowed = CBool(GetMessageDelay(m_MouseHistory(m_MouseMovePointsRemaining).ptTime) <= m_DelayThreshold)
+            If m_DelayTrackingActive Then eventAllowed = (GetMessageDelay(m_MouseHistory(m_MouseMovePointsRemaining).ptTime) <= m_DelayThreshold)
             If eventAllowed Then RaiseEvent MouseMoveCustom(Button, Shift, m_MouseHistory(m_MouseMovePointsRemaining).x, m_MouseHistory(m_MouseMovePointsRemaining).y, m_MouseHistory(m_MouseMovePointsRemaining).ptTime)
             
             m_MouseMovePointsRemaining = m_MouseMovePointsRemaining - 1
@@ -686,7 +686,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         
         m_MouseMovePointsRemaining = -1
         eventAllowed = True
-        If m_DelayTrackingActive Then eventAllowed = CBool(GetMessageDelay(msgTimestamp) <= m_DelayThreshold)
+        If m_DelayTrackingActive Then eventAllowed = (GetMessageDelay(msgTimestamp) <= m_DelayThreshold)
         If eventAllowed Then RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY, msgTimestamp)
         
     End If

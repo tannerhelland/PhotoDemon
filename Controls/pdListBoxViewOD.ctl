@@ -341,7 +341,7 @@ Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRe
 End Sub
 
 Public Function ShouldScrollBarBeVisible() As Boolean
-    ShouldScrollBarBeVisible = CBool(ScrollMax > 0)
+    ShouldScrollBarBeVisible = (ScrollMax > 0)
 End Function
 
 Public Function ScrollMax() As Long
@@ -515,8 +515,8 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     tmpRect.Height = tmpHeight - 1
                 End If
                 
-                itemIsSelected = CBool(i = curListIndex)
-                itemIsHovered = CBool(i = listSupport.ListIndexHovered)
+                itemIsSelected = (i = curListIndex)
+                itemIsHovered = (i = listSupport.ListIndexHovered)
                 
                 '...then render its fill...
                 If itemIsSelected Then

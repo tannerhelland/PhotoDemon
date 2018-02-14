@@ -288,16 +288,16 @@ Private Const INITIAL_DIB_ARRAY_SIZE As Long = 32
 Private m_NumOfDIBs As Long
 
 
-Public Property Get CanWeTheme() As Boolean
+Friend Property Get CanWeTheme() As Boolean
     CanWeTheme = Not m_ClassicThemeWorkaround
 End Property
 
-Public Property Get ImageCount() As Long
+Friend Property Get ImageCount() As Long
     ImageCount = m_NumOfDIBs
 End Property
 
 
-Public Function RemoveImage(ByVal Index As Long) As Boolean
+Friend Function RemoveImage(ByVal Index As Long) As Boolean
     
     If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Function
     
@@ -314,7 +314,7 @@ Public Function RemoveImage(ByVal Index As Long) As Boolean
     
 End Function
 
-Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
+Friend Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
     
     On Error Resume Next
     
@@ -387,7 +387,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     
 End Function
 
-Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal itemData As Long) As Boolean
+Friend Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal itemData As Long) As Boolean
 
     Dim MII As MENUITEMINFO
     Dim sKey As String
@@ -423,7 +423,7 @@ Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
 
 End Function
 
-Public Sub RemoveMenuCheckApi(ByVal hMenu As Long)
+Friend Sub RemoveMenuCheckApi(ByVal hMenu As Long)
     Dim MI As MENUINFO
     
     With MI
@@ -435,7 +435,7 @@ Public Sub RemoveMenuCheckApi(ByVal hMenu As Long)
     SetMenuInfo hMenu, MI
 End Sub
 
-Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
+Friend Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     Dim MI As MENUINFO
     Dim hMenu As Long
     Dim hSubMenu As Long
@@ -517,7 +517,7 @@ Private Function CreateNewDib() As Long
 
 End Function
 
-Public Function Clear()
+Friend Function Clear()
 
     Dim i As Long
     
@@ -628,7 +628,7 @@ Private Function AlphaIconToBmp(ByVal IconHandle As Long, ByRef RefBmp As Long) 
 End Function
 
 
-Public Function AddIconFromHandle(ByVal hIcon As Long, Optional bGhosted As Boolean) As Boolean
+Friend Function AddIconFromHandle(ByVal hIcon As Long, Optional bGhosted As Boolean) As Boolean
 
     Dim hBmp As Long
     Dim hImage As Long
@@ -654,7 +654,7 @@ End Function
 
 'Add a menu image from a source file.  All GDI+ formats are supported (PNG, JPEG, etc).
 ' MODIFIED BY TANNER: PhotoDemon's internal formats are preferentially tested before rolling over to GDI+.
-Public Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
+Friend Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromFile_Error
     
@@ -675,7 +675,7 @@ AddImageFromFile_Error:
 End Function
 
 'CREATED BY TANNER: load an image from an existing pdDIB object
-Public Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Boolean) As Boolean
+Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromDIB_Error
     
@@ -706,7 +706,7 @@ AddImageFromDIB_Error:
 
 End Function
 
-Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
+Friend Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
     
     On Local Error GoTo AddImageFromStream_Error
     
@@ -883,7 +883,7 @@ LoadIconFromStream_Error:
 
 End Function
 
-Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
+Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
     If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And MainModule.IsProgramRunning()) Then
     

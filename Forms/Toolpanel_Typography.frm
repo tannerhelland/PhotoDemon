@@ -953,7 +953,7 @@ Private Sub btsAppearanceCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsAppearanceCategory.ListCount - 1
-        ctlGroupAppearanceCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupAppearanceCategory(i).Visible = (i = buttonIndex)
     Next i
     
 End Sub
@@ -963,7 +963,7 @@ Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1
-        ctlGroupCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupCategory(i).Visible = (i = buttonIndex)
     Next i
     
 End Sub
@@ -973,7 +973,7 @@ Private Sub btsCharCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsCharCategory.ListCount - 1
-        ctlGroupCharCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupCharCategory(i).Visible = (i = buttonIndex)
     Next i
     
 End Sub

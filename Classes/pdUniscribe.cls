@@ -181,7 +181,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        GetBitFlag = CBool(CLng(srcLong And longMask) <> 0)
+        GetBitFlag = (CLng(srcLong And longMask) <> 0)
         
         'If you're curious about how this function works (and what it returns), you can uncomment the line below
         'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
@@ -193,14 +193,14 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
 End Function
 
 'Free any/all previously allocated cache structures
-Public Function FreeUniscribeCaches()
-    If m_ScriptCache.p <> 0 Then ScriptFreeCache m_ScriptCache
+Friend Function FreeUniscribeCaches()
+    If (m_ScriptCache.p <> 0) Then ScriptFreeCache m_ScriptCache
 End Function
 
 'Uniscribe caches a number of font-specific values (https://msdn.microsoft.com/en-us/library/windows/desktop/dd317726%28v=vs.85%29.aspx),
 ' which can greatly improve performance during glyph retrieval and placement.  It maintains its own reference counts, but we can improve
 ' cache behavior by manually freeing our style cache whenever the associated font object is modified.
-Public Sub UpdateFont()
+Friend Sub UpdateFont()
 
     'Free our current cache copy.  Uniscribe will automatically generate a new cache when a DC with the new font is passed to
     ' step 3 or 4, below.
@@ -215,7 +215,7 @@ End Sub
 ' every subsequent Uniscribe interaction.  This array is cached internally, in m_ScriptItemsCache().
 '
 'Returns TRUE if successful; FALSE otherwise.
-Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
+Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     
     m_ScriptItemCacheOK = False
     
@@ -365,7 +365,7 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         
         For i = 0 To numItemsFilled
             Set m_Items(i) = New pdUniscribeItem
-            m_Items(i).setScriptItem m_ScriptItemsCache(i)
+            m_Items(i).SetScriptItem m_ScriptItemsCache(i)
             
             'While we're here, it's also helpful to copy the relevant portion of the target string into each object.
             '
@@ -377,7 +377,7 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
             
                 startPos = m_ScriptItemsCache(i).iCharPos
                 endPos = m_ScriptItemsCache(i + 1).iCharPos
-                m_Items(i).setSubstring Mid$(m_CurrentString, startPos + 1, endPos - startPos), startPos + 1, endPos
+                m_Items(i).SetSubstring Mid$(m_CurrentString, startPos + 1, endPos - startPos), startPos + 1, endPos
                 
                 'Curious about how the items are broken up by Uniscribe?  Uncomment this to see substrings and positions.
                 'Debug.Print m_Items(i).getSubstring, startPos + 1, endPos
@@ -409,7 +409,7 @@ End Function
 '
 'Returns TRUE if successful; FALSE otherwise.  (A failure at step 1 that was not dealt with by the caller will cause this function to
 ' return FALSE, as it relies on the output of Step 1 to generate a correct layout.)
-Public Function Step2_ScriptLayout() As Boolean
+Friend Function Step2_ScriptLayout() As Boolean
     
     'If a SCRIPT_ITEM cache does not exist, exit now
     If Not m_ScriptItemCacheOK Then
@@ -531,7 +531,7 @@ End Function
 '
 'Returns TRUE if successful; FALSE otherwise.  (A failure at step 1 or 2 that was not dealt with by the caller will cause this function to
 ' return FALSE, as it relies on the output of Steps 1 and 2 to generate correct shapes.)
-Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
+Friend Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     
     'If a SCRIPT_ITEM cache does not exist, exit now
     If (Not m_ScriptItemCacheOK) Then
@@ -575,7 +575,7 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     For i = 0 To m_NumOfItems - 1
     
         'A number of calculations are relative to the length of this item's substring.  Cache that value now.
-        sSubstring = m_Items(i).getSubstring
+        sSubstring = m_Items(i).GetSubstring
         lSubstring = Len(sSubstring)
     
         'Determine an intial size for this item's glyph cache.  I use the MSDN-recommended formula, which is filled with magic numbers.
@@ -596,7 +596,7 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
                 ReDim m_VisualAttributesCache(0 To cMaxGlyphs - 1) As SCRIPT_VISATTR
             End If
             
-            unsReturn = ScriptShape(srcDC, VarPtr(m_ScriptCache), StrPtr(sSubstring), lSubstring, cMaxGlyphs, m_Items(i).getScriptItemAnalysisPointer, VarPtr(m_GlyphCache(0)), VarPtr(m_LogicalClusterCache(0)), VarPtr(m_VisualAttributesCache(0)), m_NumOfGlyphs)
+            unsReturn = ScriptShape(srcDC, VarPtr(m_ScriptCache), StrPtr(sSubstring), lSubstring, cMaxGlyphs, m_Items(i).GetScriptItemAnalysisPointer, VarPtr(m_GlyphCache(0)), VarPtr(m_LogicalClusterCache(0)), VarPtr(m_VisualAttributesCache(0)), m_NumOfGlyphs)
             
             'Because cMaxGlyphs initialization is a guessing game, ScriptShape will return an out of memory code if the buffer proves insufficient.
             ' If this happens, we double the size of the buffer and try again.
@@ -609,7 +609,7 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
         
             'm_NumOfGlyphs contains the number of glyphs generated by ScriptShape.  Forward the results to this Item object; it will extract
             ' only the entries it requires, so we don't have to worry about trimming array bounds.
-            m_Items(i).setShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
+            m_Items(i).SetShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
         
         Else
         
@@ -627,11 +627,11 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
                 
                 'We are now going to disable shaping and call ScriptShape again; this will remove any character-specific measurements, and instead
                 ' fill the glyph array with "missing glyph" markers.
-                m_Items(i).disableAllShaping
-                ScriptShape srcDC, VarPtr(m_ScriptCache), StrPtr(sSubstring), lSubstring, cMaxGlyphs, m_Items(i).getScriptItemAnalysisPointer, VarPtr(m_GlyphCache(0)), VarPtr(m_LogicalClusterCache(0)), VarPtr(m_VisualAttributesCache(0)), m_NumOfGlyphs
+                m_Items(i).DisableAllShaping
+                ScriptShape srcDC, VarPtr(m_ScriptCache), StrPtr(sSubstring), lSubstring, cMaxGlyphs, m_Items(i).GetScriptItemAnalysisPointer, VarPtr(m_GlyphCache(0)), VarPtr(m_LogicalClusterCache(0)), VarPtr(m_VisualAttributesCache(0)), m_NumOfGlyphs
                 
                 'Forward the updated results to this Item object
-                m_Items(i).setShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
+                m_Items(i).SetShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
                 
                 Debug.Print "WARNING!  ScriptShape could not find some glyphs in this font.  Recommend font fallback."
                 
@@ -667,7 +667,7 @@ End Function
 '
 'Returns TRUE if successful; FALSE otherwise.  (A failure at step 1 or 2 that was not dealt with by the caller will cause this function to
 ' return FALSE, as it relies on the output of Steps 1 and 2 to generate correct glyph placement.)
-Public Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
+Friend Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
 
     'If a SCRIPT_ITEM cache does not exist, exit now
     If Not m_ScriptItemCacheOK Then
@@ -709,7 +709,7 @@ Public Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
     
         'Prep the offset and advance width caches.  Note that we only resize these as necessary; we know the relevant number of glyphs, so an
         ' over-large buffer isn't a problem (and it prevents us from wasting cycles reallocating memory).
-        numOfGlyphs = m_Items(i).getNumOfGlyphs
+        numOfGlyphs = m_Items(i).GetNumOfGlyphs
         
         If numOfGlyphs > 0 Then
         
@@ -724,19 +724,19 @@ Public Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
             'This function retrieves a bunch of bare pointers from the relevant m_Items() object.  This is generally a bad idea in VB,
             ' but it saves us having to make expensive copies of large structs.
             With m_Items(i)
-                unsReturn = ScriptPlace(srcDC, m_ScriptCache, .getPointerToGlyphCache, numOfGlyphs, .getPointerToVisualAttributesCache, .getScriptItemAnalysisPointer, VarPtr(m_AdvanceWidthCache(0)), VarPtr(m_GlyphOffsetCache(0)), tmpABC)
+                unsReturn = ScriptPlace(srcDC, m_ScriptCache, .GetPointerToGlyphCache, numOfGlyphs, .GetPointerToVisualAttributesCache, .GetScriptItemAnalysisPointer, VarPtr(m_AdvanceWidthCache(0)), VarPtr(m_GlyphOffsetCache(0)), tmpABC)
             End With
             
             'If the return was successful, copy all retrieved data into the item container
             If unsReturn = S_OK Then
-                m_Items(i).setPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
+                m_Items(i).SetPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
             Else
             
                 functionSuccess = False
                 
                 'In the future, we may be able to deal with some failure states
                 If unsReturn = USP_E_SCRIPT_NOT_IN_FONT Then
-                    m_Items(i).setPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
+                    m_Items(i).SetPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
                     Debug.Print "WARNING!  ScriptPlace could not find some glyphs in this font.  Recommend font fallback."
                 Else
                     Debug.Print "WARNING!  ScriptPlace returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
@@ -766,7 +766,7 @@ End Function
 '
 'Returns TRUE if successful; FALSE otherwise.  (A failure at step 1 or 2 that was not dealt with by the caller will cause this function to
 ' return FALSE, as it relies on the output of Steps 1 and 2 to generate correct breaks.)
-Public Function Step5_ScriptBreak() As Boolean
+Friend Function Step5_ScriptBreak() As Boolean
 
     'If a SCRIPT_ITEM cache does not exist, exit now
     If Not m_ScriptItemCacheOK Then
@@ -797,7 +797,7 @@ Public Function Step5_ScriptBreak() As Boolean
     For i = 0 To m_NumOfItems - 1
         
         'Retrieve local copies of the relevant substring and length
-        sSubstring = m_Items(i).getSubstring
+        sSubstring = m_Items(i).GetSubstring
         lSubstring = Len(sSubstring)
         
         If lSubstring > 0 Then
@@ -805,11 +805,11 @@ Public Function Step5_ScriptBreak() As Boolean
             'Like other caches in this class, PD doesn't trim them, and it only expands them as necessary.  This is important for performance.
             If UBound(m_CharAttributesCache) < lSubstring Then ReDim m_CharAttributesCache(0 To lSubstring) As SCRIPT_LOGATTR
             
-            unsReturn = ScriptBreak(StrPtr(sSubstring), lSubstring, m_Items(i).getScriptItemAnalysisPointer, VarPtr(m_CharAttributesCache(0)))
+            unsReturn = ScriptBreak(StrPtr(sSubstring), lSubstring, m_Items(i).GetScriptItemAnalysisPointer, VarPtr(m_CharAttributesCache(0)))
             
             'If the return was successful, copy all retrieved data into the item container
             If unsReturn = S_OK Then
-                m_Items(i).setCharacterAttributeCache m_CharAttributesCache
+                m_Items(i).SetCharacterAttributeCache m_CharAttributesCache
             Else
                 
                 functionSuccess = False
@@ -843,7 +843,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     
     Dim i As Long, j As Long
     For i = 0 To m_NumOfItems - 1
-        totalGlyphCount = totalGlyphCount + m_Items(i).getNumOfGlyphs
+        totalGlyphCount = totalGlyphCount + m_Items(i).GetNumOfGlyphs
     Next i
     
     'If the buffer is not large enough to hold our full glyph list, forcibly enlarge it, and leave some dead space for
@@ -872,11 +872,11 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     
     For i = 0 To m_NumOfItems - 1
     
-        For j = 0 To m_Items(i).getNumOfGlyphs - 1
+        For j = 0 To m_Items(i).GetNumOfGlyphs - 1
             
             'See if this is a zero-width glyph.  We can reduce render time by leaving out zero-width glyphs that don't convey
             ' useful information to the renderer.
-            If m_Items(i).getZeroWidthAtPosition(j) Then
+            If m_Items(i).GetZeroWidthAtPosition(j) Then
                 
                 'Debug.Print "zero-width: " & netGlyphOffset & ", char-index: " & m_Items(i).getCorrespondingCharIndex(j) & ", start/end: " & m_Items(i).getRelativeStartPos & "," & m_Items(i).getRelativeEndPos
                 
@@ -884,7 +884,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                 If m_StringHasLinebreaks Then
                     
                     'See if the character position associated with this glyph was marked as a line-break character.
-                    If IsCharPositionLinebreak(m_Items(i).getCorrespondingCharIndex(j)) Then
+                    If IsCharPositionLinebreak(m_Items(i).GetCorrespondingCharIndex(j)) Then
                         
                         'Fill this glyph with dummy information, while taking care to manually mark it as a hard line break
                         With dstGlyphArray(netGlyphOffset)
@@ -913,15 +913,15 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
             Else
             
                 With dstGlyphArray(netGlyphOffset)
-                    .glyphIndex = m_Items(i).getGlyphCacheAtPosition(j)
-                    .AdvanceWidth = m_Items(i).getAdvanceWidthAtPosition(j)
+                    .glyphIndex = m_Items(i).GetGlyphCacheAtPosition(j)
+                    .AdvanceWidth = m_Items(i).GetAdvanceWidthAtPosition(j)
                     .isZeroWidth = False
-                    .isSoftBreak = m_Items(i).getSoftBreakAtPosition(j)
-                    .isWhiteSpace = m_Items(i).getWhitespaceAtPosition(j)
+                    .isSoftBreak = m_Items(i).GetSoftBreakAtPosition(j)
+                    .isWhiteSpace = m_Items(i).GetWhitespaceAtPosition(j)
                     .isHardLineBreak = False
                     .isFirstGlyphOnLine = False
                     .isLastGlyphOnLine = False
-                    m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
+                    m_Items(i).CopyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
                     
                     'While here, we also collect the ABC width of each glyph.  Note that this is a tad cumbersome, because the
                     ' glyph index must be passed as an unsigned integer, and values > 32767 are absolutely possible.  As such,
@@ -953,7 +953,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
 End Function
 
 'Sometimes it's helpful to take a close look at the current glyph cache.  This function will provide basic per-glyph info for the base run.
-Public Sub PrintUniscribeDebugInfo()
+Friend Sub PrintUniscribeDebugInfo()
     
     Dim tmpGlyphCache() As pdGlyphUniscribe
     Dim numOfGlyphs As Long

@@ -851,7 +851,7 @@ Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeD
                     If (InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) <> InStrRev(curLine, SPACE_CHAR, -1, vbBinaryCompare)) Then
                     
                         'This string contains at least two spaces.  Extract the first string-delimited entry.
-                        Dim targetColor As String, targetColorInt As Long, tmpQuad As RGBQuad
+                        Dim targetColor As String, tmpQuad As RGBQuad
                         targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
                         
                         'Attempt to convert this to a number; if it fails, that's okay; this is some kind of invalid line
@@ -1101,7 +1101,7 @@ Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal
                 If (InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) <> InStrRev(curLine, SPACE_CHAR, -1, vbBinaryCompare)) Then
                 
                     'This string contains two spaces.  Extract the first string-delimited entry.
-                    Dim targetColor As String, targetColorInt As Long, tmpQuad As RGBQuad
+                    Dim targetColor As String, tmpQuad As RGBQuad
                     targetColor = Left$(curLine, InStr(1, curLine, SPACE_CHAR, vbBinaryCompare) - 1)
                     
                     'Attempt to convert this to a number; if it fails, that's okay; this is some kind of invalid line
@@ -1191,7 +1191,7 @@ Friend Function SavePaletteAdobeColorTable(ByRef dstFile As String, Optional ByV
     numColorsSafe = m_Palettes(useGroupIndex).GetNumOfColors
     If (numColorsSafe > 256) Then numColorsSafe = 256
     
-    Dim i As Long, tmpQuad As RGBQuad
+    Dim i As Long
     For i = 0 To numColorsSafe - 1
         With m_Palettes(useGroupIndex).GetPaletteColor(i)
             dstBytes(i * 3) = .Red

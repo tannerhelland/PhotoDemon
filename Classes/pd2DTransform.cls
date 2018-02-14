@@ -43,7 +43,7 @@ Private m_TransformHandle As Long
 
 'Return a copy of the handle.  The caller should not free or otherwise modify the handle; this function exists solely
 ' for interop with other pd2D objects.
-Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
+Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
     If (createAsNecessary And (m_TransformHandle = 0)) Then
         If CreateTransform Then GetHandle = m_TransformHandle Else GetHandle = 0
     Else
@@ -51,15 +51,15 @@ Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     End If
 End Function
 
-Public Function GetTransformBackend() As PD_2D_RENDERING_BACKEND
+Friend Function GetTransformBackend() As PD_2D_RENDERING_BACKEND
     GetTransformBackend = m_TransformBackend
 End Function
 
-Public Function HasTransform() As Boolean
-    HasTransform = CBool(m_TransformHandle <> 0)
+Friend Function HasTransform() As Boolean
+    HasTransform = (m_TransformHandle <> 0)
 End Function
 
-Public Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As Boolean
+Friend Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As Boolean
     
     If (Not srcTransform Is Nothing) Then
     
@@ -70,7 +70,7 @@ Public Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As B
                 m_TransformHandle = GDI_Plus.GDIPlus_MatrixClone(srcTransform.GetHandle)
         End Select
         
-        CloneExistingTransform = CBool(m_TransformHandle <> 0)
+        CloneExistingTransform = (m_TransformHandle <> 0)
         If (CloneExistingTransform And m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange m_TransformBackend, True
         
     Else
@@ -240,7 +240,7 @@ End Function
 
 'Invert the matrix.  Note that this is a function, and it returns FALSE if the matrix is not invertible.  (This can happen if
 ' the matrix has been set to all zeroes, for example, by bogus scaling code.)
-Public Function InvertTransform() As Boolean
+Friend Function InvertTransform() As Boolean
     
     If (m_TransformHandle = 0) Then CreateTransform
     
@@ -259,7 +259,7 @@ Public Function InvertTransform() As Boolean
 End Function
 
 'Reset the matrix.  Note that this a new matrix will be auto-created by other functions, as necessary.
-Public Sub Reset()
+Friend Sub Reset()
     If (m_TransformHandle <> 0) Then ReleaseTransform
 End Sub
 
@@ -279,13 +279,13 @@ Private Function CreateTransform() As Boolean
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreateTransform = CBool(m_TransformHandle <> 0)
+    CreateTransform = (m_TransformHandle <> 0)
     If (CreateTransform And m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange m_TransformBackend, True
     
 End Function
 
 'Free the current matrix handle.
-Public Function ReleaseTransform() As Boolean
+Friend Function ReleaseTransform() As Boolean
     
     If (m_TransformHandle <> 0) Then
         
@@ -316,7 +316,7 @@ Friend Function InitializeTransformBackend(Optional ByVal targetBackend As PD_2D
 End Function
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Public Sub SetDebugMode(ByVal newMode As Boolean)
+Friend Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 

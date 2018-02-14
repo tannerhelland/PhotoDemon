@@ -77,7 +77,7 @@ Private m_cdOutputDefaultExtensions As String
 Private m_curFormatIndex As Long
 
 'Return the index of given input PDIF
-Public Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
+Friend Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfInputFormats
@@ -93,7 +93,7 @@ Public Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
 End Function
 
 'Return the PDIF ("PD image format" constant) at a given index
-Public Function GetInputPDIF(ByVal dIndex As Long) As Long
+Friend Function GetInputPDIF(ByVal dIndex As Long) As Long
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputPDIF = inputPDIFs(dIndex)
     Else
@@ -102,7 +102,7 @@ Public Function GetInputPDIF(ByVal dIndex As Long) As Long
 End Function
 
 'Return the friendly input format description at a given index
-Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
+Friend Function GetInputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatDescription = inputDescriptions(dIndex)
     Else
@@ -111,7 +111,7 @@ Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
 End Function
 
 'Return the input format extension at a given index
-Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
+Friend Function GetInputFormatExtensions(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatExtensions = inputExtensions(dIndex)
     Else
@@ -121,7 +121,7 @@ End Function
 
 'Return a list of all input formats supported by the current session.  By default, the list is delimited with commas,
 ' and each extension is listed as "*.abc".
-Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
+Friend Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
     
     'The first entry in the extensions collection is used for the "All supported formats" common dialog option;
     ' as such, it already contains a full list of valid extensions.
@@ -133,17 +133,17 @@ Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = "
 End Function
 
 'Return the number of available input format types
-Public Function GetNumOfInputFormats() As Long
+Friend Function GetNumOfInputFormats() As Long
     GetNumOfInputFormats = numOfInputFormats
 End Function
 
 'Return a list of input filetypes formatted for use with a common dialog box
-Public Function GetCommonDialogInputFormats() As String
+Friend Function GetCommonDialogInputFormats() As String
     GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
 'Return the index of given output FIF
-Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
+Friend Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfOutputFormats
@@ -159,7 +159,7 @@ Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
 End Function
 
 'Return the FIF (image format constant) at a given index
-Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
+Friend Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
@@ -168,7 +168,7 @@ Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
 End Function
 
 'Return the friendly output format description at a given index
-Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
+Friend Function GetOutputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatDescription = outputDescriptions(dIndex)
     Else
@@ -177,7 +177,7 @@ Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
 End Function
 
 'Return the output format extension at a given index
-Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
+Friend Function GetOutputFormatExtension(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatExtension = outputExtensions(dIndex)
     Else
@@ -186,22 +186,22 @@ Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
 End Function
 
 'Return the number of available output format types
-Public Function GetNumOfOutputFormats() As Long
+Friend Function GetNumOfOutputFormats() As Long
     GetNumOfOutputFormats = numOfOutputFormats
 End Function
 
 'Return a list of output filetypes formatted for use with a common dialog box
-Public Function GetCommonDialogOutputFormats() As String
+Friend Function GetCommonDialogOutputFormats() As String
     GetCommonDialogOutputFormats = m_CommonDialogOutputs
 End Function
 
 'Return a list of output default extensions formatted for use with a common dialog box
-Public Function GetCommonDialogDefaultExtensions() As String
+Friend Function GetCommonDialogDefaultExtensions() As String
     GetCommonDialogDefaultExtensions = m_cdOutputDefaultExtensions
 End Function
 
 'Generate a list of available import formats
-Public Sub GenerateInputFormats()
+Friend Sub GenerateInputFormats()
 
     'Prepare a list of possible INPUT formats based on the plugins available to us
     ReDim inputExtensions(0 To 50) As String
@@ -345,7 +345,7 @@ Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionLis
 End Sub
 
 'Generate a list of available export formats
-Public Sub GenerateOutputFormats()
+Friend Sub GenerateOutputFormats()
 
     ReDim outputExtensions(0 To 50) As String
     ReDim outputDescriptions(0 To 50) As String
@@ -428,7 +428,7 @@ Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionLi
 End Sub
 
 'Given a PDIF (PhotoDemon image format constant), return the default extension.
-Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
+Friend Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
     Select Case srcPDIF
     
@@ -527,7 +527,7 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 End Function
 
 'This can be used to see if an output format supports multiple color depths.
-Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Friend Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -542,7 +542,7 @@ Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_
 End Function
 
 'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
+Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
     
     'Check the special case of PDI (internal PhotoDemon images)
     If outputPDIF = PDIF_PDI Then
@@ -803,7 +803,7 @@ End Function
 
 'Given a file format and desired color depth, return the next-best color depth that can be used (assuming the desired one is not available)
 ' (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Long
+Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Long
     
     'Check the special case of PDI (internal PhotoDemon images)
     If outputPDIF = PDIF_PDI Then
@@ -1004,7 +1004,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
 ' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
 '  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
-Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Friend Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -1055,7 +1055,7 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether PD has implemented an export dialog for that image format.
-Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Friend Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     

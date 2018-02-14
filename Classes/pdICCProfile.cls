@@ -53,10 +53,10 @@ Private m_ICCData() As Byte
 Private m_ICCFilename As String
 
 'Retrieve the source render intent from the contained ICC profile
-Public Function GetSourceRenderIntent() As Long
+Friend Function GetSourceRenderIntent() As Long
 
     'Make sure we have been given an ICC profile to work with!
-    If UBound(m_ICCData) = 0 Then
+    If (UBound(m_ICCData) = 0) Then
         GetSourceRenderIntent = -1
         Exit Function
     End If
@@ -64,7 +64,7 @@ Public Function GetSourceRenderIntent() As Long
     'Render intent is stored in bytes 63-67 of the ICC profile, per the spec.  (http://www.color.org/specification/ICC1v43_2010-12.pdf)
     ' Technically only byte 67 matters, as render intent can only be a value of 0, 1, 2, or 3.
     Dim srcIntent As Long
-    If UBound(m_ICCData) >= 67 Then
+    If (UBound(m_ICCData) >= 67) Then
         srcIntent = m_ICCData(67)
     Else
         srcIntent = 0
@@ -78,34 +78,34 @@ Public Function GetSourceRenderIntent() As Long
 End Function
 
 'If a profile has been successfully applied to the parent image, this will return TRUE.
-Public Function HasProfileBeenApplied() As Boolean
+Friend Function HasProfileBeenApplied() As Boolean
     HasProfileBeenApplied = m_ICCProfileWasApplied
 End Function
 
 'If external functions (such as our new CMYK conversion code) apply a profile independently, they can use this function
 ' to mark the image as successfully converted.  This saves us the extra work of checking the profile again in PD's primary
 ' image import function.
-Public Sub MarkSuccessfulProfileApplication()
+Friend Sub MarkSuccessfulProfileApplication()
     m_ICCProfileWasApplied = True
 End Sub
 
 'The external CMYK transform code performs its own special transform using the stored ICC profile; as such, it requires a
 ' pointer to the stored ICC profile data.
-Public Function GetICCDataPointer() As Long
+Friend Function GetICCDataPointer() As Long
     GetICCDataPointer = VarPtr(m_ICCData(0))
 End Function
 
-Public Function GetICCDataSize() As Long
+Friend Function GetICCDataSize() As Long
     GetICCDataSize = UBound(m_ICCData) + 1
 End Function
 
 'If this path was created from a file, the filename is retrievable via this function.  A zero-length string is
 ' returned if the profile was created from a bare pointer.
-Public Function GetOriginalICCPath() As String
+Friend Function GetOriginalICCPath() As String
     GetOriginalICCPath = m_ICCFilename
 End Function
 
-Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
+Friend Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
     
     ReDim m_ICCData(0 To profileSize - 1) As Byte
     CopyMemory ByVal VarPtr(m_ICCData(0)), ByVal ptrToProfile, profileSize
@@ -116,7 +116,7 @@ Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As 
 
 End Function
 
-Public Function LoadICCFromFile(ByVal profilePath As String) As Boolean
+Friend Function LoadICCFromFile(ByVal profilePath As String) As Boolean
     
     LoadICCFromFile = False
     
@@ -129,7 +129,7 @@ Public Function LoadICCFromFile(ByVal profilePath As String) As Boolean
     
 End Function
 
-Public Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
+Friend Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
 
     If (srcProfile.GetICCDataSize = Me.GetICCDataSize) Then
         IsEqual = VBHacks.MemCmp(Me.GetICCDataPointer, srcProfile.GetICCDataPointer, Me.GetICCDataSize)
@@ -139,7 +139,7 @@ Public Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
 
 End Function
 
-Public Function HasICCData() As Boolean
+Friend Function HasICCData() As Boolean
     HasICCData = m_ICCDataExists
 End Function
 

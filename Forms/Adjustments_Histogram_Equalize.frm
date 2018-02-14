@@ -552,8 +552,8 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdateRadiusVisibility()
-    sltRadius.Visible = CBool(btsMode.ListIndex = 1)
-    btsKernelShape.Visible = CBool(btsMode.ListIndex = 1)
+    sltRadius.Visible = (btsMode.ListIndex = 1)
+    btsKernelShape.Visible = (btsMode.ListIndex = 1)
 End Sub
 
 Private Sub UpdatePreview()

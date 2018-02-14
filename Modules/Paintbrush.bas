@@ -1278,7 +1278,7 @@ Public Sub CommitBrushResults()
         
         Dim bottomLayerFullSize As Boolean
         With pdImages(g_CurrentImage).GetActiveLayer
-            bottomLayerFullSize = CBool((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height))
+            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height))
         End With
         
         pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)

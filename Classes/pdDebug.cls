@@ -479,7 +479,7 @@ Private Sub Class_Initialize()
 
 End Sub
 
-Public Sub TerminateDebugger()
+Friend Sub TerminateDebugger()
 
     'If logging is active, post a final message
     If m_logDatatoFile And (m_LogFileHandle <> 0) Then

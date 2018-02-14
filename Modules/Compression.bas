@@ -259,7 +259,7 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
             
             'Use the compression handle to perform the compression
             Dim outputSizeUsed As Long
-            CompressPtrToPtr = CBool(MS_Compress(hCompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
+            CompressPtrToPtr = (MS_Compress(hCompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
             
             'Return the number of bytes used
             dstSizeInBytes = outputSizeUsed
@@ -326,9 +326,9 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     ElseIf (compressionEngine = PD_CE_ZLib) Then
         DecompressPtrToPtr = Plugin_zLib.ZlibDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
-        DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+        DecompressPtrToPtr = (Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
-        DecompressPtrToPtr = CBool(Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+        DecompressPtrToPtr = (Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     
     'Windows compression engines all use an identical set of functions
     Else
@@ -340,7 +340,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
             
             'Use the decompression handle to perform decompression
             Dim outputSizeUsed As Long
-            DecompressPtrToPtr = CBool(MS_Decompress(hDecompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
+            DecompressPtrToPtr = (MS_Decompress(hDecompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
             
             'Windows decompressors must be closed when finished
             CloseDecompressor hDecompressor

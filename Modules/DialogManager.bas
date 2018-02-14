@@ -397,7 +397,7 @@ End Function
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
 Public Function ShowBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = vbNullString, Optional ByRef callingControl As pdBrushSelector) As Boolean
-    ShowBrushDialog = CBool(ChoosePDBrush(initialBrush, newBrush, callingControl) = vbOK)
+    ShowBrushDialog = (ChoosePDBrush(initialBrush, newBrush, callingControl) = vbOK)
 End Function
 
 'Display a custom brush selection dialog
@@ -422,7 +422,7 @@ End Function
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
 Public Function ShowPenDialog(ByRef NewPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
-    ShowPenDialog = CBool(ChoosePDPen(initialPen, NewPen, callingControl) = vbOK)
+    ShowPenDialog = (ChoosePDPen(initialPen, NewPen, callingControl) = vbOK)
 End Function
 
 'Display a custom pen selection dialog
@@ -447,7 +447,7 @@ End Function
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
 Public Function ShowGradientDialog(ByRef NewGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
-    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, NewGradient, callingControl) = vbOK)
+    ShowGradientDialog = (ChoosePDGradient(initialGradient, NewGradient, callingControl) = vbOK)
 End Function
 
 'Display a custom gradient selection dialog
@@ -549,4 +549,27 @@ Public Function PromptUITheme() As VbMsgBoxResult
         End If
     End If
     
+End Function
+
+'Present the user with PD's custom pen selection dialog.
+' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new pen parameters
+'          2) an optional initial pen parameter string
+'          3) an optional pdPenSelector control reference, if this dialog is being raised by a pdPenSelector control.
+'             (This reference will be used to provide live updates as the user plays with the pen dialog.)
+'
+' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
+Public Function ShowColorPanelDialog() As Boolean
+    ShowColorPanelDialog = (ChooseColorPanelSettings() = vbOK)
+End Function
+
+'Display a custom pen selection dialog
+Public Function ChooseColorPanelSettings() As VbMsgBoxResult
+
+    Load dialog_ColorPanel
+    dialog_ColorPanel.ShowDialog
+    
+    ChooseColorPanelSettings = dialog_ColorPanel.DialogResult
+    Unload dialog_ColorPanel
+    Set dialog_ColorPanel = Nothing
+
 End Function

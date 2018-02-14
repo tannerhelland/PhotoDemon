@@ -390,7 +390,7 @@ Friend Function GetPenBackend() As PD_2D_RENDERING_BACKEND
 End Function
 
 Friend Function HasPen() As Boolean
-    HasPen = CBool(m_PenHandle <> 0)
+    HasPen = (m_PenHandle <> 0)
 End Function
 
 'You only need to manually initialize a pen backend if you plan on using a non-default backend.  (Pens with the

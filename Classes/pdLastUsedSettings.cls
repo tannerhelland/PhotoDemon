@@ -56,13 +56,13 @@ Private m_ParentForm As Object
 ' This class relies heavily on direct access to its parent form - so don't forget to do this!  (Similarly, the parent
 ' control must pass "Nothing" to this same function somewhere before its "Unload" event fires, or circular references
 ' will cause problems.)
-Public Sub SetParentForm(ByRef ownerForm As Object)
+Friend Sub SetParentForm(ByRef ownerForm As Object)
     Set m_ParentForm = ownerForm
 End Sub
 
 'The parent form must manually request the restoration of all previous values.  We do this to give the parent time
 ' to initialize things like drop-downs and other objects.
-Public Function LoadAllControlValues() As Boolean
+Friend Function LoadAllControlValues() As Boolean
 
     'In previous versions of this control, each instance used a unique presets file inside the /Data/Presets folder.
     ' This was problematic, because unique disk accesses for each main window panel adds up, slowing program launch time.
@@ -84,7 +84,7 @@ Public Function LoadAllControlValues() As Boolean
     
 End Function
 
-Public Function SaveAllControlValues() As Boolean
+Friend Function SaveAllControlValues() As Boolean
     
     FillXMLSettings
     
@@ -199,7 +199,7 @@ Private Sub FillXMLSettings()
 End Sub
 
 'This function is called when the user wants to add new preset data to the current preset
-Public Function AddPresetData(ByRef presetName As String, ByRef presetData As String)
+Friend Function AddPresetData(ByRef presetName As String, ByRef presetData As String)
     
     'Increase the array size
     ReDim Preserve m_userPresetNames(0 To m_numUserPresets) As String
@@ -215,7 +215,7 @@ Public Function AddPresetData(ByRef presetName As String, ByRef presetData As St
 End Function
 
 'This function is called when the user wants to read custom preset data from file
-Public Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = vbNullString) As String
+Friend Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = vbNullString) As String
     RetrievePresetData = m_Params.GetString("custom:" & presetName, returnValueIfMissing)
 End Function
 
@@ -242,7 +242,7 @@ Private Function ReadXMLSettings() As Boolean
             controlValue = m_Params.GetString(controlName, vbNullString)
         End If
         
-        If (Len(controlValue) <> 0) Then
+        If (LenB(controlValue) <> 0) Then
         
             'An entry exists!  Assign out its value according to the control type.
             Select Case controlType

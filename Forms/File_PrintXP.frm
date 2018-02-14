@@ -542,7 +542,6 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     dstHeight = dstPicture.ScaleHeight
     
     Dim srcWidth As Double, srcHeight As Double
-    Dim selBounds As RectF
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     Dim srcDIB As pdDIB

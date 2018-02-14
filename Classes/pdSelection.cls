@@ -2082,7 +2082,7 @@ Private Sub CreateSelectionMask()
             If (m_FloodFill Is Nothing) Then Set m_FloodFill = New pdFloodFill
             
             'Set all initial parameters
-            m_FloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > es_None)
+            m_FloodFill.SetAntialiasingMode (GetSelectionProperty_Long(sp_Smoothing) > es_None)
             m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
             m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
             m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)

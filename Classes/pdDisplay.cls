@@ -56,43 +56,43 @@ Private m_EDIDSerialNumberMini As Long
 Private m_EDIDNativeResH As Long
 Private m_EDIDNativeResV As Long
 
-Public Function GetHandle() As Long
+Friend Function GetHandle() As Long
     GetHandle = m_hMonitor
 End Function
 
-Public Sub SetHandle(ByVal newHandle As Long)
+Friend Sub SetHandle(ByVal newHandle As Long)
     m_hMonitor = newHandle
 End Sub
 
-Public Function GetAdapterName() As String
+Friend Function GetAdapterName() As String
     GetAdapterName = m_AdapterName
 End Function
 
-Public Sub SetAdapterName(ByRef newName As String)
+Friend Sub SetAdapterName(ByRef newName As String)
     m_AdapterName = newName
 End Sub
 
-Public Function GetFriendlyName() As String
+Friend Function GetFriendlyName() As String
     GetFriendlyName = m_FriendlyName
 End Function
 
-Public Sub SetFriendlyName(ByRef newName As String)
+Friend Sub SetFriendlyName(ByRef newName As String)
     m_FriendlyName = newName
 End Sub
 
-Public Function GetDescription() As String
+Friend Function GetDescription() As String
     GetDescription = m_Description
 End Function
 
-Public Sub SetDescription(ByRef newDescription As String)
+Friend Sub SetDescription(ByRef newDescription As String)
     m_Description = newDescription
 End Sub
 
-Public Function GetDeviceID() As String
+Friend Function GetDeviceID() As String
     GetDeviceID = m_DeviceID
 End Function
 
-Public Sub SetDeviceID(ByRef newDeviceID As String)
+Friend Sub SetDeviceID(ByRef newDeviceID As String)
     m_DeviceID = newDeviceID
 End Sub
 
@@ -112,17 +112,17 @@ Friend Sub SetWorkingRect(ByRef srcRect As RectL)
     m_WorkingRect = srcRect
 End Sub
 
-Public Property Get IsPrimary() As Boolean
+Friend Property Get IsPrimary() As Boolean
     IsPrimary = m_Primary
 End Property
 
-Public Property Let IsPrimary(lPrimary As Boolean)
+Friend Property Let IsPrimary(lPrimary As Boolean)
     m_Primary = lPrimary
 End Property
 
 'Retrieve the best available name for this monitor.  If available, an EDID model name will be used.  If that doesn't
 ' exist, we'll use the Windows fallback (which is often something dumb like "Generic PnP Monitor").
-Public Function GetBestMonitorName() As String
+Friend Function GetBestMonitorName() As String
     
     If Len(m_EDIDModelName) <> 0 Then
         GetBestMonitorName = m_EDIDModelName
@@ -133,7 +133,7 @@ Public Function GetBestMonitorName() As String
 End Function
 
 'Retrieve the monitor's size, as a string (useful for displaying to the user)
-Public Function GetMonitorSizeAsString() As String
+Friend Function GetMonitorSizeAsString() As String
 
     If m_hasEDID Then
         GetMonitorSizeAsString = Format$(m_EDIDDiagonalInches, "#0.0") & """"
@@ -144,7 +144,7 @@ Public Function GetMonitorSizeAsString() As String
 End Function
 
 'Retrieve the monitor's native resolution, as a string (useful for displaying to the user)
-Public Function GetMonitorResolutionAsString() As String
+Friend Function GetMonitorResolutionAsString() As String
 
     If m_hasEDID Then
         GetMonitorResolutionAsString = CStr(m_EDIDNativeResH) & "x" & CStr(m_EDIDNativeResV)
@@ -154,7 +154,7 @@ Public Function GetMonitorResolutionAsString() As String
 
 End Function
 
-Public Function GetMonitorSerialNo(Optional ByVal getMiniDescriptor As Boolean = False, Optional ByVal getCombinedDescriptor As Boolean = False) As String
+Friend Function GetMonitorSerialNo(Optional ByVal getMiniDescriptor As Boolean = False, Optional ByVal getCombinedDescriptor As Boolean = False) As String
     If getMiniDescriptor Then
         GetMonitorSerialNo = CStr(m_EDIDSerialNumberMini)
     ElseIf getCombinedDescriptor Then
@@ -164,11 +164,11 @@ Public Function GetMonitorSerialNo(Optional ByVal getMiniDescriptor As Boolean =
     End If
 End Function
 
-Public Function HasSerialNo() As Boolean
-    HasSerialNo = CBool(Len(m_EDIDSerialNumber) <> 0)
+Friend Function HasSerialNo() As Boolean
+    HasSerialNo = (LenB(m_EDIDSerialNumber) <> 0)
 End Function
 
-Public Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boolean = True)
+Friend Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boolean = True)
     If uniqueAcrossSessions Then
         
         'Some display manufacturers don't provide any form of serial number.  This makes it really unpleasant to try
@@ -186,13 +186,13 @@ Public Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boole
     End If
 End Function
 
-Public Function HasEDID() As Boolean
+Friend Function HasEDID() As Boolean
     HasEDID = m_hasEDID
 End Function
 
 'At creation time, the clsMonitors class will attempt to retrieve an EDID for this monitor.  Regardless of success
 ' or failure, it will call this function.
-Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing As Boolean = False)
+Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing As Boolean = False)
 
     'If we already have an EDID, exit.  (This shouldn't be possible, but oh well.)
     If m_hasEDID Then Exit Sub

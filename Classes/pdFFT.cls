@@ -58,7 +58,7 @@ Private m_N As Long
 Private m_M As Long
 Private m_Direction As Boolean
 
-Public Function PrepFFT(ByVal n As Long, Optional ByVal forwardTransform As Boolean = True) As Boolean
+Friend Function PrepFFT(ByVal n As Long, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'If n = our previous n, we don't need to rebuild our lookup tables
     If ((n = m_N) And (n <> 0) And (forwardTransform = m_Direction)) Then
@@ -100,7 +100,7 @@ End Function
 ' An in-place transform is used, so srcReal() and srcImag() WILL BE OVERWRITTEN.  Plan accordingly.
 '
 'This function uses a simple radix-2 approach, which is not as fast as a radix-4+, but is significantly simpler code.
-Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
+Friend Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'Make sure all inputs align with n
     If (n = UBound(srcReal) + 1) And (n = UBound(srcImag) + 1) And (n = m_N) Then
@@ -203,7 +203,7 @@ End Function
 ' As an attempt to profile VB's specific weaknesses, this function uses estimation techniques based around Sqr()
 ' instead of pure Cos/Sin functions.  By my testing, this is 10-15% faster (compiled) than the trigonometric approach,
 ' at some minor hit to accuracy.  (For image processing functions, this is a preferred trade-off.)
-Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
+Friend Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'Make sure all inputs align with n
     If (n = UBound(srcReal) + 1) And (n = UBound(srcImag) + 1) And (n = m_N) Then
@@ -305,7 +305,7 @@ End Function
 'Dump a brief FFT test to the debug window.
 ' If you want some predictable FFT output, try the following link for test data:
 ' http://www.sccon.ca/sccon/fft/fft3.htm
-Public Sub TestFFT()
+Friend Sub TestFFT()
 
     Dim testReal() As Single, testImag() As Single
     

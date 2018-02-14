@@ -1007,7 +1007,7 @@ Friend Function FileReadData(ByVal srcHandle As Long, ByVal ptrToDestinationObje
     
     'Read the data!
     Dim tmpReturn As Long
-    FileReadData = CBool(ReadFile(srcHandle, ptrToDestinationObject, numOfBytesToRead, tmpReturn, 0&) <> 0)
+    FileReadData = (ReadFile(srcHandle, ptrToDestinationObject, numOfBytesToRead, tmpReturn, 0&) <> 0)
     
     'As a convenience to the caller, print out scenarios where the actual amount read differs from the amount of data requested.
     If (tmpReturn <> numOfBytesToRead) Then FSOError "FileReadData", "retrieved " & CStr(tmpReturn) & " bytes instead of the " & CStr(numOfBytesToRead) & " bytes you requested.  Check your math."
@@ -1719,7 +1719,7 @@ Friend Function ReleaseMMHandle(ByVal srcMappedHandle As Long, ByVal srcBaseAddr
         If flushImmediately Then FlushViewOfFile srcBaseAddress, 0&
         
         'Release the mapped file object
-        ReleaseMMHandle = CBool(CloseHandle(srcMappedHandle) <> 0)
+        ReleaseMMHandle = (CloseHandle(srcMappedHandle) <> 0)
         
         'As a convenience to the caller, we can close the original file handle now as well.
         If (srcFileHandleToo <> 0) Then ReleaseMMHandle = ReleaseMMHandle And Me.FileCloseHandle(srcFileHandleToo)

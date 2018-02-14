@@ -66,7 +66,7 @@ Friend Function GetPathBackend() As PD_2D_RENDERING_BACKEND
 End Function
 
 Friend Function HasPath() As Boolean
-    HasPath = CBool(m_PathHandle <> 0)
+    HasPath = (m_PathHandle <> 0)
 End Function
 
 'Create an actual transform handle using the current backend and the current transform settings.
@@ -85,7 +85,7 @@ Private Function CreatePath() As Boolean
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreatePath = CBool(m_PathHandle <> 0)
+    CreatePath = (m_PathHandle <> 0)
     If (CreatePath And m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange m_PathBackend, True
     
 End Function

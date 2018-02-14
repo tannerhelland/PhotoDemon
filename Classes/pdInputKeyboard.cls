@@ -142,7 +142,7 @@ End Sub
 
 'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
 ' to ensure a particular unload time.
-Public Sub Shutdown()
+Friend Sub Shutdown()
     
     If (m_targetHwnd <> 0) Then
         If m_SubclassActive Then VBHacks.StopSubclassing m_targetHwnd, Me
@@ -159,7 +159,7 @@ Public Sub Shutdown()
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+Friend Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
     'Failsafe check for bad user behavior
     If (m_targetHwnd <> 0) Then Debug.Print "WARNING!  Keyboard tracker requested, but we're already tracking an object!"
@@ -237,7 +237,7 @@ Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
 End Function
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
+Friend Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
     
     'See comments in the previous function (createKeyboardTracker) for details
     If (UBound(listOfKeys) >= LBound(listOfKeys)) Then

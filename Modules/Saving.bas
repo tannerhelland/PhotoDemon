@@ -340,31 +340,31 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
         Select Case outputPDIF
             
             Case PDIF_BMP
-                GetExportParamsFromDialog = CBool(DialogManager.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_GIF
-                GetExportParamsFromDialog = CBool(DialogManager.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_JP2
-                GetExportParamsFromDialog = CBool(DialogManager.PromptJP2Settings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptJP2Settings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_JPEG
-                GetExportParamsFromDialog = CBool(DialogManager.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_JXR
-                GetExportParamsFromDialog = CBool(DialogManager.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
         
             Case PDIF_PNG
-                GetExportParamsFromDialog = CBool(DialogManager.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_PNM
-                GetExportParamsFromDialog = CBool(DialogManager.PromptPNMSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptPNMSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_TIFF
-                GetExportParamsFromDialog = CBool(DialogManager.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_WEBP
-                GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = (DialogManager.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
         End Select
         

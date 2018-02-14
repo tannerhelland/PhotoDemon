@@ -62,10 +62,9 @@ Private m_PresetFilePath As String
 ' This string is set to the preset's XML-safe name, as set by the beginPresetRetrieval function.
 Private m_ActivePresetName As String
 
-
 'The caller must specify a preset path prior to any other interactions.
 ' Note that this function ALSO LOADS THE PRESET FILE.  (It seemed redundant to force separate handling for that step.)
-Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = vbNullString)
+Friend Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = vbNullString)
     
     m_PresetFilePath = srcPresetFilePath
     m_ToolName = toolName
@@ -86,14 +85,14 @@ Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName A
 End Sub
 
 'After the caller is done working with presets, they can call this function to write the current preset collection to file.
-Public Sub WritePresetFile()
+Friend Sub WritePresetFile()
     m_XMLEngine.WriteXMLToFile m_PresetFilePath
 End Sub
 
 'Given a pdStringStack object, fill it with a list of all available preset names.
 '
 'RETURNS: number of presets found; 0 if no presets were found, which also happens if the preset file does not exist
-Public Function GetListOfPresets(ByRef dstStringStack As pdStringStack) As Long
+Friend Function GetListOfPresets(ByRef dstStringStack As pdStringStack) As Long
     
     'As a convenience to the caller, initialize the string stack for them
     Set dstStringStack = New pdStringStack
@@ -119,7 +118,7 @@ End Function
 'See if a given preset exists in the preset file.
 '
 'Returns TRUE if the requested preset is found; FALSE otherwise.
-Public Function DoesPresetExist(ByVal presetName As String) As Boolean
+Friend Function DoesPresetExist(ByVal presetName As String) As Boolean
 
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -133,7 +132,7 @@ End Function
 
 'Prior to retrieving preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset retrieval.
-Public Sub BeginPresetRead(ByVal presetName As String)
+Friend Sub BeginPresetRead(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -145,14 +144,14 @@ End Sub
 ' for the currently active preset (as set by beginPresetRetrieval), and store it in the destination string.
 '
 'Returns TRUE if object name exists for preset name; FALSE otherwise.
-Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
+Friend Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
     
     'Perform a failsafe check to make sure preset retrieval has been initialized
-    If (Len(m_ActivePresetName) <> 0) Then
+    If (LenB(m_ActivePresetName) <> 0) Then
     
         'Retrieve said value, and return TRUE if a non-zero length string is found
         dstObjectValue = m_XMLEngine.GetUniqueTag_String(objectName, vbNullString, , "presetEntry", "id", m_ActivePresetName)
-        ReadPresetValue = CBool(LenB(dstObjectValue) <> 0)
+        ReadPresetValue = (LenB(dstObjectValue) <> 0)
         
     Else
         
@@ -164,13 +163,13 @@ Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue
 End Function
 
 'Counterpart to beginPresetRead, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
-Public Sub EndPresetRead()
+Friend Sub EndPresetRead()
     m_ActivePresetName = vbNullString
 End Sub
 
 'Prior to writing preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset writes.
-Public Sub BeginPresetWrite(ByVal presetName As String)
+Friend Sub BeginPresetWrite(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -195,10 +194,10 @@ End Sub
 
 'Given two things: an object name and a object value, write the two as a standard preset pair into the
 ' master XML object.
-Public Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As String)
+Friend Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As String)
     
     'Perform a failsafe check to make sure preset writing has been initialized
-    If (Len(m_ActivePresetName) <> 0) Then
+    If (LenB(m_ActivePresetName) <> 0) Then
         
         'Store the new value inside the master XML object
         m_XMLEngine.UpdateTag objectName, objectValue, "presetEntry", "id", m_ActivePresetName
@@ -211,7 +210,7 @@ Public Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As Str
 End Sub
 
 'Counterpart to beginPresetWrite, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
-Public Sub EndPresetWrite()
+Friend Sub EndPresetWrite()
     m_ActivePresetName = vbNullString
 End Sub
 

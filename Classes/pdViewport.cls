@@ -54,11 +54,11 @@ Private m_SrcImageIntersectRect As RectF
 'Current scroll bar values.  These are saved/restored when the active image changes.
 Private m_HScrollValue As Long, m_VScrollValue As Long
 
-Public Sub SetHScrollValue(ByVal newValue As Long)
+Friend Sub SetHScrollValue(ByVal newValue As Long)
     m_HScrollValue = newValue
 End Sub
 
-Public Sub SetVScrollValue(ByVal newValue As Long)
+Friend Sub SetVScrollValue(ByVal newValue As Long)
     m_VScrollValue = newValue
 End Sub
 
@@ -90,11 +90,11 @@ Friend Sub SetCanvasRectActualPixels(ByRef srcRectF As RectF)
     m_CanvasRect_ActualPixels = srcRectF
 End Sub
 
-Public Function GetHScrollValue() As Long
+Friend Function GetHScrollValue() As Long
     GetHScrollValue = m_HScrollValue
 End Function
 
-Public Function GetVScrollValue() As Long
+Friend Function GetVScrollValue() As Long
     GetVScrollValue = m_VScrollValue
 End Function
 

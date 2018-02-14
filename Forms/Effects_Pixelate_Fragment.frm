@@ -312,7 +312,7 @@ Private Function GetLocalParamString() As String
         .AddParam "count", sltFragments.Value
         .AddParam "distance", sltDistance.Value
         .AddParam "angle", sltAngle.Value
-        .AddParam "opacityauto", CBool(btsOpacity.ListIndex = 0)
+        .AddParam "opacityauto", (btsOpacity.ListIndex = 0)
         .AddParam "opacitymanual", sldOpacity.Value
     End With
     

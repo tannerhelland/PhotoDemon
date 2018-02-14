@@ -153,7 +153,7 @@ RetryTranslation:
         'Use the ie scripting object to access Google translate.  Note that special care must be taken for
         ' Chinese languages, if the user originates in China; we must use the .cn URL there or Google will fail.
         Dim useChineseEngine As Boolean: useChineseEngine = False
-        useChineseEngine = CBool(InStr(1, LCase$(m_dstLanguage), "zh", vbBinaryCompare) <> 0) Or CBool(InStr(1, LCase$(m_dstLanguage), "cn", vbBinaryCompare) <> 0)
+        useChineseEngine = (InStr(1, LCase$(m_dstLanguage), "zh", vbBinaryCompare) <> 0) Or (InStr(1, LCase$(m_dstLanguage), "cn", vbBinaryCompare) <> 0)
         
         If useChineseEngine Then
             m_IE.navigate "http://translate.google.cn/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText

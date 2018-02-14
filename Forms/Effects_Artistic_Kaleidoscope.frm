@@ -472,7 +472,7 @@ Private Function GetLocalParamString() As String
         .AddParam "angle", sltAngle.Value
         .AddParam "secondaryangle", sltAngle2.Value
         .AddParam "radius", sltRadius.Value
-        .AddParam "quality", CBool(btsQuality.ListIndex = 0)
+        .AddParam "quality", (btsQuality.ListIndex = 0)
         .AddParam "x", sltXCenter.Value
         .AddParam "y", sltYCenter.Value
     End With

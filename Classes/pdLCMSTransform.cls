@@ -68,14 +68,14 @@ End Function
 Friend Function CreateTwoProfileTransform(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Boolean
     If (m_TransformHandle <> 0) Then ReleaseTransform
     m_TransformHandle = LittleCMS.LCMS_CreateTwoProfileTransform(srcProfile.GetHandle, dstProfile.GetHandle, hInputFormat, hOutputFormat, trnsRenderingIntent, trnsFlags)
-    CreateTwoProfileTransform = CBool(m_TransformHandle <> 0)
+    CreateTwoProfileTransform = (m_TransformHandle <> 0)
 End Function
 
 Friend Function CreateInPlaceTransformForDIB(ByRef srcDIB As pdDIB, ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Boolean
     If (m_TransformHandle <> 0) Then ReleaseTransform
     If (Not (srcDIB Is Nothing)) And (Not (srcProfile Is Nothing)) And (Not (dstProfile Is Nothing)) Then
         m_TransformHandle = LittleCMS.LCMS_CreateInPlaceTransformForDIB(srcProfile.GetHandle, dstProfile.GetHandle, srcDIB, trnsRenderingIntent, trnsFlags)
-        CreateInPlaceTransformForDIB = CBool(m_TransformHandle <> 0)
+        CreateInPlaceTransformForDIB = (m_TransformHandle <> 0)
     End If
 End Function
 
@@ -109,7 +109,7 @@ Friend Function CreateRGBModificationTransform(Optional ByRef srcProfile As pdLC
     LittleCMS.LCMS_CloseProfileHandle transformProfiles(2)
     'Profiles (3) and (4) are deliberately skipped, because they are just copies of profile (2) and (0) - see above
     
-    CreateRGBModificationTransform = CBool(m_TransformHandle <> 0)
+    CreateRGBModificationTransform = (m_TransformHandle <> 0)
     
 End Function
 
@@ -134,7 +134,7 @@ Friend Function CreateRGBAToLabTransform(Optional ByRef srcProfile As pdLCMSProf
     If useLabAFormat Then dstFormat = TYPE_LabA_FLT Else dstFormat = TYPE_Lab_FLT
     m_TransformHandle = LittleCMS.LCMS_CreateTwoProfileTransform(srcProfile.GetHandle, dstProfile.GetHandle, , dstFormat, trnsRenderingIntent, trnsFlags)
     
-    CreateRGBAToLabTransform = CBool(m_TransformHandle <> 0)
+    CreateRGBAToLabTransform = (m_TransformHandle <> 0)
 
 End Function
 
@@ -156,7 +156,7 @@ Friend Function CreateLabToRGBATransform(Optional ByRef dstProfile As pdLCMSProf
     If useLabAFormat Then srcFormat = TYPE_LabA_FLT Else srcFormat = TYPE_Lab_FLT
     m_TransformHandle = LittleCMS.LCMS_CreateTwoProfileTransform(srcProfile.GetHandle, dstProfile.GetHandle, srcFormat, , trnsRenderingIntent, trnsFlags)
     
-    CreateLabToRGBATransform = CBool(m_TransformHandle <> 0)
+    CreateLabToRGBATransform = (m_TransformHandle <> 0)
 
 End Function
 
@@ -165,7 +165,7 @@ Friend Function GetHandle() As Long
 End Function
 
 Friend Function HasTransform() As Boolean
-    HasTransform = CBool(m_TransformHandle <> 0)
+    HasTransform = (m_TransformHandle <> 0)
 End Function
 
 Friend Function ReleaseTransform() As Boolean

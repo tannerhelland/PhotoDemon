@@ -460,7 +460,7 @@ End Function
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
     For i = picCategory.lBound To picCategory.UBound
-        picCategory(i).Visible = CBool(btsMasterType.ListIndex = i)
+        picCategory(i).Visible = (btsMasterType.ListIndex = i)
     Next i
 End Sub
 
@@ -737,7 +737,7 @@ Private Function GetExportParamString() As String
     Set cParams = New pdParamXML
     
     'The parameters this function returns vary based on the current PNG mode (standard vs web-optimized).
-    cParams.AddParam "PNGCreateWebOptimized", CBool(btsMasterType.ListIndex = 1)
+    cParams.AddParam "PNGCreateWebOptimized", (btsMasterType.ListIndex = 1)
     
     'Standard parameters are the more complicated ones, if you can believe it
     If (btsMasterType.ListIndex = 0) Then
@@ -911,7 +911,7 @@ Private Sub UpdateStandardTitlebars()
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
     For i = ttlStandard.lBound To ttlStandard.UBound
-        ttlStandard(i).Value = CBool(i = m_ActiveTitleBar)
+        ttlStandard(i).Value = (i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
     

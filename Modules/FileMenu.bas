@@ -183,7 +183,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
         ' 2) "Safe" mode.  When the user clicks "save", save a new copy of the image, auto-incremented with a trailing number.
         '    (e.g. old copies are never overwritten).
         Dim safeSaveModeActive As Boolean
-        safeSaveModeActive = CBool(g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) <> 0)
+        safeSaveModeActive = (g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) <> 0)
         
         If safeSaveModeActive Then
         

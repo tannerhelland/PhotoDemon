@@ -237,7 +237,7 @@ Friend Function GetRegionAsHRgn() As Long
 End Function
 
 Friend Function HasRegion() As Boolean
-    HasRegion = CBool(m_RegionHandle <> 0)
+    HasRegion = (m_RegionHandle <> 0)
 End Function
 
 'You only need to manually initialize a backend if you plan on using a NON-DEFAULT backend.
@@ -261,7 +261,7 @@ Friend Function CreateRegion() As Boolean
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreateRegion = CBool(m_RegionHandle <> 0)
+    CreateRegion = (m_RegionHandle <> 0)
     If (CreateRegion And m_DebugMode) Then Drawing2D.DEBUG_NotifyRegionCountChange m_RegionBackend, True
     
 End Function

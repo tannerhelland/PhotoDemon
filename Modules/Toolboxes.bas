@@ -309,20 +309,20 @@ Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PD_Toolbox, Optional By
     Select Case whichToolbar
     
         Case PDT_LeftToolbox
-            FormMain.MnuWindowToolbox(0).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
-            SetToolboxVisibilityPreference whichToolbar, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            FormMain.MnuWindowToolbox(0).Checked = (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference whichToolbar, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
         Case PDT_BottomToolbox
-            FormMain.MnuWindow(1).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
-            SetToolboxVisibilityPreference PDT_BottomToolbox, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            FormMain.MnuWindow(1).Checked = (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference PDT_BottomToolbox, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
             'Because this toolbox's visibility is also tied to the current tool, we wrap a different function.  This function
             ' will show/hide the toolbox as necessary.
             toolbar_Toolbox.ResetToolButtonStates
             
         Case PDT_RightToolbox
-            FormMain.MnuWindow(2).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
-            SetToolboxVisibilityPreference PDT_RightToolbox, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            FormMain.MnuWindow(2).Checked = (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference PDT_RightToolbox, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
     End Select
     

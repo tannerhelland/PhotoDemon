@@ -319,7 +319,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
             
     End Select
     
-    GetNonEssentialPluginFiles = CBool(dstStringStack.GetNumOfStrings <> 0)
+    GetNonEssentialPluginFiles = (dstStringStack.GetNumOfStrings <> 0)
     
 End Function
 

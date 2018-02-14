@@ -91,7 +91,7 @@ Private Sub EndSubclassing()
     End If
 End Sub
 
-Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
+Friend Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
     
     Dim strKey As String
     strKey = Trim$(Str$(parentHwnd))

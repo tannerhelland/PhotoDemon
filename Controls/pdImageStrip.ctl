@@ -189,7 +189,7 @@ Public Property Let Alignment(ByVal newAlignment As AlignConstants)
     
     'From the new alignment setting, determine whether we are in horizontal or vertical mode
     If newAlignment = vbAlignNone Then newAlignment = vbAlignTop
-    m_VerticalLayout = CBool((newAlignment = vbAlignLeft) Or (newAlignment = vbAlignRight))
+    m_VerticalLayout = ((newAlignment = vbAlignLeft) Or (newAlignment = vbAlignRight))
     
     'If we've just switched between horizontal and vertical modes, resize the control to reflect our current height
     If (prevVerticalLayout <> m_VerticalLayout) Then
@@ -284,8 +284,8 @@ End Sub
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     Dim lbClick As Boolean, rbClick As Boolean
-    lbClick = CBool((Button And pdLeftButton) <> 0)
-    rbClick = CBool((Button And pdRightButton) <> 0)
+    lbClick = ((Button And pdLeftButton) <> 0)
+    rbClick = ((Button And pdRightButton) <> 0)
     
     'LMB clicks can select a new thumb, or close a thumb (if over the corner-aligned "close image" icon)
     If (lbClick Or rbClick) Then

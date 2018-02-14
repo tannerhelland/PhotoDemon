@@ -419,6 +419,6 @@ End Sub
 Private Sub UpdatePanelVisibility()
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1
-        picContainer(i).Visible = CBool(i = btsCategory.ListIndex)
+        picContainer(i).Visible = (i = btsCategory.ListIndex)
     Next i
 End Sub

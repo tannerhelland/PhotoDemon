@@ -553,7 +553,7 @@ Private Function GetExportParamString() As String
     
     cParams.AddParam "BMPColorDepth", outputDepth
     cParams.AddParam "BMPRLECompression", CBool(chkRLE.Value)
-    cParams.AddParam "BMPForceGrayscale", CBool(btsColorModel.ListIndex = 3)
+    cParams.AddParam "BMPForceGrayscale", (btsColorModel.ListIndex = 3)
     cParams.AddParam "BMP16bpp555", CBool(chk16555.Value)
     If CBool(chkColorCount.Value) And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value Else cParams.AddParam "BMPIndexedColorCount", 256
     cParams.AddParam "BMPBackgroundColor", clsBackground.Color

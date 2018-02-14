@@ -176,7 +176,7 @@ Private m_DelayedRenderingActive As Boolean
 ' Using native clipboard functions guarantees that all programs registering the same format name get the same ID in return.
 '
 'RETURNS: clipboard format ID if successful; 0 otherwise.
-Public Function AddClipboardFormat(ByVal sName As String) As Long
+Friend Function AddClipboardFormat(ByVal sName As String) As Long
     
     Dim wFormat As Long
     wFormat = RegisterClipboardFormatW(StrPtr(sName))
@@ -187,13 +187,13 @@ Public Function AddClipboardFormat(ByVal sName As String) As Long
 End Function
 
 'Number of formats currently located on the clipboard
-Public Function GetClipboardFormatCount() As Long
+Friend Function GetClipboardFormatCount() As Long
     GetClipboardFormatCount = CountClipboardFormats()
 End Function
 
 'Return a comma-delimited list of currently available string formats.  This function exists primarily for debugging, and is not intended to
 ' be used for actual clipboard enumerations (hence the weird return format).
-Public Function GetListOfAvailableFormatNames() As String
+Friend Function GetListOfAvailableFormatNames() As String
 
     If (m_NumOfClipboardFormats > 0) Then
         
@@ -216,7 +216,7 @@ Public Function GetListOfAvailableFormatNames() As String
 End Function
 
 'Given an index into our module-level clipboard ID array, return the corresponding ID value
-Public Function GetFormatIDByIndex(ByVal lIndex As Long) As Long
+Friend Function GetFormatIDByIndex(ByVal lIndex As Long) As Long
     If ((lIndex >= 0) And (lIndex < m_NumOfClipboardFormats)) Then
         GetFormatIDByIndex = m_ClipboardIDs(lIndex)
     Else
@@ -225,7 +225,7 @@ Public Function GetFormatIDByIndex(ByVal lIndex As Long) As Long
 End Function
 
 'Given an index into our module-level clipboard name array, return the corresponding format name
-Public Function GetFormatNameByIndex(ByVal lIndex As Long) As String
+Friend Function GetFormatNameByIndex(ByVal lIndex As Long) As String
     If ((lIndex >= 0) And (lIndex < m_NumOfClipboardFormats)) Then
         GetFormatNameByIndex = m_ClipboardNames(lIndex)
     Else
@@ -235,7 +235,7 @@ End Function
 
 'See if a given clipboard format ID exists on the current clipboard.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveFormatID(ByVal srcFormatId As PredefinedClipboardFormatConstants) As Boolean
+Friend Function DoesClipboardHaveFormatID(ByVal srcFormatId As PredefinedClipboardFormatConstants) As Boolean
     
     DoesClipboardHaveFormatID = False
     
@@ -257,37 +257,37 @@ End Function
 'Shortcut function to check for HTML text.  HTML text is handled weirdly, because it's system-defined (see
 ' https://msdn.microsoft.com/en-us/library/windows/desktop/ms649015%28v=vs.85%29.aspx), but it doesn't use a hard-coded ID.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveHTML() As Boolean
+Friend Function DoesClipboardHaveHTML() As Boolean
     DoesClipboardHaveHTML = Me.DoesClipboardHaveFormatName("HTML Format")
 End Function
 
 'Shortcut function to check for one or more file paths.  File lists are handled weirdly, via an HDROP handle.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveFiles() As Boolean
+Friend Function DoesClipboardHaveFiles() As Boolean
     DoesClipboardHaveFiles = Me.DoesClipboardHaveFormatID(CF_HDROP)
 End Function
 
 'Shortcut function to check for text.  Text, OEM text, and Unicode text all cause a valid return.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveText() As Boolean
+Friend Function DoesClipboardHaveText() As Boolean
     DoesClipboardHaveText = Me.DoesClipboardHaveFormatID(CF_TEXT) Or Me.DoesClipboardHaveFormatID(CF_UNICODETEXT) Or Me.DoesClipboardHaveFormatID(CF_OEMTEXT)
 End Function
 
 'Shortcut function to check for bitmaps and DIBs.  Note that the OS auto-converts between CF_BITMAP, CF_DIB, and CF_DIBv5 for you.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveBitmapImage() As Boolean
+Friend Function DoesClipboardHaveBitmapImage() As Boolean
     DoesClipboardHaveBitmapImage = Me.DoesClipboardHaveFormatID(CF_BITMAP) Or Me.DoesClipboardHaveFormatID(CF_DIB) Or Me.DoesClipboardHaveFormatID(CF_DIBV5)
 End Function
 
 'Shortcut function to test for metafiles.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveMetafile() As Boolean
+Friend Function DoesClipboardHaveMetafile() As Boolean
     DoesClipboardHaveMetafile = Me.DoesClipboardHaveFormatID(CF_ENHMETAFILE) Or Me.DoesClipboardHaveFormatID(CF_METAFILEPICT)
 End Function
 
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Boolean
+Friend Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Boolean
     
     DoesClipboardHaveFormatName = False
     
@@ -308,7 +308,7 @@ End Function
 
 'Return the name for a given clipboard format ID.  (Format IDs for custom formats can be obtained via AddClipboardFormat(), above.)
 ' By design, this function does not support translations.  It is for internal PD use only.
-Public Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFormatConstants) As String
+Friend Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFormatConstants) As String
     
     'Predefined clipboard format names can be supplied without relying on the OS
     If ((clipFormatID > CF_MIN) And (clipFormatID < CF_MAX)) Then
@@ -394,7 +394,7 @@ End Function
 
 'Given a named clipboard format, return the matching ID.
 ' IMPORTANT NOTE: the clipboard must be open for this to work.
-Public Function GetFormatIDFromName(ByVal sName As String) As Long
+Friend Function GetFormatIDFromName(ByVal sName As String) As Long
     
     GetFormatIDFromName = 0
     
@@ -416,7 +416,7 @@ End Function
 
 'Given a clipboard format ID, return the corresponding data chunk as a raw byte array.  It's up to the caller to parse the data further.
 ' Returns: TRUE if successful; FALSE if something goes horribly wrong.
-Public Function GetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef dstData() As Byte) As Boolean
+Friend Function GetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef dstData() As Byte) As Boolean
     
     GetClipboardBinaryData = False
     
@@ -464,7 +464,7 @@ Public Function GetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
 End Function
 
 'Get a handle (HGLOBAL, specifically) to the clipboard data associated with a given format ID
-Public Function GetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Long
+Friend Function GetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Long
     
     GetClipboardMemoryHandle = 0
     
@@ -489,7 +489,7 @@ End Function
 'Stick new data on the clipboard.  An associated clipboard format is required.
 ' (IMPORTANT NOTE: the data placed on the clipboard is owned by the clipboard - NOT you - so we don't need to worry about freeing it later.)
 ' (IMPORTANT NOTE: the passed array must be initialized, or the function will fail.)
-Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte, Optional ByVal freeOnFailure As Boolean = True) As Boolean
+Friend Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte, Optional ByVal freeOnFailure As Boolean = True) As Boolean
     
     SetClipboardBinaryData = False
     
@@ -520,7 +520,7 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
                 GlobalUnlock hGlobalHandle
                         
                 'Hand the data over to the clipboard.  If we succeed, the data is no longer ours.
-                SetClipboardBinaryData = CBool(SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
+                SetClipboardBinaryData = (SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
                 
                 'If SetClipboardData fails, we must free the hGlobal handle to prevent a leak.
                 'Thank you to @wqweto for this tip; see https://github.com/tannerhelland/PhotoDemon/issues/234
@@ -557,9 +557,9 @@ End Function
 '
 'Note that by default, a failed write will be manually freed.  If you are *not* passing an hGlobal handle, you *must*
 ' set this optional parameter to FALSE and free the handle yourself.
-Public Function SetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal hMem As Long, Optional ByVal freeOnFailure As Boolean = True) As Boolean
+Friend Function SetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal hMem As Long, Optional ByVal freeOnFailure As Boolean = True) As Boolean
     
-    SetClipboardMemoryHandle = CBool(SetClipboardData(clipFormatID, hMem) <> 0)
+    SetClipboardMemoryHandle = (SetClipboardData(clipFormatID, hMem) <> 0)
     
     'If SetClipboardData fails, we must free the hGlobal handle to prevent a leak.  Note that this only applies if
     ' we are not using delayed rendering (e.g. hMem <> 0), and if we are not using CF_BITMAP (which is an exception,
@@ -572,25 +572,25 @@ End Function
 
 'Helper function, for when the caller wants to upload custom stuff to the clipboard.  We already have all the global memory APIs
 ' declared and implemented here, so this saves the caller some trouble.
-Public Function GetGlobalMemoryHandle(ByVal memSize As Long) As Long
+Friend Function GetGlobalMemoryHandle(ByVal memSize As Long) As Long
     GetGlobalMemoryHandle = GlobalAlloc(GMEM_MOVEABLE, memSize)
 End Function
     
 'Helper function to GetGlobalMemoryHandle(), above.
 'IMPORTANT NOTE:  Make sure to call the corresponding FinishedWithGlobalMemoryPtr function when you're done.
-Public Function GetPointerFromGlobalMemory(ByVal srcHGlobal As Long) As Long
+Friend Function GetPointerFromGlobalMemory(ByVal srcHGlobal As Long) As Long
     If (srcHGlobal <> 0) Then GetPointerFromGlobalMemory = GlobalLock(srcHGlobal)
 End Function
 
 'Helper function to GetPointerFromGlobalMemory, above.
 'IMPORTANT NOTE:  You must pass this function the original hGlobal handle, NOT the pointer generated by GlobalLock.
-Public Sub FinishedWithGlobalMemoryPtr(ByVal srcHGlobal As Long)
+Friend Sub FinishedWithGlobalMemoryPtr(ByVal srcHGlobal As Long)
     If (srcHGlobal <> 0) Then GlobalUnlock srcHGlobal
 End Sub
 
 'Retrieve text from the clipboard.  Format doesn't matter; PD always tries to grab Unicode text, if possible, with the system implicitly
 ' applying any necessary conversions.
-Public Function GetClipboardText(ByRef dstString As String, Optional ClipboardFormatID As PredefinedClipboardFormatConstants = CF_UNICODETEXT) As Boolean
+Friend Function GetClipboardText(ByRef dstString As String, Optional ClipboardFormatID As PredefinedClipboardFormatConstants = CF_UNICODETEXT) As Boolean
     
     GetClipboardText = False
     
@@ -605,7 +605,7 @@ Public Function GetClipboardText(ByRef dstString As String, Optional ClipboardFo
             'Apply the relevant format conversion
             If ((ClipboardFormatID = CF_UNICODETEXT) Or (ClipboardFormatID = CF_TEXT)) Then
                 dstString = Strings.StringFromUTF16_FixedLen(VarPtr(tmpData(0)), UBound(tmpData) + 1)
-                GetClipboardText = CBool(Len(dstString) <> 0)
+                GetClipboardText = (LenB(dstString) <> 0)
             Else
                 GetClipboardText = Strings.StringFromMysteryBytes(tmpData, dstString)
             End If
@@ -623,7 +623,7 @@ End Function
 'Retrieve HTML text from the clipboard.  You should verify the presence of HTML text before using this function, as HTML text will
 ' likely be in UTF-8 format, and this function will apply format heuristics to try and verify this.  If you simply need plain text,
 ' skip the need for heuristics, and use the normal GetClipboardText() function, above.
-Public Function GetClipboardHTML(ByRef dstString As String) As Boolean
+Friend Function GetClipboardHTML(ByRef dstString As String) As Boolean
     
     GetClipboardHTML = False
     
@@ -647,7 +647,7 @@ End Function
 
 'If the clipboard contains one or more file paths, you can retrieve them via this function.  Note that you must pass a string array,
 ' even if there is only a single file on the clipboard.
-Public Function GetFileList(ByRef dstFileList As pdStringStack, ByRef numOfFiles As Long) As Boolean
+Friend Function GetFileList(ByRef dstFileList As pdStringStack, ByRef numOfFiles As Long) As Boolean
     
     GetFileList = False
     If (dstFileList Is Nothing) Then Set dstFileList = New pdStringStack
@@ -712,7 +712,7 @@ End Function
 '
 'Call this function to find out which BITMAP format the caller actually placed on the clipboard, and which ones were auto-created
 ' for them by Windows.
-Public Function GetPriorityBitmapFormat() As PredefinedClipboardFormatConstants
+Friend Function GetPriorityBitmapFormat() As PredefinedClipboardFormatConstants
     
     'CF_MIN is a placeholder value that equals (first_valid_entry - 1).  For this function, it's considered a failure value,
     ' as subsequenct select statements would fail to hit it.
@@ -745,7 +745,7 @@ End Function
 '
 'Call this function to find out which TEXT format the caller actually placed on the clipboard, and which ones were auto-created
 ' for them by Windows.
-Public Function GetPriorityTextFormat() As PredefinedClipboardFormatConstants
+Friend Function GetPriorityTextFormat() As PredefinedClipboardFormatConstants
     
     'CF_MIN is a placeholder value that equals (first_valid_entry - 1).  For this function, it's considered a failure value,
     ' as subsequenct select statements would fail to hit it.
@@ -774,9 +774,9 @@ End Function
 
 'Prior to writing data, you *must* clear the clipboard.  Otherwise, any unwritten formats will remain, potentially fucking up other
 ' programs who preferentially read clipboard formats in a different order than yours.
-Public Function ClearClipboard() As Boolean
+Friend Function ClearClipboard() As Boolean
     If m_IsClipboardOpen Then
-        ClearClipboard = CBool(EmptyClipboard <> 0)
+        ClearClipboard = (EmptyClipboard <> 0)
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdClipboard.ClearClipboard doesn't work unless the clipboard is open!"
@@ -785,7 +785,7 @@ Public Function ClearClipboard() As Boolean
 End Function
 
 'Only one program at a time can open the clipboard, so control needs to be relinquished as quickly as possible.
-Public Sub ClipboardClose()
+Friend Sub ClipboardClose()
     If m_IsClipboardOpen Then
         CloseClipboard
         m_IsClipboardOpen = False
@@ -794,7 +794,7 @@ End Sub
 
 'Open the clipboard.  You must supply an owner hWnd, as some clipboard APIs rely on that hWnd to function.  (Custom clipboard formats that
 ' consume tons of space can be rendered dynamically, via window messages, rather than stuffing a blob into memory - hence the hWnd requirement.)
-Public Function ClipboardOpen(ByVal hWndOwner As Long) As Boolean
+Friend Function ClipboardOpen(ByVal hWndOwner As Long) As Boolean
     
     If (OpenClipboard(hWndOwner) <> 0) Then
         
@@ -819,7 +819,7 @@ End Function
 ' need to call it manually.
 '
 'RETURNS: TRUE if successful and at least one format exists on the clipboard.  FALSE otherwise.
-Public Function UpdateClipboardLists() As Boolean
+Friend Function UpdateClipboardLists() As Boolean
     
     'Make sure the clipboard open
     If m_IsClipboardOpen Then
@@ -877,7 +877,7 @@ End Function
 'Set clipboard data in delayed rendering mode.  This does not require source data; instead, it simply notifies the clipboard that we're
 ' the owner of the current clipboard data.  If/when someone else requests clipboard data, this class will raise a matching event -
 ' at THAT point you must upload the actual clipboard data, in the requested format.
-Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Boolean
+Friend Function SetClipboardData_DelayedRendering(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Boolean
         
     SetClipboardData_DelayedRendering = False
     
@@ -896,7 +896,7 @@ Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         
         'Set a null-copy of the current data to the clipboard.  This tells the clipboard that we're willing to provide this data
         ' on an "as-needed" basis.
-        SetClipboardData_DelayedRendering = CBool(SetClipboardData(clipFormatID, 0&) <> 0&)
+        SetClipboardData_DelayedRendering = (SetClipboardData(clipFormatID, 0&) <> 0&)
         
     End If
     
@@ -909,8 +909,8 @@ End Function
 
 'Want to know if PD is responsible for the current clipboard data?  (You may want to do this prior to the program shutting down,
 ' for example, since WM_RENDERALLFORMATS doesn't play nicely with the way VB destroys windows.)
-Public Function IsOurDataOnTheClipboard() As Boolean
-    IsOurDataOnTheClipboard = CBool(GetClipboardOwner() = m_OwnerHWnd)
+Friend Function IsOurDataOnTheClipboard() As Boolean
+    IsOurDataOnTheClipboard = (GetClipboardOwner() = m_OwnerHWnd)
 End Function
 
 'On termination, we do a failsafe clipboard close, but it *really* should be closed manually as soon as you're done with it!

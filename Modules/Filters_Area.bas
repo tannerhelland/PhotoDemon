@@ -491,7 +491,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'Determine if alpha handling is necessary for this image
     Dim hasAlpha As Boolean
-    hasAlpha = CBool(qvDepth = 4)
+    hasAlpha = (qvDepth = 4)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -763,7 +763,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     'Determine if alpha handling is necessary for this image
     Dim hasAlpha As Boolean
-    hasAlpha = CBool(qvDepth = 4)
+    hasAlpha = (qvDepth = 4)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

@@ -71,17 +71,17 @@ End Enum
 #End If
 
 'For performance reasons, the seam carver class maintains its own copy of the source image.
-Public Sub SetSourceImage(ByRef srcDIB As pdDIB)
+Friend Sub SetSourceImage(ByRef srcDIB As pdDIB)
     Set m_SourceImage = New pdDIB
     m_SourceImage.CreateFromExistingDIB srcDIB
 End Sub
 
 'Retrieve the carved image into a DIB of the calling function's choosing
-Public Function GetCarvedImage() As pdDIB
+Friend Function GetCarvedImage() As pdDIB
     Set GetCarvedImage = m_DestinationImage
 End Function
 
-Public Sub SetEnergyImage(ByRef srcDIB As pdDIB)
+Friend Sub SetEnergyImage(ByRef srcDIB As pdDIB)
     
     'Create a copy of the energy image
     Set m_EnergyImage = New pdDIB
@@ -130,7 +130,7 @@ End Sub
 'Generate a vertical seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub GetVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minRow As Long, Optional ByVal scanDirectionNormal As Boolean = True)
+Friend Sub GetVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minRow As Long, Optional ByVal scanDirectionNormal As Boolean = True)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -512,7 +512,7 @@ End Function
 'Generate a horizontal seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub GetHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long, Optional ByVal scanDirectionNormal As Boolean = True)
+Friend Sub GetHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long, Optional ByVal scanDirectionNormal As Boolean = True)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -891,7 +891,7 @@ Private Function GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
 End Function
 
 'Though they share some similar elements, shrinking and enlarging an image in either direction are handled separately.
-Public Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean
+Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean
 
     'We will be referencing image size frequently in this function, so cache these values in advance
     Dim srcWidth As Long, srcHeight As Long

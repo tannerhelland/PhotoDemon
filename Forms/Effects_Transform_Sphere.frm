@@ -524,7 +524,7 @@ Private Function GetLocalParamString() As String
         .AddParam "angle", sltAngle.Value
         .AddParam "xoffset", sltOffsetX.Value
         .AddParam "yoffset", sltOffsetY.Value
-        .AddParam "rays", CBool(btsExterior.ListIndex = 1)
+        .AddParam "rays", (btsExterior.ListIndex = 1)
         .AddParam "edges", cboEdges.ListIndex
         .AddParam "quality", sltQuality.Value
     End With

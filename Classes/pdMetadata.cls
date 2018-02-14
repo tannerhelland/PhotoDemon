@@ -239,7 +239,7 @@ Friend Function GetMetadataCount() As Long
 End Function
 
 Friend Function HasMetadata() As Boolean
-    HasMetadata = CBool(m_NumOfTags <> 0)
+    HasMetadata = (m_NumOfTags <> 0)
 End Function
 
 'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
@@ -509,7 +509,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     
     End If
     
-    CalculateIdealGroupName = CBool(Len(dstMetadata.TagGroupFriendly) <> 0)
+    CalculateIdealGroupName = (LenB(dstMetadata.TagGroupFriendly) <> 0)
     
 End Function
 
@@ -645,8 +645,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     
     Dim ppMayBeNeeded As Boolean: ppMayBeNeeded = False
     
-    ppMayBeNeeded = CBool(m_NumOfTags <> 0)
-    If ppMayBeNeeded Then ppMayBeNeeded = CBool(parentImageID <= UBound(pdImages))
+    ppMayBeNeeded = (m_NumOfTags <> 0)
+    If ppMayBeNeeded Then ppMayBeNeeded = (parentImageID <= UBound(pdImages))
     If ppMayBeNeeded Then ppMayBeNeeded = Not (pdImages(parentImageID) Is Nothing)
     
     Dim relevantTagIndex As Long
@@ -660,10 +660,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then
         
         'Check for PNGs that do not possess an ICC profile
-        ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+        ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
         
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
-        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
         'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
         ' we may be able to use ExifTool to manually retrieve the full profile data.
@@ -956,7 +956,7 @@ Private Function PARSE_AdvanceToFirstMeaningfulLine(ByRef xmlLines() As String, 
         End If
     Next i
     
-    PARSE_AdvanceToFirstMeaningfulLine = CBool(linePointer <> 0)
+    PARSE_AdvanceToFirstMeaningfulLine = (linePointer <> 0)
 
 End Function
 
@@ -1360,7 +1360,7 @@ Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tag
 End Function
 
 Private Function PARSE_EndOfTagDetails(ByRef srcLine As String) As Boolean
-    PARSE_EndOfTagDetails = CBool(InStr(1, srcLine, "</rdf:Description>", vbBinaryCompare) <> 0)
+    PARSE_EndOfTagDetails = (InStr(1, srcLine, "</rdf:Description>", vbBinaryCompare) <> 0)
 End Function
 
 Private Function PARSE_WholeLine(ByRef srcLine As String, ByRef dstString As String, Optional ByVal tagValidate As String = vbNullString) As Boolean

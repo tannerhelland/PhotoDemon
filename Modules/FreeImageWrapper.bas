@@ -1307,7 +1307,7 @@ Public Type FREE_IMAGE_TAG
    Count As Long
    Length As Long
    StringValue As String
-   Palette() As RGBQUAD
+   Palette() As RGBQuad
    RationalValue() As FIRATIONAL
    Value As Variant
 End Type
@@ -1542,7 +1542,7 @@ Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Ali
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQuad) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
@@ -1550,7 +1550,7 @@ Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dl
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQuad) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
@@ -1636,7 +1636,7 @@ Public Declare Function FreeImage_Threshold Lib "FreeImage.dll" Alias "_FreeImag
 
 Public Declare Function FreeImage_Dither Lib "FreeImage.dll" Alias "_FreeImage_Dither@8" ( _
            ByVal Bitmap As Long, _
-           ByVal DitherMethod As FREE_IMAGE_DITHER) As Long
+           ByVal ditherMethod As FREE_IMAGE_DITHER) As Long
 
 Private Declare Function FreeImage_ConvertToStandardTypeInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToStandardType@8" ( _
            ByVal Bitmap As Long, _
@@ -1912,25 +1912,25 @@ Public Declare Function FreeImage_SaveMultiBitmapToMemory Lib "FreeImage.dll" Al
 
 ' Compression functions
 Public Declare Function FreeImage_ZLibCompress Lib "FreeImage.dll" Alias "_FreeImage_ZLibCompress@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal TargetSize As Long, _
            ByVal SourcePtr As Long, _
            ByVal SourceSize As Long) As Long
 
 Public Declare Function FreeImage_ZLibUncompress Lib "FreeImage.dll" Alias "_FreeImage_ZLibUncompress@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal TargetSize As Long, _
            ByVal SourcePtr As Long, _
            ByVal SourceSize As Long) As Long
 
 Public Declare Function FreeImage_ZLibGZip Lib "FreeImage.dll" Alias "_FreeImage_ZLibGZip@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal TargetSize As Long, _
            ByVal SourcePtr As Long, _
            ByVal SourceSize As Long) As Long
            
 Public Declare Function FreeImage_ZLibGUnzip Lib "FreeImage.dll" Alias "_FreeImage_ZLibGUnzip@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal TargetSize As Long, _
            ByVal SourcePtr As Long, _
            ByVal SourceSize As Long) As Long
@@ -2112,203 +2112,203 @@ Public Declare Function FreeImage_AllocateExT Lib "FreeImage.dll" Alias "_FreeIm
 
 ' convert to 4 bpp
 Public Declare Sub FreeImage_ConvertLine1To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To4@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
            
 Public Declare Sub FreeImage_ConvertLine8To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To8@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
            
 Public Declare Sub FreeImage_ConvertLine16To4_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To4_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
                      
 Public Declare Sub FreeImage_ConvertLine16To4_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To4_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
            
 Public Declare Sub FreeImage_ConvertLine24To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To24@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
            
 Public Declare Sub FreeImage_ConvertLine32To4 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To4@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 
 ' convert to 8 bpp
 Public Declare Sub FreeImage_ConvertLine1To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To8@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine4To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To8@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To8_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To8_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To8_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To8_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine24To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To8@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine32To8 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To8@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
            
 
 ' convert to 16 bpp
 Public Declare Sub FreeImage_ConvertLine1To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To16_555@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine4To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To16_555@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine8To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To16_555@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine16_565_To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16_565_To16_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine24To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To16_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine32To16_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To16_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine1To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To16_565@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine4To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To16_565@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine8To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To16_565@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine16_555_To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16_555_To16_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine24To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To16_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine32To16_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To16_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 
 ' convert to 24 bpp
 Public Declare Sub FreeImage_ConvertLine1To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To24@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine4To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To24@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine8To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To24@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To24_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To24_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To24_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To24_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine32To24 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine32To24@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 
 ' convert to 32 bpp
 Public Declare Sub FreeImage_ConvertLine1To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine1To32@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine4To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine4To32@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine8To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine8To32@16" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long, _
            ByVal PalettePtr As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To32_555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To32_555@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine16To32_565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine16To32_565@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
 
 Public Declare Sub FreeImage_ConvertLine24To32 Lib "FreeImage.dll" Alias "_FreeImage_ConvertLine24To32@12" ( _
-           ByVal TargetPtr As Long, _
+           ByVal targetPtr As Long, _
            ByVal SourcePtr As Long, _
            ByVal WidthInPixels As Long)
           
@@ -2546,7 +2546,7 @@ Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_Save = CBool(FreeImage_SaveUInt(Format, Bitmap, StrPtr(srcFilename), Flags) = 1)
+   FreeImage_Save = (FreeImage_SaveUInt(Format, Bitmap, StrPtr(srcFilename), Flags) = 1)
 
 End Function
 
@@ -2573,7 +2573,7 @@ Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
 End Function
 
 ' Thin wrapper function returning a real VB Boolean value
-Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, ByRef BackColor As RGBQUAD) As Boolean
+Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, ByRef BackColor As RGBQuad) As Boolean
     FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
 End Function
 
@@ -2589,7 +2589,7 @@ Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByRef Green As Byte, _
                                                ByRef Blue As Byte) As Boolean
                                               
-Dim bkcolor As RGBQUAD
+Dim bkcolor As RGBQuad
 
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as four different byte values, one for each color component.
@@ -2605,7 +2605,7 @@ Dim bkcolor As RGBQUAD
 End Function
 
 Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
+                                             ByRef BackColor As RGBQuad) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
@@ -2629,7 +2629,7 @@ Public Function FreeImage_SetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByVal Green As Byte, _
                                                ByVal Blue As Byte) As Boolean
                                               
-Dim tColor As RGBQUAD
+Dim tColor As RGBQuad
 
    ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
    ' the color value to set must be provided four different byte values, one for each
@@ -3703,7 +3703,7 @@ End Function
 
 ' Image color depth conversion wrapper
 
-Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQUAD()
+Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQuad()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -3792,7 +3792,7 @@ End Function
 
 Public Function FreeImage_IsGreyscaleImage(ByVal Bitmap As Long) As Boolean
 
-Dim atRGB() As RGBQUAD
+Dim atRGB() As RGBQuad
 Dim i As Long
 
    ' This function returns a boolean value that is true, if the DIB is actually
@@ -3836,7 +3836,7 @@ Public Function FreeImage_ConvertColorDepth(ByVal Bitmap As Long, _
                                             ByVal Conversion As FREE_IMAGE_CONVERSION_FLAGS, _
                                    Optional ByVal UnloadSource As Boolean, _
                                    Optional ByVal Threshold As Byte = 128, _
-                                   Optional ByVal DitherMethod As FREE_IMAGE_DITHER = FID_FS, _
+                                   Optional ByVal ditherMethod As FREE_IMAGE_DITHER = FID_FS, _
                                    Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
                                             
 Dim hDIBNew As Long
@@ -3880,7 +3880,7 @@ Dim bForceLinearRamp As Boolean
 
       Case FICF_MONOCHROME_DITHER
          If (lBPP > 1) Then
-            hDIBNew = FreeImage_Dither(Bitmap, DitherMethod)
+            hDIBNew = FreeImage_Dither(Bitmap, ditherMethod)
          End If
       
       Case FICF_GREYSCALE_4BPP
@@ -5985,7 +5985,7 @@ Public Function FreeImage_DestroyLockedArrayRGBTRIPLE(ByRef Data() As RGBTRIPLE)
 
 End Function
 
-Public Function FreeImage_DestroyLockedArrayRGBQUAD(ByRef Data() As RGBQUAD) As Long
+Public Function FreeImage_DestroyLockedArrayRGBQUAD(ByRef Data() As RGBQuad) As Long
 
    ' This function is a thin wrapper for 'FreeImage_DestroyLockedArrayByPtr'
    ' for destroying arrays of type 'RGBQUAD'.
@@ -6391,7 +6391,7 @@ End Function
 
 'Added by Tanner: wrapper to flip a FI DIB by handle
 Public Function FreeImage_FlipVertically(ByVal fi_DIB As Long) As Boolean
-    FreeImage_FlipVertically = CBool(FreeImage_FlipVertical(fi_DIB) <> 0)
+    FreeImage_FlipVertically = (FreeImage_FlipVertical(fi_DIB) <> 0)
 End Function
 
 '--------------------------------------------------------------------------------
@@ -6448,9 +6448,9 @@ Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Mess
     End If
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FreeImage returned the following internal error:", PDM_EXTERNAL_LIB
-        pdDebug.LogAction vbTab & strErrorMessage, PDM_EXTERNAL_LIB
-        pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_EXTERNAL_LIB
+        pdDebug.LogAction "FreeImage returned the following internal error:", PDM_External_Lib
+        pdDebug.LogAction vbTab & strErrorMessage, PDM_External_Lib
+        pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_External_Lib
     #End If
    
 End Sub

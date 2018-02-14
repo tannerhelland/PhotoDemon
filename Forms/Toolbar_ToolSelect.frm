@@ -1077,7 +1077,7 @@ End Sub
 ' stream of buttons.  When enabled, buttons are sorted by category.
 Public Sub ToggleToolCategoryLabels()
     
-    m_ShowCategoryLabels = CBool(Not m_ShowCategoryLabels)
+    m_ShowCategoryLabels = (Not m_ShowCategoryLabels)
     FormMain.MnuWindowToolbox(2).Checked = m_ShowCategoryLabels
     g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", m_ShowCategoryLabels
     

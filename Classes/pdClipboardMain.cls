@@ -219,7 +219,7 @@ Private Type FILEDESCRIPTOR
     cFileName(0 To 519) As Byte   'MAXPATH wchars
 End Type
 
-Public Function IsClipboardOpen() As Boolean
+Friend Function IsClipboardOpen() As Boolean
     IsClipboardOpen = m_IsClipboardOpen
 End Function
 
@@ -229,7 +229,7 @@ End Function
 
 'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
 ' (or entire layer, if no selection is active).
-Public Sub ClipboardCut(ByVal cutMerged As Boolean)
+Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
     
     'Lock the UI
     Processor.MarkProgramBusyState True, True
@@ -291,7 +291,7 @@ End Sub
 'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
 ' The optional updateUI parameter tells the function to lock PD's UI during the copy operation.  ("Cut" operations also do this, so they
 ' manage the UI separately - hence the need for a dedicated parameter.)
-Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True)
+Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True)
     
     'Lock the UI
     If updateUI Then Processor.MarkProgramBusyState True, True
@@ -327,7 +327,7 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     
 End Sub
 
-Public Sub ClipboardEmpty()
+Friend Sub ClipboardEmpty()
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
         m_Clipboard.ClearClipboard
         m_Clipboard.ClipboardClose
@@ -336,7 +336,7 @@ End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
-Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
+Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
@@ -1122,7 +1122,7 @@ End Function
 'Any droppable surface in the program can pass this function its DataObject to see if the dragged object can be successfully handled
 ' by PD.  Note that this function only returns whether the format is parseable by PD - an actual drop will need to occur before
 ' full validation is handled.  (This is necessary for things like URLs, which may take some time to validate.)
-Public Function IsObjectDragDroppable(ByRef Data As DataObject) As Boolean
+Friend Function IsObjectDragDroppable(ByRef Data As DataObject) As Boolean
     
     IsObjectDragDroppable = False
     
@@ -1140,7 +1140,7 @@ End Function
 'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
 ' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
 ' (if valid) should be loaded as new layers or new images.
-Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
+Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
     
     If (Data Is Nothing) Then Exit Function
     
@@ -1728,13 +1728,13 @@ Private Sub DestroyStashedData()
     If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
 End Sub
 
-Public Function IsPDDataOnClipboard() As Boolean
+Friend Function IsPDDataOnClipboard() As Boolean
     IsPDDataOnClipboard = m_Clipboard.IsOurDataOnTheClipboard()
 End Function
 
 'Want to render PD's current clipboard stash to the clipboard, WITHOUT delayed rendering?  Call this function.
 ' (PD does this prior to shutdown, because WM_RENDERALLFORMATS does not play nicely with the order VB unloads objects / destroys windows.)
-Public Sub RenderAllClipboardFormatsManually()
+Friend Sub RenderAllClipboardFormatsManually()
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "pdClipboardMain received notification to render all clipboard formats.  Rendering now..."
@@ -1844,7 +1844,7 @@ Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
                 RenderClipboard_PNG
             
             Case CF_DIB, CF_DIBV5
-                RenderClipboard_DIB CBool(clipFormatID = CF_DIBV5)
+                RenderClipboard_DIB (clipFormatID = CF_DIBV5)
             
             Case Else
                 #If DEBUGMODE = 1 Then

@@ -149,7 +149,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     Dim srcImageData() As Byte
     Dim tmpSA As SafeArray2D
     
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , CBool(edgeType = 0)
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , (edgeType = 0)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4
     
     If (Not toPreview) Then
@@ -260,7 +260,7 @@ Private Sub btsEdgeType_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub UpdateVisibleEdgeOptions()
-    csBackground.Visible = CBool(btsEdgeType.ListIndex = 1)
+    csBackground.Visible = (btsEdgeType.ListIndex = 1)
 End Sub
 
 Private Sub cmdBar_OKClick()

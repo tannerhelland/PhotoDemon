@@ -95,7 +95,7 @@ End Sub
 
 'This function must be called in the UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
+Friend Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
     
     If MainModule.IsProgramRunning() Then
     
@@ -117,7 +117,7 @@ End Sub
 'If a control experiences an event that requires a repaint, e.g. a Click that changes the control's appearance, it can
 ' manually request a repaint from this function.  Note that - by design - this event will invalidate the entire window,
 ' as it's assumed that a manually requested paint affects the entire client area of the window.
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
+Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     If (m_hWnd <> 0) Then
         
@@ -142,12 +142,12 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
 End Sub
 
 'If the client needs the hDC specified by BeginPaint, they can request it here
-Public Function GetPaintStructDC() As Long
+Friend Function GetPaintStructDC() As Long
     GetPaintStructDC = m_WindowDC
 End Function
 
 'Thin wrapper for the PaintWindow() event.  This is used to keep the actual subclassing function as small as possible.
-Public Sub PrepPaintEvent()
+Friend Sub PrepPaintEvent()
 
     If (m_hWnd <> 0) Then
     

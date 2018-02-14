@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.117</langversion>
+<langversion>1.0.119</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7872,23 +7872,18 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>Restore selected autosaves</original>
-<translation>Враќање на избраните autosaves</translation>
+<original>Attempt to recover</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all autosaves</original>
-<translation>Ги отфрли сите autosaves</translation>
+<original>Discard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
 <translation>пронајдени записи автоматско зачувување</translation>
-</phrase>
-
-<phrase>
-<original>Warning</original>
-<translation>Предупредување</translation>
 </phrase>
 
 <phrase>
@@ -7916,7 +7911,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Преглед не е достапен</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8243,7 +8238,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Ако инсистираме на водење PhotoDemon во ИРО, немојте да се достават грешки во врска со IDE блокира или замрзнува. програмерите Фото Демонот може да се однесуваат само проблеми и грешки кои влијаат на Составувач извршна.</translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -15155,12 +15150,33 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for pdKDTreeNode.cls-->
 
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2541</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4592 phrases. -->
-<!-- 2053 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12170 total words. -->
+<!-- 2051 are duplicates, so only 2541 unique phrases have been written to file. -->
+<!-- These 2541 phrases contain approximately 12173 total words. -->
 
 </pdData>

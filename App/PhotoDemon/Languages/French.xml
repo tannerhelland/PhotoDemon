@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.321</langversion>
+<langversion>6.7.323</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -7872,23 +7872,18 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
-<original>Restore selected autosaves</original>
-<translation>Restaurer les autosaves sélectionnées</translation>
+<original>Attempt to recover</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all autosaves</original>
-<translation>Défaussez tous les autosaves</translation>
+<original>Discard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
 <translation>entrées enregistrées automatiquement trouvés</translation>
-</phrase>
-
-<phrase>
-<original>Warning</original>
-<translation>Avertissement</translation>
 </phrase>
 
 <phrase>
@@ -7916,7 +7911,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Aperçu non disponible</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8243,7 +8238,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Si vous insistez sur l'exécution PhotoDemon dans l'IDE, s'il vous plaît ne pas soumettre des problèmes concernant les accidents IDE ou se fige. PhotoDemon développeurs peuvent seulement traiter les questions et les bogues qui affectent le fichier. Exe.</translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -15155,12 +15150,33 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for pdKDTreeNode.cls-->
 
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2541</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4592 phrases. -->
-<!-- 2053 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12170 total words. -->
+<!-- 2051 are duplicates, so only 2541 unique phrases have been written to file. -->
+<!-- These 2541 phrases contain approximately 12173 total words. -->
 
 </pdData>

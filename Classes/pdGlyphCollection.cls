@@ -175,7 +175,7 @@ Private m_StyleUnderline As Boolean, m_StyleStrikeout As Boolean
 
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
-Public Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal underlineActive As Boolean = False, Optional ByVal strikeoutActive As Boolean = False)
+Friend Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal underlineActive As Boolean = False, Optional ByVal strikeoutActive As Boolean = False)
 
     'If this font matches previous font requests, we can retain existing glyph information.
     
@@ -212,12 +212,12 @@ Public Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
 End Sub
 
 'After this class has done its work, the caller MUST CALL THIS FUNCTION to release their font from our internal DC
-Public Sub RequestGDIFontRelease()
+Friend Sub RequestGDIFontRelease()
     SelectObject m_tmpDIB.GetDIBDC, m_oldFontHandle
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal remapType As PD_STRING_REMAP = PDSR_NONE) As Boolean
+Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal remapType As PD_STRING_REMAP = PDSR_NONE) As Boolean
         
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
@@ -630,7 +630,7 @@ Friend Function NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As S
     
     'If one or more custom character attributes are non-zero, mark a class-level flag.  This allows us to skip some processor-intensive
     ' steps if the text is generic.
-    m_CharEffectsEnabled = CBool(m_CharSpacing <> 0) Or CBool(m_CharOrientation <> 0) Or CBool(m_CharJitterX <> 0) Or CBool(m_CharJitterY <> 0) Or CBool(m_CharInflation <> 0) Or CBool(m_CharMirror <> 0)
+    m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> 0)
     
 End Function
 
@@ -695,7 +695,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
             'A glyph is renderable only if it...
             ' 1) was successfully processed by GetGlyphOutline, and...
             ' 2) GetGlyphOutline returned a shape with at least one line or curve
-            glyphIsRenderable = CBool(curGlyphOutline >= 0) And m_GlyphOutlines(curGlyphOutline).hasOutline
+            glyphIsRenderable = (curGlyphOutline >= 0) And m_GlyphOutlines(curGlyphOutline).hasOutline
             
             'We also ignore things like spaces and control characters
             If glyphIsRenderable Then
@@ -1131,7 +1131,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                     
                     'Failsafe checks for "glyph counter beyond end of string" are always advised
                     Dim incrementGlyphPointer As Boolean
-                    incrementGlyphPointer = CBool(curGlyph < m_NumOfGlyphs)
+                    incrementGlyphPointer = (curGlyph < m_NumOfGlyphs)
                     
                     'Advance the glyph pointer until we reach either...
                     ' 1) a non-whitespace glyph, or
@@ -1146,7 +1146,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                         
                         'If we're still here, this is a whitespace glyph.  Increment curGlyph and carry on.
                         curGlyph = curGlyph + 1
-                        incrementGlyphPointer = CBool(curGlyph < m_NumOfGlyphs)
+                        incrementGlyphPointer = (curGlyph < m_NumOfGlyphs)
                         
                     Loop
                     
@@ -1444,7 +1444,7 @@ Private Function GetGlyphOutlineIndex(ByVal origGlyphPosition As Long) As Long
 End Function
 
 'Reset the current glyph collection.  This forces all glyphs to be recreated from scratch, so use only if absolutely necessary.
-Public Sub ResetGlyphCollection()
+Friend Sub ResetGlyphCollection()
     
     'If the glyph outline collection exists, manually wipe it
     If m_NumOfGlyphOutlines > 0 Then
@@ -1466,7 +1466,7 @@ End Sub
 
 'Return a copy of a path handle for an assembled glyph.  Returns 0 if no path data exists.  Note that 0 is valid output,
 ' as whitespace characters do not have glyphs (for most fonts, anyway).
-Public Function GetGlyphPathHandle(ByVal glyphIndex As Long) As Long
+Friend Function GetGlyphPathHandle(ByVal glyphIndex As Long) As Long
     
     If (Not m_GlyphOutlines(glyphIndex).glyphPath Is Nothing) Then
         GetGlyphPathHandle = m_GlyphOutlines(glyphIndex).glyphPath.GetHandle

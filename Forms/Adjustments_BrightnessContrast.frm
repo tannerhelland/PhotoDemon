@@ -120,7 +120,7 @@ Private Sub btsModel_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub SetLegacyVisibility()
-    chkSample.Visible = CBool(btsModel.ListIndex <> 0)
+    chkSample.Visible = (btsModel.ListIndex <> 0)
 End Sub
 
 'Update the preview when the "sample contrast" checkbox value is changed
@@ -338,7 +338,7 @@ Private Function GetFunctionParamString() As String
     With cParams
         .AddParam "brightness", sltBright.Value
         .AddParam "contrast", sltContrast.Value
-        .AddParam "uselegacy", CBool(btsModel.ListIndex = 1)
+        .AddParam "uselegacy", (btsModel.ListIndex = 1)
         .AddParam "samplecontrast", CBool(chkSample.Value)
     End With
     GetFunctionParamString = cParams.GetParamString

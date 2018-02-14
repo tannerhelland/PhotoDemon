@@ -435,7 +435,7 @@ End Sub
 Private Sub btsEditPanel_Click(ByVal buttonIndex As Long)
     Dim i As Long
     For i = picContainer.lBound To picContainer.UBound
-        picContainer(i).Visible = CBool(i = buttonIndex)
+        picContainer(i).Visible = (i = buttonIndex)
     Next i
 End Sub
 
@@ -583,7 +583,7 @@ Private Sub Form_Load()
     
     lstGroup.SetAutomaticRedraws False
     For i = 0 To m_NumOfCategories - 1
-        lstGroup.AddItem m_MDCategories(i).Name, i, CBool(StrComp(LCase$(m_MDCategories(i).Name), "inferred", vbBinaryCompare) = 0)
+        lstGroup.AddItem m_MDCategories(i).Name, i, (StrComp(LCase$(m_MDCategories(i).Name), "inferred", vbBinaryCompare) = 0)
         If m_MDCategories(i).Count > m_LargestCategoryCount Then m_LargestCategoryCount = m_MDCategories(i).Count
     Next i
     lstGroup.SetAutomaticRedraws True, True

@@ -79,7 +79,7 @@ Private m_WindowRect As winRect
 'Prior to doing anything with this class, you need to attach it to an hWnd.  For UCs, this will simply be UserControl.hWnd.
 ' This class can optionally subclass API size/move events, and raise corresponding events, allowing us to completely
 ' bypass VB's faulty handling.
-Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
+Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
     If MainModule.IsProgramRunning() Then
     
@@ -107,28 +107,28 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
 End Sub
 
 'FYI: all retrieval functions operate purely in the pixel domain
-Public Function GetWidth() As Long
+Friend Function GetWidth() As Long
     If (Not m_SubclassActive) Then UpdateWinRect
     GetWidth = m_WindowRect.x2 - m_WindowRect.x1
 End Function
 
-Public Function GetHeight() As Long
+Friend Function GetHeight() As Long
     If (Not m_SubclassActive) Then UpdateWinRect
     GetHeight = m_WindowRect.y2 - m_WindowRect.y1
 End Function
 
-Public Function GetLeft() As Long
+Friend Function GetLeft() As Long
     If (Not m_SubclassActive) Then UpdateWinRect
     GetLeft = m_WindowRect.x1
 End Function
 
-Public Function GetTop() As Long
+Friend Function GetTop() As Long
     If (Not m_SubclassActive) Then UpdateWinRect
     GetTop = m_WindowRect.y1
 End Function
 
 'Move or resize a window
-Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long, Optional ByVal notifyWindow As Boolean = True)
     
     'Per VB convention, the new left/top coordinates should be in parent coordinates.  If you want to position a
     ' window using *screen coordinates*, you'll need to write a new function (and/or manually convert the coordinates
@@ -143,7 +143,7 @@ Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long, Optional ByV
     
 End Sub
 
-Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
@@ -154,7 +154,7 @@ Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByV
     
 End Sub
 
-Public Sub SetSizeAndPosition(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSizeAndPosition(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
 
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER

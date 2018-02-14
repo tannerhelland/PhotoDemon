@@ -295,8 +295,8 @@ Private Function GetLocalParamString() As String
     
     With cParams
         .AddParam "amount", sltNoise.Value
-        .AddParam "monochrome", CBool(btsColor.ListIndex = 1)
-        .AddParam "gaussian", CBool(btsDistribution.ListIndex = 1)
+        .AddParam "monochrome", (btsColor.ListIndex = 1)
+        .AddParam "gaussian", (btsDistribution.ListIndex = 1)
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -642,7 +642,7 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
         .SetPenOpacity 87.5
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
-        QuickCreatePairOfUIPens = CBool(QuickCreatePairOfUIPens And .CreatePen())
+        QuickCreatePairOfUIPens = (QuickCreatePairOfUIPens And .CreatePen())
     End With
     
 End Function

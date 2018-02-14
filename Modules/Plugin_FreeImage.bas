@@ -2636,7 +2636,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
 End Function
 
 Public Function FreeImageErrorState() As Boolean
-    FreeImageErrorState = CBool(Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0)
+    FreeImageErrorState = (LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0)
 End Function
 
 Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean = True) As String

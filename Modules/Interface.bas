@@ -1139,7 +1139,7 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     
     Dim i As Long
     For i = 4 To 7
-        FormMain.MnuWindowTabstrip(i).Checked = CBool(i = curMenuIndex)
+        FormMain.MnuWindowTabstrip(i).Checked = (i = curMenuIndex)
     Next i
     
     'Write the preference out to file, then notify the canvas of the change

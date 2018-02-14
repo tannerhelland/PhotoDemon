@@ -454,7 +454,7 @@ Public Function InitializeLCMS() As Boolean
     Dim lcmsPath As String
     lcmsPath = PluginManager.GetPluginPath & "lcms2.dll"
     m_LCMSHandle = LoadLibrary(StrPtr(lcmsPath))
-    InitializeLCMS = CBool(m_LCMSHandle <> 0)
+    InitializeLCMS = (m_LCMSHandle <> 0)
     
     #If DEBUGMODE = 1 Then
         If (Not InitializeLCMS) Then
@@ -518,7 +518,7 @@ Public Function LCMS_GetIlluminantxyY(ByRef dstxyY As LCMS_xyY, Optional ByVal s
     If (srcIlluminant >= cmsILLUMINANT_TYPE_D50) And (srcIlluminant <= cmsILLUMINANT_TYPE_F8) Then
         Dim srcTemperature As Double
         LCMS_GetIlluminantTemperature srcTemperature, srcIlluminant
-        LCMS_GetIlluminantxyY = CBool(cmsWhitePointFromTemp(dstxyY, srcTemperature) <> 0)
+        LCMS_GetIlluminantxyY = (cmsWhitePointFromTemp(dstxyY, srcTemperature) <> 0)
     Else
         LCMS_GetIlluminantxyY = False
     End If
@@ -708,7 +708,7 @@ Public Function LCMS_SaveProfileToArray(ByVal hProfile As Long, ByRef dstArray()
     'Passing a null pointer will fill the "profile size" parameter with the required destination size
     If (cmsSaveProfileToMem(hProfile, 0, profSize) <> 0) Then
         ReDim dstArray(0 To profSize - 1) As Byte
-        LCMS_SaveProfileToArray = CBool(cmsSaveProfileToMem(hProfile, VarPtr(dstArray(0)), profSize) <> 0)
+        LCMS_SaveProfileToArray = (cmsSaveProfileToMem(hProfile, VarPtr(dstArray(0)), profSize) <> 0)
     Else
         LCMS_SaveProfileToArray = False
     End If
@@ -720,7 +720,7 @@ Public Function LCMS_CreateAbstractBCHSProfile(Optional ByVal newBrightness As D
 End Function
 
 Public Function LCMS_CloseProfileHandle(ByRef srcHandle As Long) As Boolean
-    LCMS_CloseProfileHandle = CBool(cmsCloseProfile(srcHandle) <> 0)
+    LCMS_CloseProfileHandle = (cmsCloseProfile(srcHandle) <> 0)
     If LCMS_CloseProfileHandle Then srcHandle = 0
 End Function
 

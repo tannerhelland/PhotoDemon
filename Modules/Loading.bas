@@ -584,7 +584,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'TMP files are internal PD temp files generated from a wide variety of use-cases (Clipboard is one example).  These are
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
-            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = CBool(FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
+            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
             If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
@@ -601,7 +601,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             'If FreeImage is available, use it to try and load the image.
             If g_ImageFormats.FreeImageEnabled Then
                 freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, , suppressDebugData)
-                loadSuccessful = CBool(freeImageReturn = PD_SUCCESS)
+                loadSuccessful = (freeImageReturn = PD_SUCCESS)
             End If
                 
             'If FreeImage fails for some reason, offload the image to GDI+
@@ -725,10 +725,10 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             Message vbNullString
         End If
         
-        LoadMultipleImageFiles = CBool(numSuccesses > 0)
+        LoadMultipleImageFiles = (numSuccesses > 0)
         
         SyncInterfaceToCurrentImage
-        Processor.MarkProgramBusyState False, True, CBool(g_OpenImageCount > 1)
+        Processor.MarkProgramBusyState False, True, (g_OpenImageCount > 1)
         
         'Even if returning TRUE, we still want to notify the user of any failed files
         If (numFailures > 0) Then

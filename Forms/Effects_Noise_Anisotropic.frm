@@ -177,8 +177,8 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Based on the supported direction, create simple boolean values that determine what directions we calculate
     ' in the inner pixel loop.
     Dim adCardinal As Boolean, adOrdinal As Boolean
-    adCardinal = CBool(adDirection = 0) Or CBool(adDirection = 2)
-    adOrdinal = CBool(adDirection = 1) Or CBool(adDirection = 2)
+    adCardinal = (adDirection = 0) Or (adDirection = 2)
+    adOrdinal = (adDirection = 1) Or (adDirection = 2)
     
     'Lambda is effectively the "strength" of the final calculation.  Its maximal value should not be larger than
     ' the number of pixels processed (1/4 for either 4-way filter, or 1/8 for the full 8-way filter).

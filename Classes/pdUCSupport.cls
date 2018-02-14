@@ -225,7 +225,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         If MainModule.IsProgramRunning() Then VBHacks.StartSubclassing m_hWnd, Me
         
         'Synchronize initial window visiblity
-        m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
+        m_Visibility = (IsWindowVisible(m_hWnd) <> 0)
         
         'Mark whether the control can receive focus; if it can, we'll immediately start tracking Tab keypresses
         m_ControlCanGetFocus = controlCanReceiveFocus
@@ -987,7 +987,7 @@ Friend Function AmIVisible() As Boolean
 End Function
 
 Friend Function AmIEnabled() As Boolean
-    AmIEnabled = CBool(IsWindowEnabled(m_hWnd) = 1)
+    AmIEnabled = (IsWindowEnabled(m_hWnd) = 1)
 End Function
 
 'Want a new tooltip?  No problem; call this function to perform an instant update.
@@ -1436,7 +1436,7 @@ Private Function HandleWM_ShowWindow(ByVal hWnd As Long, ByVal uiMsg As Long, By
     Dim initVisibility As Boolean
     initVisibility = m_Visibility
     
-    m_Visibility = CBool(wParam <> 0)
+    m_Visibility = (wParam <> 0)
     
     'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
     ' one before the control is actually shown.)

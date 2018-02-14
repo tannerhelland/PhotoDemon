@@ -69,7 +69,7 @@ Begin VB.Form dialog_IDEWarning
       Width           =   8175
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Warning"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End
@@ -81,7 +81,7 @@ Begin VB.Form dialog_IDEWarning
       Width           =   8385
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Warning"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End
@@ -93,7 +93,7 @@ Begin VB.Form dialog_IDEWarning
       Width           =   8385
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Warning"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End

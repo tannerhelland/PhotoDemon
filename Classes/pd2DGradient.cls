@@ -73,11 +73,11 @@ Friend Sub SetGradientShape(ByVal newShape As PD_2D_GradientShape)
     SetGradientProperty P2_GradientShape, newShape
 End Sub
 
-Public Function GetGradientAngle() As Single
+Friend Function GetGradientAngle() As Single
     GetGradientAngle = Me.GetGradientProperty(P2_GradientAngle)
 End Function
 
-Public Sub SetGradientAngle(ByVal newAngle As Single)
+Friend Sub SetGradientAngle(ByVal newAngle As Single)
     SetGradientProperty P2_GradientAngle, newAngle
 End Sub
 
@@ -98,16 +98,16 @@ End Sub
 '
 '(Note that in order to maintain a consistent naming convention, this public-facing GetGradientNodes() function wraps
 ' a similarly named internal function; the internal function does the heavy lifting.)
-Public Function GetGradientNodes() As String
+Friend Function GetGradientNodes() As String
     GetGradientNodes = Me.GetGradientProperty(P2_GradientNodes)
 End Function
 
-Public Sub SetGradientNodes(ByRef srcString As String)
+Friend Sub SetGradientNodes(ByRef srcString As String)
     SetGradientProperty P2_GradientNodes, srcString
 End Sub
 
 'Get/set individual settings by enum type
-Public Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As Variant
+Friend Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As Variant
     
     Select Case propID
         
@@ -127,7 +127,7 @@ Public Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As 
     
 End Function
 
-Public Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal newSetting As Variant)
+Friend Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal newSetting As Variant)
     
     Select Case propID
         
@@ -272,7 +272,7 @@ End Sub
 'For interop purposes, gradients are passed around PD as XML strings.  To improve performance, you can specify
 ' an optional parameter to use Base64 when encoding node data (which can be quite large).  For small gradients,
 ' Base64 won't gain you anything, but for huge gradients with many data points, the gains can be large.
-Public Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean = True) As String
+Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean = True) As String
     
     If (Not m_GradientIsDefault) Then
         
@@ -297,7 +297,7 @@ Public Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
     
 End Function
 
-Public Sub CreateGradientFromString(ByVal srcString As String)
+Friend Sub CreateGradientFromString(ByVal srcString As String)
     
     'If the string is empty, prep a default object
     If (Len(srcString) = 0) Then
@@ -373,7 +373,7 @@ End Sub
 
 'Helper functions for quickly constructing two- and three-point gradients, without the obnoxious overhead of creating your own point
 ' and color arrays.
-Public Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#)
+Friend Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#)
     
     m_GradientIsDefault = False
     
@@ -392,7 +392,7 @@ Public Sub CreateTwoPointGradient(ByVal firstColor As Long, ByVal secondColor As
     
 End Sub
 
-Public Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#, Optional ByVal thirdOpacity As Single = 100#, Optional ByVal secondColorPosition As Single = 0.5)
+Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor As Long, ByVal thirdColor As Long, Optional ByVal firstOpacity As Single = 100#, Optional ByVal secondOpacity As Single = 100#, Optional ByVal thirdOpacity As Single = 100#, Optional ByVal secondColorPosition As Single = 0.5)
     
     m_GradientIsDefault = False
     
@@ -432,7 +432,7 @@ Friend Function GetNumOfNodes() As Long
     GetNumOfNodes = m_NumOfPoints
 End Function
 
-Public Sub ResetAllProperties()
+Friend Sub ResetAllProperties()
     
     m_GradientShape = P2_GS_Linear
     m_GradientAngle = 0

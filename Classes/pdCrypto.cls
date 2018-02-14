@@ -310,7 +310,7 @@ End Function
 ' not perform any manual caching!
 Private Function FreeCurrentHash() As Boolean
     If (m_HashHandle <> 0) Then
-        FreeCurrentHash = CBool(CryptDestroyHash(m_HashHandle) <> 0)
+        FreeCurrentHash = (CryptDestroyHash(m_HashHandle) <> 0)
         m_HashHandle = 0
     Else
         FreeCurrentHash = True
@@ -321,7 +321,7 @@ End Function
 ' automatically for most class functions.)
 Private Function FreeCurrentProvider() As Boolean
     If (m_CryptoProviderHandle <> 0) Then
-        FreeCurrentProvider = CBool(CryptReleaseContext(m_CryptoProviderHandle, 0&) <> 0)
+        FreeCurrentProvider = (CryptReleaseContext(m_CryptoProviderHandle, 0&) <> 0)
         m_CryptoProviderHandle = 0
     Else
         FreeCurrentProvider = True

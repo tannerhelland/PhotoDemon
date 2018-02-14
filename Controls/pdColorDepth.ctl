@@ -538,11 +538,11 @@ Private Sub UpdateColorDepthOptions()
     
     'Indexed color modes allow for variable palette sizes
     If (cboDepthColor.Visible) Then
-        sldColorCount.Visible = CBool(cboDepthColor.ListIndex = 2)
+        sldColorCount.Visible = (cboDepthColor.ListIndex = 2)
         
     'Indexed grayscale mode also allows for variable palette sizes
     ElseIf (cboDepthGrayscale.Visible) Then
-        sldColorCount.Visible = CBool(cboDepthGrayscale.ListIndex = 1)
+        sldColorCount.Visible = (cboDepthGrayscale.ListIndex = 1)
         
     'Other modes do not expose palette settings
     Else

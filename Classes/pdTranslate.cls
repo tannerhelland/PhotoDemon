@@ -298,7 +298,7 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     ' to ensure that the "English (US)" entry is checked correctly.
     Dim i As Long
     For i = 0 To m_numOfLanguages - 1
-        FormMain.mnuLanguages(i).Checked = CBool(m_currentLanguage = i)
+        FormMain.mnuLanguages(i).Checked = (m_currentLanguage = i)
     Next i
     
     'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)

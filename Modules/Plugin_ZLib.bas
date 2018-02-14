@@ -40,7 +40,7 @@ Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
     Dim zLibPath As String
     zLibPath = PluginManager.GetPluginPath & "zlibwapi.dll"
     m_ZLibHandle = LoadLibrary(StrPtr(zLibPath))
-    InitializeZLib = CBool(m_ZLibHandle <> 0)
+    InitializeZLib = (m_ZLibHandle <> 0)
     
     #If DEBUGMODE = 1 Then
         If (Not InitializeZLib) Then
@@ -60,7 +60,7 @@ Public Sub ReleaseZLib()
 End Sub
 
 Public Function IsZLibAvailable() As Boolean
-    IsZLibAvailable = CBool(m_ZLibHandle <> 0)
+    IsZLibAvailable = (m_ZLibHandle <> 0)
 End Function
 
 'Return the current zLib version
@@ -99,7 +99,7 @@ Public Function ZlibCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData A
     End If
 
     'Compress the data using zLib
-    If CBool(compress2(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel) = ZLIB_OK) Then
+    If (compress2(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel) = ZLIB_OK) Then
         ZlibCompressArray = dstArraySizeInBytes
     Else
         ZlibCompressArray = 0
@@ -118,7 +118,7 @@ Public Function ZlibCompressNakedPointers(ByVal dstPointer As Long, ByRef dstLen
     ElseIf (compressionLevel > ZLIB_MAX_CLEVEL) Then
         compressionLevel = ZLIB_MAX_CLEVEL
     End If
-    ZlibCompressNakedPointers = CBool(compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = ZLIB_OK)
+    ZlibCompressNakedPointers = (compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = ZLIB_OK)
 End Function
 
 'Decompress some arbitrary source pointer + length into a destination array.  Pass the optional "dstArrayIsReady" as TRUE
@@ -136,7 +136,7 @@ Public Function ZlibDecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData
     End If
     
     'Perform decompression
-    ZlibDecompressArray = CBool(uncompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
+    ZlibDecompressArray = (uncompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
     
 End Function
 
@@ -147,7 +147,7 @@ End Function
 'RETURNS: TRUE on success, FALSE on failure.  The knownUncompressedSize parameter will be filled with the amount of data written
 '         to the destination buffer, in bytes (1-based).
 Public Function ZlibDecompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByRef knownUncompressedSize As Long, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long) As Boolean
-    ZlibDecompress_UnsafePtr = CBool(uncompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
+    ZlibDecompress_UnsafePtr = (uncompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
 End Function
 
 'Determine the maximum possible size required by a compression operation.  The destination buffer should be at least

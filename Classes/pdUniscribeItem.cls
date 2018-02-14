@@ -140,47 +140,47 @@ Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 'Because VB doesn't allow a class to expose public UDTs (without a typelib, anyway), all custom structs use get/set functions.
 ' CopyMemory is used for a performance boost, but note that this doesn't work for variable-sized structs.
 ' (Those must be handled specially.)
-Friend Sub getScriptItem(ByRef dstScriptItem As SCRIPT_ITEM)
+Friend Sub GetScriptItem(ByRef dstScriptItem As SCRIPT_ITEM)
     CopyMemoryStrict VarPtr(dstScriptItem), VarPtr(m_ScriptItem), Len(m_ScriptItem)
 End Sub
 
-Friend Sub setScriptItem(ByRef srcScriptItem As SCRIPT_ITEM)
+Friend Sub SetScriptItem(ByRef srcScriptItem As SCRIPT_ITEM)
     CopyMemoryStrict VarPtr(m_ScriptItem), VarPtr(srcScriptItem), Len(m_ScriptItem)
 End Sub
 
 'Passing bare pointers is cheaper than copying structs (or sub-structs), but please do not use these functions outside of pdUniscribe,
 ' and please do not cache their values.  This class may change memory allocations at any time, so you must always call these functions
 ' if you need a pointer to something.
-Friend Function getScriptItemPointer() As Long
-    getScriptItemPointer = VarPtr(m_ScriptItem)
+Friend Function GetScriptItemPointer() As Long
+    GetScriptItemPointer = VarPtr(m_ScriptItem)
 End Function
 
-Friend Function getScriptItemAnalysisPointer() As Long
-    getScriptItemAnalysisPointer = VarPtr(m_ScriptItem.analysis)
+Friend Function GetScriptItemAnalysisPointer() As Long
+    GetScriptItemAnalysisPointer = VarPtr(m_ScriptItem.analysis)
 End Function
 
 'Substring is the only function that directly returns a value (since it uses an intrinsic VB type)
-Public Function getSubstring() As String
-    getSubstring = m_Substring
+Friend Function GetSubstring() As String
+    GetSubstring = m_Substring
 End Function
 
 'When setting the substring, we set two other parameters as well: the relative start and end position of this substring, relative to
 ' the whole string passed to pdUniscribe.  This is helpful for identifying the chunk of the main string that this item represents.
 '
 'IMPORTANT NOTE: StartPos and EndPos are in *VB STRING COORDINATES*, meaning they are 1-based, not 0-based!
-Public Sub setSubstring(ByVal newSubstring As String, ByVal relativeStartPos As Long, ByVal relativeEndPos As Long)
+Friend Sub SetSubstring(ByVal newSubstring As String, ByVal relativeStartPos As Long, ByVal relativeEndPos As Long)
     m_Substring = newSubstring
     m_SubstringLength = Len(newSubstring)
     m_RelativeStartPos = relativeStartPos
     m_RelativeEndPos = relativeEndPos
 End Sub
 
-Public Function getRelativeStartPos() As Long
-    getRelativeStartPos = m_RelativeStartPos
+Friend Function GetRelativeStartPos() As Long
+    GetRelativeStartPos = m_RelativeStartPos
 End Function
 
-Public Function getRelativeEndPos() As Long
-    getRelativeEndPos = m_RelativeEndPos
+Friend Function GetRelativeEndPos() As Long
+    GetRelativeEndPos = m_RelativeEndPos
 End Function
 
 'ScriptShape generates three arrays for each item:
@@ -189,7 +189,7 @@ End Function
 ' 3) Visual attributes list (extra display data for each glyph; same length as the glyph list)
 '
 'To improve performance, we copy all three of these simultaneously, at the end of ScriptShape processing.
-Friend Sub setShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGlyphs As Long, ByRef glyphCache() As Integer, ByRef visualAttributesCache() As SCRIPT_VISATTR)
+Friend Sub SetShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGlyphs As Long, ByRef glyphCache() As Integer, ByRef visualAttributesCache() As SCRIPT_VISATTR)
     
     'The logical cluster cache has the same length as our substring, so handle it separately
     If UBound(m_LogicalClusterCache) <> m_SubstringLength - 1 Then
@@ -218,7 +218,7 @@ Friend Sub setShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGly
 End Sub
 
 'If this item consists entirely of missing glyphs, we need to completely disable shaping.
-Friend Sub disableAllShaping()
+Friend Sub DisableAllShaping()
     
     'Shaping is controlled by the lowest 10 bits of our script analysis structure.
     m_ScriptItem.analysis.fBitFields1 = 0
@@ -232,35 +232,35 @@ Friend Sub disableAllShaping()
 End Sub
 
 'While we can set all of ScriptShape's generated information at once, retrieving it is more helpful if we do it on a per-item basis.
-Friend Function getNumOfGlyphs() As Long
-    getNumOfGlyphs = m_NumOfGlyphs
+Friend Function GetNumOfGlyphs() As Long
+    GetNumOfGlyphs = m_NumOfGlyphs
 End Function
 
 'In some cases, it's easier (and much more lightweight!) to pass bare pointers to our various large structs and caches.
 ' Obviously, you MUST not cache these between requests, as this class may change its memory allocation at any time.
-Friend Function getPointerToGlyphCache() As Long
-    getPointerToGlyphCache = VarPtr(m_GlyphCache(0))
+Friend Function GetPointerToGlyphCache() As Long
+    GetPointerToGlyphCache = VarPtr(m_GlyphCache(0))
 End Function
 
-Friend Function getPointerToVisualAttributesCache() As Long
-    getPointerToVisualAttributesCache = VarPtr(m_VisualAttributesCache(0))
+Friend Function GetPointerToVisualAttributesCache() As Long
+    GetPointerToVisualAttributesCache = VarPtr(m_VisualAttributesCache(0))
 End Function
 
 'Similarly, sometimes we just want to grab a single entry at a given position.  For performance reasons, none of these wrappers check bounds.
 ' It's assumed that the caller is iterating using the result of getNumOfGlyphs(), so bounds won't be a problem.
-Friend Function getGlyphCacheAtPosition(ByVal gPos As Long) As Long
+Friend Function GetGlyphCacheAtPosition(ByVal gPos As Long) As Long
     
     'Glyphs are returned by Uniscribe as 16-bit values.  Obviously, VB treats these values as if they are signed.
     ' To work around this, we forcibly deal with negative integer values.
-    getGlyphCacheAtPosition = (m_GlyphCache(gPos) And &HFFFF&)
+    GetGlyphCacheAtPosition = (m_GlyphCache(gPos) And &HFFFF&)
     
 End Function
 
-Friend Function getAdvanceWidthAtPosition(ByVal gPos As Long) As Long
-    getAdvanceWidthAtPosition = m_AdvanceWidthCache(gPos)
+Friend Function GetAdvanceWidthAtPosition(ByVal gPos As Long) As Long
+    GetAdvanceWidthAtPosition = m_AdvanceWidthCache(gPos)
 End Function
 
-Friend Sub copyGlyphOffsetToPointer(ByVal dstPointer As Long, ByVal gPos As Long)
+Friend Sub CopyGlyphOffsetToPointer(ByVal dstPointer As Long, ByVal gPos As Long)
     CopyMemoryStrict dstPointer, VarPtr(m_GlyphOffsetCache(gPos)), Len(m_GlyphOffsetCache(gPos))
 End Sub
 
@@ -270,7 +270,7 @@ End Sub
 ' 3) ABC measurement for the ENTIRE item.
 '
 'To improve performance, we copy all three of these simultaneously, at the end of ScriptPlace processing.
-Friend Sub setPlacementData(ByRef advanceWidthCache() As Long, ByRef glyphOffsetCache() As GOFFSET, ByRef itemABCWidth As ABC)
+Friend Sub SetPlacementData(ByRef advanceWidthCache() As Long, ByRef glyphOffsetCache() As GOFFSET, ByRef itemABCWidth As ABC)
     
     'The advance width and glyph offset caches are the same size, so we can handle them together
     If m_NumOfGlyphs > 0 Then
@@ -291,7 +291,7 @@ End Sub
 
 'ScriptBreak generates a per-character array of logical attributes.  This is a pain, as the renderer only cares about glyphs, not chars,
 ' so we have to manually convert this array into something usable.
-Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGATTR)
+Friend Sub SetCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGATTR)
     
     If m_SubstringLength > 0 Then
     
@@ -373,19 +373,19 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
         
 End Sub
 
-Friend Function getSoftBreakAtPosition(ByVal gPos As Long) As Boolean
-    getSoftBreakAtPosition = m_GlyphSoftBreakCache(gPos)
+Friend Function GetSoftBreakAtPosition(ByVal gPos As Long) As Boolean
+    GetSoftBreakAtPosition = m_GlyphSoftBreakCache(gPos)
 End Function
 
-Friend Function getWhitespaceAtPosition(ByVal gPos As Long) As Boolean
-    getWhitespaceAtPosition = m_GlyphWhitespaceCache(gPos)
+Friend Function GetWhitespaceAtPosition(ByVal gPos As Long) As Boolean
+    GetWhitespaceAtPosition = m_GlyphWhitespaceCache(gPos)
 End Function
 
-Friend Function getZeroWidthAtPosition(ByVal gPos As Long) As Boolean
-    getZeroWidthAtPosition = m_GlyphZeroWidthCache(gPos)
+Friend Function GetZeroWidthAtPosition(ByVal gPos As Long) As Boolean
+    GetZeroWidthAtPosition = m_GlyphZeroWidthCache(gPos)
 End Function
 
-Friend Function getCorrespondingCharIndex(ByVal gPos As Long) As Long
+Friend Function GetCorrespondingCharIndex(ByVal gPos As Long) As Long
 
     'Search the logical cluster cache until we find a glyph position that matches.  Note that the relationship between characters
     ' and glyphs is *not* 1:1, so one glyph may match to multiple characters!  This function will only return the first hit.
@@ -394,7 +394,7 @@ Friend Function getCorrespondingCharIndex(ByVal gPos As Long) As Long
     For i = 0 To UBound(m_LogicalClusterCache)
     
         If m_LogicalClusterCache(i) = gPos Then
-            getCorrespondingCharIndex = m_RelativeStartPos + i
+            GetCorrespondingCharIndex = m_RelativeStartPos + i
             Exit For
         End If
         
@@ -415,7 +415,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        GetBitFlag = CBool(CLng(srcLong And longMask) <> 0)
+        GetBitFlag = (CLng(srcLong And longMask) <> 0)
         
         'If you're curious about how this function works (and what it returns), you can uncomment the line below
         'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"

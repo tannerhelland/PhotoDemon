@@ -4330,7 +4330,7 @@ End Function
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
 ' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
 ' being recreated, as necessary.)
-Public Sub AttemptToFreeMemory()
+Friend Sub AttemptToFreeMemory()
     m_topDIBCopy.EraseDIB
 End Sub
 

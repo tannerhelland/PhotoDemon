@@ -299,7 +299,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "angle", sltAngle.Value
         .AddParam "edges", cboEdges.ListIndex
-        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
+        .AddParam "bilinear", (btsRender.ListIndex = 1)
         .AddParam "centerx", sltXCenter.Value
         .AddParam "centery", sltYCenter.Value
     End With

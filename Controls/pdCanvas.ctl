@@ -431,7 +431,7 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     If changesMade Then
     
         'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
-        cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
+        cmdCenter.Visible = (hScroll.Visible And vScroll.Visible)
         Me.AlignCanvasView
         
     End If

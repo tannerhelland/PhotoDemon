@@ -87,7 +87,7 @@ Private Sub btsFlatten_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub UpdateComponentVisibility()
-    clsBackground.Visible = CBool(btsFlatten.ListIndex = 2)
+    clsBackground.Visible = (btsFlatten.ListIndex = 2)
 End Sub
 
 'OK button
@@ -97,7 +97,7 @@ Private Sub cmdBar_OKClick()
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "removetransparency", CBool(btsFlatten.ListIndex = 2)
+        .AddParam "removetransparency", (btsFlatten.ListIndex = 2)
         .AddParam "backgroundcolor", clsBackground.Color
     End With
     

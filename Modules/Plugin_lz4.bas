@@ -64,7 +64,7 @@ Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
     Dim lz4Path As String
     lz4Path = pathToDLLFolder & "liblz4.dll"
     m_Lz4Handle = LoadLibrary(StrPtr(lz4Path))
-    InitializeLz4 = CBool(m_Lz4Handle <> 0)
+    InitializeLz4 = (m_Lz4Handle <> 0)
     
     'If we initialized the library successfully, cache some lz4-specific data
     If InitializeLz4 Then
@@ -182,7 +182,7 @@ Public Function Lz4HCCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSi
     finalSize = LZ4_compress_HC(srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionLevel)
     
     'Check for error returns
-    Lz4HCCompressNakedPointers = CBool(finalSize <> 0)
+    Lz4HCCompressNakedPointers = (finalSize <> 0)
     
     If Lz4HCCompressNakedPointers Then
         dstSizeInBytes = finalSize

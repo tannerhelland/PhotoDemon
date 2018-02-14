@@ -92,7 +92,7 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
     Dim dispLookup() As Long
     ReDim dispLookup(0 To 255) As Long
     
-    Dim tmpRGBA As RGBQuad, dispFinal As Byte
+    Dim tmpRGBA As RGBQuad
     
     For i = 0 To 255
         With tmpRGBA

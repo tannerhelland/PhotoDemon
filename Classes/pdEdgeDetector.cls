@@ -96,7 +96,7 @@ Friend Function FindStartingPoint(ByRef srcArray() As Byte, ByVal initX As Long,
         If (Not keepSearching) Then Exit For
     Next y
     
-    FindStartingPoint = CBool(Not keepSearching)
+    FindStartingPoint = (Not keepSearching)
     
 End Function
 

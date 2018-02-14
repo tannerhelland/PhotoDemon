@@ -34,7 +34,7 @@ Private m_ProfileHandle As Long
 Friend Function CreateFromPointer(ByVal ptrToICCProfile As Long, ByVal iccProfileSizeInBytes As Long) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(ptrToICCProfile, iccProfileSizeInBytes)
-    CreateFromPointer = CBool(m_ProfileHandle <> 0)
+    CreateFromPointer = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
@@ -54,25 +54,25 @@ End Function
 Friend Function CreateGenericGrayscaleProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
-    CreateGenericGrayscaleProfile = CBool(m_ProfileHandle <> 0)
+    CreateGenericGrayscaleProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateLinearRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadLinearRGBProfile()
-    CreateLinearRGBProfile = CBool(m_ProfileHandle <> 0)
+    CreateLinearRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateSRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockSRGBProfile()
-    CreateSRGBProfile = CBool(m_ProfileHandle <> 0)
+    CreateSRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateLabProfile(Optional ByVal useVersion4 As Boolean = True) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockLabProfile(useVersion4)
-    CreateLabProfile = CBool(m_ProfileHandle <> 0)
+    CreateLabProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function GetColorSpace() As LCMS_PROFILE_COLOR_SPACE
@@ -92,7 +92,7 @@ Friend Function GetRenderingIntent() As LCMS_RENDERING_INTENT
 End Function
 
 Friend Function HasProfile() As Boolean
-    HasProfile = CBool(m_ProfileHandle <> 0)
+    HasProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function ReleaseProfile() As Boolean

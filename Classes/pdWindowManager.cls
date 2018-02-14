@@ -227,7 +227,7 @@ Friend Function GetWindowCaptionW(ByRef targetHWnd As Long) As String
 End Function
 
 Friend Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
-    GetVisibilityByHWnd = CBool(IsWindowVisible(srcHwnd) <> 0)
+    GetVisibilityByHWnd = (IsWindowVisible(srcHwnd) <> 0)
 End Function
 
 Friend Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
@@ -345,7 +345,7 @@ Friend Function IsDWMCompositionEnabled() As Boolean
         Else
             Dim tmpLong As Long
             DwmIsCompositionEnabled tmpLong
-            IsDWMCompositionEnabled = CBool(tmpLong <> 0)
+            IsDWMCompositionEnabled = (tmpLong <> 0)
         End If
     Else
         IsDWMCompositionEnabled = False

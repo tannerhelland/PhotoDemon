@@ -128,7 +128,7 @@ Private Sub btsColorSpace_Click(ByVal buttonIndex As Long)
     
     Dim i As Long
     For i = btsChannel.lBound To btsChannel.UBound
-        btsChannel(i).Visible = CBool(i = buttonIndex)
+        btsChannel(i).Visible = (i = buttonIndex)
     Next i
     
     UpdatePreview

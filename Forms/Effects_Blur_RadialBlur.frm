@@ -275,7 +275,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "radius", sltRadius.Value
         .AddParam "symmetry", CBool(chkSymmetry.Value)
-        .AddParam "bilinear", CBool(btsRender.ListIndex = 1)
+        .AddParam "bilinear", (btsRender.ListIndex = 1)
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -347,7 +347,7 @@ Private Function GetFunctionParamString() As String
         If (btsResize.ListIndex = 1) Then .AddParam "style", "enlarge" Else .AddParam "style", "fit"
         .AddParam "angle", sltAngle.Value
         .AddParam "quality", btsResample.ListIndex
-        .AddParam "transparentbackground", CBool(btsBackground.ListIndex = 0)
+        .AddParam "transparentbackground", (btsBackground.ListIndex = 0)
         .AddParam "backgroundcolor", csBackground.Color
     End With
     

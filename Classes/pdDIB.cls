@@ -418,7 +418,7 @@ End Function
 
 'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
 Friend Function IsDIBTopDown() As Boolean
-    IsDIBTopDown = CBool(m_dibHeader.Height < 0)
+    IsDIBTopDown = (m_dibHeader.Height < 0)
 End Function
 
 'Return this DIB's hDC.  DIBs receive a DC by default, at creation-time.  However, the caller can remove the DIB from its DC by
@@ -958,7 +958,7 @@ Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
                 GDI_Plus.ReleaseGDIPlusBrush tmpBrush
                 GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
                 
-                m_IsAlphaPremultiplied = CBool(fillAlphaL = 255)
+                m_IsAlphaPremultiplied = (fillAlphaL = 255)
                 
             Else
                 m_IsAlphaPremultiplied = True
@@ -1232,7 +1232,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     If (DIBVersionCheck = DIB_FILE_VERSION_2016) Then
         Dim tmpAlphaCheck As Long
         cFile.FileReadData hFile, VarPtr(tmpAlphaCheck), 4&
-        localAlphaPremultiplied = CBool(tmpAlphaCheck <> 0)
+        localAlphaPremultiplied = (tmpAlphaCheck <> 0)
         
     ElseIf (DIBVersionCheck = DIB_FILE_VERSION_2015) Then
         cFile.FileReadData hFile, VarPtr(localAlphaPremultiplied), 2&

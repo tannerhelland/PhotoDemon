@@ -103,7 +103,7 @@ Friend Function DoesPaletteUseColorNames() As Boolean
         
         Dim i As Long
         For i = 0 To Me.GetNumOfColors - 1
-            DoesPaletteUseColorNames = (Len(m_Palette(i).colorName) <> 0)
+            DoesPaletteUseColorNames = (Len(m_Palette(i).ColorName) <> 0)
             If DoesPaletteUseColorNames Then Exit Function
         Next i
         
@@ -153,7 +153,7 @@ Friend Function AddColor(ByRef srcQuad As RGBQuad, Optional ByRef srcColorName A
     
     With m_Palette(m_NumOfColors)
         .ColorValue = srcQuad
-        .colorName = srcColorName
+        .ColorName = srcColorName
     End With
     
     m_NumOfColors = m_NumOfColors + 1
@@ -193,7 +193,7 @@ Friend Sub FindAndRemoveDuplicates()
         For j = i + 1 To m_NumOfColors - 1
             With m_Palette(j)
                 If (.ColorValue.Red = targetValue.Red) And (.ColorValue.Green = targetValue.Green) And (.ColorValue.Blue = targetValue.Blue) And (.ColorValue.Alpha = targetValue.Alpha) Then
-                    If Strings.StringsEqual(.colorName, m_Palette(i).colorName) Then
+                    If Strings.StringsEqual(.ColorName, m_Palette(i).ColorName) Then
                         needsRemoval(j) = 1
                         duplicatesFound = True
                     End If
@@ -238,7 +238,7 @@ Friend Sub FindAndRemoveDuplicates_Fast()
     Dim needsRemoval() As Byte
     ReDim needsRemoval(0 To UBound(m_Palette)) As Byte
     
-    Dim i As Long, j As Long, targetValue As RGBQuad, duplicatesFound As Boolean
+    Dim i As Long, targetValue As RGBQuad, duplicatesFound As Boolean
     For i = 0 To UBound(m_Palette) - 1
         
         'Because the palette is sorted, we only need to compare neighboring entries
@@ -246,7 +246,7 @@ Friend Sub FindAndRemoveDuplicates_Fast()
         
         With m_Palette(i + 1)
             If (.ColorValue.Red = targetValue.Red) And (.ColorValue.Green = targetValue.Green) And (.ColorValue.Blue = targetValue.Blue) And (.ColorValue.Alpha = targetValue.Alpha) Then
-                If Strings.StringsEqual(.colorName, m_Palette(i).colorName) Then
+                If Strings.StringsEqual(.ColorName, m_Palette(i).ColorName) Then
                     needsRemoval(i + 1) = 1
                     duplicatesFound = True
                 End If

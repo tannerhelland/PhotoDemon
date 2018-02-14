@@ -376,7 +376,7 @@ Private Sub btsStyle_Click(ByVal buttonIndex As Long)
     
     Dim i As Long
     For i = ctlGroupFill.lBound To ctlGroupFill.UBound
-        ctlGroupFill(i).Visible = CBool(i = buttonIndex)
+        ctlGroupFill(i).Visible = (i = buttonIndex)
     Next i
     
     UpdatePreview

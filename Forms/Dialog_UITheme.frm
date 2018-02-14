@@ -99,8 +99,10 @@ Attribute VB_Exposed = False
 'Last updated: 14/February/17
 'Last update: finally finish implementing this thing!
 '
-'Generally speaking, it's not a great idea to run PhotoDemon in the IDE.  This dialog
-' is used to warn the user of the associated risks with doing so.
+'At first-run, PhotoDemon now asks the user to confirm their choice of program language and UI theme.
+' The dialog can be canceled (in which case default settings will be used), but my hope is that users
+' will be able to configure everything the way they prefer, without needing to dive into PD's complicated
+' menu system right off the bat.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/

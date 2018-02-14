@@ -303,7 +303,7 @@ Private m_Colors As pdThemeColors
 
 Private Sub btsDisablePlugin_Click(ByVal buttonIndex As Long)
     If m_IgnoreButtonStripEvents Then Exit Sub
-    m_PluginEnabled(lstPlugins.ListIndex - 1) = CBool(btsDisablePlugin.ListIndex = 0)
+    m_PluginEnabled(lstPlugins.ListIndex - 1) = (btsDisablePlugin.ListIndex = 0)
     UpdatePluginLabels
 End Sub
 

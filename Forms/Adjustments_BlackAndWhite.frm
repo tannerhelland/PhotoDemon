@@ -192,7 +192,7 @@ Private Function GetFunctionParamString() As String
         .AddParam "dither", lstDither.ListIndex
         .AddParam "color1", csMono(0).Color
         .AddParam "color2", csMono(1).Color
-        .AddParam "removetransparency", CBool(btsTransparency.ListIndex = 1)
+        .AddParam "removetransparency", (btsTransparency.ListIndex = 1)
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function
@@ -324,10 +324,10 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Set cParams = New pdParamXML
     cParams.SetParamString monochromeParams
     
-    Dim cThreshold As Long, DitherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
+    Dim cThreshold As Long, ditherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
     With cParams
         cThreshold = .GetLong("threshold", 127)
-        DitherMethod = .GetLong("dither", 6)
+        ditherMethod = .GetLong("dither", 6)
         lowColor = .GetLong("color1", vbBlack)
         highColor = .GetLong("color2", vbWhite)
         removeTransparency = .GetBool("removetransparency", False)
@@ -389,7 +389,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Dim dDivisor As Single
     
     'Process the image based on the dither method requested
-    Select Case DitherMethod
+    Select Case ditherMethod
         
         'No dither, so just perform a quick and dirty threshold calculation
         Case 0
@@ -664,7 +664,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     End Select
     
     'If we have been asked to use a non-ordered dithering method, apply it now
-    If (DitherMethod >= PDDM_FalseFloydSteinberg) Then
+    If (ditherMethod >= PDDM_FalseFloydSteinberg) Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)

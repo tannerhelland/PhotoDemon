@@ -45,7 +45,7 @@ Public Function InitializeEZTwain() As Boolean
         Dim eztPath As String
         eztPath = PluginManager.GetPluginPath & "eztw32.dll"
         m_hLibScanner = LoadLibrary(StrPtr(eztPath))
-        InitializeEZTwain = CBool(m_hLibScanner <> 0)
+        InitializeEZTwain = (m_hLibScanner <> 0)
         m_ScanningAvailable = InitializeEZTwain
         
         #If DEBUGMODE = 1 Then
@@ -89,7 +89,7 @@ Public Function EnableScanner() As Boolean
     InitializeEZTwain
     
     If (m_hLibScanner <> 0) Then
-        EnableScanner = CBool(TWAIN_IsAvailable() <> 0)
+        EnableScanner = (TWAIN_IsAvailable() <> 0)
         If (Not EnableScanner) Then RaiseInternalDebugEvent "TWAIN_IsAvailable() Failed", "TWAIN_IsAvailable() returned 0"
     Else
         RaiseInternalDebugEvent "LoadLibrary Failed", "EnableScanner() failed to load base library"

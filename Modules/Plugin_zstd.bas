@@ -57,7 +57,7 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
     Dim zstdPath As String
     zstdPath = pathToDLLFolder & "libzstd.dll"
     m_ZstdHandle = LoadLibrary(StrPtr(zstdPath))
-    InitializeZStd = CBool(m_ZstdHandle <> 0)
+    InitializeZStd = (m_ZstdHandle <> 0)
     
     'If we initialized the library successfully, cache some zstd-specific data
     If InitializeZStd Then
@@ -89,7 +89,7 @@ Public Function GetZstdVersion() As Long
 End Function
 
 Public Function IsZstdAvailable() As Boolean
-    IsZstdAvailable = CBool(m_ZstdHandle <> 0)
+    IsZstdAvailable = (m_ZstdHandle <> 0)
 End Function
 
 'Determine the maximum possible size required by a compression operation.  The destination buffer should be at least
@@ -153,7 +153,7 @@ Public Function ZstdCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSiz
     finalSize = ZSTD_compress(dstPointer, dstSizeInBytes, srcPointer, srcSizeInBytes, compressionLevel)
     
     'Check for error returns
-    ZstdCompressNakedPointers = CBool(ZSTD_isError(finalSize) = 0)
+    ZstdCompressNakedPointers = (ZSTD_isError(finalSize) = 0)
     
     If ZstdCompressNakedPointers Then
         dstSizeInBytes = finalSize

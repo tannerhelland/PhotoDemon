@@ -639,7 +639,7 @@ Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVa
     End If
     
     'Retrieve the string's dimensions
-    GetBoundaryRectOfMultilineString = CBool(DrawText(targetDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP) <> 0)
+    GetBoundaryRectOfMultilineString = (DrawText(targetDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP) <> 0)
     
     With dstRect
         .Left = tmpRect.Left

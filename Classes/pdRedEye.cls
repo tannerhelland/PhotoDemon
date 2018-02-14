@@ -64,7 +64,7 @@ Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal
 
 'Initiate red-eye detection.  This step simply aliases the target arrays supplied by the user, one each for region
 ' tracking and region detection, while also prepping some internal structs.
-Public Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight As Long, ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean
+Friend Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight As Long, ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean
     
     m_Width = srcWidth
     m_Height = srcHeight
@@ -91,7 +91,7 @@ End Function
 
 'When the red-eye process is finished (due to any condition - success, error, etc), the caller MUST call this
 ' function to release our aliases to their local red-eye tracking arrays.
-Public Function ReleaseRedEyeEngine(ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean
+Friend Function ReleaseRedEyeEngine(ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean
     
     'The only termination task that really matters is releasing our array aliases; if we don't do this, memory will
     ' either leak, or VB will straight-up crash.
@@ -106,7 +106,7 @@ End Function
 ' if it is, this function will fail.
 '
 'If successful, this function will return the ID of the assigned region.
-Public Function FindHighlightRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal regionMarkerID As Long) As Integer
+Friend Function FindHighlightRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal regionMarkerID As Long) As Integer
 
     'Increment the region counter.
     ' (TODO: if this exceeds the upper bound of an integer, exit immediately; this is an insanely unlikely scenario,

@@ -202,9 +202,9 @@ End Sub
 Private Sub UpdateVisibleContainer()
     Dim i As Long
     For i = picContainer.lBound To picContainer.UBound
-        picContainer(i).Visible = CBool(i = btsSource.ListIndex)
+        picContainer(i).Visible = (i = btsSource.ListIndex)
     Next i
-    lblSecurity.Visible = CBool(btsSource.ListIndex = 1)
+    lblSecurity.Visible = (btsSource.ListIndex = 1)
 End Sub
 
 Private Sub chkChrome_Click()
@@ -221,7 +221,7 @@ Private Sub cmdBarMini_OKClick()
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "wholescreen", CBool(btsSource.ListIndex = 0)
+        .AddParam "wholescreen", (btsSource.ListIndex = 0)
         .AddParam "minimizefirst", CBool(chkMinimize)
         If (btsSource.ListIndex <> 0) Then
             .AddParam "targethwnd", IIf(lstWindows.ListIndex >= 0, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&)

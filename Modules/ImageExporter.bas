@@ -45,12 +45,12 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     If (srcDIB.GetDIBColorDepth = 24) Then
         currentAlphaStatus = PDAS_NoAlpha
         colorCheckSuccessful = AutoDetectColors_24BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome)
-        isTrueColor = CBool(uniqueColorCount > 256)
+        isTrueColor = (uniqueColorCount > 256)
     
     'If the incoming image is 32-bpp, we will run additional alpha channel heuristics
     Else
         colorCheckSuccessful = AutoDetectColors_32BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome, currentAlphaStatus)
-        isTrueColor = CBool(uniqueColorCount > 256)
+        isTrueColor = (uniqueColorCount > 256)
     End If
     
     'Any steps beyond this point are identical for 24- and 32-bpp sources.
@@ -1501,7 +1501,7 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
         Else
             outputColorDepth = 24
         End If
-        forceGrayscale = CBool(outputColorDepth = 8)
+        forceGrayscale = (outputColorDepth = 8)
     End If
     
     'If the user wants us to modify the output file extension to match the selected encoding, apply it now

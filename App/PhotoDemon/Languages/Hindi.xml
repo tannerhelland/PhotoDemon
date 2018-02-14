@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.24</langversion>
+<langversion>1.0.26</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -7868,23 +7868,18 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 </phrase>
 
 <phrase>
-<original>Restore selected autosaves</original>
-<translation>चयनित आटोशेव्स पुनर्स्थापित करें</translation>
+<original>Attempt to recover</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all autosaves</original>
-<translation>सभी ऑटोशेव्स को छोड़ें</translation>
+<original>Discard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
 <translation>स्वत: सहेजना प्रविष्टियां मिलीं</translation>
-</phrase>
-
-<phrase>
-<original>Warning</original>
-<translation>चेतावनी</translation>
 </phrase>
 
 <phrase>
@@ -7912,7 +7907,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>पूर्वावलोकन उपलब्ध नहीं</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8239,7 +8234,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>यदि आप IDE में PhotoDemon चलाने पर जोर देते हैं, तो कृपया IDE क्रैश या फ्रीज के बारे में बग सबमिट नहीं करें। PhotoDemon के डेवलपर्स केवल उन समस्याओं और बगों का समाधान कर सकते हैं जो संकलित.एक्सए को प्रभावित करते हैं।</translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -15150,12 +15145,33 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for pdKDTreeNode.cls-->
 
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2541</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4592 phrases. -->
-<!-- 2053 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12170 total words. -->
+<!-- 2051 are duplicates, so only 2541 unique phrases have been written to file. -->
+<!-- These 2541 phrases contain approximately 12173 total words. -->
 
 </pdData>
