@@ -157,14 +157,17 @@ Private Sub FillXMLSettings()
             
             Case "pdHistory"
                 controlValue = eControl.GetHistoryAsString()
+                
+            Case "pdPaletteUI"
+                controlValue = eControl.SerializeToXML()
             
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
-        If (Len(controlValue) <> 0) Then controlValue = Trim$(controlValue)
+        If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
         
         'If this control has a valid value property, add it to the XML file
-        If (Len(controlValue) <> 0) Then
+        If (LenB(controlValue) <> 0) Then
         
             'If this control is part of a control array, we need to remember its index as well
             If (controlIndex >= 0) Then
@@ -286,6 +289,9 @@ Private Function ReadXMLSettings() As Boolean
                     
                 Case "pdHistory"
                     eControl.SetHistoryFromString controlValue
+                    
+                Case "pdPaletteUI"
+                    eControl.CreateFromXML controlValue
             
             End Select
 

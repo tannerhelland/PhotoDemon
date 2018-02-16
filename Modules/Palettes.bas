@@ -1223,7 +1223,7 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     
         'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
         ' as they require.
-        DisplayPaletteLoadDialog = (Len(sFile) <> 0)
+        DisplayPaletteLoadDialog = (LenB(sFile) <> 0)
         
         'The dialog was successful.  Return the path, and save this path for future usage.
         If DisplayPaletteLoadDialog Then

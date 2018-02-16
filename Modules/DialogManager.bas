@@ -551,18 +551,7 @@ Public Function PromptUITheme() As VbMsgBoxResult
     
 End Function
 
-'Present the user with PD's custom pen selection dialog.
-' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new pen parameters
-'          2) an optional initial pen parameter string
-'          3) an optional pdPenSelector control reference, if this dialog is being raised by a pdPenSelector control.
-'             (This reference will be used to provide live updates as the user plays with the pen dialog.)
-'
-' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowColorPanelDialog() As Boolean
-    ShowColorPanelDialog = (ChooseColorPanelSettings() = vbOK)
-End Function
-
-'Display a custom pen selection dialog
+'Display the right-side color panel toolbox settings dialog
 Public Function ChooseColorPanelSettings() As VbMsgBoxResult
 
     Load dialog_ColorPanel

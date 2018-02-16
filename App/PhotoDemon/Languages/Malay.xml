@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3306</langversion>
+<langversion>6.8.3307</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2983,6 +2983,18 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdInputMouse.cls-->
 
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
+
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
 <!-- pdLastUsedSettings.cls contains 0 phrases. -->
@@ -3461,6 +3473,23 @@ Please masukkan nilai berangka.</translation>
 <!-- pdPackager2.cls contains 0 phrases. -->
 
 <!-- END text for pdPackager2.cls-->
+
+<!-- BEGIN text for pdPalette.cls -->
+
+<phrase>
+<original>palette exported by PhotoDemon %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- BEGIN text for pdParamXML.cls -->
 
@@ -4328,6 +4357,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdNewOld.ctl-->
+
+<!-- BEGIN text for pdPaletteUI.ctl -->
+
+<phrase>
+<original>index %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPaletteUI.ctl-->
 
 <!-- BEGIN text for pdPenSelector.ctl -->
 
@@ -7914,6 +7954,32 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
+
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to use</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
 
 <!-- BEGIN text for Dialog_ColorSelector.frm (dialog_ColorSelector) -->
 
@@ -15121,62 +15187,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPalette.cls -->
-
-<phrase>
-<original>palette exported by PhotoDemon %1</original>
-<translation></translation>
-</phrase>
-
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdPalette.cls-->
-
-<!-- BEGIN text for pdPaletteChild.cls -->
-
-<!-- pdPaletteChild.cls contains 0 phrases. -->
-
-<!-- END text for pdPaletteChild.cls-->
-
-<!-- BEGIN text for pdKDTree.cls -->
-
-<!-- pdKDTree.cls contains 0 phrases. -->
-
-<!-- END text for pdKDTree.cls-->
-
-<!-- BEGIN text for pdKDTreeNode.cls -->
-
-<!-- pdKDTreeNode.cls contains 0 phrases. -->
-
-<!-- END text for pdKDTreeNode.cls-->
-
-<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
-
-<phrase>
-<original>Color panel settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wheels + history</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette</original>
-<translation></translation>
-</phrase>
-
-<!-- Dialog_ColorPanel.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<!-- END text for Dialog_ColorPanel.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2541</phrasecount>
+<phrasecount>2543</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4592 phrases. -->
-<!-- 2051 are duplicates, so only 2541 unique phrases have been written to file. -->
-<!-- These 2541 phrases contain approximately 12173 total words. -->
+<!-- As of this build, PhotoDemon contains 4599 phrases. -->
+<!-- 2056 are duplicates, so only 2543 unique phrases have been written to file. -->
+<!-- These 2543 phrases contain approximately 12177 total words. -->
 
 </pdData>

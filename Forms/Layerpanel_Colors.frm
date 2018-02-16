@@ -24,6 +24,15 @@ Begin VB.Form layerpanel_Colors
    ScaleWidth      =   190
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdPaletteUI palSelector 
+      Height          =   735
+      Left            =   120
+      TabIndex        =   4
+      Top             =   1320
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   1296
+   End
    Begin PhotoDemon.pdButton cmdSettings 
       Height          =   255
       Left            =   2280
@@ -97,6 +106,22 @@ Private m_ResizeInProgress As Boolean
 'We do some custom rendering in this panel (for the color history dialog), so it's helpful to cache a
 ' pd2DPainter object.
 Private m_Painter As pd2DPainter
+
+'As of Feb 2018, this panel now supports multiple rendering modes.  We can shortcut certain actions if
+' certain panels are not visible, so it's important to track this.
+Public Enum PD_ColorPanelMode
+    cpm_Wheels = 0
+    cpm_Palette = 1
+End Enum
+
+#If False Then
+    Private Const cpm_Wheels = 0, cpm_Palette = 1
+#End If
+
+Private m_RenderMode As PD_ColorPanelMode
+
+'In the "palette" rendering mode, this will be set to a non-null value
+Private m_PaletteFile As String
 
 'When various paint tools are used on the main window, they will notify us (via window message) of what
 ' color was used.  We will add those colors to our history list.
@@ -234,25 +259,19 @@ Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal
     ' external color change), relay the new color to the neighboring color wheel.
     If srcIsInternal Then clrWheel.Color = newColor
     
-    'Whenever this primary color changes, we broadcast the change throughout PD, so other color selector controls
-    ' know to redraw themselves accordingly.
-    UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
-    
-    'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
-    Select Case g_CurrentTool
-    
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
-            Paintbrush.SetBrushSourceColor newColor
-            
-        Case PAINT_FILL
-            FillTool.SetFillBrushColor newColor
-    
-    End Select
+    RelayColorChange newColor
     
 End Sub
 
 Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
     If srcIsInternal Then clrVariants.Color = newColor
+End Sub
+
+Private Sub cmdSettings_Click()
+    If (DialogManager.ChooseColorPanelSettings() = vbOK) Then
+        VerifyPanelUserPrefs
+        ReflowInterface
+    End If
 End Sub
 
 Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
@@ -313,11 +332,64 @@ Private Sub Form_Load()
     lastUsedSettings.SetParentForm Me
     lastUsedSettings.LoadAllControlValues
     
+    'Load any relevant user settings
+    VerifyPanelUserPrefs True
+    
     'Update everything against the current theme.  This will also set tooltips for various controls,
     ' and reflow the interface to match.
     UpdateAgainstCurrentTheme
     
     m_ResizeInProgress = False
+    
+End Sub
+
+'After the user has potentially changed settings (e.g. at first-load or after the settings panel is invoked),
+' modify visibility of various panel elements to match.
+Private Sub VerifyPanelUserPrefs(Optional ByVal forceRefresh As Boolean = False)
+    
+    Dim oldRenderMode As PD_ColorPanelMode
+    oldRenderMode = m_RenderMode
+    
+    m_RenderMode = g_UserPreferences.GetPref_Long("Tools", "ColorPanelStyle", cpm_Wheels)
+    m_PaletteFile = g_UserPreferences.GetPref_String("Tools", "ColorPanelPaletteFile")
+    If (LenB(m_PaletteFile) <> 0) Then palSelector.PaletteFile = m_PaletteFile
+    
+    'If the palette file is invalid, we'll revert to the standard mode
+    If (m_RenderMode = cpm_Palette) And (Not palSelector.IsPaletteValid) Then m_RenderMode = cpm_Wheels
+    
+    'When render mode changes, adjust visibility accordingly
+    If (m_RenderMode <> oldRenderMode) Or forceRefresh Then
+        
+        '"Wheels" mode
+        clrVariants.Visible = (m_RenderMode = cpm_Wheels)
+        clrWheel.Visible = (m_RenderMode = cpm_Wheels)
+        clrHistory.Visible = (m_RenderMode = cpm_Wheels)
+        
+        '"Palette" mode
+        palSelector.Visible = (m_RenderMode = cpm_Palette)
+        
+    End If
+    
+End Sub
+
+'When the currently active color selector experiences a color change, call this function to relay that
+' change elsewhere in the program.
+Private Sub RelayColorChange(ByVal newColor As Long)
+
+    'Whenever this primary color changes, we broadcast the change throughout PD, so other color selector controls
+    ' know to redraw themselves accordingly.
+    UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
+    
+    'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
+    Select Case g_CurrentTool
+    
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
+            Paintbrush.SetBrushSourceColor newColor
+            
+        Case PAINT_FILL
+            FillTool.SetFillBrushColor newColor
+    
+    End Select
     
 End Sub
 
@@ -347,10 +419,13 @@ Private Sub ReflowInterface()
         'Calculate a new height available to the other controls on this panel
         curFormHeight = curFormHeight - (clrHistory.GetHeight + Interface.FixDPI(2))
         
+        'Set the palette control to this height (regardless of whether or not it's visible)
+        palSelector.SetPositionAndSize 0, 0, curFormWidth, cmdSettings.GetTop - FixDPI(4)
+        
         'Before rendering other elements, enforce a minimum size.  During startup, form size vacillates
         ' several times as this window is "fit" against its neighbors.  This can throw GDI+ rendering
         ' error messages until a final size is arrived at.
-        If (curFormHeight > 50) And (curFormWidth > 50) Then
+        If (curFormHeight > 25) Then
             
             'Right-align the color wheel
             clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(1)), 0, curFormHeight, curFormHeight
@@ -400,11 +475,30 @@ Private Sub Form_Resize()
 End Sub
 
 Public Function GetCurrentColor()
-    GetCurrentColor = clrVariants.Color
+    If (m_RenderMode = cpm_Wheels) Then
+        GetCurrentColor = clrVariants.Color
+    ElseIf (m_RenderMode = cpm_Palette) Then
+        GetCurrentColor = palSelector.GetPaletteColor()
+    End If
 End Function
 
 Public Sub SetCurrentColor(ByVal newR As Long, ByVal newG As Long, ByVal newB As Long)
+    
     clrVariants.Color = RGB(newR, newG, newB)
     clrWheel.Color = RGB(newR, newG, newB)
     clrHistory.PushNewHistoryItem RGB(newR, newG, newB), , True
+    
+    'The palette selector is a little weird here; basically, we need to find the *closest* color
+    ' to the one we were passed.
+    'TODO!
+    
+End Sub
+
+Private Sub palSelector_Click(ByVal palIndex As Long, ByVal palColor As Long)
+    
+    'Relay the new color to the "color variants" control; it will automatically sync the color
+    ' across the program.  (Also, we do it this so that if the user switches color selector modes,
+    ' they will retain the current color correctly.)
+    clrVariants.Color = palColor
+    
 End Sub

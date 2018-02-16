@@ -70,6 +70,10 @@ End Enum
 Private m_NumOfGroups As Long
 Private m_Palettes() As pdPaletteChild
 
+Friend Function ChildPalette(Optional ByVal childIndex As Long = 0) As pdPaletteChild
+    Set ChildPalette = m_Palettes(childIndex)
+End Function
+
 Friend Function GetPaletteColorCount(Optional ByVal palGroupIndex As Long = 0) As Long
     If (m_NumOfGroups > 0) Then GetPaletteColorCount = m_Palettes(palGroupIndex).GetNumOfColors() Else GetPaletteColorCount = 0
 End Function
@@ -101,6 +105,8 @@ End Function
 Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     Me.Reset
+    
+    If (LenB(srcFile) = 0) Then Exit Function
     
     'Branch according to format; on failure, attempt the next mechanism.
     ' (Note that we manually reset our palette collection between attempts, in case a load routine failed

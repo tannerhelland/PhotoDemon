@@ -121,6 +121,10 @@ Friend Function GetPaletteColor(ByVal palIndex As Long) As RGBQuad
     GetPaletteColor = m_Palette(palIndex).ColorValue
 End Function
 
+Friend Function GetPaletteColorAsLong(ByVal palIndex As Long) As Long
+    GetPaletteColorAsLong = RGB(m_Palette(palIndex).ColorValue.Red, m_Palette(palIndex).ColorValue.Green, m_Palette(palIndex).ColorValue.Blue)
+End Function
+
 Friend Function GetPaletteEntry(ByVal palIndex As Long) As PDPaletteEntry
     GetPaletteEntry = m_Palette(palIndex)
 End Function

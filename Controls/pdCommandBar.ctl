@@ -824,7 +824,7 @@ Private Sub UserControl_Show()
         
         '...but the caller can also specify a custom name.  This is used when a single PD form handled multiple effects,
         ' like PD's Median/Dilate/Erode implementation.
-        If Len(m_userSuppliedToolName) <> 0 Then m_parentToolName = m_parentToolName & "_" & m_userSuppliedToolName
+        If (LenB(m_userSuppliedToolName) <> 0) Then m_parentToolName = m_parentToolName & "_" & m_userSuppliedToolName
         
         'PD stores all preset files in a set preset folder.  This folder is not user-editable.
         m_parentToolPath = g_UserPreferences.GetPresetPath & m_parentToolName & ".xml"
@@ -970,13 +970,16 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             Case "pdHistory"
                 controlValue = eControl.GetHistoryAsString()
                 
+            Case "pdPaletteUI"
+                controlValue = eControl.SerializeToXML()
+                
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
-        If (Len(controlValue) <> 0) Then controlValue = Trim$(controlValue)
+        If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
         
         'If the control value still has a non-zero length, add it now
-        If (Len(controlValue) <> 0) Then m_Presets.WritePresetValue controlName, controlValue
+        If (LenB(controlValue) <> 0) Then m_Presets.WritePresetValue controlName, controlValue
         
     'Continue with the next control on the parent dialog
     Next eControl
@@ -1161,6 +1164,9 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                     Case "pdHistory"
                         eControl.SetHistoryFromString controlValue
                         
+                    Case "pdPaletteUI"
+                        eControl.CreateFromXML controlValue
+                        
                 End Select
     
             End If
@@ -1240,11 +1246,11 @@ Private Sub UpdateControlLayout()
     parentWindowHeight = g_WindowManager.GetClientHeight(UserControl.Parent.hWnd)
     
     Dim moveRequired As Boolean
-    If bHeight <> FixDPI(50) Then moveRequired = True
-    If ucSupport.GetControlTop <> parentWindowHeight - FixDPI(50) Then moveRequired = True
+    If (bHeight <> Interface.FixDPI(50)) Then moveRequired = True
+    If (ucSupport.GetControlTop <> parentWindowHeight - Interface.FixDPI(50)) Then moveRequired = True
     
     If moveRequired Then
-        ucSupport.RequestNewSize , FixDPI(50)
+        ucSupport.RequestNewSize , Interface.FixDPI(50)
         ucSupport.RequestNewPosition 0, parentWindowHeight - ucSupport.GetControlHeight
     End If
     
@@ -1254,8 +1260,8 @@ Private Sub UpdateControlLayout()
         If (bWidth <> parentWindowWidth) Then ucSupport.RequestNewSize parentWindowWidth
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - FixDPI(8)
-        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - FixDPI(8)
+        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - Interface.FixDPI(8)
+        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - Interface.FixDPI(8)
         
     End If
     
@@ -1297,7 +1303,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'When running, we can assign images and tooltips to the image-only command buttons
         If MainModule.IsProgramRunning() Then
             Dim cmdButtonImageSize As Long
-            cmdButtonImageSize = FixDPI(24)
+            cmdButtonImageSize = Interface.FixDPI(24)
             cmdAction(0).AssignImage "generic_reset", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(1).AssignImage "generic_random", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(2).AssignImage "generic_savepreset", , cmdButtonImageSize, cmdButtonImageSize

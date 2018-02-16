@@ -1413,6 +1413,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdDropDownFont) Then
                 isPDControl = True
+            ElseIf (TypeOf eControl Is pdPaletteUI) Then
+                isPDControl = True
             End If
             
             If isPDControl Then

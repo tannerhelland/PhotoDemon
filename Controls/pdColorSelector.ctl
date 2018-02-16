@@ -242,7 +242,7 @@ End Sub
 'Primary color area raises a dialog; secondary color area copies the color from the main screen
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If IsMouseInPrimaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection
-    If IsMouseInSecondaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then Me.Color = layerpanel_Colors.clrVariants.Color
+    If IsMouseInSecondaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then Me.Color = layerpanel_Colors.GetCurrentColor()
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -466,7 +466,7 @@ Private Sub RedrawBackBuffer()
         End With
         
         If m_ShowMainWindowColor Then
-            ColorManagement.ApplyDisplayColorManagement_SingleColor layerpanel_Colors.clrVariants.Color, secondaryColorCM
+            ColorManagement.ApplyDisplayColorManagement_SingleColor layerpanel_Colors.GetCurrentColor(), secondaryColorCM
             With m_SecondaryColorRect
                 GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, secondaryColorCM, 255
                 GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
@@ -506,7 +506,7 @@ Private Sub MakeNewTooltip()
             If m_MouseInPrimaryButton Then
                 targetColor = Me.Color
             ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
-                targetColor = layerpanel_Colors.clrVariants.Color
+                targetColor = layerpanel_Colors.GetCurrentColor()
             End If
             
             'Make sure the color is an actual RGB triplet, and not an OLE color constant

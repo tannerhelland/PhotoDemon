@@ -5,7 +5,7 @@ Begin VB.Form dialog_ColorPanel
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color panel settings"
-   ClientHeight    =   6405
+   ClientHeight    =   3525
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9045
@@ -21,7 +21,7 @@ Begin VB.Form dialog_ColorPanel
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   427
+   ScaleHeight     =   235
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
@@ -40,10 +40,59 @@ Begin VB.Form dialog_ColorPanel
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   5670
+      Top             =   2790
       Width           =   9045
       _ExtentX        =   15954
       _ExtentY        =   1296
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   1335
+      Index           =   1
+      Left            =   120
+      TabIndex        =   3
+      Top             =   1320
+      Width           =   8775
+      _ExtentX        =   15478
+      _ExtentY        =   2355
+      Begin PhotoDemon.pdButton cmdPaletteChoose 
+         Height          =   375
+         Left            =   8280
+         TabIndex        =   5
+         Top             =   330
+         Width           =   495
+         _ExtentX        =   873
+         _ExtentY        =   661
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdTextBox txtPaletteFile 
+         Height          =   375
+         Left            =   0
+         TabIndex        =   4
+         Top             =   360
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   255
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8775
+         _ExtentX        =   15478
+         _ExtentY        =   450
+         Caption         =   "palette to use:"
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   1335
+      Index           =   0
+      Left            =   120
+      TabIndex        =   2
+      Top             =   1320
+      Width           =   8775
+      _ExtentX        =   15478
+      _ExtentY        =   2355
    End
 End
 Attribute VB_Name = "dialog_ColorPanel"
@@ -85,6 +134,8 @@ Public Sub ShowDialog()
     btsStyle.AddItem "wheels + history", 0
     btsStyle.AddItem "palette", 1
     btsStyle.ListIndex = g_UserPreferences.GetPref_Long("Tools", "ColorPanelStyle", 0)
+    txtPaletteFile.Text = g_UserPreferences.GetPref_String("Tools", "ColorPanelPaletteFile")
+    UpdateVisiblePanel
     
     'Apply any custom styles to the form
     ApplyThemeAndTranslations Me
@@ -94,11 +145,8 @@ Public Sub ShowDialog()
 
 End Sub
 
-Public Sub GetNewSettings(ByRef newLangIndex As Long, ByRef newThemeClass As PD_THEME_CLASS, ByRef newThemeAccent As PD_THEME_ACCENT, ByRef newMonoIcons As Boolean)
-    'newLangIndex = m_LangIndex
-    'newThemeClass = m_ThemeClass
-    'newThemeAccent = m_ThemeAccent
-    'newMonoIcons = m_MonoIcons
+Private Sub btsStyle_Click(ByVal buttonIndex As Long)
+    UpdateVisiblePanel
 End Sub
 
 Private Sub cmdBar_CancelClick()
@@ -107,8 +155,19 @@ Private Sub cmdBar_CancelClick()
 End Sub
 
 Private Sub cmdBar_OKClick()
+    
+    'Write these preferences to file before exiting
+    g_UserPreferences.SetPref_Long "Tools", "ColorPanelStyle", btsStyle.ListIndex
+    If (btsStyle.ListIndex = 1) Then g_UserPreferences.SetPref_String "Tools", "ColorPanelPaletteFile", txtPaletteFile.Text
+    
     m_CmdBarAnswer = vbOK
     Me.Hide
+    
+End Sub
+
+Private Sub cmdPaletteChoose_Click()
+    Dim srcPaletteFile As String
+    If Palettes.DisplayPaletteLoadDialog(vbNullString, srcPaletteFile) Then txtPaletteFile.Text = srcPaletteFile
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -116,13 +175,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdateVisiblePanel()
-
-    'Wheel options
-    If (btsStyle.ListIndex = 0) Then
     
-    'Palette options
-    ElseIf (btsStyle.ListIndex = 1) Then
-    
-    End If
+    Dim i As Long
+    For i = 0 To btsStyle.ListCount - 1
+        pnlOptions(i).Visible = (i = btsStyle.ListIndex)
+    Next i
     
 End Sub

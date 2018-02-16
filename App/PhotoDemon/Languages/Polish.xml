@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.1</langversion>
+<langversion>7.0.2</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -329,11 +329,9 @@
 
 <phrase>
 <original>Before lossless copies can be saved, you must save this image at least once.
-<translation>Przed zapisaniem bezstratnej kopii, należy co najmniej raz zapisać obraz.</translation>
-</phrase>
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>Bezstratna kopia zostanie zapisana w tym samym folderze, jako wstępny zapis obrazu.</translation>                                                                                                 
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -348,11 +346,9 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 <phrase>
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
-<translation>Wystąpił nieokreślony błąd podczas próby zapisania tego obrazu.  Spróbuj zapisać obraz w alternatywnym formacie.</translation>
-</phrase>
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Jeśli problem będzie się powtarzał, zgłoś go do programistów PhotoDemon za pośrednictwem photodemon.org/contact.</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -577,8 +573,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Image is all one color.  Auto crop unnecessary.</original>
-<translation>Obraz jest w jednym kolorze. Zbędne automatyczne przycinanie.</translation>
+<original>Image is all one color.  Autocrop unnecessary.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -695,8 +691,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>GDI+ failed to create blur effect object.</original>
-<translation>GDI+ nie można utworzyć obiektu efektu rozmycia.</translation>
+<original>GDI+ failed to create blur effect object</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -754,13 +750,9 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-<translation>Wtyczka interfejsu FreeImage (FreeImage.dll) została oznaczona jako brakująca lub wyłączona podczas inicjowania programu.</translation>
-</phrase>
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Wtyczka interfejsu FreeImage plug-in (FreeImage.dll) została oznaczona jako brakująca lub wyłączona podczas inicjowania programu.
-
-Aby włączyć obsługę tego formatu obrazu, należy skopiować plik FreeImage.dll (do pobrania ze http://freeimage.sourceforge.net/download.html) do katalogu plug-in i załaduj program.</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1581,7 +1573,47 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>All supported palettes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Swatch</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Table</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Swatch Exchange</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PaintShop Pro Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2935,6 +2967,18 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdInputMouse.cls-->
 
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
+
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
 <!-- pdLastUsedSettings.cls contains 0 phrases. -->
@@ -3413,6 +3457,23 @@ Please enter a numeric value.</original>
 <!-- pdPackager2.cls contains 0 phrases. -->
 
 <!-- END text for pdPackager2.cls-->
+
+<!-- BEGIN text for pdPalette.cls -->
+
+<phrase>
+<original>palette exported by PhotoDemon %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
 
 <!-- BEGIN text for pdParamXML.cls -->
 
@@ -4281,6 +4342,17 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 
 <!-- END text for pdNewOld.ctl-->
 
+<!-- BEGIN text for pdPaletteUI.ctl -->
+
+<phrase>
+<original>index %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPaletteUI.ctl-->
+
 <!-- BEGIN text for pdPenSelector.ctl -->
 
 <!-- pdPenSelector.ctl contains 0 phrases. -->
@@ -4966,13 +5038,13 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>Wyrównaj obraz</translation>
+<original>Merge visible layers</original>
+<translation>Scalanie widocznych warstw</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Scalanie widocznych warstw</translation>
+<original>Flatten image</original>
+<translation>Wyrównaj obraz</translation>
 </phrase>
 
 <phrase>
@@ -7821,23 +7893,18 @@ Czy masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "Nie
 </phrase>
 
 <phrase>
-<original>Restore selected autosaves</original>
-<translation>Przywracanie wybranych auto zapisów</translation>
+<original>Attempt to recover</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all autosaves</original>
-<translation>Odrzuć wszystkie auto zapisy</translation>
+<original>Discard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
 <translation>znaleziono zapisy auto zapisów</translation>
-</phrase>
-
-<phrase>
-<original>Warning</original>
-<translation>Ostrzeżenie</translation>
 </phrase>
 
 <phrase>
@@ -7865,9 +7932,35 @@ Czy masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "Nie
 <translation>Podgląd niedostępny</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
+
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to use</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
 
 <!-- BEGIN text for Dialog_ColorSelector.frm (dialog_ColorSelector) -->
 
@@ -8192,7 +8285,7 @@ Czy masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "Nie
 <translation>Jeśli nalegasz na uruchomienie PhotoDemon w IDE, proszę nie zgłaszać błędów dotyczące awarii IDE lub zawieszania się. Deweloperzy Photo Demon może zajmować się jedynie problemy i błędy, które wpływają na skompilowanego.exe.</translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -10320,6 +10413,16 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation>rozpraszanie</translation>
 </phrase>
@@ -10327,6 +10430,16 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <phrase>
 <original>reduce color bleed</original>
 <translation>zredukuj kolor</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>podstawowe ustawienia</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>zaawansowane ustawienia</translation>
 </phrase>
 
 <phrase>
@@ -10342,6 +10455,16 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <phrase>
 <original>alpha cut-off</original>
 <translation>alpha cut-off</translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10374,7 +10497,17 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <translation>Zastosowanie nowej palety do obrazu</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>%1 (%2 colors)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -10475,8 +10608,8 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 </phrase>
 
 <phrase>
-<original>vertical Pan</original>
-<translation>Pan pion</translation>
+<original>vertical pan</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10775,6 +10908,66 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Wybierz folder docelowy</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>małe</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>dodaj prefiks do każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>dodaj przyrostek do każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>usuń następujący tekst (jeśli znaleziono) z każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>wymuś każdą nazwę pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>DUŻE LITERY</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>zamień spacje w nazwach plików z podkreśleniami</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>użyj uwzględniając wielkość liter</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>po przetworzeniu obrazów, zapisz z następującą nazwą</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>dodatkowe opcje zmiany nazwy</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>wyjście obrazów do tego folderu</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation>ustaw ustawienia eksportu dla formatu</translation>
 </phrase>
@@ -10887,66 +11080,6 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(proces konwersji wsadowej pojawi się tutaj w czasie wykonywania)</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Wybierz folder docelowy</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>małe</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>dodaj prefiks do każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>dodaj przyrostek do każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>usuń następujący tekst (jeśli znaleziono) z każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>wymuś każdą nazwę pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>DUŻE LITERY</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>zamień spacje w nazwach plików z podkreśleniami</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>użyj uwzględniając wielkość liter</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>po przetworzeniu obrazów, zapisz z następującą nazwą</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>dodatkowe opcje zmiany nazwy</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>wyjście obrazów do tego folderu</translation>
 </phrase>
 
 <phrase>
@@ -11313,7 +11446,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>przetwarzane przed anulowaniem. Ostatni przetwarzany obraz był " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12125,16 +12258,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>podstawowe ustawienia</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>zaawansowane ustawienia</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>ustawienia metadanych</translation>
 </phrase>
@@ -12234,7 +12357,7 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <translation>Ustawienie stratne optymalizacji zmniejszają rozmiar pliku przez %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12358,8 +12481,8 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13161,8 +13284,8 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them on to PhotoDemon.</original>
-<translation>Innym sposobem otwierania obrazów jest przeciągnięcie z pulpitu lub z Explorera Windows i upuszczenie do PhotoDemon.</translation>
+<original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15042,10 +15165,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2543</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4599 phrases. -->
+<!-- 2056 are duplicates, so only 2543 unique phrases have been written to file. -->
+<!-- These 2543 phrases contain approximately 12177 total words. -->
 
 </pdData>
