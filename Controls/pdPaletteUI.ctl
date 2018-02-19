@@ -610,21 +610,22 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         If (Not m_Palette Is Nothing) Then
             
             Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+            Drawing2D.QuickCreateSolidBrush cBrush, m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(0)
             
-            For i = 0 To m_Palette.ChildPalette(m_ChildPaletteIndex).GetNumOfColors - 1
-                
-                Drawing2D.QuickCreateSolidBrush cBrush, m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(i)
-                
-                'Fill the rect already created for this palette entry
+            Dim colorLoopMax As Long
+            colorLoopMax = m_Palette.ChildPalette(m_ChildPaletteIndex).GetNumOfColors - 1
+            
+            'Fill the rects already created for each palette entry
+            For i = 0 To colorLoopMax
+                cBrush.SetBrushColor m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(i)
                 m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_PaletteRects(i)
-                
             Next i
             
             'Next, draw borders around each palette entry
             Dim cPen As pd2DPen
             Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDH_Border)
-            For i = 0 To m_Palette.ChildPalette(m_ChildPaletteIndex).GetNumOfColors - 1
+            For i = 0 To colorLoopMax
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(i)
             Next i
             
