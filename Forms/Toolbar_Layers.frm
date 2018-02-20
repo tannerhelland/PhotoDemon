@@ -108,12 +108,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Right-side ("Layers") Toolbar
 'Copyright 2014-2018 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 19/February/18
-'Last update: implement vertically resizable panels
+'Last updated: 20/February/18
+'Last update: finalize work on vertically resizable panels
 '
 'For historical reasons, I call this the "layers" toolbar, but it actually encompasses everything that appears on
-' the right-side toolbar.  Most of the code in this window is dedicated to supporting collapsible panels, and all
-' the messy UX handling that goes along with that.
+' the right-side toolbar.  Most of the code in this window is dedicated to supporting collapsible/resizable panels,
+' so it's 90+% UX-related.
+'
+'For details on the individual panels, refer to the various layerpanel_* forms.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -135,7 +137,7 @@ Private m_WeAreResponsibleForResize As Boolean
 
 'How close does the mouse have to be to the form border to allow resizing? Currently we use this constant,
 ' while accounting for DPI variance (e.g. this value represents (n) pixels *at 96 dpi*)
-Private Const RESIZE_BORDER As Long = 5
+Private Const RESIZE_BORDER As Long = 6
 
 'A dedicated mouse handler helps provide cursor handling
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -152,11 +154,7 @@ Private Type PD_Panel
     'Current height of each panel.  This is typically identical to the initial height value, *except* during
     ' a resize operation.  This value should be used for all layout decisions.
     CurrentHeight As Long
-    
-    'To allow the user to dynamically resize panels, we need to track mouse events on the underlying form object.
-    ' These rects define "interactive" areas for vertical resize operations.
-    VerticalResizeRect As RectF
-    
+
 End Type
 
 Private m_Panels() As PD_Panel
@@ -165,17 +163,8 @@ Private m_Panels() As PD_Panel
 Private m_NumOfPanels As Long
 
 'When the user is in the midst of resizing a vertical panel, this will be set to a value >= 0 (corresponding to the
-' panel being resized), and the initial y value will be populated to some non-zero value.
-Private m_PanelResizeActive As Long, m_PanelResizeInitY As Long
-
-'Panel resizing requires mouse capturing.  (Otherwise, if the mouse leaves the underlying control - a likely scenario,
-' as the user will "drag" the mouse over neighboring panels - other controls will steal mouse focus mid-resize.)
-Private Declare Function ReleaseCapture Lib "user32" () As Long
-Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
-
-'If the user has resized the right-side panels in a way that doesn't leave enough room for the layers panel to operate,
-' this will be set to TRUE.  The user must reduce one or more other panels before the layer panel will be allowed to open.
-Private m_LayerPanelMustStayHidden As Boolean
+' panel being resized).
+Private m_PanelResizeActive As Long
 
 Private Sub Form_Load()
     
@@ -183,7 +172,6 @@ Private Sub Form_Load()
     ' will likely rely on it.
     m_NumOfPanels = ttlPanel.Count
     ReDim m_Panels(0 To m_NumOfPanels - 1) As PD_Panel
-    m_PanelResizeActive = -1
     
     'Initialize panel height values.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
@@ -325,6 +313,7 @@ Public Sub ResetInterface()
     For i = 0 To m_NumOfPanels - 1
         m_Panels(i).InitialHeight = Interface.FixDPI(100)
         m_Panels(i).CurrentHeight = m_Panels(i).InitialHeight
+        ttlPanel(i).Value = True
     Next i
     
     'Reflow the interface to match
@@ -371,77 +360,193 @@ Private Sub ReflowInterface()
     Dim MIN_PANEL_SIZE As Long, MAX_PANEL_SIZE As Long, MIN_LAYER_PANEL_SIZE As Long
     MIN_PANEL_SIZE = Interface.FixDPI(70)
     MAX_PANEL_SIZE = Interface.FixDPI(320)
-    MIN_LAYER_PANEL_SIZE = Interface.FixDPI(166)
+    MIN_LAYER_PANEL_SIZE = Interface.FixDPI(173)
     
+    'We now calculate the toolbar's layout in two passes.  First, we calculate new layout rects for all objects on
+    ' the form (including titlebars and containers).  Next, we validate all positions by ensuring that all visible
+    ' containers have enough room to correctly display their contents.  (If they don't, we shift stuff around until
+    ' validity is reached.)  Finally, we apply all the new positions and render the results.
+    Dim ttlRects() As RectF, pnlRects() As RectF
+    ReDim ttlRects(0 To m_NumOfPanels - 1) As RectF
+    ReDim pnlRects(0 To m_NumOfPanels - 1) As RectF
+    
+    'First pass: calculate all rects using the user's current layout settings.
     Dim i As Long, tmpHeight As Long
     For i = 0 To m_NumOfPanels - 1
         
         'Move the titlebar of this panel into position
-        ttlPanel(i).SetPositionAndSize xOffset, yOffset, xWidth - xOffset + Interface.FixDPI(2), ttlPanel(i).GetHeight
+        With ttlRects(i)
+            .Left = xOffset
+            .Top = yOffset
+            .Width = xWidth - xOffset + Interface.FixDPI(2)
+            .Height = ttlPanel(i).GetHeight
+        End With
         
         'Move the yOffset beneath the panel
-        yOffset = yOffset + ttlPanel(i).GetHeight + Interface.FixDPI(1)
+        yOffset = yOffset + ttlRects(i).Height + Interface.FixDPI(1)
         
-        'If the title bar state is TRUE, open its corresponding panel.
+        'If the title bar state is TRUE, calculate a layout rect for its associated panel
         If ttlPanel(i).Value Then
             
-            'Move this panel into position.
+            'Move this panel into position.  (The x-check is a failsafe check only, for weird circumstances
+            ' when the form is created and its size is not yet properly set.)
             If (xWidth - xOffset > 0) Then
                 
-                'All panels follow an identical pattern, *except* for the layers panel (which auto-fills any remaining
-                ' vertical space - see below)
-                If (i < (m_NumOfPanels - 1)) Then
+                With pnlRects(i)
+                    .Left = Int(CSng(xOffset) * 1.5 + 0.5)
+                    .Top = yOffset
+                    .Width = xWidth - xOffset
+                End With
+                    
+                'The bottom panel (the layer panel) is handled specially, as it auto-sizes to fill any remaining
+                ' vertical space.
+                If (i = m_NumOfPanels - 1) Then
+                    tmpHeight = (formHeight - yOffset)
+                    pnlRects(i).Height = tmpHeight
+                    
+                Else
                 
                     'Because the user has control over panel height, we need to perform some checks to ensure the target
                     ' panel's height is an acceptable value
                     tmpHeight = m_Panels(i).CurrentHeight
                     If (tmpHeight < MIN_PANEL_SIZE) Then tmpHeight = MIN_PANEL_SIZE
                     If (tmpHeight > MAX_PANEL_SIZE) Then tmpHeight = MAX_PANEL_SIZE
-                    ctlContainer(i).SetPositionAndSize Int(CSng(xOffset) * 1.5 + 0.5), yOffset, xWidth - xOffset, tmpHeight
-                    
-                'The layers panel is unique, because it shrinks to fit all available vertical space.
-                Else
-                    
-                    'Calculate an "ideal" height; if this isn't available (because previous panels are too tall),
-                    ' close the panel entirely.
-                    tmpHeight = (formHeight - yOffset)
-                    
-                    'There's not enough room to operate the layer panel; force it to hide until the user frees up space
-                    If (tmpHeight < MIN_LAYER_PANEL_SIZE) Then
-                        m_LayerPanelMustStayHidden = True
-                        ttlPanel(i).Value = False
-                        ctlContainer(i).Visible = False
-                    Else
-                        m_LayerPanelMustStayHidden = False
-                        ctlContainer(i).SetPositionAndSize Int(CSng(xOffset) * 1.5 + 0.5), yOffset, xWidth - xOffset, tmpHeight
-                    End If
+                    pnlRects(i).Height = tmpHeight
                     
                 End If
                 
+            Else
+                With pnlRects(i)
+                    .Left = 0
+                    .Top = yOffset
+                    .Width = 1
+                    .Height = 1
+                End With
             End If
             
-            'Show the panel, and add its height to the running offset calculation
-            ' (Also, it looks weird, but we need to re-check that the title bar is still set to TRUE here;
-            '  previous steps may have deactivated it due to size and/or layout constraints.)
-            If ttlPanel(i).Value Then ctlContainer(i).Visible = True
-            yOffset = yOffset + ctlContainer(i).GetHeight
+            'Add this panel's height to the running offset calculation.
+            yOffset = yOffset + pnlRects(i).Height 'ctlContainer(i).GetHeight
             
-        'If the title bar state is FALSE, close its corresponding panel.
-        Else
-            ctlContainer(i).Visible = False
         End If
         
-        'We now want to determine the offset *between* panels.  This step is important as it determines the interactive
-        ' region between panels where the user can click-drag to resize individual panels.
-        With m_Panels(i).VerticalResizeRect
-            .Left = xOffset
-            .Width = ctlContainer(i).GetWidth
-            .Top = yOffset
-            .Height = Interface.FixDPI(RESIZE_BORDER)
+        'Calculate the new top position of the next panel in line.
+        yOffset = yOffset + Interface.FixDPI(2)
+        
+    Next i
+    
+    Dim spaceNeeded As Long, j As Long
+    Dim initHeight As Long, heightChange As Long
+    
+    'With all positions calculated, we now need to ensure that there is a valid amount of space for all panels.
+    ' At present, this mostly just means ensuring that the layer box (if open) has enough room to display correctly.
+    If ttlPanel(m_NumOfPanels - 1).Value Then
+    
+        'Figure out how much space we need to "make available" for the layer panel
+        spaceNeeded = MIN_LAYER_PANEL_SIZE - pnlRects(m_NumOfPanels - 1).Height
+        
+        If (spaceNeeded > 0) Then
+        
+            'Set the layers panel to the minimum allowable size
+            pnlRects(m_NumOfPanels - 1).Height = MIN_LAYER_PANEL_SIZE
+            
+            'Starting at the bottom and moving up, remove space from other panels until we have enough space to
+            ' properly fit the layer panel.
+            For i = (m_NumOfPanels - 2) To 0 Step -1
+                
+                'If this panel is open, remove as much height from it as we physically can
+                If ttlPanel(i).Value Then
+                
+                    initHeight = pnlRects(i).Height
+                    pnlRects(i).Height = pnlRects(i).Height - spaceNeeded
+                    If (pnlRects(i).Height < MIN_PANEL_SIZE) Then pnlRects(i).Height = MIN_PANEL_SIZE
+                    
+                    'If we were able to remove 1+ pixels from this panel (because it was larger than the minimum
+                    ' allowed size), shift all subsequent panels upward to compensate.
+                    heightChange = (initHeight - pnlRects(i).Height)
+                    If (heightChange > 0) Then
+                    
+                        'Adjust the running "space still needed" value to account for however many pixels we
+                        ' just removed.
+                        spaceNeeded = spaceNeeded - heightChange
+                        
+                        'Adjust the top position of subsequent panels and titlebars to match this new panel size
+                        For j = i To m_NumOfPanels - 2
+                            ttlRects(j + 1).Top = pnlRects(j).Top + pnlRects(j).Height + Interface.FixDPI(2)
+                            pnlRects(j + 1).Top = ttlRects(j + 1).Top + ttlRects(j + 1).Height + Interface.FixDPI(1)
+                        Next j
+                    
+                    End If
+                    
+                    'If we've removed sufficient space for everything to fit, our work here is done!
+                    If (spaceNeeded <= 0) Then Exit For
+                    
+                End If
+                
+            Next i
+            
+        End If
+    
+    'If the layer box is *not* open, we still need to ensure there is enough room for its titlebar, at least.
+    Else
+        
+        'See if the titlebar's position is valid (e.g. it is fully visible).
+        spaceNeeded = (ttlRects(m_NumOfPanels - 1).Top + ttlRects(m_NumOfPanels - 1).Height) - (formHeight - Interface.FixDPI(2))
+        
+        If (spaceNeeded > 0) Then
+        
+            'Starting at the bottom and moving up, remove space from other panels until we have enough space to
+            ' properly fit the layer titlebar.
+            For i = (m_NumOfPanels - 2) To 0 Step -1
+                
+                If ttlPanel(i).Value Then
+                
+                    'Remove as much height from this panel as we physically can
+                    initHeight = pnlRects(i).Height
+                    pnlRects(i).Height = pnlRects(i).Height - spaceNeeded
+                    If (pnlRects(i).Height < MIN_PANEL_SIZE) Then pnlRects(i).Height = MIN_PANEL_SIZE
+                    
+                    'If we were able to remove 1+ pixels from this panel (because it was larger than the minimum
+                    ' allowed size), shift all subsequent panels upward to compensate.
+                    heightChange = (initHeight - pnlRects(i).Height)
+                    If (heightChange > 0) Then
+                    
+                        'Adjust the running "space still needed" value to account for however many pixels we just removed.
+                        spaceNeeded = spaceNeeded - heightChange
+                        
+                        'Adjust the top position of subsequent panels and titlebars to match this new panel size
+                        For j = i To m_NumOfPanels - 2
+                            ttlRects(j + 1).Top = pnlRects(j).Top + pnlRects(j).Height + Interface.FixDPI(2)
+                            pnlRects(j + 1).Top = ttlRects(j + 1).Top + ttlRects(j + 1).Height + Interface.FixDPI(1)
+                        Next j
+                    
+                    End If
+                    
+                    'If we've removed sufficient space for everything to fit, our work here is done!
+                    If (spaceNeeded <= 0) Then Exit For
+                    
+                End If
+                
+            Next i
+            
+        End If
+    
+    End If
+    
+    'With all positions calculated, we can now move everything into position in one fell swoop
+    For i = 0 To m_NumOfPanels - 1
+        
+        'Move the titlebar of this panel into position
+        With ttlRects(i)
+            ttlPanel(i).SetPositionAndSize .Left, .Top, .Width, .Height
         End With
         
-        'Calculate the new top position of the next panel in line.
-        yOffset = yOffset + m_Panels(i).VerticalResizeRect.Height
+        '...same for its attached panel
+        With pnlRects(i)
+            ctlContainer(i).SetPositionAndSize .Left, .Top, .Width, .Height
+        End With
+        
+        'If the title bar state is TRUE, open its corresponding panel.
+        ctlContainer(i).Visible = ttlPanel(i).Value
         
     Next i
     
@@ -478,21 +583,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = Fal
     
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-
-    'If we're not currently in the midst of a panel resize, see if we need to initiate one
-    If (x > Interface.FixDPI(RESIZE_BORDER)) And (m_PanelResizeActive < 0) And ((Button And pdLeftButton) <> 0) Then
-        m_PanelResizeActive = GetResizeRectUnderMouse(x, y)
-        m_PanelResizeInitY = y
-        
-        'To ensure that other PD hWnds don't steal the mouse from us, lock it to this window until the drag is complete
-        m_MouseEvents.SetCaptureOverride False
-        SetCapture Me.hWnd
-        
-    End If
-    
-End Sub
-
 Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
@@ -501,24 +591,19 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     Dim hitCode As Long
     
     'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
-    If (y > 0) And (y < Me.ScaleHeight) And (x < Interface.FixDPI(RESIZE_BORDER)) Then
-        mouseInResizeTerritory = True
-        hitCode = HTLEFT
-    Else
-        mouseInResizeTerritory = False
-    End If
+    mouseInResizeTerritory = (y > 0) And (y < Me.ScaleHeight) And (x < Interface.FixDPI(RESIZE_BORDER))
     
     'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
-    If (mouseInResizeTerritory And (m_PanelResizeActive < 0)) Then
-    
+    If mouseInResizeTerritory Then
+        
         'Change the cursor to a resize cursor
         m_MouseEvents.SetSystemCursor IDC_SIZEWE
         
-        If (Button = vbLeftButton) Then
+        If (Button And vbLeftButton <> 0) Then
         
             m_WeAreResponsibleForResize = True
             ReleaseCapture
-            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTLEFT, ByVal 0&
             
             'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
             ' notify any neighboring toolboxes (and/or the central canvas)
@@ -532,26 +617,8 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
             
         End If
     
-    End If
-    
-    'Next, see if the mouse is in the interactive area "between" panels.
-    If (m_PanelResizeActive < 0) Then
-        
-        Dim tmpIndex As Long
-        tmpIndex = GetResizeRectUnderMouse(x, y)
-        
-        'If the mouse is inside an interactive area, and the left mouse button *isn't* down,
-        ' change the cursor to reflect that the user can resize via this position.
-        If (tmpIndex >= 0) Then
-            m_MouseEvents.SetSystemCursor IDC_SIZENS
-        Else
-            If (Not mouseInResizeTerritory) Then m_MouseEvents.SetSystemCursor IDC_DEFAULT
-        End If
-    
-    'We are already in the midst of a resize.  Calculate a new height and immediately reflow the interface to match.
     Else
-        m_Panels(m_PanelResizeActive).CurrentHeight = m_Panels(m_PanelResizeActive).InitialHeight + (y - m_PanelResizeInitY)
-        ReflowInterface
+        m_MouseEvents.SetSystemCursor IDC_DEFAULT
     End If
     
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
@@ -565,43 +632,8 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    
-    'If the user just finished a vertical panel resize, update our stored height value for the resized panel
-    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then
-        
-        m_Panels(m_PanelResizeActive).InitialHeight = m_Panels(m_PanelResizeActive).CurrentHeight
-        m_PanelResizeActive = -1
-        
-        'We also need to reset the mouse handler to its default behavior
-        ReleaseCapture
-        m_MouseEvents.SetCaptureOverride True
-        
-    End If
-    
-    'See where the mouse is now and set the cursor accordingly
-    Dim tmpIndex As Long
-    tmpIndex = GetResizeRectUnderMouse(x, y)
-    
-    'If the mouse is inside an interactive area, and the left mouse button *isn't* down,
-    ' change the cursor to reflect that the user can resize via this position.
-    If (tmpIndex >= 0) Then
-        m_MouseEvents.SetSystemCursor IDC_SIZENS
-    Else
-        m_MouseEvents.SetSystemCursor IDC_DEFAULT
-    End If
-    
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
-
-Private Function GetResizeRectUnderMouse(ByVal x As Single, ByVal y As Single) As Long
-    GetResizeRectUnderMouse = -1
-    Dim i As Long
-    For i = 0 To m_NumOfPanels - 1
-        If PDMath.IsPointInRectF(x, y, m_Panels(i).VerticalResizeRect) Then
-            GetResizeRectUnderMouse = i
-            Exit For
-        End If
-    Next i
-End Function
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     
@@ -619,17 +651,56 @@ End Sub
 'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
 ' perhaps sparing the amount of redraw work required.
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
+    
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
-    If ttlPanel(2).Value And (Not m_LayerPanelMustStayHidden) Then layerpanel_Layers.ForceRedraw True, layerID
+    
+    'Ideally, we wouldn't redraw the layer box unless it's actually visible, but we need to ensure that the layer
+    ' box's internal caches of things like layer thumbnails stays relevant to image state.  (Otherwise, if the panel
+    ' is closed and then the user later opens it, it would be completely out of sync!)  As such, we always redraw
+    ' the layer box, regardless of whether it's visible or not.
+    layerpanel_Layers.ForceRedraw True, layerID
+    
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     #End If
+    
 End Sub
 
 'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel
 ' affected by viewport changes is the navigator panel.
 Public Sub NotifyViewportChange()
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
+End Sub
+
+Private Sub ttlPanel_MouseDownCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    'Only panels after the first one can be resized (as the first panel sits at the top of the toolbox, and it must
+    ' always remain aligned there).  Note also that dragging a titlebar resizes the panel *above* this one
+    ' (hence the -1 on the line below).
+    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then m_PanelResizeActive = Index - 1
+    
+End Sub
+
+Private Sub ttlPanel_MouseDrag(Index As Integer, ByVal xChange As Long, ByVal yChange As Long)
+    
+    'The user is click-dragging a titlebar to resize its associated panel.  Calculate a new height and immediately
+    ' reflow the interface to match.
+    If (m_PanelResizeActive >= 0) Then
+        m_Panels(m_PanelResizeActive).CurrentHeight = m_Panels(m_PanelResizeActive).InitialHeight + yChange
+        ReflowInterface
+    End If
+    
+End Sub
+
+Private Sub ttlPanel_MouseUpCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+
+    'After a drag event, we need to store the new panel height
+    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then
+        m_Panels(m_PanelResizeActive).InitialHeight = m_Panels(m_PanelResizeActive).CurrentHeight
+        m_PanelResizeActive = -1
+    End If
+    
 End Sub

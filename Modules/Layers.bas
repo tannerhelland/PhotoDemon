@@ -56,7 +56,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
@@ -203,7 +203,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     'Redraw the main viewport (if requested)
     If (Not suspendRedraws) Then
         
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
@@ -238,7 +238,7 @@ Public Sub AddLayerFromVisibleLayers()
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
@@ -295,7 +295,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             End If
             
             'Render the new image to screen
-            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             
             'Synchronize the interface to the new image
             SyncInterfaceToCurrentImage
@@ -361,7 +361,7 @@ Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
         If alsoSyncInterface Then SyncInterfaceToCurrentImage
         
         'Redraw the viewport, but only if requested
-        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
         
@@ -387,7 +387,7 @@ Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
         If alsoSyncInterface Then SyncInterfaceToCurrentImage
             
         'Redraw the viewport, but only if requested
-        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
         
@@ -409,7 +409,7 @@ Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     SyncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -454,7 +454,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
@@ -513,7 +513,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
 
@@ -610,7 +610,7 @@ Public Sub DeleteLayer(ByVal dLayerIndex As Long)
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -661,7 +661,7 @@ Public Sub DeleteHiddenLayers()
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -687,7 +687,7 @@ Public Sub MoveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
 
@@ -735,7 +735,7 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
 
@@ -792,7 +792,7 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -856,7 +856,7 @@ Public Sub MergeVisibleLayers()
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -873,7 +873,7 @@ Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -890,7 +890,7 @@ Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -906,7 +906,7 @@ Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -927,7 +927,7 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -960,7 +960,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -981,7 +981,7 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1003,7 +1003,7 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1177,7 +1177,7 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     End If
         
     'Update the viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1254,7 +1254,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 

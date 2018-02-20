@@ -394,7 +394,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
                 If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerID) Then
                     Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
                     Layers.SetActiveLayerByIndex clickedLayer, False
-                    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                 End If
                 
             End If
@@ -481,7 +481,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -496,7 +496,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             SyncInterfaceToCurrentImage
         End If
         
@@ -594,17 +594,14 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             Me.RequestRedraw True
             
             'Redraw the viewport
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
         End If
         
     End If
     
     'If a layer other than the active one is being hovered, highlight that box
-    UpdateHoveredLayer GetLayerAtPosition(x, y)
-    
-    'TODO: optimize this call; we may not need it if we redrew the buffer previously in this function
-    RedrawBackBuffer
+    If (Not UpdateHoveredLayer(GetLayerAtPosition(x, y))) Then RedrawBackBuffer
     
 End Sub
 
@@ -637,7 +634,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
                 Me.RequestRedraw True
                 
                 'Redraw the viewport
-                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                 
             End If
             
@@ -685,8 +682,11 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then
+        If (Not UpdateControlLayout) Then RedrawBackBuffer
+    Else
+        RedrawBackBuffer
+    End If
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -852,21 +852,26 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
 End Sub
 
 'Update the currently hovered layer.  Note that this sets a module-level flag, rather than returning a specific value.
-Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
+Private Function UpdateHoveredLayer(ByVal newLayerUnderMouse As Long) As Boolean
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    UpdateHoveredLayer = False
+    
+    If (Not MainModule.IsProgramRunning()) Then Exit Function
     
     'If a layer other than the active one is being hovered, highlight that box
     If (m_CurLayerHover <> newLayerUnderMouse) Then
         m_CurLayerHover = newLayerUnderMouse
         RedrawBackBuffer
+        UpdateHoveredLayer = True
     End If
 
-End Sub
+End Function
 
-'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
-' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+'Unlike other control's UpdateControlLayout() function(s), this control can't easily predict whether or not
+' it will need to redraw the control (because it depends on some unpredictable factors like "does the new size
+' require a scroll bar").  If this control *does* redraw the underlying window, it will return TRUE.  Use this
+' to know whether you need to manually call RedrawBackBuffer after updating the control's layout.
+Private Function UpdateControlLayout() As Boolean
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -888,9 +893,10 @@ Private Sub UpdateControlLayout()
     
     'See if a scroll bar needs to be displayed.  Note that this will return TRUE if a redraw was requested -
     ' in that case, we can skip requesting our own redraw.
-    If (Not UpdateLayerScrollbarVisibility) Then RedrawBackBuffer
+    UpdateControlLayout = (Not UpdateLayerScrollbarVisibility)
+    If UpdateControlLayout Then RedrawBackBuffer
             
-End Sub
+End Function
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
@@ -968,6 +974,9 @@ Private Sub RedrawBackBuffer()
             fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
             fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
             fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
+            
+            'Retrieve a font object that we can use for rendering layer names
+            Set layerFont = Fonts.GetMatchingUIFont(10, False, False, False)
             
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
@@ -1078,7 +1087,6 @@ Private Sub RedrawBackBuffer()
                         drawString = tmpLayerRef.GetLayerName
                         
                         'Retrieve a matching font object from the UI font cache, and prep it with the proper display settings
-                        Set layerFont = Fonts.GetMatchingUIFont(10, False, False, False)
                         If layerIsSelected Then
                             If layerIsHovered Then paintColor = fontColorSelectedHover Else paintColor = fontColorSelected
                         Else
@@ -1234,6 +1242,8 @@ End Function
 ' need to provide your own redraw.
 Private Function UpdateLayerScrollbarVisibility() As Boolean
     
+    UpdateLayerScrollbarVisibility = False
+    
     Dim maxBoxSize As Long
     maxBoxSize = Interface.FixDPIFloat(LAYER_BLOCK_HEIGHT) * m_NumOfThumbnails - 1
     
@@ -1253,6 +1263,18 @@ Private Function UpdateLayerScrollbarVisibility() As Boolean
             UpdateLayerScrollbarVisibility = True
         End If
     End If
+    
+End Function
+
+'Want to know if a scrollbar is required at some arbitrary height?  Use this function to test.
+Public Function IsScrollbarRequiredForHeight(ByVal testHeight As Long) As Boolean
+    
+    Dim maxBoxSize As Long
+    maxBoxSize = Interface.FixDPIFloat(LAYER_BLOCK_HEIGHT) * m_NumOfThumbnails - 1
+    
+    'Note that this control requires three vertical pixels for padding; that's the reason for the
+    ' magic "3" number, below.
+    IsScrollbarRequiredForHeight = (maxBoxSize >= (testHeight - 3))
     
 End Function
 

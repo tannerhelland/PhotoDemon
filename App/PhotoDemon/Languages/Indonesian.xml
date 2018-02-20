@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.266</langversion>
+<langversion>6.6.267</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -5925,6 +5925,11 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
+<original>Reset all toolboxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Next image</original>
 <translation>gambar berikutnya</translation>
 </phrase>
@@ -6491,7 +6496,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
+<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15195,10 +15200,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2543</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4599 phrases. -->
-<!-- 2056 are duplicates, so only 2543 unique phrases have been written to file. -->
-<!-- These 2543 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4600 phrases. -->
+<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12180 total words. -->
 
 </pdData>

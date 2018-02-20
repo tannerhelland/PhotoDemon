@@ -57,8 +57,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control really only needs one event raised - Click
+'This control really only needs one event raised - Click.  However, a few other events are raised for
+' special situations where this control needs to do more than just open/close a corresponding panel.
 Public Event Click(ByVal newState As Boolean)
+Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseDrag(ByVal xChange As Long, ByVal yChange As Long)
+Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -71,6 +75,10 @@ Private m_CaptionRect As RECT
 
 'Current title state (TRUE when arrow is pointing down, e.g. the associated container is "open")
 Private m_TitleState As Boolean
+
+'Some titlebars support drag-to-resize behavior for their associated container.  We need to raise corresponding
+' mouse events so that parent controls can handle this.  On _MouseDown, the initial mouse position is cached.
+Private m_InitMouseX As Single, m_InitMouseY As Single
 
 '2D painting support classes
 Private m_Painter As pd2DPainter
@@ -226,6 +234,21 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
+    
+        'Toggle title state and redraw
+        m_TitleState = Not m_TitleState
+        
+        'Note that drawing flags are handled by MouseDown/Up.  Click() is only used for raising a matching Click() event.
+        RaiseEvent Click(m_TitleState)
+        RedrawBackBuffer
+        
+    End If
+    
+End Sub
+
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
@@ -254,19 +277,26 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     
 End Sub
 
-'Only left clicks raise Click() events
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
-    If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
-    
-        'Toggle title state and redraw
-        m_TitleState = Not m_TitleState
+    'Cache the current mouse position.  Importantly, note that we must translate these coordinates to
+    ' *screen* coordinates, as it's possible our parent control will move our window as a result of
+    ' this drag (which in turn causes mouse coords to go berserk).
+    If (Not g_WindowManager Is Nothing) Then
         
-        'Note that drawing flags are handled by MouseDown/Up.  Click() is only used for raising a matching Click() event.
-        RaiseEvent Click(m_TitleState)
-        RedrawBackBuffer
+        Dim tmpPoint As POINTAPI
+        tmpPoint.x = x
+        tmpPoint.y = y
+        g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
+        
+        m_InitMouseX = tmpPoint.x
+        m_InitMouseY = tmpPoint.y
+        
+        ucSupport.RequestAutoDropMouseMessages False
         
     End If
+    
+    RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
     
 End Sub
 
@@ -288,6 +318,29 @@ End Sub
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'If the left mouse button is pressed, relay any changes in position to our parent control.
+    If (Button And pdLeftButton <> 0) And (Not g_WindowManager Is Nothing) Then
+        
+        'Convert the mouse coord to screen coordinates
+        Dim tmpPoint As POINTAPI
+        tmpPoint.x = x
+        tmpPoint.y = y
+        g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
+        
+        'Relay the *difference* between the current coords and initial coords to our parent control
+        RaiseEvent MouseDrag(tmpPoint.x - m_InitMouseX, tmpPoint.y - m_InitMouseY)
+        
+    End If
+
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    ucSupport.RequestAutoDropMouseMessages True
+    RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)

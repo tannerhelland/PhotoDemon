@@ -262,27 +262,29 @@ Private Sub UpdateControlLayout()
         lbRightPosition = m_InteractiveRect.Left + m_InteractiveRect.Width
     End If
     
-    'Move the listbox into position
-    lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, lbRightPosition - m_InteractiveRect.Left, m_InteractiveRect.Height
+    'If we wanted to move the listbox into position, we could do it with this line:
+    'lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, lbRightPosition - m_InteractiveRect.Left, m_InteractiveRect.Height
     
-    'Because the listbox is in a new position, it may or may not still need a scrollbar
+    '...however, we still need to figure out if a scroll bar is required.  If it is, we'll need to shrink the layer list
+    ' horizontally to leave room for the scrollbar.  Rather than risk moving the listbox twice, let's figure out the
+    ' scroll bar situation, then render everything all at once.
     Dim scrollShouldBeVisible As Boolean
-    scrollShouldBeVisible = (lbView.ScrollMax > 0)
+    scrollShouldBeVisible = lbView.IsScrollbarRequiredForHeight(m_InteractiveRect.Height)
     
     vScroll.Visible = scrollShouldBeVisible
     If scrollShouldBeVisible Then
+        
         vScroll.SetPositionAndSize lbRightPosition, m_InteractiveRect.Top + 1, vScroll.GetWidth, m_InteractiveRect.Height - 2
         lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, lbRightPosition - m_InteractiveRect.Left, m_InteractiveRect.Height
+        
+        'As a failsafe, synchronize scroll bar values if the scrollbar is visible
+        vScroll.Max = lbView.ScrollMax
+        vScroll.Value = lbView.ScrollValue
+        
     Else
         lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, m_InteractiveRect.Width, m_InteractiveRect.Height
     End If
-    
-    'As a failsafe, synchronize scroll bar values if the scrollbar is visible
-    If scrollShouldBeVisible Then
-        vScroll.Max = lbView.ScrollMax
-        vScroll.Value = lbView.ScrollValue
-    End If
-            
+        
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).

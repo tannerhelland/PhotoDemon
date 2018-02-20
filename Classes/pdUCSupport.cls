@@ -549,13 +549,14 @@ Friend Sub SuspendAutoRepaintBehavior(ByVal newSuspendState As Boolean)
     m_SuspendAutoRepaint = newSuspendState
 End Sub
 
-'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution mouse input is
-' *not* enabled for most controls.)
+'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution
+' mouse input is *not* enabled for most controls.)
 Friend Sub RequestHighResMouseInput(ByVal newState As Boolean)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetHighResolutionTrackingMode newState
 End Sub
 
-'Want to turn off auto-dropping of delayed mouse messages?  Request changes here.  (By default, auto-drop is always enabled.)
+'Want to turn off auto-dropping of delayed mouse messages?  Request changes here.  (By default, auto-drop
+' is always enabled.)
 Friend Sub RequestAutoDropMouseMessages(ByVal newState As Boolean)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetAutoDropOfDelayedEvents newState
 End Sub
@@ -1049,7 +1050,7 @@ Private Sub HideTooltip(Optional ByVal forciblyRelease As Boolean = True)
     If forciblyRelease Then
         UserControls.HideUCTooltip
     Else
-        If (Len(m_TTCaption) <> 0) Then UserControls.HideUCTooltip
+        If (LenB(m_TTCaption) <> 0) Then UserControls.HideUCTooltip
     End If
 End Sub
 
@@ -1058,6 +1059,11 @@ End Sub
 Friend Function DoIHaveFocus() As Boolean
     DoIHaveFocus = m_FocusDetector.HasFocus
 End Function
+
+'Relay mouse capture requests to our internal mouse handler
+Friend Sub SetCaptureOverride(ByVal newState As Boolean)
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetCaptureOverride newState
+End Sub
 
 'Retrieve a copy of the back buffer's DC.  Optionally, you can request that the control wipe the background first.
 Friend Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = False, Optional ByVal newBackColor As Long = -1&) As Long
@@ -1289,7 +1295,7 @@ End Sub
 ' need to redraw anything to match.  (Note that the ID contains data about both the UI theme and the current language;
 ' changing either should initiate a full redraw.)
 Friend Function ThemeUpdateRequired() As Boolean
-    If (Len(m_LastThemeID) = 0) Then
+    If (LenB(m_LastThemeID) = 0) Then
         ThemeUpdateRequired = True
     Else
         ThemeUpdateRequired = Strings.StringsNotEqual(m_LastThemeID, Interface.GetCurrentInterfaceID, False)

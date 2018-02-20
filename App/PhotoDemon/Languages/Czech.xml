@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3307</langversion>
+<langversion>6.8.3308</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5915,6 +5915,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
+<original>Reset all toolboxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Next image</original>
 <translation>Další obrázek</translation>
 </phrase>
@@ -6480,7 +6485,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Odstraňte alfa kanál</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
+<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15182,10 +15187,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2543</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4599 phrases. -->
-<!-- 2056 are duplicates, so only 2543 unique phrases have been written to file. -->
-<!-- These 2543 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4600 phrases. -->
+<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12180 total words. -->
 
 </pdData>

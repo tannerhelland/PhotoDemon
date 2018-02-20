@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3307</langversion>
+<langversion>6.8.3308</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5919,6 +5919,11 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Reset all toolboxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Next image</original>
 <translation>Neste bilde</translation>
 </phrase>
@@ -6485,7 +6490,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>Fjern alfakanal </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
+<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15187,10 +15192,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2543</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4599 phrases. -->
-<!-- 2056 are duplicates, so only 2543 unique phrases have been written to file. -->
-<!-- These 2543 phrases contain approximately 12177 total words. -->
+<!-- As of this build, PhotoDemon contains 4600 phrases. -->
+<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12180 total words. -->
 
 </pdData>
