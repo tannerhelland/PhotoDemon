@@ -685,16 +685,13 @@ Private Sub Class_Terminate()
     
 End Sub
 
-Private Function HandleKeydownMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
-    'Inside a keydown message, we want to cache WM_CHAR, if one exists.  (If we don't do this, VB will eat unicode
+    'Inside keydown/up messages, we want to cache WM_CHAR, if one exists.  (If we don't do this, VB will eat unicode
     ' character codes inside its TranslateAccelerator handler.)
     Dim tmpMsg As TagMSG
-    If (PeekMessage(tmpMsg, hWnd, WM_CHAR, WM_CHAR, PM_NOREMOVE) <> 0) Then
-        m_CharCache = tmpMsg.wParam
-    End If
-    
-    HandleKeydownMsg = 0
+    If (PeekMessage(tmpMsg, hWnd, WM_CHAR, WM_CHAR, PM_NOREMOVE) <> 0) Then m_CharCache = tmpMsg.wParam
+    HandleKeyDownUpMsgs = 0
     
 End Function
 
@@ -787,8 +784,8 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         End If
             
     'Manually dispatch WM_KEYDOWN messages.
-    ElseIf (uiMsg = WM_KEYDOWN) Then
-        HandleEditBoxMsgs = HandleKeydownMsg(hWnd, uiMsg, wParam, lParam, msgEaten)
+    ElseIf (uiMsg = WM_KEYDOWN) Or (uiMsg = WM_KEYUP) Then
+        HandleEditBoxMsgs = HandleKeyDownUpMsgs(hWnd, uiMsg, wParam, lParam, msgEaten)
             
     'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
     ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
