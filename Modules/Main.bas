@@ -489,10 +489,10 @@ Public Function ContinueLoadingProgram() As Boolean
     g_Zoom.InitializeViewportEngine
     
     'Populate the main form's zoom drop-down
-    g_Zoom.PopulateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference
+    g_Zoom.PopulateZoomComboBox FormMain.MainCanvas(0).GetZoomDropDownReference
     
     'Populate the main canvas's size unit dropdown
-    FormMain.mainCanvas(0).PopulateSizeUnits
+    FormMain.MainCanvas(0).PopulateSizeUnits
     
     
     '*************************************************************************************************************************************
@@ -600,7 +600,7 @@ Public Function ContinueLoadingProgram() As Boolean
     End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
-    InitializeIconHandler
+    IconsAndCursors.InitializeIconHandler
     
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.  (Note that PD exposes two versions of the checkerboard pattern: a GDI version
@@ -617,10 +617,10 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
-    g_MouseAccuracy = FixDPIFloat(7)
+    g_MouseAccuracy = Interface.FixDPIFloat(7)
     
     'Allow main form components to load any control-specific preferences they may utilize
-    FormMain.mainCanvas(0).ReadUserPreferences
+    FormMain.MainCanvas(0).ReadUserPreferences
     
     'Prep the color management pipeline
     ColorManagement.CacheDisplayCMMData

@@ -526,8 +526,10 @@ Public Sub InitializeMenus()
         AddMenuItem "Right", "window_imagetabstrip_alignright", 9, 3, 6
         AddMenuItem "Bottom", "window_imagetabstrip_alignbottom", 9, 3, 7
     AddMenuItem "-", "-", 9, 4
-    AddMenuItem "Next image", "window_next", 9, 5, , "generic_next"
-    AddMenuItem "Previous image", "window_previous", 9, 6, , "generic_previous"
+    AddMenuItem "Reset all toolboxes", "window_resetsettings", 9, 5
+    AddMenuItem "-", "-", 9, 6
+    AddMenuItem "Next image", "window_next", 9, 7, , "generic_next"
+    AddMenuItem "Previous image", "window_previous", 9, 8, , "generic_previous"
     
     
     'Help Menu

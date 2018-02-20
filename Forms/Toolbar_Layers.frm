@@ -185,19 +185,20 @@ Private Sub Form_Load()
     ReDim m_Panels(0 To m_NumOfPanels - 1) As PD_Panel
     m_PanelResizeActive = -1
     
-    'Some panel heights are hard-coded.  Calculate those now.
+    'Initialize panel height values.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
     '  space remains after other panels are positioned.)
-    ' (Also, in a perfect world the user could resize each panel vertically.  I'm writing each sub-panel UI so that
-    '  it technically supports this behavior, but there's no framework for that kind of resizing just yet.)
+    Dim pnlDefaultHeight As Long
+    pnlDefaultHeight = Interface.FixDPI(100)
+    
     Dim i As Long
     If (Not g_UserPreferences Is Nothing) Then
         For i = 0 To m_NumOfPanels - 1
-            m_Panels(i).InitialHeight = g_UserPreferences.GetPref_Long("Toolbox", "RightPanelWidth-" & CStr(i + 1), Interface.FixDPI(100))
+            m_Panels(i).InitialHeight = g_UserPreferences.GetPref_Long("Toolbox", "RightPanelWidth-" & CStr(i + 1), pnlDefaultHeight)
         Next i
     Else
         For i = 0 To m_NumOfPanels - 1
-            m_Panels(i).InitialHeight = Interface.FixDPI(100)
+            m_Panels(i).InitialHeight = pnlDefaultHeight
         Next i
     End If
     
@@ -314,6 +315,20 @@ Private Sub Form_Unload(Cancel As Integer)
         #End If
         Cancel = True
     End If
+    
+End Sub
+
+Public Sub ResetInterface()
+
+    'Reset all panels to their default heights
+    Dim i As Long
+    For i = 0 To m_NumOfPanels - 1
+        m_Panels(i).InitialHeight = Interface.FixDPI(100)
+        m_Panels(i).CurrentHeight = m_Panels(i).InitialHeight
+    Next i
+    
+    'Reflow the interface to match
+    ReflowInterface
     
 End Sub
 

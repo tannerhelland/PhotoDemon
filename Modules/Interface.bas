@@ -295,13 +295,8 @@ Public Sub SyncInterfaceToCurrentImage()
         
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
-    If (g_OpenImageCount >= 2) Then
-        FormMain.MnuWindow(5).Enabled = True
-        FormMain.MnuWindow(6).Enabled = True
-    Else
-        FormMain.MnuWindow(5).Enabled = False
-        FormMain.MnuWindow(6).Enabled = False
-    End If
+    FormMain.MnuWindow(7).Enabled = (g_OpenImageCount > 1)
+    FormMain.MnuWindow(8).Enabled = (g_OpenImageCount > 1)
         
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
@@ -319,66 +314,25 @@ End Sub
 Private Sub SyncUI_MultipleLayerSettings()
     
     'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-    If (pdImages(g_CurrentImage).GetNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).GetNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers) Then
-        FormMain.MnuLayerDelete(1).Enabled = True
-    Else
-        FormMain.MnuLayerDelete(1).Enabled = False
-    End If
-
-    'Merge up/down are not available for layers at the top and bottom of the image
-    If (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1) Then
-        FormMain.MnuLayer(3).Enabled = True
-    Else
-        FormMain.MnuLayer(3).Enabled = False
-    End If
+    FormMain.MnuLayerDelete(1).Enabled = (pdImages(g_CurrentImage).GetNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).GetNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers)
     
-    If (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1) Then
-        FormMain.MnuLayer(4).Enabled = True
-    Else
-        FormMain.MnuLayer(4).Enabled = False
-    End If
+    'Merge up/down are not available for layers at the top and bottom of the image
+    FormMain.MnuLayer(3).Enabled = (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1)
+    FormMain.MnuLayer(4).Enabled = (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1)
     
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
-    If (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1) Then
-        If (Not FormMain.MnuLayerOrder(0).Enabled) Then
-            FormMain.MnuLayerOrder(0).Enabled = True
-            FormMain.MnuLayerOrder(3).Enabled = True    '"raise to top" mirrors "raise layer"
-        End If
-    Else
-        If FormMain.MnuLayerOrder(0).Enabled Then
-            FormMain.MnuLayerOrder(0).Enabled = False
-            FormMain.MnuLayerOrder(3).Enabled = False
-        End If
-    End If
-    
-    If (pdImages(g_CurrentImage).GetActiveLayerIndex > 0) Then
-        If (Not FormMain.MnuLayerOrder(1).Enabled) Then
-            FormMain.MnuLayerOrder(1).Enabled = True
-            FormMain.MnuLayerOrder(4).Enabled = True    '"lower to bottom" mirrors "lower layer"
-        End If
-    Else
-        If FormMain.MnuLayerOrder(1).Enabled Then
-            FormMain.MnuLayerOrder(1).Enabled = False
-            FormMain.MnuLayerOrder(4).Enabled = False
-        End If
-    End If
-    
+    FormMain.MnuLayerOrder(0).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1)
+    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled   '"raise to top" mirrors "raise layer"
+    FormMain.MnuLayerOrder(1).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex > 0)
+    FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled   '"lower to bottom" mirrors "lower layer"
     
     'Flatten is only available if one or more layers are actually *visible*
-    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0) Then
-        If (Not FormMain.MnuLayer(15).Enabled) Then FormMain.MnuLayer(15).Enabled = True
-    Else
-        FormMain.MnuLayer(15).Enabled = False
-    End If
+    FormMain.MnuLayer(15).Enabled = (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0)
     
     'Merge visible is only available if *two* or more layers are visible
-    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1) Then
-        If (Not FormMain.MnuLayer(16).Enabled) Then FormMain.MnuLayer(16).Enabled = True
-    Else
-        FormMain.MnuLayer(16).Enabled = False
-    End If
+    FormMain.MnuLayer(16).Enabled = (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1)
     
 End Sub
 

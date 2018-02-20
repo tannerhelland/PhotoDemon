@@ -245,8 +245,8 @@ Public Sub ResetMenuIcons()
     AddMenuIcon "edit_repeat", 1, 4         'Repeat previous action
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
-    AddMenuIcon "generic_next", 9, 5       'Next image
-    AddMenuIcon "generic_previous", 9, 6   'Previous image
+    AddMenuIcon "generic_next", 9, 7       'Next image
+    AddMenuIcon "generic_previous", 9, 8   'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long

@@ -804,7 +804,7 @@ Private Sub NewToolSelected()
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    If (g_OpenImageCount > 0) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (g_OpenImageCount > 0) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage
@@ -1075,9 +1075,16 @@ End Sub
 
 'Used to change the visibility of category labels.  When disabled, the button layout is reflowed into a continuous
 ' stream of buttons.  When enabled, buttons are sorted by category.
-Public Sub ToggleToolCategoryLabels()
+Public Sub ToggleToolCategoryLabels(Optional ByVal newSetting As PD_BOOL = PD_BOOL_AUTO)
     
-    m_ShowCategoryLabels = (Not m_ShowCategoryLabels)
+    If (newSetting = PD_BOOL_AUTO) Then
+        m_ShowCategoryLabels = (Not m_ShowCategoryLabels)
+    ElseIf (newSetting = PD_BOOL_FALSE) Then
+        m_ShowCategoryLabels = False
+    Else
+        m_ShowCategoryLabels = True
+    End If
+    
     FormMain.MnuWindowToolbox(2).Checked = m_ShowCategoryLabels
     g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", m_ShowCategoryLabels
     
@@ -1131,11 +1138,7 @@ Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
 
     'Apply a checkbox to the matching menu item
     For i = 4 To 6
-        If i = newSize Then
-            FormMain.MnuWindowToolbox(i).Checked = True
-        Else
-            FormMain.MnuWindowToolbox(i).Checked = False
-        End If
+        FormMain.MnuWindowToolbox(i).Checked = (i = newSize)
     Next i
     
     'TODO: notify the new toolbox manager of this change

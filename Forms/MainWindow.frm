@@ -26,24 +26,24 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
-   Begin PhotoDemon.pdCanvas mainCanvas 
+   Begin PhotoDemon.pdCanvas MainCanvas 
       Height          =   5055
       Index           =   0
       Left            =   2640
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -58,7 +58,7 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuFile 
          Caption         =   "Open &recent"
          Index           =   2
-         Begin VB.Menu mnuRecDocs 
+         Begin VB.Menu MnuRecDocs 
             Caption         =   "Empty"
             Enabled         =   0   'False
             Index           =   0
@@ -1310,12 +1310,12 @@ Begin VB.Form FormMain
          Caption         =   "Custom filter..."
       End
    End
-   Begin VB.Menu mnuTools 
+   Begin VB.Menu MnuTools 
       Caption         =   "&Tools"
       Begin VB.Menu MnuTool 
          Caption         =   "Language"
          Index           =   0
-         Begin VB.Menu mnuLanguages 
+         Begin VB.Menu MnuLanguages 
             Caption         =   "English (US)"
             Checked         =   -1  'True
             Index           =   0
@@ -1366,7 +1366,7 @@ Begin VB.Form FormMain
             Caption         =   "-"
             Index           =   0
          End
-         Begin VB.Menu mnuClearRecentMacros 
+         Begin VB.Menu MnuClearRecentMacros 
             Caption         =   "Clear recent macro list"
          End
       End
@@ -1490,12 +1490,20 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
+         Caption         =   "Reset all toolboxes"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Previous image"
+         Caption         =   "-"
          Index           =   6
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "Next image"
+         Index           =   7
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "Previous image"
+         Index           =   8
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1588,7 +1596,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK"
     asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     
-    FormMain.mainCanvas(0).SetNetworkState False
+    FormMain.MainCanvas(0).SetNetworkState False
     Debug.Print "All downloads complete."
     
 End Sub
@@ -1666,7 +1674,7 @@ End Sub
 
 'External functions can request asynchronous downloads via this function.
 Public Function RequestAsynchronousDownload(ByRef downloadKey As String, ByRef urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal saveToThisFileWhenComplete As String = vbNullString, Optional ByVal checksumToVerify As Long = 0) As Boolean
-    FormMain.mainCanvas(0).SetNetworkState True
+    FormMain.MainCanvas(0).SetNetworkState True
     RequestAsynchronousDownload = Me.asyncDownloader.AddToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, True, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
@@ -1701,7 +1709,7 @@ Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
     'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
     ' Note that resizing the canvas rect will automatically trigger a redraw of the viewport, as necessary.
     With canvasRect
-        FormMain.mainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
+        FormMain.MainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
     End With
     
     'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
@@ -2441,8 +2449,8 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         Dim i As Integer
         For i = 0 To 9
             If .HotKeyName(acceleratorIndex) = ("MRU_" & i) Then
-                If FormMain.mnuRecDocs.Count > i Then
-                    If FormMain.mnuRecDocs(i).Enabled Then
+                If FormMain.MnuRecDocs.Count > i Then
+                    If FormMain.MnuRecDocs(i).Enabled Then
                         Call FormMain.mnuRecDocs_Click(i)
                         Exit Sub
                     End If
@@ -2472,40 +2480,40 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
         End If
         
         'Various zoom values
         If .HotKeyName(acceleratorIndex) = "Zoom_161" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 2
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 2
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_81" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 4
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 4
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_41" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 8
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 8
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_21" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 10
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 10
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_12" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 14
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 14
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_14" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 16
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 16
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_18" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 19
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 19
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_116" Then
-            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 21
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
         End If
         
         'Remove selection
@@ -2766,7 +2774,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
     #End If
     
-    FormMain.mainCanvas(0).WriteUserPreferences
+    FormMain.MainCanvas(0).WriteUserPreferences
     Toolboxes.SaveToolboxData
     
     'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
@@ -4045,28 +4053,28 @@ End Sub
 Private Sub MnuSpecificZoom_Click(Index As Integer)
 
     'Only attempt to change zoom if the primary zoom box is not currently disabled
-    If FormMain.mainCanvas(0).IsZoomEnabled Then
+    If FormMain.MainCanvas(0).IsZoomEnabled Then
 
         Select Case Index
         
             Case 0
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 2
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 2
             Case 1
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 4
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 4
             Case 2
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 8
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 8
             Case 3
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 10
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 10
             Case 4
-                FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
+                FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
             Case 5
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 14
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 14
             Case 6
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 16
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 16
             Case 7
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 19
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 19
             Case 8
-                FormMain.mainCanvas(0).SetZoomDropDownIndex 21
+                FormMain.MainCanvas(0).SetZoomDropDownIndex 21
                 
         End Select
 
@@ -4216,12 +4224,19 @@ Private Sub MnuWindow_Click(Index As Integer)
         '<separator>
         Case 4
         
-        'Next image
+        'Reset all toolbox settings
         Case 5
+            Toolboxes.ResetAllToolboxSettings
+        
+        '<separator>
+        Case 6
+        
+        'Next image
+        Case 7
             MoveToNextChildWindow True
             
         'Previous image
-        Case 6
+        Case 8
             MoveToNextChildWindow False
 
     End Select
@@ -4279,34 +4294,34 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
     
         'Always display image tabstrip
         Case 0
-            ToggleImageTabstripVisibility Index
+            Interface.ToggleImageTabstripVisibility Index
         
         'Display tabstrip for 2+ images (default)
         Case 1
-            ToggleImageTabstripVisibility Index
+            Interface.ToggleImageTabstripVisibility Index
         
         'Never display image tabstrip
         Case 2
-            ToggleImageTabstripVisibility Index
+            Interface.ToggleImageTabstripVisibility Index
         
         '<separator>
         Case 3
         
         'Align left
         Case 4
-            ToggleImageTabstripAlignment vbAlignLeft
+            Interface.ToggleImageTabstripAlignment vbAlignLeft
         
         'Align top
         Case 5
-            ToggleImageTabstripAlignment vbAlignTop
+            Interface.ToggleImageTabstripAlignment vbAlignTop
         
         'Align right
         Case 6
-            ToggleImageTabstripAlignment vbAlignRight
+            Interface.ToggleImageTabstripAlignment vbAlignRight
         
         'Align bottom
         Case 7
-            ToggleImageTabstripAlignment vbAlignBottom
+            Interface.ToggleImageTabstripAlignment vbAlignBottom
     
     End Select
 
@@ -4314,14 +4329,14 @@ End Sub
 
 'Zoom in/out rely on the g_Zoom object to calculate a new value
 Private Sub MnuZoomIn_Click()
-    If FormMain.mainCanvas(0).IsZoomEnabled Then
-        If (FormMain.mainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownIndex)
+    If FormMain.MainCanvas(0).IsZoomEnabled Then
+        If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
     End If
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.mainCanvas(0).IsZoomEnabled Then
-        If (FormMain.mainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownIndex)
+    If FormMain.MainCanvas(0).IsZoomEnabled Then
+        If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
     End If
 End Sub
 

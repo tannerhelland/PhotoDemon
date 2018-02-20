@@ -330,3 +330,53 @@ Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PD_Toolbox, Optional By
     If (Not suppressRedraws) Then FormMain.UpdateMainLayout
     
 End Sub
+
+Public Sub ResetAllToolboxSettings()
+    
+    'Reset all toolbox sizes to their initial defaults
+    FillDefaultToolboxValues
+    
+    'Set current toolbox sizes to match their (freshly restored) default values
+    Dim i As PD_Toolbox
+    For i = [_First] To [_Last]
+        With m_Toolboxes(i)
+            .ConstrainingSize = .DefaultSize
+            .IsVisibleNow = True
+            .IsVisiblePreference = True
+        End With
+    Next i
+    
+    'Reset all left toolbar settings
+    toolbar_Toolbox.ToggleToolCategoryLabels PD_BOOL_TRUE
+    toolbar_Toolbox.UpdateButtonSize 1
+    
+    'The left-side toolbox is a little finicky because it auto-locks its width to match precise intervals
+    ' of its current button size. To simplify the process of resetting its settings, forcibly set its
+    ' width now, *before* calling the central canvas layout update function.
+    If (Not g_WindowManager Is Nothing) Then
+        With m_Toolboxes(PDT_LeftToolbox)
+            g_WindowManager.SetVisibilityByHWnd .hWnd, True
+            g_WindowManager.SetSizeByHWnd .hWnd, .DefaultSize, g_WindowManager.GetClientHeight(.hWnd), True
+        End With
+    End If
+    
+    'Sync various menus to reflect the new settings
+    FormMain.MnuWindowToolbox(0).Checked = True
+    FormMain.MnuWindow(1).Checked = True
+    FormMain.MnuWindow(2).Checked = True
+    
+    'Ensure that the options toolbox is properly shown/hidden depending on the currently selected tool
+    toolbar_Toolbox.ResetToolButtonStates
+    
+    'Reset all image strip settings
+    Interface.ToggleImageTabstripVisibility 1
+    Interface.ToggleImageTabstripAlignment vbAlignTop
+    
+    'Some toolboxes may need to perform their own internal resets (e.g. the layer panel needs to reset
+    ' individual panel sizes)
+    toolbar_Layers.ResetInterface
+    
+    'Redraw the primary image viewport to reflect our many potential changes
+    FormMain.UpdateMainLayout True
+
+End Sub
