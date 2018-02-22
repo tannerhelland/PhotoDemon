@@ -583,11 +583,7 @@ Private Sub CreateColorWheel()
     
     'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
     ' For convenience, we will place hue 0 at angle 0.
-    Dim hPixels() As Byte
-    Dim hueSA As SafeArray2D
-    PrepSafeArray hueSA, m_WheelBuffer
-    CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
-    
+    Dim hPixels() As Byte, hueSA As SafeArray1D
     Dim x As Long, y As Long
     Dim r As Double, g As Double, b As Double, a As Long, aFloat As Single
     
@@ -598,7 +594,7 @@ Private Sub CreateColorWheel()
     loopHeight = (m_WheelBuffer.GetDIBHeight - 1)
     
     Dim fastDivisor As Single
-    fastDivisor = 1# / 255#
+    fastDivisor = 1! / 255!
     
     Dim fLookup() As Single
     ReDim fLookup(0 To 255) As Single
@@ -608,19 +604,25 @@ Private Sub CreateColorWheel()
     
     fastDivisor = 1# / PI_DOUBLE
     
+    Dim hPtr As Long, hStride As Long
+    m_WheelBuffer.WrapArrayAroundScanline hPixels, hueSA, 0
+    hPtr = hueSA.pvData
+    hStride = hueSA.cElements
+    
     For y = 0 To loopHeight
+        hueSA.pvData = hPtr + hStride * y
     For x = 0 To loopWidth Step 4
         
         'Before calculating anything, check the color at this position.  (Because the image is grayscale, we only need to
         ' pull a single color value.)
-        b = hPixels(x, y)
+        b = hPixels(x)
         
         'If this pixel is black, it will be forced to full transparency.  Apply that now.
         If (b = 0) Then
-            hPixels(x, y) = 0
-            hPixels(x + 1, y) = 0
-            hPixels(x + 2, y) = 0
-            hPixels(x + 3, y) = 0
+            hPixels(x) = 0
+            hPixels(x + 1) = 0
+            hPixels(x + 2) = 0
+            hPixels(x + 3) = 0
         
         'If this pixel is non-black, it must be colored.  Proceed with hue calculation.
         Else
@@ -641,7 +643,7 @@ Private Sub CreateColorWheel()
             Colors.fHSVtoRGB pxAngle, 1#, 1#, r, g, b
             
             'Retrieve the "alpha" clue for this pixel
-            a = hPixels(x, y)
+            a = hPixels(x)
             aFloat = fLookup(a)
             
             'Premultiply alpha
@@ -650,10 +652,10 @@ Private Sub CreateColorWheel()
             b = b * aFloat
             
             'Store the new color values
-            hPixels(x, y) = b * 255#
-            hPixels(x + 1, y) = g * 255#
-            hPixels(x + 2, y) = r * 255#
-            hPixels(x + 3, y) = a
+            hPixels(x) = b * 255#
+            hPixels(x + 1) = g * 255#
+            hPixels(x + 2) = r * 255#
+            hPixels(x + 3) = a
             
         End If
     
@@ -661,7 +663,7 @@ Private Sub CreateColorWheel()
     Next y
     
     'With our work complete, point the array away from the DIB before VB attempts to deallocate it
-    CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
+    m_WheelBuffer.UnwrapArrayFromDIB hPixels
     
     'If color management is active, apply it now
     ColorManagement.ApplyDisplayColorManagement m_WheelBuffer
@@ -685,6 +687,8 @@ Private Sub CreateSVSquare()
     Else
         m_SquareBuffer.ResetDIB 255
     End If
+    
+    m_SquareBuffer.SetInitialAlphaPremultiplicationState True
     
     'To prevent IDE crashes, bail now during compilation
     If (Not MainModule.IsProgramRunning()) Or (Not ucSupport.AmIVisible) Then Exit Sub
@@ -786,11 +790,11 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         'Trace the edges of the hue wheel, to help separate the bright portions from the background.
         Dim borderWidth As Single, borderTransparency As Single
         If m_MouseInsideWheel Then
-            borderWidth = 2#
-            borderTransparency = 100#
+            borderWidth = 2!
+            borderTransparency = 100!
         Else
-            borderWidth = 1#
-            borderTransparency = 75#
+            borderWidth = 1!
+            borderTransparency = 75!
         End If
         Drawing2D.QuickCreateSolidPen cPen, borderWidth, wheelBorderColor, borderTransparency
         m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
@@ -801,17 +805,17 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             
             'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
             With m_SVRectF
-                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , GP_IM_Bilinear, bufferDC
+                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , GP_IM_NearestNeighbor, bufferDC
                 m_SquareBuffer.FreeFromDC
             End With
             
             'Trace the edges of the square, to help separate the bright portions from the background
             If m_MouseInsideBox Then
-                borderWidth = 2#
-                borderTransparency = 100#
+                borderWidth = 2!
+                borderTransparency = 100!
             Else
-                borderWidth = 1#
-                borderTransparency = 50#
+                borderWidth = 1!
+                borderTransparency = 50!
             End If
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, boxBorderColor, borderTransparency, P2_LJ_Miter, P2_LC_Flat
             If (Not m_MouseInsideBox) Then cSurface.SetSurfacePixelOffset P2_PO_Half
