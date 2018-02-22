@@ -381,7 +381,6 @@ Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal S
     
     'If no images have been loaded, reset the cursor
     If (g_OpenImageCount = 0) Then ucSupport.RequestCursor IDC_DEFAULT
-    
     RaiseEvent MouseEnter(Button, Shift, x, y)
     
 End Sub
@@ -427,7 +426,7 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
         ' is slower than the automatic repaints requested by our parent pdUCSupport instance.  As such,
         ' we manually disable repaints until the viewport buffer is ready.
         ucSupport.SuspendAutoRepaintBehavior True
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         ucSupport.SuspendAutoRepaintBehavior False
         
         'Because we suspended auto-repaints, we must manually request a final paint-to-screen

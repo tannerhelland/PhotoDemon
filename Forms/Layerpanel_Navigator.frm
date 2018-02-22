@@ -88,6 +88,9 @@ Private Sub ReflowInterface()
         nvgMain.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
     End If
     
+    'Refresh the panel immediately, so the user can see the result of the resize
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.ForceWindowRepaint Me.hWnd
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:

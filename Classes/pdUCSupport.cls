@@ -1238,7 +1238,7 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
     Else
     
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
-        If (Not (m_BackBuffer Is Nothing)) And (Not m_NoBackBufferMode) Then
+        If (Not m_BackBuffer Is Nothing) And (Not m_NoBackBufferMode) Then
             
             CacheWindowDimensions
             If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True

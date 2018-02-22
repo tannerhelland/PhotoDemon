@@ -437,7 +437,9 @@ Private Sub ReflowInterface()
         End If
         
     End If
-
+    
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.ForceWindowRepaint Me.hWnd
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
