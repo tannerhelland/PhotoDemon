@@ -354,8 +354,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Primary Toolbar
 'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 26/October/17
-'Last update: add hotkeys for tool selection
+'Last updated: 22/February/18
+'Last update: properly remember open/closed panel state between sessions
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -366,6 +366,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'The value of all controls on this form are saved and loaded to file by this class
+Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.
 ' This variable is then checked before requesting additional redraws during our resize event.
@@ -483,6 +487,16 @@ Private Sub cmdFile_Click(Index As Integer)
     
 End Sub
 
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+
+    'Save all last-used settings to file
+    If Not (m_lastUsedSettings Is Nothing) Then
+        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SetParentForm Nothing
+    End If
+    
+End Sub
+
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
 ' likely to leave off the right side of this form)
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -559,6 +573,11 @@ Private Sub Form_Load()
     'Note that we don't actually reflow the interface here; that will happen later, when the form's previous size and
     ' position are loaded from the user's preference file.
     
+    'Load any last-used settings for this form
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues
+    
     'As a final step, redraw everything against the current theme.
     UpdateAgainstCurrentTheme
     
@@ -574,6 +593,9 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub ReflowToolboxLayout()
+    
+    'Failsafe check for some module-level properties being loaded
+    If (m_ButtonWidth = 0) Then Exit Sub
     
     Dim continueWithReflow As Boolean
     
