@@ -82,7 +82,7 @@ End Sub
 Friend Function GetParamVersion() As Double
     
     Dim versionString As String
-    If GetParamValue("version", versionString) Then
+    If GetParamValue("version", versionString, True, 1) Then
         GetParamVersion = CDblCustom(versionString)
     Else
         GetParamVersion = 0#
@@ -180,7 +180,7 @@ End Function
 
 'Given a parameter name, fill a user-supplied string with the parameter value.
 ' Returns TRUE if parameter exists; FALSE otherwise.
-Private Function GetParamValue(ByVal paramName As String, ByRef dstString As String, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Boolean
+Private Function GetParamValue(ByVal paramName As String, ByRef dstString As String, Optional ByVal nameGuaranteedXMLSafe As Boolean = False, Optional ByVal searchStart As Long = -1) As Boolean
     
     GetParamValue = False
     
@@ -190,7 +190,11 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
     'Search starting from wherever we found our previous tag.  (PD tags are usually read in sequential order,
     ' and this *greatly* accelerates parse-time.)
     Dim tagStart As Long, tagEnd As Long
-    If (m_SearchStart > m_ParamString.GetLength()) Then m_SearchStart = 1
+    If (searchStart < 0) Then
+        If (m_SearchStart > m_ParamString.GetLength()) Then m_SearchStart = 1
+    Else
+        m_SearchStart = 1
+    End If
     tagStart = m_ParamString.StrStr("<" & paramName & ">", m_SearchStart)
     
     'If we didn't find anything, and we didn't start our search at the front of the string, try a full-string search now

@@ -165,9 +165,9 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
             
             'Add two management parameters: the point count (which simplifies parsing), and whether we have already sorted the list.
             ' (If we have, this saves future functions from needing to perform their own sort.)
-            .AddParam "GradientPointCount", m_NumOfPoints
-            .AddParam "GradientListAlreadySorted", m_IsSorted
-            .AddParam "GradientNodesUseBase64", useBase64ForNodes
+            .AddParam "GradientPointCount", m_NumOfPoints, True, True
+            .AddParam "GradientListAlreadySorted", m_IsSorted, True, True
+            .AddParam "GradientNodesUseBase64", useBase64ForNodes, True, True
             
             'We now have two options for encoding actual node data.  If the caller allows us, we'll just use
             ' Base64 to dump the full node array to a string.  For very large gradients, this provides a nice
@@ -176,7 +176,7 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
             
                 Dim strBase64 As String
                 Strings.BytesToBase64Ex VarPtr(m_GradientPoints(0)), m_NumOfPoints * LenB(m_GradientPoints(0)), strBase64
-                .AddParam "GradientNodesBase64", strBase64, True, False 'True
+                .AddParam "GradientNodesBase64", strBase64, True, False
             
             Else
             
@@ -204,7 +204,7 @@ End Function
 
 Private Sub SetGradientNodesFromString(ByRef srcString As String)
     
-    If (Len(srcString) = 0) Then
+    If (LenB(srcString) = 0) Then
         Me.ResetAllProperties
         
     Else
@@ -297,10 +297,10 @@ Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
     
 End Function
 
-Friend Sub CreateGradientFromString(ByVal srcString As String)
+Friend Sub CreateGradientFromString(ByRef srcString As String)
     
     'If the string is empty, prep a default object
-    If (Len(srcString) = 0) Then
+    If (LenB(srcString) = 0) Then
         Me.ResetAllProperties
     Else
         
@@ -688,6 +688,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                 gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 1, m_GradientWrapMode)
                 If (gdipBrush = 0) Then
                     Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+                    Debug.Print "Debug info: " & Me.GetGradientAsString(False)
                 Else
                     If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
                 End If

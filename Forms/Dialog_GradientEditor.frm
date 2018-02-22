@@ -707,14 +707,14 @@ Private Sub Form_Load()
         Set inactiveArrowFill = New pd2DBrush
         Set activeArrowFill = New pd2DBrush
         
-        inactiveArrowFill.SetBrushProperty P2_BrushMode, 0
-        inactiveArrowFill.SetBrushProperty P2_BrushOpacity, 100
-        inactiveArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetGenericUIColor(UI_Background)
+        inactiveArrowFill.SetBrushMode P2_BM_Solid
+        inactiveArrowFill.SetBrushOpacity 100!
+        inactiveArrowFill.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
         inactiveArrowFill.CreateBrush
         
-        activeArrowFill.SetBrushProperty P2_BrushMode, 0
-        activeArrowFill.SetBrushProperty P2_BrushOpacity, 100
-        activeArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetGenericUIColor(UI_AccentLight)
+        activeArrowFill.SetBrushMode P2_BM_Solid
+        activeArrowFill.SetBrushOpacity 100!
+        activeArrowFill.SetBrushColor g_Themer.GetGenericUIColor(UI_AccentLight)
         activeArrowFill.CreateBrush
         
         Set inactiveOutlinePen = New pd2DPen
@@ -1128,7 +1128,7 @@ Private Sub DrawGradientNodes()
             tmpBlock.TranslatePath hOffset + m_GradientPoints(i).PointPosition * hScaleFactor, 0
             
             'The node's colored block is rendered the same regardless of hover
-            blockFill.SetBrushProperty P2_BrushColor, m_GradientPoints(i).PointRGB
+            blockFill.SetBrushColor m_GradientPoints(i).PointRGB
             m_Painter.FillPath cSurface, blockFill, tmpBlock
             
             'All other renders vary by hover state

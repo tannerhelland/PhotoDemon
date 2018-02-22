@@ -144,14 +144,9 @@ End Function
 'Brush mode is an internal pd2D setting; as such, the entire brush needs to be re-created after changing this setting.
 Friend Sub SetBrushMode(ByVal newSetting As PD_2D_BrushMode)
     
-    m_BrushMode = newSetting
-    
-    'After setting a parameter, if a brush already exists, we must relay the new setting to the active backend
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushMode, m_BrushMode)) Then ReleaseBrush
-        End Select
+    If (m_BrushMode <> newSetting) Then
+        ReleaseBrush
+        m_BrushMode = newSetting
     End If
     
 End Sub
@@ -160,6 +155,7 @@ Friend Sub SetBrushColor(ByVal newSetting As Long)
     
     m_PrimaryColor = newSetting
     
+    'After setting a parameter, if a brush already exists, we must relay the new setting to the active backend
     If (m_BrushHandle <> 0) Then
         Select Case m_BrushBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -186,12 +182,7 @@ Friend Sub SetBrushPatternStyle(ByVal newSetting As PD_2D_PatternStyle)
     
     m_PatternStyle = newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPatternStyle, m_PatternStyle)) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
     
 End Sub
 
@@ -199,12 +190,7 @@ Friend Sub SetBrushPattern1Color(ByVal newSetting As Long)
     
     m_Pattern1Color = newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Color, m_Pattern1Color)) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
     
 End Sub
 
@@ -212,12 +198,7 @@ Friend Sub SetBrushPattern1Opacity(ByVal newSetting As Single)
     
     m_Pattern1Opacity = newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Opacity, m_Pattern1Opacity)) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
     
 End Sub
 
@@ -225,12 +206,7 @@ Friend Sub SetBrushPattern2Color(ByVal newSetting As Long)
     
     m_Pattern2Color = newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Color, m_Pattern2Color)) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
     
 End Sub
 
@@ -238,12 +214,7 @@ Friend Sub SetBrushPattern2Opacity(ByVal newSetting As Single)
     
     m_Pattern2Opacity = newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
     
 End Sub
 
@@ -252,12 +223,7 @@ Friend Sub SetBrushGradientAllSettings(ByRef newSetting As String)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.CreateGradientFromString newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
     
 End Sub
     
@@ -266,12 +232,7 @@ Friend Sub SetBrushGradientShape(ByVal newSetting As PD_2D_GradientShape)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientShape newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
     
 End Sub
 
@@ -280,12 +241,7 @@ Friend Sub SetBrushGradientAngle(ByVal newSetting As Single)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientAngle newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
     
 End Sub
 
@@ -294,12 +250,7 @@ Friend Sub SetBrushGradientWrapMode(ByVal newSetting As PD_2D_WrapMode)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientWrapMode newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
     
 End Sub
 
@@ -308,12 +259,7 @@ Friend Sub SetBrushGradientNodes(ByRef newSetting As String)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientNodes newSetting
     
-    If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
-        End Select
-    End If
+    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
     
 End Sub
 
@@ -421,7 +367,7 @@ Friend Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetti
             
         Case P2_BrushGradientAllSettings
             If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.CreateGradientFromString newSetting
+            m_Gradient.CreateGradientFromString CStr(newSetting)
         
         Case P2_BrushGradientShape
             If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient

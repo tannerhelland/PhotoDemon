@@ -3470,7 +3470,9 @@ Public Function GetGDIPlusPatternBrushHandle(ByVal brushPattern As GP_PatternSty
 End Function
 
 Public Function GetGDIPlusLinearBrushHandle(ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As PD_2D_WrapMode) As Long
-    GdipCreateLineBrushFromRectWithAngle srcRect, firstRGBA, secondRGBA, gradAngle, isAngleScalable, gradientWrapMode, GetGDIPlusLinearBrushHandle
+    Dim gdiReturn As Long
+    gdiReturn = GdipCreateLineBrushFromRectWithAngle(srcRect, firstRGBA, secondRGBA, gradAngle, isAngleScalable, gradientWrapMode, GetGDIPlusLinearBrushHandle)
+    If (gdiReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, gdiReturn
 End Function
 
 Public Function OverrideGDIPlusLinearGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
@@ -3729,10 +3731,6 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
         
         Select Case propID
             
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushMode
-                SetGDIPlusBrushProperty = False
-                
             Case P2_BrushColor
                 tmpOpacity = GetGDIPlusBrushProperty(hBrush, P2_BrushOpacity)
                 SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
@@ -3741,48 +3739,13 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 tmpColor = GetGDIPlusBrushProperty(hBrush, P2_BrushColor)
                 SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPatternStyle
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern1Color
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern1Opacity
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern2Color
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern2Opacity
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientAllSettings
-                SetGDIPlusBrushProperty = False
-            
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientShape
-                SetGDIPlusBrushProperty = False
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientAngle
-                SetGDIPlusBrushProperty = False
-            
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientWrapMode
-                SetGDIPlusBrushProperty = False
-            
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientNodes
-                SetGDIPlusBrushProperty = False
-                
             Case P2_BrushTextureWrapMode
                 SetGDIPlusBrushProperty = (GdipSetTextureWrapMode(hBrush, CLng(newSetting)) = GP_OK)
+                
+            'A number of settings are not directly supported by GDI+; instead, the pd2DBrush class handles
+            ' these settings internally
+            Case Else
+                SetGDIPlusBrushProperty = False
                 
         End Select
     

@@ -506,21 +506,21 @@ End Sub
 Private Sub UpdateFillObject()
 
     With m_Filler
-        .SetBrushProperty P2_BrushMode, btsStyle.ListIndex
-        .SetBrushProperty P2_BrushColor, csFillColor.Color
-        .SetBrushProperty P2_BrushOpacity, sltFillOpacity.Value
-        .SetBrushProperty P2_BrushPatternStyle, lstFillPattern.ListIndex
-        .SetBrushProperty P2_BrushPattern1Color, csPattern(0).Color
-        .SetBrushProperty P2_BrushPattern1Opacity, sltPatternOpacity(0).Value
-        .SetBrushProperty P2_BrushPattern2Color, csPattern(1).Color
-        .SetBrushProperty P2_BrushPattern2Opacity, sltPatternOpacity(1).Value
+        .SetBrushMode btsStyle.ListIndex
+        .SetBrushColor csFillColor.Color
+        .SetBrushOpacity sltFillOpacity.Value
+        .SetBrushPatternStyle lstFillPattern.ListIndex
+        .SetBrushPattern1Color csPattern(0).Color
+        .SetBrushPattern1Opacity sltPatternOpacity(0).Value
+        .SetBrushPattern2Color csPattern(1).Color
+        .SetBrushPattern2Opacity sltPatternOpacity(1).Value
         
         'Gradient settings are first passed through a pd2DGradient instance, which condenses all the gradient options
         ' into a single settable string.
         m_Gradient.CreateGradientFromString gsPrimary.Gradient
-        m_Gradient.SetGradientProperty P2_GradientShape, btsGradientShape.ListIndex
-        m_Gradient.SetGradientProperty P2_GradientAngle, sldGradientAngle.Value
-        .SetBrushProperty P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString
+        m_Gradient.SetGradientShape btsGradientShape.ListIndex
+        m_Gradient.SetGradientAngle sldGradientAngle.Value
+        .SetBrushGradientAllSettings m_Gradient.GetGradientAsString
         
     End With
 

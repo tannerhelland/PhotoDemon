@@ -347,7 +347,7 @@ Private Sub RedrawBackBuffer()
         tmpGradient.SetGradientAngle 0#
         
         m_Brush.SetBoundaryRect m_GradientRect
-        m_Brush.SetBrushProperty P2_BrushGradientAllSettings, tmpGradient.GetGradientAsString
+        m_Brush.SetBrushGradientAllSettings tmpGradient.GetGradientAsString
         
         Dim tmpBrush As Long
         tmpBrush = m_Brush.GetHandle
