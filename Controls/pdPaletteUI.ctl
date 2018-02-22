@@ -498,7 +498,7 @@ Private Sub UpdateControlLayout()
     'Next, we need to figure out how to place palette colors inside the current control area.  We want each palette
     ' entry to be a perfect square, so the number of items we can support is limited to how many perfectly square
     ' items we can fit in the supplied area.
-    Dim colorCount As Long, numRows As Long, numColumns As Long
+    Dim colorCount As Long
     If (Not m_Palette Is Nothing) Then
         
         colorCount = m_Palette.ChildPalette(m_ChildPaletteIndex).GetNumOfColors()
@@ -508,18 +508,18 @@ Private Sub UpdateControlLayout()
             
             'Iterate until we find the "best fit" for this palette's color count given the
             ' available space in the control.
-            Dim numColorsFit As Long, MinSize As Long, MaxSize As Long
-            MinSize = PDMath.Min2Int(m_PaletteRect.Width, m_PaletteRect.Height)
-            MaxSize = PDMath.Max2Int(m_PaletteRect.Width, m_PaletteRect.Height)
-            numColorsFit = Int(CSng(MaxSize) / CSng(MinSize))
+            Dim numColorsFit As Long, minimumSize As Long, maximumSize As Long
+            minimumSize = PDMath.Min2Int(m_PaletteRect.Width, m_PaletteRect.Height)
+            maximumSize = PDMath.Max2Int(m_PaletteRect.Width, m_PaletteRect.Height)
+            numColorsFit = Int(CSng(maximumSize) / CSng(minimumSize))
             
             Dim fitSize As Long, numIterations As Long
             numIterations = 1
             
             Do While (numColorsFit < colorCount)
                 numIterations = numIterations + 1
-                fitSize = Int(MinSize / CSng(numIterations) + 0.5)
-                numColorsFit = (MaxSize \ fitSize) * (MinSize \ fitSize)
+                fitSize = Int(minimumSize / CSng(numIterations) + 0.5)
+                numColorsFit = (maximumSize \ fitSize) * (minimumSize \ fitSize)
             Loop
             
             'fitSize now represents the minimum size required to fit all palette colors in the available space

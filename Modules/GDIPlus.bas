@@ -3435,7 +3435,8 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long, Optional ByVal removePrem
         Else
         
             Dim tmpSingle As Single
-            tmpSingle = CSng(srcQuad.Alpha) / 255#
+            Const ONE_DIV_255 As Single = 1! / 255!
+            tmpSingle = CSng(srcQuad.Alpha) * ONE_DIV_255
             
             If (tmpSingle > 0#) Then
                 Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long

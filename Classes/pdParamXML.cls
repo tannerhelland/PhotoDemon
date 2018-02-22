@@ -111,7 +111,7 @@ Friend Function DoesParamExist(ByRef paramName As String) As Boolean
 End Function
 
 'Retrieve various type-specific parameters.  Note that these ultimately wrap getParamValue; they simply cast the result explicitly.
-Friend Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
+Friend Function GetBool(ByRef paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetBool = CBool(Trim$(paramValue))
@@ -120,7 +120,7 @@ Friend Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Friend Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
+Friend Function GetByte(ByRef paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetByte = CByte(Trim$(paramValue))
@@ -129,7 +129,7 @@ Friend Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Friend Function GetInteger(ByVal paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
+Friend Function GetInteger(ByRef paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetInteger = CInt(CDblCustom(Trim$(paramValue)))
@@ -138,7 +138,7 @@ Friend Function GetInteger(ByVal paramName As String, Optional ByVal defaultRetu
     End If
 End Function
 
-Friend Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
+Friend Function GetLong(ByRef paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetLong = CLng(CDblCustom(Trim$(paramValue)))
@@ -147,7 +147,7 @@ Friend Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Friend Function GetSingle(ByVal paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
+Friend Function GetSingle(ByRef paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetSingle = CDblCustom(Trim$(paramValue))
@@ -156,7 +156,7 @@ Friend Function GetSingle(ByVal paramName As String, Optional ByVal defaultRetur
     End If
 End Function
 
-Friend Function GetDouble(ByVal paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
+Friend Function GetDouble(ByRef paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetDouble = CDblCustom(Trim$(paramValue))
@@ -169,7 +169,7 @@ Friend Function GetString(ByRef paramName As String, Optional ByVal defaultRetur
     If (Not GetParamValue(paramName, GetString, nameGuaranteedXMLSafe)) Then GetString = defaultReturn
 End Function
 
-Friend Function GetVariant(ByVal paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
+Friend Function GetVariant(ByRef paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetVariant = CVar(paramValue)
