@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon KD-Tree for fast palette matching (child node)
 'Copyright 2018-2018 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 31/January/18
-'Last update: finished massive code profiling run, and the result is a very nicely optimized palette-matcher
-'             that outperforms the WAPI GetNearestPaletteIndex function by as much as 6x for 8-bit palettes
+'Last updated: 22/February/18
+'Last update: add support for retrieving colors by their original palette index (instead of bare RGBQuads)
 'Dependencies: pdKDTree
 '
 'A length description of this class (and what it does) can be found in the pdKDTree class.  This class is
@@ -34,6 +33,10 @@ Option Explicit
 ' various signed arithmetic operations (e.g. m_Color.Red - someOtherColor.Red can underflow).
 Private m_Color As RGBQuad
 Private m_Red As Long, m_Green As Long, m_Blue As Long
+
+'This node's original index in the initial source palette we were passed.  Storing this allows us
+' to retrieve color data as palette indices instead of just raw RGBQuads.
+Private m_OriginalIndex As Long
 
 'This class uses recursion, and for some variables it makes more sense to simply use a class-instance
 ' rather than a local instance, especially inside functions that are likely to deeply recurse.
@@ -58,7 +61,7 @@ Private m_Left As pdKDTreeNode, m_Right As pdKDTreeNode
 ' excellent trade-off to use this tree creation method (which on a 256-color palette still takes < 1ms)
 ' in return for a massive improvement during palette matching (on a 256-color palette and ~10 mb image,
 ' the performance improvement is many *actual* seconds!)
-Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal depth As Long = 0)
+Friend Sub InsertNodeBalanced(ByRef srcPalette() As PDPaletteCache, Optional ByVal depth As Long = 0)
     
     'MOD is slower than a simple branch; cycle between values 0/1/2 for red/green/blue axes
     If (depth > 2) Then depth = 0
@@ -83,11 +86,11 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         Dim i As Long
         For i = 0 To UBound(srcPalette)
             If (depth = 0) Then
-                palHistogram(srcPalette(i).Red) = palHistogram(srcPalette(i).Red) + 1
+                palHistogram(srcPalette(i).ColorValue.Red) = palHistogram(srcPalette(i).ColorValue.Red) + 1
             ElseIf (depth = 1) Then
-                palHistogram(srcPalette(i).Green) = palHistogram(srcPalette(i).Green) + 1
+                palHistogram(srcPalette(i).ColorValue.Green) = palHistogram(srcPalette(i).ColorValue.Green) + 1
             Else
-                palHistogram(srcPalette(i).Blue) = palHistogram(srcPalette(i).Blue) + 1
+                palHistogram(srcPalette(i).ColorValue.Blue) = palHistogram(srcPalette(i).ColorValue.Blue) + 1
             End If
         Next i
         
@@ -107,22 +110,23 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         targetValue = i
         For i = 0 To UBound(srcPalette)
             If (depth = 0) Then
-                If (srcPalette(i).Red = targetValue) Then Exit For
+                If (srcPalette(i).ColorValue.Red = targetValue) Then Exit For
             ElseIf (depth = 1) Then
-                If (srcPalette(i).Green = targetValue) Then Exit For
+                If (srcPalette(i).ColorValue.Green = targetValue) Then Exit For
             Else
-                If (srcPalette(i).Blue = targetValue) Then Exit For
+                If (srcPalette(i).ColorValue.Blue = targetValue) Then Exit For
             End If
         Next i
         
         'i now points at the palette value we want for this node
         Dim targetIndex As Long
         targetIndex = i
-        m_Color = srcPalette(targetIndex)
+        m_Color = srcPalette(targetIndex).ColorValue
         m_Red = m_Color.Red
         m_Green = m_Color.Green
         m_Blue = m_Color.Blue
         m_Depth = depth
+        m_OriginalIndex = srcPalette(targetIndex).OrigIndex
         
         'We now want to construct two new sub-palettes: one for colors *less than* the current entry
         ' (these go in the left node), and one for colors *greater than or equal to* the current entry
@@ -130,9 +134,9 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         ' of these new palettes will not be required.
         
         'Note also that this function is written in a way that allows for palettes larger than 256 colors.
-        Dim leftPalette() As RGBQuad, rightPalette() As RGBQuad
-        ReDim leftPalette(0 To 3) As RGBQuad
-        ReDim rightPalette(0 To 3) As RGBQuad
+        Dim leftPalette() As PDPaletteCache, rightPalette() As PDPaletteCache
+        ReDim leftPalette(0 To 3) As PDPaletteCache
+        ReDim rightPalette(0 To 3) As PDPaletteCache
         Dim leftCount As Long, rightCount As Long
         Dim placeLeft As Boolean
         
@@ -140,19 +144,19 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
             If (i <> targetIndex) Then
                 
                 If (depth = 0) Then
-                    placeLeft = (srcPalette(i).Red < targetValue)
+                    placeLeft = (srcPalette(i).ColorValue.Red < targetValue)
                 ElseIf (depth = 1) Then
-                    placeLeft = (srcPalette(i).Green < targetValue)
+                    placeLeft = (srcPalette(i).ColorValue.Green < targetValue)
                 Else
-                    placeLeft = (srcPalette(i).Blue < targetValue)
+                    placeLeft = (srcPalette(i).ColorValue.Blue < targetValue)
                 End If
                 
                 If placeLeft Then
-                    If (leftCount > UBound(leftPalette)) Then ReDim Preserve leftPalette(0 To UBound(leftPalette) * 2 + 1) As RGBQuad
+                    If (leftCount > UBound(leftPalette)) Then ReDim Preserve leftPalette(0 To UBound(leftPalette) * 2 + 1) As PDPaletteCache
                     leftPalette(leftCount) = srcPalette(i)
                     leftCount = leftCount + 1
                 Else
-                    If (rightCount > UBound(rightPalette)) Then ReDim Preserve rightPalette(0 To UBound(rightPalette) * 2 + 1) As RGBQuad
+                    If (rightCount > UBound(rightPalette)) Then ReDim Preserve rightPalette(0 To UBound(rightPalette) * 2 + 1) As PDPaletteCache
                     rightPalette(rightCount) = srcPalette(i)
                     rightCount = rightCount + 1
                 End If
@@ -162,7 +166,7 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         
         'Trim the left and right palettes as necessary, then pass them to freshly created child nodes.
         If (leftCount > 0) Then
-            If (UBound(leftPalette) <> leftCount - 1) Then ReDim Preserve leftPalette(0 To leftCount - 1) As RGBQuad
+            If (UBound(leftPalette) <> leftCount - 1) Then ReDim Preserve leftPalette(0 To leftCount - 1) As PDPaletteCache
             If (m_Left Is Nothing) Then Set m_Left = New pdKDTreeNode
             m_Left.InsertNodeBalanced leftPalette, depth + 1
         Else
@@ -170,7 +174,7 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         End If
         
         If (rightCount > 0) Then
-            If (UBound(rightPalette) <> rightCount - 1) Then ReDim Preserve rightPalette(0 To rightCount - 1) As RGBQuad
+            If (UBound(rightPalette) <> rightCount - 1) Then ReDim Preserve rightPalette(0 To rightCount - 1) As PDPaletteCache
             If (m_Right Is Nothing) Then Set m_Right = New pdKDTreeNode
             m_Right.InsertNodeBalanced rightPalette, depth + 1
         Else
@@ -179,10 +183,11 @@ Friend Sub InsertNodeBalanced(ByRef srcPalette() As RGBQuad, Optional ByVal dept
         
     'This palette only contains one color, meaning we can skip all the "create children node(s)" steps
     Else
-        m_Color = srcPalette(0)
+        m_Color = srcPalette(0).ColorValue
         m_Red = m_Color.Red
         m_Green = m_Color.Green
         m_Blue = m_Color.Blue
+        m_OriginalIndex = srcPalette(0).OrigIndex
         m_Depth = depth
     End If
     
@@ -297,6 +302,124 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
                 If (b > 0) Then
                     m_testDistance = b - 1 - m_Blue
                     If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
+                End If
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
+'Return the original palette index of the palette color from this tree (and its children) that is closest
+' to some specified source color.  This function is called recursively, which is why everything must be
+' passed to it as ByRef.  (That said, the srcColor value can be treated as a CONST, but VB doesn't allow
+' const pointers, so... yeah.  It is what it is.)
+Friend Sub NearestPaletteIndex(ByRef srcColor As RGBQuad, ByRef curBestColor As PDPaletteCache, ByRef curBestDistance As Long)
+    
+    'Before checking child nodes, compare the target color against this node's color.
+    Dim r As Long, g As Long, b As Long
+    r = m_Red - srcColor.Red
+    g = m_Green - srcColor.Green
+    b = m_Blue - srcColor.Blue
+    m_testDistance = (r * r + g * g + b * b)
+    
+    If (m_testDistance < curBestDistance) Then
+        curBestDistance = m_testDistance
+        curBestColor.ColorValue = m_Color
+        curBestColor.OrigIndex = m_OriginalIndex
+    End If
+    
+    'Next, we want to determine which child node contains points "closer" or "further" from our
+    ' current best-match color.  (NOTE: in early builds, this was coded more cleanly, with local
+    ' nearDirection and farDirection pdKDTreeNode objects being assigned to left or right children,
+    ' accordingly - but this code is used inside tight per-pixel loops, so I've manually expanded
+    ' and in-lined a bunch of code to improve performance.)
+    
+    'Note that we use our previously stored depth to determine which axis to use for comparisons.
+    
+    'Red axis
+    If (m_Depth = 0) Then
+        
+        r = srcColor.Red
+        
+        'If the target color is *less than* this node's color, better matches will be found in
+        ' the left tree.  (Conversely, if it is *greater than or equal to* this node's color,
+        ' search the right tree first.)
+        If (r < m_Red) Then
+            If (Not m_Left Is Nothing) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            
+            'Now we need to repeat some ugly steps (but writing it this way avoids unnecessary branching,
+            ' which kills performance).  We next need to see if it's necessary to check the right branch
+            ' of ths tree as well.  We do this by testing the theoretical "closest point" possible in
+            ' the right branch, and if that "theoretical" point is closer to the target color than our
+            ' current best match, we need to search the right branch for possible targets as well.
+            If (Not m_Right Is Nothing) Then
+                
+                'We know that the best value for this tree lay in the left branch, meaning the closest
+                ' value in the right branch would be the *smallest possible value* - meaning a color
+                ' with an r value as low as possible.  Because our KD-tree implementation uses
+                ' "greater-than-or-equal-to" for right branch determination, the lowest possible value in
+                ' the branch is an r-value equal to the target color's.
+                m_testDistance = r - m_Red
+            
+                'If the closest "theoretical" point in the right branch is closer than the current best match,
+                ' let's query that child for a best match.
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+                
+            End If
+            
+        Else
+            If (Not m_Right Is Nothing) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (Not m_Left Is Nothing) Then
+                
+                'Because we're querying the left tree, the nearest possible color would have to be at least
+                ' one less than this node's color.  As such, if this node has a value of 0, there is no
+                ' possible way that the left node could contain a closer color (as it can't contain
+                ' *any* colors less than zero!)
+                If (r > 0) Then
+                    m_testDistance = r - 1 - m_Red
+                    If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+                End If
+            End If
+        End If
+    
+    'Green and blue axes follow the exact same pattern as red; refer to red for comments
+    ElseIf (m_Depth = 1) Then
+        
+        g = srcColor.Green
+        
+        If (g < m_Green) Then
+            If (Not m_Left Is Nothing) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (Not m_Right Is Nothing) Then
+                m_testDistance = g - m_Green
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            End If
+        Else
+            If (Not m_Right Is Nothing) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (Not m_Left Is Nothing) Then
+                If (g > 0) Then
+                    m_testDistance = g - 1 - m_Green
+                    If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+                End If
+            End If
+        End If
+        
+    Else
+        
+        b = srcColor.Blue
+        
+        If (b < m_Blue) Then
+            If (Not m_Left Is Nothing) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (Not m_Right Is Nothing) Then
+                m_testDistance = b - m_Blue
+                If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            End If
+        Else
+            If (Not m_Right Is Nothing) Then m_Right.NearestPaletteIndex srcColor, curBestColor, curBestDistance
+            If (Not m_Left Is Nothing) Then
+                If (b > 0) Then
+                    m_testDistance = b - 1 - m_Blue
+                    If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestPaletteIndex srcColor, curBestColor, curBestDistance
                 End If
             End If
         End If

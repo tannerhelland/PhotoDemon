@@ -65,6 +65,11 @@ Public Type PDPaletteEntry
     ColorName As String
 End Type
 
+Public Type PDPaletteCache
+    ColorValue As RGBQuad
+    OrigIndex As Long
+End Type
+
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.

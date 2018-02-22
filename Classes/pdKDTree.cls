@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon KD-Tree for fast palette matching
 'Copyright 2018-2018 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 31/January/18
-'Last update: finished massive code profiling run, and the result is a very nicely optimized palette-matcher
-'             that outperforms the WAPI GetNearestPaletteIndex function by as much as 6x
+'Last updated: 22/February/18
+'Last update: add support for retrieving colors by their original palette index (instead of bare RGBQuads)
 'Dependencies: pdKDTreeNode
 '
 'K-D trees (https://en.wikipedia.org/wiki/K-d_tree) are a data structure well-designed for sorting large collections
@@ -57,9 +56,20 @@ Friend Function BuildTree(ByRef srcPalette() As RGBQuad, ByVal numColorsToUse As
     
         Set m_Root = New pdKDTreeNode
         
+        'Transfer the source palette into a "cache" type, so we can store original palette indices
+        ' into the KD-tree (instead of just bare RGBQuads)
+        Dim tmpCache() As PDPaletteCache
+        ReDim tmpCache(0 To numColorsToUse - 1) As PDPaletteCache
+        
+        Dim i As Long
+        For i = 0 To numColorsToUse - 1
+            tmpCache(i).ColorValue = srcPalette(i)
+            tmpCache(i).OrigIndex = i
+        Next i
+        
         'For best performance, users should request a balanced tree.  This imposes a tree creation penalty,
         ' but subsequent nearest-neighbor queries are *much* faster.
-        m_Root.InsertNodeBalanced srcPalette, 0
+        m_Root.InsertNodeBalanced tmpCache, 0
         
     End If
     
@@ -69,6 +79,17 @@ End Function
 Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
     m_BestDistance = LONG_MAX
     If (Not m_Root Is Nothing) Then m_Root.NearestColor srcColor, GetNearestColor, m_BestDistance
+End Function
+
+'Given some source color, return an index into the original source palette of the palette entry
+' that most closely matches the requested color.
+Friend Function GetNearestPaletteIndex(ByRef srcColor As RGBQuad) As Long
+    m_BestDistance = LONG_MAX
+    If (Not m_Root Is Nothing) Then
+        Dim tmpResult As PDPaletteCache
+        m_Root.NearestPaletteIndex srcColor, tmpResult, m_BestDistance
+        GetNearestPaletteIndex = tmpResult.OrigIndex
+    End If
 End Function
 
 ''This alternate build strategy was created during early testing phases.  It is still valid code, but I do not require
