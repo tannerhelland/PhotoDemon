@@ -782,16 +782,24 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             colorSetIsSkippable = (initialAlpha = 0) And (initialColor = 0)
             
             If colorSetIsSkippable Then
-                FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
+                FillMemory m_dibBits, m_dibStride * m_dibHeight, 0
             Else
                 
-                If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
+                'The other "skippable" color combination is an opaque+white image
+                colorSetIsSkippable = (initialAlpha = 255) And (initialColor = vbWhite)
+                If colorSetIsSkippable Then
+                    FillMemory m_dibBits, m_dibStride * m_dibHeight, 255
+                Else
                 
-                Drawing2D.QuickCreatePainter cPainter
-                Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.GetDIBDC, False
-                Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
-                cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
-                Set cSurface = Nothing
+                    If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
+                    
+                    Drawing2D.QuickCreatePainter cPainter
+                    Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.GetDIBDC, False
+                    Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
+                    cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                    Set cSurface = Nothing
+                    
+                End If
                 
             End If
                     
@@ -873,14 +881,22 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                     'Newly created DIBs will be black and transparent by default, so we can skip the fill
                     If (Not colorSetIsSkippable) Then
                         
-                        'The back color may or may not be a system color, so translate it just in case
-                        If (initialColor <> vbWhite) Then initialColor = TranslateColor(initialColor)
+                        'Look for opaque+white, which is also skippable
+                        colorSetIsSkippable = (initialAlpha = 255) And (initialColor = vbWhite)
+                        If colorSetIsSkippable Then
+                            FillMemory m_dibBits, m_dibStride * m_dibHeight, 255
+                        Else
                         
-                        Drawing2D.QuickCreatePainter cPainter
-                        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
-                        Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
-                        cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
-                        Set cSurface = Nothing
+                            'The back color may or may not be a system color, so translate it just in case
+                            If (initialColor <> vbWhite) Then initialColor = TranslateColor(initialColor)
+                            
+                            Drawing2D.QuickCreatePainter cPainter
+                            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
+                            Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
+                            cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                            Set cSurface = Nothing
+                            
+                        End If
                         
                     Else
                         'We could cheat and use FillMemory here, but by default, a newly initialized DIB is already
