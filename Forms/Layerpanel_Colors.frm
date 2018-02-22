@@ -496,9 +496,10 @@ End Sub
 
 Private Sub palSelector_Click(ByVal palIndex As Long, ByVal palColor As Long)
     
-    'Relay the new color to the "color variants" control; it will automatically sync the color
+    'Relay the new color to the other color selectors; this will automatically sync the color
     ' across the program.  (Also, we do it this so that if the user switches color selector modes,
     ' they will retain the current color correctly.)
+    clrWheel.Color = palColor
     clrVariants.Color = palColor
     
 End Sub

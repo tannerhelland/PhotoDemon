@@ -474,6 +474,13 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If newVisibility Then
+        CreateSVSquare
+        RedrawBackBuffer True
+    End If
+End Sub
+
 Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
