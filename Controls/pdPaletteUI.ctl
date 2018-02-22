@@ -76,6 +76,9 @@ Private m_PaletteItemHovered As Long
 'The currently selected palette entry, if any, will be stored here
 Private m_PaletteItemSelected As Long
 
+'Fast palette matching comes courtesy of a dedicated KD-tree class
+Private m_ColorLookup As pdKDTree
+
 '2D painting support classes
 Private m_Painter As pd2DPainter
 
@@ -156,8 +159,8 @@ Public Property Let PaletteFile(ByVal newFile As String)
     If (m_Palette Is Nothing) Then Set m_Palette = New pdPalette
     
     'NOTE: I'm not sure if ideal behavior here is to remove duplicates or not.  At present,
-    ' we *do* remove duplicate entries from imported palettes.
-    If (Not m_Palette.LoadPaletteFromFile(newFile, True, True)) Then Set m_Palette = Nothing
+    ' we *do not* remove duplicate entries from imported palettes.
+    If (Not m_Palette.LoadPaletteFromFile(newFile, False, True)) Then Set m_Palette = Nothing
     
     If (Not m_Palette Is Nothing) Then
     
@@ -168,6 +171,9 @@ Public Property Let PaletteFile(ByVal newFile As String)
             m_ChildPaletteIndex = 0
             m_PaletteItemHovered = -1
             m_PaletteItemSelected = 0
+            
+            'Reset our color lookup object; it will need to be re-created against the new group
+            Set m_ColorLookup = Nothing
             
             UpdateControlLayout
         
@@ -184,8 +190,16 @@ End Property
 Public Property Let PaletteGroup(ByVal newGroup As Long)
     If (Not m_Palette Is Nothing) Then
         If (newGroup >= 0) And (newGroup < m_Palette.GetPaletteGroupCount) And (newGroup <> m_ChildPaletteIndex) Then
+            
             m_ChildPaletteIndex = newGroup
+            m_PaletteItemHovered = -1
+            m_PaletteItemSelected = 0
+            
+            'Reset our color lookup object; it will need to be re-created against the new group
+            Set m_ColorLookup = Nothing
+            
             RedrawBackBuffer
+            
         End If
     End If
 End Property
@@ -258,6 +272,32 @@ Public Function GetPaletteColor() As Long
         GetPaletteColor = m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(m_PaletteItemSelected)
     End If
 End Function
+
+'This function doesn't work how you may think.  It accepts an arbitrary new color, and it then finds the
+' *closest* palette color, and sets that as the new index.
+Public Sub SetPaletteColor(ByVal newColor As Long)
+    
+    If (m_Palette Is Nothing) Or (m_PaletteItemSelected < 0) Then Exit Sub
+    
+    'If our color lookup object doesn't exist, we need to create it prior to performing lookups.
+    If (m_ColorLookup Is Nothing) Then
+        
+        Dim tmpPalette() As RGBQuad
+        If m_Palette.CopyPaletteToArray(tmpPalette, m_ChildPaletteIndex) Then
+            Set m_ColorLookup = New pdKDTree
+            m_ColorLookup.BuildTree tmpPalette, m_Palette.GetPaletteColorCount(m_ChildPaletteIndex)
+        End If
+        
+    End If
+    
+    'Set our palette index to the *nearest* color to the target one
+    Dim tmpQuad As RGBQuad
+    tmpQuad.Red = Colors.ExtractRed(newColor)
+    tmpQuad.Green = Colors.ExtractGreen(newColor)
+    tmpQuad.Blue = Colors.ExtractBlue(newColor)
+    Me.PaletteIndex = m_ColorLookup.GetNearestPaletteIndex(tmpQuad)
+
+End Sub
 
 Public Function IsPaletteValid() As Boolean
     IsPaletteValid = (Not m_Palette Is Nothing)

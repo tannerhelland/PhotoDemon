@@ -81,8 +81,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Color Selector Tool Panel
 'Copyright 2015-2018 by Tanner Helland
 'Created: 15/October/15
-'Last updated: 20/October/15
-'Last update: actually implement color selection controls!
+'Last updated: 22/February/18
+'Last update: when a color is selected from the image, the palette control will now select the
+'             *nearest* palette index to the new color
 '
 'As part of the 7.0 release, PD's right-side panel gained a lot of new functionality.  To simplify the code for
 ' the new panel, each chunk of related settings (e.g. layer, nav, color selector) was moved to its own subpanel.
@@ -490,7 +491,7 @@ Public Sub SetCurrentColor(ByVal newR As Long, ByVal newG As Long, ByVal newB As
     
     'The palette selector is a little weird here; basically, we need to find the *closest* color
     ' to the one we were passed.
-    'TODO!
+    If (m_RenderMode = cpm_Palette) Then palSelector.SetPaletteColor RGB(newR, newG, newB)
     
 End Sub
 
