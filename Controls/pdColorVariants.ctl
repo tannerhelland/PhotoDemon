@@ -544,7 +544,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     ' Their vertical positioning is equally split between the 3 boxes, so it is contingent on the control's size
     ' as a whole.
     Dim rgbHeight As Single
-    rgbHeight = colorRects(CV_Primary).Height / 3
+    rgbHeight = colorRects(CV_Primary).Height / 3!
     
     'Start by assigning all boxes a uniform height
     For i = CV_RedUp To CV_BlueUp
@@ -596,7 +596,7 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     innerRadius = (minDimension / 2) - dpiAwareBorderSize
     
     'Failsafe check
-    If (innerRadius <= 0) Then Exit Sub
+    If (innerRadius <= 4) Then Exit Sub
     
     'The primary circle is the only subregion that receives a special construction method.
     m_ColorRegions(CV_Primary).AddCircle centerX, centerY, innerRadius

@@ -49,6 +49,7 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "overview"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -60,6 +61,7 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "layers"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -71,6 +73,7 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "color selector"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
@@ -108,7 +111,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Right-side ("Layers") Toolbar
 'Copyright 2014-2018 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 20/February/18
+'Last updated: 23/February/18
 'Last update: finalize work on vertically resizable panels
 '
 'For historical reasons, I call this the "layers" toolbar, but it actually encompasses everything that appears on
@@ -172,6 +175,7 @@ Private Sub Form_Load()
     ' will likely rely on it.
     m_NumOfPanels = ttlPanel.Count
     ReDim m_Panels(0 To m_NumOfPanels - 1) As PD_Panel
+    m_PanelResizeActive = -1
     
     'Initialize panel height values.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
@@ -304,6 +308,128 @@ Private Sub Form_Unload(Cancel As Integer)
         Cancel = True
     End If
     
+End Sub
+
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
+    ' the layer toolbox.
+    Dim mouseInResizeTerritory As Boolean
+    Dim hitCode As Long
+    
+    'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
+    mouseInResizeTerritory = (y > 0) And (y < Me.ScaleHeight) And (x < Interface.FixDPI(RESIZE_BORDER))
+    
+    'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
+    If mouseInResizeTerritory Then
+        
+        'Change the cursor to a resize cursor
+        m_MouseEvents.SetSystemCursor IDC_SIZEWE
+        
+        If (Button And vbLeftButton <> 0) Then
+        
+            m_WeAreResponsibleForResize = True
+            ReleaseCapture
+            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTLEFT, ByVal 0&
+            
+            'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
+            ' notify any neighboring toolboxes (and/or the central canvas)
+            Toolboxes.SetConstrainingSize PDT_RightToolbox, Me.ScaleWidth
+            FormMain.UpdateMainLayout
+            
+            'A premature exit is required, because the end of this sub contains code to detect the release of the
+            ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
+            ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
+            Exit Sub
+            
+        End If
+    
+    Else
+        m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    End If
+    
+    'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
+    ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
+    ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
+    If m_WeAreResponsibleForResize Then
+        m_WeAreResponsibleForResize = False
+        m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    End If
+    
+End Sub
+
+Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    
+    'If a panel is opening, redraw any elements that have may been suppressed while the panel was invisible
+    If newState Then NotifyLayerChange
+    
+    'Reflow the interface to account for the changed size
+    ReflowInterface
+    
+End Sub
+
+Private Sub ttlPanel_MouseDownCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    'Only panels after the first one can be resized (as the first panel sits at the top of the toolbox, and it must
+    ' always remain aligned there).  Note also that dragging a titlebar resizes the panel *above* this one
+    ' (hence the -1 on the line below).
+    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then m_PanelResizeActive = Index - 1
+    
+End Sub
+
+Private Sub ttlPanel_MouseDrag(Index As Integer, ByVal xChange As Long, ByVal yChange As Long)
+    
+    'The user is click-dragging a titlebar to resize its associated panel.  Calculate a new height and immediately
+    ' reflow the interface to match.
+    If (m_PanelResizeActive >= 0) Then
+        m_Panels(m_PanelResizeActive).CurrentHeight = m_Panels(m_PanelResizeActive).InitialHeight + yChange
+        ReflowInterface
+    End If
+    
+End Sub
+
+Private Sub ttlPanel_MouseUpCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+
+    'After a drag event, we need to store the new panel height
+    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then
+        m_Panels(m_PanelResizeActive).InitialHeight = m_Panels(m_PanelResizeActive).CurrentHeight
+        m_PanelResizeActive = -1
+    End If
+    
+End Sub
+
+'When one or more layers are modified (via painting, effects, whatever), PD's various interface control functions
+' will notify this toolbar via this function.  The toolbar will then redraw individual panels as necessary.
+'
+'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
+' perhaps sparing the amount of redraw work required.
+Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Ideally, we wouldn't redraw the layer box unless it's actually visible, but we need to ensure that the layer
+    ' box's internal caches of things like layer thumbnails stays relevant to image state.  (Otherwise, if the panel
+    ' is closed and then the user later opens it, it would be completely out of sync!)  As such, we always redraw
+    ' the layer box, regardless of whether it's visible or not.
+    layerpanel_Layers.ForceRedraw True, layerID
+    
+    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    #End If
+    
+End Sub
+
+'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel
+' affected by viewport changes is the navigator panel.
+Public Sub NotifyViewportChange()
+    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
 End Sub
 
 Public Sub ResetInterface()
@@ -580,127 +706,5 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = Fal
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     ReflowInterface
-    
-End Sub
-
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
-    ' the layer toolbox.
-    Dim mouseInResizeTerritory As Boolean
-    Dim hitCode As Long
-    
-    'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
-    mouseInResizeTerritory = (y > 0) And (y < Me.ScaleHeight) And (x < Interface.FixDPI(RESIZE_BORDER))
-    
-    'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
-    If mouseInResizeTerritory Then
-        
-        'Change the cursor to a resize cursor
-        m_MouseEvents.SetSystemCursor IDC_SIZEWE
-        
-        If (Button And vbLeftButton <> 0) Then
-        
-            m_WeAreResponsibleForResize = True
-            ReleaseCapture
-            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTLEFT, ByVal 0&
-            
-            'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
-            ' notify any neighboring toolboxes (and/or the central canvas)
-            Toolboxes.SetConstrainingSize PDT_RightToolbox, Me.ScaleWidth
-            FormMain.UpdateMainLayout
-            
-            'A premature exit is required, because the end of this sub contains code to detect the release of the
-            ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
-            ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
-            Exit Sub
-            
-        End If
-    
-    Else
-        m_MouseEvents.SetSystemCursor IDC_DEFAULT
-    End If
-    
-    'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
-    ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
-    ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
-    If m_WeAreResponsibleForResize Then
-        m_WeAreResponsibleForResize = False
-        m_MouseEvents.SetSystemCursor IDC_DEFAULT
-    End If
-    
-End Sub
-
-Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    m_MouseEvents.SetSystemCursor IDC_DEFAULT
-End Sub
-
-Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
-    
-    'If a panel is opening, redraw any elements that have may been suppressed while the panel was invisible
-    If newState Then NotifyLayerChange
-    
-    'Reflow the interface to account for the changed size
-    ReflowInterface
-    
-End Sub
-
-'When one or more layers are modified (via painting, effects, whatever), PD's various interface control functions
-' will notify this toolbar via this function.  The toolbar will then redraw individual panels as necessary.
-'
-'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
-' perhaps sparing the amount of redraw work required.
-Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
-    
-    Dim startTime As Currency
-    VBHacks.GetHighResTime startTime
-    
-    'Ideally, we wouldn't redraw the layer box unless it's actually visible, but we need to ensure that the layer
-    ' box's internal caches of things like layer thumbnails stays relevant to image state.  (Otherwise, if the panel
-    ' is closed and then the user later opens it, it would be completely out of sync!)  As such, we always redraw
-    ' the layer box, regardless of whether it's visible or not.
-    layerpanel_Layers.ForceRedraw True, layerID
-    
-    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
-    
-End Sub
-
-'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel
-' affected by viewport changes is the navigator panel.
-Public Sub NotifyViewportChange()
-    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
-End Sub
-
-Private Sub ttlPanel_MouseDownCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    'Only panels after the first one can be resized (as the first panel sits at the top of the toolbox, and it must
-    ' always remain aligned there).  Note also that dragging a titlebar resizes the panel *above* this one
-    ' (hence the -1 on the line below).
-    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then m_PanelResizeActive = Index - 1
-    
-End Sub
-
-Private Sub ttlPanel_MouseDrag(Index As Integer, ByVal xChange As Long, ByVal yChange As Long)
-    
-    'The user is click-dragging a titlebar to resize its associated panel.  Calculate a new height and immediately
-    ' reflow the interface to match.
-    If (m_PanelResizeActive >= 0) Then
-        m_Panels(m_PanelResizeActive).CurrentHeight = m_Panels(m_PanelResizeActive).InitialHeight + yChange
-        ReflowInterface
-    End If
-    
-End Sub
-
-Private Sub ttlPanel_MouseUpCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-
-    'After a drag event, we need to store the new panel height
-    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then
-        m_Panels(m_PanelResizeActive).InitialHeight = m_Panels(m_PanelResizeActive).CurrentHeight
-        m_PanelResizeActive = -1
-    End If
     
 End Sub

@@ -173,11 +173,8 @@ Public Property Get WheelWidth() As Single
 End Property
 
 Public Property Let WheelWidth(ByVal newWidth As Single)
-    If (m_WheelWidth <> newWidth) Then
-        m_WheelWidth = newWidth
-        CreateSVSquare
-        RedrawBackBuffer
-    End If
+    m_WheelWidth = newWidth
+    UpdateControlLayout
 End Property
 
 'To support high-DPI settings properly, we expose specialized move+size functions

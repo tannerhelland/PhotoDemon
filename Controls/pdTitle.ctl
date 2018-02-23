@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Collapsible Title Label+Button control
 'Copyright 2014-2018 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 12/February/16
-'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
+'Last updated: 22/February/18
+'Last update: new "Draggable" property will render a left-side gripper on the titlebar
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -76,8 +76,14 @@ Private m_CaptionRect As RECT
 'Current title state (TRUE when arrow is pointing down, e.g. the associated container is "open")
 Private m_TitleState As Boolean
 
-'Some titlebars support drag-to-resize behavior for their associated container.  We need to raise corresponding
-' mouse events so that parent controls can handle this.  On _MouseDown, the initial mouse position is cached.
+'Some titlebars support drag-to-resize behavior for their associated container.  This is accessible via the
+' "Draggable" property
+Private m_Draggable As Boolean
+Private Const GRIPPER_PADDING As Long = 12
+
+'If this titlebar supports drag-to-resize behavior, we need to raise corresponding mouse events so our
+' parent control can handle the resize.  On _MouseDown, the initial mouse position is cached; subsequent
+' _MouseMove events will compare against these coordinates to determine drag distance.
 Private m_InitMouseX As Single, m_InitMouseY As Single
 
 '2D painting support classes
@@ -144,6 +150,16 @@ Public Property Let Caption(ByRef newCaption As String)
         UserControl.AccessKeys = vbNullString
     End If
     
+End Property
+
+'Changing the Draggable property does not currently initiate a redraw event; it's assumed that this property
+' won't be changed at run-time (although there is no technical reason that you couldn't change it).
+Public Property Get Draggable() As Boolean
+    Draggable = m_Draggable
+End Property
+
+Public Property Let Draggable(ByVal newSetting As Boolean)
+    m_Draggable = newSetting
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -381,6 +397,7 @@ End Sub
 'Set default properties
 Private Sub UserControl_InitProperties()
     Caption = vbNullString
+    Draggable = False
     FontBold = False
     FontSize = 10
     Value = True
@@ -394,6 +411,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
+        Draggable = .ReadProperty("Draggable", False)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
         Value = .ReadProperty("Value", True)
@@ -407,6 +425,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
+        .WriteProperty "Draggable", m_Draggable, False
         .WriteProperty "FontBold", ucSupport.GetCaptionFontBold, False
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
         .WriteProperty "Value", m_TitleState, True
@@ -447,6 +466,9 @@ Private Sub UpdateControlLayout()
         Dim maxCaptionWidth As Long
         maxCaptionWidth = bWidth - (FixDPI(hTextPadding) * 2) - bHeight
         
+        'If the control is draggable, we need to account for some extra left-side space to render a gripper
+        If m_Draggable Then maxCaptionWidth = maxCaptionWidth - Interface.FixDPI(GRIPPER_PADDING)
+        
         'Next, determine if our current caption + font-size combination fits within the available space.
         Dim fontWidth As Long
         fontWidth = tmpFont.GetWidthOfString(Me.Caption)
@@ -486,11 +508,13 @@ Private Sub UpdateControlLayout()
         ' will automatically fit the caption within this area, regardless of the currently selected font size.
         With m_CaptionRect
             .Left = FixDPI(hTextPadding)
+            If m_Draggable Then .Left = .Left + Interface.FixDPI(GRIPPER_PADDING)
             .Top = FixDPI(vTextPadding)
             .Bottom = bHeight - FixDPI(vTextPadding)
             
             'The right measurement is the only complicated one, as it requires padding so we have room to render the drop-down arrow.
             .Right = bWidth - FixDPI(hTextPadding) * 2 - bHeight
+            If m_Draggable Then .Right = .Right - Interface.FixDPI(GRIPPER_PADDING)
             If (.Right < .Left) Then .Right = .Left + 1
             
             'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
@@ -550,6 +574,36 @@ Private Sub RedrawBackBuffer()
     End If
     
     If MainModule.IsProgramRunning() Then
+        
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
+        'If this control instance is "draggable", let's render a gripper on its left-hand side
+        If m_Draggable Then
+            
+            'Turn off antialiasing prior to drawing the gripper
+            cSurface.SetSurfaceAntialiasing P2_AA_None
+            
+            'Use the same arrow color, but at a reduced opacity
+            Drawing2D.QuickCreateSolidBrush cBrush, arrowColor, 70!
+            
+            'Boxes are 2x2 logical pixels, with 2-px padding between them
+            Dim xStep As Long, yStep As Long, boxSize As Long
+            xStep = Interface.FixDPI(4)
+            yStep = Interface.FixDPI(4)
+            boxSize = Interface.FixDPI(2)
+            
+            Dim x As Long, y As Long
+            For x = 0 To xStep Step xStep
+            For y = yStep To bHeight - yStep Step yStep
+                m_Painter.FillRectangleI cSurface, cBrush, x, y, boxSize, boxSize
+            Next y
+            Next x
+            
+            'Restore antialiasing so that subsequent steps look okay
+            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            
+        End If
     
         'Next, paint the drop-down arrow.  To simplify calculations, we first calculate a boundary rect.
         Dim arrowRect As RectF
@@ -589,8 +643,6 @@ Private Sub RedrawBackBuffer()
         End If
         
         'Draw the drop-down arrow
-        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
         m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
         m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3

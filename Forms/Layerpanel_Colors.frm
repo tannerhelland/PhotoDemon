@@ -427,14 +427,37 @@ Private Sub ReflowInterface()
         ' several times as this window is "fit" against its neighbors.  This can throw GDI+ rendering
         ' error messages until a final size is arrived at.
         If (curFormHeight > 25) Then
+        
+            'We now have a dilemma.  If more size is available horizontally then vertically, render the color
+            ' wheels side-by-side...
+            If (curFormHeight < curFormWidth) Then
             
-            'Right-align the color wheel
-            clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(1)), 0, curFormHeight, curFormHeight
+                'Right-align the color wheel
+                clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + Interface.FixDPI(1)), 0, curFormHeight, curFormHeight
+                
+                'Fit the variant selector into the remaining area.
+                clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - Interface.FixDPI(10), curFormHeight
             
-            'Fit the variant selector into the remaining area.
-            clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - Interface.FixDPI(10), curFormHeight
+            'But if there is more space vertically, stack the controls atop each other
+            Else
+            
+                'Bottom-align the color wheel
+                clrWheel.SetPositionAndSize 0, curFormHeight - (curFormWidth + Interface.FixDPI(1)), curFormWidth, curFormWidth
+                
+                'Fit the variant selector into the remaining area.
+                clrVariants.SetPositionAndSize 0, 0, curFormWidth, clrWheel.GetTop - Interface.FixDPI(10)
+                
+            End If
             
         End If
+        
+        'Dynamically set the width of the hue wheel (the rainbow circle surrounding the HSV picker)
+        ' to be a fraction of the control's on-screen size.  This guarantees good layouts even if the user resizes
+        ' this panel to be extremely large or extremely small.
+        Dim newWheelWidth As Long
+        newWheelWidth = (clrWheel.GetWidth * 0.15)
+        If (newWheelWidth < 9) Then newWheelWidth = 9
+        clrWheel.WheelWidth = newWheelWidth
         
     End If
     
