@@ -229,9 +229,10 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 3, 15
     AddMenuItem "Metadata", "image_metadata", 3, 16
         AddMenuItem "Edit metadata...", "image_editmetadata", 3, 16, 0, "image_metadata"
-        AddMenuItem "-", "-", 3, 16, 1
-        AddMenuItem "Count unique colors", "image_countcolors", 3, 16, 2
-        AddMenuItem "Map photo location...", "image_maplocation", 3, 16, 3, "image_maplocation"
+        AddMenuItem "Remove all metadata", "image_removemetadata", 3, 16, 1
+        AddMenuItem "-", "-", 3, 16, 2
+        AddMenuItem "Count unique colors", "image_countcolors", 3, 16, 3
+        AddMenuItem "Map photo location...", "image_maplocation", 3, 16, 4, "image_maplocation"
     
     
     'Layer menu

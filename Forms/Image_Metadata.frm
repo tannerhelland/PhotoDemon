@@ -492,7 +492,6 @@ Private Sub cmdMarkPrivateTags_Click()
     Dim i As Long, j As Long
     For i = 0 To m_NumOfCategories - 1
         For j = 0 To m_MDCategories(i).Count - 1
-            Debug.Print m_AllTags(i, j).TagNameFriendly
             m_AllTags(i, j).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_AllTags(i, j))
         Next j
     Next i

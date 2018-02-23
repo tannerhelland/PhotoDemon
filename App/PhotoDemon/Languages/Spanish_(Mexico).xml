@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.328</langversion>
+<langversion>6.7.330</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -4903,6 +4903,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Count unique colors</original>
 <translation>Cuente colores únicos</translation>
 </phrase>
@@ -6489,7 +6494,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
+<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15192,10 +15197,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2544</phrasecount>
+<phrasecount>2545</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4600 phrases. -->
-<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
-<!-- These 2544 phrases contain approximately 12180 total words. -->
+<!-- As of this build, PhotoDemon contains 4602 phrases. -->
+<!-- 2057 are duplicates, so only 2545 unique phrases have been written to file. -->
+<!-- These 2545 phrases contain approximately 12183 total words. -->
 
 </pdData>

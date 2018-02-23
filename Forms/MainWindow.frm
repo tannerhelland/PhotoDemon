@@ -382,16 +382,20 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuMetadata 
-            Caption         =   "-"
+            Caption         =   "Remove all metadata"
             Index           =   1
          End
          Begin VB.Menu MnuMetadata 
-            Caption         =   "Count unique colors"
+            Caption         =   "-"
             Index           =   2
          End
          Begin VB.Menu MnuMetadata 
-            Caption         =   "Map photo location..."
+            Caption         =   "Count unique colors"
             Index           =   3
+         End
+         Begin VB.Menu MnuMetadata 
+            Caption         =   "Map photo location..."
+            Index           =   4
          End
       End
    End
@@ -3745,15 +3749,19 @@ Private Sub MnuMetadata_Click(Index As Integer)
         Case 0
             Process "Edit metadata", True
         
-        'Separator
+        'Remove all metadata
         Case 1
+            Process "Remove all metadata", False, , UNDO_ImageHeader
+        
+        'Separator
+        Case 2
         
         'Count colors
-        Case 2
+        Case 3
             Process "Count image colors", True
         
         'Map photo location
-        Case 3
+        Case 4
             
             If (Not pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata) Then
                 PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly Or vbInformation, "No GPS data found"

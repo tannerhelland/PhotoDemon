@@ -473,11 +473,11 @@ Public Function RetrieveMetadataString() As String
     
         'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
         ' to standard characters before returning the retrieved metadata.
-        If InStr(1, m_currentMetadataText, "&amp;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&amp;", "&")
-        If InStr(1, m_currentMetadataText, "&#39;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&#39;", "'")
-        If InStr(1, m_currentMetadataText, "&quot;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&quot;", """")
-        If InStr(1, m_currentMetadataText, "&gt;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&gt;", ">")
-        If InStr(1, m_currentMetadataText, "&lt;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&lt;", "<")
+        If (InStr(1, m_currentMetadataText, "&amp;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&amp;", "&")
+        If (InStr(1, m_currentMetadataText, "&#39;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&#39;", "'")
+        If (InStr(1, m_currentMetadataText, "&quot;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&quot;", """")
+        If (InStr(1, m_currentMetadataText, "&gt;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&gt;", ">")
+        If (InStr(1, m_currentMetadataText, "&lt;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&lt;", "<")
         
     End If
         
@@ -2053,4 +2053,8 @@ Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMe
         
     End If
     
+End Sub
+
+Public Sub RemoveAllMetadata(ByRef srcImage As pdImage)
+    If (Not srcImage Is Nothing) Then srcImage.ImgMetadata.Reset
 End Sub

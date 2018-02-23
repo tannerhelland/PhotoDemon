@@ -2058,6 +2058,10 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         If raiseDialog Then ExifTool.ShowMetadataDialog pdImages(g_CurrentImage)
         Process_ImageMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Remove all metadata", True) Then
+        ExifTool.RemoveAllMetadata pdImages(g_CurrentImage)
+        Process_ImageMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Count image colors", True) Then
         Filters_Miscellaneous.MenuCountColors
         Process_ImageMenu = True

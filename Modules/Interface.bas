@@ -188,7 +188,7 @@ Public Sub SyncInterfaceToCurrentImage()
         
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
-        
+    
     'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image (e.g. Undo), and stuff that changes
     ' based on the *total* number of available images (e.g. visibility of the Effects menu).
     
@@ -399,7 +399,7 @@ Private Sub SyncUI_CurrentImageSettings()
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If (pdImages(g_CurrentImage).Width <> 0) Then
         ViewportEngine.DisableRendering
-        FormMain.mainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).GetZoom
+        FormMain.MainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).GetZoom
         ViewportEngine.EnableRendering
     End If
     
@@ -493,7 +493,7 @@ Private Sub SetUIMode_NoImages()
         
     'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
     ' previously visible.
-    FormMain.mainCanvas(0).ClearCanvas
+    FormMain.MainCanvas(0).ClearCanvas
     
     'Restore the default taskbar and titlebar icons and clear the custom icon cache
     IconsAndCursors.ResetAppIcons
@@ -541,7 +541,7 @@ Private Sub SetUIMode_AtLeastOneImage()
     SetUIGroupState PDUI_LayerTools, True
     
     'Make sure scroll bars are enabled and positioned correctly on the canvas
-    FormMain.mainCanvas(0).AlignCanvasView
+    FormMain.MainCanvas(0).AlignCanvasView
     
 End Sub
 
@@ -770,23 +770,25 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 
             End If
                 
-        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
-        ' reading/browsing/writing metadata.)
+        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a
+        ' separate fallback for reading/browsing/writing metadata.)
         Case PDUI_Metadata
         
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
-                If (FormMain.MnuMetadata(0).Enabled <> newState) Then FormMain.MnuMetadata(0).Enabled = newState
+                FormMain.MnuMetadata(0).Enabled = newState
+                FormMain.MnuMetadata(1).Enabled = newState
             Else
-                If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
+                FormMain.MnuMetadata(0).Enabled = False
+                FormMain.MnuMetadata(1).Enabled = False
             End If
         
         'GPS metadata is its own sub-category, and its activation is contigent upon an image having embedded GPS data
         Case PDUI_GPSMetadata
         
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
-                If (FormMain.MnuMetadata(3).Enabled <> newState) Then FormMain.MnuMetadata(3).Enabled = newState
+                If (FormMain.MnuMetadata(4).Enabled <> newState) Then FormMain.MnuMetadata(4).Enabled = newState
             Else
-                If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
+                If FormMain.MnuMetadata(4).Enabled Then FormMain.MnuMetadata(4).Enabled = False
             End If
         
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
@@ -1098,7 +1100,7 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     
     'Write the preference out to file, then notify the canvas of the change
     If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
-    FormMain.mainCanvas(0).NotifyImageStripAlignment newAlignment
+    FormMain.MainCanvas(0).NotifyImageStripAlignment newAlignment
     
 End Sub
 
@@ -1118,7 +1120,7 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
 
     'Write the matching preference out to file, then notify the primary canvas of the change
     If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
-    FormMain.mainCanvas(0).NotifyImageStripVisibilityMode newSetting
+    FormMain.MainCanvas(0).NotifyImageStripVisibilityMode newSetting
 
 End Sub
 
@@ -1486,7 +1488,7 @@ End Function
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByRef srcImage As pdImage)
-    If (Not srcImage Is Nothing) Then FormMain.mainCanvas(0).DisplayImageSize srcImage
+    If (Not srcImage Is Nothing) Then FormMain.MainCanvas(0).DisplayImageSize srcImage
 End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
@@ -1597,7 +1599,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         If (Macros.GetMacroStatus = MacroSTART) Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
-        If (Macros.GetMacroStatus <> MacroBATCH) Then FormMain.mainCanvas(0).DisplayCanvasMessage newString
+        If (Macros.GetMacroStatus <> MacroBATCH) Then FormMain.MainCanvas(0).DisplayCanvasMessage newString
         
         'Update the global "previous message" string, so external functions can access it.
         m_LastFullMessage = newString
@@ -1614,7 +1616,7 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    FormMain.mainCanvas(0).DisplayCanvasCoordinates 0, 0, True
+    FormMain.MainCanvas(0).DisplayCanvasCoordinates 0, 0, True
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
@@ -1690,7 +1692,7 @@ Public Sub EnableUserInput()
     ' and if we don't do this, the mouse cursor won't reflect any position updates that have occurred since
     ' the last action was started.)
     Dim tmpPoint As POINTAPI, mouseMustBeFaked As Boolean
-    If (GetCursorPos(tmpPoint) <> 0) Then mouseMustBeFaked = FormMain.mainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
+    If (GetCursorPos(tmpPoint) <> 0) Then mouseMustBeFaked = FormMain.MainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
     
     '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
@@ -1702,9 +1704,9 @@ Public Sub EnableUserInput()
     'If the mouse lies over the canvas, we now want to post a "fake" mouse movement message to that window,
     ' to ensure any custom cursors are painted correctly.
     If mouseMustBeFaked Then
-        ScreenToClient FormMain.mainCanvas(0).GetCanvasViewHWnd, tmpPoint
-        FormMain.mainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
-        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_ReuseLast
+        ScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
+        FormMain.MainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
+        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
     End If
     
 End Sub
@@ -1977,7 +1979,7 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1)
         IconsAndCursors.CreateCustomFormIcons pdImages(affectedImageIndex)
         
         'Notify the image tabstrip of any changes
-        FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
+        FormMain.MainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
         
     End If
     
@@ -2000,7 +2002,7 @@ Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
     IconsAndCursors.CreateCustomFormIcons pdImages(newImageIndex)
     
     'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
-    FormMain.mainCanvas(0).NotifyTabstripAddNewThumb newImageIndex
+    FormMain.MainCanvas(0).NotifyTabstripAddNewThumb newImageIndex
     
 End Sub
 
@@ -2014,7 +2016,7 @@ Public Sub NotifyImageRemoved(Optional ByVal oldImageIndex As Long = -1, Optiona
     If (oldImageIndex < 0) Then oldImageIndex = g_CurrentImage
     
     'The image tabstrip has to recalculate internal metrics whenever an image is unloaded
-    FormMain.mainCanvas(0).NotifyTabstripRemoveThumb oldImageIndex, redrawImmediately
+    FormMain.MainCanvas(0).NotifyTabstripRemoveThumb oldImageIndex, redrawImmediately
     
 End Sub
 
@@ -2025,7 +2027,7 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
     
     'The toolbar must redraw itself to match the newly activated image
-    FormMain.mainCanvas(0).NotifyTabstripNewActiveImage newImageIndex
+    FormMain.MainCanvas(0).NotifyTabstripNewActiveImage newImageIndex
     
     'A newly activated image requires a whole swath of UI changes.  Ask SyncInterfaceToCurrentImage to handle this for us.
     Interface.SyncInterfaceToCurrentImage
@@ -2035,7 +2037,7 @@ End Sub
 'This function should only be used if the entire tabstrip needs to be redrawn due to some massive display-related change
 ' (such as changing the display color management policy).
 Public Sub RequestTabstripRedraw(Optional ByVal regenerateThumbsToo As Boolean = False)
-    FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired regenerateThumbsToo
+    FormMain.MainCanvas(0).NotifyTabstripTotalRedrawRequired regenerateThumbsToo
 End Sub
 
 'If a preview control won't be activated for a given dialog, call this function to display a persistent

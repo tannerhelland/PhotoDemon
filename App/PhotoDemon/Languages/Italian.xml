@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.325</langversion>
+<langversion>6.7.327</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4903,6 +4903,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Count unique colors</original>
 <translation>Conta i colori unici</translation>
 </phrase>
@@ -6489,7 +6494,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
+<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15191,10 +15196,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2544</phrasecount>
+<phrasecount>2545</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4600 phrases. -->
-<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
-<!-- These 2544 phrases contain approximately 12180 total words. -->
+<!-- As of this build, PhotoDemon contains 4602 phrases. -->
+<!-- 2057 are duplicates, so only 2545 unique phrases have been written to file. -->
+<!-- These 2545 phrases contain approximately 12183 total words. -->
 
 </pdData>

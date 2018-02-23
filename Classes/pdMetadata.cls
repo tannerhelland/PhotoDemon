@@ -332,7 +332,7 @@ Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
     End If
     
     'If no metadata was returned, we can also abandon this function
-    If (Len(mdString) = 0) Then
+    If (LenB(mdString) = 0) Then
         LoadAllMetadata = False
         Exit Function
     End If
@@ -791,7 +791,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                             'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
                             ' so the image may already be visible on the screen!)
                             If (parentImageID = g_CurrentImage) Then
-                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
                                 Interface.NotifyImageChanged parentImageID
                             End If
                             
@@ -850,7 +850,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                     
                     'Refresh the screen to reflect the new colors
                     If (parentImageID = g_CurrentImage) Then
-                        ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                        ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
                         Interface.NotifyImageChanged parentImageID
                     End If
                     
@@ -918,7 +918,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
                         
                         If (parentImageID = g_CurrentImage) Then
-                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
                             Interface.NotifyImageChanged parentImageID
                         End If
                         
@@ -1455,6 +1455,15 @@ Private Function PARSE_GetTagName(ByRef srcLine As String, ByRef dstLine As Stri
     End If
 End Function
 
+'Want to strip metadata from an image?  Call this to forcibly clear out all metadata information from this object,
+' and return it to a pristine, childlike state.
+Friend Sub Reset()
+    m_NumOfTags = 0
+    ReDim m_Tags(0) As PDMetadataItem
+    m_OriginalXML = vbNullString
+    m_HasGPSCoordinates = False
+End Sub
+
 'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a reference to the image in question,
 ' embed as much or as little metadata as the image's settings specify.
 ' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
@@ -1514,7 +1523,7 @@ Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         ' we copy over metadata from an existing image.
         
         'If, however, the image *does* have metadata, we need to write it out to a temporary XML file.
-        If (Len(newXMLString) <> 0) Then
+        If (LenB(newXMLString) <> 0) Then
             
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
             tmpXMLPath = Files.FileGetPath(outputPath)
@@ -1548,6 +1557,5 @@ Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
 End Function
 
 Private Sub Class_Initialize()
-    m_NumOfTags = 0
-    ReDim m_Tags(0) As PDMetadataItem
+    Me.Reset
 End Sub

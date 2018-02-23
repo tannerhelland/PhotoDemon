@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.16</langversion>
+<langversion>1.0.18</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4900,6 +4900,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Count unique colors</original>
 <translation>ユニークな色を数えます</translation>
 </phrase>
@@ -6485,7 +6490,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>アルファチャンネルを削除</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 550 phrases. 185 were duplicates of existing phrases, so only 365 new phrases were written to file. -->
+<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15188,10 +15193,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2544</phrasecount>
+<phrasecount>2545</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4600 phrases. -->
-<!-- 2056 are duplicates, so only 2544 unique phrases have been written to file. -->
-<!-- These 2544 phrases contain approximately 12180 total words. -->
+<!-- As of this build, PhotoDemon contains 4602 phrases. -->
+<!-- 2057 are duplicates, so only 2545 unique phrases have been written to file. -->
+<!-- These 2545 phrases contain approximately 12183 total words. -->
 
 </pdData>

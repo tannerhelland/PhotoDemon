@@ -396,6 +396,12 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
         
         Else
             Debug.Print "FYI, this PDI file does not contain metadata information."
+            
+            'As a failsafe (because the target image may already exist, and this operation can be triggered by
+            ' something like "Redo: Remove all metadata", meaning the target image already has a full metadata
+            ' manager), erase the target image's metadata collection, if any.
+            dstImage.ImgMetadata.Reset
+            
         End If
         
         'That's all there is to it!  Mark the load as successful and carry on.
@@ -963,7 +969,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).MainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
-    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1306,12 +1312,12 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'Reset the main viewport's scroll bars to (0, 0)
     ViewportEngine.DisableRendering
-    FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
-    FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
+    FormMain.MainCanvas(0).SetScrollVisibility PD_BOTH, True
+    FormMain.MainCanvas(0).SetScrollValue PD_BOTH, 0
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc).
     ' Importantly, this also shows/hides the image tabstrip that's available when multiple images are loaded.
-    FormMain.mainCanvas(0).AlignCanvasView
+    FormMain.MainCanvas(0).AlignCanvasView
     
     'Fit the current image to the active viewport
     FitImageToViewport
