@@ -290,7 +290,7 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
             If MainModule.IsProgramRunning() Then
                 m_MouseEvents.AddInputTracker m_hWnd, appCommandEvents
                 m_ControlIsNotInteractive = (Not controlIsInteractive)
-                If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW, False
+                If m_ControlIsNotInteractive Then m_MouseEvents.SetCursor_System IDC_ARROW, False
             End If
         End If
         
@@ -834,7 +834,7 @@ Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByV
     HideTooltip True
     
     'Non-interactive controls get automatic cursor management from us
-    If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW
+    If m_ControlIsNotInteractive Then m_MouseEvents.SetCursor_System IDC_ARROW
     
     RaiseEvent MouseEnter(Button, Shift, x, y)
     
@@ -847,7 +847,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = False
-    m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetCursor_System IDC_DEFAULT
     HideTooltip
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
@@ -1145,11 +1145,11 @@ Friend Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boo
 End Function
 
 Friend Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
-    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor standardCursorType
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetCursor_System standardCursorType
 End Sub
 
-Friend Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
-    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
+Friend Sub RequestCursor_Resource(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetCursor_Resource pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
 Friend Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
@@ -1181,9 +1181,7 @@ Friend Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional By
     If (newTop = -100) Then newTop = m_MoveSize.GetTop
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
-    If (newLeft <> m_MoveSize.GetLeft) Or (newTop <> m_MoveSize.GetTop) Then
-        m_MoveSize.SetPosition newLeft, newTop
-    End If
+    If (newLeft <> m_MoveSize.GetLeft) Or (newTop <> m_MoveSize.GetTop) Then m_MoveSize.SetPosition newLeft, newTop
     m_ResizeEventsSuspended = False
     
 End Sub

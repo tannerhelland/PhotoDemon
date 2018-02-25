@@ -111,14 +111,13 @@ Private Const SM_CYCAPTION As Long = 4
 Private Const SM_CYSIZEFRAME As Long = 33
 
 'API calls for window positioning and tracking
-Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
 Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long) As Long
 Private Declare Function GetWindowTextLengthW Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef scrPoint As POINTAPI) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 
 'APIs for getting/setting Unicode window captions
@@ -331,11 +330,22 @@ Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
 End Sub
 
 Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
-    GetClientToScreen = (ClientToScreen(srcHwnd, srcPoint) <> 0)
+    
+    'MapWindowPoints is preferred over ClientToScreen because it works on BiDi systems.  However,
+    ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
+    ' (although I don't know how well that would work in VB, given the way Err.LastDllError works),
+    ' but we simply assume success and always return TRUE.
+    MapWindowPoints srcHwnd, 0, VarPtr(srcPoint), 1
+    GetClientToScreen = True
+    
 End Function
 
 Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
-    GetScreenToClient = (ScreenToClient(srcHwnd, srcPoint) <> 0)
+    
+    'See the notes for GetClientToScreen, above
+    MapWindowPoints 0, srcHwnd, VarPtr(srcPoint), 1
+    GetScreenToClient = True
+    
 End Function
 
 Friend Sub ActivateWindowAPI(ByVal hWndToActivate As Long)

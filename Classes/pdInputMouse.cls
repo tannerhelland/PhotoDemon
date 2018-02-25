@@ -176,8 +176,7 @@ Private Const SM_CXVIRTUALSCREEN = 78
 Private Const SM_CYVIRTUALSCREEN = 79
 
 'API helper functions for converting between screen and client coordinate spaces
-Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 
 'MSDN best practices suggest that we always retrieve the user's setting for scroll wheel sensitivity, as it may change
 ' while a program is running.  SystemParametersInfo is used for this.  Note that horizontal and vertical settings
@@ -352,7 +351,7 @@ Friend Sub Shutdown()
 End Sub
 
 'Assign a system cursor to the underlying hWnd.  Call this function without a parameter to reset the cursor to the default arrow.
-Friend Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal applyImmediately As Boolean = True)
+Friend Sub SetCursor_System(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal applyImmediately As Boolean = True)
     
     'Load the relevant cursor handle
     If (systemCursorType = IDC_DEFAULT) Then
@@ -371,7 +370,7 @@ End Sub
 ' there is a high probability of PNG icons being requested by more than one class in a given session, so rather than
 ' repeat all the steps for each request, we only do it once, then cache the results.  PD itself will handle unloading
 ' custom cursors at exit time, so this class need not concern itself with unloading requested cursors.
-Friend Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+Friend Sub SetCursor_Resource(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
     Dim tmpCursorHandle As Long
     tmpCursorHandle = IconsAndCursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
@@ -383,7 +382,7 @@ Friend Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHo
     
 End Sub
 
-'Private helper function used by SetSystemCursor and SetPNGCursor, above.  When setting the cursor for the first time,
+'Private helper function used by SetCursor_System and SetCursor_Resource, above.  When setting the cursor for the first time,
 ' it is helpful to reset the class cursor definition so that Windows doesn't automatically raise WM_SETCURSOR messages
 ' every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class cursor and overwrite
 ' it with NULL.
@@ -467,14 +466,11 @@ Private Function GetCurrentCursorPosition(ByRef controlX As Long, ByRef controlY
     If (GetCursorPos(tmpPoint) <> 0) Then
         
         'Convert the screen coordinates into the coordinate space of the supplied hWnd
-        If (ScreenToClient(m_hWnd, tmpPoint) <> 0) Then
-            controlX = tmpPoint.x
-            controlY = tmpPoint.y
-            GetCurrentCursorPosition = True
-        Else
-            GetCurrentCursorPosition = False
-        End If
-    
+        MapWindowPoints 0, m_hWnd, VarPtr(tmpPoint), 1
+        controlX = tmpPoint.x
+        controlY = tmpPoint.y
+        GetCurrentCursorPosition = True
+        
     Else
         GetCurrentCursorPosition = False
     End If
@@ -488,16 +484,13 @@ Friend Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelat
     Dim tmpPoint As POINTAPI
     tmpPoint.x = xRelativeToHwnd
     tmpPoint.y = yRelativeToHwnd
+    MapWindowPoints m_hWnd, 0, VarPtr(tmpPoint), 1
     
-    If (ClientToScreen(m_hWnd, tmpPoint) <> 0) Then
-        
-        'Cursor trails may cause ghosting, where we move the cursor, but a cursor is still shown at the old mouse position.
-        ' To account for that, we must hide the cursor, move it, then re-display it.
-        ShowCursor 0
-        SetCursorPos tmpPoint.x, tmpPoint.y
-        ShowCursor 1
-        
-    End If
+    'Cursor trails may cause ghosting, where we move the cursor, but a cursor is still shown at the old mouse position.
+    ' To account for that, we must hide the cursor, move it, then re-display it.
+    ShowCursor 0
+    SetCursorPos tmpPoint.x, tmpPoint.y
+    ShowCursor 1
     
 End Sub
 
@@ -550,8 +543,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     Dim tmpPoint As POINTAPI
     tmpPoint.x = clientX
     tmpPoint.y = clientY
-    
-    ClientToScreen m_hWnd, tmpPoint
+    MapWindowPoints m_hWnd, 0, VarPtr(tmpPoint), 1
     
     Dim screenX As Long, screenY As Long
     screenX = tmpPoint.x
@@ -649,7 +641,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             'With this point successfully transformed, the last thing we need to do is convert it from screen to window coordinates.
             tmpPoint.x = m_MouseHistory(i).x
             tmpPoint.y = m_MouseHistory(i).y
-            ScreenToClient m_hWnd, tmpPoint
+            MapWindowPoints 0, m_hWnd, VarPtr(tmpPoint), 1
             m_MouseHistory(i).x = tmpPoint.x
             m_MouseHistory(i).y = tmpPoint.y
             

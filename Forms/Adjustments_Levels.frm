@@ -845,9 +845,9 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If (IsCursorOverArrow(x, True) >= 0) Then
-            m_MouseEventsIn.SetSystemCursor IDC_HAND
+            m_MouseEventsIn.SetCursor_System IDC_HAND
         Else
-            m_MouseEventsIn.SetSystemCursor IDC_ARROW
+            m_MouseEventsIn.SetCursor_System IDC_ARROW
         End If
         
     End If
@@ -937,9 +937,9 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If (IsCursorOverArrow(x, False) >= 0) Then
-            m_MouseEventsOut.SetSystemCursor IDC_HAND
+            m_MouseEventsOut.SetCursor_System IDC_HAND
         Else
-            m_MouseEventsOut.SetSystemCursor IDC_ARROW
+            m_MouseEventsOut.SetCursor_System IDC_ARROW
         End If
         
     End If

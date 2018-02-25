@@ -22,8 +22,8 @@ Option Explicit
 
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 
 'These constants are used to toggle visibility of display elements.
@@ -1704,7 +1704,7 @@ Public Sub EnableUserInput()
     'If the mouse lies over the canvas, we now want to post a "fake" mouse movement message to that window,
     ' to ensure any custom cursors are painted correctly.
     If mouseMustBeFaked Then
-        ScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
         FormMain.MainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
         ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
     End If

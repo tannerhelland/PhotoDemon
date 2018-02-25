@@ -695,7 +695,7 @@ Private Sub Form_Load()
         'Set up a special mouse handler for the gradient interaction window
         If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
         m_MouseEvents.AddInputTracker picInteract.hWnd
-        m_MouseEvents.SetSystemCursor IDC_HAND
+        m_MouseEvents.SetCursor_System IDC_HAND
         
         'Prep a default set of gradient points
         ResetGradientPoints
@@ -908,12 +908,12 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseEvents.SetSystemCursor IDC_HAND
+    m_MouseEvents.SetCursor_System IDC_HAND
 End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
-    m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetCursor_System IDC_DEFAULT
     DrawGradientNodes
 End Sub
 

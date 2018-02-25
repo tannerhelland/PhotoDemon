@@ -136,12 +136,11 @@ Private m_PDControlCount As Long
 ' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
 ' and the hWnd is cached so we can kill that window as necessary.
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
@@ -889,7 +888,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     Dim mouseScreenPos As POINTAPI
     mouseScreenPos.x = mouseX
     mouseScreenPos.y = mouseY
-    ClientToScreen ownerHwnd, mouseScreenPos
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetClientToScreen ownerHwnd, mouseScreenPos
     
     Dim ttDistance(0 To 3) As Single
     ttDistance(TTS_Right) = srcControlRect.Right - mouseScreenPos.x

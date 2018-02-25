@@ -53,9 +53,7 @@ End Enum
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
-Private Declare Function ClientToScreen Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Const GW_OWNER = 4
@@ -177,7 +175,7 @@ Private Sub UpdateWinRect()
         Dim tmpPoint As POINTAPI
         tmpPoint.x = m_WindowRect.x1
         tmpPoint.y = m_WindowRect.y1
-        MapWindowPoints 0&, GetParent(m_hWnd), tmpPoint, 1&
+        MapWindowPoints 0&, GetParent(m_hWnd), VarPtr(tmpPoint), 1
         
         'Translate the window rect into our parent's coordinate space, which greatly simplifies subsequent property requests
         Dim xDiff As Long, yDiff As Long

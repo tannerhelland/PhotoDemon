@@ -795,7 +795,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                SetInitialCanvasScrollValues FormMain.mainCanvas(0)
+                SetInitialCanvasScrollValues FormMain.MainCanvas(0)
                 
             'Move stuff around
             Case NAV_MOVE
@@ -879,7 +879,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     Tools.SetCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                     
                     'Redraw the viewport immediately
-                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_CornerSE
+                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_CornerSE
                 
                 End If
             
@@ -954,12 +954,12 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, pdImages(g_CurrentImage), FormMain.MainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
                 Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
-                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
         
             'Color picker
             Case COLOR_PICKER
@@ -973,7 +973,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Text layers are identical to the move tool
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
                 Message "Shift key: preserve layer aspect ratio"
-                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
             
             'Unlike other tools, the paintbrush engine controls when the main viewport gets redrawn.
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
@@ -1096,7 +1096,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             Case NAV_MOVE
             
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-                If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tools.TerminateGenericToolTracking
@@ -1146,11 +1146,11 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         Tools.SyncToolOptionsUIToCurrentLayer
                         
                         'Manually force a viewport redraw
-                        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                         
                     'If the user already specified a size, use their values to finalize the layer size
                     Else
-                        Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                        Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
                     End If
                     
                     'As a failsafe, ensure the layer has a proper rotational center point.  (If the user dragged the mouse so that
@@ -1178,7 +1178,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Else
                     
                     'As a convenience to the user, ignore clicks that don't actually change layer settings
-                    If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                    If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
                     
                 End If
                 
@@ -1262,7 +1262,7 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     
     'Request a manual redraw from ViewportEngine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
     
     'Notify external UI elements of the change
     RelayViewportChanges
@@ -1712,9 +1712,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If IsMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If (curMouseEvent = pMouseUp) Or (Button = 0) Then
-                    CanvasView.RequestCursor_PNG "cursor_handopen", 0, 0
+                    CanvasView.RequestCursor_Resource "cursor_handopen", 0, 0
                 Else
-                    CanvasView.RequestCursor_PNG "cursor_handclosed", 0, 0
+                    CanvasView.RequestCursor_Resource "cursor_handclosed", 0, 0
                 End If
             
             'If the cursor is not over the image, change to an arrow cursor
@@ -1752,7 +1752,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 'Mouse is over a rotation handle
                 Case poi_EdgeE, poi_EdgeS, poi_EdgeW, poi_EdgeN
                     CanvasView.RequestCursor_System IDC_SIZEALL
-                    'CanvasView.RequestCursor_PNG "cursor_rotate", 7, 7
+                    'CanvasView.RequestCursor_Resource "cursor_rotate", 7, 7
                     
                 'Mouse is within the layer, but not over a specific node
                 Case poi_Interior

@@ -639,7 +639,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseEnter(Button, Shift, x, y)
-    m_MouseEvents.SetSystemCursor IDC_IBEAM
+    m_MouseEvents.SetCursor_System IDC_IBEAM
 End Sub
 
 Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -648,7 +648,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseLeave(Button, Shift, x, y)
-    m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetCursor_System IDC_DEFAULT
 End Sub
 
 'On first click, we select all text (but only if the user hasn't manually selected text with their initial mouse action)

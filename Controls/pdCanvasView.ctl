@@ -299,8 +299,8 @@ Public Sub RequestCursor_System(Optional ByVal standardCursorType As SystemCurso
     ucSupport.RequestCursor standardCursorType
 End Sub
 
-Public Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
-    ucSupport.RequestCursor_PNG pngResourceName, cursorHotspotX, cursorHotspotY
+Public Sub RequestCursor_Resource(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+    ucSupport.RequestCursor_Resource pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
 'External functions can request an immediate redraw.  Please don't abuse this - it should really only be used when some
