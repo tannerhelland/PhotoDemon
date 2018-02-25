@@ -25,17 +25,35 @@ Attribute VB_Name = "IconsAndCursors"
 
 Option Explicit
 
-'API calls for building an icon at run-time
+'API calls for building icons and cursors at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
-Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+
+Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
+Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
+
+Private Enum DrawIconEx_Flags
+    DI_COMPAT = &H4         'This flag is ignored
+    DI_DEFAULTSIZE = &H8    'Draws the icon or cursor using the width and height specified by the system metric values for icons, if the cxWidth and cyWidth parameters are set to zero. If this flag is not specified and cxWidth and cyWidth are set to zero, the function uses the actual resource size.
+    DI_IMAGE = &H2          'Draws the icon or cursor using the image.
+    DI_MASK = &H1           'Draws the icon or cursor using the mask.
+    DI_NOMIRROR = &H10      'Draws the icon as an unmirrored icon. By default, the icon is drawn as a mirrored icon if hdc is mirrored.
+    DI_NORMAL = &H3         'Combination of DI_IMAGE and DI_MASK.
+End Enum
+
+#If False Then
+    Private Const DI_COMPAT = &H4, DI_DEFAULTSIZE = &H8, DI_IMAGE = &H2, DI_MASK = &H1, DI_NOMIRROR = &H10, DI_NORMAL = &H3
+#End If
+
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal iStepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As DrawIconEx_Flags) As Long
 
 'System constants for retrieving system default icon sizes and related metrics
 Private Const SM_CXICON As Long = 11
 Private Const SM_CYICON As Long = 12
+Private Const SM_CXCURSOR As Long = 13
+Private Const SM_CYCURSOR As Long = 14
 Private Const SM_CXSMICON As Long = 49
 Private Const SM_CYSMICON As Long = 50
 Private Const LR_SHARED As Long = &H8000&
@@ -59,6 +77,14 @@ Private Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
 'GDI+ types and constants
 Private Const UnitPixel As Long = &H2&
 
+Private Type CURSORINFO
+    cbSize As Long
+    Flags As Long
+    hCursor As Long
+    ptScreenPosX As Long
+    ptScreenPosY As Long
+End Type
+
 'Type required to create an icon on-the-fly
 Private Type ICONINFO
     fIcon As Boolean
@@ -69,9 +95,10 @@ Private Type ICONINFO
 End Type
 
 'Used to apply and manage custom cursors (without subclassing)
+Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
+Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef dstInfo As ICONINFO) As Long
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
 
 Public Enum SystemCursorConstant
     IDC_DEFAULT = 0&
@@ -371,9 +398,6 @@ End Sub
 'Convert a DIB - any DIB! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
 ' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed DIB will have been created using
 ' the pdImage function "RequestThumbnail".
-'
-'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
-' the function without FreeImage's help, but frankly don't consider it worth the trouble.
 Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
 
     'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
@@ -563,29 +587,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         curHotspotX = (CDbl(curHotspotX) / 16#) * m_CursorSize
         curHotspotY = (CDbl(curHotspotY) / 16#) * m_CursorSize
         
-        'Generate a blank monochrome mask to pass to the icon creation function.
-        ' (This is a stupid Windows workaround for 32bpp cursors.  The cursor creation function always assumes
-        '  the presence of a mask bitmap, so we have to submit one even if we want the PNG's alpha channel
-        '  used for transparency.)
-        Dim monoBmp As Long
-        monoBmp = CreateBitmap(resDIB.GetDIBWidth, resDIB.GetDIBHeight, 1, 1, ByVal 0&)
-        
-        'Create an icon header and point it at our temporary mask and original DIB resource
-        Dim icoInfo As ICONINFO
-        With icoInfo
-            .fIcon = False
-            .xHotspot = curHotspotX
-            .yHotspot = curHotspotY
-            .hbmMask = monoBmp
-            .hbmColor = resDIB.GetDIBHandle
-        End With
-        
-        'Create the cursor
-        CreateCursorFromResource = CreateNewIcon(icoInfo)
-        
-        'Release our temporary mask and resource container, as Windows has now made its own copies
-        DeleteObject monoBmp
-        Set resDIB = Nothing
+        CreateCursorFromResource = CreateCursorFromDIB(resDIB)
         
     Else
         #If DEBUGMODE = 1 Then
@@ -593,7 +595,35 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         #End If
     End If
     
-    Exit Function
+End Function
+
+'Given an arbitrary DIB, return a valid cursor handle.  All resources required for creation were auto-freed (except the
+' incoming source DIB, obviously), but note that *YOU* are responsible for freeing the cursor handle when finished.
+' (This is why this function is not public; PD uses safe wrapper functions that auto-cache and free cursors as relevant.)
+Private Function CreateCursorFromDIB(ByRef srcDIB As pdDIB, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
+    
+    'Generate a blank monochrome mask to pass to the icon creation function.
+    ' (This is a stupid Windows workaround for 32bpp cursors.  The cursor creation function always assumes
+    '  the presence of a mask bitmap, so we have to submit one even if we want the PNG's alpha channel
+    '  used for transparency.)
+    Dim monoBmp As Long
+    monoBmp = CreateBitmap(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, 1, ByVal 0&)
+    
+    'Create an icon header and point it at our temporary mask and original DIB resource
+    Dim icoInfo As ICONINFO
+    With icoInfo
+        .fIcon = False
+        .xHotspot = curHotspotX
+        .yHotspot = curHotspotY
+        .hbmMask = monoBmp
+        .hbmColor = srcDIB.GetDIBHandle
+    End With
+    
+    'Create the cursor
+    CreateCursorFromDIB = CreateNewIcon(icoInfo)
+    
+    'Release our temporary mask
+    DeleteObject monoBmp
     
 End Function
 
@@ -607,7 +637,6 @@ Public Function GetSystemCursorSizeInPx() As Long
     'Also, note that Windows cursors typically only use one quadrant of the current system cursor size.  This odd behavior
     ' is why we divide the retrieved cursor size by two.
     If (m_CursorSize = 0) Then
-        Const SM_CYCURSOR As Long = 14
         m_CursorSize = GetSystemMetrics(SM_CYCURSOR) \ 2
         If (m_CursorSize <= 0) Then m_CursorSize = FixDPI(16)
     End If
@@ -641,42 +670,15 @@ Public Sub UnloadAllCursors()
     
 End Sub
 
-'Use any 32bpp PNG resource as a cursor .  When setting the mouse pointer of VB objects, please use SetPNGCursorToObject, below.
-Public Sub SetPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
-    SetClassLong dstHwnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
-End Sub
-
-'Use any 32bpp PNG resource as a cursor.  Use this function preferentially over the previous one, "SetPNGCursorToHwnd", when possible.
-' (If a VB object does not have its MousePointer property set to "custom", it will override our attempts to set a custom mouse icon.)
-Public Sub SetPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
-    srcObject.MousePointer = vbCustom
-    SetClassLong srcObject.hWnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
-End Sub
-
-'Set a single object to use the hand cursor
-Public Sub SetHandCursor(ByRef tControl As Object)
-    tControl.MouseIcon = LoadPicture(vbNullString)
-    tControl.MousePointer = 99
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
-End Sub
-
-Public Sub SetHandCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
-End Sub
-
-Public Sub SetArrowCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
-End Sub
-
 'Set a single form to use the arrow cursor
 Public Sub SetArrowCursor(ByRef tControl As Object)
     tControl.MousePointer = vbCustom
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
-'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
-' the cursor resource for future reference (so the image doesn't have to be loaded again).
-Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
+'If a custom 32-bpp cursor has not been loaded, this function will load the resource, convert it to cursor format,
+' then store the cursor resource for future reference (so the image doesn't have to be loaded again).
+Public Function RequestCustomCursor(ByRef resCursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
 
     Dim i As Long
     Dim cursorLocation As Long
@@ -704,8 +706,15 @@ Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVa
     If cursorAlreadyLoaded Then
         RequestCustomCursor = m_customCursorHandles(cursorLocation)
     Else
+        
         Dim tmpHandle As Long
-        tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
+        
+        'PD uses special names for some internal cursors.  These are *not* resources, but they are assembled at run-time.
+        If Strings.StringsEqual(resCursorName, "HAND-AND-RESIZE", True) Then
+            tmpHandle = GetHandAndResizeCursor()
+        Else
+            tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
+        End If
         
         If (tmpHandle <> 0) Then
             ReDim Preserve m_customCursorNames(0 To m_numCustomCursors) As String
@@ -714,8 +723,9 @@ Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVa
             m_customCursorHandles(m_numCustomCursors) = tmpHandle
             m_numCustomCursors = m_numCustomCursors + 1
         End If
-        
+            
         RequestCustomCursor = tmpHandle
+        
     End If
 
 End Function
@@ -829,3 +839,60 @@ Public Sub SetThunderMainIcon()
     SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconSmall
 
 End Sub
+
+Public Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRef dstDIB As pdDIB, Optional ByVal initDIBForMe As Boolean = True, Optional ByVal renderFrame As Long = 0) As Boolean
+
+    'First, retrieve a handle to the system cursor in question
+    Dim hCursor As Long
+    hCursor = LoadCursor(0&, cursorType)
+    
+    'Next, prepare the destination DIB
+    If initDIBForMe Or (dstDIB Is Nothing) Then
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank GetSystemMetrics(SM_CXCURSOR), GetSystemMetrics(SM_CYCURSOR), 32, 0, 0
+        dstDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    'Finally, use DrawIconEx to render the cursor into the DIB
+    GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_NORMAL) <> 0)
+    #If DEBUGMODE = 1 Then
+        If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
+    #End If
+    
+End Function
+
+'Some PD objects are clickable *and* draggable; they use a specialized "hand+resize" cursor that we generate on-the-fly
+' from the current hand and resize system cursors.
+Public Function GetHandAndResizeCursor() As Long
+
+    'Start by retrieving the two cursors in question as DIBs
+    Dim handDIB As pdDIB, resizeDIB As pdDIB
+    GetSysCursorAsDIB IDC_HAND, handDIB
+    GetSysCursorAsDIB IDC_SIZENS, resizeDIB
+    
+    'We now need to retrieve the cursor hotspot for the current handDIB, because we'll be reusing that for our cursor
+    Dim handInfo As ICONINFO
+    GetHandAndResizeCursor = (GetIconInfo(LoadCursor(0&, IDC_HAND), handInfo) <> 0)
+    If GetHandAndResizeCursor Then
+    
+        'We now have everything we need to assemble a new icon!  Start by combining the two source DIBs into a new
+        ' destination DIB.
+        Dim newDIB As pdDIB
+        Set newDIB = New pdDIB
+        newDIB.CreateBlank GetSystemMetrics(SM_CXCURSOR) * 2, GetSystemMetrics(SM_CYCURSOR) * 2, 32, 0, 0
+        GDI.BitBltWrapper newDIB.GetDIBDC, 0, 0, handDIB.GetDIBWidth, handDIB.GetDIBHeight, handDIB.GetDIBDC, 0, 0, vbSrcCopy
+        
+        Dim dibSize As Long, dibPosX As Long, dibPosY As Long
+        dibPosX = handDIB.GetDIBWidth * 0.65
+        dibPosY = handDIB.GetDIBHeight * 0.16
+        dibSize = handDIB.GetDIBWidth * 0.8
+        GDI_Plus.GDIPlus_StretchBlt newDIB, dibPosX, dibPosY, dibSize, dibSize, resizeDIB, 0, 0, resizeDIB.GetDIBWidth, resizeDIB.GetDIBHeight
+        
+        'Make a cursor from the composited DIB
+        GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)
+    
+    Else
+        Debug.Print "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
+    End If
+
+End Function
