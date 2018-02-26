@@ -146,6 +146,10 @@ Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
 End Sub
 
+Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long)
+    ucSupport.RequestNewPosition newLeft, newTop, True
+End Sub
+
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub

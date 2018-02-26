@@ -20,8 +20,8 @@ Attribute VB_Name = "OS"
 
 Option Explicit
 
-'This module is automatically enabled/disabled based on the current OS version.  If you want these features disabled
-' even on valid OS versions, you can set this failsafe constant to FALSE.
+'This module is automatically enabled/disabled based on the current OS version.  If you want these
+' features disabled even on valid OS versions, you can set this failsafe constant to FALSE.
 Private Const WIN7_FEATURES_ALLOWED As Boolean = True
 
 Private Const CLSID_TASKBARLIST As String = "{56FDF344-FD6D-11d0-958A-006097C9A090}"
@@ -339,6 +339,9 @@ Private Declare Function FindWindowW Lib "user32" (Optional ByVal lpClassName As
 Private Declare Function GetGuiResources Lib "user32" (ByVal hProcess As Long, ByVal resourceToCheck As PD_GuiResources) As Long
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal uCmd As Long) As Long
 
+Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As Long
+
 'A persistent handle to the OLE interface we create for Win7+ taskbar features
 Private m_taskbarObjHandle As Long
 
@@ -357,6 +360,19 @@ Private m_ThunderMainHwnd As Long
 ' (Also, if we failed to retrieve the ID on a previous attempt, we cache that as well, so we don't waste time
 '  trying again.)
 Private m_AppProcID As Long, m_TriedToRetrieveID As Boolean
+
+'This module caches whether or not Aero is enabled.  (We require this for various UI interop bits.)
+Private Enum PD_ThemingAvailable
+    pdta_Unknown = 0
+    pdta_False = 1
+    pdta_True = 2
+End Enum
+
+#If False Then
+    Private Const pdta_Unknown = 0, pdta_False = 1, pdta_True = 2
+#End If
+
+Private m_ThemingAvailable As PD_ThemingAvailable
 
 'Function for returning this application's current memory usage.  Note that this function will return warped
 ' values inside the IDE (because the reported total is for *all* of VB6, including the IDE itself).
@@ -688,6 +704,39 @@ End Function
 ' struct to a more usable longlong?  Use this function.
 Public Function GetSystemTimeAsCurrency() As Currency
     GetSystemTimeAsFileTime GetSystemTimeAsCurrency
+End Function
+
+'Is Aero enabled (requires Vista+ and classic theme must *not* be in use)
+Public Function IsAeroAvailable() As Boolean
+    
+    'Only check this once; it does not change per-session
+    If (m_ThemingAvailable = pdta_Unknown) Then
+    
+        'Windows XP is always false
+        If (Not IsVistaOrLater) Then
+            m_ThemingAvailable = pdta_False
+        
+        'Win 8+ always makes Aero available
+        ElseIf IsWin8OrLater Then
+            m_ThemingAvailable = pdta_True
+            
+        'Win Vista/7 must be dynamically detected
+        Else
+            Dim hTheme As Long, sClass As String
+            sClass = "Window"
+            hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
+            If (hTheme <> 0) Then
+                m_ThemingAvailable = pdta_True
+                CloseThemeData hTheme
+            Else
+                m_ThemingAvailable = pdta_False
+            End If
+        End If
+    
+    End If
+    
+    IsAeroAvailable = (m_ThemingAvailable = pdta_True)
+    
 End Function
 
 'Is this program instance compiled, or running from the IDE?

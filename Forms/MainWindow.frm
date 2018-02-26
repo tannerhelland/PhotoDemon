@@ -1593,6 +1593,8 @@ Attribute m_InterfaceTimer.VB_VarHelpID = -1
 Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
 
+Private m_AllowedToReflowInterface As Boolean
+
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
@@ -1691,12 +1693,17 @@ Private Sub Form_Resize()
     End If
 End Sub
 
+Public Function ToolbarsAllowedToReflow() As Boolean
+    ToolbarsAllowedToReflow = m_AllowedToReflowInterface
+End Function
+
 'Resize all currently active canvases.  This was an important function back when PD used an MDI engine, but now that we
 ' use our own tabbed interface, it's due for a major revisit.  If we could kill this function entirely, I'd be very happy.
 Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
 
     'If the main form has been minimized, don't refresh anything
     If (FormMain.WindowState = vbMinimized) Then Exit Sub
+    If (Not m_AllowedToReflowInterface) Then Exit Sub
     
     'As of 7.0, a new, lightweight toolbox manager can calculate idealized window positions for us.
     Dim mainRect As winRect, canvasRect As winRect
@@ -2552,6 +2559,8 @@ Private Sub Form_Load()
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Registering toolbars with the window manager..."
         #End If
+        
+        m_AllowedToReflowInterface = True
         
         'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
         ' to match, then display the window.
@@ -4220,11 +4229,11 @@ Private Sub MnuWindow_Click(Index As Integer)
             
         'Show/hide tool options
         Case 1
-            ToggleToolboxVisibility PDT_BottomToolbox
+            Toolboxes.ToggleToolboxVisibility PDT_BottomToolbox
         
         'Show/hide layer toolbox
         Case 2
-            ToggleToolboxVisibility PDT_RightToolbox
+            Toolboxes.ToggleToolboxVisibility PDT_RightToolbox
         
         '<top-level Image tabstrip>
         Case 3

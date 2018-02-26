@@ -3,19 +3,19 @@ Attribute VB_Name = "IconsAndCursors"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2018 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 03/February/17
-'Last update: add automatic high-DPI cursor support for custom cursors created from PNGs
+'Last updated: 26/February/18
+'Last update: new support functions for manually combining certain system cursors at run-time (for pdTitlebar)
 '
-'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
-' functions to PhotoDemon.  As of 7.0, all icons in the program are stored in PD's custom resource file (in a variety of
+'Because VB6 doesn't provide many (any?) mechanisms for manipulating icons, I've had to manually write a wide variety
+' of icon handling functions.  As of v7.0, all icons in PD are stored in our custom resource file (in a variety of
 ' formats, each one optimized for file size).  These icons are extracted, re-colored, resized (for high-DPI screens),
 ' and rendered onto UI elements at run-time.
 '
-'Menu icons currently use the clsMenuImage class by Leandro Ascierto.  Please see that class for details on how it works.
-' (A link to Leandro's original project can also be found there.)
+'Menu icons currently lean on the clsMenuImage class by Leandro Ascierto.  Please see that class for details on how
+' it works. (A link to Leandro's original project can also be found there.)
 '
 'This module also handles the rendering of dynamic form, program, and taskbar icons.  When an image is loaded and active,
-' those icons can change to match the current image.  For an overview on how this works, you can see the following MSDN page:
+' those icons can change to match the current image.  For an overview on how this works, visit this MSDN page:
 ' http://support.microsoft.com/kb/318876
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -534,7 +534,7 @@ End Sub
 
 'Given an image in the .exe's resource section (typically a PNG image), return an icon handle to it (hIcon).
 ' The calling function is responsible for deleting this object once they are done with it.
-Public Function CreateIconFromResource(ByVal resTitle As String) As Long
+Private Function CreateIconFromResource(ByVal resTitle As String) As Long
     
     'Start by extracting the PNG data into a bytestream
     Dim imageData() As Byte
@@ -571,7 +571,7 @@ End Function
 
 'Given an image in PD's theme file, return it as a system cursor handle.
 'PLEASE NOTE: PD auto-caches created cursors, and retains them for the life of the program.  They should not be manually freed.
-Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
+Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
     'Ensure our cached system cursor size is up-to-date
     GetSystemCursorSizeInPx
@@ -707,16 +707,29 @@ Public Function RequestCustomCursor(ByRef resCursorName As String, Optional ByVa
         RequestCustomCursor = m_customCursorHandles(cursorLocation)
     Else
         
-        Dim tmpHandle As Long
+        Dim tmpHandle As Long, cacheHandle As Boolean
         
         'PD uses special names for some internal cursors.  These are *not* resources, but they are assembled at run-time.
         If Strings.StringsEqual(resCursorName, "HAND-AND-RESIZE", True) Then
-            tmpHandle = GetHandAndResizeCursor()
+            
+            'Dynamic assembly of system icons only works on systems where Aero is active.  On XP (or Vista/7 with
+            ' "classic theming" enabled), DrawIconEx fails to render to 32-bpp surfaces.  As such, we'd need to
+            ' manually handle all masking ourselves, and that's a ton of work for UI frills on obsolete OSes.
+            ' As such, check for Aero activation, and simply return a default hand icon as necessary.
+            If OS.IsAeroAvailable() Then
+                tmpHandle = GetHandAndResizeCursor()
+                cacheHandle = True
+            Else
+                tmpHandle = LoadCursor(0&, IDC_HAND)
+                cacheHandle = False
+            End If
+            
         Else
             tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
+            cacheHandle = (tmpHandle <> 0)
         End If
         
-        If (tmpHandle <> 0) Then
+        If (tmpHandle <> 0) And cacheHandle Then
             ReDim Preserve m_customCursorNames(0 To m_numCustomCursors) As String
             ReDim Preserve m_customCursorHandles(0 To m_numCustomCursors) As Long
             m_customCursorNames(m_numCustomCursors) = resCursorName
@@ -840,7 +853,7 @@ Public Sub SetThunderMainIcon()
 
 End Sub
 
-Public Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRef dstDIB As pdDIB, Optional ByVal initDIBForMe As Boolean = True, Optional ByVal renderFrame As Long = 0) As Boolean
+Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRef dstDIB As pdDIB, Optional ByVal initDIBForMe As Boolean = True, Optional ByVal renderFrame As Long = 0) As Boolean
 
     'First, retrieve a handle to the system cursor in question
     Dim hCursor As Long
@@ -850,11 +863,17 @@ Public Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRe
     If initDIBForMe Or (dstDIB Is Nothing) Then
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank GetSystemMetrics(SM_CXCURSOR), GetSystemMetrics(SM_CYCURSOR), 32, 0, 0
-        dstDIB.SetInitialAlphaPremultiplicationState True
+        dstDIB.SetInitialAlphaPremultiplicationState False
     End If
     
-    'Finally, use DrawIconEx to render the cursor into the DIB
-    GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_NORMAL) <> 0)
+    'TODO: make sure Windows theming is active (e.g. not XP or Vista/7 on classic theme).  If theming is *not* active,
+    ' we need to manually render the mask to a temporary 24-bpp DIB, cache the mask as a transparency table, then render
+    ' the cursor as normal and manually mask the alpha bytes.
+    
+    'Finally, use DrawIconEx to render the cursor into the DIB, then premultiply the result
+    GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_COMPAT Or DI_NORMAL) <> 0)
+    dstDIB.SetAlphaPremultiplication True
+    
     #If DEBUGMODE = 1 Then
         If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
     #End If
@@ -863,7 +882,7 @@ End Function
 
 'Some PD objects are clickable *and* draggable; they use a specialized "hand+resize" cursor that we generate on-the-fly
 ' from the current hand and resize system cursors.
-Public Function GetHandAndResizeCursor() As Long
+Private Function GetHandAndResizeCursor() As Long
 
     'Start by retrieving the two cursors in question as DIBs
     Dim handDIB As pdDIB, resizeDIB As pdDIB
@@ -880,13 +899,14 @@ Public Function GetHandAndResizeCursor() As Long
         Dim newDIB As pdDIB
         Set newDIB = New pdDIB
         newDIB.CreateBlank GetSystemMetrics(SM_CXCURSOR) * 2, GetSystemMetrics(SM_CYCURSOR) * 2, 32, 0, 0
-        GDI.BitBltWrapper newDIB.GetDIBDC, 0, 0, handDIB.GetDIBWidth, handDIB.GetDIBHeight, handDIB.GetDIBDC, 0, 0, vbSrcCopy
+        newDIB.SetInitialAlphaPremultiplicationState True
+        handDIB.AlphaBlendToDC newDIB.GetDIBDC, 255, 0, 0, handDIB.GetDIBWidth, handDIB.GetDIBHeight
         
         Dim dibSize As Long, dibPosX As Long, dibPosY As Long
         dibPosX = handDIB.GetDIBWidth * 0.65
         dibPosY = handDIB.GetDIBHeight * 0.16
         dibSize = handDIB.GetDIBWidth * 0.8
-        GDI_Plus.GDIPlus_StretchBlt newDIB, dibPosX, dibPosY, dibSize, dibSize, resizeDIB, 0, 0, resizeDIB.GetDIBWidth, resizeDIB.GetDIBHeight
+        GDI_Plus.GDIPlus_StretchBlt newDIB, dibPosX, dibPosY, dibSize, dibSize, resizeDIB, 0, 0, resizeDIB.GetDIBWidth, resizeDIB.GetDIBHeight, , , , True
         
         'Make a cursor from the composited DIB
         GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)

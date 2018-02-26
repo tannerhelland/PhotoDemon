@@ -146,22 +146,6 @@ Private Const RESIZE_BORDER As Long = 6
 Private WithEvents m_MouseEvents As pdInputMouse
 Attribute m_MouseEvents.VB_VarHelpID = -1
 
-'Panels within this right-side toolbox store a number of extra information bits.  These help us reflow the
-' panel correctly at run-time.
-Private Type PD_Panel
-
-    'Initial height of each panel.  This is (currently) hard-coded for all panels except the layers panel;
-    ' that panel is dynamically sized to fit any remaining vertical space in the toolbox.
-    InitialHeight As Long
-    
-    'Current height of each panel.  This is typically identical to the initial height value, *except* during
-    ' a resize operation.  This value should be used for all layout decisions.
-    CurrentHeight As Long
-
-End Type
-
-Private m_Panels() As PD_Panel
-
 'Number of panels; set automatically at Form_Load
 Private m_NumOfPanels As Long
 
@@ -169,34 +153,31 @@ Private m_NumOfPanels As Long
 ' panel being resized).
 Private m_PanelResizeActive As Long
 
+'Similarly, during a panel resize, we track both the panel's initial size, and its "net change" amount.  We use these
+' to resize the panel "on the fly"
+Private m_NetResizeAmount As Long, m_PanelStartHeight As Long
+
 Private Sub Form_Load()
     
     'All layout decisions on this form are contingent on the number of panels, so set this first as subsequent code
     ' will likely rely on it.
     m_NumOfPanels = ttlPanel.Count
-    ReDim m_Panels(0 To m_NumOfPanels - 1) As PD_Panel
     m_PanelResizeActive = -1
     
     'Initialize panel height values.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
-    '  space remains after other panels are positioned.)
-    Dim pnlDefaultHeight As Long
+    '  space remains after the panels above it are positioned.)
+    Dim pnlDefaultHeight As Long, targetHeight As Long
     pnlDefaultHeight = Interface.FixDPI(100)
     
     Dim i As Long
-    If (Not g_UserPreferences Is Nothing) Then
-        For i = 0 To m_NumOfPanels - 1
-            m_Panels(i).InitialHeight = g_UserPreferences.GetPref_Long("Toolbox", "RightPanelWidth-" & CStr(i + 1), pnlDefaultHeight)
-        Next i
-    Else
-        For i = 0 To m_NumOfPanels - 1
-            m_Panels(i).InitialHeight = pnlDefaultHeight
-        Next i
-    End If
-    
-    'Synchronize all panel heights
     For i = 0 To m_NumOfPanels - 1
-        m_Panels(i).CurrentHeight = m_Panels(i).InitialHeight
+        If (Not g_UserPreferences Is Nothing) Then
+            targetHeight = g_UserPreferences.GetPref_Long("Toolbox", "RightPanelSize" & CStr(i + 1), pnlDefaultHeight)
+        Else
+            targetHeight = pnlDefaultHeight
+        End If
+        ctlContainer(i).SetHeight targetHeight
     Next i
     
     'Prep a mouse handler for the underlying form
@@ -270,7 +251,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If (Not g_UserPreferences Is Nothing) Then
         Dim i As Long
         For i = 0 To m_NumOfPanels - 1
-            g_UserPreferences.SetPref_Long "Toolbox", "RightPanelWidth-" & CStr(i + 1), m_Panels(i).CurrentHeight
+            g_UserPreferences.SetPref_Long "Toolbox", "RightPanelSize" & CStr(i + 1), ctlContainer(i).GetHeight
         Next i
     End If
     
@@ -324,7 +305,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If mouseInResizeTerritory Then
         
         'Change the cursor to a resize cursor
-        m_MouseEvents.SetSystemCursor IDC_SIZEWE
+        m_MouseEvents.SetCursor_System IDC_SIZEWE
         
         If (Button And vbLeftButton <> 0) Then
         
@@ -345,7 +326,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         End If
     
     Else
-        m_MouseEvents.SetSystemCursor IDC_DEFAULT
+        m_MouseEvents.SetCursor_System IDC_DEFAULT
     End If
     
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
@@ -353,13 +334,13 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
     If m_WeAreResponsibleForResize Then
         m_WeAreResponsibleForResize = False
-        m_MouseEvents.SetSystemCursor IDC_DEFAULT
+        m_MouseEvents.SetCursor_System IDC_DEFAULT
     End If
     
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetCursor_System IDC_DEFAULT
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
@@ -377,7 +358,11 @@ Private Sub ttlPanel_MouseDownCustom(Index As Integer, ByVal Button As PDMouseBu
     'Only panels after the first one can be resized (as the first panel sits at the top of the toolbox, and it must
     ' always remain aligned there).  Note also that dragging a titlebar resizes the panel *above* this one
     ' (hence the -1 on the line below).
-    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then m_PanelResizeActive = Index - 1
+    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then
+        m_PanelResizeActive = Index - 1
+        m_PanelStartHeight = ctlContainer(m_PanelResizeActive).GetHeight
+        m_NetResizeAmount = 0
+    End If
     
 End Sub
 
@@ -386,19 +371,16 @@ Private Sub ttlPanel_MouseDrag(Index As Integer, ByVal xChange As Long, ByVal yC
     'The user is click-dragging a titlebar to resize its associated panel.  Calculate a new height and immediately
     ' reflow the interface to match.
     If (m_PanelResizeActive >= 0) Then
-        m_Panels(m_PanelResizeActive).CurrentHeight = m_Panels(m_PanelResizeActive).InitialHeight + yChange
+        m_NetResizeAmount = yChange
         ReflowInterface
     End If
     
 End Sub
 
 Private Sub ttlPanel_MouseUpCustom(Index As Integer, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-
-    'After a drag event, we need to store the new panel height
-    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then
-        m_Panels(m_PanelResizeActive).InitialHeight = m_Panels(m_PanelResizeActive).CurrentHeight
-        m_PanelResizeActive = -1
-    End If
+    
+    'After a drag event, reset the resize tracker
+    If (m_PanelResizeActive >= 0) And ((Button And pdLeftButton) <> 0) Then m_PanelResizeActive = -1
     
 End Sub
 
@@ -437,8 +419,7 @@ Public Sub ResetInterface()
     'Reset all panels to their default heights
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
-        m_Panels(i).InitialHeight = Interface.FixDPI(100)
-        m_Panels(i).CurrentHeight = m_Panels(i).InitialHeight
+        ctlContainer(i).SetHeight Interface.FixDPI(100)
         ttlPanel(i).Value = True
     Next i
     
@@ -451,7 +432,11 @@ End Sub
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
 Private Sub ReflowInterface()
-    
+        
+    'We need to wait for the main form to initialize before reflowing our interface; otherwise, we can't guarantee that
+    ' this form is even the right size!
+    If Not FormMain.ToolbarsAllowedToReflow Then Exit Sub
+        
     'If the form is invisible (due to minimize or something else), just exit now
     Dim formWidth As Long, formHeight As Long
     If (g_WindowManager Is Nothing) Then
@@ -532,9 +517,18 @@ Private Sub ReflowInterface()
                     
                 Else
                 
+                    'If a panel is in the midst of a user-initiated resize, let's calculate its height as the sum of
+                    ' its original height, and however far the user has vertically dragged the mouse.
+                    If (i = m_PanelResizeActive) Then
+                        tmpHeight = m_PanelStartHeight + m_NetResizeAmount
+                    
+                    '...otherwise, try to preserve the container's existing height
+                    Else
+                        tmpHeight = ctlContainer(i).GetHeight
+                    End If
+                    
                     'Because the user has control over panel height, we need to perform some checks to ensure the target
                     ' panel's height is an acceptable value
-                    tmpHeight = m_Panels(i).CurrentHeight
                     If (tmpHeight < MIN_PANEL_SIZE) Then tmpHeight = MIN_PANEL_SIZE
                     If (tmpHeight > MAX_PANEL_SIZE) Then tmpHeight = MAX_PANEL_SIZE
                     pnlRects(i).Height = tmpHeight
@@ -551,8 +545,10 @@ Private Sub ReflowInterface()
             End If
             
             'Add this panel's height to the running offset calculation.
-            yOffset = yOffset + pnlRects(i).Height 'ctlContainer(i).GetHeight
-            
+            yOffset = yOffset + pnlRects(i).Height
+        
+        Else
+            pnlRects(i).Height = 1
         End If
         
         'Calculate the new top position of the next panel in line.
@@ -668,7 +664,13 @@ Private Sub ReflowInterface()
         
         '...same for its attached panel
         With pnlRects(i)
-            ctlContainer(i).SetPositionAndSize .Left, .Top, .Width, .Height
+            If ttlPanel(i).Value Then
+                ctlContainer(i).SetPositionAndSize .Left, .Top, .Width, .Height
+            
+            'If this panel is hidden, don't bother settings its size
+            Else
+                ctlContainer(i).SetPosition .Left, .Top
+            End If
         End With
         
         'If the title bar state is TRUE, open its corresponding panel.

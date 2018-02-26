@@ -317,7 +317,11 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    ucSupport.RequestCursor IDC_HAND
+    If m_Draggable Then
+        ucSupport.RequestCursor_Resource "HAND-AND-RESIZE"
+    Else
+        ucSupport.RequestCursor IDC_HAND
+    End If
     RedrawBackBuffer
 End Sub
 
