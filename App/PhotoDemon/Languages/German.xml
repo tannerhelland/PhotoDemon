@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.62</langversion>
+<langversion>7.2.213</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -127,7 +127,7 @@
 
 <phrase>
 <original>Purging old autosave data</original>
-<translation>Alte Autosave-Daten werden permanent gelöscht</translation>
+<translation>Alte Autosave-Daten werden dauerhaft gelöscht</translation>
 </phrase>
 
 <phrase>
@@ -1591,32 +1591,32 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Adobe Color Swatch</original>
-<translation></translation>
+<translation>Adobe Color Swatch</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation>Adobe-Farbtabelle</translation>
+<translation>Adobe Color Table</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange</original>
-<translation></translation>
+<translation>Adobe Swatch Exchange</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Palette</original>
-<translation>GIMP-Palette</translation>
+<translation>GIMP Palette</translation>
 </phrase>
 
 <phrase>
 <original>PaintShop Pro Palette</original>
-<translation>PaintShop Pro-Palette</translation>
+<translation>PaintShop Pro Palette</translation>
 </phrase>
 
 <phrase>
 <original>Paint.NET Palette</original>
-<translation>Paint.NET-Palette</translation>
+<translation>Paint.NET Palette</translation>
 </phrase>
 
 <phrase>
@@ -3479,7 +3479,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
-<translation></translation>
+<translation>Palette exportiert von PhotoDemon %1</translation>
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4363,7 +4363,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>index %1</original>
-<translation></translation>
+<translation>Index %1</translation>
 </phrase>
 
 <!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4906,7 +4906,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Remove all metadata</original>
-<translation></translation>
+<translation>Alle Metadaten entfernen</translation>
 </phrase>
 
 <phrase>
@@ -5926,7 +5926,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Reset all toolboxes</original>
-<translation></translation>
+<translation>Alle Toolboxen zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -7924,12 +7924,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Attempt to recover</original>
-<translation></translation>
+<translation>Wiederherstellen versuchen</translation>
 </phrase>
 
 <phrase>
 <original>Discard</original>
-<translation></translation>
+<translation>Verwerfen</translation>
 </phrase>
 
 <phrase>
@@ -7944,7 +7944,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden automatisch gespeicherten Bilder automatisch wiederherstellen?</translation>
+<translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
 </phrase>
 
 <phrase>
@@ -7970,22 +7970,22 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Color panel settings</original>
-<translation></translation>
+<translation>Farbpanel-Einstellungen</translation>
 </phrase>
 
 <phrase>
 <original>palette to use</original>
-<translation></translation>
+<translation>Zu verwendende Palette</translation>
 </phrase>
 
 <phrase>
 <original>wheels + history</original>
-<translation></translation>
+<translation>Räder + Verlauf</translation>
 </phrase>
 
 <phrase>
 <original>palette</original>
-<translation></translation>
+<translation>Palette</translation>
 </phrase>
 
 <!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10444,7 +10444,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>palettes in this file</original>
-<translation></translation>
+<translation>Paletten in dieser Datei</translation>
 </phrase>
 
 <phrase>
@@ -10529,7 +10529,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>%1 (%2 colors)</original>
-<translation></translation>
+<translation>%1 (%2 Farben)</translation>
 </phrase>
 
 <phrase>
@@ -13658,7 +13658,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Make layer changes permanent</original>
-<translation>Layer-Änderungen als permanent festlegen</translation>
+<translation>Layer-Änderungen als dauerhaft festlegen</translation>
 </phrase>
 
 <phrase>
@@ -13678,7 +13678,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) als permanent festlegen. Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn das Viewport-Rendering träge ist.</translation>
+<translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) als dauerhaft festlegen. Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn das Viewport-Rendering träge ist.</translation>
 </phrase>
 
 <phrase>
@@ -14194,7 +14194,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die vorhandene Arbeit ist automatisch gespeichert worden.</translation>
+<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die vorhandene Arbeit ist autom. gespeichert worden.</translation>
 </phrase>
 
 <phrase>
@@ -14360,7 +14360,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)</original>
-<translation>(HINWEIS: An dieser Seite vorge- nommene Änderungen werden nur dann automatisch gespeichert, wenn Sie auf den Button "Weiter" oder "Zurück" klicken.)</translation>
+<translation>(HINWEIS: An dieser Seite vorge- nommene Änderungen werden nur dann autom. gespeichert, wenn Sie auf den Button "Weiter" oder "Zurück" klicken.)</translation>
 </phrase>
 
 <phrase>
@@ -14455,7 +14455,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>autosaved on</original>
-<translation>Automatisch gespeichert in</translation>
+<translation>Autom. gespeichert in</translation>
 </phrase>
 
 <!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
@@ -14945,7 +14945,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Wenn Sie nicht wissen, was diese Einstellung steuert, legen Sie es auf "Perzeptiv" fest. Perzeptives Rendering-Intent ist die beste Wahl für die meisten Benutzer.</translation>
+<translation>Wenn Sie nicht wissen, was diese Einstellung steuert, setzen Sie es auf "Perzeptiv". Perzeptives Rendering-Intent ist die beste Wahl für die meisten Benutzer.</translation>
 </phrase>
 
 <phrase>

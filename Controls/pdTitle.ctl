@@ -317,12 +317,17 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If m_Draggable Then
-        ucSupport.RequestCursor_Resource "HAND-AND-RESIZE"
-    Else
+    
+    'Previously, we had support for dual-cursors here if the title bar is "draggable", but persistent issues
+    ' across various Windows versions and with anything but the default cursor theme has led me to disable this.
+    'If m_Draggable Then
+    '    ucSupport.RequestCursor_Resource "HAND-AND-RESIZE"
+    'Else
         ucSupport.RequestCursor IDC_HAND
-    End If
+    'End If
+    
     RedrawBackBuffer
+    
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)

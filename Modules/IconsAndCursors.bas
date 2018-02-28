@@ -882,6 +882,11 @@ End Function
 
 'Some PD objects are clickable *and* draggable; they use a specialized "hand+resize" cursor that we generate on-the-fly
 ' from the current hand and resize system cursors.
+'
+'NOTE!  As of 28 February 2018, this function is considered "disabled".  There are persistent and difficult to predict
+' issues with rendering system cursors into custom containers, particularly when anything but the non-default system
+' cursor theme is in use.  I need to do much more investigation before enabling this function.  (See pdTitleBar's
+' _MouseEnter event for a location where this could potential be useful, if the various kinks are worked out.)
 Private Function GetHandAndResizeCursor() As Long
 
     'Start by retrieving the two cursors in question as DIBs
