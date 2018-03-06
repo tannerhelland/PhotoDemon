@@ -711,19 +711,8 @@ Public Function RequestCustomCursor(ByRef resCursorName As String, Optional ByVa
         
         'PD uses special names for some internal cursors.  These are *not* resources, but they are assembled at run-time.
         If Strings.StringsEqual(resCursorName, "HAND-AND-RESIZE", True) Then
-            
-            'Dynamic assembly of system icons only works on systems where Aero is active.  On XP (or Vista/7 with
-            ' "classic theming" enabled), DrawIconEx fails to render to 32-bpp surfaces.  As such, we'd need to
-            ' manually handle all masking ourselves, and that's a ton of work for UI frills on obsolete OSes.
-            ' As such, check for Aero activation, and simply return a default hand icon as necessary.
-            If OS.IsAeroAvailable() Then
-                tmpHandle = GetHandAndResizeCursor()
-                cacheHandle = True
-            Else
-                tmpHandle = LoadCursor(0&, IDC_HAND)
-                cacheHandle = False
-            End If
-            
+            tmpHandle = GetHandAndResizeCursor()
+            cacheHandle = True
         Else
             tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
             cacheHandle = (tmpHandle <> 0)
@@ -743,49 +732,35 @@ Public Function RequestCustomCursor(ByRef resCursorName As String, Optional ByVa
 
 End Function
 
-'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
-' The calling function is responsible for deleting the DIB once they are done with it.
-Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0, Optional ByVal useCustomColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
-        
-    'As of v7.0, PD now has two places from which to pull resources:
-    ' 1) Its own custom resource handler (which is the preferred location)
-    ' 2) The old, standard .exe resource section (which is deprecated, and in the process of being removed)
-    '
-    'We always attempt (1) before falling back to (2).  The goal for 7.0's release is to remove (2) entirely.
-        
+'Given an image in the .exe's resource section (typically a 32-bpp image), load it to a pdDIB object.
+Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0, Optional ByVal useCustomColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False, Optional ByVal resampleAlgorithm As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
+    
     'Some functions may call this before GDI+ has loaded; exit if that happens
     If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
     
-        'Attempt the default resource manager first
-        Dim intResFound As Boolean: intResFound = False
+        'Make sure PD's resource manager is also active before attempting the load
         If (Not g_Resources Is Nothing) Then
             If g_Resources.AreResourcesAvailable Then
-            
-                'Attempt to load the requested resource.  (This may fail, as I am still in the process of migrating
-                ' all resources to the new format.)
-                intResFound = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders, , useCustomColor, suspendMonochrome, resampleAlgorithm)
-                LoadResourceToDIB = intResFound
-            
+                LoadResourceToDIB = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders, , useCustomColor, suspendMonochrome, resampleAlgorithm)
             End If
         End If
         
         'If we failed to find the requested resource, return a small blank DIB (to work around some old code
-        ' that expects an initialized DIB), report the problem, then exit
-        If (Not intResFound) Then
+        ' that expects an initialized DIB), report the problem, then exit.  (As of v7.0, this failsafe check
+        ' will only be triggered by misspelling a resource name!)
+        If (Not LoadResourceToDIB) Then
         
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
             dstDIB.CreateBlank 16, 16, 32, 0, 0
+            LoadResourceToDIB = False
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
             #End If
             
-            LoadResourceToDIB = False
-            
         End If
         
     Else
-        'Debug.Print "GDI+ unavailable; resources suspended for this session."
         LoadResourceToDIB = False
     End If
     
@@ -853,7 +828,7 @@ Public Sub SetThunderMainIcon()
 
 End Sub
 
-Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRef dstDIB As pdDIB, Optional ByVal initDIBForMe As Boolean = True, Optional ByVal renderFrame As Long = 0) As Boolean
+Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByRef dstDIB As pdDIB, ByRef dstBounds As RectF, Optional ByVal initDIBForMe As Boolean = True, Optional ByVal renderFrame As Long = 0) As Boolean
 
     'First, retrieve a handle to the system cursor in question
     Dim hCursor As Long
@@ -866,17 +841,76 @@ Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByR
         dstDIB.SetInitialAlphaPremultiplicationState False
     End If
     
-    'TODO: make sure Windows theming is active (e.g. not XP or Vista/7 on classic theme).  If theming is *not* active,
-    ' we need to manually render the mask to a temporary 24-bpp DIB, cache the mask as a transparency table, then render
-    ' the cursor as normal and manually mask the alpha bytes.
-    
-    'Finally, use DrawIconEx to render the cursor into the DIB, then premultiply the result
-    GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_COMPAT Or DI_NORMAL) <> 0)
+    'Use DrawIconEx to render the cursor into the 32-bpp DIB, then premultiply the result
+    GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_NORMAL) <> 0)
     dstDIB.SetAlphaPremultiplication True
     
     #If DEBUGMODE = 1 Then
         If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
     #End If
+    
+    'We now want to see if the destination DIB contains valid data.  (We define this as meeting two criteria:
+    ' 1) the image must contain at least some non-transparent bytes, and...
+    ' 2) the image must not be one solid uniformly colored block.  (This is a telltale sign of GDI failing in 32-bpp mode.)
+    ' If the image does not appear to be valid, we will manually assemble it using legacy mask+bmp merging.
+    If DIBs.IsDIBAlphaBinary(dstDIB, False) Or DIBs.IsDIBSolidColor(dstDIB) Then
+        
+        'This DIB does not contain a usable alpha channel, so we need to render it manually in two stages.  Start by creating two
+        ' temporary DIBs - and importantly, make sure the DIBs are *24-bpp*.
+        Dim tmpMask As pdDIB
+        Set tmpMask = New pdDIB
+        tmpMask.CreateBlank GetSystemMetrics(SM_CXCURSOR), GetSystemMetrics(SM_CYCURSOR), 24, 0
+        
+        Dim tmpBMP As pdDIB
+        Set tmpBMP = New pdDIB
+        tmpBMP.CreateBlank GetSystemMetrics(SM_CXCURSOR), GetSystemMetrics(SM_CYCURSOR), 24, 0
+        
+        'Render the cursor mask into the mask DIB, and the cursor image bytes into the BMP DIB
+        GetSysCursorAsDIB = (DrawIconEx(tmpMask.GetDIBDC, 0, 0, hCursor, tmpMask.GetDIBWidth, tmpMask.GetDIBHeight, renderFrame, 0, DI_MASK) <> 0)
+        If GetSysCursorAsDIB Then GetSysCursorAsDIB = (DrawIconEx(tmpBMP.GetDIBDC, 0, 0, hCursor, tmpBMP.GetDIBWidth, tmpBMP.GetDIBHeight, renderFrame, 0, DI_IMAGE) <> 0)
+        
+        If GetSysCursorAsDIB Then
+            
+            'We now want to merge the two 24-bpp DIBs into a usable 32-bpp DIB.
+            
+            'Start by copying a grayscale copy of the DIB mask into a byte array.  We will use this data to produce the
+            ' 32-bpp merged image's alpha channel.
+            Dim transBytes() As Byte
+            If DIBs.GetDIBGrayscaleMap(tmpMask, transBytes, False) Then
+            
+                'Note that the mask will be inverted, by default.  (Black is opaque and white is transparent.)
+                ' We need to reverse it.
+                Filters_ByteArray.InvertByteArray transBytes, tmpMask.GetDIBWidth, tmpMask.GetDIBHeight
+            
+                'Next, copy the image bytes into the destination DIB we created in the first place.
+                tmpBMP.ConvertTo32bpp
+                dstDIB.CreateFromExistingDIB tmpBMP
+                
+                'Finally, merge the mask as a transparency channel, and premultiply the end result
+                DIBs.ApplyTransparencyTable dstDIB, transBytes
+                dstDIB.SetAlphaPremultiplication True, True
+                
+                GetSysCursorAsDIB = True
+            
+            End If
+        
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx, second attempt(s)."
+            #End If
+        End If
+        
+    End If
+    
+    'One way or another, we've hopefully ended up with a usable 32-bpp cursor by now.
+    If GetSysCursorAsDIB Then
+    
+        'The last thing we want to do is determine the usable area of the DIB consumed by the cursor.
+        ' (Some system cursors, such as the default Windows arrow, may occupy less than 1/4 of the default
+        ' system cursor size.)
+        GetSysCursorAsDIB = DIBs.GetRectOfInterest(dstDIB, dstBounds)
+    
+    End If
     
 End Function
 
@@ -890,13 +924,14 @@ End Function
 Private Function GetHandAndResizeCursor() As Long
 
     'Start by retrieving the two cursors in question as DIBs
-    Dim handDIB As pdDIB, resizeDIB As pdDIB
-    GetSysCursorAsDIB IDC_HAND, handDIB
-    GetSysCursorAsDIB IDC_SIZENS, resizeDIB
+    Dim handDIB As pdDIB, handRect As RectF
+    Dim resizeDIB As pdDIB, resizeRect As RectF
+    GetHandAndResizeCursor = GetSysCursorAsDIB(IDC_HAND, handDIB, handRect)
+    If GetHandAndResizeCursor Then GetHandAndResizeCursor = GetSysCursorAsDIB(IDC_SIZENS, resizeDIB, resizeRect)
     
     'We now need to retrieve the cursor hotspot for the current handDIB, because we'll be reusing that for our cursor
     Dim handInfo As ICONINFO
-    GetHandAndResizeCursor = (GetIconInfo(LoadCursor(0&, IDC_HAND), handInfo) <> 0)
+    If GetHandAndResizeCursor Then GetHandAndResizeCursor = (GetIconInfo(LoadCursor(0&, IDC_HAND), handInfo) <> 0)
     If GetHandAndResizeCursor Then
     
         'We now have everything we need to assemble a new icon!  Start by combining the two source DIBs into a new
@@ -905,19 +940,29 @@ Private Function GetHandAndResizeCursor() As Long
         Set newDIB = New pdDIB
         newDIB.CreateBlank GetSystemMetrics(SM_CXCURSOR) * 2, GetSystemMetrics(SM_CYCURSOR) * 2, 32, 0, 0
         newDIB.SetInitialAlphaPremultiplicationState True
-        handDIB.AlphaBlendToDC newDIB.GetDIBDC, 255, 0, 0, handDIB.GetDIBWidth, handDIB.GetDIBHeight
+        GDI.BitBltWrapper newDIB.GetDIBDC, 0, 0, handDIB.GetDIBWidth, handDIB.GetDIBHeight, handDIB.GetDIBDC, 0, 0, vbSrcCopy
         
-        Dim dibSize As Long, dibPosX As Long, dibPosY As Long
-        dibPosX = handDIB.GetDIBWidth * 0.65
-        dibPosY = handDIB.GetDIBHeight * 0.16
-        dibSize = handDIB.GetDIBWidth * 0.8
-        GDI_Plus.GDIPlus_StretchBlt newDIB, dibPosX, dibPosY, dibSize, dibSize, resizeDIB, 0, 0, resizeDIB.GetDIBWidth, resizeDIB.GetDIBHeight, , , , True
+        'The arrow DIB is a little different; because the arrow cursor can be vastly different sizes (depending on the
+        ' current system cursor theme), we want to make sure we only grab the *relevant* portion of the arrow DIB,
+        ' using the boundary rect returned by GetSysCursorAsDIB.
+        Const arrowShrink As Double = 0.25
+        Dim dibWidth As Long, dibHeight As Long, dibPosX As Long, dibPosY As Long
+        dibPosX = handRect.Left + handRect.Width + Interface.FixDPI(3)
+        dibPosY = handRect.Top + handRect.Height * arrowShrink
+        dibHeight = handRect.Height * (1# - arrowShrink)
+        dibWidth = (resizeRect.Width / resizeRect.Height) * dibHeight
+        
+        With resizeRect
+            GDI_Plus.GDIPlus_StretchBlt newDIB, dibPosX, dibPosY, dibWidth, dibHeight, resizeDIB, .Left, .Top, .Width, .Height, , GP_IM_HighQualityBicubic, , True
+        End With
         
         'Make a cursor from the composited DIB
         GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)
     
     Else
-        Debug.Print "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
+        #End If
     End If
 
 End Function

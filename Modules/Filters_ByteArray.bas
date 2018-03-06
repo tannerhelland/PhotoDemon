@@ -1261,3 +1261,24 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
     End If
     
 End Function
+
+'Given a byte array, invert all values (e.g. Value = (255 - Value)).
+Public Function InvertByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = arrayWidth - 1
+    finalY = arrayHeight - 1
+    
+    'Invert the array
+    For x = initX To finalX
+    For y = initY To finalY
+        srcArray(x, y) = 255 - srcArray(x, y)
+    Next y
+    Next x
+    
+    InvertByteArray = True
+    
+End Function

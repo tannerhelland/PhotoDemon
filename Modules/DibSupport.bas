@@ -78,12 +78,10 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
                 If (chkAlpha <> 255) Then
                 
                     If checkForZero Then
-                    
                         If (chkAlpha <> 0) Then
                             notBinary = True
                             Exit For
                         End If
-                        
                     Else
                         notBinary = True
                         Exit For
@@ -96,7 +94,6 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             Next y
     
             srcDIB.UnwrapArrayFromDIB iData
-            
             IsDIBAlphaBinary = Not notBinary
                 
         End If
@@ -1411,5 +1408,137 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
     Else
         Debug.Print "WARNING!  pdDIB.Construct32bppDIBFromByteMap() requires a 32-bpp DIB to operate correctly."
     End If
+    
+End Function
+
+'Determine the "rect of interest" in a 32-bpp image.  The "rect of interest" is the smallest rectangle that contains
+' all non-transparent pixels in the image.  The source image is not modified.
+'
+'RETURNS: TRUE if successful, FALSE if the entire image is transparent.  If the rect in question is passed to any
+' per-pixel routines, you will want to catch the FALSE case as not doing so may lead to OOB errors.
+Public Function GetRectOfInterest(ByRef srcDIB As pdDIB, ByRef dstRectF As RectF) As Boolean
+    
+    'The image will be analyzed in four steps.  Each edge will be analyzed separately, starting with the top.
+    
+    'Point an array at the DIB data
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, xStride As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'The new edges of the image will mark these values for us; at the end of the function, we'll fill the RectF
+    ' with these.
+    Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
+    
+    'When a non-transparent pixel is found, this check value will be set to TRUE; we need this to provide a
+    ' failsafe for fully transparent images.
+    Dim colorFails As Boolean:    colorFails = False
+    
+    'Scan the image, starting at the top-left and moving right
+    For y = 0 To finalY
+    For x = 0 To finalX
+        
+        'If this pixel is transparent, keep scanning.  Otherwise, note that we have found a non-transparent pixel
+        ' and exit the loop.
+        If (srcImageData(x * 4 + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
+        
+    Next x
+        If colorFails Then Exit For
+    Next y
+    
+    'We have now reached one of two conditions:
+    '1) The entire image is transparent
+    '2) The loop progressed part-way through the image and terminated
+    
+    'Check for case (1) and warn the user if it occurred
+    If (Not colorFails) Then
+        srcDIB.UnwrapArrayFromDIB srcImageData
+        GetRectOfInterest = False
+        Exit Function
+    
+    'Next, check for case (2)
+    Else
+        newTop = y
+    End If
+    
+    initY = newTop
+    
+    'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
+    ' the top trim failed - this saves processing time.
+    colorFails = False
+    
+    For x = 0 To finalX
+        xStride = x * 4
+    For y = initY To finalY
+    
+        If (srcImageData(xStride + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
+        
+    Next y
+        If colorFails Then Exit For
+    Next x
+    
+    newLeft = x
+    
+    'Repeat the above steps, but tracking the right edge instead.  Note also that we will only be scanning from wherever
+    ' the top trim failed - this saves processing time.
+    colorFails = False
+    
+    For x = finalX To 0 Step -1
+        xStride = x * 4
+    For y = initY To finalY
+    
+        If (srcImageData(xStride + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
+        
+    Next y
+        If colorFails Then Exit For
+    Next x
+    
+    newRight = x
+    
+    'Finally, repeat the steps above for the bottom of the image.  Note also that we will only be scanning from wherever
+    ' the left and right trims failed - this saves processing time.
+    colorFails = False
+    initX = newLeft
+    finalX = newRight
+    
+    For y = finalY To initY Step -1
+    For x = initX To finalX
+        
+        If (srcImageData(x * 4 + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
+        
+    Next x
+        If colorFails Then Exit For
+    Next y
+    
+    newBottom = y
+    
+    'Safely deallocate our temporary array reference
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    
+    'Populate the destination rect (which uses floating-point values, like all PD rects)
+    With dstRectF
+        .Left = newLeft
+        .Top = newTop
+        .Width = newRight - newLeft + 1
+        .Height = newBottom - newTop + 1
+    End With
+    
+    GetRectOfInterest = True
     
 End Function
