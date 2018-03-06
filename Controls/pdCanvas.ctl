@@ -917,7 +917,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, COLOR_PICKER
             ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
     End Select
     
