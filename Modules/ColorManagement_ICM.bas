@@ -234,7 +234,7 @@ Private m_ProfileCache() As ICCProfileCache
 Private m_PreAlphaManagementRequired As Boolean
 
 Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMENT
-    GetDisplayColorManagementPreference = g_UserPreferences.GetPref_Long("ColorManagement", "DisplayCMMode", DCM_NoManagement)
+    GetDisplayColorManagementPreference = UserPrefs.GetPref_Long("ColorManagement", "DisplayCMMode", DCM_NoManagement)
     
     'Past PD versions used a true/false system to control this setting.  The old setting will be "-1" if the system
     ' color profile is in use.
@@ -242,15 +242,15 @@ Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMEN
 End Function
 
 Public Sub SetDisplayColorManagementPreference(ByVal newPref As DISPLAY_COLOR_MANAGEMENT)
-    g_UserPreferences.SetPref_Long "ColorManagement", "DisplayCMMode", newPref
+    UserPrefs.SetPref_Long "ColorManagement", "DisplayCMMode", newPref
 End Sub
 
 Public Function GetDisplayRenderingIntentPref() As LCMS_RENDERING_INTENT
-    GetDisplayRenderingIntentPref = g_UserPreferences.GetPref_Long("ColorManagement", "DisplayRenderingIntent", INTENT_PERCEPTUAL)
+    GetDisplayRenderingIntentPref = UserPrefs.GetPref_Long("ColorManagement", "DisplayRenderingIntent", INTENT_PERCEPTUAL)
 End Function
 
 Public Sub SetDisplayRenderingIntentPref(Optional ByVal newPref As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL)
-    g_UserPreferences.SetPref_Long "ColorManagement", "DisplayRenderingIntent", newPref
+    UserPrefs.SetPref_Long "ColorManagement", "DisplayRenderingIntent", newPref
 End Sub
 
 Public Function GetSRGBProfileIndex() As Long
@@ -353,7 +353,7 @@ Public Sub CacheDisplayCMMData()
                 
                 'Make it XML safe and look for a matching tag
                 uniqueMonitorID = tmpXML.GetXMLSafeTagName(uniqueMonitorID)
-                monICCPath = g_UserPreferences.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, vbNullString)
+                monICCPath = UserPrefs.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, vbNullString)
                 
                 'If an ICC path exists, attempt to load it
                 If (Len(monICCPath) <> 0) Then
@@ -693,7 +693,7 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         'If an image has been loaded, and it is valid, redraw it now
         If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         End If
         
     End If

@@ -935,7 +935,7 @@ Public Sub ReadUserPreferences()
 
     'Constraining size is settable by the user
     Dim cSize As Long
-    cSize = g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Size", Me.ConstrainingSize)
+    cSize = UserPrefs.GetPref_Long("Core", "Image Tabstrip Size", Me.ConstrainingSize)
     
     If m_VerticalLayout Then
         If ucSupport.GetControlWidth <> cSize Then Me.SetWidth cSize
@@ -946,7 +946,7 @@ Public Sub ReadUserPreferences()
 End Sub
 
 Public Sub WriteUserPreferences()
-    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Size", Me.ConstrainingSize
+    UserPrefs.SetPref_Long "Core", "Image Tabstrip Size", Me.ConstrainingSize
 End Sub
 
 Private Sub GetChangedImageResources()

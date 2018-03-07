@@ -351,8 +351,8 @@ Private Sub VerifyPanelUserPrefs(Optional ByVal forceRefresh As Boolean = False)
     Dim oldRenderMode As PD_ColorPanelMode
     oldRenderMode = m_RenderMode
     
-    m_RenderMode = g_UserPreferences.GetPref_Long("Tools", "ColorPanelStyle", cpm_Wheels)
-    m_PaletteFile = g_UserPreferences.GetPref_String("Tools", "ColorPanelPaletteFile")
+    m_RenderMode = UserPrefs.GetPref_Long("Tools", "ColorPanelStyle", cpm_Wheels)
+    m_PaletteFile = UserPrefs.GetPref_String("Tools", "ColorPanelPaletteFile")
     If (LenB(m_PaletteFile) <> 0) Then palSelector.PaletteFile = m_PaletteFile
     
     'If the palette file is invalid, we'll revert to the standard mode

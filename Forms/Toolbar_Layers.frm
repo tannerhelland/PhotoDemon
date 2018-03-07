@@ -172,8 +172,8 @@ Private Sub Form_Load()
     
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
-        If (Not g_UserPreferences Is Nothing) Then
-            targetHeight = g_UserPreferences.GetPref_Long("Toolbox", "RightPanelSize" & CStr(i + 1), pnlDefaultHeight)
+        If UserPrefs.IsReady Then
+            targetHeight = UserPrefs.GetPref_Long("Toolbox", "RightPanelSize" & CStr(i + 1), pnlDefaultHeight)
         Else
             targetHeight = pnlDefaultHeight
         End If
@@ -248,10 +248,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Some settings are not stored inside the last-used settings file, but in the central PD settings file.
     ' (This is done so that a full "reset" of the core settings file appropriately resets the panel sizes, too.)
-    If (Not g_UserPreferences Is Nothing) Then
+    If UserPrefs.IsReady Then
         Dim i As Long
         For i = 0 To m_NumOfPanels - 1
-            g_UserPreferences.SetPref_Long "Toolbox", "RightPanelSize" & CStr(i + 1), ctlContainer(i).GetHeight
+            UserPrefs.SetPref_Long "Toolbox", "RightPanelSize" & CStr(i + 1), ctlContainer(i).GetHeight
         Next i
     End If
     

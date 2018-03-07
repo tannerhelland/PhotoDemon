@@ -1981,7 +1981,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     profileSize = 0
     GdipGetPropertyItemSize hImage, GP_PT_Orientation, profileSize
     
-    If (profileSize > 0) And g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
+    If (profileSize > 0) And UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
         
         'Orientation tag will only ever be 2 bytes
         Dim tmpPropertyBuffer() As Byte
@@ -2414,7 +2414,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     ' of compression types, we must adjust our code accordingly.
     If (imgFormat = P2_FFE_TIFF) Then
     
-        Select Case g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
+        Select Case UserPrefs.GetPref_Long("File Formats", "TIFF Compression", 0)
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0

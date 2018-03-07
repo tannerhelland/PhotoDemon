@@ -560,15 +560,15 @@ End Sub
 Private Sub Form_Load()
     
     'Retrieve any relevant toolbox display settings from the user's preferences file
-    m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    m_ButtonSize = g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1)
+    m_ShowCategoryLabels = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
+    m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1)
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
     m_MouseEvents.AddInputTracker Me.hWnd
         
     g_PreviousTool = -1
-    g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
+    g_CurrentTool = UserPrefs.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
     
     'Note that we don't actually reflow the interface here; that will happen later, when the form's previous size and
     ' position are loaded from the user's preference file.
@@ -762,7 +762,7 @@ Private Sub Form_Unload(Cancel As Integer)
     If g_ProgramShuttingDown Then
         ReleaseFormTheming Me
         Set m_MouseEvents = Nothing
-        g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
+        UserPrefs.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
@@ -1108,7 +1108,7 @@ Public Sub ToggleToolCategoryLabels(Optional ByVal newSetting As PD_BOOL = PD_BO
     End If
     
     FormMain.MnuWindowToolbox(2).Checked = m_ShowCategoryLabels
-    g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", m_ShowCategoryLabels
+    UserPrefs.SetPref_Boolean "Core", "Show Toolbox Category Labels", m_ShowCategoryLabels
     
     'Reflow the interface
     ReflowToolboxLayout
@@ -1119,7 +1119,7 @@ End Sub
 Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw As Boolean = False)
     
     'Export the updated size to file
-    If (Not suppressRedraw) Then g_UserPreferences.SetPref_Long "Core", "Toolbox Button Size", newSize
+    If (Not suppressRedraw) Then UserPrefs.SetPref_Long "Core", "Toolbox Button Size", newSize
     
     'Update our internal size metrics to match
     m_ButtonSize = newSize
@@ -1249,7 +1249,7 @@ Public Sub UpdateAgainstCurrentTheme()
         cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
     End If
     
-    If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
+    If UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
         cmdFile(FILE_SAVE).AssignTooltip "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.", "Save image in current format"
     Else
         cmdFile(FILE_SAVE).AssignTooltip "You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename.", "Save image in current format"

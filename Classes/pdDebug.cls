@@ -115,7 +115,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Dim i As Long
         
         'First things first: we need to make sure a Debug path exists.  Otherwise, we can't write any of our debug data to file.
-        m_logPath = g_UserPreferences.GetDebugPath
+        m_logPath = UserPrefs.GetDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
         If Files.PathExists(m_logPath, True) Then

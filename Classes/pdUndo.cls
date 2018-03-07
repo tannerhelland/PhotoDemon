@@ -476,7 +476,7 @@ Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     Me.WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     Message "Image successfully restored."
     
@@ -673,7 +673,7 @@ Friend Sub RestoreUndoData()
         End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
     
@@ -974,7 +974,7 @@ Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If (Not parentPDImage Is Nothing) Then
-        GenerateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        GenerateUndoFilename = UserPrefs.GetTempPath & "~cPDU_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
     End If
     
 End Function
@@ -982,7 +982,7 @@ End Function
 'Friendly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
 Friend Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByRef originalSessionID As String) As String
-    GenerateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
+    GenerateUndoFilenameExternal = UserPrefs.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
 End Function
 
 'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
@@ -996,7 +996,7 @@ Private Function GenerateUndoHeaderFilename() As String
         ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
         ' parent reference in advance.
         If (Not parentPDImage Is Nothing) Then
-            m_HeaderFilename = g_UserPreferences.GetTempPath() & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
+            m_HeaderFilename = UserPrefs.GetTempPath() & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
         End If
         
     End If

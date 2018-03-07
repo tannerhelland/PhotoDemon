@@ -52,7 +52,7 @@ Private m_XmlEntries() As AutosaveXML
 Public Function PeekLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = UserPrefs.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     PeekLastShutdownClean = (Not Files.FileExists(safeShutdownPath))
@@ -64,7 +64,7 @@ End Function
 Public Function WasLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = UserPrefs.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     If Files.FileExists(safeShutdownPath) Then
@@ -100,7 +100,7 @@ End Function
 Public Sub NotifyCleanShutdown()
     
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = UserPrefs.GetPresetPath & "SafeShutdown.xml"
     
     Files.FileDeleteIfExists safeShutdownPath
 
@@ -184,7 +184,7 @@ Public Function SaveableImagesPresent() As Long
     Dim chkFile As String
     Dim listOfFiles As pdStringStack
     
-    If Files.RetrieveAllFiles(g_UserPreferences.GetTempPath & "~PDU_StackSummary_*_.pdtmp", listOfFiles, False, False) Then
+    If Files.RetrieveAllFiles(UserPrefs.GetTempPath & "~PDU_StackSummary_*_.pdtmp", listOfFiles, False, False) Then
     
         'Continue checking potential autosave XML entries until all have been analyzed
         Do While listOfFiles.PopString(chkFile)

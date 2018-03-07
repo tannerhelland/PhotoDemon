@@ -106,7 +106,7 @@ Option Explicit
 Private Sub cmdUpdate_Click(Index As Integer)
     
     'Regardless of the user's choice, we always update their notification preference
-    g_UserPreferences.SetPref_Boolean "Updates", "Update Notifications", Not CBool(chkNotify.Value)
+    UserPrefs.SetPref_Boolean "Updates", "Update Notifications", Not CBool(chkNotify.Value)
     
     Select Case Index
     
@@ -136,7 +136,7 @@ End Sub
 Private Sub Form_Load()
     
     'Load the "notify of updates" preference
-    If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
+    If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then
         chkNotify.Value = vbUnchecked
     Else
         chkNotify.Value = vbChecked

@@ -206,7 +206,7 @@ Public Function ContinueLoadingProgram() As Boolean
         perfCheck.MarkEvent "Initialize preferences engine"
     #End If
     
-    Set g_UserPreferences = New pdPreferences
+    UserPrefs.StartPrefEngine
     
     'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
     ' Similarly, if the user has done something stupid, like unzip PD inside a system folder, the preferences manager will
@@ -214,18 +214,13 @@ Public Function ContinueLoadingProgram() As Boolean
     ' can warn the user about this behavior after the program finishes loading.)
     LoadMessage "Initializing all program directories..."
     
-    'This is one of the few functions where a failure will cause PD to exit immediately.
-    ContinueLoadingProgram = g_UserPreferences.InitializePaths()
+    'This is one of the few functions where failures force PD to exit immediately.
+    ContinueLoadingProgram = UserPrefs.InitializePaths()
     If (Not ContinueLoadingProgram) Then Exit Function
     
     'Now, ask the preferences handler to load all other user settings from the preferences file.
-    ' IMPORTANTLY: note that loading all settings puts the preferences engine into "batch mode".  Normally, the preferences engine
-    ' immediately writes all changes out to file, which preserves things like "last-used settings" if the program goes down
-    ' prematurely (due to a crash or other problem).  Batch mode suspends this behavior.  At present, batch mode is turned off
-    ' after FormMain successfully loads, initializes, and displays.
     LoadMessage "Loading all user settings..."
-    
-    g_UserPreferences.LoadUserSettings False
+    UserPrefs.LoadUserSettings
     
     'Mark the Macro recorder as "not recording"
     Macros.SetMacroStatus MacroSTOP
@@ -371,10 +366,10 @@ Public Function ContinueLoadingProgram() As Boolean
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
     Dim wRect As RectL
     With wRect
-        .Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
-        .Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
-        .Right = .Left + g_UserPreferences.GetPref_Long("Core", "Last Window Width", 1)
-        .Bottom = .Top + g_UserPreferences.GetPref_Long("Core", "Last Window Height", 1)
+        .Left = UserPrefs.GetPref_Long("Core", "Last Window Left", 1)
+        .Top = UserPrefs.GetPref_Long("Core", "Last Window Top", 1)
+        .Right = .Left + UserPrefs.GetPref_Long("Core", "Last Window Width", 1)
+        .Bottom = .Top + UserPrefs.GetPref_Long("Core", "Last Window Height", 1)
     End With
     
     'Center the splash screen on whichever monitor the user previously used.
@@ -550,12 +545,12 @@ Public Function ContinueLoadingProgram() As Boolean
     FormMain.MnuWindow(2).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_RightToolbox)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
-    ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
-    ToggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True
+    ToggleImageTabstripVisibility UserPrefs.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
+    ToggleImageTabstripAlignment UserPrefs.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True
     
     'The primary toolbox has some options of its own.  Load them now.
-    FormMain.MnuWindowToolbox(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    toolbar_Toolbox.UpdateButtonSize g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1), True
+    FormMain.MnuWindowToolbox(2).Checked = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
+    toolbar_Toolbox.UpdateButtonSize UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1), True
     
     
     
@@ -772,8 +767,12 @@ Public Sub FinalShutdown()
         #End If
     End If
     
-    'NOTE: in the future, any final user-preference actions could be handled here, as g_UserPreferences is still alive.
-    Set g_UserPreferences = Nothing
+    'Write all preferences out to file and terminate the XML parser
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Writing user preferences to file..."
+    #End If
+    
+    UserPrefs.StopPrefEngine
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."

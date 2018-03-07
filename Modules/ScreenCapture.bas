@@ -113,7 +113,7 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon Screen Capture.tmpdib"
+    tmpFilename = UserPrefs.GetTempPath & "PhotoDemon Screen Capture.tmpdib"
     
     'Ask the DIB to write out its data to file in PD's internal temporary DIB format
     tmpDIB.WriteToFile tmpFilename, PD_CE_Lz4

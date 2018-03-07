@@ -48,7 +48,7 @@ Private m_NumEntries As Long
 Private m_XMLEngine As pdXML
 
 'The file where this class persistently stores its data.  In PD, the path of this file is controlled by the global
-' preferences object (g_UserPreferences)
+' preferences object (UserPrefs)
 Private m_XMLFilename As String
 
 'This class relies on a child class that implements that the IMRUList interface.
@@ -66,7 +66,7 @@ End Sub
 Private Function GetMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If (g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
+    If (UserPrefs.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
         GetMRUCaption = Files.FileGetName(newFile)
     Else
         GetMRUCaption = Files.PathCompact(newFile, maxMRULength)
@@ -154,8 +154,8 @@ Public Sub MRU_LoadFromFile()
         
         'Make sure the file does not contain more entries than are allowed (shouldn't theoretically be possible,
         ' but it doesn't hurt to check).
-        If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
-            m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        If (m_NumEntries > UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
+            m_NumEntries = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
         End If
         
     'No recent file entries were found.  Adjust the Recent Files menu to match
@@ -283,9 +283,9 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
         m_NumEntries = m_NumEntries + 1
         
         'Cap the number of MRU files at a certain value (specified by the user in the Preferences menu)
-        If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
+        If (m_NumEntries > UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
             
-            m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+            m_NumEntries = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
             
             'Also, because we are about to purge the MRU list, the last entry may require cleanup
             m_MRUList.EraseEntryAtPosition Me, m_NumEntries - 1
@@ -321,9 +321,9 @@ End Sub
 Public Sub MRU_NotifyNewMaxLimit()
     
     'Erase any entries above the new limit
-    If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
+    If (m_NumEntries > UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
     
-        m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        m_NumEntries = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
         
         ' Delete the old MRU file now, because we need to truncate it
         Files.FileDeleteIfExists m_XMLFilename

@@ -413,7 +413,7 @@ Private Sub cmdDstFolder_Click()
     folderPath = Files.PathBrowseDialog(Me.hWnd, txtDstFolder.Text)
     If (Len(folderPath) <> 0) Then
         txtDstFolder.Text = Files.PathAddBackslash(folderPath)
-        g_UserPreferences.SetPref_String "BatchProcess", "RepairDstFolder", txtDstFolder.Text
+        UserPrefs.SetPref_String "BatchProcess", "RepairDstFolder", txtDstFolder.Text
     End If
 End Sub
 
@@ -422,7 +422,7 @@ Private Sub cmdSrcFolder_Click()
     folderPath = Files.PathBrowseDialog(Me.hWnd, txtSrcFolder.Text)
     If (Len(folderPath) <> 0) Then
         txtSrcFolder.Text = Files.PathAddBackslash(folderPath)
-        g_UserPreferences.SetPref_String "BatchProcess", "RepairSrcFolder", txtSrcFolder.Text
+        UserPrefs.SetPref_String "BatchProcess", "RepairSrcFolder", txtSrcFolder.Text
     End If
 End Sub
 
@@ -430,16 +430,16 @@ Private Sub Form_Load()
 
     'Load default source/dest folders.  If previously saved paths are not found, default to the user's current
     ' open/save image paths.
-    If g_UserPreferences.DoesValueExist("BatchProcess", "RepairSrcFolder") Then
-        txtSrcFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairSrcFolder", g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString))
+    If UserPrefs.DoesValueExist("BatchProcess", "RepairSrcFolder") Then
+        txtSrcFolder.Text = UserPrefs.GetPref_String("BatchProcess", "RepairSrcFolder", UserPrefs.GetPref_String("Paths", "Open Image", vbNullString))
     Else
-        txtSrcFolder.Text = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
+        txtSrcFolder.Text = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
     End If
     
-    If g_UserPreferences.DoesValueExist("BatchProcess", "RepairDstFolder") Then
-        txtDstFolder.Text = g_UserPreferences.GetPref_String("BatchProcess", "RepairDstFolder", g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString))
+    If UserPrefs.DoesValueExist("BatchProcess", "RepairDstFolder") Then
+        txtDstFolder.Text = UserPrefs.GetPref_String("BatchProcess", "RepairDstFolder", UserPrefs.GetPref_String("Paths", "Save Image", vbNullString))
     Else
-        txtDstFolder.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
+        txtDstFolder.Text = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     End If
     
     Interface.ApplyThemeAndTranslations Me

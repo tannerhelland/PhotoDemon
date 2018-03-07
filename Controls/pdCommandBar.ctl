@@ -827,7 +827,7 @@ Private Sub UserControl_Show()
         If (LenB(m_userSuppliedToolName) <> 0) Then m_parentToolName = m_parentToolName & "_" & m_userSuppliedToolName
         
         'PD stores all preset files in a set preset folder.  This folder is not user-editable.
-        m_parentToolPath = g_UserPreferences.GetPresetPath & m_parentToolName & ".xml"
+        m_parentToolPath = UserPrefs.GetPresetPath & m_parentToolName & ".xml"
         
         'If our parent tool has an XML settings file, load it now.  (If one doesn't exist, the preset engine will create
         ' a default one for us.)

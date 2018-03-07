@@ -1224,7 +1224,7 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     Dim sFile As String
     sFile = srcFilename
     
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, UserPrefs.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
     
         'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
         ' as they require.
@@ -1232,7 +1232,7 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
         
         'The dialog was successful.  Return the path, and save this path for future usage.
         If DisplayPaletteLoadDialog Then
-            g_UserPreferences.SetPalettePath sFile
+            UserPrefs.SetPalettePath sFile
             dstFilename = sFile
         Else
             dstFilename = vbNullString

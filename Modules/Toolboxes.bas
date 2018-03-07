@@ -69,14 +69,14 @@ Public Sub LoadToolboxData()
     Dim i As PD_Toolbox, newSize As Long
     For i = [_First] To [_Last]
         With m_Toolboxes(i)
-            .IsVisiblePreference = g_UserPreferences.GetPref_Boolean("Toolbox", GetToolboxName(i) & "Visible", True)
+            .IsVisiblePreference = UserPrefs.GetPref_Boolean("Toolbox", GetToolboxName(i) & "Visible", True)
             .IsVisibleNow = .IsVisiblePreference
             
             'Retrieve the last-set size for the toolbox, then adjust it to compensate for any per-session DPI changes
-            newSize = g_UserPreferences.GetPref_Long("Toolbox", GetToolboxName(i) & "Size", .DefaultSize)
+            newSize = UserPrefs.GetPref_Long("Toolbox", GetToolboxName(i) & "Size", .DefaultSize)
             
             Dim lastDPI As Single
-            lastDPI = g_UserPreferences.GetPref_Float("Toolbox", "LastSessionDPI", 1#)
+            lastDPI = UserPrefs.GetPref_Float("Toolbox", "LastSessionDPI", 1#)
             If (lastDPI < 1#) Then lastDPI = 1#
             If (lastDPI > 4#) Then lastDPI = 4#
             newSize = newSize * (Interface.GetSystemDPI() / lastDPI)
@@ -99,12 +99,12 @@ Public Sub SaveToolboxData()
         Dim i As PD_Toolbox
         For i = [_First] To [_Last]
             With m_Toolboxes(i)
-                g_UserPreferences.SetPref_Boolean "Toolbox", GetToolboxName(i) & "Visible", .IsVisiblePreference
-                g_UserPreferences.SetPref_Long "Toolbox", GetToolboxName(i) & "Size", .ConstrainingSize
+                UserPrefs.SetPref_Boolean "Toolbox", GetToolboxName(i) & "Visible", .IsVisiblePreference
+                UserPrefs.SetPref_Long "Toolbox", GetToolboxName(i) & "Size", .ConstrainingSize
             End With
         Next i
         
-        g_UserPreferences.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
+        UserPrefs.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
         
     End If
 

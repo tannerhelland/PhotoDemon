@@ -172,9 +172,9 @@ Friend Function GetMonochromeIconSetting() As Boolean
 End Function
 
 Friend Sub SetMonochromeIconSetting(ByVal newSetting As Boolean)
-    If (Not g_UserPreferences Is Nothing) Then
+    If UserPrefs.IsReady Then
         m_MonochromeIcons = newSetting
-        g_UserPreferences.SetPref_Boolean "Themes", "MonochromeIcons", m_MonochromeIcons
+        UserPrefs.SetPref_Boolean "Themes", "MonochromeIcons", m_MonochromeIcons
     End If
 End Sub
 
@@ -189,10 +189,10 @@ Friend Sub LoadDefaultPDTheme()
     Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
     If MainModule.IsProgramRunning() Then
     
-        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Dark")
+        themeName = UserPrefs.GetPref_String("Themes", "CurrentTheme", "Dark")
         themeFilename = "Default_" & themeName & ".xml"
         
-        accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
+        accentName = UserPrefs.GetPref_String("Themes", "CurrentAccent", "Blue")
         accentFilename = "Colors_" & accentName & ".xml"
         
         'Note that the accent filename is not automatically mapped to an internal "accent value";
@@ -217,7 +217,7 @@ Friend Sub LoadDefaultPDTheme()
             m_ThemeAccent = PDTA_Undefined
         End If
         
-        m_MonochromeIcons = g_UserPreferences.GetPref_Boolean("Themes", "MonochromeIcons", False)
+        m_MonochromeIcons = UserPrefs.GetPref_Boolean("Themes", "MonochromeIcons", False)
         
     Else
         'FYI: inside the designer, PD will silently fall back on hard-coded IDE colors
@@ -314,7 +314,7 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
     DoesThemeFileExist = False
     
     Dim themeFilename As String
-    themeFilename = g_UserPreferences.GetThemePath(False) & themeFile
+    themeFilename = UserPrefs.GetThemePath(False) & themeFile
     
     'pdFSO is used for all file interactions
     Dim cFile As pdFSO
@@ -331,17 +331,17 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
-        If Files.FileExists(g_UserPreferences.GetProgramPath & themeFile) Then
+        If Files.FileExists(UserPrefs.GetProgramPath & themeFile) Then
             
             pdDebug.LogAction "UPDATE!  Theme file found in the base PD folder.  Attempting to relocate..."
             
             'Move the file to the proper folder
-            If cFile.FileCopyW(g_UserPreferences.GetProgramPath & themeFile, g_UserPreferences.GetThemePath & themeFile) Then
+            If cFile.FileCopyW(UserPrefs.GetProgramPath & themeFile, UserPrefs.GetThemePath & themeFile) Then
                 
                 pdDebug.LogAction "UPDATE!  Theme file relocated successfully."
                 
                 'Kill the old file instance
-                Files.FileDeleteIfExists g_UserPreferences.GetProgramPath & themeFile
+                Files.FileDeleteIfExists UserPrefs.GetProgramPath & themeFile
                 
                 'Return success!
                 DoesThemeFileExist = True
@@ -400,12 +400,10 @@ Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
     m_ThemeClass = themeClass
     m_ThemeAccent = accentColor
     
-    If (Not g_UserPreferences Is Nothing) Then
-        If (Len(themeName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentTheme", themeName
-        If (Len(accentName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentAccent", accentName
-        SetNewTheme = True
-    Else
-        SetNewTheme = False
+    SetNewTheme = UserPrefs.IsReady
+    If SetNewTheme Then
+        If (LenB(themeName) <> 0) Then UserPrefs.WritePreference "Themes", "CurrentTheme", themeName
+        If (LenB(accentName) <> 0) Then UserPrefs.WritePreference "Themes", "CurrentAccent", accentName
     End If
         
 End Function
@@ -519,7 +517,7 @@ End Function
 Private Function LoadThemeWithAllFallbacks(ByVal themeFilename As String, ByRef dstXML As pdXML) As Boolean
 
     Dim fullThemePath As String
-    fullThemePath = g_UserPreferences.GetThemePath & themeFilename
+    fullThemePath = UserPrefs.GetThemePath & themeFilename
     
     Dim loadSuccess As Boolean
     
@@ -565,7 +563,7 @@ End Function
 Private Function LoadAccentWithAllFallbacks(ByVal accentFilename As String, ByRef dstXML As pdXML) As Boolean
 
     Dim fullAccentPath As String
-    fullAccentPath = g_UserPreferences.GetThemePath & accentFilename
+    fullAccentPath = UserPrefs.GetThemePath & accentFilename
         
     Dim loadSuccess As Boolean
     
@@ -837,12 +835,12 @@ Friend Sub BuildThemePackage()
     
     'Prep a new package
     Dim dstFilename As String
-    dstFilename = g_UserPreferences.GetThemePath(False) & "Core_Themes.pdrc"
+    dstFilename = UserPrefs.GetThemePath(False) & "Core_Themes.pdrc"
     tmpPackage.PrepareNewPackage , PD_RES_IDENTIFIER, , PD_SM_MemoryBacked
     
     'Add each file in turn
     Dim listOfFiles As pdStringStack
-    Files.RetrieveAllFiles g_UserPreferences.GetThemePath(False), listOfFiles, False, False, "xml"
+    Files.RetrieveAllFiles UserPrefs.GetThemePath(False), listOfFiles, False, False, "xml"
     
     Dim tmpFilename As String
     Do While listOfFiles.PopString(tmpFilename)

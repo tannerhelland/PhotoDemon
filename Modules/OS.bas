@@ -1065,8 +1065,8 @@ Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_"
     
     'Use the current program-level temp folder as the destination for this file.  (And because we're thorough,
     ' use the system temp folder as a failsafe.)
-    If (Not g_UserPreferences Is Nothing) Then
-        tmpFolder = g_UserPreferences.GetTempPath()
+    If UserPrefs.IsReady Then
+        tmpFolder = UserPrefs.GetTempPath()
     Else
         
         tmpFolder = String$(512, 0)
@@ -1077,7 +1077,7 @@ Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_"
     
     End If
     
-    If (Len(tmpFolder) <> 0) Then
+    If (LenB(tmpFolder) <> 0) Then
     
         'Ensure a trailing backslash on the destination folder
         tmpFolder = Files.PathAddBackslash(tmpFolder)

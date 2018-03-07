@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.327</langversion>
+<langversion>6.7.328</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -3507,12 +3507,6 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -15193,6 +15187,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

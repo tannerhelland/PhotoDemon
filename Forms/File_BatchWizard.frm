@@ -866,7 +866,7 @@ End Sub
 
 Private Sub cmdAddFolders_Click()
     
-    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
+    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
     
     Dim folderPath As String
     folderPath = Files.PathBrowseDialog(Me.hWnd, m_LastBatchFolder)
@@ -992,7 +992,7 @@ Private Sub cmdLoadList_Click()
     
     'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Batch Process", "List Folder", vbNullString)
     
     Dim cdFilter As String
     cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
@@ -1009,7 +1009,7 @@ Private Sub cmdLoadList_Click()
         'Save this new directory as the default path for future usage
         Dim listPath As String
         listPath = Files.FileGetPath(sFile)
-        g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
+        UserPrefs.SetPref_String "Batch Process", "List Folder", listPath
         
         'Load the file using pdFSO, which is Unicode-compatible
         Dim fileContents As String
@@ -1306,7 +1306,7 @@ Private Function SaveCurrentBatchList() As Boolean
 
     'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Batch Process", "List Folder", vbNullString)
     
     Dim cdFilter As String
     cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
@@ -1323,7 +1323,7 @@ Private Function SaveCurrentBatchList() As Boolean
         'Save this new directory as the default path for future usage
         Dim listPath As String
         listPath = Files.FileGetPath(sFile)
-        g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
+        UserPrefs.SetPref_String "Batch Process", "List Folder", listPath
         
         'Assemble the output string, which basically just contains the currently selected list of files.
         Dim outputText As pdString 'As String
@@ -1419,7 +1419,7 @@ Private Sub cmdSelectMacro_Click()
     
     'Get the last macro-related path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Macro", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Macro", vbNullString)
     
     Dim cdFilter As String
     cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
@@ -1436,7 +1436,7 @@ Private Sub cmdSelectMacro_Click()
         
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = Files.FileGetPath(sFile)
-        g_UserPreferences.SetPref_String "Paths", "Macro", tempPathString
+        UserPrefs.SetPref_String "Paths", "Macro", tempPathString
         
         'Display the selected macro location in the relevant text box
         txtMacro.Text = sFile
@@ -1457,7 +1457,7 @@ Private Sub cmdSelectOutputPath_Click()
         txtOutputPath.Text = Files.PathAddBackslash(tString)
     
         'Save this new directory as the default path for future usage
-        g_UserPreferences.SetPref_String "Batch Process", "Output Folder", tString
+        UserPrefs.SetPref_String "Batch Process", "Output Folder", tString
     End If
     
 End Sub
@@ -1508,8 +1508,8 @@ Private Sub Form_Load()
     
     'Build default paths from preference file values
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", vbNullString)
-    If (LenB(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Batch Process", "Output Folder", vbNullString)
+    If (LenB(tempPathString) <> 0) And (Files.PathExists(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True

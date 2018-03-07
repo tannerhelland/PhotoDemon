@@ -612,28 +612,34 @@ End Function
 
 'Write the current XML contents out to file.  By default, the output will have tabs added to it to make the output "pretty".
 ' This behavior can be avoided by setting the suppressIndentation param to TRUE.
-Friend Function WriteXMLToFile(ByVal dstFile As String, Optional ByVal suppressIndentation As Boolean = False)
+Friend Function WriteXMLToFile(ByRef dstFile As String, Optional ByVal suppressIndentation As Boolean = False) As Boolean
     
     On Error GoTo CouldNotWriteXML
     
-    'Make the XML contents pretty by providing some basic indentation
-    Dim fileContents As String
-    fileContents = m_xmlContents
+    If (LenB(m_xmlContents) <> 0) Then
     
-    If (Not suppressIndentation) Then ApplyIndentation fileContents
-    
-    'If the file contains an old-style windows-1252 encoding declaration, replace it with UTF-8
-    If (InStr(1, fileContents, "windows-1252", vbBinaryCompare) <> 0) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
-    
-    'Allow pdFSO to handle the file write for us
-    WriteXMLToFile = Files.FileSaveAsText(fileContents, dstFile)
+        'Make the XML contents pretty by providing some basic indentation
+        Dim fileContents As String
+        fileContents = m_xmlContents
+        
+        If (Not suppressIndentation) Then ApplyIndentation fileContents
+        
+        'If the file contains an old-style windows-1252 encoding declaration, replace it with UTF-8
+        If (InStr(1, fileContents, "windows-1252", vbBinaryCompare) <> 0) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
+        
+        'Allow pdFSO to handle the file write for us
+        WriteXMLToFile = Files.FileSaveAsText(fileContents, dstFile)
+        
+    Else
+        WriteXMLToFile = False
+    End If
     
     Exit Function
     
 CouldNotWriteXML:
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING! A request to pdXML.writeXMLToFile failed for unknown reasons (#" & Err.Number & ").  Please investigate."
+        pdDebug.LogAction "WARNING! A request to pdXML.WriteXMLToFile failed for unknown reasons (#" & Err.Number & ", " & Err.Description & ") on file (" & dstFile & ")."
     #End If
     WriteXMLToFile = False
 

@@ -746,7 +746,7 @@ Private Sub Class_Initialize()
     'Prepare the XML handler, and retrieve window location data from file (if it exists)
     Set m_XML = New pdXML
     m_XML.SetTextCompareMode vbBinaryCompare
-    m_WindowPresetPath = g_UserPreferences.GetPresetPath & "Program_WindowLocations.xml"
+    m_WindowPresetPath = UserPrefs.GetPresetPath & "Program_WindowLocations.xml"
     LoadAllWindowLocations
     
 End Sub

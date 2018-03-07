@@ -199,7 +199,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     If InStr(1, tmpFilename, "%20", vbBinaryCompare) Then tmpFilename = Replace$(tmpFilename, "%20", " ")
     
     Dim tmpFile As String
-    tmpFile = g_UserPreferences.GetTempPath & tmpFilename
+    tmpFile = UserPrefs.GetTempPath & tmpFilename
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."

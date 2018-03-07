@@ -614,7 +614,7 @@ Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     'If a selection is already active, change its type to match the current option, then redraw it
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_WandSearchMode, buttonIndex
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
     
 End Sub
@@ -624,7 +624,7 @@ Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
     'If a selection is already active, change its type to match the current option, then redraw it
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_WandSampleMerged, buttonIndex
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 
 End Sub
@@ -637,7 +637,7 @@ Private Sub cboSelArea_Click(Index As Integer)
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_Area, cboSelArea(Index).ListIndex
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
     
 End Sub
@@ -651,7 +651,7 @@ Private Sub cboSelRender_Click()
     
     'Redraw the viewport
     Selections.NotifySelectionRenderChange PDSR_RenderMode, cboSelRender.ListIndex
-    If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -665,7 +665,7 @@ Private Sub cboSelSmoothing_Click()
     If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_Smoothing, cboSelSmoothing.ListIndex
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_FeatheringRadius, sltSelectionFeathering.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 
 End Sub
@@ -682,7 +682,7 @@ Private Sub cboWandCompare_Click()
     'If a selection is already active, change its type to match the current option, then redraw it
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_WandCompareMethod, cboWandCompare.ListIndex
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
     
 End Sub
@@ -691,7 +691,7 @@ Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
     Selections.NotifySelectionRenderChange PDSR_HighlightColor, csSelectionHighlight.Color
-    If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -786,7 +786,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     Next i
     
     'Pull certain universal selection settings from PD's main preferences file
-    If (Not g_UserPreferences Is Nothing) Then
+    If UserPrefs.IsReady Then
         cboSelRender.ListIndex = Selections.GetSelectionRenderMode()
         csSelectionHighlight.Color = Selections.GetSelectionRenderColor()
     End If
@@ -796,35 +796,35 @@ End Sub
 Private Sub sltCornerRounding_Change()
     If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
     If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_PolygonCurvature, sltPolygonCurvature.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change(Index As Integer)
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
     If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_FeatheringRadius, sltSelectionFeathering.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
     If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_LineWidth, sltSelectionLineWidth.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
@@ -845,14 +845,14 @@ End Sub
 Private Sub sltSmoothStroke_Change()
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_SmoothStroke, sltSmoothStroke.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).MainSelection.SetSelectionProperty sp_WandTolerance, sltWandTolerance.Value
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     End If
 End Sub
 
@@ -867,7 +867,7 @@ Private Sub UpdateSelectionsValuesViaText()
     If SelectionsAllowed(True) Then
         If (Not pdImages(g_CurrentImage).MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
             pdImages(g_CurrentImage).MainSelection.UpdateViaTextBox
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         End If
     End If
 End Sub

@@ -134,10 +134,10 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         'Save this macro's directory as the default macro path
-        g_UserPreferences.SetMacroPath sFile
+        UserPrefs.SetMacroPath sFile
         
         'Create a pdXML class, which will help us assemble the macro file
         Dim xmlEngine As pdXML
@@ -253,12 +253,12 @@ Public Sub PlayMacro()
         
     'If we get a path, load that file
     Dim sFile As String
-    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         Message "Loading macro data..."
         
         'Save this macro's folder as the default macro path
-        g_UserPreferences.SetMacroPath sFile
+        UserPrefs.SetMacroPath sFile
                 
         Macros.PlayMacroFromFile sFile
         
@@ -375,7 +375,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroSTOP
     
     'Some processor requests may not manually update the screen; as such, perform a manual update now
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Our work here is complete!
     Message "Macro complete!"

@@ -966,7 +966,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
         .Height = Me.Height
     End With
     
-    Me.GetCompositedRect m_ImageThumbnail, dstRectF, srcRectF, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
+    Me.GetCompositedRect m_ImageThumbnail, dstRectF, srcRectF, UserPrefs.GetThumbnailInterpolationPref(), , CLC_Thumbnail
     m_ImageThumbnail.SetInitialAlphaPremultiplicationState True
     
     'Before exiting, apply color-management.  This spares callers from needing to do it (and when wouldn't we want
@@ -1024,14 +1024,14 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         End If
         
         'Paint the thumbnail into place
-        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     
     'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
     ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
     Else
         Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
-        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     End If
     
     dstThumbnailDIB.SetInitialAlphaPremultiplicationState True

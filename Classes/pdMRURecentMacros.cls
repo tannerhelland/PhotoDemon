@@ -48,7 +48,7 @@ End Function
 
 'The location of the XML file is hard-coded against the current preset path
 Private Property Get IMRUList_XMLFileName() As String
-    IMRUList_XMLFileName = g_UserPreferences.GetPresetPath & "Program_RecentMacros.xml"
+    IMRUList_XMLFileName = UserPrefs.GetPresetPath & "Program_RecentMacros.xml"
 End Property
 
 'When the recent macro list is cleared, we can unload the entire mnuRecentMacros collection (except index 0, which is simply hidden)
@@ -75,7 +75,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
     'Redraw the MRU menu based on the updated list
     If (Not FormMain.MnuRecentMacros(0).Enabled) Then
         FormMain.MnuRecentMacros(0).Enabled = True
-        FormMain.mnuClearRecentMacros.Enabled = True
+        FormMain.MnuClearRecentMacros.Enabled = True
     End If
     
     'Ask the manager object how many entries it currently maintains
@@ -119,7 +119,7 @@ End Sub
 Private Sub IMRUList_AfterListLoad(ByRef mruManager As pdMRUManager)
     
     'Make sure the "Clear MRU" option is visible and enabled
-    FormMain.mnuClearRecentMacros.Enabled = (mruManager.MRU_ReturnCount > 0)
+    FormMain.MnuClearRecentMacros.Enabled = (mruManager.MRU_ReturnCount > 0)
     
     'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
     IconsAndCursors.ResetMenuIcons
@@ -130,7 +130,7 @@ End Sub
 Private Sub IMRUList_OnListIsEmpty()
 
     FormMain.MnuRecentMacros(0).Enabled = False
-    FormMain.mnuClearRecentMacros.Enabled = False
+    FormMain.MnuClearRecentMacros.Enabled = False
     
     'All icons in this menu need to be manually reset after the list is cleared; the ResetMenuIcons function
     ' will also call the Menus.UpdateSpecialMenu_RecentFiles() function to set all captions properly.

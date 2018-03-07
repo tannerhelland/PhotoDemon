@@ -503,7 +503,7 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.GetPresetPath & "Gradient_Selector.xml"
+    m_XMLFilename = UserPrefs.GetPresetPath & "Gradient_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'LoadRecentGradientList

@@ -401,7 +401,7 @@ Private Sub StopVerificationMode()
             
             'Write the completed technical report out to a temp file
             Dim tmpFilename As String
-            tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & Files.FileGetName(m_technicalReportSrcImage, True) & ".html"
+            tmpFilename = UserPrefs.GetTempPath & "MetadataReport_" & Files.FileGetName(m_technicalReportSrcImage, True) & ".html"
             Files.FileSaveAsText m_VerificationString, tmpFilename
             
             'Shell the default HTML viewer for the user
@@ -565,12 +565,12 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     End If
     
     'If the user wants us to estimate JPEG quality, do so now
-    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then
+    If UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then
         cmdParams = cmdParams & "-api" & vbCrLf & "RequestTags=JPEGQualityEstimate,JPEGDigest" & vbCrLf
     End If
     
     'If the user wants us to extract binary data, do so now
-    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then
+    If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then
         cmdParams = cmdParams & "-b" & vbCrLf
     End If
     
@@ -581,13 +581,13 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
         cmdParams = cmdParams & "-U" & vbCrLf
     'If this file is *not* an SVG candidate, rely on the user's setting to control unknown tag behavior.
     Else
-        If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
+        If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
             cmdParams = cmdParams & "-u" & vbCrLf
         End If
     End If
     
     'If the user wants us to expose duplicate tags, do so now.  (Default behavior is to suppress duplicates.)
-    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then
+    If UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then
         cmdParams = cmdParams & "--a" & vbCrLf
     End If
     
@@ -1086,7 +1086,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' If the user has NOT requested anonymization, list PD as the processing software.  (Note that this behavior can also be
     ' disabled from the Preferences dialog.)
     If (Not forciblyAnonymize) Then
-        If g_UserPreferences.GetPref_Boolean("Saving", "MetadataListPD", True) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
+        If UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
     End If
     
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
@@ -1160,7 +1160,7 @@ End Function
 Public Function StartExifTool() As Boolean
     
     'Start by creating a temp folder for ExifTool-specific data, as necessary
-    m_ExifToolDataFolder = g_UserPreferences.GetDataPath() & "PluginData\"
+    m_ExifToolDataFolder = UserPrefs.GetDataPath() & "PluginData\"
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
     Files.PathCreate m_ExifToolDataFolder

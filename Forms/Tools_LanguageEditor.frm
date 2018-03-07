@@ -932,11 +932,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                                 
-                If LoadAllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
+                If LoadAllPhrasesFromFile(UserPrefs.GetLanguagePath & "Master\MASTER.xml") Then
                     
                     'Populate the current language's metadata container with some default values
                     With m_curLanguage
-                        .FileName = g_UserPreferences.GetLanguagePath(True) & "new language.xml"
+                        .FileName = UserPrefs.GetLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .LangName = g_Language.TranslateMessage("New Language")
                         .LangStatus = g_Language.TranslateMessage("incomplete")
@@ -959,7 +959,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
                 m_curLanguage = m_ListOfLanguages(GetLanguageIndexFromListIndex())
-                m_curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & Files.FileGetName(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
+                m_curLanguage.FileName = UserPrefs.GetLanguagePath(True) & Files.FileGetName(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
                 If LoadAllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
@@ -1350,7 +1350,7 @@ Private Sub PerformAutosave()
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = g_UserPreferences.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str(m_curBackupFile) & ".tmpxml"
+    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str(m_curBackupFile) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
     m_XMLEngine.WriteXMLToFile backupFile, True
@@ -1369,7 +1369,7 @@ Private Sub PopulateAvailableLanguages()
     ' user to load these if available.
     Dim listOfTmpXML As pdStringStack
     Set listOfTmpXML = New pdStringStack
-    If Files.RetrieveAllFiles(g_UserPreferences.GetLanguagePath(True), listOfTmpXML, False, True, "tmpxml") Then
+    If Files.RetrieveAllFiles(UserPrefs.GetLanguagePath(True), listOfTmpXML, False, True, "tmpxml") Then
         
         Dim chkFile As String
         Do While listOfTmpXML.PopString(chkFile)
@@ -1377,7 +1377,7 @@ Private Sub PopulateAvailableLanguages()
             'Use PD's XML engine to load the file
             Dim tmpm_xmlEngine As pdXML
             Set tmpm_xmlEngine = New pdXML
-            If tmpm_xmlEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
+            If tmpm_xmlEngine.LoadXMLFile(UserPrefs.GetLanguagePath(True) & chkFile) Then
             
                 'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
                 If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
@@ -1395,7 +1395,7 @@ Private Sub PopulateAvailableLanguages()
                         .Author = tmpm_xmlEngine.GetUniqueTag_String("author")
                         
                         'Finally, add some internal metadata
-                        .FileName = g_UserPreferences.GetLanguagePath(True) & chkFile
+                        .FileName = UserPrefs.GetLanguagePath(True) & chkFile
                         .LangType = "Autosave"
                         
                     End With

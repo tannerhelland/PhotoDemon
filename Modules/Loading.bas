@@ -394,7 +394,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             End If
             
             'With all pages/frames/icons successfully loaded, redraw the main viewport
-            ViewportEngine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
+            ViewportEngine.Stage1_InitializeBuffer targetImage, FormMain.MainCanvas(0), VSR_ResetToZero
             
         'Add a flag to this pdImage object noting that the multipage loading path was *not* utilized.
         Else
@@ -772,7 +772,7 @@ Public Sub DuplicateCurrentImage()
     
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
-    tmpDuplicationFile = g_UserPreferences.GetTempPath & "PDDuplicate.pdi"
+    tmpDuplicationFile = UserPrefs.GetTempPath & "PDDuplicate.pdi"
     SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, PD_CE_Lz4, PD_CE_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file

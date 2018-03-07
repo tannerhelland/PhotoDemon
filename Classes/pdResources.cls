@@ -70,13 +70,13 @@ Friend Function LoadInitialResourceCollection() As Boolean
     
         Dim srcResFile As String
         srcResFile = "Core_Icons.pdrc"
-        loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+        loadSuccess = LoadResourceFile(UserPrefs.GetThemePath & srcResFile)
             
         'If the theme file doesn't exist, attempt to recover it.  (This may be necessary if the user used a dumb program
         ' like WinZip to unzip their PD download.)
         If (Not loadSuccess) Then
             AttemptResourceRecovery srcResFile
-            loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+            loadSuccess = LoadResourceFile(UserPrefs.GetThemePath & srcResFile)
         End If
         
     End If
@@ -94,7 +94,7 @@ End Function
 Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolean
 
     Dim resourceFilename As String
-    resourceFilename = g_UserPreferences.GetThemePath(False) & resourceFile
+    resourceFilename = UserPrefs.GetThemePath(False) & resourceFile
     
     'pdFSO is used for all file interactions
     Dim cFile As pdFSO
@@ -111,17 +111,17 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
-        If Files.FileExists(g_UserPreferences.GetProgramPath & resourceFile) Then
+        If Files.FileExists(UserPrefs.GetProgramPath & resourceFile) Then
             
             RaiseResourceError "Resource file found in the base PD folder.  Attempting to relocate...", True
             
             'Move the file to the proper folder
-            If cFile.FileCopyW(g_UserPreferences.GetProgramPath & resourceFile, g_UserPreferences.GetThemePath & resourceFile) Then
+            If cFile.FileCopyW(UserPrefs.GetProgramPath & resourceFile, UserPrefs.GetThemePath & resourceFile) Then
                 
                 RaiseResourceError "Resource file relocated successfully.", True
                 
                 'Kill the old file instance
-                Files.FileDeleteIfExists g_UserPreferences.GetProgramPath & resourceFile
+                Files.FileDeleteIfExists UserPrefs.GetProgramPath & resourceFile
                 
                 'Return success!
                 AttemptResourceRecovery = True

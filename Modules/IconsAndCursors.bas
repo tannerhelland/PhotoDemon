@@ -413,7 +413,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
         'To improve quality at very low sizes, enforce prefiltering
         Dim resampleMode As GP_InterpolationMode
         If (iconSize <= 32) Then resampleMode = GP_IM_HighQualityBicubic Else resampleMode = GP_IM_HighQualityBicubic
-        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
         
     Else
         tmpDIB.CreateFromExistingDIB srcDIB

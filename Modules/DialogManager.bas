@@ -241,7 +241,7 @@ End Sub
 Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParamString As String) As VbMsgBoxResult
     
     'Before displaying the dialog, see if the user has requested that we automatically display previously specified settings
-    If g_UserPreferences.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then
+    If UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then
     
         'Load the dialog, and supply it with any information it needs prior to display
         Load dialog_ToneMapping
@@ -260,11 +260,11 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
             copyOfParamString = dialog_ToneMapping.ToneMapSettings
             
             'If the user doesn't want us to raise this dialog in the future, store their preference now
-            g_UserPreferences.SetPref_Boolean "Loading", "Tone Mapping Prompt", Not dialog_ToneMapping.RememberSettings
+            UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", Not dialog_ToneMapping.RememberSettings
             
             'Write the param string out to the preferences file (in case the user decides to toggle this preference
             ' from the preferences dialog, or if they want settings automatically applied going forward).
-            g_UserPreferences.SetPref_String "Loading", "Tone Mapping Settings", copyOfParamString
+            UserPrefs.SetPref_String "Loading", "Tone Mapping Settings", copyOfParamString
             
         End If
             
@@ -277,7 +277,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
     ' to actually loading an HDR image, argh), generate a default set of "good enough" parameters.
     Else
     
-        copyOfParamString = g_UserPreferences.GetPref_String("Loading", "Tone Mapping Settings", vbNullString)
+        copyOfParamString = UserPrefs.GetPref_String("Loading", "Tone Mapping Settings", vbNullString)
         
         'Check for an empty string; if found, build a default param string
         If (Len(copyOfParamString) = 0) Then copyOfParamString = BuildParamList("method", PDTM_DRAGO)
@@ -327,10 +327,10 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     questionID = xmlEngine.GetXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
-    If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
+    If UserPrefs.DoesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
-        PromptGenericYesNoDialog = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        PromptGenericYesNoDialog = UserPrefs.GetPref_Long("Dialogs", questionID, defaultAnswer)
         
     'The user has not saved a previous answer.  Display the full dialog.
     Else
@@ -342,7 +342,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
         
         'If the user wants us to permanently remember this action, save their preference now.
         If dialog_GenericMemory.getRememberAnswerState Then
-            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
+            UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
         End If
         
         Unload dialog_GenericMemory
@@ -363,10 +363,10 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     questionID = xmlEngine.GetXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
-    If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
+    If UserPrefs.DoesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
-        PromptGenericYesNoDialog_SingleOutcome = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        PromptGenericYesNoDialog_SingleOutcome = UserPrefs.GetPref_Long("Dialogs", questionID, defaultAnswer)
         
     'The user has not saved a previous answer.  Display the full dialog.
     Else
@@ -378,7 +378,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
         
         'If the user wants us to permanently remember this action, save their preference now.
         If dialog_GenericMemory.getRememberAnswerState Then
-            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
+            UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
         End If
         
         'Release the dialog form
@@ -491,7 +491,7 @@ Public Function PromptUITheme() As VbMsgBoxResult
     Set dialog_UITheme = Nothing
     
     'Regardless of the return value, note that the user has seen this dialog
-    g_UserPreferences.SetPref_Boolean "Themes", "HasSeenThemeDialog", True
+    UserPrefs.SetPref_Boolean "Themes", "HasSeenThemeDialog", True
     
     'If the dialog was canceled, reset the original language and theme.
     If (PromptUITheme <> vbOK) Then

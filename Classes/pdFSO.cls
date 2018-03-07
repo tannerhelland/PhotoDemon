@@ -1041,7 +1041,7 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
             ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
             
             'For example, in PhotoDemon I use the standard Data/Updates folder for backups when patching, like this:
-            'backupFile = g_UserPreferences.GetUpdatePath & FileGetName(oldFile)
+            'backupFile = UserPrefs.GetUpdatePath & FileGetName(oldFile)
             
             'This ensures that we always have a way to undo the replace step if something goes wrong
         

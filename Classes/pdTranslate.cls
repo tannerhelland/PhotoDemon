@@ -148,7 +148,7 @@ Friend Function TranslationActive() As Boolean
 End Function
 
 Friend Sub WriteLanguagePreferencesToFile()
-    g_UserPreferences.SetPref_String "Language", "Current Language File", m_AvailableLanguages(m_currentLanguage).FileName
+    UserPrefs.SetPref_String "Language", "Current Language File", m_AvailableLanguages(m_currentLanguage).FileName
 End Sub
 
 'Given an index in the m_availableLanguages array, mark that as the new language (including saving it to the preferences file)
@@ -205,7 +205,7 @@ Friend Sub DetermineLanguage()
     Else
     
         Dim curLangFile As String
-        curLangFile = g_UserPreferences.GetPref_String("Language", "Current Language File", vbNullString)
+        curLangFile = UserPrefs.GetPref_String("Language", "Current Language File", vbNullString)
         
         'If no specific file has been named, use the default language
         If (LenB(curLangFile) = 0) Then
@@ -298,7 +298,7 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     ' to ensure that the "English (US)" entry is checked correctly.
     Dim i As Long
     For i = 0 To m_numOfLanguages - 1
-        FormMain.mnuLanguages(i).Checked = (m_currentLanguage = i)
+        FormMain.MnuLanguages(i).Checked = (m_currentLanguage = i)
     Next i
     
     'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)
@@ -474,7 +474,7 @@ Friend Sub CheckAvailableLanguages()
     'Language file names and attributes are cached inside a dedicated language settings file.  This file lets
     ' us bypass a lot of obnoxious and time-consuming validation steps.
     Dim langCacheFilename As String
-    langCacheFilename = g_UserPreferences.GetPresetPath() & "LangCache.xml"
+    langCacheFilename = UserPrefs.GetPresetPath() & "LangCache.xml"
     
     Dim cacheLoadedSuccessfully As Boolean: cacheLoadedSuccessfully = False
     
@@ -505,7 +505,7 @@ Friend Sub CheckAvailableLanguages()
     PerformLanguageFileCleanup
     
     'Find all available OFFICIAL language files
-    m_numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
+    m_numOfLanguages = TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(False), 0, "Official")
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
@@ -513,7 +513,7 @@ Friend Sub CheckAvailableLanguages()
     #End If
     
     'Find all available USER language files
-    m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
+    m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
@@ -568,8 +568,8 @@ End Sub
 Private Sub PerformLanguageFileCleanup()
     
     'This step is pointless if we are in non-portable mode (because we don't have access to our app folder)
-    If (g_UserPreferences Is Nothing) Then Exit Sub
-    If g_UserPreferences.IsNonPortableModeActive Then Exit Sub
+    If Not UserPrefs.IsReady Then Exit Sub
+    If UserPrefs.IsNonPortableModeActive Then Exit Sub
     
     '****
     '6.6 > 7.0 RELEASE CLEANUP
@@ -582,7 +582,7 @@ Private Sub PerformLanguageFileCleanup()
     ' counterpart is found.
     
     Dim langPath As String
-    langPath = g_UserPreferences.GetLanguagePath()
+    langPath = UserPrefs.GetLanguagePath()
     
     Dim targetFilename As String, replaceFilename As String
     targetFilename = langPath & "Francais.xml"
@@ -626,22 +626,22 @@ Private Sub PopulateLanguageMenu()
 
     'Start by unloading all current language menu entries
     Dim i As Long
-    If (FormMain.mnuLanguages.Count > 1) Then
-        For i = FormMain.mnuLanguages.Count - 1 To 0 Step -1
-            Unload FormMain.mnuLanguages(i)
+    If (FormMain.MnuLanguages.Count > 1) Then
+        For i = FormMain.MnuLanguages.Count - 1 To 0 Step -1
+            Unload FormMain.MnuLanguages(i)
         Next i
     End If
     
     'Load all the menu entries we'll be needing.
     If (m_numOfLanguages > 1) Then
         For i = 1 To m_numOfLanguages - 1
-            Load FormMain.mnuLanguages(i)
+            Load FormMain.MnuLanguages(i)
         Next i
     End If
     
     'Make sure all menus are un-checked
     For i = 0 To m_numOfLanguages - 1
-        FormMain.mnuLanguages(i).Checked = False
+        FormMain.MnuLanguages(i).Checked = False
     Next i
     
     'Use the menus module to update menu captions; this allows for Unicode text

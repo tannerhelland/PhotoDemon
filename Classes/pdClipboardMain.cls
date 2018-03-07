@@ -284,7 +284,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
     Processor.MarkProgramBusyState False
     
     'Redraw the active viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -511,7 +511,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
         If m_Clipboard.GetClipboardBinaryData(clipFormatID, rawClipboardData) Then
             
             'Dump the data out to file
-            tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard." & tmpFileExtension
+            tmpClipboardFile = UserPrefs.GetTempPath & "PDClipboard." & tmpFileExtension
             If Files.FileCreateFromByteArray(rawClipboardData, tmpClipboardFile) Then
                 
                 'We no longer need our local copy of the clipboard data
@@ -712,7 +712,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
                 pdDebug.LogAction "Clipboard metafile handle retrieved successfully.  Writing to temp file..."
             #End If
             
-            tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.emf"
+            tmpClipboardFile = UserPrefs.GetTempPath & "PDClipboard.emf"
             
             Dim tmpEmfCopy As Long
             tmpEmfCopy = CopyEnhMetaFileW(emfHandle, StrPtr(tmpClipboardFile))
@@ -1026,7 +1026,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     
                     'Place the temporary file in inside the program-specified temp path
                     Dim tmpClipboardFile As String
-                    tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
+                    tmpClipboardFile = UserPrefs.GetTempPath & "PDClipboard.tmp"
                     
                     'pdFSO is used to ensure Unicode subfolder compatibility
                     Files.FileDeleteIfExists tmpClipboardFile
@@ -1423,8 +1423,8 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                             
                             'Save the file's contents to a temporary file, and note the filename (if successful)
                             fileHGlobalPtr = GlobalLock(fMedium.Data)
-                            If Files.FileCreateFromPtr(fileHGlobalPtr, GlobalSize(fMedium.Data), g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
-                                listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                            If Files.FileCreateFromPtr(fileHGlobalPtr, GlobalSize(fMedium.Data), UserPrefs.GetTempPath & tmpFilename, True, True) Then
+                                listOfFiles.AddString UserPrefs.GetTempPath & tmpFilename
                             End If
                             
                             GlobalUnlock fMedium.Data
@@ -1438,8 +1438,8 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                             
                                 'Save the file's contents to a temporary file, and note the filename (if successful)
                                 VBHacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
-                                If Files.FileCreateFromByteArray(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
-                                    listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                                If Files.FileCreateFromByteArray(tmpBytes, UserPrefs.GetTempPath & tmpFilename, True, True) Then
+                                    listOfFiles.AddString UserPrefs.GetTempPath & tmpFilename
                                 End If
                                 
                             End If
@@ -1532,7 +1532,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     
     'Ask the DIB to write its contents to file in BMP format
     Dim tmpDragDropFile As String
-    tmpDragDropFile = g_UserPreferences.GetTempPath & "PDDragDrop.tmp"
+    tmpDragDropFile = UserPrefs.GetTempPath & "PDDragDrop.tmp"
     tmpDIB.WriteToBitmapFile tmpDragDropFile
     Set tmpDIB = Nothing
     
@@ -1683,7 +1683,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     If (Len(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
     
     'Grab a new temporary path name (TODO: use system-generated temp file names)
-    If (Len(m_StashFile) = 0) Then m_StashFile = g_UserPreferences.GetTempPath() & "cbStash.tmpdib"
+    If (Len(m_StashFile) = 0) Then m_StashFile = UserPrefs.GetTempPath() & "cbStash.tmpdib"
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing clipboard stash now..."

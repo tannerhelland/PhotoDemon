@@ -3474,7 +3474,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
-    RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, m_SelMask, 0, 0, m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, g_UserPreferences.GetThumbnailInterpolationPref())
+    RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, m_SelMask, 0, 0, m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, UserPrefs.GetThumbnailInterpolationPref())
     
 End Function
 
@@ -3563,7 +3563,7 @@ Private Sub m_AntTimer_Timer()
         End If
         
         If okayToRender Then
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_ReuseLast
+            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
         Else
             m_AntTimer.StopTimer
         End If

@@ -73,7 +73,7 @@ Friend Function LoadAllControlValues() As Boolean
     m_ParentID = Replace$(m_ParentForm.Name, "Form", vbNullString, , , vbTextCompare) & "-presets"
     
     Dim presetPacket As String
-    If g_UserPreferences.GetDialogPresets(m_ParentID, presetPacket) Then
+    If UserPrefs.GetDialogPresets(m_ParentID, presetPacket) Then
         m_Params.SetParamString presetPacket
     Else
         If (LenB(Trim$(m_ParentForm.Caption)) <> 0) Then m_Params.AddParam "ToolDescription", Trim$(m_ParentForm.Caption)
@@ -88,7 +88,7 @@ Friend Function SaveAllControlValues() As Boolean
     
     FillXMLSettings
     
-    If (Not g_UserPreferences Is Nothing) Then
+    If UserPrefs.IsReady Then
         
         Dim tmpString As String
         tmpString = m_Params.GetParamString()
@@ -103,7 +103,7 @@ Friend Function SaveAllControlValues() As Boolean
         Loop
         
         'Send the tidied-up string to the preset manager
-        g_UserPreferences.SetDialogPresets m_ParentID, vbCrLf & tmpString & vbCrLf
+        UserPrefs.SetDialogPresets m_ParentID, vbCrLf & tmpString & vbCrLf
         
     End If
     

@@ -1,22 +1,10 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-  Persistable = 0  'NotPersistable
-  DataBindingBehavior = 0  'vbNone
-  DataSourceBehavior  = 0  'vbNone
-  MTSTransactionMode  = 0  'NotAnMTSObject
-END
-Attribute VB_Name = "pdPreferences"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Name = "UserPrefs"
 '***************************************************************************
-'PhotoDemon Preferences Interface
+'PhotoDemon User Preferences Manager
 'Copyright 2012-2018 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 06/February/17
-'Last update: minor performance improvements
+'Last updated: 07/March/18
+'Last update: migrate from class to module as part of a broader preferences overhaul
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
 ' with persistent user settings.
@@ -26,12 +14,12 @@ Attribute VB_Exposed = False
 '
 'Because the settings XML file may receive new settings with each new version, all setting interaction functions
 ' require the caller to specify a default value, which will be used if the requested setting does not exist in the
-' XML file.  Also note that if code attempts to write a setting value, but that setting value does not exist,
+' XML file.  Also note that if code attempts to write a setting, but that setting name or section does not exist,
 ' it will automatically be appended as a "new" setting at the end of its respective section.
 '
-'Finally, let me state again that you should *never* interact with the XML settings file directly.  Always pass
-' setting read/writes through this class.  I cannot guarantee that the XML format or style will remain consistent
-' between versions, but as long as you stick to the wrapping functions in this class, settings will be handled correctly.
+'Finally, outside functions should *never* interact with PD's central XML settings file directly.  Always pass
+' read/writes through this class.  I cannot guarantee that the XML format or style will remain consistent
+' between versions, but as long as you use the wrapping functions in this class, settings will be handled correctly.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -92,15 +80,15 @@ Private m_XMLPresets As pdXML, m_MasterPresetFile As String
 Private m_NonPortableModeActive As Boolean
 
 'Helper functions for performance-sensitive preferences.
-Friend Function GetThumbnailInterpolationPref() As GP_InterpolationMode
+Public Function GetThumbnailInterpolationPref() As GP_InterpolationMode
     GetThumbnailInterpolationPref = m_ThumbnailInterpolation
 End Function
 
-Friend Function GetThumbnailPerformancePref() As PD_PerformanceSetting
+Public Function GetThumbnailPerformancePref() As PD_PerformanceSetting
     GetThumbnailPerformancePref = m_ThumbnailPerformance
 End Function
 
-Friend Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting)
+Public Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting)
     m_ThumbnailPerformance = newSetting
     If (newSetting = PD_PERF_BESTQUALITY) Then
         m_ThumbnailInterpolation = GP_IM_HighQualityBicubic
@@ -114,77 +102,57 @@ End Sub
 'Non-portable mode means PD has been extracted to an access-restricted folder.  The program (should) still run normally,
 ' with silent redirection to the local appdata folder, but in-place automatic upgrades will be disabled (as we don't
 ' have write access to our own folder, alas).
-Friend Function IsNonPortableModeActive() As Boolean
+Public Function IsNonPortableModeActive() As Boolean
     IsNonPortableModeActive = m_NonPortableModeActive
 End Function
 
-'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
-' without writing the updates out to file after each updated.
-' NOTE!  You must remember to deactivate this mode when finished; otherwise, preferences may not get written out to file for that session.
-Friend Sub StartBatchPreferenceMode()
-
-    m_BatchModeActive = True
-
-    'Initialize an XML object
-    Set m_XMLEngine = New pdXML
-    m_XMLEngine.LoadXMLFile m_PreferencesPath
-
-End Sub
-
-'When you have finished updating multiple preferences, use this function to terminate batch mode.  The updated XML file will be
-' immediately written to file.
-Friend Sub EndBatchPreferenceMode()
-    m_BatchModeActive = False
-    m_XMLEngine.WriteXMLToFile m_PreferencesPath
-End Sub
-
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
-Friend Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
+Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
     If getUserThemePathInstead Then GetThemePath = m_UserThemePath Else GetThemePath = m_ThemePath
 End Function
 
 'Get/set subfolders from the user's /Data folder.  These paths may not exist at run-time; ensure code works even if these
 ' paths are not available!  Similarly, not all folders support a /Set
-Friend Function GetDebugPath() As String
+Public Function GetDebugPath() As String
     GetDebugPath = m_DebugPath
 End Function
 
-Friend Function GetPalettePath() As String
+Public Function GetPalettePath() As String
     GetPalettePath = m_PalettePath
 End Function
 
-Friend Sub SetPalettePath(ByRef newPalettePath As String)
+Public Sub SetPalettePath(ByRef newPalettePath As String)
     m_PalettePath = Files.PathAddBackslash(Files.FileGetPath(newPalettePath))
     SetPref_String "Paths", "Palettes", m_PalettePath
 End Sub
 
-Friend Function GetPresetPath() As String
+Public Function GetPresetPath() As String
     GetPresetPath = m_PresetPath
 End Function
 
 'Get/set the current Selection directory
-Friend Function GetSelectionPath() As String
+Public Function GetSelectionPath() As String
     GetSelectionPath = m_SelectionPath
 End Function
 
-Friend Sub SetSelectionPath(ByVal newSelectionPath As String)
+Public Sub SetSelectionPath(ByVal newSelectionPath As String)
     m_SelectionPath = Files.PathAddBackslash(Files.FileGetPath(newSelectionPath))
     SetPref_String "Paths", "Selections", m_SelectionPath
 End Sub
 
 'Return the current Language directory
-Friend Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
+Public Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
     If getUserLanguagePathInstead Then GetLanguagePath = m_UserLanguagePath Else GetLanguagePath = m_LanguagePath
 End Function
 
 'Return the current temporary directory, as specified by the user's preferences.  (Note that this may not be the
 ' current Windows system temp path, if the user has opted to change it.)
-Friend Function GetTempPath() As String
+Public Function GetTempPath() As String
     GetTempPath = m_TempPath
 End Function
 
 'Set the current temp directory
-Friend Sub SetTempPath(ByVal newTempPath As String)
+Public Sub SetTempPath(ByVal newTempPath As String)
     
     'If the folder exists and is writable as-is, great: save it and exit
     Dim doesFolderExist As Boolean
@@ -219,43 +187,43 @@ Friend Sub SetTempPath(ByVal newTempPath As String)
 End Sub
 
 'Return the current program directory
-Friend Function GetProgramPath() As String
+Public Function GetProgramPath() As String
     GetProgramPath = m_ProgramPath
 End Function
 
 'Return the current app data directory
-Friend Function GetAppPath() As String
+Public Function GetAppPath() As String
     GetAppPath = m_AppPath
 End Function
 
 'Return the current user data directory
-Friend Function GetDataPath() As String
+Public Function GetDataPath() As String
     GetDataPath = m_DataPath
 End Function
 
 'Return the current macro directory
-Friend Function GetMacroPath() As String
+Public Function GetMacroPath() As String
     GetMacroPath = m_MacroPath
 End Function
 
 'Set the current macro directory
-Friend Sub SetMacroPath(ByVal newMacroPath As String)
+Public Sub SetMacroPath(ByVal newMacroPath As String)
     m_MacroPath = Files.PathAddBackslash(Files.FileGetPath(newMacroPath))
     SetPref_String "Paths", "Macro", m_MacroPath
 End Sub
 
 'Return the current MRU icon directory
-Friend Function GetIconPath() As String
+Public Function GetIconPath() As String
     GetIconPath = m_IconPath
 End Function
 
 'Return the current update-specific temp path
-Friend Function GetUpdatePath() As String
+Public Function GetUpdatePath() As String
     GetUpdatePath = m_UpdatesPath
 End Function
 
 'Initialize key program directories.  If this function fails, PD will fail to load.
-Friend Function InitializePaths() As Boolean
+Public Function InitializePaths() As Boolean
     
     InitializePaths = True
     
@@ -268,11 +236,11 @@ Friend Function InitializePaths() As Boolean
     ' Because PD is a portable application, we default to creating those folders in our own
     ' application folder.  Unfortunately, some users do dumb things like put PD inside protected
     ' system folders, which causes this step to fail.  We try to handle this situation gracefully,
-    ' by redirecting those folders to the active user folder.
+    ' by redirecting those folders to the current user's AppData folder.
     m_NonPortableModeActive = False
     
     'Anyway, before doing anything else, let's make sure we actually have write access to our own
-    ' damn folder; if we don't, we can fall activate non-portable mode.
+    ' damn folder; if we don't, we can activate what I call "non-portable" mode.
     Dim localAppDataPath As String
     localAppDataPath = OS.SpecialFolder(CSIDL_LOCAL_APPDATA)
     
@@ -417,10 +385,11 @@ Friend Function InitializePaths() As Boolean
     ' duplicate files between builds.)
     PerformPathCleanup
     
-    'The user preferences file is also located in the \Data folder
+    'The user preferences file is also located in the \Data folder.  We don't actually load it yet; this is handled
+    ' by the (rather large) LoadUserSettings() function.
     m_PreferencesPath = m_DataPath & "PhotoDemon_settings.xml"
     
-    'Last-used dialog settings are also located in the \Presets subfolder; retrieve the master file now, if it exists.
+    'Last-used dialog settings are also located in the \Presets subfolder; this file *is* loaded now, if it exists.
     m_MasterPresetFile = m_PresetPath & "MainPanels.xml"
     If (m_XMLPresets Is Nothing) Then Set m_XMLPresets = New pdXML
     
@@ -429,7 +398,7 @@ Friend Function InitializePaths() As Boolean
             If (Not m_XMLPresets.IsPDDataType("Presets")) Then m_XMLPresets.PrepareNewXML "Presets"
         End If
     Else
-        m_XMLPresets.PrepareNewXML ("Presets")
+        m_XMLPresets.PrepareNewXML "Presets"
     End If
         
 End Function
@@ -449,8 +418,8 @@ Private Sub PerformPathCleanup()
     'To prevent duplicate copies, check for any leftover.txt instances and remove them.  (Note that we explicitly check
     ' file size to avoid removing files that are not ours.)
     Dim targetFilename As String, replaceFilename As String
-    targetFilename = Me.GetProgramPath & "README.txt"
-    replaceFilename = Me.GetProgramPath & "README.md"
+    targetFilename = UserPrefs.GetProgramPath & "README.txt"
+    replaceFilename = UserPrefs.GetProgramPath & "README.md"
     If (Files.FileExists(targetFilename) And Files.FileExists(replaceFilename)) Then
     
         'Check filesize.  This uses magic numbers taken from the official 6.6 release file sizes.
@@ -459,8 +428,8 @@ Private Sub PerformPathCleanup()
     End If
     
     'Repeat above steps for LICENSE.md
-    targetFilename = Me.GetProgramPath & "LICENSE.txt"
-    replaceFilename = Me.GetProgramPath & "LICENSE.md"
+    targetFilename = UserPrefs.GetProgramPath & "LICENSE.txt"
+    replaceFilename = UserPrefs.GetProgramPath & "LICENSE.md"
     If Files.FileExists(targetFilename) And Files.FileExists(replaceFilename) Then If (Files.FileLenW(targetFilename) = 30659&) Then Files.FileDelete targetFilename
     
     'END 6.6 > 7.0 RELEASE CLEANUP
@@ -469,58 +438,57 @@ Private Sub PerformPathCleanup()
 End Sub
 
 'Load all user settings from file
-Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
+Public Sub LoadUserSettings()
     
-    'If no preferences file exists, build a default one
+    'If no preferences file exists, construct a default one
     If (Not Files.FileExists(m_PreferencesPath)) Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdPreferences.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
+            pdDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
         #End If
         CreateNewPreferencesFile
     End If
     
-    'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
-    ' for each preference access).
-    Me.StartBatchPreferenceMode
+    If m_XMLEngine.LoadXMLFile(m_PreferencesPath) And m_XMLEngine.IsPDDataType("User Preferences") Then
+    
+        'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
+        ' the system temp path.)
+        m_TempPath = GetPref_String("Paths", "TempFiles", vbNullString)
+        If (Not Files.PathExists(m_TempPath)) Then
+            m_TempPath = OS.SystemTempPath()
+            SetPref_String "Paths", "TempFiles", m_TempPath
+        End If
+            
+        'Pull all other stored paths
+        m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
+        m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
+        m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)
+            
+        'Check if the user wants us to prompt them about closing unsaved images
+        g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
         
-    'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
-    ' the system temp path.)
-    m_TempPath = GetPref_String("Paths", "TempFiles", vbNullString)
-    If (Not Files.PathExists(m_TempPath)) Then
-        m_TempPath = OS.SystemTempPath()
-        SetPref_String "Paths", "TempFiles", m_TempPath
+        'Grab the last-used common dialog filters
+        g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
+        g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
+        
+        'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
+        ' every time they're needed.)
+        g_InterfacePerformance = UserPrefs.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
+        UserPrefs.SetThumbnailPerformancePref UserPrefs.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+        g_ViewportPerformance = UserPrefs.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
+        g_UndoCompressionLevel = UserPrefs.GetPref_Long("Performance", "UndoCompression", 1)
+        
+        Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
+        #End If
     End If
-        
-    'Pull all other stored paths
-    m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
-    m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
-    m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)
-        
-    'Check if the user wants us to prompt them about closing unsaved images
-    g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
-    
-    'Grab the last-used common dialog filters
-    g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
-    g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
-    
-    'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
-    ' every time they're needed.)
-    g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
-    Me.SetThumbnailPerformancePref g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
-    g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
-    g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 1)
-    
-    Tools.SetToolSetting_HighResMouse g_UserPreferences.GetPref_Boolean("Tools", "HighResMouseInput", True)
-    
-    'Initialize a few other settings to default values, despite them not coming from the preferences file
-    
-    'Terminate batch preference mode before exiting
-    If endBatchModeWhenFinished Then Me.EndBatchPreferenceMode
                 
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
-Friend Sub ResetPreferences()
+Public Sub ResetPreferences()
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
     #End If
@@ -535,18 +503,17 @@ Private Sub CreateNewPreferencesFile()
 
     'This function is used to determine whether PhotoDemon is being run for the first time.  Why do it here?
     ' 1) When first downloaded, PhotoDemon doesn't come with a prefs file.  Thus this routine MUST be called.
-    ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as "first run",
-    '     so any first-run type dialogs are reset as well.
-    ' 3) If the user moves PhotoDemon but leaves behind the old prefs file.  There's no easy way to check this, but
-    '     treating the program as if its being run for the first time is as good a plan as any.
+    ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as
+    '     "first run", to ensure that any first-run dialogs are also reset.
+    ' 3) If the user moves PhotoDemon but leaves behind the old prefs file.  There's no easy way to check this,
+    '     but treating the program like it's being run for the first time is as good a plan as any.
     g_IsFirstRun = True
     
-    'As a failsafe against data corruption, if this is determined to be a first run, we also delete some settings-related
-    ' files in the Presets folder (if they exist).
+    'As a failsafe against data corruption, if this is determined to be a first run, we also delete some
+    ' settings-related files in the Presets folder (if they exist).
     If g_IsFirstRun Then Files.FileDeleteIfExists m_PresetPath & "Program_WindowLocations.xml"
     
-    'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
-    Set m_XMLEngine = New pdXML
+    'Reset our XML engine
     m_XMLEngine.PrepareNewXML "User Preferences"
     m_XMLEngine.WriteBlankLine
     
@@ -706,13 +673,14 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.CloseTag "Updates"
     m_XMLEngine.WriteBlankLine
     
-    'With all tags successfully written, we can now close the XML data and write it out to file.
-    m_XMLEngine.WriteXMLToFile m_PreferencesPath
+    'With all tags successfully written, forcibly write the result out to file (so we have a "clean" file copy that
+    ' mirrors our current settings, just like a normal session).
+    ForceWriteToFile
     
 End Sub
 
 'Get a Boolean-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Friend Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Boolean) As Boolean
+Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Boolean) As Boolean
 
     'Request the value (as a string)
     Dim tmpString As String
@@ -723,7 +691,7 @@ Friend Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue))
-        Me.SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
+        UserPrefs.SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
         GetPref_Boolean = prefDefaultValue
             
     'If the requested value DOES exist, convert it to boolean type and return it
@@ -740,18 +708,16 @@ Friend Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
 End Function
 
 'Write a Boolean-type value to the preferences file.
-Friend Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
-
+Public Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
     If boolVal Then
-        Me.WritePreference preferenceSection, preferenceName, "True"
+        UserPrefs.WritePreference preferenceSection, preferenceName, "True"
     Else
-        Me.WritePreference preferenceSection, preferenceName, "False"
+        UserPrefs.WritePreference preferenceSection, preferenceName, "False"
     End If
-
 End Sub
 
 'Get a Long-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
-Friend Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Long) As Long
+Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Long) As Long
 
     'Get the value (as a string) from the INI file
     Dim tmpString As String
@@ -762,7 +728,7 @@ Friend Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue ))
-        Me.SetPref_Long preferenceSection, preferenceName, prefDefaultValue
+        UserPrefs.SetPref_Long preferenceSection, preferenceName, prefDefaultValue
         GetPref_Long = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -773,12 +739,12 @@ Friend Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
 End Function
 
 'Set a Long-type value to the preferences file.
-Friend Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
-    Me.WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
+Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
+    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
 End Sub
 
 'Get a Float-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
-Friend Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Double) As Double
+Public Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Double) As Double
 
     'Get the value (as a string) from the INI file
     Dim tmpString As String
@@ -788,7 +754,7 @@ Friend Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenc
     If (LenB(tmpString) = 0) Then
     
         'To prevent future blank results, write out a default value
-        Me.SetPref_Float preferenceSection, preferenceName, prefDefaultValue
+        UserPrefs.SetPref_Float preferenceSection, preferenceName, prefDefaultValue
         GetPref_Float = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -799,12 +765,12 @@ Friend Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenc
 End Function
 
 'Set a Float-type value to the preferences file.
-Friend Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal floatVal As Double)
-    Me.WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
+Public Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal floatVal As Double)
+    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Friend Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
+Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
 
     'Get the requested value from the preferences file
     Dim tmpString As String
@@ -815,7 +781,7 @@ Friend Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & prefDefaultValue
-        Me.SetPref_String preferenceSection, preferenceName, prefDefaultValue
+        UserPrefs.SetPref_String preferenceSection, preferenceName, prefDefaultValue
         GetPref_String = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -826,12 +792,12 @@ Friend Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
 End Function
 
 'Set a String-type value to the INI file.
-Friend Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
-    Me.WritePreference preferenceSection, preferenceName, stringVal
+Public Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
+    UserPrefs.WritePreference preferenceSection, preferenceName, stringVal
 End Sub
 
 'Sometimes we want to know if a value exists at all.  This function handles that.
-Friend Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
+Public Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
     DoesValueExist = (LenB(tmpString) <> 0)
@@ -843,30 +809,16 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
     Const SPACE_CHAR As String = " "
-    If InStr(1, strSectionHeader, " ", vbBinaryCompare) Then strSectionHeader = Replace$(strSectionHeader, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
-    If InStr(1, strVariableName, " ", vbBinaryCompare) Then strVariableName = Replace$(strVariableName, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
+    If InStr(1, strSectionHeader, SPACE_CHAR, vbBinaryCompare) Then strSectionHeader = Replace$(strSectionHeader, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
+    If InStr(1, strVariableName, SPACE_CHAR, vbBinaryCompare) Then strVariableName = Replace$(strVariableName, SPACE_CHAR, vbNullString, , , vbBinaryCompare)
     
-    'Create an XML object and load the XML settings file
-    Dim prefFileOK As Boolean
-    If m_BatchModeActive Then
-        prefFileOK = True
-    Else
-        Set m_XMLEngine = New pdXML
-        m_XMLEngine.LoadXMLFile m_PreferencesPath
-        prefFileOK = m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths")
-    End If
-    
-    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If prefFileOK Then
-        GetPreference = m_XMLEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
-    Else
-        GetPreference = vbNullString
-    End If
+    'Read the associated preference
+    GetPreference = m_XMLEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
     
 End Function
 
 'Write a string value to the preferences file
-Friend Function WritePreference(ByVal strSectionHeader As String, ByVal strVariableName As String, ByVal strValue As String) As Boolean
+Public Function WritePreference(ByVal strSectionHeader As String, ByVal strVariableName As String, ByVal strValue As String) As Boolean
 
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
@@ -874,38 +826,18 @@ Friend Function WritePreference(ByVal strSectionHeader As String, ByVal strVaria
     strSectionHeader = Replace$(strSectionHeader, SPACE_CHAR, vbNullString)
     strVariableName = Replace$(strVariableName, SPACE_CHAR, vbNullString)
     
-    'Create an XML object and load the XML settings file
-    If (Not m_BatchModeActive) Then
-        Set m_XMLEngine = New pdXML
-        m_XMLEngine.LoadXMLFile m_PreferencesPath
-    End If
-    
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
     If m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths") Then
     
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
-        If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
-            WritePreference = True
-            If (Not m_BatchModeActive) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
-        Else
-            
-            'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
-            ' an old PhotoDemon version, but keeps their old preferences file).  To prevent the problem from recurring, add this
-            ' section to the preferences file.
-            If m_XMLEngine.WriteNewSection(strSectionHeader) Then
-            
-                'Try the write again
-                If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
-                    WritePreference = True
-                    If (Not m_BatchModeActive) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
-                Else
-                    WritePreference = False
-                End If
-            
-            Else
-                WritePreference = False
-            End If
-            
+        WritePreference = m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader)
+        
+        'Tag updates will fail if the requested preferences section doesn't exist (which may happen after the user upgrades
+        ' from an old PhotoDemon version, but retains their existing preferences file).  To prevent the problem from recurring,
+        ' add this section to the current preferences file.
+        If (Not WritePreference) Then
+            WritePreference = m_XMLEngine.WriteNewSection(strSectionHeader)
+            If WritePreference Then WritePreference = m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader)
         End If
         
     End If
@@ -914,7 +846,7 @@ End Function
 
 'Return the XML parameter list for a given dialog ID (constructed by the last-used settings class).
 ' Returns: TRUE if a preset exists for that ID; FALSE otherwise.
-Friend Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As String) As Boolean
+Public Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As String) As Boolean
 
     If m_XMLPresets.DoesTagExist(dialogID) Then
         dstXMLString = m_XMLPresets.GetUniqueTag_String(dialogID, vbNullString)
@@ -927,14 +859,40 @@ Friend Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As
 End Function
 
 'Set an XML parameter list for a given dialog ID (constructed by the last-used settings class).
-Friend Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
+Public Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
     m_XMLPresets.UpdateTag dialogID, srcXMLString
 End Function
 
-Private Sub Class_Initialize()
+Public Sub StartPrefEngine()
+    
+    'Initialize two preference engines: one for saved presets (shared across certain windows and tools), and another for
+    ' the core PD user preferences file.
     Set m_XMLPresets = New pdXML
+    Set m_XMLEngine = New pdXML
+    
+    'Note that XML data is *not actually loaded* until the InitializePaths function is called.  (That function determines
+    ' where PD's user settings file is actually stored, as it can be in several places depending on folder rights of
+    ' whereever the user unzipped us.)
+    
 End Sub
 
-Private Sub Class_Terminate()
-    If ((Not m_XMLPresets Is Nothing) And (Len(m_MasterPresetFile) <> 0)) Then m_XMLPresets.WriteXMLToFile m_MasterPresetFile
+Public Sub StopPrefEngine()
+    UserPrefs.ForceWriteToFile
+    Set m_XMLEngine = Nothing
+    Set m_XMLPresets = Nothing
+End Sub
+
+Public Function IsReady() As Boolean
+    IsReady = Not (m_XMLPresets Is Nothing)
+End Function
+
+'In rare cases, we may want to forcibly copy all current user preferences out to file (e.g. after the Tools > Options dialog
+' is closed via OK button).  This function will force an immediate to-file dump, but note that it will only work if...
+' 1) the preferences engine has been successfully initialized, and...
+' 2) the master preset file path has already been validated
+Public Sub ForceWriteToFile(Optional ByVal alsoWritePresets As Boolean = True)
+    If ((Not m_XMLEngine Is Nothing) And (LenB(m_PreferencesPath) <> 0)) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
+    If alsoWritePresets Then
+        If ((Not m_XMLPresets Is Nothing) And (LenB(m_MasterPresetFile) <> 0)) Then m_XMLPresets.WriteXMLToFile m_MasterPresetFile
+    End If
 End Sub

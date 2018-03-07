@@ -950,7 +950,7 @@ Private Sub cboMonitors_Click()
     
     'Use that to retrieve a stored color profile (if any)
     Dim profilePath As String
-    profilePath = g_UserPreferences.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, "(none)")
+    profilePath = UserPrefs.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, "(none)")
     
     'If the returned value is "(none)", translate that into the user's language before displaying; otherwise, display
     ' whatever path we retrieved.
@@ -997,11 +997,8 @@ Private Sub cmdBarMini_OKClick()
     SetProgBarMax 8
     SetProgBarVal 1
     
-    'Start batch preference edit mode
-    g_UserPreferences.StartBatchPreferenceMode
-    
     'First, make note of the active panel, so we can default to that if the user returns to this dialog
-    g_UserPreferences.SetPref_Long "Core", "Last Preferences Page", btsvCategory.ListIndex
+    UserPrefs.SetPref_Long "Core", "Last Preferences Page", btsvCategory.ListIndex
     
     'Write preferences out to file in category order.  (The preference XML file is order-agnostic, but I try to
     ' maintain the order used in the Preferences dialog itself to make changes easier.)
@@ -1011,7 +1008,7 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Interface preferences
         
         'START/END image window caption length
-            g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cboTitleText.ListIndex
+            UserPrefs.SetPref_Long "Interface", "Window Caption Length", cboTitleText.ListIndex
         
         Dim mruNeedsToBeRebuilt As Boolean
         mruNeedsToBeRebuilt = False
@@ -1019,8 +1016,8 @@ Private Sub cmdBarMini_OKClick()
         'START MRU caption length
         
             'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If (cboMRUStyle.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
-            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cboMRUStyle.ListIndex
+            If (cboMRUStyle.ListIndex <> UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
+            UserPrefs.SetPref_Long "Interface", "MRU Caption Length", cboMRUStyle.ListIndex
             
         'END MRU caption length
         
@@ -1035,8 +1032,8 @@ Private Sub cmdBarMini_OKClick()
             End If
             
             'If the max number of recent files has changed, update the MRU list to match
-            If (newMaxRecentFiles <> g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then mruNeedsToBeRebuilt = True
-            g_UserPreferences.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
+            If (newMaxRecentFiles <> UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)) Then mruNeedsToBeRebuilt = True
+            UserPrefs.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
             
         'END maximum MRU count
         
@@ -1047,13 +1044,13 @@ Private Sub cmdBarMini_OKClick()
         End If
         
         'START alpha checkerboard colors
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
+            UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
+            UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
+            UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
         'END alpha checkerboard colors
             
         'START alpha checkerboard size
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
+            UserPrefs.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
             Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
         'END alpha checkerboard size
     
@@ -1066,17 +1063,17 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Loading preferences
     
         'START/END automatically tone-map HDR images
-            g_UserPreferences.SetPref_Boolean "Loading", "Tone Mapping Prompt", CBool(chkToneMapping)
+            UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", CBool(chkToneMapping)
             
         'START metadata behavior at load-time
-            g_UserPreferences.SetPref_Boolean "Loading", "Metadata Hide Duplicates", CBool(chkMetadataDuplicates.Value)
-            g_UserPreferences.SetPref_Boolean "Loading", "Metadata Estimate JPEG", CBool(chkMetadataJPEG.Value)
-            g_UserPreferences.SetPref_Boolean "Loading", "Metadata Extract Binary", CBool(chkMetadataBinary.Value)
-            g_UserPreferences.SetPref_Boolean "Loading", "Metadata Extract Unknown", CBool(chkMetadataUnknown.Value)
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", CBool(chkMetadataDuplicates.Value)
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", CBool(chkMetadataJPEG.Value)
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", CBool(chkMetadataBinary.Value)
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", CBool(chkMetadataUnknown.Value)
         'END metadata behavior at load-time
         
         'START/END EXIF auto-rotation
-            g_UserPreferences.SetPref_Boolean "Loading", "ExifAutoRotate", CBool(chkLoadingOrientation)
+            UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", CBool(chkLoadingOrientation)
         
     
     'END Loading preferences
@@ -1089,7 +1086,7 @@ Private Sub cmdBarMini_OKClick()
     
         'START prompt on unsaved images
             g_ConfirmClosingUnsaved = CBool(chkConfirmUnsaved.Value)
-            g_UserPreferences.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
+            UserPrefs.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
@@ -1099,13 +1096,13 @@ Private Sub cmdBarMini_OKClick()
         'END prompt on unsaved images
         
         'START/END metadata-related options
-            g_UserPreferences.SetPref_Boolean "Saving", "MetadataListPD", CBool(chkMetadataListPD.Value)
+            UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", CBool(chkMetadataListPD.Value)
         
         'START/END Save behavior (overwrite or copy)
-            g_UserPreferences.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
+            UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
         
         'START/END "Save As" dialog's suggested file format
-            g_UserPreferences.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
+            UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
     
     'END Saving preferences
         
@@ -1116,19 +1113,19 @@ Private Sub cmdBarMini_OKClick()
     'START Performance preferences
         
         'START/END interface decoration performance
-            g_UserPreferences.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(0).ListIndex
+            UserPrefs.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(0).ListIndex
             g_InterfacePerformance = cboPerformance(0).ListIndex
         
         'START/END thumbnail render performance
-            g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
-            g_UserPreferences.SetThumbnailPerformancePref cboPerformance(1).ListIndex
+            UserPrefs.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
+            UserPrefs.SetThumbnailPerformancePref cboPerformance(1).ListIndex
         
         'START/END viewport render performance
-            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(2).ListIndex
+            UserPrefs.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(2).ListIndex
             g_ViewportPerformance = cboPerformance(2).ListIndex
             
         'START/END undo/redo data compression
-            g_UserPreferences.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
+            UserPrefs.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
             g_UndoCompressionLevel = sltUndoCompression.Value
     
     'END Performance preferences
@@ -1164,13 +1161,13 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Update preferences
         
         'START/END update frequency
-            g_UserPreferences.SetPref_Long "Updates", "Update Frequency", cboUpdates(0).ListIndex
+            UserPrefs.SetPref_Long "Updates", "Update Frequency", cboUpdates(0).ListIndex
         
         'START/END update track
-            g_UserPreferences.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
+            UserPrefs.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
             
         'START/END update notifications
-            g_UserPreferences.SetPref_Boolean "Updates", "Update Notifications", CBool(chkUpdates(0).Value)
+            UserPrefs.SetPref_Boolean "Updates", "Update Notifications", CBool(chkUpdates(0).Value)
     
     'END Update preferences
     
@@ -1181,18 +1178,18 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
-            If Strings.StringsNotEqual(Trim$(txtTempPath), g_UserPreferences.GetTempPath, True) Then g_UserPreferences.SetTempPath Trim$(txtTempPath)
+            If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)
         
         'START/END high-resolution mouse input
-            If (btsMouseHighRes.ListIndex = 1) Then g_UserPreferences.SetPref_Boolean "Tools", "HighResMouseInput", True Else g_UserPreferences.SetPref_Boolean "Tools", "HighResMouseInput", False
+            If (btsMouseHighRes.ListIndex = 1) Then UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", True Else UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", False
             Tools.SetToolSetting_HighResMouse (btsMouseHighRes.ListIndex = 1)
         
     'END Advanced preferences
     
     '***************************************************************************
     
-    'End batch preference edit mode, which will force a write-to-file operation
-    g_UserPreferences.EndBatchPreferenceMode
+    'Forcibly write a copy of the preference data out to file
+    UserPrefs.ForceWriteToFile
     
     'All user preferences have now been written out to file
     
@@ -1220,7 +1217,7 @@ Private Sub cmdColorProfilePath_Click()
     
     'Get the last color profile path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Color Profile", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Color Profile", vbNullString)
     
     'If no color profile path was found, populate it with the default system color profile path
     If (Len(tempPathString) = 0) Then tempPathString = GetSystemColorFolder()
@@ -1243,7 +1240,7 @@ Private Sub cmdColorProfilePath_Click()
         'Save this new directory as the default path for future usage
         Dim listPath As String
         listPath = Files.FileGetPath(sFile)
-        g_UserPreferences.SetPref_String "Paths", "Color Profile", listPath
+        UserPrefs.SetPref_String "Paths", "Color Profile", listPath
         
         'Set the text box to match this color profile, and save the resulting preference out to file.
         txtColorProfilePath = sFile
@@ -1256,7 +1253,7 @@ Private Sub cmdColorProfilePath_Click()
             uniqueMonID = tmpXML.GetXMLSafeTagName(uniqueMonID)
         End If
         
-        g_UserPreferences.SetPref_String "ColorManagement", "DisplayProfile_" & uniqueMonID, sFile
+        UserPrefs.SetPref_String "ColorManagement", "DisplayProfile_" & uniqueMonID, sFile
         
         'If the "user custom color profiles" option button isn't selected, mark it now
         If (Not optColorManagement(2).Value) Then optColorManagement(2).Value = True
@@ -1279,7 +1276,7 @@ Private Sub cmdReset_Click()
     'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
     If (confirmReset = vbYes) Then
     
-        g_UserPreferences.ResetPreferences
+        UserPrefs.ResetPreferences
         LoadAllPreferences
         
         'Restore the currently active language to the preferences file; this prevents the language from resetting to English
@@ -1293,15 +1290,12 @@ End Sub
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
-    tString = Files.PathBrowseDialog(Me.hWnd, g_UserPreferences.GetTempPath)
+    tString = Files.PathBrowseDialog(Me.hWnd, UserPrefs.GetTempPath)
     If (Len(tString) <> 0) Then txtTempPath.Text = Files.PathAddBackslash(tString)
 End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
 Private Sub LoadAllPreferences()
-    
-    'Start batch preference mode.  This will suspend any file read/write operations until the mode finishes.
-    g_UserPreferences.StartBatchPreferenceMode
     
     'For the sake of order, we will load preferences by category.  (They can be loaded in any order without consequence,
     ' but there are MANY preferences, so maintaining some kind of order is helpful.)
@@ -1320,21 +1314,21 @@ Private Sub LoadAllPreferences()
             cboTitleText.Clear
             cboTitleText.AddItem " compact - image names only", 0
             cboTitleText.AddItem " descriptive - full image locations, including folder(s)", 1
-            cboTitleText.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
+            cboTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
             cboTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
         'END image window caption length
                 
         'START Recent file max count
             lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
             tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + FixDPI(6)
-            tudRecentFiles.Value = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+            tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
         'END
         
         'START MRU caption length
             cboMRUStyle.Clear
             cboMRUStyle.AddItem " compact - image names only", 0
             cboMRUStyle.AddItem " descriptive - full image locations, including folder(s)", 1
-            cboMRUStyle.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
+            cboMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
             cboMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
         'END MRU caption length
         
@@ -1346,10 +1340,10 @@ Private Sub LoadAllPreferences()
             cboAlphaCheck.AddItem " Shadow checks", 2
             cboAlphaCheck.AddItem " Custom (click boxes to customize)", 3
             
-            cboAlphaCheck.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Mode", 0)
+            cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
             
-            csAlphaOne.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
-            csAlphaTwo.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
+            csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
+            csAlphaTwo.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
             
             cboAlphaCheck.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
             csAlphaOne.AssignTooltip "Click to change the first checkerboard background color for alpha channels"
@@ -1364,7 +1358,7 @@ Private Sub LoadAllPreferences()
             cboAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
             cboAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
             
-            cboAlphaCheckSize.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Size", 1)
+            cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
             
             cboAlphaCheckSize.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
         'END alpha-channel checkerboard size
@@ -1376,7 +1370,7 @@ Private Sub LoadAllPreferences()
     'START Loading preferences
     
         'START tone-mapping HDR images at load time
-            If g_UserPreferences.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
             
             If g_ImageFormats.FreeImageEnabled Then
                 chkToneMapping.Enabled = True
@@ -1389,14 +1383,14 @@ Private Sub LoadAllPreferences()
         'END tone-mapping HDR images at load time
         
         'START metadata behavior at load-time
-            If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then chkMetadataDuplicates.Value = vbChecked Else chkMetadataDuplicates.Value = vbUnchecked
-            If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then chkMetadataJPEG.Value = vbChecked Else chkMetadataJPEG.Value = vbUnchecked
-            If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then chkMetadataBinary.Value = vbChecked Else chkMetadataBinary.Value = vbUnchecked
-            If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then chkMetadataUnknown.Value = vbChecked Else chkMetadataUnknown.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then chkMetadataDuplicates.Value = vbChecked Else chkMetadataDuplicates.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then chkMetadataJPEG.Value = vbChecked Else chkMetadataJPEG.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then chkMetadataBinary.Value = vbChecked Else chkMetadataBinary.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then chkMetadataUnknown.Value = vbChecked Else chkMetadataUnknown.Value = vbUnchecked
         'END metadata behavior at load-time
         
         'START auto-rotate according to EXIF data
-            If g_UserPreferences.GetPref_Boolean("Loading", "EXIF Auto Rotate", True) Then chkLoadingOrientation.Value = vbChecked Else chkLoadingOrientation.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True) Then chkLoadingOrientation.Value = vbChecked Else chkLoadingOrientation.Value = vbUnchecked
             chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
         'END auto-rotate according to EXIF data
         
@@ -1414,7 +1408,7 @@ Private Sub LoadAllPreferences()
             cboDefaultSaveFormat.Clear
             cboDefaultSaveFormat.AddItem " the current file format of the image being saved", 0
             cboDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
-            cboDefaultSaveFormat.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0)
+            cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
             
             cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
         'END suggested save as format
@@ -1423,13 +1417,13 @@ Private Sub LoadAllPreferences()
             cboSaveBehavior.Clear
             cboSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
             cboSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
-            cboSaveBehavior.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0)
+            cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
             
             cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
         'END overwrite vs copy when saving
                
         'START/END metadata export
-            If g_UserPreferences.GetPref_Boolean("Saving", "MetadataListPD", True) Then chkMetadataListPD.Value = vbChecked Else chkMetadataListPD.Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True) Then chkMetadataListPD.Value = vbChecked Else chkMetadataListPD.Value = vbUnchecked
         
     'END Saving preferences
     
@@ -1453,7 +1447,7 @@ Private Sub LoadAllPreferences()
         'END Interface decorations performance
         
         'START Thumbnail rendering performance
-            cboPerformance(1).ListIndex = g_UserPreferences.GetThumbnailPerformancePref()
+            cboPerformance(1).ListIndex = UserPrefs.GetThumbnailPerformancePref()
             cboPerformance(1).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
         'END Thumbnail rendering performance
         
@@ -1548,22 +1542,22 @@ Private Sub LoadAllPreferences()
             
             'Old versions of PD used a binary check/don't check preference.  To respect users who set the "don't check" preference in a
             ' previous version, automatically convert that preference to the new "never (not recommended)" value.
-            If g_UserPreferences.DoesValueExist("Updates", "CheckForUpdates") Then
+            If UserPrefs.DoesValueExist("Updates", "CheckForUpdates") Then
                 
-                If (Not g_UserPreferences.GetPref_Boolean("Updates", "CheckForUpdates", True)) Then
+                If (Not UserPrefs.GetPref_Boolean("Updates", "CheckForUpdates", True)) Then
                     
                     'Write a matching preference in the new format.
-                    g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
+                    UserPrefs.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
                     
                     'Overwrite the old preference, so it doesn't trigger again
-                    g_UserPreferences.SetPref_Boolean "Updates", "CheckForUpdates", True
+                    UserPrefs.SetPref_Boolean "Updates", "CheckForUpdates", True
                     
                 End If
                 
             End If
             
             'Retrieve the current preference
-            cboUpdates(0).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+            cboUpdates(0).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
             cboUpdates(0).AssignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
         'END update frequency
         
@@ -1574,12 +1568,12 @@ Private Sub LoadAllPreferences()
             cboUpdates(1).AddItem "stable, beta, and developer releases", 2
             
             'Retrieve the current preference
-            cboUpdates(1).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
+            cboUpdates(1).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Track", PDUT_BETA)
             cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
         'END update track
         
         'START notify when updates are ready for patching
-            If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
+            If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
             chkUpdates(0).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
         'END notify when updates are ready for patching
         
@@ -1589,7 +1583,7 @@ Private Sub LoadAllPreferences()
             ' In non-portable mode, however, we don't have write access to our own folder (because the user
             ' probably stuck us in an access-restricted folder).  When this happens, we disable all update
             ' options and use the explanation label to explain "why".
-            If g_UserPreferences.IsNonPortableModeActive() Then
+            If UserPrefs.IsNonPortableModeActive() Then
             
                 'This is a non-portable install.  Disable all update controls, then explain why.
                 For i = cboUpdates.lBound() To cboUpdates.UBound()
@@ -1617,17 +1611,17 @@ Private Sub LoadAllPreferences()
         
         'Display the current program settings folder.  (This is normally a subfolder inside the PD folder,
         ' unless the user has done something dumb like install us to a restricted folder.)
-        lblSettingsFolder.Caption = g_UserPreferences.GetDataPath()
+        lblSettingsFolder.Caption = UserPrefs.GetDataPath()
         
         'Display the current temporary file path
-        txtTempPath.Text = g_UserPreferences.GetTempPath
+        txtTempPath.Text = UserPrefs.GetTempPath
         
         'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
         ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
         btsMouseHighRes.AddItem "off", 0
         btsMouseHighRes.AddItem "on", 1
         btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
-        If g_UserPreferences.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
+        If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
         
         'Display what we know about PD's memory usage
             lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(OS.AppMemoryUsage()), "###,###,###,###") & " K"
@@ -1640,9 +1634,6 @@ Private Sub LoadAllPreferences()
     'END Advanced preferences
     
     '***************************************************************************
-    
-    'End batch preference mode
-    g_UserPreferences.EndBatchPreferenceMode
     
     'All preference controls are now initialized with the matching value stored in the preferences file
     
@@ -1709,7 +1700,7 @@ Private Sub Form_Load()
     
     'Activate the last preferences panel that the user looked at
     Dim activePanel As Long
-    activePanel = g_UserPreferences.GetPref_Long("Core", "Last Preferences Page", 0)
+    activePanel = UserPrefs.GetPref_Long("Core", "Last Preferences Page", 0)
     If (activePanel > picContainer.UBound) Then activePanel = picContainer.UBound
     picContainer(activePanel).Visible = True
     btsvCategory.ListIndex = activePanel

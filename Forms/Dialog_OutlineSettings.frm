@@ -268,7 +268,7 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.GetPresetPath & "Pen_Selector.xml"
+    m_XMLFilename = UserPrefs.GetPresetPath & "Pen_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'loadRecentPenList

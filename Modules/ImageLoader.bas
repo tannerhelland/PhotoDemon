@@ -29,7 +29,7 @@ End Sub
 
 Public Function GetImportPref_JPEGOrientation() As Boolean
     If (m_JpegObeyEXIFOrientation = PD_BOOL_UNKNOWN) Then
-        If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then m_JpegObeyEXIFOrientation = PD_BOOL_TRUE Else m_JpegObeyEXIFOrientation = PD_BOOL_FALSE
+        If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then m_JpegObeyEXIFOrientation = PD_BOOL_TRUE Else m_JpegObeyEXIFOrientation = PD_BOOL_FALSE
     End If
     GetImportPref_JPEGOrientation = (m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
 End Function

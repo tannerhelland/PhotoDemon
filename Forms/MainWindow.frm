@@ -1620,7 +1620,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             'The update file downloaded correctly.  Write today's date to the master preferences file, so we can correctly calculate
             ' weekly/monthly update checks for users that require it.
             Debug.Print "Update file download complete.  Update information has been saved at " & savedToThisFile
-            g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
+            UserPrefs.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
             
             'Retrieve the file contents into a string
             Dim updateXML As String
@@ -2624,7 +2624,7 @@ Private Sub Form_Load()
         
         'Update checks only work in portable mode (because we require write access to our own folder to do an
         ' in-place update).
-        If (Not g_UserPreferences.IsNonPortableModeActive()) Then Updates.StandardUpdateChecks
+        If (Not UserPrefs.IsNonPortableModeActive()) Then Updates.StandardUpdateChecks
         
         
         '*************************************************************************************************************************************
@@ -2646,7 +2646,7 @@ Private Sub Form_Load()
         ' users to help them get everything set up just the way they want it.
         
         'See if we've shown this dialog before; if we have, suspend its load.
-        If (Not g_UserPreferences.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
+        If (Not UserPrefs.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
         
         '*************************************************************************************************************************************
         ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
@@ -2658,11 +2658,13 @@ Private Sub Form_Load()
         
         'Because people may be using this code in the IDE, warn them about the consequences of doing so
         If (Not OS.IsProgramCompiled) Then
-            If (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
+            If (UserPrefs.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
         End If
         
-        'With all preferences successfully handled, we can shut down batch preference mode
-        g_UserPreferences.EndBatchPreferenceMode
+        'Because various user preferences may have been modified during the load process (to account for
+        ' failure states, system configurations, etc), write a copy of our potentially-modified
+        ' preference list out to file.
+        UserPrefs.ForceWriteToFile False
         
         'In debug mode, note that we are about to turn control over to the user
         #If DEBUGMODE = 1 Then
@@ -2758,18 +2760,13 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutdown initiated"
     #End If
     
-    'As part of the shutdown process, we're gonna be saving a lot of session data to the user's pref file.  Rather than
-    ' save/load the file on each request, activate "batch preference mode", which caches the user's prefs in-memory
-    ' and only dumps them to file once, when batch mode ends.
-    g_UserPreferences.StartBatchPreferenceMode
-    
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
-    g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
-    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
-    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
+    UserPrefs.SetPref_Long "Core", "Last Window State", Me.WindowState
+    UserPrefs.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
+    UserPrefs.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
+    UserPrefs.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
+    UserPrefs.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
     
     'Hide the main window to make it appear as if we shut down quickly
     Me.Visible = False
@@ -2988,8 +2985,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Writing session data to file..."
     #End If
     
-    g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
-    g_UserPreferences.EndBatchPreferenceMode
+    UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
     #If DEBUGMODE = 1 Then
@@ -3511,7 +3507,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, g_UserPreferences.GetUpdatePath & "updates.xml"
+            FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
             
         'Submit feedback
         Case 3
@@ -3523,10 +3519,10 @@ Private Sub MnuHelp_Click(Index As Integer)
             Dim msgReturn As VbMsgBoxResult
             
             'If the user has previously been prompted about having a GitHub account, use their previous answer
-            If g_UserPreferences.DoesValueExist("Core ", "Has GitHub Account") Then
+            If UserPrefs.DoesValueExist("Core ", "Has GitHub Account") Then
             
                 Dim hasGitHub As Boolean
-                hasGitHub = g_UserPreferences.GetPref_Boolean("Core", "Has GitHub Account", False)
+                hasGitHub = UserPrefs.GetPref_Boolean("Core", "Has GitHub Account", False)
                 
                 If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
             
@@ -3536,8 +3532,8 @@ Private Sub MnuHelp_Click(Index As Integer)
                 msgReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbInformation Or vbYesNoCancel, "Thanks for fixing PhotoDemon")
                 
                 'If their answer was anything but "Cancel", store that answer to file
-                If msgReturn = vbYes Then g_UserPreferences.SetPref_Boolean "Core", "Has GitHub Account", True
-                If msgReturn = vbNo Then g_UserPreferences.SetPref_Boolean "Core", "Has GitHub Account", False
+                If msgReturn = vbYes Then UserPrefs.SetPref_Boolean "Core", "Has GitHub Account", True
+                If msgReturn = vbNo Then UserPrefs.SetPref_Boolean "Core", "Has GitHub Account", False
                 
             End If
             

@@ -27,9 +27,6 @@ Public g_OpenImageCount As Long
 ' a new entry in this array.
 Public pdImages() As pdImage
 
-'Main user preferences and settings handler
-Public g_UserPreferences As pdPreferences
-
 'Main resource handler
 Public g_Resources As pdResources
 

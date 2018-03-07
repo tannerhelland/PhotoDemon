@@ -125,7 +125,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon_print.png"
+    tmpFilename = UserPrefs.GetTempPath & "PhotoDemon_print.png"
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing to print: " & tmpFilename

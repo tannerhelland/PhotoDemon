@@ -429,7 +429,7 @@ Private Sub cmdExport_Click()
         
         'Keep the existing filename, but strip the extension and replace it with "PDRC"
         ' (for... PhotoDemon Resource Collection, I guess?)
-        targetResFile = g_UserPreferences.GetThemePath & Files.FileGetName(txtResourcePath.Text, True) & ".pdrc"
+        targetResFile = UserPrefs.GetThemePath & Files.FileGetName(txtResourcePath.Text, True) & ".pdrc"
         
         'Prep a pdPackage
         Dim cPackage As pdPackager
@@ -619,7 +619,7 @@ Private Sub cmdResourcePath_Click()
     If cCommonDialog.GetOpenFileName(srcFile, , False, False, "PD Resource Files (*.pdr)|*.pdr", , m_FSO.FileGetPath(txtResourcePath.Text), "Select resource file", "pdr", Me.hWnd) Then
         If (Len(srcFile) <> 0) Then
             txtResourcePath.Text = srcFile
-            g_UserPreferences.SetPref_String "Themes", "LastResourceFile", srcFile
+            UserPrefs.SetPref_String "Themes", "LastResourceFile", srcFile
             LoadResourceFromFile
         End If
     End If
@@ -640,10 +640,10 @@ Private Sub SaveWorkingFile()
         Dim srcFile As String
         
         Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
-        If cCommonDialog.GetSaveFileName(srcFile, , True, "PD Resource Files (*.pdr)|*.pdr", , g_UserPreferences.GetThemePath, "Save resource file", "pdr", Me.hWnd) Then
+        If cCommonDialog.GetSaveFileName(srcFile, , True, "PD Resource Files (*.pdr)|*.pdr", , UserPrefs.GetThemePath, "Save resource file", "pdr", Me.hWnd) Then
             If (Len(srcFile) <> 0) Then
                 txtResourcePath.Text = srcFile
-                g_UserPreferences.SetPref_String "Themes", "LastResourceFile", srcFile
+                UserPrefs.SetPref_String "Themes", "LastResourceFile", srcFile
                 okayToProceed = True
             Else
                 okayToProceed = False
@@ -774,8 +774,8 @@ Private Sub Form_Load()
     Set m_FSO = New pdFSO
     
     'Load the last-edited resource file (if any)
-    If g_UserPreferences.DoesValueExist("Themes", "LastResourceFile") Then
-        txtResourcePath.Text = g_UserPreferences.GetPref_String("Themes", "LastResourceFile", vbNullString)
+    If UserPrefs.DoesValueExist("Themes", "LastResourceFile") Then
+        txtResourcePath.Text = UserPrefs.GetPref_String("Themes", "LastResourceFile", vbNullString)
         LoadResourceFromFile
     Else
         txtResourcePath.Text = vbNullString

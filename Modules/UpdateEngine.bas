@@ -82,26 +82,26 @@ Public Function IsItTimeForAnUpdate() As Boolean
     ' updates are respected, if the new preference doesn't exist yet, we'll use the old preference value instead.
     Dim updateFrequency As PD_UPDATE_FREQUENCY
     updateFrequency = PDUF_EACH_SESSION
-    If g_UserPreferences.DoesValueExist("Updates", "CheckForUpdates") Then
+    If UserPrefs.DoesValueExist("Updates", "CheckForUpdates") Then
         
         'Write a matching preference in the new format, and overwrite the old preference (so it doesn't trigger this
         ' check again)
-        If Not g_UserPreferences.GetPref_Boolean("Updates", "CheckForUpdates", True) Then
-            g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
-            g_UserPreferences.SetPref_Boolean "Updates", "CheckForUpdates", True
+        If Not UserPrefs.GetPref_Boolean("Updates", "CheckForUpdates", True) Then
+            UserPrefs.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
+            UserPrefs.SetPref_Boolean "Updates", "CheckForUpdates", True
         End If
         
     End If
     
     'In v6.6, PD's update strategy was modified to allow the user to specify an update frequency (rather than
     ' a binary yes/no preference).  Retrieve the allowed frequency now.
-    If (updateFrequency <> PDUF_NEVER) Then updateFrequency = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+    If (updateFrequency <> PDUF_NEVER) Then updateFrequency = UserPrefs.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
     
     'If updates ARE allowed, see when we last checked for an update.  If enough time has elapsed, check again.
     If (updateFrequency <> PDUF_NEVER) Then
     
         Dim lastCheckDate As String
-        lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check")
+        lastCheckDate = UserPrefs.GetPref_String("Updates", "Last Update Check")
         
         'If a "last update check date" was not found, request an immediate update check.
         If (Len(lastCheckDate) = 0) Then
@@ -176,7 +176,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
             ' necessarily correlate to this .exe's build type.  (For example, maybe this is a stable PD build, but the user
             ' has decided to switch update checks to include beta and nightly builds - that's okay!)
             Dim curUpdateTrack As PD_UPDATE_TRACK
-            curUpdateTrack = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
+            curUpdateTrack = UserPrefs.GetPref_Long("Updates", "Update Track", PDUT_BETA)
             
             'From the update track, we need to generate a string that identifies the correct chunk of the XML file.
             ' Some update tracks can update to more than one type of build (for example, nightly builds can update
@@ -302,7 +302,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 'Request a download from the main form.  Note that we also use the reported checksum as the file's
                 ' unique ID value. (Post-download and extraction, this value will be used to ensure that the extracted
                 ' patch data matches what we originally uploaded.)
-                If FormMain.RequestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, g_UserPreferences.GetUpdatePath & "PDPatch.tmp") Then
+                If FormMain.RequestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "PDPatch.tmp") Then
                     InternalDebugMsg "Now downloading update summary from " & updateURL, "ProcessProgramUpdateFile"
                     ProcessProgramUpdateFile = True
                 Else
@@ -365,7 +365,7 @@ Public Function PatchProgramFiles() As Boolean
     Dim tmpXML As pdXML
     Set tmpXML = New pdXML
     tmpXML.LoadXMLFromString m_PDPatchXML
-    tmpXML.WriteXMLToFile g_UserPreferences.GetUpdatePath & "patch.xml", True
+    tmpXML.WriteXMLToFile UserPrefs.GetUpdatePath & "patch.xml", True
     
     'The patching .exe is embedded inside the update package.  Extract it now.
     Dim cPackage As pdPackagerLegacy
@@ -376,7 +376,7 @@ Public Function PatchProgramFiles() As Boolean
     patchFileName = "PD_Update_Patcher.exe"
     
     If cPackage.ReadPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
-        cPackage.AutoExtractSingleFile g_UserPreferences.GetProgramPath, patchFileName, , 99
+        cPackage.AutoExtractSingleFile UserPrefs.GetProgramPath, patchFileName, , 99
     Else
         InternalDebugMsg "WARNING!  Patch program wasn't found inside the update package.  Patching will not proceed.", "PatchProgramFiles"
     End If
@@ -389,7 +389,7 @@ Public Function PatchProgramFiles() As Boolean
     patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
     Dim targetPath As String
-    targetPath = g_UserPreferences.GetProgramPath & patchFileName
+    targetPath = UserPrefs.GetProgramPath & patchFileName
     
     Dim shellReturn As Long
     shellReturn = ShellExecute(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
@@ -434,12 +434,12 @@ Public Sub CleanPreviousUpdateFiles()
     Dim tmpFile As String
         
     'First, we hard-code a few XML files that may exist due to old PD update methods
-    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "patch.xml"
-    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "pdupdate.xml"
-    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "updates.xml"
+    tmpFileList.AddString UserPrefs.GetUpdatePath & "patch.xml"
+    tmpFileList.AddString UserPrefs.GetUpdatePath & "pdupdate.xml"
+    tmpFileList.AddString UserPrefs.GetUpdatePath & "updates.xml"
     
     'Next, we auto-add any .tmp files in the update folder, which should cover all other potential use-cases
-    Files.RetrieveAllFiles g_UserPreferences.GetUpdatePath, tmpFileList, False, False, "TMP|tmp"
+    Files.RetrieveAllFiles UserPrefs.GetUpdatePath, tmpFileList, False, False, "TMP|tmp"
     
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
@@ -451,7 +451,7 @@ Public Sub CleanPreviousUpdateFiles()
         
     'Do the same thing for temp files in the base PD folder
     Set tmpFileList = Nothing
-    If Files.RetrieveAllFiles(g_UserPreferences.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
+    If Files.RetrieveAllFiles(UserPrefs.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
             If Files.FileExists(tmpFile) Then
@@ -476,7 +476,7 @@ Public Sub CleanPreviousUpdateFiles()
     End If
     
     'Finally, delete the patch exe itself, which will have closed by now
-    Files.FileDeleteIfExists g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
+    Files.FileDeleteIfExists UserPrefs.GetProgramPath & "PD_Update_Patcher.exe"
     
 End Sub
 
@@ -486,7 +486,7 @@ End Sub
 Public Function WasProgramStartedViaRestart() As Boolean
     
     Dim restartFile As String
-    restartFile = g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
+    restartFile = UserPrefs.GetProgramPath & "PD_Update_Patcher.exe"
     
     If Files.FileExists(restartFile) Then
         Files.FileDelete restartFile
@@ -504,7 +504,7 @@ End Function
 Public Sub StandardUpdateChecks()
     
     'If PD is running in non-portable mode, we don't have write access to our own folder - which makes updates impossible.
-    If g_UserPreferences.IsNonPortableModeActive() Then Exit Sub
+    If UserPrefs.IsNonPortableModeActive() Then Exit Sub
     
     'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
     g_ProgramStartedViaRestart = Updates.WasProgramStartedViaRestart
@@ -532,7 +532,7 @@ Public Sub StandardUpdateChecks()
         'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, g_UserPreferences.GetUpdatePath & "updates.xml"
+        FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
         
     End If
     
@@ -551,7 +551,7 @@ Public Sub DisplayUpdateNotification()
     g_ShowUpdateNotification = False
     
     'Check user preferences; they can choose to ignore update notifications
-    If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
+    If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then
         
         'Display the dialog, while yielding for the rare case that a modal dialog is already active
         If Interface.IsModalDialogActive() Then

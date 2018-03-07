@@ -357,7 +357,7 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.GetPresetPath & "Brush_Selector.xml"
+    m_XMLFilename = UserPrefs.GetPresetPath & "Brush_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'LoadRecentBrushList

@@ -320,8 +320,7 @@ Private Sub cmdBarMini_OKClick()
     Me.Visible = False
     
     'Remember the current container the user is viewing
-    g_UserPreferences.StartBatchPreferenceMode
-    g_UserPreferences.SetPref_Long "Plugins", "Last Plugin Preferences Page", lstPlugins.ListIndex
+    UserPrefs.SetPref_Long "Plugins", "Last Plugin Preferences Page", lstPlugins.ListIndex
     
     'Look for any changes to plugin settings
     Dim settingsChanged As Boolean: settingsChanged = False
@@ -346,8 +345,8 @@ Private Sub cmdBarMini_OKClick()
         g_ImageFormats.GenerateOutputFormats
     End If
     
-    'End batch preference update mode, which will force a write-to-file operation
-    g_UserPreferences.EndBatchPreferenceMode
+    'Because plugin data is stored in the core user prefs file, force a write-to-file op now
+    UserPrefs.ForceWriteToFile
     
     Message "Plugin options saved."
     
@@ -357,7 +356,7 @@ End Sub
 Private Sub cmdReset_Click()
 
     'Set current container to zero
-    g_UserPreferences.SetPref_Long "Plugins", "Last Plugin Preferences Page", 0
+    UserPrefs.SetPref_Long "Plugins", "Last Plugin Preferences Page", 0
     
     'Enable all plugins if possible
     Dim i As Long
@@ -468,9 +467,6 @@ Private Sub LoadAllPluginSettings()
         m_PluginEnabled(i) = PluginManager.IsPluginCurrentlyEnabled(i)
     Next i
     
-    'Start batch preference processing mode.
-    g_UserPreferences.StartBatchPreferenceMode
-    
     'Now, check version numbers of each plugin.  This is more complicated than it needs to be, on account of
     ' each plugin having its own unique mechanism for version-checking, but I have wrapped these various functions
     ' inside fairly standard wrapper calls.
@@ -481,11 +477,8 @@ Private Sub LoadAllPluginSettings()
     UpdatePluginLabels
     
     'Enable the last container the user selected
-    lstPlugins.ListIndex = g_UserPreferences.GetPref_Long("Plugins", "Last Plugin Preferences Page", 0)
+    lstPlugins.ListIndex = UserPrefs.GetPref_Long("Plugins", "Last Plugin Preferences Page", 0)
     PluginChanged
-    
-    'End batch preference mode
-    g_UserPreferences.EndBatchPreferenceMode
     
 End Sub
 

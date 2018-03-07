@@ -1099,7 +1099,7 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     Next i
     
     'Write the preference out to file, then notify the canvas of the change
-    If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
+    If (Not suppressPrefUpdate) Then UserPrefs.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
     FormMain.MainCanvas(0).NotifyImageStripAlignment newAlignment
     
 End Sub
@@ -1119,7 +1119,7 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     Next i
 
     'Write the matching preference out to file, then notify the primary canvas of the change
-    If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
+    If (Not suppressPrefUpdate) Then UserPrefs.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
     FormMain.MainCanvas(0).NotifyImageStripVisibilityMode newSetting
 
 End Sub
@@ -1439,7 +1439,7 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
                 'This image has a filename!  Next, check the user's preference for long or short window captions
                 
                 'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
-                If (g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0) Then
+                If (UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0) = 0) Then
                     captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                     appendFileFormat = True
                 Else

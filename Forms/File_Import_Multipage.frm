@@ -170,11 +170,11 @@ Private Sub cmdAnswer_Click(Index As Integer)
     
         Case 0
             userAnswer = vbYes
-            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Long "Loading", "Multipage Image Prompt", 2
+            If CBool(chkRepeat.Value) Then UserPrefs.SetPref_Long "Loading", "Multipage Image Prompt", 2
             
         Case 1
             userAnswer = vbNo
-            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Long "Loading", "Multipage Image Prompt", 1
+            If CBool(chkRepeat.Value) Then UserPrefs.SetPref_Long "Loading", "Multipage Image Prompt", 1
             
     End Select
         

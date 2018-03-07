@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.330</langversion>
+<langversion>6.7.331</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -3507,12 +3507,6 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -15194,6 +15188,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

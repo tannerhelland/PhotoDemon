@@ -133,8 +133,8 @@ Public Sub ShowDialog()
     'Prep any dynamic UI objects
     btsStyle.AddItem "wheels + history", 0
     btsStyle.AddItem "palette", 1
-    btsStyle.ListIndex = g_UserPreferences.GetPref_Long("Tools", "ColorPanelStyle", 0)
-    txtPaletteFile.Text = g_UserPreferences.GetPref_String("Tools", "ColorPanelPaletteFile")
+    btsStyle.ListIndex = UserPrefs.GetPref_Long("Tools", "ColorPanelStyle", 0)
+    txtPaletteFile.Text = UserPrefs.GetPref_String("Tools", "ColorPanelPaletteFile")
     UpdateVisiblePanel
     
     'Apply any custom styles to the form
@@ -157,8 +157,8 @@ End Sub
 Private Sub cmdBar_OKClick()
     
     'Write these preferences to file before exiting
-    g_UserPreferences.SetPref_Long "Tools", "ColorPanelStyle", btsStyle.ListIndex
-    If (btsStyle.ListIndex = 1) Then g_UserPreferences.SetPref_String "Tools", "ColorPanelPaletteFile", txtPaletteFile.Text
+    UserPrefs.SetPref_Long "Tools", "ColorPanelStyle", btsStyle.ListIndex
+    If (btsStyle.ListIndex = 1) Then UserPrefs.SetPref_String "Tools", "ColorPanelPaletteFile", txtPaletteFile.Text
     
     m_CmdBarAnswer = vbOK
     Me.Hide

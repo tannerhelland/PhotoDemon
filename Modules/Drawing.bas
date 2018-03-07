@@ -131,8 +131,8 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
 
     'Retrieve the user's preferred alpha checkerboard colors, and convert the longs into individual RGB components
     Dim chkColorOne As Long, chkColorTwo As Long
-    chkColorOne = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckOne", RGB(255, 255, 255))
-    chkColorTwo = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckTwo", RGB(204, 204, 204))
+    chkColorOne = UserPrefs.GetPref_Long("Transparency", "AlphaCheckOne", RGB(255, 255, 255))
+    chkColorTwo = UserPrefs.GetPref_Long("Transparency", "AlphaCheckTwo", RGB(204, 204, 204))
     
     Dim r1 As Long, g1 As Long, b1 As Long
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -145,7 +145,7 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     
     'Determine a checkerboard block size based on the current user preference
     Dim chkSize As Long
-    chkSize = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckSize", 1)
+    chkSize = UserPrefs.GetPref_Long("Transparency", "AlphaCheckSize", 1)
     
     Select Case chkSize
     
@@ -541,12 +541,12 @@ Public Sub GetCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
     With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
         
         'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
         dstRect.Right = Int(tmpX + 0.99)
@@ -564,12 +564,12 @@ Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As Rec
     With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
         dstRect.Width = tmpX - dstRect.Left
         dstRect.Height = tmpY - dstRect.Top
         

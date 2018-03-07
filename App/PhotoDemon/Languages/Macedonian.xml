@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.123</langversion>
+<langversion>1.0.124</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3508,12 +3508,6 @@ Please enter a numeric value.</original>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -15196,6 +15190,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

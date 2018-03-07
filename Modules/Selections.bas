@@ -133,7 +133,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
                 
-        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.GetSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
+        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
@@ -143,7 +143,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             If tmpSelection.ReadSelectionFromFile(sFile, True) Then
                 
                 'Save the new directory as the default path for future usage
-                g_UserPreferences.SetSelectionPath sFile
+                UserPrefs.SetSelectionPath sFile
                 
                 'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
                 Process "Load selection", False, BuildParamList("selectionpath", sFile), UNDO_Selection
@@ -175,7 +175,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         SyncTextToCurrentSelection g_CurrentImage
                 
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         Message "Selection loaded successfully"
     
     End If
@@ -197,10 +197,10 @@ Public Sub SaveSelectionToFile()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
         
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.GetSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
-        g_UserPreferences.SetSelectionPath sFile
+        UserPrefs.SetSelectionPath sFile
         
         'Write out the selection file
         Dim cmpLevel As Long
@@ -247,7 +247,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
@@ -318,7 +318,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
     'By default, recommend PNG as the save format
     Dim saveFormat As Long
@@ -732,7 +732,7 @@ Public Sub InvertCurrentSelection()
     pdImages(g_CurrentImage).SetSelectionActive True
         
     'Draw the new selection to the screen
-    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -784,7 +784,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
 
@@ -891,7 +891,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
 
@@ -946,7 +946,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
     
@@ -1001,7 +1001,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
     
@@ -1073,7 +1073,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     End If
     
@@ -1085,7 +1085,7 @@ Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)
     pdImages(g_CurrentImage).EraseProcessedSelection targetLayerIndex
     
     'Redraw the active viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1265,7 +1265,7 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     SetUIGroupState PDUI_SelectionTransforms, True
     
     'Redraw the screen
-    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
                         
 End Sub
 
@@ -1299,14 +1299,14 @@ End Function
 ' Selections can be loaded directly from file, without ever invoking a tool.)
 Public Sub InitializeSelectionRendering()
 
-    If (Not g_UserPreferences Is Nothing) Then
+    If UserPrefs.IsReady Then
         
         'Rendering mode (marching ants, highlight, etc)
-        m_CurSelectionMode = g_UserPreferences.GetPref_Long("Tools", "SelectionRenderMode", 0)
+        m_CurSelectionMode = UserPrefs.GetPref_Long("Tools", "SelectionRenderMode", 0)
         
         'Highlight mode color
         Dim tmpString As String
-        tmpString = g_UserPreferences.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48")
+        tmpString = UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48")
         m_CurSelectionColor = Colors.GetRGBLongFromHex(tmpString)
         
         'TODO: lightbox color, opacity for various modes
@@ -1327,11 +1327,11 @@ Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSe
             'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
             ' them correctly, even if selection tools have not been loaded this session.  (This can happen if the user runs
             ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
-            If (Not g_UserPreferences Is Nothing) Then g_UserPreferences.WritePreference "Tools", "SelectionRenderMode", Trim$(Str(m_CurSelectionMode))
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str(m_CurSelectionMode))
             
         Case PDSR_HighlightColor
             m_CurSelectionColor = newValue
-            If (Not g_UserPreferences Is Nothing) Then g_UserPreferences.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_CurSelectionColor)
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_CurSelectionColor)
             
     End Select
     

@@ -42,7 +42,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
     
     'Prep a common dialog interface
     Dim openDialog As pdOpenSaveDialog
@@ -91,7 +91,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
             Next i
             
             'Save the new directory as the default path for future usage
-            g_UserPreferences.SetPref_String "Paths", "Open Image", imagesPath
+            UserPrefs.SetPref_String "Paths", "Open Image", imagesPath
             
         'If there is only one file in the array (e.g. the user only opened one image), we don't need to do all
         ' that extra processing - just save the new directory to the preferences file
@@ -99,7 +99,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         
             'Save the new directory as the default path for future usage
             tempPathString = Files.FileGetPath(listOfFiles(0))
-            g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
+            UserPrefs.SetPref_String "Paths", "Open Image", tempPathString
             
             dstStringStack.AddString listOfFiles(0)
             
@@ -108,7 +108,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         'Copy the raw string array into an iteration-friendly string stack
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
+        UserPrefs.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
         
         'All done!
         PhotoDemon_OpenImageDialog = True
@@ -136,17 +136,17 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", vbNullString)
+    tempPathString = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
         
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
     If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = Files.FileGetPath(userImagePath)
-        g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
+        UserPrefs.SetPref_String "Paths", "Open Image", tempPathString
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
+        UserPrefs.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
         
         'All done!
         PhotoDemon_OpenImageDialog_Simple = True
@@ -183,7 +183,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
         ' 2) "Safe" mode.  When the user clicks "save", save a new copy of the image, auto-incremented with a trailing number.
         '    (e.g. old copies are never overwritten).
         Dim safeSaveModeActive As Boolean
-        safeSaveModeActive = (g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) <> 0)
+        safeSaveModeActive = (UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0) <> 0)
         
         If safeSaveModeActive Then
         
@@ -228,7 +228,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '1) Determine an initial folder.  This is easy, as we will just grab the last "save image" path from the preferences file.
     '   (The preferences engine will automatically pass us the user's Pictures folder if no "last path" entry exists.)
     Dim initialSaveFolder As String
-    initialSaveFolder = g_UserPreferences.GetPref_String("Paths", "Save Image", vbNullString)
+    initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
     '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
     '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)
@@ -237,7 +237,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     Dim cdFormatIndex As Long
     Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
     
-    If (g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
+    If (UserPrefs.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
         cdFormatIndex = g_LastSaveFilter
         suggestedSaveFormat = g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         suggestedFileExtension = g_ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)
@@ -279,8 +279,8 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         
         'Store all global-preference attributes
         g_LastSaveFilter = cdFormatIndex
-        g_UserPreferences.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
-        g_UserPreferences.SetPref_String "Paths", "Save Image", Files.FileGetPath(sFile)
+        UserPrefs.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
+        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(sFile)
         
         'Our work here is done!  Transfer control to the core SaveImage routine, which will handle the actual export process.
         MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)

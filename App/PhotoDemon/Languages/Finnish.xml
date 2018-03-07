@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3310</langversion>
+<langversion>6.8.3311</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3502,12 +3502,6 @@ Please enter a numeric value.</original>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -15190,6 +15184,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

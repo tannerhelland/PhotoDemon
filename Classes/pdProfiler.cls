@@ -393,7 +393,7 @@ Private Function GetReportFilename()
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
-    GetReportFilename = g_UserPreferences.GetDebugPath & dstFilename
+    GetReportFilename = UserPrefs.GetDebugPath & dstFilename
 
 End Function
 
@@ -414,7 +414,7 @@ Private Function GetDatabaseFilename()
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
-    GetDatabaseFilename = g_UserPreferences.GetDebugPath & dstFilename
+    GetDatabaseFilename = UserPrefs.GetDebugPath & dstFilename
 
 End Function
 

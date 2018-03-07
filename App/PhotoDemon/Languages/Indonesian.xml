@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.269</langversion>
+<langversion>6.6.270</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -3509,12 +3509,6 @@ Please masukkan nilai berangka.</translation>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -15202,6 +15196,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 
