@@ -70,6 +70,18 @@ Private m_BatchModeActive As Boolean
 ' Outside callers can retrieve them via their dedicated functions.
 Private m_ThumbnailPerformance As PD_PerformanceSetting, m_ThumbnailInterpolation As GP_InterpolationMode
 
+Public Enum PD_DebugLogBehavior
+    dbg_Auto = 0
+    dbg_False = 1
+    dbg_True = 2
+End Enum
+
+#If False Then
+    Private Const dbg_Auto = 0, dbg_False = 1, dbg_True = 2
+#End If
+
+Private m_GenerateDebugLogs As PD_DebugLogBehavior
+
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
 ' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
 ' file, and individual windows rely on this module to manage the file for them.
@@ -97,6 +109,21 @@ Public Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting
     ElseIf (newSetting = PD_PERF_FASTEST) Then
         m_ThumbnailInterpolation = GP_IM_NearestNeighbor
     End If
+End Sub
+
+Public Function GenerateDebugLogs() As Boolean
+    If (m_GenerateDebugLogs = dbg_Auto) Then
+        GenerateDebugLogs = (PD_BUILD_QUALITY <> PD_PRODUCTION)
+    ElseIf (m_GenerateDebugLogs = dbg_False) Then
+        GenerateDebugLogs = False
+    Else
+        GenerateDebugLogs = True
+    End If
+End Function
+
+Public Sub SetDebugLogPreference(ByVal newPref As PD_DebugLogBehavior)
+    m_GenerateDebugLogs = newPref
+    UserPrefs.SetPref_Long "Core", "GenerateDebugLogs", m_GenerateDebugLogs
 End Sub
 
 'Non-portable mode means PD has been extracted to an access-restricted folder.  The program (should) still run normally,
@@ -477,6 +504,7 @@ Public Sub LoadUserSettings()
         g_ViewportPerformance = UserPrefs.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
         g_UndoCompressionLevel = UserPrefs.GetPref_Long("Performance", "UndoCompression", 1)
         
+        m_GenerateDebugLogs = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         
     Else
@@ -539,6 +567,7 @@ Private Sub CreateNewPreferencesFile()
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
     m_XMLEngine.WriteTag "Core", vbNullString, True
         m_XMLEngine.WriteTag "DisplayIDEWarning", "True"
+        m_XMLEngine.WriteTag "GenerateDebugLogs", "0"     'Default to "automatic" debug log behavior
         m_XMLEngine.WriteTag "HasGitHubAccount", vbNullString
         m_XMLEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
         m_XMLEngine.WriteTag "LastPreferencesPage", "0"

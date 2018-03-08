@@ -45,19 +45,19 @@ Begin VB.Form FormOptions
       _ExtentY        =   11774
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   6
       Left            =   3000
       TabIndex        =   6
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
          Height          =   975
          Left            =   0
          TabIndex        =   43
-         Top             =   1320
+         Top             =   1950
          Width           =   8175
          _ExtentX        =   14420
          _ExtentY        =   1720
@@ -67,7 +67,7 @@ Begin VB.Form FormOptions
          Height          =   600
          Left            =   240
          TabIndex        =   30
-         Top             =   5640
+         Top             =   4665
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   1058
@@ -77,7 +77,7 @@ Begin VB.Form FormOptions
          Height          =   450
          Left            =   7680
          TabIndex        =   29
-         Top             =   435
+         Top             =   5775
          Width           =   525
          _ExtentX        =   926
          _ExtentY        =   794
@@ -87,39 +87,37 @@ Begin VB.Form FormOptions
          Height          =   315
          Left            =   240
          TabIndex        =   23
-         Top             =   510
+         Top             =   5850
          Width           =   7335
          _ExtentX        =   12938
          _ExtentY        =   556
          Text            =   "automatically generated at run-time"
       End
       Begin PhotoDemon.pdLabel lblMemoryUsageMax 
-         Height          =   540
+         Height          =   345
          Left            =   240
-         Top             =   4560
+         Top             =   3855
          Width           =   7965
          _ExtentX        =   14049
-         _ExtentY        =   953
+         _ExtentY        =   609
          Caption         =   "memory usage will be displayed here"
          ForeColor       =   8405056
-         Layout          =   1
       End
       Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
-         Height          =   540
+         Height          =   345
          Left            =   240
-         Top             =   4080
+         Top             =   3495
          Width           =   7965
          _ExtentX        =   14049
-         _ExtentY        =   953
+         _ExtentY        =   609
          Caption         =   "memory usage will be displayed here"
          ForeColor       =   8405056
-         Layout          =   1
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   5
          Left            =   0
-         Top             =   3600
+         Top             =   3135
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -131,7 +129,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   19
          Left            =   0
-         Top             =   0
+         Top             =   5400
          Width           =   8145
          _ExtentX        =   14367
          _ExtentY        =   503
@@ -142,7 +140,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdLabel lblTempPathWarning 
          Height          =   480
          Left            =   240
-         Top             =   900
+         Top             =   6240
          Visible         =   0   'False
          Width           =   8025
          _ExtentX        =   14155
@@ -155,7 +153,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   1
          Left            =   0
-         Top             =   5160
+         Top             =   4305
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -167,7 +165,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   20
          Left            =   0
-         Top             =   2640
+         Top             =   0
          Width           =   8145
          _ExtentX        =   14367
          _ExtentY        =   503
@@ -178,23 +176,33 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdLabel lblSettingsFolder 
          Height          =   285
          Left            =   240
-         Top             =   3000
+         Top             =   360
          Width           =   7905
          _ExtentX        =   13944
          _ExtentY        =   503
          Caption         =   ""
          ForeColor       =   4210752
       End
+      Begin PhotoDemon.pdButtonStrip btsDebug 
+         Height          =   975
+         Left            =   0
+         TabIndex        =   44
+         Top             =   780
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   1720
+         Caption         =   "generate debug logs"
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   5
       Left            =   3000
       TabIndex        =   4
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   3495
          Left            =   240
@@ -255,14 +263,14 @@ Begin VB.Form FormOptions
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   0
       Left            =   3000
       TabIndex        =   0
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdDropDown cboMRUStyle 
          Height          =   810
          Left            =   180
@@ -389,14 +397,14 @@ Begin VB.Form FormOptions
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   4
       Left            =   3000
       TabIndex        =   7
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
          Left            =   180
@@ -498,14 +506,14 @@ Begin VB.Form FormOptions
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   2
       Left            =   3000
       TabIndex        =   13
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   180
@@ -520,7 +528,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   180
          TabIndex        =   15
-         Top             =   2775
+         Top             =   1455
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
@@ -531,7 +539,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   180
          TabIndex        =   16
-         Top             =   1365
+         Top             =   4125
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
@@ -542,7 +550,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   4
          Left            =   0
-         Top             =   3690
+         Top             =   2490
          Width           =   8265
          _ExtentX        =   14579
          _ExtentY        =   503
@@ -554,7 +562,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   6
          Left            =   0
-         Top             =   885
+         Top             =   3645
          Width           =   8175
          _ExtentX        =   14420
          _ExtentY        =   503
@@ -578,7 +586,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   8
          Left            =   0
-         Top             =   2310
+         Top             =   990
          Width           =   8205
          _ExtentX        =   14473
          _ExtentY        =   503
@@ -590,7 +598,7 @@ Begin VB.Form FormOptions
          Height          =   375
          Left            =   180
          TabIndex        =   36
-         Top             =   4200
+         Top             =   3000
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   661
@@ -598,14 +606,14 @@ Begin VB.Form FormOptions
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   1
       Left            =   3000
       TabIndex        =   8
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   180
@@ -706,14 +714,14 @@ Begin VB.Form FormOptions
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
+      Height          =   6720
       Index           =   3
       Left            =   3000
       TabIndex        =   3
       Top             =   120
       Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   14631
+      _ExtentY        =   11853
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   765
          Left            =   180
@@ -1177,6 +1185,9 @@ Private Sub cmdBarMini_OKClick()
     
     'BEGIN Advanced preferences
     
+        'START/END generate debug logs
+            UserPrefs.SetDebugLogPreference btsDebug.ListIndex
+            
         'START/END store the temporary path (but only if it's changed)
             If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)
         
@@ -1372,21 +1383,20 @@ Private Sub LoadAllPreferences()
         'START tone-mapping HDR images at load time
             If UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
             
-            If g_ImageFormats.FreeImageEnabled Then
-                chkToneMapping.Enabled = True
-            Else
-                chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
-                chkToneMapping.Enabled = False
-            End If
-            
+            chkToneMapping.Enabled = g_ImageFormats.FreeImageEnabled
+            If (Not g_ImageFormats.FreeImageEnabled) Then chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
             chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
         'END tone-mapping HDR images at load time
         
         'START metadata behavior at load-time
             If UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then chkMetadataDuplicates.Value = vbChecked Else chkMetadataDuplicates.Value = vbUnchecked
+            chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
             If UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then chkMetadataJPEG.Value = vbChecked Else chkMetadataJPEG.Value = vbUnchecked
-            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then chkMetadataBinary.Value = vbChecked Else chkMetadataBinary.Value = vbUnchecked
+            chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
             If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then chkMetadataUnknown.Value = vbChecked Else chkMetadataUnknown.Value = vbUnchecked
+            chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
+            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then chkMetadataBinary.Value = vbChecked Else chkMetadataBinary.Value = vbUnchecked
+            chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
         'END metadata behavior at load-time
         
         'START auto-rotate according to EXIF data
@@ -1403,6 +1413,7 @@ Private Sub LoadAllPreferences()
     
         'START/END prompt about unsaved images
             If g_ConfirmClosingUnsaved Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
+            chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
             
         'START suggested save as format
             cboDefaultSaveFormat.Clear
@@ -1422,8 +1433,9 @@ Private Sub LoadAllPreferences()
             cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
         'END overwrite vs copy when saving
                
-        'START/END metadata export
+        'START/END embed PD as the last-used program
             If UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True) Then chkMetadataListPD.Value = vbChecked Else chkMetadataListPD.Value = vbUnchecked
+            chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
         
     'END Saving preferences
     
@@ -1448,7 +1460,7 @@ Private Sub LoadAllPreferences()
         
         'START Thumbnail rendering performance
             cboPerformance(1).ListIndex = UserPrefs.GetThumbnailPerformancePref()
-            cboPerformance(1).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
+            cboPerformance(1).AssignTooltip "PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance."
         'END Thumbnail rendering performance
         
         'START Viewport rendering performance
@@ -1457,7 +1469,7 @@ Private Sub LoadAllPreferences()
         'END Viewport rendering performance
         
         'START Undo data compression
-            sltUndoCompression.AssignTooltip "By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)"
+            sltUndoCompression.AssignTooltip "Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited."
             sltUndoCompression.Value = g_UndoCompressionLevel
         'END Undo data compression
         
@@ -1613,8 +1625,13 @@ Private Sub LoadAllPreferences()
         ' unless the user has done something dumb like install us to a restricted folder.)
         lblSettingsFolder.Caption = UserPrefs.GetDataPath()
         
-        'Display the current temporary file path
-        txtTempPath.Text = UserPrefs.GetTempPath
+        'By default, debug logs are only generated in developer and beta builds.  As of 7.2, this behavior can be forcibly
+        ' toggled in production builds as well.
+        btsDebug.AddItem "auto", 0
+        btsDebug.AddItem "no", 1
+        btsDebug.AddItem "yes", 2
+        btsDebug.ListIndex = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
+        btsDebug.AssignTooltip "In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem."
         
         'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
         ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
@@ -1624,13 +1641,20 @@ Private Sub LoadAllPreferences()
         If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
         
         'Display what we know about PD's memory usage
-            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(OS.AppMemoryUsage()), "###,###,###,###") & " K"
-            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(OS.AppMemoryUsage(True)), "###,###,###,###") & " K"
-            If (Not OS.IsProgramCompiled) Then
-                lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
-                lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
-            End If
-    
+        lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(OS.AppMemoryUsage()), "###,###,###,###") & " K"
+        lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(OS.AppMemoryUsage(True)), "###,###,###,###") & " K"
+        If (Not OS.IsProgramCompiled) Then
+            lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
+            lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
+        End If
+            
+        'Display the current temporary file path
+        txtTempPath.Text = UserPrefs.GetTempPath
+        cmdTmpPath.AssignTooltip "Click to select a new temporary folder."
+        
+        'Clarify the behavior of the "reset" button
+        cmdReset.AssignTooltip "This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem."
+        
     'END Advanced preferences
     
     '***************************************************************************

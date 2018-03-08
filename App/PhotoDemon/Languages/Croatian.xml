@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3311</langversion>
+<langversion>6.8.3312</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14496,6 +14496,11 @@ To nastavite, preuzmite novu kopiju PhotoDemona iz photodemon.org.</translation>
 </phrase>
 
 <phrase>
+<original>generate debug logs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(Odricanje od odgovornosti popunjeno u vremenu vožnje)</translation>
 </phrase>
@@ -14830,8 +14835,33 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
 <translation>Većina digitalnih fotografija uključuje upute za rotaciju (meta podatke o orijentaciji EXIF) koje će PhotoDemon koristiti za automatsko rotiranje fotografija. Neki stariji pametni telefoni i fotoaparati možda neće ispravno napisati ove upute, pa ako se fotografije uvoze na stranu ili naopako, možete pokušati onemogućiti značajku automatskog zakretanja.</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14865,6 +14895,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximize quality</original>
 <translation>Maksimizirati kvalitetu</translation>
 </phrase>
@@ -14885,8 +14920,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.</original>
-<translation>PhotoDemon mora generirati mnogo sličica, pogotovo kada slike sadrže više slojeva. Kvaliteta tih sličica može se smanjiti kako bi se poboljšala učinkovitost.</translation>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14895,8 +14930,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)</original>
-<translation>Prema zadanim postavkama, podaci poništavanja programa PhotoDemon nisu komprimirani. To čini poništavanje operacija vrlo brzo, ali povećava prostor na disku. Komprimiranje poništavanja podataka smanjuje potrošnju prostora na disku, uz određene troškove i performanse. (Imajte na umu da se poništavanje podataka briše kada se PhotoDemon izlazi, pa ova postavka utječe samo na korištenje prostora na disku dok je PhotoDemon pokrenut.)</translation>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15008,6 +15043,11 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 </phrase>
 
 <phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
 <translation>Kada koristite udaljeni radni stol ili VM (virtualni stroj), unos mišem visoke rezolucije možda neće raditi ispravno. Ovo je dugotrajan Windows bug. U tim situacijama ovu postavku možete koristiti za vraćanje ispravnog ponašanja miša.</translation>
 </phrase>
@@ -15025,6 +15065,16 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <phrase>
 <original>reading not accurate inside IDE</original>
 <translation>Čitanje nije točno unutar IDE-a</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15072,7 +15122,7 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <translation>Ova nova lokacija privremene mape neće imati učinka dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15195,10 +15245,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2545</phrasecount>
+<phrasecount>2555</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4602 phrases. -->
-<!-- 2057 are duplicates, so only 2545 unique phrases have been written to file. -->
-<!-- These 2545 phrases contain approximately 12183 total words. -->
+<!-- As of this build, PhotoDemon contains 4615 phrases. -->
+<!-- 2060 are duplicates, so only 2555 unique phrases have been written to file. -->
+<!-- These 2555 phrases contain approximately 12394 total words. -->
 
 </pdData>
