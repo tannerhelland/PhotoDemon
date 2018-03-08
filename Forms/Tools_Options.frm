@@ -1717,18 +1717,22 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the selected temp folder doesn't have write access, warn the user
-Private Sub TxtTempPath_Change()
+Private Sub txtTempPath_Change()
     
-    If (Not Files.PathExists(Trim$(txtTempPath.Text), True)) Then
-        lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.")
-    Else
-        lblTempPathWarning.Caption = g_Language.TranslateMessage("This new temporary folder location will not take effect until you restart the program.")
-    End If
-    
+    'Assign theme-specific error colors
     If Me.Visible Then
         lblTempPathWarning.ForeColor = g_Themer.GetGenericUIColor(UI_ErrorRed)
         lblTempPathWarning.UseCustomForeColor = True
+    End If
+    
+    'Ensure the specified temp path exists.  If it doesn't (or if access is denied), let the user know that we will silently
+    ' fall back to the system temp folder.
+    If (Not Files.PathExists(Trim$(txtTempPath.Text), True)) Then
+        lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.")
         lblTempPathWarning.Visible = True
+    Else
+        lblTempPathWarning.Caption = g_Language.TranslateMessage("This new temporary folder location will not take effect until you restart the program.")
+        lblTempPathWarning.Visible = Strings.StringsNotEqual(Trim$(txtTempPath.Text), UserPrefs.GetTempPath, True)
     End If
     
 End Sub
