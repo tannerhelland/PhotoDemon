@@ -410,9 +410,9 @@ Public Function ContinueLoadingProgram() As Boolean
     'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Initialize debugger"
-        pdDebug.InitializeDebugger True
+        If UserPrefs.GenerateDebugLogs Then pdDebug.InitializeDebugger True
     #End If
-        
+    
     
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
@@ -688,7 +688,7 @@ Public Function ContinueLoadingProgram() As Boolean
     'While in debug mode, copy a timing report of program startup to the debug folder
     #If DEBUGMODE = 1 Then
         perfCheck.StopProfiling
-        perfCheck.GenerateProfileReport True
+        If UserPrefs.GenerateDebugLogs Then perfCheck.GenerateProfileReport True
     #End If
     
     'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.

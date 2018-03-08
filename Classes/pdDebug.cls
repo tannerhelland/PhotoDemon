@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Custom Debug helper class
 'Copyright 2014-2018 by Tanner Helland
 'Created: 17/July/14
-'Last updated: 28/August/17
-'Last update: heavily optimized file writes by using pdFSO and a persistent append handle
+'Last updated: 08/March/18
+'Last update: rework initialization to allow us to arbitrarily start/suspend the debugger during a given session
 'Dependencies: OS module (for retrieving system-level debug data)
 '
 'As PhotoDemon has grown more complex, debugging has become correspondingly difficult.  Debugging on my local PC is fine
@@ -82,12 +82,11 @@ Private m_logPath As String
 Private m_NumLoggedEvents As Long
 
 'For technical reasons (how's that for nondescript), the public instance of this class cannot be formally initialized
-' until fairly late into PD's load process.  However, there are technical details that would be nice to know prior to
-' that point.  To work around this, I allow the class to log messages prior to being formally initialized.  When it
-' *is* finally initialized, it will dump all the cached messages to the log file, with their original timestamps.
-Private Const INIT_NUM_BACKUP_MESSAGES As Long = 32
-Private m_backupMessages() As String
-Private m_numBackupMessages As Long
+' until fairly late into PD's load process.  (In particular, we need to access PD's central user preferences collection
+' to know where to store debug logs.)  To prevent the loss of debug events prior to the class's formal initialization,
+' we use a fallback log method during startup phases.  When this class is (finally) initialized completely, we dump all
+' cached messages to the log file, with their original timestamps.
+Private m_backupMessages As pdStringStack
 
 'When the user requests a RAM update, we report the delta between the current update and the previous update.
 ' This is very helpful for catching memory leaks.
@@ -108,7 +107,7 @@ Private m_LogString As pdString
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
-Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True) As Boolean
+Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True, Optional ByVal initIsNormal As Boolean = True) As Boolean
     
     If writeLogDataToFile Then
         
@@ -135,9 +134,10 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             Set debugHeader = New pdString
             
             If writeHeaderToo Then
-            
+                
                 debugHeader.AppendLine "**********************************************" & vbCrLf
                 debugHeader.AppendLine "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf
+                If (Not initIsNormal) Then debugHeader.AppendLine "WARNING: debugger was not initiated by default; session data may be incomplete"
                 
                 debugHeader.AppendLine "Date: " & Date
                 debugHeader.AppendLine "Time: " & Time
@@ -207,20 +207,23 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     Me.LogAction vbNullString, PDM_Mem_Report
     
     'If messages were logged prior to this class being formally initialized, dump them now
-    If (m_numBackupMessages > 0) And (writeLogDataToFile) Then
-    
-        Me.LogAction "(The following " & m_numBackupMessages & " actions were logged prior to initialization.)"
-        Me.LogAction "(They are presented here with their original timestamps.)"
+    If (Not m_backupMessages Is Nothing) Then
         
-        For i = 0 To m_numBackupMessages - 1
-            Me.LogAction m_backupMessages(i), PDM_Startup_Message, True
-        Next i
+        If (m_backupMessages.GetNumOfStrings > 0) Then
         
-        Me.LogAction "(End of pre-initialization data)"
+            Me.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
+            Me.LogAction "(They are presented here with their original timestamps.)"
+            
+            For i = 0 To m_backupMessages.GetNumOfStrings - 1
+                Me.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
+            Next i
+            
+            Me.LogAction "(End of pre-initialization data)"
+            
+        End If
         
         'We don't need the backup messages any more, so we are free to release them into the ether
-        ReDim m_backupMessages(0) As String
-        m_numBackupMessages = 0
+        m_backupMessages.ResetStack 0
         
     End If
     
@@ -433,9 +436,9 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
         ' formally initialize this class.  When that happens, we cache the messages in a temporary array; when the class is
         ' formally initialized, we'll dump that array out to file.
-        If (m_numBackupMessages > UBound(m_backupMessages)) Then ReDim Preserve m_backupMessages(0 To m_numBackupMessages * 2 - 1) As String
-        m_backupMessages(m_numBackupMessages) = "<BCK< | " & Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem) & " | " & "(" & CStr(m_numBackupMessages + 1) & ") " & actionString
-        m_numBackupMessages = m_numBackupMessages + 1
+        If (LenB(actionString) <> 0) Then
+            m_backupMessages.AddString "<BCK< | " & Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem) & " | " & "(" & CStr(m_backupMessages.GetNumOfStrings + 1) & ") " & actionString
+        End If
         
     End If
     
@@ -463,27 +466,23 @@ End Sub
 Private Sub Class_Initialize()
     
     Set m_LogString = New pdString
-    
-    m_debuggerActive = False
-    m_logDatatoFile = False
-    
-    ReDim m_backupMessages(0 To INIT_NUM_BACKUP_MESSAGES - 1) As String
-    m_numBackupMessages = 0
-    
-    m_NumLoggedEvents = 0
-    m_lastMemCheck = 0
+    Set m_backupMessages = New pdStringStack
+    Set m_FSO = New pdFSO
     
     ReDim m_utf8Buffer(0) As Byte
     
-    Set m_FSO = New pdFSO
-
+    m_debuggerActive = False
+    m_logDatatoFile = False
+    m_NumLoggedEvents = 0
+    m_lastMemCheck = 0
+    
 End Sub
 
-Friend Sub TerminateDebugger()
+Friend Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = True)
 
     'If logging is active, post a final message
     If m_logDatatoFile And (m_LogFileHandle <> 0) Then
-        WriteDebugStringAsUTF8 "-- END SESSION REPORT --"
+        If terminationIsNormal Then WriteDebugStringAsUTF8 "-- END SESSION REPORT --" Else WriteDebugStringAsUTF8 "-- WARNING: DEBUGGER TERMINATED BY USER, SESSION DATA INCOMPLETE --"
         m_FSO.FileCloseHandle m_LogFileHandle
         m_LogFileHandle = 0
         m_logDatatoFile = False

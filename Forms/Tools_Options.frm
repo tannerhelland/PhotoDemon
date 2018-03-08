@@ -1185,8 +1185,26 @@ Private Sub cmdBarMini_OKClick()
     
     'BEGIN Advanced preferences
     
-        'START/END generate debug logs
-            UserPrefs.SetDebugLogPreference btsDebug.ListIndex
+        'START generate debug logs
+            
+            'First, see if the user has changed the debug log preference
+            If (UserPrefs.GetDebugLogPreference <> btsDebug.ListIndex) Then
+                
+                'The user has changed the current setting.  Make a note of whether debug logs are currently being generated.
+                ' (If this behavior changes, we may need to create and/or terminate the debugger.)
+                Dim curLogBehavior As Boolean
+                curLogBehavior = UserPrefs.GenerateDebugLogs()
+                
+                'Store the new preference
+                UserPrefs.SetDebugLogPreference btsDebug.ListIndex
+                
+                'Invoke and/or terminate the current debugger, as necessary
+                If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
+                    If UserPrefs.GenerateDebugLogs Then pdDebug.InitializeDebugger True, , False Else pdDebug.TerminateDebugger False
+                End If
+            End If
+            
+        'END generate debug logs
             
         'START/END store the temporary path (but only if it's changed)
             If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)

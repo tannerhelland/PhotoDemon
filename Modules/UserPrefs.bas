@@ -121,9 +121,15 @@ Public Function GenerateDebugLogs() As Boolean
     End If
 End Function
 
+Public Function GetDebugLogPreference() As PD_DebugLogBehavior
+    GetDebugLogPreference = m_GenerateDebugLogs
+End Function
+
 Public Sub SetDebugLogPreference(ByVal newPref As PD_DebugLogBehavior)
-    m_GenerateDebugLogs = newPref
-    UserPrefs.SetPref_Long "Core", "GenerateDebugLogs", m_GenerateDebugLogs
+    If (newPref <> m_GenerateDebugLogs) Then
+        m_GenerateDebugLogs = newPref
+        UserPrefs.SetPref_Long "Core", "GenerateDebugLogs", m_GenerateDebugLogs
+    End If
 End Sub
 
 'Non-portable mode means PD has been extracted to an access-restricted folder.  The program (should) still run normally,
