@@ -587,7 +587,7 @@ End Sub
 'Given the current font size, return the suggested height of an edit box.  Parent controls can use this to auto-size
 ' themselves in preparation of actually creating the API window.
 Friend Function SuggestedHeight() As Long
-    SuggestedHeight = Fonts.GetDefaultStringHeight(m_FontSize)
+    SuggestedHeight = Fonts.GetDefaultStringHeight(m_FontSize) + 1
 End Function
 
 'Create the brush and font used to render the edit box background and text.  Normally, we only sync these values with the API window
