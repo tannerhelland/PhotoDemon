@@ -15,22 +15,24 @@ Attribute VB_Exposed = False
 'PhotoDemon Performance Profiler - Long-term Tracking
 'Copyright 2014-2018 by Tanner Helland
 'Created: 19/June/14
-'Last updated: 28/August/17
-'Last update: code clean-up in preparation for splitting some functionality into a short-term class
+'Last updated: 08/March/18
+'Last update: migrate to pdString for improved performance
 '
-'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
-' performance is a tough thing to track using default VB code, which is why it became necessary to write a custom
-' profiler better tailored to the kind of complex performance analysis PD needs.
+'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.
+' Unfortunately, performance is a tough thing to track using default VB code, which is why it became
+' necessary to write a custom profiler better tailored to the unique performance analysis a project
+' like PD requires.
 '
-'pdProfilerLT aims to solve a specific profiling problem: tracking single-occurrence events across multiple sessions,
-' and calculating things like average time taken, standard deviations, and coefficients of variation.  At present, I use
-' this to track performance of PD's startup process(es), and the profiler results have been incredibly helpful at
-' helping me has isolate and solve a number of perf issues during program initialization.
+'pdProfilerLT aims to solve a specific profiling problem: tracking single-occurrence events across
+' multiple sessions, and calculating things like average time taken, standard deviations, and coefficients
+' of variation.  At present, I use this to track performance of PD's startup process(es), and the profiler
+' results have been incredibly useful for isolating perf issues during program initialization.
 '
-'Because this class is meant to be as simple to use as possible *from within PD*, I've added a number of PD-specific bits
-' to it, like automatically using the program's known Debug folder for file output, and automatically generating filenames
-' from report titles.  These PD-specific instances should be easy to strip out, but as with any class containing a "pd"
-' prefix, I haven't gone out of my way to make everything in here project-agnostic.  NB: Use at your own risk!
+'Because this class is meant to be as simple to use as possible *from within PD*, I've added a number of
+' PD-specific bits to it, like automatically using the program's known Debug folder for file output,
+' and automatically generating filenames from report titles.  These PD-specific instances should be easy
+' to strip out, but as with any class containing a "pd" prefix, I haven't gone out of my way to make
+' everything in here project-agnostic.  NB: Use at your own risk!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -139,13 +141,16 @@ Friend Sub MarkEvent(ByRef eventName As String)
     'Fill in this time as the END of the previous tracked event
     m_Events(m_CurrentEventIndex - 1).EndTick = curTick
     
+    'Make sure we have sufficient room for this event index
+    If (m_CurrentEventIndex > UBound(m_Events)) Then ReDim Preserve m_Events(0 To m_CurrentEventIndex * 2 - 1) As PD_TimedEvent
+    
     'Start a new tracked event entry
     With m_Events(m_CurrentEventIndex)
         .Index = m_CurrentEventIndex
         .Name = eventName
         VBHacks.GetHighResTime .StartTick
     End With
-    
+        
     'Advance the event index
     m_CurrentEventIndex = m_CurrentEventIndex + 1
     
@@ -173,31 +178,34 @@ End Sub
 Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
     
     'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
-    Dim reportString As String
-    reportString = vbNullString
+    Dim reportString As pdString
+    Set reportString = New pdString
     
     'Give the report a title
-    reportString = reportString & vbCrLf & "-- pdProfile report for " & Chr(34) & m_Events(0).Name & Chr(34) & " --" & vbCrLf
+    reportString.AppendLine "-- pdProfiler report for " & Chr(34) & m_Events(0).Name & Chr(34) & " --"
     
     'Note the data as well
-    reportString = reportString & "(Report updated at " & Format$(Now, "h:mm:ss AM/PM") & " on " & Format$(Now, "d-mmmm-yy") & ")" & vbCrLf & vbCrLf
+    reportString.AppendLine "(Report updated at " & Format$(Now, "hh:mm:ss AM/PM") & " on " & Format$(Now, "dd-mmmm-yy") & ")"
+    reportString.AppendLineBreak
     
     'Note the number of events tracked and total time
     Dim totalTime As Double
     totalTime = VBHacks.GetTimerDifference(m_Events(0).StartTick, m_Events(m_CurrentEventIndex - 1).EndTick) * 1000#
     
-    reportString = reportString & "Number of events tracked: " & m_CurrentEventIndex & vbCrLf
-    reportString = reportString & "Total time taken (this session): " & FormatNumber(CDbl(totalTime) / 1000#, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf
-    reportString = reportString & "Program compiled: " & OS.IsProgramCompiled() & vbCrLf & vbCrLf
+    reportString.AppendLine "Number of events tracked: " & m_CurrentEventIndex
+    reportString.AppendLine "Total time taken (this session): " & FormatNumber(CDbl(totalTime) / 1000#, , vbTrue, vbFalse, vbUseDefault) & " seconds"
+    reportString.AppendLine "Program compiled: " & OS.IsProgramCompiled()
+    reportString.AppendLineBreak
     
     'Next, report each event individually, but sorted from longest to shortest
-    reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
+    reportString.AppendLine "Timing for THIS SESSION, with events sorted from longest to shortest:"
+    reportString.AppendLineBreak
     
     SortProfileEntries pdps_SessionTime
     
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
-        reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+        reportString.AppendLine vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms"
     Next i
     
     'If the user has enabled database support, and a database file exists, update our recorded times with any
@@ -208,7 +216,9 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         RetrieveDatabase
     
         'Display results by their historical mean time taken
-        reportString = reportString & vbCrLf & "Mean time across ALL RECORDED SESSIONS, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
+        reportString.AppendLineBreak
+        reportString.AppendLine "Mean time across ALL RECORDED SESSIONS, with events sorted from longest to shortest:"
+        reportString.AppendLineBreak
         
         SortProfileEntries pdps_Mean
         
@@ -222,23 +232,26 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
                 uncertaintyValue = Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))
             End If
             
-            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+            reportString.AppendLine vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms"
             
         Next i
         
         'Display results by their coefficient of deviation, which is a dimensionless number defined as StdDev / Mean;
         ' This tells us which timing values are most variable.
-        reportString = reportString & vbCrLf & "Coefficient of variation across ALL RECORDED SESSIONS, with events sorted from highest to lowest magnitude:" & vbCrLf & vbCrLf
+        reportString.AppendLineBreak
+        reportString.AppendLine "Coefficient of variation across ALL RECORDED SESSIONS, with events sorted from highest to lowest magnitude:"
+        reportString.AppendLineBreak
         
         SortProfileEntries pdps_CV
         
         For i = 0 To m_CurrentEventIndex - 1
-            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
+            reportString.AppendLine vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse)
         Next i
         
     End If
     
-    reportString = reportString & vbCrLf & "-- End of timing report --" & vbCrLf
+    reportString.AppendLineBreak
+    reportString.AppendLine "-- End of timing report --"
     
     'If an output path was specified, write the timing report out to file now
     If alsoWriteToFile Then
@@ -247,14 +260,14 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         logFile = GetReportFilename()
         
         'Write the data to file using pdFSO
-        Files.FileSaveAsText reportString, logFile
+        Files.FileSaveAsText reportString.ToString(), logFile
         
         'If the user wants us to use a persistent database for timing data, write out the current session's data now.
         If m_UseDatabase Then WriteUpdatedDatabase
         
     'If not writing the data out to file, dump it to the debug window instead
     Else
-        Debug.Print reportString
+        Debug.Print reportString.ToString()
     End If
     
 End Sub
@@ -389,7 +402,7 @@ Private Function GetReportFilename()
     
     'Make sure the report name can be used as a valid filename
     dstFilename = Files.FileMakeNameValid(dstFilename)
-    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace$(dstFilename, " ", "_")
+    If (InStr(1, dstFilename, " ", vbBinaryCompare) <> 0) Then dstFilename = Replace$(dstFilename, " ", "_", , , vbBinaryCompare)
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
@@ -410,7 +423,7 @@ Private Function GetDatabaseFilename()
     
     'Make sure the report name can be used as a valid filename
     dstFilename = Files.FileMakeNameValid(dstFilename)
-    If (InStr(1, dstFilename, " ") > 0) Then dstFilename = Replace$(dstFilename, " ", "_")
+    If (InStr(1, dstFilename, " ", vbBinaryCompare) <> 0) Then dstFilename = Replace$(dstFilename, " ", "_", , , vbBinaryCompare)
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
