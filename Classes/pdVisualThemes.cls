@@ -187,7 +187,7 @@ Friend Sub LoadDefaultPDTheme()
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the designer.)
     Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         themeName = UserPrefs.GetPref_String("Themes", "CurrentTheme", "Dark")
         themeFilename = "Default_" & themeName & ".xml"
@@ -234,9 +234,9 @@ Friend Sub LoadDefaultPDTheme()
     End If
     
     If themeLoadedCorrectly Then
-        If MainModule.IsProgramRunning() Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
+        If pdMain.IsProgramRunning() Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
     Else
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             
             RaiseThemingError "failed to load theme file: " & themeFilename & ".  Attempting theme recovery now...", True
             AttemptThemeRecovery
@@ -429,7 +429,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
     ' 3) (not currently implemented) The user's /Data folder, which contains user-specific data (and can be deleted willy-nilly)
     
     'Attempt to resolve the passed themeFilename to one of these locations
-    If (MainModule.IsProgramRunning() And (Not g_ProgramShuttingDown)) Then
+    If (pdMain.IsProgramRunning() And (Not g_ProgramShuttingDown)) Then
     
         If LoadThemeWithAllFallbacks(themeFilename, m_XML) Then
             
@@ -867,7 +867,7 @@ Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef srcFile
 End Sub
 
 Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'If we're not already subclassing this hWnd (something that shouldn't be possible, but better safe than sorry),
         ' add it to our subclassed list.
@@ -882,7 +882,7 @@ End Sub
 Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
     
     'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         VBHacks.StopSubclassing srcHwnd, Me
         m_SubclassedHWnds.DeleteEntry srcHwnd
         m_SubclassedHWnds.TrimDeletedEntries
@@ -891,13 +891,11 @@ Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
 End Sub
 
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
-    #If DEBUGMODE = 1 Then
-        If msgIsNonErrorFeedback Then
-            pdDebug.LogAction "pdTheme reported: " & msgError
-        Else
-            pdDebug.LogAction "WARNING!  pdTheme error: " & msgError
-        End If
-    #End If
+    If msgIsNonErrorFeedback Then
+        pdDebug.LogAction "pdTheme reported: " & msgError
+    Else
+        pdDebug.LogAction "WARNING!  pdTheme error: " & msgError
+    End If
 End Sub
 
 Private Sub Class_Initialize()

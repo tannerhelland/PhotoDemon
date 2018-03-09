@@ -199,14 +199,9 @@ Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     
     'If no EDID could be found, mark the failure state and exit.
     If warningEDIDMissing Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: Monitor EDID could not be retrieved; physical dimensions unknown for this session."
-        #End If
-        
+        pdDebug.LogAction "WARNING: Monitor EDID could not be retrieved; physical dimensions unknown for this session."
         m_hasEDID = False
         Exit Sub
-        
     End If
     
     'If we made it here, assume the EDID was gathered successfully.  Make a local copy of it.
@@ -219,11 +214,7 @@ Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     
     'EDIDs should never be shorter than 128 bytes.  Newer versions of the spec allow *longer* than 128, but 128 is
     ' the minimum.
-    If (EDIDLength < 128) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  This monitor's EDID is less than 128 bytes.  This shouldn't be possible - investigate??"
-        #End If
-    End If
+    If (EDIDLength < 128) Then pdDebug.LogAction "WARNING!  This monitor's EDID is less than 128 bytes.  This shouldn't be possible - investigate??"
     
     'With the EDID successfully retrieved, attempt to parse it for useful values.
     

@@ -642,9 +642,7 @@ Private Sub CacheCommonTranslations()
         m_CommonMenuText(cmt_Alt) = g_Language.TranslateMessage("Alt")
         m_CommonMenuText(cmt_Shift) = g_Language.TranslateMessage("Shift")
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
-        #End If
+        pdDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
     End If
 End Sub
 
@@ -1364,9 +1362,5 @@ Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
 End Function
 
 Private Sub InternalMenuWarning(ByVal funcName As String, ByVal errMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg
-    #Else
-        Debug.Print "Menus." & funcName & " warns: " & errMsg
-    #End If
+    pdDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg
 End Sub

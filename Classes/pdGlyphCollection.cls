@@ -322,10 +322,7 @@ Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
                         'Glyph buffer parsing failed
                         Else
                         
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
-                            #End If
-                            
+                            pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
                             m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                             glyphAdded = False
                             

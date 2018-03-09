@@ -342,7 +342,7 @@ Friend Function Run(ByVal childCmdLine As String, Optional ByVal childCmdLinePar
         m_ChildProcessActive = True
         
         'Start listening for return data
-        If MainModule.IsProgramRunning Then m_Async.StartTimer
+        If pdMain.IsProgramRunning Then m_Async.StartTimer
         
         Run = True
         
@@ -504,13 +504,11 @@ Private Sub WriteData()
 End Sub
 
 Private Sub InternalError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
-    #If DEBUGMODE = 1 Then
-        If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
-        Else
-            pdDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
-        End If
-    #End If
+    If (errNumber <> 0) Then
+        pdDebug.LogAction "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
+    Else
+        pdDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
+    End If
 End Sub
 
 'Ideally, a class like this would raise meaningful events, but in PD, we only use pipe interactions with one plugin
@@ -519,24 +517,15 @@ End Sub
 Private Sub InternalDataArrival()
     
     If (m_BufferIn.GetStreamSize() > 0) Then
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Asynchronously received " & m_BufferIn.GetStreamSize() & " new characters from ExifTool."
-        #End If
-        
+        pdDebug.LogAction "Asynchronously received " & m_BufferIn.GetStreamSize() & " new characters from ExifTool."
         ExifTool.NewMetadataReceived
-        
     End If
     
 End Sub
 
 Private Sub InternalErrDataArrival()
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
-        pdDebug.LogAction Me.ErrGetDataAsString()
-    #End If
-    
+    pdDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
+    pdDebug.LogAction Me.ErrGetDataAsString()
 End Sub
 
 Private Sub Class_Initialize()

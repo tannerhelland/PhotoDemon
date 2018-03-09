@@ -329,7 +329,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDFXPREVIEW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDFXPreview", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Prep the various buttonstrips
     btsState.AddItem "before", 0
@@ -364,13 +364,13 @@ End Sub
 
 'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then UpdateControlLayout
+    If Not pdMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
 'After a resize or paint request, update the layout of our control
 Private Sub UpdateControlLayout()
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
         Dim newPicWidth As Long, newPicHeight As Long
@@ -430,6 +430,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         pdPreviewBox.UpdateAgainstCurrentTheme
         btsState.UpdateAgainstCurrentTheme
         btsZoom.UpdateAgainstCurrentTheme
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

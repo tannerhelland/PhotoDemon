@@ -194,7 +194,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDC_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDContainer", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'By default, assume a normal coloring scheme
     m_UniqueBackColor = -1
@@ -207,7 +207,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
@@ -228,7 +228,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         ucSupport.SetCustomBackcolor targetBackColor
         UserControl.BackColor = targetBackColor
         
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     
     End If
     

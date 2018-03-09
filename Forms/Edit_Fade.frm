@@ -135,9 +135,7 @@ Private Sub Form_Load()
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING! Fade data could not be retrieved; something went horribly wrong!  Crash imminent!"
-        #End If
+        pdDebug.LogAction "WARNING! Fade data could not be retrieved; something went horribly wrong!  Crash imminent!"
         
     End If
     
@@ -222,7 +220,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
         ProgressBars.SetProgBarVal 0
         ReleaseProgressBar

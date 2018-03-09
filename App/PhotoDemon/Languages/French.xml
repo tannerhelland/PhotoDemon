@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.329</langversion>
+<langversion>6.7.330</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1634,6 +1634,12 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 
 <!-- END text for PDMath.bas-->
 
+<!-- BEGIN text for Debug.bas -->
+
+<!-- Debug.bas contains 0 phrases. -->
+
+<!-- END text for Debug.bas-->
+
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -2617,6 +2623,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
+
 <!-- BEGIN text for VB_Hacks.bas -->
 
 <!-- VB_Hacks.bas contains 0 phrases. -->
@@ -2848,12 +2860,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
-
-<!-- BEGIN text for pdDebug.cls -->
-
-<!-- pdDebug.cls contains 0 phrases. -->
-
-<!-- END text for pdDebug.cls-->
 
 <!-- BEGIN text for pdDictionary.cls -->
 
@@ -15240,12 +15246,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for UserPrefs.bas -->
-
-<!-- UserPrefs.bas contains 0 phrases. -->
-
-<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

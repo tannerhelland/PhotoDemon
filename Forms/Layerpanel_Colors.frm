@@ -132,9 +132,9 @@ End Sub
 
 Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If (Len(histValue) <> 0) And MainModule.IsProgramRunning() And (targetDC <> 0) Then
+    If (Len(histValue) <> 0) And pdMain.IsProgramRunning() And (targetDC <> 0) Then
         
-        If MainModule.IsProgramRunning Then
+        If pdMain.IsProgramRunning Then
         
             Dim tmpRectF As RectF
             If (ptrToRectF <> 0) Then
@@ -277,7 +277,7 @@ End Sub
 
 Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
     
-    If MainModule.IsProgramRunning Then
+    If pdMain.IsProgramRunning Then
     
         Dim cPainter As pd2DPainter
         Drawing2D.QuickCreatePainter cPainter

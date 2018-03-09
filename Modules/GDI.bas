@@ -126,9 +126,7 @@ Public Function GetMemoryDC() As Long
     If (GetMemoryDC <> 0) Then
         g_DCsCreated = g_DCsCreated + 1
     Else
-        #If DEBUGMODE = 1 Then
-            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
-        #End If
+        pdDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
     End If
 End Function
 
@@ -138,9 +136,7 @@ Public Sub FreeMemoryDC(ByRef srcDC As Long)
             g_DCsDestroyed = g_DCsDestroyed + 1
             srcDC = 0
         Else
-            #If DEBUGMODE = 1 Then
-                If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
-            #End If
+            pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
         End If
     End If
 End Sub
@@ -225,8 +221,6 @@ End Function
 
 'Add your own error-handling behavior here, as desired
 Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  The GDI interface encountered an error: """ & errName & """ - " & errDescription
-        If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
-    #End If
+    pdDebug.LogAction "WARNING!  The GDI interface encountered an error: """ & errName & """ - " & errDescription
+    If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
 End Sub

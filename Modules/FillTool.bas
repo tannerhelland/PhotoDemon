@@ -244,9 +244,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
             'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
             If (pdImages(g_CurrentImage).ScratchLayer Is Nothing) Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
-                #End If
+                pdDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
                 pdImages(g_CurrentImage).ResetScratchLayer True
             End If
             

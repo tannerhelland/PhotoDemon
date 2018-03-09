@@ -552,9 +552,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     'Rewritten by Tanner: VirtualAlloc is required to not make DEP angry
     hGlobal = VirtualAlloc(0&, 5 * ParamsCount + 5 + 5 + 3 + 1, MEM_COMMIT Or MEM_RESERVE, PAGE_EXECUTE_READWRITE)
     If (hGlobal = 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
-        #End If
+        pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
         Exit Function
     End If
     hGlobalOffset = hGlobal
@@ -590,9 +588,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     
     'Edit by Tanner: match VirtualAlloc(), above
     If (VirtualFree(hGlobal, 0&, MEM_RELEASE) = 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
-        #End If
+        pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
     End If
   
 End Function
@@ -1101,12 +1097,10 @@ End Function
 'Internal system-related errors are passed here.  PD writes these to a debug log, but only in debug builds;
 ' you can choose to handle errors differently.
 Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber As Long = 0)
-    #If DEBUGMODE = 1 Then
-        If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  VB error in OS module (#" & Err.Number & "): " & Err.Description & " || " & errComment
-        Else
-            pdDebug.LogAction "WARNING!  OS module internal error: " & errComment
-        End If
-    #End If
+    If (errNumber <> 0) Then
+        pdDebug.LogAction "WARNING!  VB error in OS module (#" & Err.Number & "): " & Err.Description & " || " & errComment
+    Else
+        pdDebug.LogAction "WARNING!  OS module internal error: " & errComment
+    End If
 End Sub
 

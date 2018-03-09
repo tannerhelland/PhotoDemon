@@ -276,10 +276,8 @@ End Sub
 ' paint ops on a vector layer are placed into a completely new raster layer.
 Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
     
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     Dim xOffset As Double, yOffset As Double
     Dim i As Long
@@ -446,10 +444,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     End If
     
     'The paintbrush layer has been merged successfully!  Any further actions (like resetting the paint layer) must be handled by the caller.
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

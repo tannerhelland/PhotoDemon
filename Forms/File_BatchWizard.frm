@@ -1477,7 +1477,7 @@ Private Sub Form_Load()
             UpdatePhotoOpVisibility
             
         'Resize fit types
-            If MainModule.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+            If pdMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
             cmbResizeFit.Clear
             cmbResizeFit.AddItem "stretching to fit", 0
             cmbResizeFit.AddItem "fit inclusively", 1

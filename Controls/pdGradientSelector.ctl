@@ -255,7 +255,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDGS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDGradientSelector", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -282,7 +282,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -336,7 +336,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True)
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'Render the gradient first.  To do this, we use a temporary gradient object that *only* renders as
         ' a linear gradient.  (This gradient control only allows editing of a gradient's color, not its shape.)
@@ -393,8 +393,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

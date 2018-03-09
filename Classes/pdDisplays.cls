@@ -192,9 +192,7 @@ Friend Function GetWindowsDPI() As Double
     'Convert that value into a fractional DPI modified (e.g. 1.0 for 100% scaling, 2.0 for 200% scaling)
     If (logPixelsX = 0) Then
         GetWindowsDPI = 1#
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
-        #End If
+        pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
     Else
         GetWindowsDPI = logPixelsX / 96#
     End If
@@ -271,30 +269,26 @@ Friend Function RefreshDisplays() As Long
     'Whenever the display collection is refreshed, add any discoveries to the debug log.
     'If this is a non-production release, note our discovered monitors in the debug log; this can be a big help when tracking
     ' down strange issues.
-    #If DEBUGMODE = 1 Then
-                
-        If (m_NumOfDisplays > 0) Then
-        
-            Dim i As Long, prefixText As String
-            For i = 0 To m_NumOfDisplays - 1
-                
-                If listOfDisplays(i).IsPrimary Then
-                    prefixText = "Found primary monitor: "
-                Else
-                    prefixText = "Found secondary monitor: "
-                End If
-                
-                pdDebug.LogAction prefixText & listOfDisplays(i).GetMonitorSizeAsString & " " & listOfDisplays(i).GetMonitorResolutionAsString & " " & listOfDisplays(i).GetBestMonitorName & " (powered by " & listOfDisplays(i).GetDescription & ")"
-                
-            Next i
+    If (m_NumOfDisplays > 0) Then
+    
+        Dim i As Long, prefixText As String
+        For i = 0 To m_NumOfDisplays - 1
             
-        Else
-            pdDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
-        End If
+            If listOfDisplays(i).IsPrimary Then
+                prefixText = "Found primary monitor: "
+            Else
+                prefixText = "Found secondary monitor: "
+            End If
+            
+            pdDebug.LogAction prefixText & listOfDisplays(i).GetMonitorSizeAsString & " " & listOfDisplays(i).GetMonitorResolutionAsString & " " & listOfDisplays(i).GetBestMonitorName & " (powered by " & listOfDisplays(i).GetDescription & ")"
+            
+        Next i
         
-        pdDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
-              
-    #End If
+    Else
+        pdDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
+    End If
+    
+    pdDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
     
 End Function
 
@@ -355,9 +349,7 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
         If (m_NumOfDisplays > UBound(listOfDisplays)) Then ReDim Preserve listOfDisplays(0 To m_NumOfDisplays * 2 - 1) As pdDisplay
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  In pdDisplays.addNewDisplay, GetMonitorInfo inexplicably failed on handle " & hDisplay & "."
-        #End If
+        pdDebug.LogAction "WARNING!  In pdDisplays.addNewDisplay, GetMonitorInfo inexplicably failed on handle " & hDisplay & "."
     End If
     
 End Sub
@@ -365,7 +357,7 @@ End Sub
 'After adding a new display to the collection, call this to populate detailed info (like friendly name, physical dimensions, etc)
 Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     
-    On Error GoTo detailedDisplayInfoBug
+    On Error GoTo DetailedDisplayInfoBug
     
     'First, we're going to enumerate display devices until we find one that matches the monitor we were passed.
     Dim monitorInfoDetailed As DISPLAY_DEVICEW
@@ -478,12 +470,9 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     End If
     
     Exit Sub
-    
-detailedDisplayInfoBug:
 
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.fillDetailedDisplayInfo.  Some display info may be missing."
-    #End If
+DetailedDisplayInfoBug:
+    pdDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.fillDetailedDisplayInfo.  Some display info may be missing."
     
 End Sub
 
@@ -491,7 +480,7 @@ End Sub
 ' Returns: TRUE if the EDID is found, FALSE otherwise.  API errors will be logged to pdDebug.
 Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal registryPath As String) As Boolean
 
-    On Error GoTo registryFetchError
+    On Error GoTo RegistryFetchError
 
     'Make sure the array has been dimensioned at least once; that way, even if this function fails, the caller will not
     ' experience OOB errors.
@@ -529,39 +518,28 @@ Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
         
             'If the key was queried successfully but the EDID size was 0, we don't have a choice but to fail.
             RetrieveEDIDFromRegistry = False
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
-            #End If
+            pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
             
         End If
         
         'Make sure to close the registry key when we're done with it.  Thank you to vbforums.com user Elroy for
         ' catching and reporting this.
         successCheck = RegCloseKey(regHandle)
+        If (successCheck <> 0) Then pdDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
         
-        #If DEBUGMODE = 1 Then
-            If (successCheck <> 0) Then pdDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
-        #End If
-    
     'Couldn't open the registry key.  Exit.
     Else
-        
         RetrieveEDIDFromRegistry = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
-        #End If
-            
+        pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
     End If
     
     Exit Function
     
-registryFetchError:
+RegistryFetchError:
 
     'successCheck will contain the last return value of a registry API call; might as well return it in case it's helpful
     RetrieveEDIDFromRegistry = False
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
-    #End If
+    pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
     
 End Function
 
@@ -671,11 +649,8 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
     Exit Function
     
 CouldNotCenterForm:
-    
     CenterFormViaReferenceRect = False
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdDisplays.CenterFormViaReferenceRect() failed for unknown reasons."
-    #End If
+    pdDebug.LogAction "WARNING!  pdDisplays.CenterFormViaReferenceRect() failed for unknown reasons."
     
 End Function
 

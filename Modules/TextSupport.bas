@@ -243,11 +243,8 @@ Public Function BuildParamList(ParamArray allParams() As Variant) As String
     Exit Function
     
 BuildParamListFailure:
-        
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  buildParamList failed to create a parameter string!"
-    #End If
     
+    pdDebug.LogAction "WARNING!  buildParamList failed to create a parameter string!"
     BuildParamList = vbNullString
     
 End Function

@@ -189,37 +189,29 @@ Private Sub Form_Load()
     
     'It can take quite some time to load these panels, so during debugging, it's helpful to track
     ' any unintentional changes to load time (which in turn harm PD's average startup time).
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     Load layerpanel_Navigator
     m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Navigator.hWnd
     layerpanel_Navigator.Show
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     Load layerpanel_Colors
     m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -229,9 +221,7 @@ Private Sub Form_Load()
     'Theme everything
     Me.UpdateAgainstCurrentTheme True
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)
-    #End If
+    pdDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)
     
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
     ' However, UpdateAgainstCurrentTheme now calls that function automatically.
@@ -283,9 +273,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Unload layerpanel_Layers
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  toolbar_Layers was unloaded prematurely - why??"
-        #End If
+        pdDebug.LogAction "WARNING!  toolbar_Layers was unloaded prematurely - why??"
         Cancel = True
     End If
     
@@ -401,10 +389,7 @@ Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
     layerpanel_Layers.ForceRedraw True, layerID
     
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    'pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

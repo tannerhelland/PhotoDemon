@@ -1850,9 +1850,7 @@ Private Sub m_MetadataTimer_Timer()
                                 'If this occurs, request a rewrite from the Undo engine, so we can make sure metadata gets
                                 ' added to the Undo/Redo stack.
                                 If pdImages(curImageID).UndoManager.HasFirstUndoWriteOccurred Then
-                                    #If DEBUGMODE = 1 Then
-                                        pdDebug.LogAction "Adding late-arrival metadata to original undo entry..."
-                                    #End If
+                                    pdDebug.LogAction "Adding late-arrival metadata to original undo entry..."
                                     pdImages(curImageID).UndoManager.ForceLastUndoDataToIncludeEverything
                                 End If
                                 
@@ -2540,7 +2538,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
 End Sub
 
-'Note that FormMain is only loaded after MainModule.Main() has triggered.  Look there for the *true* start of the program.
+'Note that FormMain is only loaded after pdMain.Main() has triggered.  Look there for the *true* start of the program.
 Private Sub Form_Load()
     
     On Error GoTo FormMainLoadError
@@ -2550,16 +2548,13 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    If MainModule.ContinueLoadingProgram() Then
+    If pdMain.ContinueLoadingProgram() Then
     
         '*************************************************************************************************************************************
         ' Now that all program engines are initialized, we can finally display the primary window
         '*************************************************************************************************************************************
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Registering toolbars with the window manager..."
-        #End If
-        
+        pdDebug.LogAction "Registering toolbars with the window manager..."
         m_AllowedToReflowInterface = True
         
         'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
@@ -2582,18 +2577,12 @@ Private Sub Form_Load()
         'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
         g_WindowManager.SetAutoRefreshMode True
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Preparing input tracker..."
-        #End If
-        
         
         '*************************************************************************************************************************************
         ' Next, make sure PD's previous session closed down successfully
         '*************************************************************************************************************************************
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Checking for old autosave data..."
-        #End If
+        pdDebug.LogAction "Checking for old autosave data..."
         Autosaves.InitializeAutosave
         
         
@@ -2601,20 +2590,13 @@ Private Sub Form_Load()
         ' Next, analyze the command line and load any image files (if present).
         '*************************************************************************************************************************************
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Checking command line..."
-        #End If
+        pdDebug.LogAction "Checking command line..."
         
         'Retrieve a Unicode-friendly copy of any command line parameters
         Dim cmdLineParams As pdStringStack
         If OS.CommandW(cmdLineParams, True) Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Command line might contain images.  Attempting to load..."
-            #End If
-            
+            pdDebug.LogAction "Command line might contain images.  Attempting to load..."
             Loading.LoadMultipleImageFiles cmdLineParams, True
-            
         End If
         
         
@@ -2652,9 +2634,7 @@ Private Sub Form_Load()
         ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
         '*************************************************************************************************************************************
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
-        #End If
+        pdDebug.LogAction "Current PD custom control count: " & UserControls.GetPDControlCount
         
         'Because people may be using this code in the IDE, warn them about the consequences of doing so
         If (Not OS.IsProgramCompiled) Then
@@ -2667,10 +2647,8 @@ Private Sub Form_Load()
         UserPrefs.ForceWriteToFile False
         
         'In debug mode, note that we are about to turn control over to the user
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
-            pdDebug.LogAction vbNullString, PDM_Mem_Report
-        #End If
+        pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
         
         'Finally, return focus to the main form
         g_WindowManager.SetFocusAPI FormMain.hWnd
@@ -2678,13 +2656,8 @@ Private Sub Form_Load()
         Exit Sub
         
 FormMainLoadError:
-    
-        #If DEBUGMODE = 1 Then
-            If (Not (pdDebug Is Nothing)) Then
-                pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
-            End If
-        #End If
-    
+        pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+        
     'Something went catastrophically wrong during the load process.  Do not continue with the loading process.
     Else
         MsgBox "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)", vbOKOnly + vbCritical, "Startup failure"
@@ -2756,9 +2729,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown initiated"
-    #End If
+    pdDebug.LogAction "Shutdown initiated"
     
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
@@ -2773,32 +2744,24 @@ Private Sub Form_Unload(Cancel As Integer)
     Interface.ReleaseResources
     
     'Cancel any pending downloads
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
-    #End If
+    pdDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
     
     Me.asyncDownloader.Reset
     
     'Allow any objects on this form to save preferences and other user data
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
-    #End If
+    pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
     
     FormMain.MainCanvas(0).WriteUserPreferences
     Toolboxes.SaveToolboxData
     
     'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
     ' copy of all supported formats - for this reason, this step may be a little slow.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutting down clipboard manager..."
-    #End If
+    pdDebug.LogAction "Shutting down clipboard manager..."
     
     If (Not g_Clipboard Is Nothing) Then
     
         If (g_Clipboard.IsPDDataOnClipboard And OS.IsProgramCompiled) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
-            #End If
+            pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
             g_Clipboard.RenderAllClipboardFormatsManually
         End If
     
@@ -2810,75 +2773,50 @@ Private Sub Form_Unload(Cancel As Integer)
     ' no images are loaded by this point.  Because it takes some time to shut down, trigger it prematurely.
     If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
         ExifTool.TerminateExifTool
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ExifTool terminated"
-        #End If
+        pdDebug.LogAction "ExifTool terminated"
     End If
     
     'Perform any printer-related cleanup
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Removing printer temp files..."
-    #End If
-    
+    pdDebug.LogAction "Removing printer temp files..."
     Printing.PerformPrinterCleanup
     
     'Stop tracking hotkeys
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Turning off hotkey manager..."
-    #End If
-    
+    pdDebug.LogAction "Turning off hotkey manager..."
     If (Not pdHotkeys Is Nothing) Then
         pdHotkeys.DeactivateHook True
         pdHotkeys.ReleaseResources
     End If
     
     'Release the tooltip tracker
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing tooltip manager..."
-    #End If
-    
+    pdDebug.LogAction "Releasing tooltip manager..."
     UserControls.FinalTooltipUnload
     
     'Destroy all custom-created icons and cursors
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Destroying custom icons and cursors..."
-    #End If
-    
+    pdDebug.LogAction "Destroying custom icons and cursors..."
     IconsAndCursors.DestroyAllIcons
     IconsAndCursors.UnloadAllCursors
     
     'Destroy all paint-related resources
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Destroying paint tool resources..."
-    #End If
-    
+    pdDebug.LogAction "Destroying paint tool resources..."
     Paintbrush.FreeBrushResources
     FillTool.FreeFillResources
         
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Saving recent file list..."
-    #End If
-    
+    pdDebug.LogAction "Saving recent file list..."
     If (Not g_RecentFiles Is Nothing) Then
         g_RecentFiles.WriteListToFile
         g_RecentMacros.MRU_SaveToFile
     End If
     
     'Release any Win7-specific features
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing custom Windows 7+ features..."
-    #End If
-    
+    pdDebug.LogAction "Releasing custom Windows 7+ features..."
     OS.StopWin7PlusFeatures
     
     'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_Mem_Report
-        pdDebug.LogAction "Unloading tool panels..."
-    #End If
+    pdDebug.LogAction vbNullString, PDM_Mem_Report
+    pdDebug.LogAction "Unloading tool panels..."
     
     'Now that toolpanels are loaded/unloaded on-demand, we don't need to manually unload them at shutdown.
     ' Instead, just unload the *active* one (which we can infer from the active tool).
@@ -2921,9 +2859,7 @@ Private Sub Form_Unload(Cancel As Integer)
     End If
     
     'With all tool panels unloaded, unload all toolboxes as well
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading toolboxes..."
-    #End If
+    pdDebug.LogAction "Unloading toolboxes..."
     
     Unload toolbar_Layers
     Set toolbar_Layers = Nothing
@@ -2935,17 +2871,12 @@ Private Sub Form_Unload(Cancel As Integer)
     Set toolbar_Toolbox = Nothing
     
     'Release this form from the window manager, and write out all window data to file
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutting down window manager..."
-    #End If
-    
+    pdDebug.LogAction "Shutting down window manager..."
     Interface.ReleaseFormTheming Me
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.UnregisterMainForm Me
     
     'As a final failsafe, forcibly unload any remaining forms
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Forcibly unloading any remaining forms..."
-    #End If
+    pdDebug.LogAction "Forcibly unloading any remaining forms..."
     
     Dim tmpForm As Form
     For Each tmpForm In Forms
@@ -2960,46 +2891,32 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
-    If Updates.IsUpdatePackageAvailable And MainModule.WasStartupSuccessful() Then
+    If Updates.IsUpdatePackageAvailable And pdMain.WasStartupSuccessful() Then
         
         If Updates.PatchProgramFiles() Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
-            #End If
+            pdDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
             
             'If the user wants a restart, create a restart batch file now
             'If g_UserWantsRestart Then Updates.CreateRestartBatchFile
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
-            #End If
+            pdDebug.LogAction "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
         End If
         
     End If
         
     'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
     ' it can compare its version against this value, to infer if an update occurred.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Writing session data to file..."
-    #End If
-    
+    pdDebug.LogAction "Writing session data to file..."
     UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Final step: writing out new autosave checksum..."
-    #End If
-    
+    pdDebug.LogAction "Final step: writing out new autosave checksum..."
     Autosaves.PurgeOldAutosaveData
     Autosaves.NotifyCleanShutdown
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.FinalShutdown()..."
-    #End If
-    
-    MainModule.FinalShutdown
+    pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to pdMain.FinalShutdown()..."
+    pdMain.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
     'If g_UserWantsRestart Then Updates.InitiateRestart

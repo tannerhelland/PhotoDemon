@@ -614,7 +614,7 @@ End Sub
 ' significant digits) to match.  Use this function to do so.
 Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUnit As MeasurementUnit)
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Start by retrieving the old values in pixel measurements
     Dim imgWidthPixels As Double, imgHeightPixels As Double
@@ -738,7 +738,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRESIZE_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDResize", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -763,13 +763,13 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
 
     'Translate various bits of UI text at run-time
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'Add tooltips to the controls that natively support them
         cmdAspectRatio.AssignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
@@ -805,7 +805,7 @@ Private Sub PopulateDropdowns()
     'Populate the width unit drop-down box
     cmbWidthUnit.Clear
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         If Not m_PercentDisabled Then cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels")
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches")
@@ -830,7 +830,7 @@ Private Sub PopulateDropdowns()
     'Populate the resolution unit box
     cmbResolution.Clear
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         cmbResolution.AddItem g_Language.TranslateMessage(" pixels / inch (PPI)"), 0
         cmbResolution.AddItem g_Language.TranslateMessage(" pixels / centimeter (PPCM)"), 1
         cmbResolution.ListIndex = RU_PPI
@@ -924,7 +924,7 @@ End Sub
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
 Private Sub UpdateAspectRatio()
 
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
 
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
@@ -1106,7 +1106,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'Add the "lock aspect ratio" button
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             Dim buttonImageSize As Long
             buttonImageSize = FixDPI(32)
             cmdAspectRatio.AssignImage "generic_unlock", , buttonImageSize, buttonImageSize
@@ -1114,7 +1114,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         End If
         
         UpdateColorList
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
         lblWidth.UpdateAgainstCurrentTheme

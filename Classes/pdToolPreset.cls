@@ -236,8 +236,6 @@ Private Sub Class_Initialize()
     
 End Sub
 
-Private Sub DebugNote(ByVal debugMessage As String)
-    #If DEBUGMODE = 1 Then
-        If (Len(debugMessage) <> 0) Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
-    #End If
+Private Sub DebugNote(ByRef debugMessage As String)
+    If (LenB(debugMessage) <> 0) Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
 End Sub

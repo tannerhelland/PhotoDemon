@@ -42,9 +42,7 @@ End Function
 ' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
 Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
-    #End If
+    pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -65,19 +63,15 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     ' (Also, because PDI files store data roughly sequentially, we can use OptimizeSequentialAccess for a small perf boost.)
     If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER, PD_SM_MemoryBacked, PD_SA_ReadOnly, OptimizeSequentialAccess) Then
     
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
-        #End If
-    
+        pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
+        
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String, retSize As Long
         
         If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
-            #End If
+            pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
             
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
@@ -91,9 +85,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
-        #End If
+        pdDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
         
         'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
         ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
@@ -104,10 +96,8 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         Dim i As Long
         For i = 0 To dstImage.GetNumOfLayers - 1
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Retrieving layer header " & i & "..."
-            #End If
-        
+            pdDebug.LogAction "Retrieving layer header " & i & "..."
+            
             'First, retrieve the layer's header
             If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, False, retSize) Then
             
@@ -135,9 +125,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             'Image (raster) layers
             If dstImage.GetLayerByIndex(i).IsLayerRaster Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
-                #End If
+                pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
@@ -151,9 +139,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             'Text and other vector layers
             ElseIf dstImage.GetLayerByIndex(i).IsLayerVector Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
-                #End If
+                pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
                 
                 If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, False, retSize) Then
                 
@@ -176,7 +162,6 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             'In the future, additional layer types can be handled here
             Else
                 Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.GetLayerByIndex(i).GetLayerType
-            
             End If
             
             'If successful, notify the parent of the change
@@ -188,9 +173,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         
         Next i
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
-        #End If
+        pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
         
         Dim nonEssentialParseTime As Currency
         VBHacks.GetHighResTime nonEssentialParseTime
@@ -198,10 +181,8 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
-            #End If
-        
+            pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
+            
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
             CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
@@ -211,9 +192,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID, sourceIsUndoFile) Then
                 
                 'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING: PDI Metadata Node rejected by metadata parser."
-                #End If
+                pdDebug.LogAction "WARNING: PDI Metadata Node rejected by metadata parser."
                 
             End If
         
@@ -223,10 +202,8 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         ' and other changes.)
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, False, retSize) Then
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
-            #End If
-        
+            pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
+            
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
             CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
@@ -237,10 +214,8 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         
         End If
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-            Debug.Print "Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & ", non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime)
-        #End If
+        pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
+        pdDebug.LogAction "(Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & ", non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime) & ")"
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
@@ -253,9 +228,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     Else
     
         'If we made it to this block, the first stage of PDI validation failed.  This may be a legacy PDI file -- try that function next.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Legacy PDI file encountered; dropping back to pdPackage v1 functions..."
-        #End If
+        pdDebug.LogAction "Legacy PDI file encountered; dropping back to pdPackage v1 functions..."
         LoadPhotoDemonImage = LoadPDI_Legacy(pdiPath, dstDIB, dstImage, sourceIsUndoFile)
     
     End If
@@ -264,9 +237,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     
 LoadPDIFail:
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
-    #End If
+    pdDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
     
     'Before falling back to a generic error message, check for a couple known problem states.
     
@@ -389,9 +360,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
                 End If
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  ImageImporter.LoadPhotoDemonImageHeaderOnly() failed to retrieve to parse this image's metadata chunk."
-                #End If
+                pdDebug.LogAction "WARNING!  ImageImporter.LoadPhotoDemonImageHeaderOnly() failed to retrieve to parse this image's metadata chunk."
             End If
         
         Else
@@ -410,10 +379,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
     Else
     
         'If we made it to this block, the first stage of PDI validation failed, meaning this file may be a legacy PDI format.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
-        #End If
-        
+        pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
         LoadPhotoDemonImageHeaderOnly = LoadPhotoDemonImageHeaderOnly_Legacy(pdiPath, dstImage)
     
     End If
@@ -547,10 +513,7 @@ Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer A
     Else
     
         'If we made it to this block, the first stage of PDI validation failed, meaning this file may be a legacy PDI format.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
-        #End If
-        
+        pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
         LoadSingleLayerFromPDI = LoadSingleLayerFromPDI_Legacy(pdiPath, dstLayer, targetLayerID, loadHeaderOnly)
     
     End If
@@ -768,9 +731,7 @@ Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef 
     'In the future, we'll add meaningful heuristics, but for now, don't even attempt a load unless the file extension matches.
     If IsFileSVGCandidate(imagePath) Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Waiting for SVG parsing to complete..."
-        #End If
+        pdDebug.LogAction "Waiting for SVG parsing to complete..."
         
         'Hang out while we wait for ExifTool to finish processing this image's metadata
         Do While (Not dstImage.ImgMetadata.HasMetadata)
@@ -827,13 +788,8 @@ Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef 
     Exit Function
     
 LoadSVGFail:
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  SVG parsing failed with error #" & Err.Number & ": " & Err.Description
-    #End If
-    
+    pdDebug.LogAction "WARNING!  SVG parsing failed with error #" & Err.Number & ": " & Err.Description
     LoadSVG = False
-    Exit Function
     
 End Function
 
@@ -1004,18 +960,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     CascadeLoadGenericImage = False
     
     'Before jumping out to a 3rd-party library, check for any image formats that we must decode using internal plugins.
-    #If DEBUGMODE = 1 Then
         
-        'SVG support is just experimental at present!
-        CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
-        If CascadeLoadGenericImage Then
-            decoderUsed = PDIDE_SVGPARSER
-            dstImage.SetOriginalFileFormat PDIF_SVG
-            dstImage.SetDPI 96, 96
-            dstImage.SetOriginalColorDepth 32
-        End If
-        
-    #End If
+    'SVG support is just experimental at present!
+    CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
+    If CascadeLoadGenericImage Then
+        decoderUsed = PDIDE_SVGPARSER
+        dstImage.SetOriginalFileFormat PDIF_SVG
+        dstImage.SetDPI 96, 96
+        dstImage.SetOriginalColorDepth 32
+    End If
     
     'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
     ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
@@ -1054,10 +1007,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         
         If g_ImageFormats.GDIPlusEnabled Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-            #End If
-            
+            pdDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
             CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB)
             
             If CascadeLoadGenericImage Then
@@ -1077,9 +1027,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             srcFileExtension = UCase(Files.FileGetExtension(srcFile))
             
             If ((srcFileExtension <> "EMF") And (srcFileExtension <> "WMF")) Then
-                #If DEBUGMODE = 1 Then
-                    Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
-                #End If
+                Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
                 
                 If LoadVBImage(srcFile, dstDIB) Then
                     CascadeLoadGenericImage = True
@@ -1196,10 +1144,8 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication False
                 
                 'During debug mode, color-management performance is an item of interest
-                #If DEBUGMODE = 1 Then
-                    Dim startTime As Currency
-                    VBHacks.GetHighResTime startTime
-                #End If
+                Dim startTime As Currency
+                VBHacks.GetHighResTime startTime
                 
                 'LittleCMS is our preferred color management engine.  Use it whenever possible.
                 If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then
@@ -1208,11 +1154,9 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                     ColorManagement.ApplyICCtoPDDib_WindowsCMS targetDIB
                 End If
                 
-                #If DEBUGMODE = 1 Then
-                    Dim engineUsed As String
-                    If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
-                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms using " & engineUsed
-                #End If
+                Dim engineUsed As String
+                If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
+                pdDebug.LogAction "Note: color management of the imported image took " & VBHacks.GetTimeDiffNowAsString(startTime) & " using " & engineUsed
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
                 ApplyPostLoadICCHandling = True
@@ -1241,10 +1185,7 @@ End Function
 ' IMPORTANT NOTE: the passed srcFile string *may be modified by this function, by design.*  Plan accordingly.
 Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcImage As pdImage) As Boolean
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "SyncRecoveredAutosaveImage invoked; attempting to recover usable data from the Autosave database..."
-    #End If
-    
+    pdDebug.LogAction "SyncRecoveredAutosaveImage invoked; attempting to recover usable data from the Autosave database..."
     srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", srcFile
             
     'Ask the AutoSave engine to synchronize this image's data against whatever it can recover from the Autosave database
@@ -1262,10 +1203,6 @@ End Function
 'After loading an image file, you can call this function to set up any post-load pdImage attributes (like name and save state)
 Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef targetImage As pdImage, ByRef suggestedFilename As String) As Boolean
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Determining initial pdImage attributes..."
-    #End If
-    
     'If PD explicitly requested a custom image name, we can safely assume the calling routine is NOT loading a generic image file
     ' from disk - instead, this image came from a scanner, or screen capture, or some format that doesn't automatically yield a
     ' usable filename.
@@ -1273,7 +1210,7 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     'Therefore, our job is to coordinate between the image's suggested name (which will be suggested at first-save), the actual
     ' location on disk (which we treat as "non-existent", even though we're loading from a temp file of some sort), and the image's
     ' save state (which we forcibly set to FALSE to ensure the user is prompted to save before closing the image).
-    If (Len(suggestedFilename) = 0) Then
+    If (LenB(suggestedFilename) = 0) Then
     
         'The calling routine didn't specify a custom image name, so we can assume this is a normal image file.
         'Prep all default attributes using the filename itself.
@@ -1334,9 +1271,7 @@ End Sub
 'Legacy import functions for old PDI versions are found below.  These functions are no longer maintained; use at your own risk.
 Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Legacy PDI file identified.  Starting pdPackage decompression..."
-    #End If
+    pdDebug.LogAction "Legacy PDI file identified.  Starting pdPackage decompression..."
     
     On Error GoTo LoadPDIFail
     
@@ -1353,19 +1288,15 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     ' Note that this step will also validate the incoming file.
     If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
-        #End If
-    
+        pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
+        
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
         If pdiReader.GetNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
-            #End If
+            pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
             
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
@@ -1383,9 +1314,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
-        #End If
+        pdDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
         
         'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
         ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
@@ -1396,10 +1325,8 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
         Dim i As Long
         For i = 0 To dstImage.GetNumOfLayers - 1
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Retrieving layer header " & i & "..."
-            #End If
-        
+            pdDebug.LogAction "Retrieving layer header " & i & "..."
+            
             'First, retrieve the layer's header
             If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
             
@@ -1431,9 +1358,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             'Image (raster) layers
             If dstImage.GetLayerByIndex(i).IsLayerRaster Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
-                #End If
+                pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
@@ -1447,9 +1372,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             'Text and other vector layers
             ElseIf dstImage.GetLayerByIndex(i).IsLayerVector Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
-                #End If
+                pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
                 
                 If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
@@ -1484,17 +1407,13 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
         
         Next i
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
-        #End If
+        pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
         
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
-            #End If
-        
+            pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
+            
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
@@ -1518,10 +1437,8 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
         ' and other changes.)
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
         
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
-            #End If
-        
+            pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
+            
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
@@ -1536,9 +1453,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
         
         End If
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-        #End If
+        pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
@@ -1560,9 +1475,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     
 LoadPDIFail:
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
-    #End If
+    pdDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
     
     'Before falling back to a generic error message, check for a couple known problem states.
     

@@ -387,13 +387,11 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
 End Function
 
 Private Sub RaiseResourceError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
-    #If DEBUGMODE = 1 Then
-        If msgIsNonErrorFeedback Then
-            pdDebug.LogAction "pdResources reported: " & msgError
-        Else
-            pdDebug.LogAction "WARNING!  pdResources error: " & msgError
-        End If
-    #End If
+    If msgIsNonErrorFeedback Then
+        pdDebug.LogAction "pdResources reported: " & msgError
+    Else
+        pdDebug.LogAction "WARNING!  pdResources error: " & msgError
+    End If
 End Sub
 
 Private Sub Class_Initialize()

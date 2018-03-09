@@ -2254,12 +2254,10 @@ End Sub
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
 Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
         
-    #If DEBUGMODE = 1 Then
-        If (UBound(ExtraText) >= LBound(ExtraText)) Then
-            pdDebug.LogAction msgString & " (extra parameters were supplied)"
-        Else
-            pdDebug.LogAction msgString
-        End If
-    #End If
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then
+        pdDebug.LogAction msgString & " (extra parameters were supplied)"
+    Else
+        pdDebug.LogAction msgString
+    End If
     
 End Sub

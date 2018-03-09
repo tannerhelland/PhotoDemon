@@ -271,7 +271,7 @@ Public Property Let Max(ByVal newValue As Double)
     
     'Recalculate thumb size and position
     DetermineThumbSize
-    If MainModule.IsProgramRunning() Then RedrawBackBuffer True
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer True
     
     PropertyChanged "Max"
     
@@ -295,7 +295,7 @@ Public Property Let Min(ByVal newValue As Double)
     
     'Recalculate thumb size and position, then redraw the button to match
     DetermineThumbSize
-    If MainModule.IsProgramRunning() Then RedrawBackBuffer True
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer True
     
     PropertyChanged "Min"
     
@@ -350,7 +350,7 @@ Public Property Let Value(ByVal newValue As Double)
         
         'While running, perform bounds-checking.  (It's less important in the designer, as the assumption is that the
         ' developer will momentarily bring everything into order.)
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             
             'To prevent RTEs, perform an additional bounds check.  Clamp the value if it lies outside control boundaries.
             If (m_Value < m_Min) Then m_Value = m_Min
@@ -846,10 +846,10 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSCROLL_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDScrollBar", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Prep timer objects
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         Set m_UpButtonTimer = New pdTimer
         Set m_DownButtonTimer = New pdTimer
     End If
@@ -904,7 +904,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 'When the control value is INCREASED, this function is called
@@ -1012,7 +1012,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     bHeight = ucSupport.GetBackBufferHeight
     
     'Paint all backgrounds and borders first
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'Next, initialize a whole bunch of color values
         Dim thumbBorderColor As Long, thumbFillColor As Long
@@ -1278,7 +1278,7 @@ Private Sub UpdatePopupText()
     
     'The text of the scroll bar context menu changes depending on orientation.  We match the verbiage and layout
     ' of the default Windows context menu.
-    If MainModule.IsProgramRunning() And (Not g_Language Is Nothing) Then
+    If pdMain.IsProgramRunning() And (Not g_Language Is Nothing) Then
         
         If m_OrientationHorizontal Then
             MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
@@ -1326,8 +1326,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

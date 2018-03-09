@@ -2049,10 +2049,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetImageVerticalResolution hImage, imgVResolution
     dstDIB.SetDPI imgHResolution, imgVResolution
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "GDI+ image dimensions reported as: " & imgWidth & "x" & imgHeight & ", (" & imgWidthF & ", " & imgHeightF & ")"
-        pdDebug.LogAction "GDI+ image resolution reported as: " & imgHResolution & "x" & imgVResolution
-    #End If
+    'pdDebug.LogAction "GDI+ image dimensions reported as: " & imgWidth & "x" & imgHeight & ", (" & imgWidthF & ", " & imgHeightF & ")"
+    'pdDebug.LogAction "GDI+ image resolution reported as: " & imgHResolution & "x" & imgVResolution
     
     'Metafile containers (EMF, WMF) require special handling.
     Dim emfPlusAvailable As Boolean, metafileWasUpsampled As Boolean
@@ -2082,23 +2080,16 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         ' (The GDI+ conversion function straight-up fails if the original contains mixed EMF/EMF+ data, unfortunately.)
         Dim tmpHeader As GP_MetafileHeader
         If (GdipGetMetafileHeaderFromMetafile(hImage, tmpHeader) = GP_OK) Then
-            
             emfPlusAvailable = (tmpHeader.mfType = GP_MT_EmfPlus) Or (tmpHeader.mfType = GP_MT_EmfDual)
-            
-            #If DEBUGMODE = 1 Then
-                If (tmpHeader.mfType = GP_MT_EmfPlus) Then pdDebug.LogAction "Note: incoming metafile is in EMF+ format.  Up-sampling will be skipped."
-                If (tmpHeader.mfType = GP_MT_EmfDual) Then pdDebug.LogAction "Note: incoming metafile is in dual-EMF format.  EMF+ data will be preferentially used."
-            #End If
-            
+            If (tmpHeader.mfType = GP_MT_EmfPlus) Then pdDebug.LogAction "Note: incoming metafile is in EMF+ format.  Up-sampling will be skipped."
+            If (tmpHeader.mfType = GP_MT_EmfDual) Then pdDebug.LogAction "Note: incoming metafile is in dual-EMF format.  EMF+ data will be preferentially used."
         End If
         
         'If GDI+ v1.1 is available, we can translate old-style EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
         ' and alpha channels (among other things).
         If ((Not emfPlusAvailable) And GDI_Plus.IsGDIPlusV11Available) Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Incoming metafile detected.  Attempting to upsample to EMF+ format..."
-            #End If
+            pdDebug.LogAction "Incoming metafile detected.  Attempting to upsample to EMF+ format..."
             
             'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
             Dim tmpSettingsDIB As pdDIB
@@ -2125,9 +2116,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 emfConvertResult = GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, GP_MT_EmfPlus, 0&, mfHandleDst)
                 If (emfConvertResult = GP_OK) Then
                     
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "EMF+ conversion successful!  Continuing with load..."
-                    #End If
+                    pdDebug.LogAction "EMF+ conversion successful!  Continuing with load..."
                     
                     'Conversion successful!  Replace our current image handle with the EMF+ copy
                     metafileWasUpsampled = True
@@ -2136,9 +2125,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                     hImage = mfHandleDst
 
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "EMF+ conversion failed (#" & CStr(emfConvertResult) & ", " & CStr(convSuccess) & ").  Original EMF data will be used."
-                    #End If
+                    pdDebug.LogAction "EMF+ conversion failed (#" & CStr(emfConvertResult) & ", " & CStr(convSuccess) & ").  Original EMF data will be used."
                 End If
                 
                 'Release our temporary graphics container
@@ -2272,20 +2259,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 
                 'Apply the transformation using the dedicated CMYK transform handler
                 If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Copying newly transformed sRGB data..."
-                    #End If
-                
-                    'The transform was successful, and the destination DIB is ready to go!
+                    pdDebug.LogAction "Copying newly transformed sRGB data..."
                     dstDIB.ICCProfile.MarkSuccessfulProfileApplication
                                     
                 'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
                 Else
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
-                    #End If
+                    
+                    pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
                     
                     GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
                     If (hGraphics <> 0) Then
@@ -2355,10 +2335,7 @@ End Function
 Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As PD_2D_FileFormatExport, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Prepping image for GDI+ export..."
-    #End If
+    pdDebug.LogAction "Prepping image for GDI+ export..."
     
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpDIB As pdDIB
@@ -2621,15 +2598,12 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         GDIPlusReturn = GdipDisposeImage(hGdipBitmap)
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  GDI+ QuickSavePNG failed to create a valid gdipBitmap handle."
-        #End If
+        pdDebug.LogAction "WARNING!  GDI+ QuickSavePNG failed to create a valid gdipBitmap handle."
     End If
     
     Exit Function
     
 GDIPlusQuickSaveError:
-
     GDIPlusQuickSavePNG = False
     
 End Function
@@ -3373,9 +3347,7 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
     End If
     
     If (LenB(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction tmpString, PDM_External_Lib
-    #End If
+    pdDebug.LogAction tmpString, PDM_External_Lib
     
 End Function
 

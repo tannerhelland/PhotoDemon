@@ -72,7 +72,7 @@ Implements ISubclass
 
 Friend Sub SetParentHWnd(ByVal hWnd As Long)
     
-    If (MainModule.IsProgramRunning() And (hWnd <> 0)) Then
+    If (pdMain.IsProgramRunning() And (hWnd <> 0)) Then
     
         m_ParentHWnd = hWnd
         

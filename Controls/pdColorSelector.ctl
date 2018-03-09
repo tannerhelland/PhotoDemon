@@ -316,7 +316,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDColorSelector", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -345,7 +345,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If Not pdMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -447,7 +447,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True)
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable button portion.
-    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
     
         'Calculate default border colors.  (Note that there are two: one for hover state, and one for default state)
         Dim defaultBorderColor As Long, activeBorderColor As Long
@@ -497,7 +497,7 @@ End Sub
 Private Sub MakeNewTooltip()
     
     'Failsafe for compile-time errors when properties are written
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         Dim toolString As String, hexString As String, rgbString As String, targetColor As Long
         
@@ -542,8 +542,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

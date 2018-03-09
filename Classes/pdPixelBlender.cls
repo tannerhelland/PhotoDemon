@@ -171,10 +171,8 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
-                #End If
-        
+                pdDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
+                
         End Select
         
         'Composited results will have been placed inside the temporary top DIB copy.  Apply the final blend now!

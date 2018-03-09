@@ -1014,22 +1014,22 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                         
                         'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                         ' while in debug mode.
-                        #If DEBUGMODE = 1 Then
+                        If UserPrefs.GenerateDebugLogs Then
                             Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
-                        #Else
+                        Else
                             Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName
-                        #End If
+                        End If
                     
                     'The mouse is not over a layer.  Default to the active layer, which allows the user to interact with the
                     ' layer even if it lies off-canvas.
                     Else
                         m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
                         
-                        #If DEBUGMODE = 1 Then
+                        If UserPrefs.GenerateDebugLogs Then
                             Message "Target layer: %1", g_Language.TranslateMessage("(none)"), "DONOTLOG"
-                        #Else
+                        Else
                             Message "Target layer: %1", g_Language.TranslateMessage("(none)")
-                        #End If
+                        End If
                         
                     End If
                 
@@ -1390,9 +1390,9 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'Allow the control to generate its own redraw requests
         Me.SetRedrawSuspension False
@@ -1607,16 +1607,16 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
 
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
@@ -1629,10 +1629,8 @@ Private Sub UserControl_Show()
         ' retain their default Tahoma label.
         
         'Convert all labels to the current interface font
-        If (Len(g_InterfaceFont) = 0) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING: pdCanvas.UserControl_Show had to make a premature decision about g_InterfaceFont"
-            #End If
+        If (LenB(g_InterfaceFont) = 0) Then
+            pdDebug.LogAction "WARNING: pdCanvas.UserControl_Show had to make a premature decision about g_InterfaceFont"
             g_InterfaceFont = "Segoe UI"
         End If
         
@@ -1698,7 +1696,7 @@ End Function
 ' RELAY: the actual cursor request needs to be passed to pdCanvasView, and we need to make sure its MouseEnter event also calls this.
 Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
     
-    If ((Not MainModule.IsProgramRunning()) Or g_ProgramShuttingDown) Then Exit Sub
+    If ((Not pdMain.IsProgramRunning()) Or g_ProgramShuttingDown) Then Exit Sub
     
     'Some cursor functions operate on a POI basis
     Dim curPOI As PD_PointOfInterest
@@ -2005,7 +2003,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         UpdateColorList
         ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme

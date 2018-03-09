@@ -816,7 +816,7 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     
     'If the color type is STILL unknown and/or invalid, there's nothing we can do.  Exit immediately.
     If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
-        If MainModule.IsProgramRunning() Then pdDebug.LogAction "WARNING!  Colors.GetColorFromString was unable to resolve the color string " & srcString & "."
+        If pdMain.IsProgramRunning() Then pdDebug.LogAction "WARNING!  Colors.GetColorFromString was unable to resolve the color string " & srcString & "."
         GetColorFromString = False
         Exit Function
     End If

@@ -116,9 +116,7 @@ Public Sub InitializeAutosave()
         If (Not Autosaves.WasLastShutdownClean) Then
             
             'Oh no!  Something went horribly wrong with the last PD session.
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
-            #End If
+            pdDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
                                     
             'See if there's any image autosave data worth recovering.
             If (Autosaves.SaveableImagesPresent > 0) Then
@@ -153,15 +151,11 @@ Public Sub InitializeAutosave()
             End If
         
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Previous shutdown was clean (no autosave data found)."
-            #End If
+            pdDebug.LogAction "Previous shutdown was clean (no autosave data found)."
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Multiple PhotoDemon sessions active; autosave check abandoned."
-        #End If
+        pdDebug.LogAction "Multiple PhotoDemon sessions active; autosave check abandoned."
     End If
     
 End Sub

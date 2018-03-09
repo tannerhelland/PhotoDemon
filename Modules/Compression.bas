@@ -483,7 +483,5 @@ Public Function GetCompressorName(ByVal whichEngine As PD_CompressionEngine) As 
 End Function
 
 Private Sub InternalErrorMsg(ByVal errMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING! Compression module error: " & errMsg
-    #End If
+    pdDebug.LogAction "WARNING! Compression module error: " & errMsg
 End Sub

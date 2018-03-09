@@ -156,10 +156,7 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     
     'Prepare the target DIB
     dstDIB.CreateBlank screenWidth, screenHeight, 32
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
-    #End If
+    pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
     
     'Copy the image directly from the screen's DC to the target DIB's DC
     Dim screenHwnd As Long, desktopDC As Long

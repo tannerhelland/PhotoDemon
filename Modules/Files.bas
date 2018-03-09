@@ -174,10 +174,6 @@ Public Function RequestTempFile() As String
     Dim tmpFile As String
     tmpFile = OS.UniqueTempFilename()
     
-    #If DEBUGMODE = 1 Then
-        Debug.Print "Note: generated a new temp file at " & tmpFile
-    #End If
-    
     m_ListOfTempFiles(m_NumOfTempFiles) = tmpFile
     m_NumOfTempFiles = m_NumOfTempFiles + 1
     RequestTempFile = tmpFile

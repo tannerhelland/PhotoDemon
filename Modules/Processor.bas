@@ -106,13 +106,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     End If
     
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
-    #If DEBUGMODE = 1 Then
-        If raiseDialog Then
-            pdDebug.LogAction "Show """ & processID & """ dialog", PDM_Processor
-        Else
-            pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
-        End If
-    #End If
+    If raiseDialog Then
+        pdDebug.LogAction "Show """ & processID & """ dialog", PDM_Processor
+    Else
+        pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
+    End If
     
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
@@ -361,10 +359,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     Dim procFinalStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procFinalStopTime
-    
-    #If DEBUGMODE = 1 Then
-        If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & VBHacks.GetTimeDiffAsString(procStartTime, procFinalStopTime) & ".  (init: " & VBHacks.GetTimeDiffAsString(procStartTime, procSortStartTime) & ", sort: " & VBHacks.GetTimeDiffAsString(procSortStartTime, procSortStopTime) & ", pre-Undo: " & VBHacks.GetTimeDiffAsString(procSortStopTime, procUndoStartTime) & ", undo: " & VBHacks.GetTimeDiffAsString(procUndoStartTime, procUndoStopTime) & ", UI: " & VBHacks.GetTimeDiffAsString(procUndoStopTime, procFinalStopTime) & ")"
-    #End If
+    If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & VBHacks.GetTimeDiffAsString(procStartTime, procFinalStopTime) & ".  (init: " & VBHacks.GetTimeDiffAsString(procStartTime, procSortStartTime) & ", sort: " & VBHacks.GetTimeDiffAsString(procSortStartTime, procSortStopTime) & ", pre-Undo: " & VBHacks.GetTimeDiffAsString(procSortStopTime, procUndoStartTime) & ", undo: " & VBHacks.GetTimeDiffAsString(procUndoStartTime, procUndoStopTime) & ", UI: " & VBHacks.GetTimeDiffAsString(procUndoStopTime, procFinalStopTime) & ")"
     
     Exit Sub
 
@@ -586,9 +581,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     End If
     
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
-    #End If
+    pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
@@ -924,9 +917,8 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
     Exit Sub
     
 CheckForCanvasModifyFail:
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Processor.CheckForCanvasModifications failed unexpectedly (#" & Err.Number & ", " & Err.Description & ")"
-    #End If
+    pdDebug.LogAction "WARNING!  Processor.CheckForCanvasModifications failed unexpectedly (#" & Err.Number & ", " & Err.Description & ")"
+    
 End Sub
 
 'Certain processor actions (like rotating the image) require us to remove the active selection.  We could probably work around this

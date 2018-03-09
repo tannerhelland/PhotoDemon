@@ -701,7 +701,7 @@ Friend Sub RegisterMainForm(ByRef parentForm As Form)
     'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
     m_MainWindowHWnd = parentForm.hWnd
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'Apply any unique styles to the parent window
         Dim newWinStyle As Long
@@ -767,7 +767,7 @@ End Sub
 ' the window in question; plan accordingly!)
 Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
-    If ((srcHwnd <> 0) And MainModule.IsProgramRunning()) Then
+    If ((srcHwnd <> 0) And pdMain.IsProgramRunning()) Then
     
         With m_MinMaxEntries(m_numOfMinMaxEntries)
             .hWnd = srcHwnd

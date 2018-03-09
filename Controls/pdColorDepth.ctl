@@ -506,7 +506,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UpdateColorDepthVisibility()
@@ -562,28 +562,28 @@ Private Sub UpdateTransparencyOptions()
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
             clsComposite.Visible = False
-            If MainModule.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
             
         'alpha by cut-off
         Case 2
             sldAlphaCutoff.Visible = True
             clsAlphaColor.Visible = False
             clsComposite.Visible = True
-            If MainModule.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
         
         'alpha by color
         Case 3
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = True
             clsComposite.Visible = True
-            If MainModule.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(True)
+            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(True)
             
         'no alpha
         Case 4
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
             clsComposite.Visible = True
-            If MainModule.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
     
     End Select
     
@@ -679,7 +679,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True, g_Themer.GetGenericUIColor(UI_Background))
@@ -697,7 +697,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'UpdateColorList
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
         cboColorModel.UpdateAgainstCurrentTheme

@@ -562,9 +562,7 @@ Private Sub cmdExport_Click()
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         
                         Else
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
-                            #End If
+                            pdDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
                             tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
                             cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         End If

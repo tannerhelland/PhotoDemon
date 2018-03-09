@@ -222,16 +222,12 @@ Friend Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
             End If
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
-            #End If
+            pdDebug.LogAction "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
         End If
     
     'The calling function didn't supply an hWnd.  Warn and exit.
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
-        #End If
+        pdDebug.LogAction "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
     End If
     
 End Function
@@ -304,7 +300,7 @@ End Sub
 Private Sub InstallKeyboardHook()
     
     'Check for an existing hook
-    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And MainModule.IsProgramRunning() Then
+    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And pdMain.IsProgramRunning() Then
         
         'If a hook is already active, and we're trying to unhook it safely, we don't want to reinstall our hook
         Dim tryingToUnhook As Boolean: tryingToUnhook = False
@@ -476,9 +472,7 @@ Private Sub HandleWMSetFocus()
     If (Not m_HasFocus) Then
         InstallKeyboardHook
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
-        #End If
+        pdDebug.LogAction m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
     End If
 End Sub
 
@@ -492,9 +486,7 @@ Private Sub HandleWMKillFocus()
     If m_HasFocus Then
         m_HasFocus = False
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
-        #End If
+        pdDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
     End If
     
 End Sub

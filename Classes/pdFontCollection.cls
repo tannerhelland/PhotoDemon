@@ -338,7 +338,7 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         Dim i As Long
         For i = LBound(m_FontCollection) To UBound(m_FontCollection)

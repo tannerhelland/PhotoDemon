@@ -1929,9 +1929,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2082,9 +2080,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2250,9 +2246,7 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  HorizontalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2386,9 +2380,7 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  VerticalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2910,9 +2902,7 @@ Public Function FastGammaDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double) As
     
     'Ensure gamma is valid; bad crashes will occur otherwise
     If (newGamma <= 0#) Or (newGamma >= 100#) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
-        #End If
+        pdDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
         FastGammaDIB = 0
         Exit Function
     End If

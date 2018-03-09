@@ -445,7 +445,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTRIP_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDHistory", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Set various UI trackers to default values.
     m_FocusRectActive = -1
@@ -475,7 +475,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 'Store all associated properties
@@ -582,7 +582,7 @@ Private Sub RedrawBackBuffer()
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDS_Background, Me.Enabled))
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         Dim tmpRectF As RectF
         Dim i As Long
@@ -680,10 +680,10 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList
         
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
         'Update all text managed by the support class (e.g. tooltips)
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If
     

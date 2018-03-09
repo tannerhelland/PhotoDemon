@@ -357,13 +357,11 @@ Private Sub WriteMetadataDatabaseToFile()
     If (writeSize > 0) Then m_FSO.FileWriteData m_DatabaseHandle, m_Async.PeekPointer(0), writeSize
     m_FSO.FileCloseHandle m_DatabaseHandle
     
-    #If DEBUGMODE = 1 Then
-        If (writeSize > 0) Then
-            pdDebug.LogAction "ExifTool Metadata database created successfully (" & Files.FileLenW(m_DatabasePath) & " bytes)"
-        Else
-            pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile failed to write the metadata database to file."
-        End If
-    #End If
+    If (writeSize > 0) Then
+        pdDebug.LogAction "ExifTool Metadata database created successfully (" & Files.FileLenW(m_DatabasePath) & " bytes)"
+    Else
+        pdDebug.LogAction "WARNING!  ExifTool.WriteMetadataDatabaseToFile failed to write the metadata database to file."
+    End If
         
     'Reset the database mode tracker, so the database doesn't accidentally get rebuilt again!
     m_DatabaseModeActive = False
@@ -816,9 +814,7 @@ Public Function WriteTagDatabase() As Boolean
         ' this file.
         Set m_FSO = New pdFSO
         If (Not m_FSO.FileCreateHandle(m_DatabasePath, m_DatabaseHandle, True, True, OptimizeSequentialAccess)) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  Failed to create ExifTool database.  Metadata editing is disabled for this session."
-            #End If
+            pdDebug.LogAction "WARNING!  Failed to create ExifTool database.  Metadata editing is disabled for this session."
             m_DatabaseModeActive = False
             WriteTagDatabase = False
             Exit Function
@@ -1189,19 +1185,13 @@ Public Function StartExifTool() As Boolean
     'Attempt to open ExifTool
     Set m_Async = New pdAsyncPipe
     If m_Async.Run(appLocation, cmdParams) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
-        #End If
+        pdDebug.LogAction "ExifTool initiated successfully.  Ready to process metadata."
         m_IsExifToolRunning = True
         StartExifTool = True
-                
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING! ExifTool Input/Output pipes could not be created."
-        #End If
+        pdDebug.LogAction "WARNING! ExifTool Input/Output pipes could not be created."
         m_IsExifToolRunning = False
         StartExifTool = False
-        
     End If
 
 End Function
@@ -1340,28 +1330,27 @@ Public Sub KillStrandedExifToolInstances()
     hSnapShot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
     rProcessFound = ProcessFirst(hSnapShot, uProcess)
     
+    Dim numProcessesTerminated As Long
+    
     'Iterate through all running processes, looking for ExifTool instances
-    Do While rProcessFound
+    Do While (rProcessFound <> 0)
     
         'Retrieve the EXE name of this process
         i = InStr(1, uProcess.szExeFile, Chr(0))
         szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
         
         'If the process name is "exiftool.exe", terminate it
-        If Right$(szExename, Len("exiftool.exe")) = "exiftool.exe" Then
+        If Strings.StringsEqual(Right$(szExename, Len("exiftool.exe")), "exiftool.exe", True) Then
             
             'Retrieve a handle to the ExifTool instance
             myProcess = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
             
             'Attempt to kill it
             If KillProcess(uProcess.th32ProcessID, 0) Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
-                #End If
+                pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
+                numProcessesTerminated = numProcessesTerminated + 1
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
-                #End If
+                pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
             End If
              
         End If
@@ -1372,18 +1361,13 @@ Public Sub KillStrandedExifToolInstances()
     Loop
     
     'Release our generic process snapshot, then exit
-    CloseHandle hSnapShot
-    #If DEBUGMODE = 1 Then
-        Debug.Print "All old ExifTool instances were auto-terminated successfully."
-    #End If
+    If (hSnapShot <> 0) Then CloseHandle hSnapShot
+    If (numProcessesTerminated > 0) Then pdDebug.LogAction CStr(numProcessesTerminated) & " old ExifTool instances were auto-terminated successfully."
     
     Exit Sub
     
 CouldntKillExiftoolInstances:
-    
-    #If DEBUGMODE = 1 Then
-        Debug.Print "Old ExifTool instances could not be auto-terminated.  Sorry!"
-    #End If
+    pdDebug.LogAction "Old ExifTool instances could not be auto-terminated due to errors.  Sorry!"
     
 End Sub
  
@@ -1983,10 +1967,8 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
     Exit Function
     
 SerializeFailed:
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  ExifTool.SerializeTagToString failed with Error #" & Err.Number & ", " & Err.Description
-    #End If
-
+    pdDebug.LogAction "WARNING!  ExifTool.SerializeTagToString failed with Error #" & Err.Number & ", " & Err.Description
+    
 End Function
 
 Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)

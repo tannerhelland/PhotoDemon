@@ -229,7 +229,7 @@ End Sub
 Private Sub Form_Load()
 
     'Unfortunately, we have to subclass to prevent obnoxious flickering when the form is first displayed
-    If MainModule.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
+    If pdMain.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
     
 End Sub
 

@@ -329,16 +329,16 @@ Private Function FreeCurrentProvider() As Boolean
 End Function
 
 Private Sub InternalCryptError(ByVal funcName As String, ByVal errName As String, Optional ByVal errDescription As String = vbNullString)
-    #If DEBUGMODE = 1 Then
-        Dim errString As String
-        errString = "WARNING!  pdCrypto error in " & funcName & ": " & errName
-        If (Len(errDescription) <> 0) Then
-            errString = errString & " - " & errDescription
-        Else
-            errString = errString & " (FYI, last DLL error is #" & Hex(Err.LastDllError) & ")"
-        End If
-        pdDebug.LogAction errString
-    #End If
+    
+    Dim errString As String
+    errString = "WARNING!  pdCrypto error in " & funcName & ": " & errName
+    If (LenB(errDescription) <> 0) Then
+        errString = errString & " - " & errDescription
+    Else
+        errString = errString & " (FYI, last DLL error is #" & Hex(Err.LastDllError) & ")"
+    End If
+    pdDebug.LogAction errString
+    
 End Sub
 
 Private Sub Class_Initialize()

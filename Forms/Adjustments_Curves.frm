@@ -665,7 +665,7 @@ End Sub
 'TODO: rewrite this monstrosity against pd2D, and render to a persistent DIB instead of directly to the picture box (ugh)
 Private Sub RedrawPreviewBox()
 
-    If (Not cmdBar.PreviewsAllowed) Or (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not cmdBar.PreviewsAllowed) Or (Not pdMain.IsProgramRunning()) Then Exit Sub
 
     picDraw.Picture = LoadPicture(vbNullString)
     

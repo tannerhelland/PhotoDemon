@@ -195,7 +195,7 @@ Public Sub ClearCanvas()
     bHeight = ucSupport.GetBackBufferHeight
         
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (g_OpenImageCount = 0) And MainModule.IsProgramRunning() And (Not g_ProgramShuttingDown) Then
+    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() And (Not g_ProgramShuttingDown) Then
         
         Dim placeholderImageSize As Long
         placeholderImageSize = 256
@@ -418,7 +418,7 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     
     'If no images are loaded, repaint ourselves automatically
-    If (g_OpenImageCount = 0) And MainModule.IsProgramRunning() Then
+    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() Then
         Me.ClearCanvas
     Else
     
@@ -448,7 +448,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -519,7 +519,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         UpdateColorList
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         If (g_OpenImageCount = 0) Then Me.ClearCanvas
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

@@ -91,9 +91,7 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
         cmdParams = cmdParams & "--ext -8bpp.png "
                 
         'Verbose output is helpful when debugging
-        #If DEBUGMODE = 1 Then
-            cmdParams = cmdParams & "-v "
-        #End If
+        If UserPrefs.GenerateDebugLogs Then cmdParams = cmdParams & "-v "
         
         'Tell pngquant to stop argument processing here
         cmdParams = cmdParams & "-- "

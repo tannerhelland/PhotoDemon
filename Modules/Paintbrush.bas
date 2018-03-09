@@ -422,9 +422,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
-        #End If
+        pdDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
     

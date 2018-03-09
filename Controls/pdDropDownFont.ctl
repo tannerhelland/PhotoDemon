@@ -453,7 +453,7 @@ End Sub
 
 Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Cache colors in advance, so we can simply reuse them in the inner loop
     Dim itemFillColor As Long, itemFillBorderColor As Long, itemFontColor As Long
@@ -691,7 +691,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDDROPDOWNFONT_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDDropDownFont", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
@@ -730,7 +730,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -745,7 +745,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Terminate()
@@ -770,7 +770,7 @@ Private Sub RaiseListBox()
     
     On Error GoTo UnexpectedListBoxTrouble
     
-    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Or (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Or (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'We first want to retrieve this control instance's window coordinates *in the screen's coordinate space*.
     ' (We need this to know how to position the listbox element.)
@@ -950,7 +950,7 @@ Private Sub RaiseListBox()
     ' but non-focusable clicks are problematic.  To solve this, we subclass our parent control and watch for mouse events.
     ' Also, since we're subclassing the control anyway, we'll also hide the ListBox if the parent window is moved.
     m_ParentHWnd = UserControl.Parent.hWnd
-    If (m_ParentHWnd <> 0) And MainModule.IsProgramRunning() Then
+    If (m_ParentHWnd <> 0) And pdMain.IsProgramRunning() Then
         
         'Make sure we're not currently trying to release a previous subclass attempt
         Dim subclassActive As Boolean: subclassActive = False
@@ -977,10 +977,7 @@ Private Sub RaiseListBox()
     Exit Sub
     
 UnexpectedListBoxTrouble:
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
-    #End If
+    pdDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 
@@ -1113,7 +1110,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     ddColorText = m_Colors.RetrieveColor(PDDD_DropDownCaption, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
     ddColorArrow = m_Colors.RetrieveColor(PDDD_DropArrow, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'First, fill the combo area interior with the established fill color
         GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ComboRect, ddColorFill, 255
@@ -1194,8 +1191,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         listSupport.UpdateAgainstCurrentTheme
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbPrimary.UpdateAgainstCurrentTheme
     End If
 End Sub

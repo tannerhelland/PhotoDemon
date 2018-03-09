@@ -819,11 +819,7 @@ End Sub
 'In a default build, external pd2D classes relay any internal errors to this function.  You may wish to modify those classes
 ' to raise their own error events, or perhaps handle their errors internally.  (By default, pd2D does *not* halt on errors.)
 Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
-    #If DEBUGMODE = 1 Then
-        If (Len(errSource) = 0) Then errSource = "pd2D"
-        If (Not pdDebug Is Nothing) Then
-            pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
-            If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
-        End If
-    #End If
+    If (LenB(errSource) = 0) Then errSource = "pd2D"
+    pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
+    If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
 End Sub

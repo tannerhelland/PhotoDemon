@@ -99,9 +99,7 @@ Friend Sub StopTimer()
         If timerReleaseCheck Then
             UserControls.NotifyTimerDestroyed
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."
-            #End If
+            pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."
         End If
         
     End If

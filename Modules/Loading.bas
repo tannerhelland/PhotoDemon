@@ -63,12 +63,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'If debug mode is active, image loading is a place where many things can go wrong - bad files, corrupt formats, heavy RAM usage,
     ' incompatible color formats, and about a bazillion other problems.  As such, this function dumps a *lot* of information to
     ' the debug log, to help narrow down problems.
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-        pdDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
-        pdDebug.LogAction vbNullString, PDM_Mem_Report
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    pdDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
+    pdDebug.LogAction vbNullString, PDM_Mem_Report
     
     'Display a busy cursor
     If handleUIDisabling Then
@@ -161,10 +159,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Make a best guess at the incoming image's format
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Determining filetype..."
-    #End If
-    
+    pdDebug.LogAction "Determining filetype..."
     If Not (targetImage Is Nothing) Then targetImage.SetOriginalFileFormat FIF_UNKNOWN
     
     Dim srcFileExtension As String
@@ -192,34 +187,22 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
         '*************************************************************************************************************************************
         If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Starting separate metadata extraction thread..."
-            #End If
-                
+            pdDebug.LogAction "Starting separate metadata extraction thread..."
             ExifTool.StartMetadataProcessing srcFile, targetImage
-            
         End If
     
     'PD-specific files use their own load function, which bypasses a lot of tedious format-detection heuristics
     Else
     
         loadSuccessful = ImageImporter.CascadeLoadInternalImage(internalFormatID, srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
-    
-        #If DEBUGMODE = 1 Then
-            If (Not loadSuccessful) Then
-                pdDebug.LogAction "WARNING!  LoadFileAsNewImage failed on an internal file; all engines failed to handle " & srcFile & " correctly."
-            End If
-        #End If
+        If (Not loadSuccessful) Then pdDebug.LogAction "WARNING!  LoadFileAsNewImage failed on an internal file; all engines failed to handle " & srcFile & " correctly."
         
     End If
     
     'Eventually, the user may choose to save this image in a new format, but for now, the original and current formats are identical
     targetImage.SetCurrentFileFormat targetImage.GetOriginalFileFormat
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Format-specific parsing complete.  Running a few failsafe checks on the new pdImage object..."
-    #End If
+    pdDebug.LogAction "Format-specific parsing complete.  Running a few failsafe checks on the new pdImage object..."
     
     'Because ExifTool is sending us data in the background, we must periodically yield for metadata piping.
     If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
@@ -231,9 +214,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     If loadSuccessful And (targetDIB.GetDIBWidth > 0) And (targetDIB.GetDIBHeight > 0) And (Not (targetImage Is Nothing)) Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Debug note: image load appeared to be successful.  Summary forthcoming."
-        #End If
+        pdDebug.LogAction "Debug note: image load appeared to be successful.  Summary forthcoming."
         
         '*************************************************************************************************************************************
         ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of additional processing steps.
@@ -284,38 +265,34 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'We've now completed the bulk of the image load process.  In nightly builds, dump a bunch of image-related data out to file;
         ' such data is invaluable when tracking down bugs.
-        #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "~ Summary of image """ & Files.FileGetName(srcFile) & """ follows ~", , True
+        pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
         
-            pdDebug.LogAction "~ Summary of image """ & Files.FileGetName(srcFile) & """ follows ~", , True
-            pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
+        Select Case decoderUsed
             
-            Select Case decoderUsed
-                
-                Case PDIDE_INTERNAL
-                    pdDebug.LogAction vbTab & "Load engine: Internal PhotoDemon decoder", , True
-                
-                Case PDIDE_FREEIMAGE
-                    pdDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
-                
-                Case PDIDE_GDIPLUS
-                    pdDebug.LogAction vbTab & "Load engine: GDI+", , True
-                
-                Case PDIDE_VBLOADPICTURE
-                    pdDebug.LogAction vbTab & "Load engine: OleLoadPicture", , True
-                
-            End Select
+            Case PDIDE_INTERNAL
+                pdDebug.LogAction vbTab & "Load engine: Internal PhotoDemon decoder", , True
             
-            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
-            pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
-            pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
-            pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
-            pdDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
-            pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
-            pdDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
-            pdDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
-            pdDebug.LogAction "~ End of image summary ~", , True
+            Case PDIDE_FREEIMAGE
+                pdDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
             
-        #End If
+            Case PDIDE_GDIPLUS
+                pdDebug.LogAction vbTab & "Load engine: GDI+", , True
+            
+            Case PDIDE_VBLOADPICTURE
+                pdDebug.LogAction vbTab & "Load engine: OleLoadPicture", , True
+            
+        End Select
+            
+        pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
+        pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
+        pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
+        pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
+        pdDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
+        pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
+        pdDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
+        pdDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
+        pdDebug.LogAction "~ End of image summary ~", , True
         
         '*************************************************************************************************************************************
         ' Generate all relevant pdImage attributes tied to the source file (like the image's name and save state)
@@ -323,7 +300,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'First, see if this image is being restored from PD's "autosave" engine.  Autosaved images require special handling, because their
         ' state must be reconstructed from whatever bits we can dredge up from the temp file.
-        If srcFileExtension = "PDTMP" Then
+        If (srcFileExtension = "PDTMP") Then
             ImageImporter.SyncRecoveredAutosaveImage srcFile, targetImage
         Else
             ImageImporter.GenerateExtraPDImageAttributes srcFile, targetImage, suggestedFilename
@@ -337,9 +314,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' If this is a primary image, update all relevant UI elements (image size display, custom form icon, etc)
         '*************************************************************************************************************************************
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Finalizing image details..."
-        #End If
+        pdDebug.LogAction "Finalizing image details..."
         
         'The finalized pdImage object is finally worthy of being added to the master PD collection.  Note that this function will
         ' automatically update g_CurrentImage to point to the new image.
@@ -412,14 +387,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             If (Not targetImage.ImgMetadata.HasMetadata) Then
             
                 If ExifTool.IsMetadataFinished Then
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Metadata retrieved successfully."
-                    #End If
+                    pdDebug.LogAction "Metadata retrieved successfully."
                     targetImage.ImgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, targetImage.imageID
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
-                    #End If
+                    pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
                     FormMain.StartMetadataTimer
                 End If
             
@@ -444,13 +415,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '
         '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
         If (Macros.GetMacroStatus <> MacroBATCH) Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
-            #End If
-            
+            Dim autoSaveTime As Currency
+            VBHacks.GetHighResTime autoSaveTime
+            pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), vbNullString, UNDO_Everything
-            
+            pdDebug.LogAction "Initial auto-save creation took " & VBHacks.GetTimeDiffNowAsString(autoSaveTime)
         End If
             
             
@@ -461,15 +430,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         loadSuccessful = True
         
         'In debug mode, note the new memory baseline, post-load
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "New memory report after loading image """ & Files.FileGetName(srcFile) & """:"
-            pdDebug.LogAction vbNullString, PDM_Mem_Report
+        pdDebug.LogAction "New memory report after loading image """ & Files.FileGetName(srcFile) & """:"
+        pdDebug.LogAction vbNullString, PDM_Mem_Report
             
-            'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
-            ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
-            pdDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
-        #End If
-    
+        'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
+        ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
+        pdDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
+        
     'This ELSE block is hit when the image fails post-load verification checks.  Treat the load as unsuccessful.
     Else
     
@@ -519,9 +486,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If
     End If
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Image loaded in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-    #End If
+    pdDebug.LogAction "Image loaded in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         
 End Function
 
@@ -747,9 +712,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
     Static loadProgress As Long
         
     'In debug mode, mirror message output to PD's central Debugger
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction sMsg, PDM_User_Message
-    #End If
+    pdDebug.LogAction sMsg, PDM_User_Message
     
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not g_Language Is Nothing) Then

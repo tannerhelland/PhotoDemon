@@ -827,13 +827,8 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         WritePackageToFile = True
     
     Else
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
-        #End If
-        
+        pdDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
-    
     End If
         
     'TODO!  Add basic error handling.
@@ -985,9 +980,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
-                #End If
+                pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1042,9 +1035,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
-                #End If
+                pdDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1092,9 +1083,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
     Else
         ReadPackageFromFile = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
     End If
     
     Exit Function
@@ -1112,9 +1101,7 @@ End Function
 ' Unicode-aware parsing code, FYI!
 Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
-    #End If
+    pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
     
     'Open the file
     Dim fileNum As Integer
@@ -1799,13 +1786,11 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             GetNodeDataByIndex = False
             Exit Function
         Else
-            #If DEBUGMODE = 1 Then
-                If useHeaderBuffer Then
-                    pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
-                Else
-                    pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
-                End If
-            #End If
+            If useHeaderBuffer Then
+                pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
+            Else
+                pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
+            End If
         End If
         
     End If

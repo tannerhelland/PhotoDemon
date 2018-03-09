@@ -94,10 +94,7 @@ Private Sub Class_Initialize()
 IENotAvailable:
     
     m_IEAvailable = False
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  clsGoogleTranslate could not initialize an IE instance.  Last error was #" & Err.Number & ", " & Err.Description
-    #End If
+    pdDebug.LogAction "WARNING!  clsGoogleTranslate could not initialize an IE instance.  Last error was #" & Err.Number & ", " & Err.Description
     
 End Sub
 
@@ -111,7 +108,6 @@ Private Sub Class_Terminate()
     End If
     
 IEWasntInitialized:
-    
     m_IEAvailable = False
     
 End Sub

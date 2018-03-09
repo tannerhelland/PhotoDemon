@@ -275,7 +275,7 @@ Private m_StillUseDefWindowProc As Boolean
 'Note that this function will return TRUE if input tracking was initiated successfully.
 Friend Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
     
-    If (MainModule.IsProgramRunning() And (targetHWnd <> 0)) Then
+    If (pdMain.IsProgramRunning() And (targetHWnd <> 0)) Then
     
         'Cache relevant parameters at module-level.  These affect the way the subclasser responds to various window messages.
         m_hWnd = targetHWnd

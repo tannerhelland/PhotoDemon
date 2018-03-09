@@ -102,9 +102,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
                 ' parameter string exists; if it doesn't, we need to prompt them again.
                 dictEntry = "ExportParams" & saveExtension
                 If (Not needToDisplayDialog) And (Len(srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  PhotoDemon_SaveImage found an image where HasSeenExportDialog = TRUE, but ExportParams = null.  Fix this!"
-                    #End If
+                    pdDebug.LogAction "WARNING!  PhotoDemon_SaveImage found an image where HasSeenExportDialog = TRUE, but ExportParams = null.  Fix this!"
                     needToDisplayDialog = True
                 End If
                 
@@ -277,18 +275,15 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
             'Sometimes, PD may process images faster than ExifTool can parse the source file's metadata.
             ' Check for this, and pause until metadata processing catches up.
             If ExifTool.IsMetadataPipeActive Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Pausing batch process so that metadata processing can catch up..."
-                #End If
+                
+                pdDebug.LogAction "Pausing batch process so that metadata processing can catch up..."
                 
                 Do While ExifTool.IsMetadataPipeActive
                     Sleep 50
                     DoEvents
                 Loop
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Metadata processing caught up; proceeding with batch operation..."
-                #End If
+                pdDebug.LogAction "Metadata processing caught up; proceeding with batch operation..."
                 
             End If
             
@@ -550,10 +545,8 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
                 'Unfortunately, there's no good way to do this for our already-parsed metadata collection...
                 pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetSerializedXMLData(), compressHeaders
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Note: metadata writes took " & VBHacks.GetTimeDiffNowAsString(mdStartTime)
-                #End If
-        
+                pdDebug.LogAction "Note: metadata writes took " & VBHacks.GetTimeDiffNowAsString(mdStartTime)
+                
             Else
                 Debug.Print "FYI, metadata string data is reported as zero-length; abandoning write"
             End If
@@ -566,13 +559,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     SavePhotoDemonImage = pdiWriter.WritePackageToFile(pdiPath, secondPassDirectoryCompression, srcIsUndo)
     
     'Report timing on debug builds
-    #If DEBUGMODE = 1 Then
-        If SavePhotoDemonImage Then
-            pdDebug.LogAction "Saved PDI file in " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
-        Else
-            pdDebug.LogAction "WARNING!  SavePhotoDemonImage failed after " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
-        End If
-    #End If
+    If SavePhotoDemonImage Then
+        pdDebug.LogAction "Saved PDI file in " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+    Else
+        pdDebug.LogAction "WARNING!  SavePhotoDemonImage failed after " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+    End If
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
@@ -655,21 +646,14 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonLayer = m_PdiWriter.WritePackageToFile(pdiPath, , srcIsUndo)
-    
-    #If DEBUGMODE = 1 Then
-        If (Not SavePhotoDemonLayer) Then
-            pdDebug.LogAction "WARNING!  SavingSavePhotoDemonLayer received a failure status from pdiWriter.WritePackageToFile()"
-        End If
-    #End If
+    If (Not SavePhotoDemonLayer) Then
+        pdDebug.LogAction "WARNING!  SavingSavePhotoDemonLayer received a failure status from pdiWriter.WritePackageToFile()"
+    End If
     
     Exit Function
     
 SavePDLayerError:
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Saving.SavePhotoDemonLayer failed with error #" & Err.Number & ", " & Err.Description
-    #End If
-    
+    pdDebug.LogAction "WARNING!  Saving.SavePhotoDemonLayer failed with error #" & Err.Number & ", " & Err.Description
     SavePhotoDemonLayer = False
     
 End Function
@@ -682,10 +666,8 @@ End Function
 ' here must also be mirrored there.
 Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UndoType, Optional ByVal targetLayerID As Long = -1, Optional ByVal compressionHint As Long = -1) As Boolean
     
-    #If DEBUGMODE = 1 Then
-        Dim timeAtUndoStart As Currency
-        VBHacks.GetHighResTime timeAtUndoStart
-    #End If
+    Dim timeAtUndoStart As Currency
+    VBHacks.GetHighResTime timeAtUndoStart
     
     'As of v7.0, PD has multiple compression engines available.  These engines are not exposed to the user.  We use LZ4 by default,
     ' as it is far and away the fastest at both compression and decompression (while compressing at marginally worse ratios).
@@ -740,21 +722,16 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            #End If
-            
+            pdDebug.LogAction "Unknown Undo data write requested - is it possible to avoid this request entirely??"
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, , undoCmpLevel, , True)
         
     End Select
     
     SaveUndoData = undoSuccess
     
-    #If DEBUGMODE = 1 Then
-        If (Not SaveUndoData) Then pdDebug.LogAction "SaveUndoData returned failure; cause unknown."
-        'Want to test undo timing?  Uncomment the line below
-        'Debug.Print "Undo file creation took: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
-    #End If
+    If (Not SaveUndoData) Then pdDebug.LogAction "SaveUndoData returned failure; cause unknown."
+    'Want to test undo timing?  Uncomment the line below
+    'pdDebug.LogAction "Undo file creation took: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
     
 End Function
 
@@ -800,27 +777,17 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
             
             'Ask FreeImage to write the thumbnail out to file
             fi_Check = FreeImage_SaveEx(fi_DIB, dstFilename, PDIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
-            If (Not fi_Check) Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (FreeImage_SaveEx silent fail)."
-                #End If
-            End If
+            If (Not fi_Check) Then pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (FreeImage_SaveEx silent fail)."
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (blank handle)."
-            #End If
+            pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (blank handle)."
         End If
         
         If alphaWasChanged Then srcDIB.SetAlphaPremultiplication True
         
     'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
     Else
-        If (Not GDIPlusQuickSavePNG(dstFilename, srcDIB)) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via GDI+ failed (unspecified GDI+ error)."
-            #End If
-        End If
+        If (Not GDIPlusQuickSavePNG(dstFilename, srcDIB)) Then pdDebug.LogAction "Saving.QuickSaveDIBAsPNG via GDI+ failed (unspecified GDI+ error)."
     End If
 
 End Function

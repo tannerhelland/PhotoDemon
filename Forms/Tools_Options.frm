@@ -1200,7 +1200,7 @@ Private Sub cmdBarMini_OKClick()
                 
                 'Invoke and/or terminate the current debugger, as necessary
                 If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
-                    If UserPrefs.GenerateDebugLogs Then pdDebug.InitializeDebugger True, , False Else pdDebug.TerminateDebugger False
+                    If UserPrefs.GenerateDebugLogs Then pdDebug.StartDebugger True, , False Else pdDebug.TerminateDebugger False
                 End If
             End If
             
@@ -1708,7 +1708,7 @@ Private Sub Form_Load()
     Dim i As Long
     
     'Populate all controls with the corresponding values from the preferences file
-    If MainModule.IsProgramRunning() Then LoadAllPreferences
+    If pdMain.IsProgramRunning() Then LoadAllPreferences
     
     'Prep the category button strip
     With btsvCategory

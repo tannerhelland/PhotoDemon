@@ -48,13 +48,11 @@ Public Function InitializeEZTwain() As Boolean
         InitializeEZTwain = (m_hLibScanner <> 0)
         m_ScanningAvailable = InitializeEZTwain
         
-        #If DEBUGMODE = 1 Then
-            If (Not InitializeEZTwain) Then
-                pdDebug.LogAction "WARNING!  LoadLibrary failed to load EZTwain.  Last DLL error: " & Err.LastDllError
-                pdDebug.LogAction "(FYI, the attempted path was: " & eztPath & ")"
-            End If
-        #End If
-    
+        If (Not InitializeEZTwain) Then
+            pdDebug.LogAction "WARNING!  LoadLibrary failed to load EZTwain.  Last DLL error: " & Err.LastDllError
+            pdDebug.LogAction "(FYI, the attempted path was: " & eztPath & ")"
+        End If
+        
     Else
         InitializeEZTwain = True
     End If
@@ -213,7 +211,5 @@ ScanError:
 End Sub
 
 Private Sub RaiseInternalDebugEvent(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
-    #End If
+    pdDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
 End Sub

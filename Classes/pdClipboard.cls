@@ -444,21 +444,15 @@ Friend Function GetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
                 GetClipboardBinaryData = True
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't lock the clipboard data.  Clipboard operation abandoned."
-                #End If
+                pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't lock the clipboard data.  Clipboard operation abandoned."
             End If
         
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't grab the clipboard data, because blob size = 0."
-            #End If
+            pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't grab the clipboard data, because blob size = 0."
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't grab the clipboard data, because the hGlobal handle = 0."
-        #End If
+        pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardBinaryData() couldn't grab the clipboard data, because the hGlobal handle = 0."
     End If
     
 End Function
@@ -473,15 +467,10 @@ Friend Function GetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboa
         
         'Attempt to retrieve a handle to the data; zero indicates failure
         GetClipboardMemoryHandle = GetClipboardData(clipFormatID)
-        
-        #If DEBUGMODE = 1 Then
-            If GetClipboardMemoryHandle = 0 Then pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardMemoryHandle() returned zero.  API Error code: " & Err.LastDllError
-        #End If
+        If (GetClipboardMemoryHandle = 0) Then pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardMemoryHandle() returned zero.  API Error code: " & Err.LastDllError
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't retrieve clipboard memory handles (via GetClipboardMemoryHandle) unless the clipboard is open!"
-        #End If
+        pdDebug.LogAction "WARNING!  You can't retrieve clipboard memory handles (via GetClipboardMemoryHandle) unless the clipboard is open!"
     End If
     
 End Function
@@ -527,21 +516,15 @@ Friend Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
                 If ((Not SetClipboardBinaryData) And freeOnFailure) Then GlobalFree hGlobalHandle
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  SetClipboardBinaryData couldn't allocate a valid global memory handle; clipboard operation abandoned."
-                #End If
+                pdDebug.LogAction "WARNING!  SetClipboardBinaryData couldn't allocate a valid global memory handle; clipboard operation abandoned."
             End If
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  SetClipboardBinaryData couldn't allocate a valid global memory handle; clipboard operation abandoned."
-            #End If
+            pdDebug.LogAction "WARNING!  SetClipboardBinaryData couldn't allocate a valid global memory handle; clipboard operation abandoned."
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't stick stuff on the clipboard (via SetClipboardBinaryData) unless the clipboard is open, or delayed rendering is active!"
-        #End If
+        pdDebug.LogAction "WARNING!  You can't stick stuff on the clipboard (via SetClipboardBinaryData) unless the clipboard is open, or delayed rendering is active!"
     End If
     
     Exit Function
@@ -613,9 +596,7 @@ Friend Function GetClipboardText(ByRef dstString As String, Optional ClipboardFo
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardText() failed, because the requested format ID doesn't exist on the clipboard."
-        #End If
+        pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardText() failed, because the requested format ID doesn't exist on the clipboard."
     End If
     
 End Function
@@ -638,9 +619,7 @@ Friend Function GetClipboardHTML(ByRef dstString As String) As Boolean
         If GetClipboardBinaryData(htmlID, tmpData()) Then GetClipboardHTML = Strings.StringFromMysteryBytes(tmpData, dstString)
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardHTML() failed, because the clipboard doesn't have HTML text."
-        #End If
+        pdDebug.LogAction "WARNING!  pdClipboard.GetClipboardHTML() failed, because the clipboard doesn't have HTML text."
     End If
     
 End Function
@@ -684,23 +663,17 @@ Friend Function GetFileList(ByRef dstFileList As pdStringStack, ByRef numOfFiles
    
             Else
                 numOfFiles = 0
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the hDrop contained zero valid files."
-                #End If
+                pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the hDrop contained zero valid files."
             End If
 
         Else
             numOfFiles = 0
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard didn't return a valid hDrop."
-            #End If
+            pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard didn't return a valid hDrop."
         End If
         
     Else
         numOfFiles = 0
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard doesn't contains any filenames."
-        #End If
+        pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard doesn't contains any filenames."
     End If
     
 End Function
@@ -778,9 +751,7 @@ Friend Function ClearClipboard() As Boolean
     If m_IsClipboardOpen Then
         ClearClipboard = (EmptyClipboard <> 0)
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdClipboard.ClearClipboard doesn't work unless the clipboard is open!"
-        #End If
+        pdDebug.LogAction "WARNING!  pdClipboard.ClearClipboard doesn't work unless the clipboard is open!"
     End If
 End Function
 
@@ -867,9 +838,7 @@ Friend Function UpdateClipboardLists() As Boolean
         
     Else
         UpdateClipboardLists = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't enumerate clipboard formats without first opening the clipboard!"
-        #End If
+        pdDebug.LogAction "WARNING!  You can't enumerate clipboard formats without first opening the clipboard!"
     End If
     
 End Function
@@ -890,7 +859,7 @@ Friend Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         m_DelayedRenderingActive = True
         
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
-        If ((Not m_OwnerSubclassed) And MainModule.IsProgramRunning() And (m_OwnerHWnd <> 0)) Then
+        If ((Not m_OwnerSubclassed) And pdMain.IsProgramRunning() And (m_OwnerHWnd <> 0)) Then
             m_OwnerSubclassed = VBHacks.StartSubclassing(m_OwnerHWnd, Me)
         End If
         
@@ -920,10 +889,7 @@ Private Sub Class_Terminate()
     
     If m_OwnerSubclassed Then
     
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Terminating clipboard subclasser.  I hope all clipboard formats have been rendered already..."
-        #End If
-        
+        pdDebug.LogAction "Terminating clipboard subclasser.  I hope all clipboard formats have been rendered already..."
         VBHacks.StopSubclassing m_OwnerHWnd, Me
         m_OwnerSubclassed = False
         

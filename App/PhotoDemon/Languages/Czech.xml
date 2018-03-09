@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3312</langversion>
+<langversion>6.8.3313</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1633,6 +1633,12 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 
 <!-- END text for PDMath.bas-->
 
+<!-- BEGIN text for Debug.bas -->
+
+<!-- Debug.bas contains 0 phrases. -->
+
+<!-- END text for Debug.bas-->
+
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -2614,6 +2620,12 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
+
 <!-- BEGIN text for VB_Hacks.bas -->
 
 <!-- VB_Hacks.bas contains 0 phrases. -->
@@ -2845,12 +2857,6 @@ Při zadání číselné hodnoty.</translation>
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
-
-<!-- BEGIN text for pdDebug.cls -->
-
-<!-- pdDebug.cls contains 0 phrases. -->
-
-<!-- END text for pdDebug.cls-->
 
 <!-- BEGIN text for pdDictionary.cls -->
 
@@ -15233,12 +15239,6 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for UserPrefs.bas -->
-
-<!-- UserPrefs.bas contains 0 phrases. -->
-
-<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

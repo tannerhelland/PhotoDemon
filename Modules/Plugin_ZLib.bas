@@ -42,13 +42,11 @@ Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
     m_ZLibHandle = LoadLibrary(StrPtr(zLibPath))
     InitializeZLib = (m_ZLibHandle <> 0)
     
-    #If DEBUGMODE = 1 Then
-        If (Not InitializeZLib) Then
-            pdDebug.LogAction "WARNING!  LoadLibrary failed to load zLib.  Last DLL error: " & Err.LastDllError
-            pdDebug.LogAction "(FYI, the attempted path was: " & zLibPath & ")"
-        End If
-    #End If
-    
+    If (Not InitializeZLib) Then
+        pdDebug.LogAction "WARNING!  LoadLibrary failed to load zLib.  Last DLL error: " & Err.LastDllError
+        pdDebug.LogAction "(FYI, the attempted path was: " & zLibPath & ")"
+    End If
+        
 End Function
 
 'When PD closes, make sure to release our open zLib handle!

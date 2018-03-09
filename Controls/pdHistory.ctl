@@ -157,7 +157,7 @@ End Property
 Public Property Let HistoryRows(ByVal newRows As Long)
     If (newRows <> m_NumHistoryRows) Then
         m_NumHistoryRows = newRows
-        If ((Not ucSupport Is Nothing) And MainModule.IsProgramRunning()) Then
+        If ((Not ucSupport Is Nothing) And pdMain.IsProgramRunning()) Then
             If ucSupport.AmIVisible Then UpdateControlLayout
         End If
     End If
@@ -431,7 +431,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDHISTORY_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDHistory", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -459,7 +459,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -617,8 +617,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 
@@ -630,7 +630,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDH_Background, Me.Enabled))
     
-    If MainModule.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
         
         Dim i As Long
         

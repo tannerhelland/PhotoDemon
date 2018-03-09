@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.20</langversion>
+<langversion>1.0.21</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1633,6 +1633,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for PDMath.bas-->
 
+<!-- BEGIN text for Debug.bas -->
+
+<!-- Debug.bas contains 0 phrases. -->
+
+<!-- END text for Debug.bas-->
+
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -2614,6 +2620,12 @@ P数値を入力してください。</translation>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
+
 <!-- BEGIN text for VB_Hacks.bas -->
 
 <!-- VB_Hacks.bas contains 0 phrases. -->
@@ -2845,12 +2857,6 @@ P数値を入力してください。</translation>
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
-
-<!-- BEGIN text for pdDebug.cls -->
-
-<!-- pdDebug.cls contains 0 phrases. -->
-
-<!-- END text for pdDebug.cls-->
 
 <!-- BEGIN text for pdDictionary.cls -->
 
@@ -15234,12 +15240,6 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for UserPrefs.bas -->
-
-<!-- UserPrefs.bas contains 0 phrases. -->
-
-<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

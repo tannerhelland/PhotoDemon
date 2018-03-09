@@ -456,12 +456,10 @@ Public Function InitializeLCMS() As Boolean
     m_LCMSHandle = LoadLibrary(StrPtr(lcmsPath))
     InitializeLCMS = (m_LCMSHandle <> 0)
     
-    #If DEBUGMODE = 1 Then
-        If (Not InitializeLCMS) Then
-            pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
-            pdDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
-        End If
-    #End If
+    If (Not InitializeLCMS) Then
+        pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
+        pdDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
+    End If
     
     'Initialize D65 primaries as well; these are helpful shortcuts when assembling RGB profiles on-the-fly
     ReDim m_D65_XYZ(0 To 2) As Double
@@ -741,19 +739,10 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
         
         '32-bpp DIBs can be applied in one fell swoop, since there are no scanline padding issues
         If (srcDIB.GetDIBColorDepth = 32) Then
-        
-            #If DEBUGMODE = 1 Then
-                'pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
-            #End If
-            
             cmsDoTransform hTransform, srcDIB.GetDIBPointer, srcDIB.GetDIBPointer, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
                     
         '24-bpp DIBs may have scanline padding issues.  We must process them one line at a time.
         Else
-            
-            #If DEBUGMODE = 1 Then
-                'pdDebug.LogAction "Applying ICC transform to 24-bpp DIB..."
-            #End If
             
             Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
             iWidth = srcDIB.GetDIBWidth
@@ -823,9 +812,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
     ApplyICCProfileToPDDIB = False
     
     If (targetDIB Is Nothing) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
-        #End If
+        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
         Exit Function
     End If
     
@@ -835,9 +822,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
         Exit Function
     End If
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
-    #End If
+    pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
     
     'Start by creating two LCMS profile handles:
     ' 1) a source profile (the in-memory copy of the ICC profile associated with this DIB)
@@ -872,35 +857,24 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
                 Set srcProfile = Nothing: Set dstProfile = Nothing
                 
                 If cTransform.ApplyTransformToPDDib(targetDIB) Then
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
-                    #End If
-                    
+                    pdDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
                     targetDIB.ICCProfile.MarkSuccessfulProfileApplication
                     ApplyICCProfileToPDDIB = True
-                    
                 End If
                 
                 'Note that we could free the transform here, but it's unnecessary.  (The pdLCMSTransform class
                 ' is self-freeing upon destruction.)
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
-                #End If
+                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
             End If
         
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
-            #End If
+            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
         End If
     
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
-        #End If
+        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
     End If
     
 End Function

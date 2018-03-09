@@ -242,7 +242,7 @@ End Property
 ' No preprocessing is currently applied to DIBs loaded as a resource.
 Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
-    If (Not MainModule.IsProgramRunning) Then Exit Sub
+    If (Not pdMain.IsProgramRunning) Then Exit Sub
     
     'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
     ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
@@ -579,7 +579,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDTOOLBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDToolButton", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -598,7 +598,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -612,7 +612,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -673,7 +673,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
         
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'A single-pixel border is always drawn around the control
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, 1
@@ -728,8 +728,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

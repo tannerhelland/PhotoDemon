@@ -1365,7 +1365,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
     
-    If cmdBar.PreviewsAllowed And MainModule.IsProgramRunning() Then
+    If cmdBar.PreviewsAllowed And pdMain.IsProgramRunning() Then
         
         cmdBar.MarkPreviewStatus False
         

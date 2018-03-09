@@ -280,9 +280,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
     
     If srcDIB.GetDIBColorDepth = 24 Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Analyzing color count of 24-bpp image..."
-        #End If
+        pdDebug.LogAction "Analyzing color count of 24-bpp image..."
         
         Dim srcPixels() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
@@ -416,10 +414,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
     If (srcDIB.GetDIBColorDepth = 32) Then
 
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Analyzing color count of 32-bpp image..."
-        #End If
-
+        pdDebug.LogAction "Analyzing color count of 32-bpp image..."
+        
         Dim srcPixels() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
@@ -570,9 +566,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 End Function
 
 Private Sub ExportDebugMsg(ByVal debugMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction debugMsg
-    #End If
+    pdDebug.LogAction debugMsg
 End Sub
 
 'Format-specific export functions follow.  A few notes on how these functions work.
@@ -1971,9 +1965,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                     Plugin_FreeImage.ReleaseFreeImageObject fi_PageHandle
                     
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  PD was unable to create a FreeImage handle for layer # " & i
-                    #End If
+                    pdDebug.LogAction "WARNING!  PD was unable to create a FreeImage handle for layer # " & i
                 End If
                 
             'End "is layer visible?"

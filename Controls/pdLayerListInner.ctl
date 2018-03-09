@@ -705,7 +705,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLAYERBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDLayerBoxInner", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Reset all internal storage objects (used to track layer thumbnails, among other things)
     m_NumOfThumbnails = 0
@@ -754,7 +754,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -764,7 +764,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -856,7 +856,7 @@ Private Function UpdateHoveredLayer(ByVal newLayerUnderMouse As Long) As Boolean
     
     UpdateHoveredLayer = False
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Function
+    If (Not pdMain.IsProgramRunning()) Then Exit Function
     
     'If a layer other than the active one is being hovered, highlight that box
     If (m_CurLayerHover <> newLayerUnderMouse) Then
@@ -920,7 +920,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDLB_Background, enabledState))
     
     'This bunch of checks are basically failsafes to ensure we have valid pdLayer objects to pull from
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'If the list either 1) has keyboard focus, or 2) is actively being hovered by the mouse, we render
         ' it differently, using PD's standard hover behavior (accent colors and chunky border)
@@ -1178,7 +1178,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
+    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -1299,7 +1299,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     'Load all hover UI image resources
     If ucSupport.ThemeUpdateRequired Then
         
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             Dim iconSize As Long
             iconSize = FixDPI(16)
             LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
@@ -1307,8 +1307,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         End If
         
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         txtLayerName.UpdateAgainstCurrentTheme
         
     End If

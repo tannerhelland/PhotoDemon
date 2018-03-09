@@ -116,9 +116,7 @@ Public Function CreateProgressBar(ByVal ContainerHwnd As Long, _
         m_Speed = 30
         CreateProgressBar = True
         UserControls.NotifyAPIWindowCreated
-        #If DEBUGMODE = 1 Then
-            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "Creating system progress bar..."
-        #End If
+        pdDebug.LogAction "Creating system progress bar..."
     End If
     
 End Function

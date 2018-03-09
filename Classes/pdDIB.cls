@@ -853,9 +853,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             If (m_dibHandle <> 0) Then
                 
                 'Inside debugging mode, increment a global DIB counter.
-                #If DEBUGMODE = 1 Then
-                    If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
-                #End If
+                If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
                 
                 'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
                 m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
@@ -1000,10 +998,8 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
         m_dibHandle = 0
         
         'Inside debug mode, decrement a global DIB counter
-        #If DEBUGMODE = 1 Then
-            g_DIBsDestroyed = g_DIBsDestroyed + 1
-        #End If
-    
+        g_DIBsDestroyed = g_DIBsDestroyed + 1
+        
     End If
     
     If (alsoReleaseDC And (m_dibDC <> 0)) Then
@@ -1216,9 +1212,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     'If this is not an embedded file, create and open it now
     If (Not useEmbeddedLocation) Then
         If (Not cFile.FileCreateHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess)) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
-            #End If
+            pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
             CreateFromFile = False
             Exit Function
         End If
@@ -1266,13 +1260,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Make sure the dimensions are valid
     If (fWidth = 0) Or (fHeight = 0) Or (fArrayWidth = 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.CreateFromFile encountered invalid width/height measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
-        #End If
-    Else
-        #If DEBUGMODE = 1 Then
-            'pdDebug.LogAction "pdDIB.CreateFromFile() detected an incoming buffer with measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
-        #End If
+        pdDebug.LogAction "WARNING!  pdDIB.CreateFromFile encountered invalid width/height measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
     End If
     
     'Check compression.  As of 2016, this is no longer a true/false value - it is an enum describing a specific
@@ -1318,9 +1306,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
             
             'If the data is decompressed successfully, convert it to a 2D array and copy it into this class's DIB memory chunk
             If (Not Compression.DecompressPtrToPtr(tmpDIBPointer, tmpDIBLength, VarPtr(fileData(0)), compressedDataSize, useDecompressionEngine)) Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Decompression was not successful (unspecified compression plugin error).  DIB processing abandoned."
-                #End If
+                pdDebug.LogAction "Decompression was not successful (unspecified compression plugin error).  DIB processing abandoned."
                 CreateFromFile = False
                 Exit Function
             End If
@@ -1333,9 +1319,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         CreateFromFile = True
         
     Else
-        #If DEBUGMODE = 1 Then
-            If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
         CreateFromFile = False
     End If
     
@@ -1354,9 +1338,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.GetDIBWidth <= 0) Or (Me.GetDIBHeight <= 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.WriteToFile was called on an empty DIB.  Fix this!"
-        #End If
+        pdDebug.LogAction "WARNING!  pdDIB.WriteToFile was called on an empty DIB.  Fix this!"
         WriteToFile = False
         Exit Function
     End If
@@ -1369,9 +1351,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     If (Not embedInFile) Then
         If cFile.FileExists(dstFilename) Then cFile.FileDelete dstFilename
         If (Not cFile.FileCreateHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.WriteToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
-            #End If
+            pdDebug.LogAction "WARNING!  pdDIB.WriteToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
             WriteToFile = False
             Exit Function
         End If
@@ -1421,9 +1401,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
             cFile.FileWriteData hFile, VarPtr(compressedSize), 4&
             cFile.FileWriteData hFile, VarPtr(compressedImageData(0)), compressedSize
             
-            '#If DEBUGMODE = 1 Then
-            '    pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
-            '#End If
+            'pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
                 
         'On failure, we'll simply write out uncompressed bytes
         Else
@@ -1519,15 +1497,10 @@ Friend Sub WriteToBitmapFile(ByRef dstFilename As String)
         
         'That's it!
         cFile.FileCloseHandle hFile
-
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
-        #End If
-
+        pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
+        
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
-        #End If
+        pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
     End If
     
     'Minimize GDI resources by freeing our DC

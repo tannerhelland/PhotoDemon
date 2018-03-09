@@ -353,7 +353,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     
     'At present, the largest allowable size for a message box is the smaller of:
     ' 1) the primary canvas size, or...
-    curCanvasWidth = FormMain.mainCanvas(0).GetCanvasWidth
+    curCanvasWidth = FormMain.MainCanvas(0).GetCanvasWidth
     
     ' 2) 40% the width of the primary monitor.
     g_Displays.PrimaryDisplay.GetWorkingRect curScreenRect
@@ -547,9 +547,5 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub MsgBoxWarning(ByVal funcName As String, ByVal errMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  dialog_MsgBox." & funcName & " reported: " & errMsg
-    #Else
-        Debug.Print "dialog_MsgBox." & funcName & " warns: " & errMsg
-    #End If
+    pdDebug.LogAction "WARNING!  dialog_MsgBox." & funcName & " reported: " & errMsg
 End Sub

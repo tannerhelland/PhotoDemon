@@ -368,11 +368,9 @@ End Sub
 ' necessary to keep speed high.  (Also, note the DC so we can do fast font rendering later.)
 Friend Sub AttachToDC(ByVal targetDC As Long)
     
-    #If DEBUGMODE = 1 Then
-        If (targetDC = 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
-        If (curDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
-        If (targetDC = curDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
-    #End If
+    If (targetDC = 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
+    If (curDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
+    If (targetDC = curDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
     
     'Set the font
     If (targetDC <> curDC) Then
@@ -408,10 +406,8 @@ Friend Function CreateFontObject() As Boolean
     CreateFontObject = (curFont <> 0)
     
     'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
-    #If DEBUGMODE = 1 Then
-        If CreateFontObject Then g_FontsCreated = g_FontsCreated + 1
-    #End If
-
+    If CreateFontObject Then g_FontsCreated = g_FontsCreated + 1
+    
 End Function
 
 'Shortcut function to set all font properties at once
@@ -685,7 +681,7 @@ Private Sub Class_Initialize()
         ' Segoe and Tahoma aren't available on the target machine.
         .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
         
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             m_origFontFace = g_InterfaceFont
         Else
             m_origFontFace = "Tahoma"
@@ -739,19 +735,15 @@ Friend Sub DeleteCurrentFont()
         
         'If the font is inside a DC, remove it (otherwise we can't delete it)
         If (curDC <> 0) Then
-            Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
+            pdDebug.LogAction "HEY!  Font was not removed from DC - please do that before deleting it!"
             ReleaseFromDC
         End If
         
-        #If DEBUGMODE = 1 Then
-            If (DeleteObject(curFont) = 0) Then
-                Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
-            Else
-                g_FontsDestroyed = g_FontsDestroyed + 1
-            End If
-        #Else
-            DeleteObject curFont
-        #End If
+        If (DeleteObject(curFont) = 0) Then
+            pdDebug.LogAction "WARNING! Could not delete font resource - is it selected into a DC??"
+        Else
+            g_FontsDestroyed = g_FontsDestroyed + 1
+        End If
         
         curFont = 0
         

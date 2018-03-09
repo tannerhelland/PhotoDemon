@@ -230,11 +230,8 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
             
             'If tag end is less than tag start, it means there's an XML parsing problem
             Else
-                Debug.Print "WARNING: requested parameter (" & paramName & ") wasn't properly closed! (" & tagStart & ", " & tagEnd & ")"
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
-                    pdDebug.LogAction m_ParamString.ToString()
-                #End If
+                pdDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
+                pdDebug.LogAction m_ParamString.ToString()
                 dstString = vbNullString
             End If
             
@@ -296,10 +293,7 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     
 AddParamFailed:
     AddParam = False
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
-    #End If
+    pdDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
     
 End Function
 
@@ -336,11 +330,7 @@ Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     Exit Function
     
 MultiParamFailure:
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
-    #End If
-    
+    pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
     AddParamList = False
 
 End Function

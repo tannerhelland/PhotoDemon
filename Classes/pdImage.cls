@@ -975,10 +975,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    pdDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

@@ -115,7 +115,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
             ElseIf (g_CurrentTool = COLOR_PICKER) Then
-                If FormMain.mainCanvas(0).IsMouseOverCanvas Then ColorPicker.RenderColorPickerCursor dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then ColorPicker.RenderColorPickerCursor dstCanvas
             
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
@@ -134,11 +134,11 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
             'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
             ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
-                If FormMain.mainCanvas(0).IsMouseOverCanvas Then Paintbrush.RenderBrushOutline dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Paintbrush.RenderBrushOutline dstCanvas
             
             'Fill tools also render a custom cursor
             ElseIf (g_CurrentTool = PAINT_FILL) Then
-                If FormMain.mainCanvas(0).IsMouseOverCanvas Then FillTool.RenderFillCursor dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then FillTool.RenderFillCursor dstCanvas
                 
             End If
             
@@ -448,7 +448,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
         'If rendering is considered valid, but no images have been loaded, render a blank placeholder image and exit.
         If (g_OpenImageCount = 0) Then
-            FormMain.mainCanvas(0).ClearCanvas
+            FormMain.MainCanvas(0).ClearCanvas
         Else
             
             'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with,
@@ -503,7 +503,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             
             'Before querying the canvas object for sizes, make sure scroll bars are visible.  (As of v7.0, viewport scrollbars
             ' are *always* visible.)
-            FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
+            FormMain.MainCanvas(0).SetScrollVisibility PD_BOTH, True
             
             'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is responsible for determining this, as it must
             ' account for the positioning of scroll bars, a status bar, rulers, and whatever else the user has enabled.
@@ -685,7 +685,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     Else
         
         'Because dstCanvas may not yet exist, forcibly invoke the default canvas
-        FormMain.mainCanvas(0).ClearCanvas
+        FormMain.MainCanvas(0).ClearCanvas
         
     End If
     
@@ -761,13 +761,11 @@ End Sub
 'Report the current viewport performance profiling data to pdDebug.  Useless in non-debug builds.
 Public Sub ReportViewportProfilingData()
 
-    #If DEBUGMODE = 1 Then
-        If (m_TotalTime <> 0#) Then
-            pdDebug.LogAction "Final viewport perf data, by stage:"
-            pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
-            pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
-            pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
-        End If
-    #End If
+    If (m_TotalTime <> 0#) Then
+        pdDebug.LogAction "Final viewport perf data, by stage:"
+        pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
+        pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
+        pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
+    End If
 
 End Sub

@@ -171,11 +171,9 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         Exit Function
     End If
     
-    'Flood filling is super-expensive.  We may want to time it in debug builds.
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    'Flood filling can be expensive.  We may want to time it in debug builds.
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     'If a destination DIB was supplied, initialize it now
     If (Not dstDIB Is Nothing) Then
@@ -215,18 +213,14 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         FloodFillGlobal srcDIB
     End If
     
-    #If DEBUGMODE = 1 Then
-        'pdDebug.LogAction "FF-MAP: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-        VBHacks.GetHighResTime startTime
-    #End If
+    'pdDebug.LogAction "FF-MAP: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+    VBHacks.GetHighResTime startTime
     
     'From the flood fill results, generate an outline path
     GenerateFloodFillOutline dstOutlinePath
     
-    #If DEBUGMODE = 1 Then
-        'pdDebug.LogAction "FF-OUTLINE: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-        VBHacks.GetHighResTime startTime
-    #End If
+    'pdDebug.LogAction "FF-OUTLINE: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+    VBHacks.GetHighResTime startTime
     
     'Finally, render our floodfill results onto the destination DIB, if one was provided
     If (Not dstDIB Is Nothing) Then
@@ -240,9 +234,7 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
         Set cSurface = Nothing
         
-        #If DEBUGMODE = 1 Then
-            'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-        #End If
+        'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         
     End If
     

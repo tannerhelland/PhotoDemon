@@ -301,9 +301,7 @@ Public Sub SyncInterfaceToCurrentImage()
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Interface.SyncInterfaceToCurrentImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    pdDebug.LogAction "Interface.SyncInterfaceToCurrentImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -1045,9 +1043,7 @@ Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoadi
             IconsAndCursors.ChangeWindowIcon m_PopupHWnds(m_NumOfPopupHWnds), m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         Else
             m_NumOfPopupHWnds = 0
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  Interface.FixPopupWindow() has somehow unloaded more windows than it's loaded."
-            #End If
+            pdDebug.LogAction "WARNING!  Interface.FixPopupWindow() has somehow unloaded more windows than it's loaded."
         End If
     
     End If
@@ -1225,7 +1221,7 @@ End Sub
 Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Want to measure time on this function?  Use this line to isolate specific forms for further analysis.
     'Dim debugTest As Boolean
@@ -1415,7 +1411,7 @@ End Sub
 Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     
     'This function may be triggered during compilation; avoid this
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         If (Not g_Themer Is Nothing) Then g_Themer.RemoveWindowPainter srcForm.hWnd
         NavKey.NotifyFormUnloading srcForm
     End If
@@ -1559,7 +1555,8 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         'In debug mode, mirror the message output to PD's central Debugger.  Note that this behavior can be overridden by
         ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
-        #If DEBUGMODE = 1 Then
+        If UserPrefs.GenerateDebugLogs Then
+        
             If UBound(ExtraText) < LBound(ExtraText) Then
                 pdDebug.LogAction tmpDupeCheckString, PDM_User_Message
             Else
@@ -1571,7 +1568,8 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
                 End If
             
             End If
-        #End If
+        
+        End If
         
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request
         m_PrevMessage = tmpDupeCheckString
@@ -1985,9 +1983,7 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1)
     
     'This function has historically been a target for hand-optimization; uncomment the code below to
     ' report timing results.
-    '#If DEBUGMODE = 1 Then
-    '    Debug.Print "Time spent in NotifyImageChanged: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0.00") & " ms"
-    '#End If
+    'pdDebug.LogAction "Time spent in NotifyImageChanged: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0.00") & " ms"
     
 End Sub
 
@@ -2045,7 +2041,7 @@ End Sub
 ' to the underlying control.  If you do, those images will obviously overwrite this warning!)
 Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB

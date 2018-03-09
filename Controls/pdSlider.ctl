@@ -538,7 +538,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_Show()
@@ -637,7 +637,7 @@ Private Sub UpdateControlLayout()
     If (tudPrimary.GetLeft <> newLeft_TUD) Then tudPrimary.SetLeft newLeft_TUD
     
     'Inside the IDE, use a line of dummy code to force a redraw of the control outline
-    If (Not MainModule.IsProgramRunning()) Then
+    If (Not pdMain.IsProgramRunning()) Then
         pdssPrimary.Visible = False
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True)
@@ -674,7 +674,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         pdssPrimary.UpdateAgainstCurrentTheme
         tudPrimary.UpdateAgainstCurrentTheme
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

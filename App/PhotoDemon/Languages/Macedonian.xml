@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.125</langversion>
+<langversion>1.0.126</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1633,6 +1633,12 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <!-- END text for PDMath.bas-->
 
+<!-- BEGIN text for Debug.bas -->
+
+<!-- Debug.bas contains 0 phrases. -->
+
+<!-- END text for Debug.bas-->
+
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -2617,6 +2623,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
+
 <!-- BEGIN text for VB_Hacks.bas -->
 
 <!-- VB_Hacks.bas contains 0 phrases. -->
@@ -2848,12 +2860,6 @@ Please enter a numeric value.</original>
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
-
-<!-- BEGIN text for pdDebug.cls -->
-
-<!-- pdDebug.cls contains 0 phrases. -->
-
-<!-- END text for pdDebug.cls-->
 
 <!-- BEGIN text for pdDictionary.cls -->
 
@@ -15240,12 +15246,6 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for UserPrefs.bas -->
-
-<!-- UserPrefs.bas contains 0 phrases. -->
-
-<!-- END text for UserPrefs.bas-->
 
 <!-- Automatic text extraction complete. -->
 

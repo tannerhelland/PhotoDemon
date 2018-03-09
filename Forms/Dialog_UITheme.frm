@@ -276,7 +276,7 @@ End Sub
 'The accent color strip is owner-drawn, so we must respond to rendering events and paint the accent colors manually
 Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
-    If ((Len(btnValue) <> 0) And MainModule.IsProgramRunning()) Then
+    If ((Len(btnValue) <> 0) And pdMain.IsProgramRunning()) Then
     
         Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&

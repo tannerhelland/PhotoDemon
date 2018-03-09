@@ -54,7 +54,7 @@ Friend Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
     ' (Note that this step will fail inside the IDE; a workaround is provided.)
     m_ObjectName = srcObjectName
-    If MainModule.IsProgramRunning() And (Not g_Themer Is Nothing) Then
+    If pdMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
         InitializeColorList = g_Themer.VerifyThemeObject(srcObjectName)
     Else
         InitializeColorList = True
@@ -94,7 +94,7 @@ Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
         Dim baseColorValue As Long
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
-        If MainModule.IsProgramRunning() And (Not g_Themer Is Nothing) Then
+        If pdMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
             If g_Themer.RetrieveColorFromCache(m_ObjectName, srcColorName, m_ColorList(colorIndex)) Then
@@ -248,9 +248,5 @@ Friend Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
 End Function
 
 Private Sub InternalProblem(ByRef errMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdThemeColors returned an error: " & errMsg
-    #Else
-        Debug.Print "WARNING!  pdThemeColors returned an error: " & errMsg
-    #End If
+    pdDebug.LogAction "WARNING!  pdThemeColors returned an error: " & errMsg
 End Sub

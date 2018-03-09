@@ -707,9 +707,7 @@ Private Sub cmdUpdateLossyPreview_Click()
                 End If
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
-                #End If
+                pdDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
             End If
             
             Files.FileDeleteIfExists tmpFilename

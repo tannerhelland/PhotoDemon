@@ -696,14 +696,9 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
             If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) Then
             
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
-                #End If
-                
+                pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
                 ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
-                
                 sRGBHandled = True
-                
                 ApplyMetadataPostProcessing = True
             
             End If
@@ -735,11 +730,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         
                         'Check for matching inputs, including zeroes.  These indicate a writer error.
                         If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
-                            
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
-                                pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
-                            #End If
+                            pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
+                            pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
                             
                         'End points appear to be valid!  Continue with the transform.
                         Else
@@ -752,16 +744,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                             'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
                             ' the conversion, but we have no choice but to assume a default gamma value.
                             If (srcGamma = 0) Then
-                            
-                                #If DEBUGMODE = 1 Then
-                                    pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
-                                #End If
-                            
+                                pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
                             End If
                             
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
-                            #End If
+                            pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
                             
                             'We're now going to do something weird.  If the reported cHRM endpoints match sRGB endpoints, we're going to pass 0 to the
                             ' gamut conversion function.  This enables the sRGB gamma function, which is a rather complicated two-part ramp (instead of
@@ -783,10 +769,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                             'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
                             ' corrections to the image.
                             cHRMHandled = True
-                            
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "Custom cHRM data analysis complete."
-                            #End If
+                            pdDebug.LogAction "Custom cHRM data analysis complete."
                             
                             'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
                             ' so the image may already be visible on the screen!)
@@ -800,17 +783,11 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         End If
                     
                     Else
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
-                        #End If
+                        pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
                     End If
                 
                 Else
-                    If sRGBHandled Then
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
-                        #End If
-                    End If
+                    If sRGBHandled Then pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
                 End If
             
             'End cHRM chunk handling for PNG files
@@ -826,23 +803,14 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 
                 'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
                 If (srcGamma <= 0) Then
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
-                    #End If
-                
+                    pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
+                    
                 'If gamma does exist, and it is encoded correctly (as far as we can tell), apply it now
                 Else
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
-                    #End If
                     
+                    pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
                     Filters_Layers.FastGammaDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma
-                    
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Custom cHRM data analysis complete."
-                    #End If
+                    pdDebug.LogAction "Custom cHRM data analysis complete."
                     
                     'Note that gAMA has been handled; this prevents subsequent checks from possibly applying a second round of
                     ' corrections to the image.
@@ -889,9 +857,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             'Ask ExifTool to extract the ICC profile to a standalone temp file
             If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
-                #End If
+                pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
                 
                 'Next, we need to pause while ExifTool does its thing.  To minimize re-entrance issues, we only want to
                 ' yield to WM_TIMER messages (which is how we asynchronously receive data from ExifTool - timer+pipe).
@@ -910,10 +876,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                     'Load the ICC bytes into the target DIB
                     If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
                         
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
-                        #End If
-                
+                        pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
+                        
                         'Apply ICC conversion now
                         ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
                         
@@ -935,9 +899,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 
         End If
         
-        #If DEBUGMODE = 1 Then
-            If ApplyMetadataPostProcessing Then pdDebug.LogAction "NOTE!  Metadata-based post-processing was applied to this image."
-        #End If
+        If ApplyMetadataPostProcessing Then pdDebug.LogAction "NOTE!  Metadata-based post-processing was applied to this image."
         
     'END all preprocessing checks
     End If

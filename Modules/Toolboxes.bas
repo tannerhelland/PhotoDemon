@@ -94,7 +94,7 @@ End Sub
 'Before unloading the toolboxes, call this sub to write our current toolbox data out to the user's preference file.
 Public Sub SaveToolboxData()
 
-    If MainModule.WasStartupSuccessful() Then
+    If pdMain.WasStartupSuccessful() Then
 
         Dim i As PD_Toolbox
         For i = [_First] To [_Last]

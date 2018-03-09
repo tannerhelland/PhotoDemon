@@ -323,10 +323,7 @@ DownloadError:
     
     m_LastErrorNumber = Err.Number
     m_LastErrorDescription = Err.Description
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
-    #End If
+    pdDebug.LogAction "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
     
     'Download failed.  Populate struct elements anyway, then raise a completion event with the FAIL flag set.
     With m_DownloadList(itemIndex)
@@ -528,9 +525,7 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     If (DoesKeyExist(downloadKey) >= 0) Then
     
         'Duplicate keys are not allowed.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload.AddToQueue(), meaning an update request is likely already in-progress.  Ignoring duplicate request."
-        #End If
+        pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload.AddToQueue(), meaning an update request is likely already in-progress.  Ignoring duplicate request."
         AddToQueue = False
         Exit Function
     
@@ -609,9 +604,7 @@ Public Function ForceDownloadQueueSize(ByVal newSize As Long) As Boolean
 
     'Perform a failsafe check against current queue contents
     If (newSize < m_NumOfFiles) Or (newSize < 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
-        #End If
+        pdDebug.LogAction "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
         ForceDownloadQueueSize = False
         Exit Function
     End If
@@ -694,11 +687,8 @@ startDownloadingFailure:
     
     'TODO: implement "try again later" status
     If (keyIndex >= 0) Then m_DownloadList(keyIndex).CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdDownload.StartDownloadingByIndex had an error (#" & Err.Number & "): " & Err.Description
-    #End If
-
+    pdDebug.LogAction "WARNING!  pdDownload.StartDownloadingByIndex had an error (#" & Err.Number & "): " & Err.Description
+    
 End Function
 
 'Thin wrapper to startDownloadingByIndex, above

@@ -1079,16 +1079,12 @@ Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal
                 
                 'Next, check the version.  To my knowledge, this never varies from 0100
                 curLine = Trim$(fileLines.GetString(1))
-                #If DEBUGMODE = 1 Then
-                    If Strings.StringsNotEqual(curLine, "0100", False) Then pdDebug.LogAction "WARNING!  JASC palette contains unexpected version number: " & curLine
-                #End If
+                If Strings.StringsNotEqual(curLine, "0100", False) Then pdDebug.LogAction "WARNING!  JASC palette contains unexpected version number: " & curLine
                 
                 'Finally, retrieve line 3.  This line should be some number on the range [1, 256].
                 curLine = Trim$(fileLines.GetString(2))
                 If (CLng(curLine) < 1 Or CLng(curLine) > 256) Then
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  JASC palette contains invalid color count: " & curLine
-                    #End If
+                    pdDebug.LogAction "WARNING!  JASC palette contains invalid color count: " & curLine
                     okayToParseColors = False
                 End If
                 
@@ -1674,11 +1670,7 @@ Friend Sub Reset()
 End Sub
 
 Private Sub InternalProblem(ByRef errMsg As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdPalette returned an error: " & errMsg
-    #Else
-        Debug.Print "WARNING!  pdPalette returned an error: " & errMsg
-    #End If
+    pdDebug.LogAction "WARNING!  pdPalette returned an error: " & errMsg
 End Sub
 
 Private Sub Class_Initialize()

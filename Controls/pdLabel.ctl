@@ -130,7 +130,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     ucSupport.SetCaptionAlignment newAlignment
-    If (Not MainModule.IsProgramRunning()) Then UpdateControlLayout
+    If (Not pdMain.IsProgramRunning()) Then UpdateControlLayout
     PropertyChanged "Alignment"
 End Property
 
@@ -331,7 +331,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLABEL_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "GenericPDControl", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -377,7 +377,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -546,7 +546,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
+    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -561,7 +561,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

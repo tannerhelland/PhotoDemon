@@ -590,9 +590,7 @@ Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByV
         CreateCursorFromResource = CreateCursorFromDIB(resDIB)
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
-        #End If
+        pdDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
     End If
     
 End Function
@@ -753,10 +751,7 @@ Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDI
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
             dstDIB.CreateBlank 16, 16, 32, 0, 0
             LoadResourceToDIB = False
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
-            #End If
+            pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
             
         End If
         
@@ -844,10 +839,7 @@ Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByR
     'Use DrawIconEx to render the cursor into the 32-bpp DIB, then premultiply the result
     GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_NORMAL) <> 0)
     dstDIB.SetAlphaPremultiplication True
-    
-    #If DEBUGMODE = 1 Then
-        If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
-    #End If
+    If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
     
     'We now want to see if the destination DIB contains valid data.  (We define this as meeting two criteria:
     ' 1) the image must contain at least some non-transparent bytes, and...
@@ -895,9 +887,7 @@ Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByR
             End If
         
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx, second attempt(s)."
-            #End If
+            pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx, second attempt(s)."
         End If
         
     End If
@@ -960,9 +950,7 @@ Private Function GetHandAndResizeCursor() As Long
         GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)
     
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
-        #End If
+        pdDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
     End If
 
 End Function

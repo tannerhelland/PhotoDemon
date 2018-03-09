@@ -1819,11 +1819,7 @@ Private Sub CreateSelectionMask()
     
     dstSurface.SetSurfaceCompositing P2_CM_Overwrite
     
-    If (Not surfaceOK) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdSelection.CreateSelectionMask() failed to wrap the destination mask surface."
-        #End If
-    End If
+    If (Not surfaceOK) Then pdDebug.LogAction "WARNING!  pdSelection.CreateSelectionMask() failed to wrap the destination mask surface."
     
     'Interior/exterior selections use brushes to fill the appropriate region; bordered selections use a pen to *stroke*
     ' the selection outline.  (For bordered selections, note that we also generate a matching pd2DPath object, which is
@@ -2492,9 +2488,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'If any of our "viewport cache is ready" checks failed, generate a new cache now
     If (Not m_ViewportRefReady) Then
         
-        #If DEBUGMODE = 1 Then
-            VBHacks.GetHighResTime startTime
-        #End If
+        VBHacks.GetHighResTime startTime
         
         'Prep a target DIB; if at all possible, we want to reuse our existing DIB (as allocating new memory can be
         ' prohibitively expensive, given how frequently this function may be called).
@@ -2534,9 +2528,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
         overlayWasRegenerated = True
         
-        #If DEBUGMODE = 1 Then
-            'pdDebug.LogAction "Selection viewport reference DIB generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
-        #End If
+        'Timing report:
+        'pdDebug.LogAction "Selection viewport reference DIB generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         
     End If
     
@@ -2596,9 +2589,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'If any preceding checks failed, generate a new UI DIB to match current settings.
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
         
-        #If DEBUGMODE = 1 Then
-            Debug.Print "rebuilding selection overlay (" & Timer & ")"
-        #End If
+        If UserPrefs.GenerateDebugLogs Then Debug.Print "rebuilding selection overlay (" & Timer & ")"
         
         'The following chunk of code generates the actual 32-bpp selection image "overlaid" on the viewport.
         ' (Said another way, this image reflects things like the user's currently selected highlight or lightbox UI settings.)
@@ -2763,9 +2754,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_OverlayIsReady = True
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
-            #End If
+            pdDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
         End If
         
     End If
@@ -2784,10 +2773,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Outline rendering isn't free.  In debug builds you may want to profile it.
     ' (At present, profile reports are commented-out, but timing is still tracked - so just uncomment the
     '  various pdDebug.LogAction() calls to gather performance data.)
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     'Rendering an outline requires two broad stages:
     ' 1a) See if our currently cached outline path is accurate.
@@ -2801,9 +2788,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' 2) up-to-date.
     If (Not m_FinalOutlineIsReady) Or (m_FinalOutline Is Nothing) Or overlayWasRegenerated Then
         
-        '#If DEBUGMODE = 1 Then
-        '    Debug.Print "rebuilding selection outline path (" & Timer & ")"
-        '#End If
+        'Debug.Print "rebuilding selection outline path (" & Timer & ")"
         
         If (m_FinalOutline Is Nothing) Then Set m_FinalOutline = New pd2DPath Else m_FinalOutline.ResetPath
         
@@ -3027,9 +3012,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' so speedy during paint ops).
     m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
     
-    #If DEBUGMODE = 1 Then
-        'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
-    #End If
+    'Timing reports:
+    'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
     
 End Sub
 
@@ -3064,10 +3048,7 @@ End Sub
 Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
     ReadSelectionFromFile = False
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Reading selection data from file: " & srcFilename
-    #End If
+    pdDebug.LogAction "Reading selection data from file: " & srcFilename
     
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackager
@@ -3181,29 +3162,21 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     ReadSelectionFromFile = True
                     
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
-                    #End If
+                    pdDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
                 End If
             
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header; header XML follows:"
-                    pdDebug.LogAction headerXML.GetParamString()
-                #End If
+                pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header; header XML follows:"
+                pdDebug.LogAction headerXML.GetParamString()
             End If
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
-            #End If
+            pdDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
         End If
         
     End If
-        
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
-    #End If
+    
+    pdDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
     
 End Function
 

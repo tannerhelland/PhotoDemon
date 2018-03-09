@@ -338,7 +338,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
     Dim itemIsClickable As Boolean
     itemIsClickable = (LenB(m_contributorList(itemIndex).ctbURL) <> 0)
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         Dim txtColor As Long
         If itemIsClickable Then

@@ -1593,11 +1593,11 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
                 
                 'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                 ' while in debug mode.
-                #If DEBUGMODE = 1 Then
+                If UserPrefs.GenerateDebugLogs Then
                     Message "Release the mouse button to complete the lasso selection", "DONOTLOG"
-                #Else
+                Else
                     Message "Release the mouse button to complete the lasso selection"
-                #End If
+                End If
                 
                 'Force a redraw of the viewport
                 If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
@@ -1787,11 +1787,11 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                         ' while in debug mode.
                         If (Not wasSelectionActiveBeforeMouseEvents) Then
-                            #If DEBUGMODE = 1 Then
+                            If UserPrefs.GenerateDebugLogs Then
                                 Message "Click on the first point to complete the polygon selection", "DONOTLOG"
-                            #Else
+                            Else
                                 Message "Click on the first point to complete the polygon selection"
-                            #End If
+                            End If
                         End If
                         
                     End If

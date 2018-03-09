@@ -399,9 +399,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                 End If
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  Couldn't retrieve supported script list for " & srcFontName
-                #End If
+                pdDebug.LogAction "WARNING!  Couldn't retrieve supported script list for " & srcFontName
             End If
             
             'Remember to free our temporary font and DC when we're done with them

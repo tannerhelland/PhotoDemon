@@ -222,10 +222,7 @@ Friend Sub FindAndRemoveDuplicates()
         
         m_NumOfColors = m_NumOfColors - numRemoved
         ReDim Preserve m_Palette(0 To m_NumOfColors - 1) As PDPaletteEntry
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
-        #End If
+        pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
         
     End If
     
@@ -274,10 +271,7 @@ Friend Sub FindAndRemoveDuplicates_Fast()
         
         m_NumOfColors = m_NumOfColors - numRemoved
         ReDim Preserve m_Palette(0 To m_NumOfColors - 1) As PDPaletteEntry
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
-        #End If
+        pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
         
     End If
     

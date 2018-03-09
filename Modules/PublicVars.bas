@@ -137,10 +137,6 @@ Public g_UndoCompressionLevel As Long
 '       activation code in LoadTheProgram.
 Public g_DisplayTimingReports As Boolean
 
-'PhotoDemon's central debugger.  This class is accessed by pre-alpha, alpha, and beta builds, and it is used to log
-' generic debug messages on client PCs, which we can (hopefully) use to recreate crashes as necessary.
-Public pdDebug As pdDebugger
-
 'If FreeImage throws an error, the error string(s) will be stored here.  Make sure to clear it after reading to prevent future
 ' functions from mistakenly displaying the same message!
 Public g_FreeImageErrorMessages() As String

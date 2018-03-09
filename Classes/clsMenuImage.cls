@@ -691,19 +691,14 @@ Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
-        #End If
+        pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
     End If
     
     Exit Function
     
 AddImageFromDIB_Error:
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
-    #End If
-
+    pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
+    
 End Function
 
 Friend Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
@@ -885,7 +880,7 @@ End Function
 
 Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And MainModule.IsProgramRunning()) Then
+    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And pdMain.IsProgramRunning()) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
@@ -896,11 +891,7 @@ Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
             If (m_hWnd <> 0) Then StopSubclassing
             m_hWnd = hWnd
             If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
-            #End If
-            
+            pdDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
         Else
             m_hWnd = hWnd
             Init = True
@@ -911,7 +902,7 @@ Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
 End Function
 
 Private Function SetSubclassing() As Boolean
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         m_SubclassActive = VBHacks.StartSubclassing(m_hWnd, Me)
         SetSubclassing = m_SubclassActive
     Else

@@ -113,7 +113,7 @@ End Sub
 
 Public Function GenerateDebugLogs() As Boolean
     If (m_GenerateDebugLogs = dbg_Auto) Then
-        GenerateDebugLogs = (PD_BUILD_QUALITY <> PD_PRODUCTION)
+        GenerateDebugLogs = (PD_BUILD_QUALITY <> PD_PRODUCTION) And pdMain.IsProgramRunning()
     ElseIf (m_GenerateDebugLogs = dbg_False) Then
         GenerateDebugLogs = False
     Else
@@ -287,9 +287,7 @@ Public Function InitializePaths() As Boolean
         
     If m_NonPortableModeActive Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
-        #End If
+        pdDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
         
         'Because we don't have access to our own folder, we need a plan B for PD's expected user data folders.
         ' (Note that we still need access to required plugin DLLs, which must exist *somewhere* we can access.)
@@ -312,10 +310,8 @@ Public Function InitializePaths() As Boolean
         
         'If we're still here, we were able to create a data folder in a backup location.
         ' Try to proceed with the load process.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Non-portable mode activated successfully.  Continuing program initialization..."
-        #End If
-    
+        pdDebug.LogAction "Non-portable mode activated successfully.  Continuing program initialization..."
+        
     'This is a normal portable session.  The base folder is the same as PD's app path.
     Else
         baseFolder = m_ProgramPath
@@ -380,10 +376,8 @@ Public Function InitializePaths() As Boolean
         
     End If
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "PD base folder is " & m_ProgramPath
-        pdDebug.LogAction "PD data folder points at " & m_DataPath
-    #End If
+    pdDebug.LogAction "PD base folder is " & m_ProgramPath
+    pdDebug.LogAction "PD data folder points at " & m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     m_DebugPath = m_DataPath & "Debug\"
@@ -475,9 +469,7 @@ Public Sub LoadUserSettings()
     
     'If no preferences file exists, construct a default one
     If (Not Files.FileExists(m_PreferencesPath)) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
-        #End If
+        pdDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
         CreateNewPreferencesFile
     End If
     
@@ -514,18 +506,14 @@ Public Sub LoadUserSettings()
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
-        #End If
+        pdDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
     End If
                 
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub ResetPreferences()
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
-    #End If
+    pdDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
     Files.FileDeleteIfExists m_PreferencesPath
     CreateNewPreferencesFile
     LoadUserSettings

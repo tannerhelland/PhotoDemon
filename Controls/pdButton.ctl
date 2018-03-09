@@ -490,7 +490,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDButton", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -510,7 +510,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -527,7 +527,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -646,7 +646,7 @@ Private Sub RedrawBackBuffer()
         btnColorFill = m_Colors.RetrieveColor(PDB_ButtonFill, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
     End If
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'First, we fill the button interior with the established fill color
         GDI_Plus.GDIPlusFillRectToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorFill, 255
@@ -688,7 +688,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not MainModule.IsProgramRunning()) Then UserControl.Refresh
+    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -707,8 +707,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

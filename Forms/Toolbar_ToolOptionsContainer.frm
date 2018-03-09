@@ -59,7 +59,7 @@ Attribute m_WindowSize.VB_VarHelpID = -1
 
 Private Sub Form_Load()
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         Set m_WindowSize = New pdWindowSize
         m_WindowSize.AttachToHWnd Me.hWnd, True
     End If
@@ -77,9 +77,7 @@ Private Sub Form_Unload(Cancel As Integer)
         ReleaseFormTheming Me
         Set m_WindowSize = Nothing
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  toolbar_Options was unloaded prematurely - why??"
-        #End If
+        pdDebug.LogAction "WARNING!  toolbar_Options was unloaded prematurely - why??"
         Cancel = True
     End If
 End Sub

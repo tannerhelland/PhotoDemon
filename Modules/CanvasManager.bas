@@ -83,17 +83,17 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         
         'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
         ' the user switches between loaded images).
-        FormMain.mainCanvas(0).SetZoomDropDownIndex newZoomIndex
+        FormMain.MainCanvas(0).SetZoomDropDownIndex newZoomIndex
         pdImages(g_CurrentImage).SetZoom newZoomIndex
         
         'Re-enable scrolling
         ViewportEngine.EnableRendering
             
         'Now fix scrollbars and everything
-        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
-        FormMain.mainCanvas(0).RelayViewportChanges
+        FormMain.MainCanvas(0).RelayViewportChanges
     
     End If
 
@@ -107,17 +107,17 @@ Public Sub FitOnScreen()
         ViewportEngine.DisableRendering
         
         'Set zoom to the "fit whole" index
-        FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
+        FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
         pdImages(g_CurrentImage).SetZoom g_Zoom.GetZoomFitAllIndex
         
         'Re-enable scrolling
         ViewportEngine.EnableRendering
             
         'Now fix scrollbars and everything
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
-        FormMain.mainCanvas(0).RelayViewportChanges
+        FormMain.MainCanvas(0).RelayViewportChanges
         
     End If
     
@@ -129,20 +129,20 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
     If (g_OpenImageCount <> 0) Then
             
         'Prevent the viewport from auto-updating on scroll bar events
-        FormMain.mainCanvas(0).SetRedrawSuspension True
+        FormMain.MainCanvas(0).SetRedrawSuspension True
         
         'Set both canvas scrollbars to their midpoint
-        FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
-        FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
+        FormMain.MainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.MainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
+        FormMain.MainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.MainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
         
         'Re-enable scrolling
-        FormMain.mainCanvas(0).SetRedrawSuspension False
+        FormMain.MainCanvas(0).SetRedrawSuspension False
             
         'Now fix scrollbars and everything
-        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
-        FormMain.mainCanvas(0).RelayViewportChanges
+        FormMain.MainCanvas(0).RelayViewportChanges
         
     End If
         
@@ -173,9 +173,9 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         If redrawScreen Then
         
             If (g_OpenImageCount > 0) Then
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
             Else
-                FormMain.mainCanvas(0).ClearCanvas
+                FormMain.MainCanvas(0).ClearCanvas
             End If
             
         End If
@@ -373,7 +373,7 @@ Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal resyncInt
     
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
     If resyncInterface Then
-        FormMain.mainCanvas(0).AlignCanvasView
+        FormMain.MainCanvas(0).AlignCanvasView
         Interface.SyncInterfaceToCurrentImage
         Message "Finished."
     End If
@@ -410,13 +410,13 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         If (associatedUndoType = UNDO_Everything) Or (associatedUndoType = UNDO_Image) Or (associatedUndoType = UNDO_Image_VectorSafe) Or (associatedUndoType = UNDO_ImageHeader) Then
             
-            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
+            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
             
             'Reflow any image-window-specific chrome (status bar, rulers, etc)
-            FormMain.mainCanvas(0).AlignCanvasView
+            FormMain.MainCanvas(0).AlignCanvasView
             
         Else
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_ReuseLast
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
         End If
         
         'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image
@@ -428,10 +428,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
     ' making sure a scratch layer exists, and that it matches the current image's size.)
     Tools.InitializeToolsDependentOnImage
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    pdDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

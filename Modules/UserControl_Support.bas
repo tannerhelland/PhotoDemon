@@ -413,11 +413,7 @@ Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&,
         End If
     Next i
     
-    #If DEBUGMODE = 1 Then
-        If pmReturn = 0 Then
-            pdDebug.LogAction "PostPDMessage was unable to post message ID #" & wMsg & " to one or more windows."
-        End If
-    #End If
+    If (pmReturn = 0) Then pdDebug.LogAction "PostPDMessage was unable to post message ID #" & wMsg & " to one or more windows."
     
 End Sub
 
@@ -657,9 +653,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
         If (Not Fonts.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  UserControls.GetSharedGDIFont() failed to create a new UI font handle."
-            #End If
+            pdDebug.LogAction "WARNING!  UserControls.GetSharedGDIFont() failed to create a new UI font handle."
         End If
         
         'Return the newly created font handle, increment the font count, and exit
@@ -868,7 +862,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     
     On Error GoTo UnexpectedTTTrouble
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'If a tooltip is currently active, suspend the release timer (because we're just going to "snap" the current
     ' tooltip window into place, rather than waiting for an animation).
@@ -1071,10 +1065,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     Exit Sub
     
 UnexpectedTTTrouble:
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  UserControls.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
-    #End If
+    pdDebug.LogAction "WARNING!  UserControls.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 

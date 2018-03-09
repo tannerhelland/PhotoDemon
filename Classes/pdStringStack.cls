@@ -299,9 +299,7 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     End If
     
     'Want timing reports?  Here you go:
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "String collection sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    #End If
+    'pdDebug.LogAction "String collection sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

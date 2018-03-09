@@ -1,4 +1,4 @@
-Attribute VB_Name = "MainModule"
+Attribute VB_Name = "pdMain"
 '***************************************************************************
 'PhotoDemon Startup Module
 'Copyright 2014-2018 by Tanner Helland
@@ -135,20 +135,16 @@ Public Function ContinueLoadingProgram() As Boolean
     'Enable program-wide high-performance timer objects
     VBHacks.EnableHighResolutionTimers
     
-    'Regardless of debug mode, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
-    ' with DEBUGMODE = 1, however.
-    Set pdDebug = New pdDebugger
+    'Regardless of debug mode, we initialize our internal debugger.  (As of 7.2, the user can opt-out of debug tracking,
+    ' or they can manually enable it in stable builds.)
+    pdDebug.InitializeDebugger
     
     'During development, I find it helpful to profile PhotoDemon's startup process (so I can watch for obvious regressions).
     ' PD utilizes several different profiler-types; the LT type is "long-term" profiling, where data is written to a persistent
-    ' log file and measured over time.
+    ' log file and tracked over time.
     Dim perfCheck As pdProfilerLT
     Set perfCheck = New pdProfilerLT
-    
-    #If DEBUGMODE = 1 Then
-        perfCheck.StartProfiling "PhotoDemon Startup", True
-    #End If
-    
+    perfCheck.StartProfiling "PhotoDemon Startup", True
     
     
     '*************************************************************************************************************************************
@@ -159,14 +155,11 @@ Public Function ContinueLoadingProgram() As Boolean
     ReDim pdImages(0 To 3) As pdImage
     
     
-    
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Prepare splash screen"
-    #End If
+    perfCheck.MarkEvent "Prepare splash screen"
     
     'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
     ' (At present, only GDI+ is used)
@@ -174,9 +167,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     If Drawing2D.StartRenderingEngine(P2_DefaultBackend) Then
         
-        #If DEBUGMODE = 1 Then
-            Drawing2D.SetLibraryDebugMode True
-        #End If
+        Drawing2D.SetLibraryDebugMode UserPrefs.GenerateDebugLogs
         
         'Load FormSplash into memory.  (Note that its .Visible property is set to FALSE, so it is not actually displayed here.)
         Load FormSplash
@@ -188,10 +179,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Determine which version of Windows the user is running (as other load functions rely on this)
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Check Windows version"
-    #End If
-    
+    perfCheck.MarkEvent "Check Windows version"
     LoadMessage "Detecting Windows® version..."
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
@@ -202,10 +190,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize preferences engine"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize preferences engine"
     UserPrefs.StartPrefEngine
     
     'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
@@ -246,19 +231,14 @@ Public Function ContinueLoadingProgram() As Boolean
     'Normally, PD logs a bunch of internal data before exporting its first debug log, but if things are really dire,
     ' we can forcibly initialize debugging here.  (Just note that things like plugin data will *not* be accurate,
     ' as they haven't been loaded yet!)
-    #If DEBUGMODE = 1 Then
-        If ENABLE_EMERGENCY_DEBUGGER Then pdDebug.InitializeDebugger True, False
-    #End If
+    If ENABLE_EMERGENCY_DEBUGGER Then pdDebug.StartDebugger True, False
     
     
     '*************************************************************************************************************************************
     ' Initialize the plugin manager and load any high-priority plugins (e.g. those required to start the program successfully)
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load high-priority plugins"
-    #End If
-    
+    perfCheck.MarkEvent "Load high-priority plugins"
     PluginManager.InitializePluginManager
     PluginManager.LoadPluginGroup True
     
@@ -267,10 +247,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Initialize our internal resources handler
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize resource handler"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize resource handler"
     Set g_Resources = New pdResources
     g_Resources.LoadInitialResourceCollection
     
@@ -279,10 +256,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Initialize our internal menu manager
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize menu manager"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize menu manager"
     Menus.InitializeMenus
     
     
@@ -290,11 +264,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Initialize the translation (language) engine
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize translation engine"
-    #End If
-    
-    'Initialize a new language engine.
+    perfCheck.MarkEvent "Initialize translation engine"
     Set g_Language = New pdTranslate
     
     LoadMessage "Scanning for language files..."
@@ -320,11 +290,8 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Initialize the visual themes engine
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize theme engine"
-    #End If
-    
     'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
+    perfCheck.MarkEvent "Initialize theme engine"
     LoadMessage "Initializing theme engine..."
     
     Set g_Themer = New pdTheme
@@ -342,10 +309,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' PhotoDemon works well with multiple monitors.  Check for such a situation now.
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Detect displays"
-    #End If
-    
+    perfCheck.MarkEvent "Detect displays"
     LoadMessage "Analyzing current monitor setup..."
     
     Set g_Displays = New pdDisplays
@@ -359,9 +323,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Now we have what we need to properly display the splash screen.  Do so now.
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Calculate splash screen coordinates"
-    #End If
+    perfCheck.MarkEvent "Calculate splash screen coordinates"
     
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
     Dim wRect As RectL
@@ -375,11 +337,8 @@ Public Function ContinueLoadingProgram() As Boolean
     'Center the splash screen on whichever monitor the user previously used.
     g_Displays.CenterFormViaReferenceRect FormSplash, wRect
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Confirm UI font exists"
-    #End If
-    
     'If Segoe UI is available, we prefer to use it instead of Tahoma.  On XP this is not guaranteed, however, so we have to check.
+    perfCheck.MarkEvent "Confirm UI font exists"
     Dim tmpFontCheck As pdFont
     Set tmpFontCheck = New pdFont
     
@@ -388,19 +347,13 @@ Public Function ContinueLoadingProgram() As Boolean
     If tmpFontCheck.DoesFontExist("Segoe UI") Then g_InterfaceFont = "Segoe UI" Else g_InterfaceFont = "Tahoma"
     Set tmpFontCheck = Nothing
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Retrieve splash logo"
-    #End If
-    
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
+    perfCheck.MarkEvent "Retrieve splash logo"
     FormSplash.PrepareSplashLogo NUMBER_OF_LOADING_STEPS
     FormSplash.PrepareRestOfSplash
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Display splash screen"
-    #End If
-    
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
+    perfCheck.MarkEvent "Display splash screen"
     FormSplash.Show vbModeless
     
     '*************************************************************************************************************************************
@@ -408,20 +361,15 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize debugger"
-        If UserPrefs.GenerateDebugLogs Then pdDebug.InitializeDebugger True
-    #End If
+    perfCheck.MarkEvent "Initialize debugger"
+    If UserPrefs.GenerateDebugLogs Then pdDebug.StartDebugger True
     
     
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load import and export libraries"
-    #End If
-    
+    perfCheck.MarkEvent "Load import and export libraries"
     LoadMessage "Loading import/export libraries..."
     
     'The FreeImage.dll plugin provides most of PD's advanced image format support, but we can also fall back on GDI+.
@@ -438,10 +386,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Build a font cache for this system
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Build font cache"
-    #End If
-    
+    perfCheck.MarkEvent "Build font cache"
     LoadMessage "Building font cache..."
         
     'PD currently builds two font caches:
@@ -454,17 +399,12 @@ Public Function ContinueLoadingProgram() As Boolean
     Fonts.BuildFontCacheProperties
     
     
-    
     '*************************************************************************************************************************************
     ' Initialize PD's central clipboard manager
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize pdClipboardMain"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize pdClipboardMain"
     LoadMessage "Initializing clipboard interface..."
-    
     Set g_Clipboard = New pdClipboardMain
     
     
@@ -472,11 +412,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Get the viewport engine ready
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize viewport engine"
-    #End If
-    
-    'Initialize our current zoom method
+    perfCheck.MarkEvent "Initialize viewport engine"
     LoadMessage "Initializing viewport engine..."
     
     'Create the program's primary zoom handler
@@ -494,21 +430,16 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Finish loading low-priority plugins
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load low-priority plugins"
-    #End If
-    
+    perfCheck.MarkEvent "Load low-priority plugins"
     PluginManager.LoadPluginGroup False
     PluginManager.ReportPluginLoadSuccess
+    
     
     '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize window manager"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize window manager"
     LoadMessage "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
     
@@ -523,20 +454,13 @@ Public Function ContinueLoadingProgram() As Boolean
     'With toolbox data assembled, we can now silently load each tool window.  Even though these windows may not
     ' be visible (as the user can elect to hide them), we still want them loaded so that we can activate them quickly
     ' if/when they are enabled.
-    
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Window manager: load left toolbox"
-    #End If
+    perfCheck.MarkEvent "Window manager: load left toolbox"
     Load toolbar_Toolbox
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Window manager: load right toolbox"
-    #End If
+    perfCheck.MarkEvent "Window manager: load right toolbox"
     Load toolbar_Layers
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Window manager: load bottom toolbox"
-    #End If
+    perfCheck.MarkEvent "Window manager: load bottom toolbox"
     Load toolbar_Options
     
     'Retrieve tool window visibility and mark those menus as well
@@ -553,15 +477,11 @@ Public Function ContinueLoadingProgram() As Boolean
     toolbar_Toolbox.UpdateButtonSize UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1), True
     
     
-    
     '*************************************************************************************************************************************
     ' Set all default tool values
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize tools"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize tools"
     LoadMessage "Initializing image tools..."
     
     'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance, and it saves a bit of memory
@@ -575,10 +495,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize UI"
-    #End If
-    
+    perfCheck.MarkEvent "Initialize UI"
     LoadMessage "Initializing user interface..."
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
@@ -625,10 +542,7 @@ Public Function ContinueLoadingProgram() As Boolean
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.
     '*************************************************************************************************************************************
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Prep developer menus"
-    #End If
-    
+    perfCheck.MarkEvent "Prep developer menus"
     LoadMessage "Preparing program menus..."
     
     'In debug modes, certain developer and experimental menus will be enabled.
@@ -638,18 +552,12 @@ Public Function ContinueLoadingProgram() As Boolean
     FormMain.MnuTool(11).Visible = debugMenuVisibility
     FormMain.MnuTool(12).Visible = debugMenuVisibility
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Initialize hotkey manager"
-    #End If
-    
     'In the future, hotkeys really need to become user-editable, but for now, the list is hard-coded.
+    perfCheck.MarkEvent "Initialize hotkey manager"
     Menus.InitializeAllHotkeys
-            
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Prep MRU menus"
-    #End If
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
+    perfCheck.MarkEvent "Prep MRU menus"
     Set g_RecentFiles = New pdRecentFiles
     g_RecentFiles.LoadListFromFile
     
@@ -657,25 +565,16 @@ Public Function ContinueLoadingProgram() As Boolean
     g_RecentMacros.InitList New pdMRURecentMacros
     g_RecentMacros.MRU_LoadFromFile
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load all menu icons"
-    #End If
-    
     'Load and draw all menu icons
+    perfCheck.MarkEvent "Load all menu icons"
     IconsAndCursors.LoadMenuIcons False
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Apply theme/language to FormMain"
-    #End If
-    
     'Finally, apply all of our various UI features
+    perfCheck.MarkEvent "Apply theme/language to FormMain"
     FormMain.UpdateAgainstCurrentTheme False
     
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Final interface sync"
-    #End If
-    
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
+    perfCheck.MarkEvent "Final interface sync"
     Interface.SyncInterfaceToCurrentImage
     
     'If we made it all the way here, startup can be considered successful!
@@ -686,21 +585,17 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     'While in debug mode, copy a timing report of program startup to the debug folder
-    #If DEBUGMODE = 1 Then
-        perfCheck.StopProfiling
-        If UserPrefs.GenerateDebugLogs Then perfCheck.GenerateProfileReport True
-    #End If
+    perfCheck.StopProfiling
+    If UserPrefs.GenerateDebugLogs Then perfCheck.GenerateProfileReport True
     
     'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.
     ' (If this is *not* the first time, the window manager will automatically restore the window's last-known position and state.)
     If g_IsFirstRun Then g_WindowManager.SetFirstRunMainWindowPosition
     
     'In debug mode, make a baseline memory reading here, before the main form is displayed.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
-        pdDebug.LogAction vbNullString, PDM_Mem_Report
-        pdDebug.LogAction "Proceeding to load main window..."
-    #End If
+    pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
+    pdDebug.LogAction vbNullString, PDM_Mem_Report
+    pdDebug.LogAction "Proceeding to load main window..."
     
     Unload FormSplash
     
@@ -709,13 +604,8 @@ End Function
 'FormMain's Unload step calls this process as its final action.
 Public Sub FinalShutdown()
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FinalShutdown() reached."
-    #End If
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Manually unloading all remaining public class instances..."
-    #End If
+    pdDebug.LogAction "FinalShutdown() reached."
+    pdDebug.LogAction "Manually unloading all remaining public class instances..."
     
     Set g_RecentFiles = Nothing
     Set g_RecentMacros = Nothing
@@ -735,23 +625,14 @@ Public Sub FinalShutdown()
     
     'Report final profiling data
     ViewportEngine.ReportViewportProfilingData
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
-    #End If
+    pdDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
     
     'Free any ugly VB-specific workaround data
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing VB-specific hackarounds..."
-    #End If
-    
+    pdDebug.LogAction "Releasing VB-specific hackarounds..."
     VBHacks.ShutdownCleanup
     
     'Delete any remaining temp files in the cache
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Clearing temp file cache..."
-    #End If
-    
+    pdDebug.LogAction "Clearing temp file cache..."
     Files.DeleteTempFiles
     
     'Release each potentially active plugin in turn
@@ -761,32 +642,20 @@ Public Sub FinalShutdown()
     Drawing.ReleaseUIPensAndBrushes
     Set g_CheckerboardPattern = Nothing
     Set g_CheckerboardBrush = Nothing
-    If Drawing2D.StopRenderingEngine(P2_DefaultBackend) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "GDI+ released"
-        #End If
-    End If
+    If Drawing2D.StopRenderingEngine(P2_DefaultBackend) Then pdDebug.LogAction "GDI+ released"
     
     'Write all preferences out to file and terminate the XML parser
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Writing user preferences to file..."
-    #End If
-    
+    pdDebug.LogAction "Writing user preferences to file..."
     UserPrefs.StopPrefEngine
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
-    #End If
+    pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
     If (m_hShellModule <> 0) Then FreeLibrary m_hShellModule
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
-        pdDebug.LogAction "Final memory report", PDM_Mem_Report
-        pdDebug.TerminateDebugger
-        Set pdDebug = Nothing
-    #End If
+    pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
+    pdDebug.LogAction "Final memory report", PDM_Mem_Report
+    pdDebug.TerminateDebugger
     
     m_IsProgramRunning = False
     

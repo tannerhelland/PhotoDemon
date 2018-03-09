@@ -779,7 +779,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCB_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCommandBar", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -794,7 +794,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -807,7 +807,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
@@ -817,7 +817,7 @@ Private Sub UserControl_Show()
     
     'When the control is first made visible, rebuild individual tooltips using a custom solution
     ' (which allows for linebreaks and theming).
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
                 
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         m_parentToolName = Replace$(UserControl.Parent.Name, "Form", vbNullString, , , vbTextCompare)
@@ -868,7 +868,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo SomethingStoleFocus
-    If MainModule.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
+    If pdMain.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
 
 SomethingStoleFocus:
     
@@ -1255,7 +1255,7 @@ Private Sub UpdateControlLayout()
     End If
     
     'Make the control the same width as its parent
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         If (bWidth <> parentWindowWidth) Then ucSupport.RequestNewSize parentWindowWidth
         
@@ -1301,7 +1301,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
     
         'When running, we can assign images and tooltips to the image-only command buttons
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             Dim cmdButtonImageSize As Long
             cmdButtonImageSize = Interface.FixDPI(24)
             cmdAction(0).AssignImage "generic_reset", , cmdButtonImageSize, cmdButtonImageSize
@@ -1319,8 +1319,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
         ' colors are loaded FIRST
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim cbBackgroundColor As Long
         cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)

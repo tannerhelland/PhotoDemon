@@ -588,7 +588,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    If (Not MainModule.IsProgramRunning()) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Disable all previews while we initialize the dialog
     cmdBar.MarkPreviewStatus False

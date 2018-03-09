@@ -764,9 +764,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Set m_MouseEvents = Nothing
         UserPrefs.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
-        #End If
+        pdDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
         Cancel = True
     End If
 End Sub

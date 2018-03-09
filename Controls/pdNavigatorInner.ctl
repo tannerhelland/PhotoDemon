@@ -228,18 +228,18 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         
         'Next, convert those to the (min, max) scale of the current viewport scrollbars
         Dim hScrollRange As Double, vScrollRange As Double, newHScroll As Double, newVscroll As Double
-        hScrollRange = FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL) - FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL)
-        vScrollRange = FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL) - FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL)
-        newHScroll = (xRatio * hScrollRange) + FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL)
-        newVscroll = (yRatio * vScrollRange) + FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL)
+        hScrollRange = FormMain.MainCanvas(0).GetScrollMax(PD_HORIZONTAL) - FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL)
+        vScrollRange = FormMain.MainCanvas(0).GetScrollMax(PD_VERTICAL) - FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL)
+        newHScroll = (xRatio * hScrollRange) + FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL)
+        newVscroll = (yRatio * vScrollRange) + FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL)
         
         'Assign the new scrollbar values, then request a viewport refresh
-        FormMain.mainCanvas(0).SetRedrawSuspension True
-        FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, newHScroll
-        FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, newVscroll
-        FormMain.mainCanvas(0).SetRedrawSuspension False
+        FormMain.MainCanvas(0).SetRedrawSuspension True
+        FormMain.MainCanvas(0).SetScrollValue PD_HORIZONTAL, newHScroll
+        FormMain.MainCanvas(0).SetScrollValue PD_VERTICAL, newVscroll
+        FormMain.MainCanvas(0).SetRedrawSuspension False
         
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     End If
 
@@ -261,7 +261,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDNAVINNER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDNavInner", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -274,7 +274,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
@@ -322,7 +322,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'If an image has been loaded, determine a centered position for the image's thumbnail
         If (g_OpenImageCount <= 0) Then
@@ -448,8 +448,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

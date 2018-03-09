@@ -214,10 +214,7 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     If (lReturn = 0) And (CommDlgExtendedError() = FNERR_BUFFERTOOSMALL) Then
         
         PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error: too many images"
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
-        #End If
+        pdDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
         
     End If
     

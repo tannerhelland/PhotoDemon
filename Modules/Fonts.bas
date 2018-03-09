@@ -427,9 +427,7 @@ Public Function BuildFontCaches() As Long
     
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
-    #End If
+    pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
     
     'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions can use for
     ' their own UI painting.

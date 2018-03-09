@@ -2088,31 +2088,24 @@ End Function
 'Internal error messages should be passed through this function.  Note that individual functions may choose to handle the error
 ' and continue operation; that's fine.  (This function is primarily used for reporting, to reduce the number of internal #ifdefs.)
 Private Sub FSOError(ByVal functionName As String, ByVal errText As String, Optional ByVal errNumber As Long = 0)
-    #If DEBUGMODE = 1 Then
-        If (Not pdDebug Is Nothing) Then
-            If (Len(functionName) <> 0) Then
-                If (errNumber <> 0) Then
-                    pdDebug.LogAction "WARNING!  pdFSO." & functionName & " error #" & CStr(errNumber) & ": " & errText
-                Else
-                    pdDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
-                End If
-            Else
-                If (errNumber <> 0) Then
-                    pdDebug.LogAction "WARNING!  pdFSO error #" & CStr(errNumber) & ": " & errText
-                Else
-                    pdDebug.LogAction "WARNING!  pdFSO problem: " & errText
-                End If
-            End If
+    
+    If (LenB(functionName) <> 0) Then
+        If (errNumber <> 0) Then
+            pdDebug.LogAction "WARNING!  pdFSO." & functionName & " error #" & CStr(errNumber) & ": " & errText
         Else
-            Debug.Print "WARNING!  pdFSO tried to report an error, but pdDebug is missing."
-            Debug.Print "Error was from " & functionName & ": " & errText & "(# " & CStr(errNumber) & ")"
+            pdDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
         End If
-    #End If
+    Else
+        If (errNumber <> 0) Then
+            pdDebug.LogAction "WARNING!  pdFSO error #" & CStr(errNumber) & ": " & errText
+        Else
+            pdDebug.LogAction "WARNING!  pdFSO problem: " & errText
+        End If
+    End If
+        
 End Sub
 
 'Non-error messages containing potentially useful nightly build info can be routed here.  Feel free to disregard at your leisure.
 Private Sub FSOFeedback(ByVal functionName As String, ByVal msgFeedback As String)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
-    #End If
+    pdDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
 End Sub

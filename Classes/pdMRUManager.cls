@@ -121,13 +121,8 @@ Public Sub MRU_LoadFromFile()
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.LoadXMLFile(m_XMLFilename)) Then
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "The Recent Files XML data at " & m_XMLFilename & " didn't validate.  Creating a new list now..."
-            #End If
-            
+            pdDebug.LogAction "The Recent Files XML data at " & m_XMLFilename & " didn't validate.  Creating a new list now..."
             ResetXMLData
-            
         End If
         
     Else

@@ -319,9 +319,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             startX = x
             startY = y
             
-            #If DEBUGMODE = 1 Then
-                VBHacks.GetHighResTime startTime
-            #End If
+            VBHacks.GetHighResTime startTime
             
             'Start searching for contour points!
             Do
@@ -366,30 +364,24 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             'Loop checks are easy - continue until we return to our starting point
             Loop While ((x <> startX) Or (y <> startY))
             
-            #If DEBUGMODE = 1 Then
-                traceTime = traceTime + VBHacks.GetTimerDifferenceNow(startTime)
-                VBHacks.GetHighResTime startTime
-            #End If
+            traceTime = traceTime + VBHacks.GetTimerDifferenceNow(startTime)
+            VBHacks.GetHighResTime startTime
             
             'The stack now describes a completed polygon.  Add it to a temporary path object.
             tmpPath.ResetPath
             tmpPath.SetFillRule P2_FR_OddEven
             tmpPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
-            #If DEBUGMODE = 1 Then
-                gdipCreateTime = gdipCreateTime + VBHacks.GetTimerDifferenceNow(startTime)
-                VBHacks.GetHighResTime startTime
-            #End If
+            gdipCreateTime = gdipCreateTime + VBHacks.GetTimerDifferenceNow(startTime)
+            VBHacks.GetHighResTime startTime
             
             'Add the temporary polgyon to our running collection.  (NOTE!  You might be tempted to use dstPath.AddPath here,
             ' passing the path object that we've already assembled.  Do *not* do this.  For some reason, .AddPath is insanely
             ' slow compared to just adding the raw data points.  (Like, 1000x slower for complicated paths.)
             dstPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
-            #If DEBUGMODE = 1 Then
-                gdipCopyTime = gdipCopyTime + VBHacks.GetTimerDifferenceNow(startTime)
-                VBHacks.GetHighResTime startTime
-            #End If
+            gdipCopyTime = gdipCopyTime + VBHacks.GetTimerDifferenceNow(startTime)
+            VBHacks.GetHighResTime startTime
             
             'Create a region object from our outline.  Why do this when we already have a perfectly good path?  Because regions
             ' are *significantly* faster to hit-test than paths.
@@ -436,11 +428,9 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             
                 If (GdipGetRegionScansI(tmpGdipHandle, VarPtr(m_RectLCache(0)), numOfRects, tmpMatrix) = GP_OK) Then
                     
-                    #If DEBUGMODE = 1 Then
-                        gdipRegionTime = gdipRegionTime + VBHacks.GetTimerDifferenceNow(startTime)
-                        VBHacks.GetHighResTime startTime
-                    #End If
-            
+                    gdipRegionTime = gdipRegionTime + VBHacks.GetTimerDifferenceNow(startTime)
+                    VBHacks.GetHighResTime startTime
+                    
                     'We now have a full copy of this region, in the form of individual rectangles (the sum total of which
                     ' represent the underlying region).
                     
@@ -468,9 +458,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
 
             End If
             
-            #If DEBUGMODE = 1 Then
-                fillTime = fillTime + VBHacks.GetTimerDifferenceNow(startTime)
-            #End If
+            fillTime = fillTime + VBHacks.GetTimerDifferenceNow(startTime)
             
             'Reset the stack pointer
             m_StackPosition = 0
@@ -484,10 +472,9 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     'Before exiting, free any temporary source array pointers
     PutMem4 VarPtrArray(tmpArray()), 0&
     PutMem4 VarPtrArray(tmpMasterArray()), 0&
-     
-    #If DEBUGMODE = 1 Then
-        'pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
-    #End If
+    
+    'Want detailed timing reports?  Uncomment this line:
+    'pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
     
     FindAllEdges = True
     

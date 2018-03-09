@@ -873,7 +873,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDIMAGESTRIP_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDImageStrip", colorCount
-    If Not MainModule.IsProgramRunning() Then UpdateColorList
+    If Not pdMain.IsProgramRunning() Then UpdateColorList
     
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
@@ -910,7 +910,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -921,7 +921,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -1023,7 +1023,7 @@ Private Sub UpdateControlLayout(Optional ByVal thumbsMustBeUpdated As Boolean = 
     bHeight = ucSupport.GetControlHeight
     
     'Detect alignment changes (if any)
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         'If the control's size has changed in the dimension that determines thumb size, we need to recreate all image thumbnails
         Dim oldThumbWidth As Long, oldThumbHeight As Long
@@ -1073,7 +1073,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If MainModule.IsProgramRunning() And (m_NumOfThumbs > 0) And ucSupport.AmIVisible Then
+    If pdMain.IsProgramRunning() And (m_NumOfThumbs > 0) And ucSupport.AmIVisible Then
         
         'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
         ' of image tabs currently visible is long enough that it needs to be scrollable).
@@ -1258,8 +1258,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         Set m_CloseIconShadow = Nothing
         Set m_ModifiedIcon = Nothing
         
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If
     

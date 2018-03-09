@@ -874,13 +874,11 @@ Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Opt
 End Function
 
 Private Sub InternalStreamError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
-    #If DEBUGMODE = 1 Then
-        If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  pdStream error # " & errNumber & ": " & errMessage
-        Else
-            pdDebug.LogAction "WARNING!  Unspecified pdStream error: " & errMessage
-        End If
-    #End If
+    If (errNumber <> 0) Then
+        pdDebug.LogAction "WARNING!  pdStream error # " & errNumber & ": " & errMessage
+    Else
+        pdDebug.LogAction "WARNING!  Unspecified pdStream error: " & errMessage
+    End If
 End Sub
 
 Private Sub Class_Terminate()

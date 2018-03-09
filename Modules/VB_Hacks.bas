@@ -209,21 +209,15 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
                     GlobalUnlock ptrGlobal
                     CreateStreamOnHGlobal hGlobalHandle, 1&, GetStreamFromVBArray
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to retrieve a pointer to its hGlobal data!"
-                    #End If
+                    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to retrieve a pointer to its hGlobal data!"
                 End If
             
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to create a valid hGlobal!"
-                #End If
+                pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to create a valid hGlobal!"
             End If
             
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  GetStreamFromVBArray() requires a valid stream length!"
-            #End If
+            pdDebug.LogAction "WARNING!  GetStreamFromVBArray() requires a valid stream length!"
         End If
         
     End If
@@ -231,9 +225,8 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
     Exit Function
     
 StreamDied:
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
-    #End If
+    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
+    
 End Function
 
 'Given an IStream, use its native functionality to write its contents into a VB array.  This should work regardless of
@@ -266,23 +259,18 @@ Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArra
         If (DispCallFunc(ptrSrcStream, ISTREAM_READ, CC_STDCALL, vbLong, 3&, pVartypes(0), pVars(0), varRtn) = 0) Then
             ReadIStreamIntoVBArray = True
         Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed to initiate a successful DispCallFunc-based IStream read."
-            #End If
+            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed to initiate a successful DispCallFunc-based IStream read."
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer and/or size!"
-        #End If
+        pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer and/or size!"
     End If
     
     Exit Function
     
 StreamConversionFailed:
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
-    #End If
+    pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
+    
 End Function
 
 'Check array initialization.  All array types supported.  Thank you to http://stackoverflow.com/questions/183353/how-do-i-determine-if-an-array-is-initialized-in-vb6

@@ -903,16 +903,11 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
 End Function
 
 'Updates involve the Internet, so any number of things can go wrong.  PD versions (post-7.0) post a lot of internal
-' debug data throughout this module, to help us identify problems where we can.  Instead of inserting your own
-' "#IF DEBUGMODE = 1" lines, please route debugging data through here.
+' debug data throughout this module, to help us identify problems where we can.
 Private Sub InternalDebugMsg(ByRef srcMsg As String, ByRef srcFunctionName As String, Optional ByVal errNumber As Long = 0, Optional ByRef errDescription As String = vbNullString)
-
-    #If DEBUGMODE = 1 Then
-        If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  Updates." & srcFunctionName & " reported an error (#" & CStr(errNumber) & "): " & errDescription & ".  Further details: " & srcMsg
-        Else
-            pdDebug.LogAction "Updates." & srcFunctionName & " reports: " & srcMsg, , True
-        End If
-    #End If
-
+    If (errNumber <> 0) Then
+        pdDebug.LogAction "WARNING!  Updates." & srcFunctionName & " reported an error (#" & CStr(errNumber) & "): " & errDescription & ".  Further details: " & srcMsg
+    Else
+        pdDebug.LogAction "Updates." & srcFunctionName & " reports: " & srcMsg, , True
+    End If
 End Sub

@@ -388,16 +388,16 @@ End Sub
 Private Sub CmbZoom_Click()
 
     'Only process zoom changes if an image has been loaded
-    If FormMain.mainCanvas(0).IsCanvasInteractionAllowed() Then
+    If FormMain.MainCanvas(0).IsCanvasInteractionAllowed() Then
         
         'Before updating the current image, we need to retrieve two sets of points: the current center point
         ' of the canvas, in canvas coordinate space, and the current center point of the canvas *in image
         ' coordinate space*.  When zoom is changed, we preserve the current center of the image relative to
         ' the center of the canvas, to make the zoom operation feel more natural.
         Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
-        centerXCanvas = FormMain.mainCanvas(0).GetCanvasWidth / 2
-        centerYCanvas = FormMain.mainCanvas(0).GetCanvasHeight / 2
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
+        centerXCanvas = FormMain.MainCanvas(0).GetCanvasWidth / 2
+        centerYCanvas = FormMain.MainCanvas(0).GetCanvasHeight / 2
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
         
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
         pdImages(g_CurrentImage).SetZoom cmbZoom.ListIndex
@@ -426,13 +426,13 @@ Private Sub CmbZoom_Click()
             ' of updating zoom.  If they have *not* selected this, we want to preserve the current center point
             ' of the viewport.
             If (cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex) Then
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
             Else
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
             End If
         
             'Notify any other relevant UI elements
-            FormMain.mainCanvas(0).RelayViewportChanges
+            FormMain.MainCanvas(0).RelayViewportChanges
             
         End If
         
@@ -441,7 +441,7 @@ Private Sub CmbZoom_Click()
 End Sub
 
 Private Sub cmdImgSize_Click()
-    If FormMain.mainCanvas(0).IsCanvasInteractionAllowed() Then Process "Resize image", True
+    If FormMain.MainCanvas(0).IsCanvasInteractionAllowed() Then Process "Resize image", True
 End Sub
 
 Private Sub cmdZoomFit_Click()
@@ -462,13 +462,13 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, False
     ucSupport.RequestExtraFunctionality True
-    If MainModule.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
+    If pdMain.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTATUSBAR_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDStatusBar", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
     
@@ -483,7 +483,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -491,7 +491,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -634,7 +634,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDSB_Background, Me.Enabled))
         
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         If (Not sbIconCoords Is Nothing) And m_LastEnabledState Then
             sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
@@ -698,7 +698,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         UpdateColorList
         
-        If MainModule.IsProgramRunning() Then
+        If pdMain.IsProgramRunning() Then
             
             Dim buttonIconSize As Long
             buttonIconSize = FixDPI(16)
@@ -764,7 +764,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.UpdateAgainstCurrentTheme
         cmbSizeUnit.UpdateAgainstCurrentTheme
         
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
         cmbZoom.Top = (UserControl.ScaleHeight - cmbZoom.GetHeight) \ 2

@@ -79,14 +79,12 @@ Private m_WindowRect As winRect
 ' bypass VB's faulty handling.
 Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         EndSubclassing
         
         If (srcHwnd = 0) Then
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
-            #End If
+            pdDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
         Else
         
             m_hWnd = srcHwnd

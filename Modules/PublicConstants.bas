@@ -15,12 +15,6 @@ End Enum
 'Quality of the current build.  This value automatically dictates a number of behaviors throughout the program,
 ' like reporting time-to-completion for effects and enabling detailed debug reports.  Do not change unless you
 ' fully understand the consequences!
-'
-'IMPORTANT NOTE!  In conjunction with this constant, a compile-time constant called "DEBUGMODE" should be set to 1
-' for any non-production (release) builds.  This compile-time constant enables various conditional compilation
-' segments through the program, including the bulk of PD's debugging code.
-'
-' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
 Public Const PD_BUILD_QUALITY As Long = PD_PRE_ALPHA
 
 'Identifier for various PD-specific file types

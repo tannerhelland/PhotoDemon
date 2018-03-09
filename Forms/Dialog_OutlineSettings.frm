@@ -362,7 +362,7 @@ Private Sub Form_Load()
     cboCorner.AddItem "round"
     cboCorner.ListIndex = 0
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
         If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pd2DPath
         Set m_PreviewDIB = New pdDIB

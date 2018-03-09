@@ -1151,10 +1151,7 @@ Friend Function CreateFontObject() As Boolean
         Else
         
             'For some reason, this combination of settings doesn't work at all.  I hope this never happens, but you never know.
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdTextRenderer's CreateFontObject failed with both GDI+ and GDI; sorry!"
-            #End If
-            
+            pdDebug.LogAction "WARNING!  pdTextRenderer's CreateFontObject failed with both GDI+ and GDI; sorry!"
             m_CurrentBackend = fb_UNKNOWN
             m_FontCacheClean = False
             CreateFontObject = False
@@ -1265,27 +1262,22 @@ End Function
 'If a GDI+ function fails, pass the return value to this function so the debugger can attempt to output a helpful message.
 Private Sub ReportGDIPlusFailure(ByVal failCode As Long)
 
-    'For performance reasons, this sub is disabled in production builds.  GDI+ failures are expected and frequent, so my
-    ' main interest in them is academic.
-    #If DEBUGMODE = 1 Then
-        
-        Select Case failCode
-        
-            Case gdipFontFamilyNotFound
-                pdDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
-                
-            Case gdipFontStyleNotFound
-                pdDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
-                
-            Case gdipNotTrueTypeFont
-                pdDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
-                
-            Case Else
-                pdDebug.LogAction "(GDI+ failed for an unknown reason: #" & failCode & ")"
-        
-        End Select
-        
-    #End If
+    'FYI, GDI+ failures are expected and frequent, so my interest in them is primarily academic at present.
+    Select Case failCode
+    
+        Case gdipFontFamilyNotFound
+            pdDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
+            
+        Case gdipFontStyleNotFound
+            pdDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
+            
+        Case gdipNotTrueTypeFont
+            pdDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
+            
+        Case Else
+            pdDebug.LogAction "(GDI+ failed for an unknown reason: #" & failCode & ")"
+    
+    End Select
     
 End Sub
 

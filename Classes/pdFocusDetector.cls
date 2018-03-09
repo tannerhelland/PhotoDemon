@@ -68,7 +68,7 @@ End Sub
 ' load this class.
 Friend Sub StartFocusTracking(ByVal srcHwnd As Long)
     
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
     
         'Release any existing subclassers
         If (m_hWnd <> 0) Then

@@ -263,11 +263,11 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
                 
                 'Display a download update in the message area, but do not log it in the debugger (as there may be
                 ' many such notifications, and we don't want to inflate the log unnecessarily)
-                #If DEBUGMODE = 1 Then
+                If UserPrefs.GenerateDebugLogs Then
                     Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize, "DONOTLOG"
-                #Else
+                Else
                     Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize
-                #End If
+                End If
                 
             End If
             

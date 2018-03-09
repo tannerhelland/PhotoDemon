@@ -1,18 +1,6 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-  Persistable = 0  'NotPersistable
-  DataBindingBehavior = 0  'vbNone
-  DataSourceBehavior  = 0  'vbNone
-  MTSTransactionMode  = 0  'NotAnMTSObject
-END
-Attribute VB_Name = "pdDebugger"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Name = "pdDebug"
 '***************************************************************************
-'PhotoDemon Custom Debug helper class
+'PhotoDemon Custom Debug Logger
 'Copyright 2014-2018 by Tanner Helland
 'Created: 17/July/14
 'Last updated: 08/March/18
@@ -24,10 +12,9 @@ Attribute VB_Exposed = False
 '
 'To that end, a more comprehensive debugging solution was required.  Enter this class.
 '
-'I am currently in the process of converting PD's many Debug.Print statements to pdDebug.LogAction, surrounded by
-' conditional compilation "#IF DEBUGMODE = 1 // #END IF" statements.  Every time an action is logged this way, it will
-' be not only mirrored to the Debug window (same as Debug.Print), it will also be written out to file in the program's
-' /Data folder.  This should allow me to retrieve at least basic information from end users who experience hard crashes.
+'Throughout PD, you'll see many pdDebug.LogAction() statements in place of Debug.Print.  When actions are logged this way,
+' they are mirrored to the Debug window (same as Debug.Print), and also be written out to file in the program's /Data
+' folder (if user preferences allow).  This allows me to retrieve relevant information from users who experience crashes.
 '
 'While some elements of this class are PD-specific (such as where it writes its logs to file), it wouldn't take much
 ' work to change those bits to fit any other project.  Aside from that particular aspect, I've tried to keep the rest
@@ -62,7 +49,7 @@ End Enum
     Private Const PDM_Normal = 0, PDM_User_Message = 1, PDM_Mem_Report = 2, PDM_HDD_Report = 3, PDM_Processor = 4, PDM_External_Lib = 5, PDM_Startup_Message = 6, PDM_Timer_Report = 7
 #End If
 
-'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
+'Has this instance been initialized?  This will be set to true if the StartDebugger function has executed successfully.
 Private m_debuggerActive As Boolean
 
 'Does the user want us writing this data to file?  If so, this will be set to TRUE.
@@ -73,7 +60,7 @@ Private m_logDatatoFile As Boolean
 ' logs.
 Private m_debuggerID As Long
 
-'Full path to the log file for this debug session.  This is created by the InitializeDebugger function, and it relies on
+'Full path to the log file for this debug session.  This is created by the StartDebugger function, and it relies on
 ' the /Debug path specified by the pdPreferences class.  (Generally this is the /Data/Debug folder of wherever PhotoDemon.exe
 ' is located.)
 Private m_logPath As String
@@ -107,7 +94,7 @@ Private m_LogString As pdString
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
-Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True, Optional ByVal initIsNormal As Boolean = True) As Boolean
+Public Function StartDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True, Optional ByVal initIsNormal As Boolean = True) As Boolean
     
     If writeLogDataToFile Then
         
@@ -191,7 +178,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             Debug.Print "Log path invalid.  Saved debug logs not available for this session."
             
             m_debuggerActive = False
-            InitializeDebugger = False
+            StartDebugger = False
             Exit Function
             
         End If
@@ -201,24 +188,24 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     m_debuggerActive = True
     
     'Log an initial event, to note that debug mode was successfully initiated
-    Me.LogAction "Debugger initialized successfully"
+    pdDebug.LogAction "Debugger initialized successfully"
     
     'Perform an initial memory check; this gives us a nice baseline measurement
-    Me.LogAction vbNullString, PDM_Mem_Report
+    pdDebug.LogAction vbNullString, PDM_Mem_Report
     
     'If messages were logged prior to this class being formally initialized, dump them now
     If (Not m_backupMessages Is Nothing) Then
         
         If (m_backupMessages.GetNumOfStrings > 0) Then
         
-            Me.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
-            Me.LogAction "(They are presented here with their original timestamps.)"
+            pdDebug.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
+            pdDebug.LogAction "(They are presented here with their original timestamps.)"
             
             For i = 0 To m_backupMessages.GetNumOfStrings - 1
-                Me.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
+                pdDebug.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
             Next i
             
-            Me.LogAction "(End of pre-initialization data)"
+            pdDebug.LogAction "(End of pre-initialization data)"
             
         End If
         
@@ -227,7 +214,7 @@ Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         
     End If
     
-    InitializeDebugger = True
+    StartDebugger = True
     
 End Function
 
@@ -266,7 +253,7 @@ Private Function GetLogID() As Long
             
             'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
             GetLogID = minID
-            Me.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
+            pdDebug.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
         
         Else
         
@@ -290,7 +277,10 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DebugMessages = PDM_Normal, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
+Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DebugMessages = PDM_Normal, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
+    
+    'If the debugger has not been initialized, do nothing
+    If (m_LogString Is Nothing) Then Exit Sub
     
     m_LogString.Reset
     
@@ -447,13 +437,13 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_Mem_Report)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
     
     'If we've gone GAP_BETWEEN_MEMORY_REPORTS events without a RAM report, provide one now
-    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + GAP_BETWEEN_MEMORY_REPORTS)) Then Me.LogAction vbNullString, PDM_Mem_Report
+    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + GAP_BETWEEN_MEMORY_REPORTS)) Then pdDebug.LogAction vbNullString, PDM_Mem_Report
 
 End Sub
 
 'Shorcut function for logging timing results
-Friend Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
-    Me.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
+Public Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
+    pdDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
 End Sub
 
 'Internal helper function that handles the "convert string to UTF-8 and append to file" part of logging
@@ -463,7 +453,7 @@ Private Sub WriteDebugStringAsUTF8(ByRef srcString As String)
     End If
 End Sub
 
-Private Sub Class_Initialize()
+Public Sub InitializeDebugger()
     
     Set m_LogString = New pdString
     Set m_backupMessages = New pdStringStack
@@ -478,7 +468,7 @@ Private Sub Class_Initialize()
     
 End Sub
 
-Friend Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = True)
+Public Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = True)
 
     'If logging is active, post a final message
     If m_logDatatoFile And (m_LogFileHandle <> 0) Then
@@ -490,8 +480,4 @@ Friend Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = Tru
     
     If m_debuggerActive Then m_debuggerActive = False
     
-End Sub
-
-Private Sub Class_Terminate()
-    TerminateDebugger
 End Sub

@@ -126,10 +126,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String
     tmpFilename = UserPrefs.GetTempPath & "PhotoDemon_print.png"
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing to print: " & tmpFilename
-    #End If
+    pdDebug.LogAction "Preparing to print: " & tmpFilename
     
     'Write the temporary DIB out to a temporary PNG file, then free it
     Saving.QuickSaveDIBAsPNG tmpFilename, tmpDIB

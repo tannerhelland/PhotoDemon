@@ -544,7 +544,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDPREVIEW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDPreview", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     m_ShowOriginalInstead = False
     m_curColor = 0
@@ -575,7 +575,7 @@ End Sub
 
 'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
-    If Not MainModule.IsProgramRunning() Then UpdateControlLayout
+    If Not pdMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Show()
@@ -584,7 +584,7 @@ Private Sub UserControl_Show()
     m_UniqueID = Timer
     
     'Determine acceptable max/min scroll values for 100% zoom preview mode
-    If MainModule.IsProgramRunning() Then
+    If pdMain.IsProgramRunning() Then
         
         ucSupport.RequestCursor IDC_DEFAULT
         
@@ -775,7 +775,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder, ctlBorderColor, , borderWidth, False, GP_LJ_Miter
         
         'Paint the results to the screen!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
-        If MainModule.IsProgramRunning() Then ucSupport.RequestRepaint True
+        If pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
         
     End If
 
@@ -795,7 +795,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

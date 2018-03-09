@@ -325,13 +325,8 @@ Public Sub CacheDisplayCMMData()
         'If we fail to load the current system profile, there's really no good option for continuing.  The least
         ' of many evils is to simply point the current system profile at a default sRGB profile and hope for the best.
         Else
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "System ICC profile couldn't be loaded.  Reverting to default sRGB policy..."
-            #End If
-            
+            pdDebug.LogAction "System ICC profile couldn't be loaded.  Reverting to default sRGB policy..."
             m_SystemProfileIndex = m_sRGBIndex
-            
         End If
         
     'If the user has manually specified per-monitor display profiles, we want to cache each display profile in turn.
@@ -672,11 +667,11 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
             Next i
             
             'As a convenience, note display changes in the debug log
-            #If DEBUGMODE = 1 Then
+            If UserPrefs.GenerateDebugLogs Then
                 Dim tmpProfile As ICCProfileCache
                 tmpProfile = GetCachedProfile_ByIndex(m_CurrentDisplayIndex)
                 If (Not tmpProfile.fullProfile Is Nothing) Then pdDebug.LogAction "Monitor change detected, new profile is: " & tmpProfile.fullProfile.GetOriginalICCPath
-            #End If
+            End If
         
         End If
         
@@ -756,7 +751,7 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
     dstColor = srcColor
     
     'Note that this function does nothing if the display is not currently color managed
-    If (m_DisplayCMMPolicy <> DCM_NoManagement) And MainModule.IsProgramRunning() Then
+    If (m_DisplayCMMPolicy <> DCM_NoManagement) And pdMain.IsProgramRunning() Then
         
         ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, Nothing
         
@@ -1539,9 +1534,7 @@ End Function
 'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
 Public Function ApplyCMYKTransform_WindowsCMS(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
 
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
-    #End If
+    pdDebug.LogAction "Using ICM and embedded ICC profile to convert image from CMYK to sRGB color space..."
     
     'Use the ColorManagement module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
@@ -1572,9 +1565,7 @@ Public Function ApplyCMYKTransform_WindowsCMS(ByVal iccProfilePointer As Long, B
                 
                 'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
                 ' the API with direct access to our DIB bits.
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "CMYK to sRGB transform data created successfully.  Applying transform..."
-                #End If
+                pdDebug.LogAction "ICM-based CMYK to sRGB transform data created successfully.  Applying transform..."
                 
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
@@ -1583,13 +1574,8 @@ Public Function ApplyCMYKTransform_WindowsCMS(ByVal iccProfilePointer As Long, B
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
-                    
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "CMYK to sRGB transformation successful."
-                    #End If
-                    
+                    pdDebug.LogAction "CMYK to sRGB transformation successful."
                     ApplyCMYKTransform_WindowsCMS = True
-                    
                 Else
                     Message "sRGB transform could not be applied.  Image remains in CMYK format."
                 End If
@@ -1654,9 +1640,7 @@ Public Function ApplyICCtoPDDib_WindowsCMS(ByRef targetDIB As pdDIB) As Boolean
     If (targetDIB Is Nothing) Then Exit Function
     If (Not targetDIB.ICCProfile.HasICCData) Then Exit Function
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Using Windows ICM to convert pdDIB to current RGB working space..."
-    #End If
+    pdDebug.LogAction "Using Windows ICM to convert pdDIB to current RGB working space..."
     
     'Use the ColorManagement module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
@@ -1700,14 +1684,9 @@ Public Function ApplyICCtoPDDib_WindowsCMS(ByRef targetDIB As pdDIB) As Boolean
                     
                     'If the transform was successful, pat ourselves on the back.
                     If transformCheck Then
-                    
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
-                        #End If
-                        
+                        pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
                         ApplyICCtoPDDib_WindowsCMS = True
                         targetDIB.ICCProfile.MarkSuccessfulProfileApplication
-                        
                     Else
                         Message "ICC profile could not be applied.  Image remains in original profile."
                     End If
@@ -1721,9 +1700,7 @@ Public Function ApplyICCtoPDDib_WindowsCMS(ByRef targetDIB As pdDIB) As Boolean
                 End If
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "ICC transform is not required, because source and destination profiles are identical."
-                #End If
+                pdDebug.LogAction "ICC transform is not required, because source and destination profiles are identical."
                 ApplyICCtoPDDib_WindowsCMS = True
             End If
         

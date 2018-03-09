@@ -220,7 +220,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLAYERLIST_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDListBox", colorCount
-    If (Not MainModule.IsProgramRunning()) Then UpdateColorList
+    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -229,11 +229,11 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not MainModule.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
@@ -305,7 +305,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If MainModule.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbView.UpdateAgainstCurrentTheme
         vScroll.UpdateAgainstCurrentTheme
     End If

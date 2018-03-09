@@ -72,12 +72,10 @@ Private m_ExifToolEnabled As Boolean, m_OptiPNGEnabled As Boolean, m_LCMSEnabled
 Private m_PluginPath As String
 
 Public Function GetPluginPath() As String
-    If (Len(m_PluginPath) <> 0) Then
+    If (LenB(m_PluginPath) <> 0) Then
         GetPluginPath = m_PluginPath
     Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  PluginManager.GetPluginPath() was called before the plugin manager was initialized!"
-        #End If
+        pdDebug.LogAction "WARNING!  PluginManager.GetPluginPath() was called before the plugin manager was initialized!"
     End If
 End Function
 
@@ -105,14 +103,13 @@ End Sub
 ' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
 Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = True)
     
-    #If DEBUGMODE = 1 Then
-        If loadHighPriorityPlugins Then
-            pdDebug.LogAction "Initializing high-priority plugins..."
-        Else
-            pdDebug.LogAction "Initializing low-priority plugins..."
-        End If
-        Dim startTime As Currency
-    #End If
+    If loadHighPriorityPlugins Then
+        pdDebug.LogAction "Initializing high-priority plugins..."
+    Else
+        pdDebug.LogAction "Initializing low-priority plugins..."
+    End If
+    
+    Dim startTime As Currency
         
     'Plugin loading is handled in a loop.  This loop will call several helper functions, passing each sequential plugin
     ' index as defined by the CORE_PLUGINS enum (and matching CORE_PLUGIN_COUNT const).  Some initialization steps are
@@ -123,10 +120,8 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
         
         If (loadHighPriorityPlugins = IsPluginHighPriority(i)) Then
             
-            #If DEBUGMODE = 1 Then
-                VBHacks.GetHighResTime startTime
-            #End If
-        
+            VBHacks.GetHighResTime startTime
+            
             'Before doing anything else, see if the plugin file actually exists.
             m_PluginExists(i) = DoesPluginFileExist(i)
             
@@ -144,9 +139,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             ' (This step is optional; plugins do not need to support it.)
             FinalizePluginInitialization i, m_PluginInitialized(i)
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
-            #End If
+            pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
             
         End If
         
@@ -159,23 +152,19 @@ End Sub
 Public Sub ReportPluginLoadSuccess()
 
     'Initialization complete!  In debug builds, write out some plugin debug information.
-    #If DEBUGMODE = 1 Then
-        
-        Dim successfulPluginCount As Long
-        successfulPluginCount = 0
-        
-        Dim i As Long
-        For i = 0 To CORE_PLUGIN_COUNT - 1
-            If m_PluginInitialized(i) Then
-                successfulPluginCount = successfulPluginCount + 1
-            Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
-            End If
-        Next i
-        
-        pdDebug.LogAction CStr(successfulPluginCount) & "/" & CStr(CORE_PLUGIN_COUNT) & " plugins initialized successfully."
-        
-    #End If
+    Dim successfulPluginCount As Long
+    successfulPluginCount = 0
+    
+    Dim i As Long
+    For i = 0 To CORE_PLUGIN_COUNT - 1
+        If m_PluginInitialized(i) Then
+            successfulPluginCount = successfulPluginCount + 1
+        Else
+            pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+        End If
+    Next i
+    
+    pdDebug.LogAction CStr(successfulPluginCount) & "/" & CStr(CORE_PLUGIN_COUNT) & " plugins initialized successfully."
     
 End Sub
 
@@ -538,9 +527,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
             ' to kill any stranded instances before starting new ones.
             If (Not PeekLastShutdownClean) Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
-                #End If
+                pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 ExifTool.KillStrandedExifToolInstances
             End If
             
@@ -637,11 +624,7 @@ Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
         
         Case CCP_FreeImage
             'As of v6.4, PD uses a dedicated callback function to track and report any internal FreeImage errors.
-            If pluginState Then
-                #If DEBUGMODE = 1 Then
-                    Outside_FreeImageV3.FreeImage_InitErrorHandler
-                #End If
-            End If
+            If pluginState Then Outside_FreeImageV3.FreeImage_InitErrorHandler
             
         Case Else
         
@@ -736,43 +719,31 @@ Public Sub TerminateAllPlugins()
     'Plugins are released in the order of "how much do we use them", with the most-used plugins being saved for last.
     ' (There's not really a reason for this, except as a failsafe against asynchronous actions happening in the background.)
     Plugin_EZTwain.ReleaseEZTwain
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "EZTwain released"
-    #End If
+    pdDebug.LogAction "EZTwain released"
     
     Plugin_FreeImage.ReleaseFreeImage
     g_ImageFormats.FreeImageEnabled = False
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FreeImage released"
-    #End If
+    pdDebug.LogAction "FreeImage released"
     
     LittleCMS.ReleaseLCMS
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "LittleCMS released"
-    #End If
+    pdDebug.LogAction "LittleCMS released"
     
     If m_ZlibEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_ZLib
         m_ZlibEnabled = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zLib released"
-        #End If
+        pdDebug.LogAction "zLib released"
     End If
     
     If m_ZstdEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_Zstd
         m_ZstdEnabled = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zstd released"
-        #End If
+        pdDebug.LogAction "zstd released"
     End If
     
     If m_lz4Enabled Then
         Compression.ShutDownCompressionEngine PD_CE_Lz4
         m_lz4Enabled = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "lz4 released"
-        #End If
+        pdDebug.LogAction "lz4 released"
     End If
     
 End Sub

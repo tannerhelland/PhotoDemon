@@ -94,9 +94,7 @@ Private m_Crypto As pdCrypto
 Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
 
 'To try and improve performance, we profile translation times inside developer builds
-#If DEBUGMODE = 1 Then
-    Private m_NetTranslateTime As Double
-#End If
+Private m_NetTranslateTime As Double
 
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from Checkm_availableLanguages().
@@ -385,15 +383,10 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             
                 'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
                 fileValidationRequired = Strings.StringsNotEqual(chkCachedValue, GetLangFileChecksum(chkFile), False)
-                
-                #If DEBUGMODE = 1 Then
-                    If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
-                #End If
+                If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
                 
             Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
-                #End If
+                pdDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
             End If
             
             'If validation is required, we need to load the file from scratch and run some checks on it
@@ -483,18 +476,14 @@ Friend Sub CheckAvailableLanguages()
     
     If Files.FileExists(langCacheFilename) Then cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     'If the cache exists, we won't write it back out to file unless it somehow changes during this session
     ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
     ' and force it to write out to file at the end of this initiation.
     If (Not cacheLoadedSuccessfully) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
-        #End If
+        pdDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
         m_LangCacheXML.PrepareNewXML "PDLanguageCache"
         m_LangCacheChanged = True
     End If
@@ -507,18 +496,14 @@ Friend Sub CheckAvailableLanguages()
     'Find all available OFFICIAL language files
     m_numOfLanguages = TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(False), 0, "Official")
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     'Find all available USER language files
     m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     m_AvailableLanguages(m_numOfLanguages).FileName = vbNullString
@@ -552,10 +537,8 @@ Friend Sub CheckAvailableLanguages()
     If m_LangCacheChanged Then m_LangCacheXML.WriteXMLToFile langCacheFilename
     Set m_LangCacheXML = Nothing
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
-        VBHacks.GetHighResTime startTime
-    #End If
+    pdDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
     'TESTING: display the info we retrieved
     'Dim i As Long
@@ -858,10 +841,8 @@ End Function
 ' If a translation cannot be found, return the original string.
 Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
-    #If DEBUGMODE = 1 Then
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-    #End If
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
     
     Dim searchString As String, newString As String
     If Me.TranslationActive() Then
@@ -913,9 +894,8 @@ Friend Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     'Return the fully translated string
     TranslateMessage = newString
     
-    #If DEBUGMODE = 1 Then
-        m_NetTranslateTime = m_NetTranslateTime + VBHacks.GetTimerDifferenceNow(startTime)
-    #End If
+    'Track net time spent in translation
+    m_NetTranslateTime = m_NetTranslateTime + VBHacks.GetTimerDifferenceNow(startTime)
     
 End Function
 
@@ -1009,14 +989,14 @@ Friend Sub ApplyTranslations(ByRef srcForm As Form)
     If Me.TranslationActive Then
     
         'At present, all we have to do is translate the form's caption
-        If (Len(srcForm.Caption) <> 0) Then
+        If (LenB(srcForm.Caption) <> 0) Then
         
             Dim searchString As String, newString As String
             searchString = srcForm.Caption
             newString = GetTranslationTagFromCaption(searchString)
             
             'If a new string was found, apply it to the object's caption
-            If (Len(newString) <> 0) Then
+            If (LenB(newString) <> 0) Then
                 If (Not g_WindowManager Is Nothing) Then
                     g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
                 Else
@@ -1031,11 +1011,9 @@ Friend Sub ApplyTranslations(ByRef srcForm As Form)
 End Sub
 
 'In developer builds, net translation engine time is tracked for perf reasons
-#If DEBUGMODE = 1 Then
 Friend Function GetNetTranslationTime() As Double
     GetNetTranslationTime = m_NetTranslateTime
 End Function
-#End If
 
 Private Sub Class_Initialize()
     Set m_FSO = New pdFSO

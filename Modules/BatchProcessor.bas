@@ -333,9 +333,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                 ' a failsafe for faulty old versions of PD.
                 Else
                     
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  m_ProcessCount is zero!  Macro file is technically valid, but there's nothing to see here..."
-                    #End If
+                    pdDebug.LogAction "WARNING!  m_ProcessCount is zero!  Macro file is technically valid, but there's nothing to see here..."
                     
                     Message "Macro complete!"
                     PlayMacroFromFile = True
