@@ -3,8 +3,9 @@ Attribute VB_Name = "Autosaves"
 'Image Autosave Handler
 'Copyright 2014-2018 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 10/January/17
-'Last update: update against latest 7.0 changes to imageID values
+'Last updated: 09/March/18
+'Last update: previous session crashes now notify pdDebug; it may choose to activate the debugger, even in stable builds,
+'             as a failsafe.
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -112,12 +113,19 @@ Public Sub InitializeAutosave()
     'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
     If (Not App.PrevInstance) Then
         
+        'See if the previous PD session crashed.
+        Dim shutDownClean As Boolean
+        shutDownClean = Autosaves.WasLastShutdownClean
+        
+        'Notify the debugger; it may use this information to generate additional debug data
+        pdDebug.NotifyLastSessionState shutDownClean
+        
         'If our last shutdown was clean, skip further processing
-        If (Not Autosaves.WasLastShutdownClean) Then
+        If (Not shutDownClean) Then
             
             'Oh no!  Something went horribly wrong with the last PD session.
             pdDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
-                                    
+            
             'See if there's any image autosave data worth recovering.
             If (Autosaves.SaveableImagesPresent > 0) Then
             

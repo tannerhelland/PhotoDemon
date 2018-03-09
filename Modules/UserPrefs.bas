@@ -80,7 +80,7 @@ End Enum
     Private Const dbg_Auto = 0, dbg_False = 1, dbg_True = 2
 #End If
 
-Private m_GenerateDebugLogs As PD_DebugLogBehavior
+Private m_GenerateDebugLogs As PD_DebugLogBehavior, m_EmergencyDebug As Boolean
 
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
 ' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
@@ -113,7 +113,7 @@ End Sub
 
 Public Function GenerateDebugLogs() As Boolean
     If (m_GenerateDebugLogs = dbg_Auto) Then
-        GenerateDebugLogs = (PD_BUILD_QUALITY <> PD_PRODUCTION) And pdMain.IsProgramRunning()
+        GenerateDebugLogs = ((PD_BUILD_QUALITY <> PD_PRODUCTION) Or m_EmergencyDebug) And pdMain.IsProgramRunning()
     ElseIf (m_GenerateDebugLogs = dbg_False) Then
         GenerateDebugLogs = False
     Else
@@ -130,6 +130,10 @@ Public Sub SetDebugLogPreference(ByVal newPref As PD_DebugLogBehavior)
         m_GenerateDebugLogs = newPref
         UserPrefs.SetPref_Long "Core", "GenerateDebugLogs", m_GenerateDebugLogs
     End If
+End Sub
+
+Public Sub SetEmergencyDebugger(ByVal newState As Boolean)
+    m_EmergencyDebug = newState
 End Sub
 
 'Non-portable mode means PD has been extracted to an access-restricted folder.  The program (should) still run normally,
@@ -571,6 +575,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "LastWindowTop", "1"
         m_XMLEngine.WriteTag "LastWindowWidth", "1"
         m_XMLEngine.WriteTag "LastWindowHeight", "1"
+        m_XMLEngine.WriteTag "SessionsSinceLastCrash", "-1"
     m_XMLEngine.CloseTag "Core"
     m_XMLEngine.WriteBlankLine
     

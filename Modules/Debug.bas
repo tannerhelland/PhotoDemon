@@ -91,188 +91,20 @@ Private m_utf8Buffer() As Byte, m_utf8Size As Long
 'A string builder is used to cut down on string allocations
 Private m_LogString As pdString
 
-'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
-' this session's data, among other things, so don't attempt to use the class until this has been called!
-' Returns: TRUE if successful, FALSE otherwise.
-Public Function StartDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True, Optional ByVal initIsNormal As Boolean = True) As Boolean
+Public Sub InitializeDebugger()
     
-    If writeLogDataToFile Then
-        
-        Dim i As Long
-        
-        'First things first: we need to make sure a Debug path exists.  Otherwise, we can't write any of our debug data to file.
-        m_logPath = UserPrefs.GetDebugPath
-        
-        'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If Files.PathExists(m_logPath, True) Then
-        
-            'We now know the Debug path exists.  Retrieve a relevant ID for this file.
-            m_debuggerID = GetLogID()
-            
-            'Generate a filename for this log, using that ID.
-            m_logPath = m_logPath & "DebugReport_" & m_debuggerID & ".log"
-            
-            'If a log file already exists at that location, remove it.  (Only 10 log files are allowed, so if we reach 11,
-            ' the oldest one will be overwritten.)
-            Files.FileDeleteIfExists m_logPath
-            
-            'Assemble a basic collection of relevant debug data.
-            Dim debugHeader As pdString
-            Set debugHeader = New pdString
-            
-            If writeHeaderToo Then
-                
-                debugHeader.AppendLine "**********************************************" & vbCrLf
-                debugHeader.AppendLine "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf
-                If (Not initIsNormal) Then debugHeader.AppendLine "WARNING: debugger was not initiated by default; session data may be incomplete"
-                
-                debugHeader.AppendLine "Date: " & Date
-                debugHeader.AppendLine "Time: " & Time
-                debugHeader.AppendLine "Session ID: " & OS.UniqueSessionID()
-                debugHeader.AppendLine "Compiled: " & CStr(OS.IsProgramCompiled)
-                debugHeader.AppendLine "First run: " & CStr(g_IsFirstRun) & vbCrLf
-                
-                debugHeader.AppendLine "-- SYSTEM INFORMATION --" & vbCrLf
-                
-                debugHeader.AppendLine "OS: " & OS.OSVersionAsString
-                debugHeader.AppendLine "Processor cores (logical): " & OS.LogicalCoreCount
-                debugHeader.AppendLine "Processor features: " & OS.ProcessorFeatures
-                debugHeader.AppendLine "System RAM: " & OS.RAM_SystemTotal
-                debugHeader.AppendLine "Max memory available to PhotoDemon: " & OS.RAM_Available
-                debugHeader.AppendLine "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf
-                
-                debugHeader.AppendLine "-- PROGRAM INFORMATION -- " & vbCrLf
-                
-                debugHeader.AppendLine "Version: " & GetPhotoDemonNameAndVersion
-                debugHeader.AppendLine "Translation active: " & CStr(g_Language.TranslationActive())
-                debugHeader.AppendLine "Language in use: " & CStr(g_Language.GetCurrentLanguage())
-                debugHeader.AppendLine "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf
-                
-                debugHeader.AppendLine "-- PLUGIN INFORMATION -- " & vbCrLf
-                
-                For i = 0 To PluginManager.GetNumOfPlugins - 1
-                    debugHeader.Append PluginManager.GetPluginName(i) & ": "
-                    If PluginManager.IsPluginCurrentlyInstalled(i) Then
-                        debugHeader.Append "available"
-                    Else
-                        debugHeader.Append "MISSING"
-                    End If
-                    debugHeader.AppendLineBreak
-                Next i
-            
-            End If
-            
-            debugHeader.AppendLine vbCrLf & "**********************************************" & vbCrLf
-            debugHeader.AppendLine "-- SESSION REPORT --" & vbCrLf
-            
-            'Grab a persistent append handle to the log file
-            m_logDatatoFile = True
-            If (Not m_FSO.FileCreateAppendHandle(m_logPath, m_LogFileHandle)) Then m_LogFileHandle = 0
-            
-            'Convert the first chunk of debug text to UTF-8, then write the data to file
-            WriteDebugStringAsUTF8 debugHeader.ToString()
-            
-        'File writing is requested, but the log file folder is inaccessible
-        Else
-        
-            Debug.Print "Log path invalid.  Saved debug logs not available for this session."
-            
-            m_debuggerActive = False
-            StartDebugger = False
-            Exit Function
-            
-        End If
-        
-    End If
+    Set m_LogString = New pdString
+    Set m_backupMessages = New pdStringStack
+    Set m_FSO = New pdFSO
     
-    m_debuggerActive = True
+    ReDim m_utf8Buffer(0) As Byte
     
-    'Log an initial event, to note that debug mode was successfully initiated
-    pdDebug.LogAction "Debugger initialized successfully"
+    m_debuggerActive = False
+    m_logDatatoFile = False
+    m_NumLoggedEvents = 0
+    m_lastMemCheck = 0
     
-    'Perform an initial memory check; this gives us a nice baseline measurement
-    pdDebug.LogAction vbNullString, PDM_Mem_Report
-    
-    'If messages were logged prior to this class being formally initialized, dump them now
-    If (Not m_backupMessages Is Nothing) Then
-        
-        If (m_backupMessages.GetNumOfStrings > 0) Then
-        
-            pdDebug.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
-            pdDebug.LogAction "(They are presented here with their original timestamps.)"
-            
-            For i = 0 To m_backupMessages.GetNumOfStrings - 1
-                pdDebug.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
-            Next i
-            
-            pdDebug.LogAction "(End of pre-initialization data)"
-            
-        End If
-        
-        'We don't need the backup messages any more, so we are free to release them into the ether
-        m_backupMessages.ResetStack 0
-        
-    End If
-    
-    StartDebugger = True
-    
-End Function
-
-'Search the debug folder for existing debug files, sort them by date, and automatically give this log a unique ID on the
-' range [0, 9].  If there are already 10 debug files present, steal the ID of the oldest file.
-Private Function GetLogID() As Long
-
-    'Start by assembling a list of existing debug files
-    Dim numFiles As Long
-    numFiles = 0
-    
-    Dim logFiles As pdStringStack
-    If m_FSO.FileFind(m_logPath & "DebugReport_*.log", logFiles) Then
-    
-        numFiles = logFiles.GetNumOfStrings()
-        
-        'logFiles contains a list of all debug logs in the current folder.  If there are already
-        ' 10 entries, we want to find the oldest file in the list, and steal its ID number.
-        If (numFiles = 10) Then
-        
-            Dim minDate As Date, minID As Long, tmpDate As Date
-            
-            'Grab the date of the first file.
-            minDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(0), PDFT_WriteTime)
-            minID = 0
-            
-            'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
-            Dim i As Long
-            For i = 1 To 9
-                tmpDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(i), PDFT_WriteTime)
-                If (tmpDate < minDate) Then
-                    minDate = tmpDate
-                    minID = i
-                End If
-            Next i
-            
-            'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
-            GetLogID = minID
-            pdDebug.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
-        
-        Else
-        
-            'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
-            For i = 0 To 9
-                If (Not Files.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
-                    GetLogID = i
-                    Exit For
-                End If
-            Next i
-            
-        End If
-    
-    'If the search function fails, start over with debug log 0
-    Else
-        GetLogID = 0
-    End If
-    
-End Function
+End Sub
 
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
@@ -446,27 +278,192 @@ Public Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Doubl
     pdDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
 End Sub
 
-'Internal helper function that handles the "convert string to UTF-8 and append to file" part of logging
-Private Sub WriteDebugStringAsUTF8(ByRef srcString As String)
-    If Strings.UTF8FromString(srcString, m_utf8Buffer, m_utf8Size) Then
-        If (m_LogFileHandle <> 0) Then m_FSO.FileWriteData m_LogFileHandle, VarPtr(m_utf8Buffer(0)), m_utf8Size
+'If this is the first session after a hard crash, we want to forcibly activate the debugger (if user preferences allow)
+Public Sub NotifyLastSessionState(ByVal lastSessionDidntCrash As Boolean)
+    
+    Dim sessionsSinceLastCrash As Long
+    
+    'If the last session was clean, update our "sessions since last crash" tracker.
+    If lastSessionDidntCrash Then
+        
+        'Increment the "time since last crash" tracker
+        sessionsSinceLastCrash = UserPrefs.GetPref_Long("Core", "SessionsSinceLastCrash", -1)
+        
+        'If the program hasn't crashed recently, we don't need to process anything else
+        If (sessionsSinceLastCrash <> -1) Then
+        
+            'The program crashed recently.  Increment our "clean session" crash tracker
+            sessionsSinceLastCrash = sessionsSinceLastCrash + 1
+            
+            'If 10 clean sessions have passed, reset the counter.
+            If (sessionsSinceLastCrash > 10) Then
+                sessionsSinceLastCrash = -1
+                UserPrefs.SetPref_Long "Core", "SessionsSinceLastCrash", -1
+            Else
+                UserPrefs.SetPref_Long "Core", "SessionsSinceLastCrash", sessionsSinceLastCrash
+            End If
+        
+        End If
+        
+    'Shit - the last session crashed.  If user preferences allow, let's start the debugger and see if we can't catch
+    ' the problem (as users are likely to try the same task again).
+    Else
+    
+        'Notify the preference manager of the problem
+        sessionsSinceLastCrash = 0
+        UserPrefs.SetPref_Long "Core", "SessionsSinceLastCrash", sessionsSinceLastCrash
+    
     End If
+    
+    'If we experienced a recent crash, and user preferences allow, start the debugger - *even if this is a stable build*!
+    If (sessionsSinceLastCrash >= 0) Then
+        
+        'See if we're already running
+        If (Not UserPrefs.GenerateDebugLogs) Then
+            
+            'We're not running.  See if the preference for debug logs is set to "automatic" mode.
+            If (UserPrefs.GetDebugLogPreference = dbg_Auto) Then
+                
+                'The user has debug logging set to "automatic" - so we're allowed to invoke the debugger!  Start it up.
+                UserPrefs.SetEmergencyDebugger True
+                pdDebug.StartDebugger True, , False
+                pdDebug.LogAction "WARNING!  A recent PD session crashed (" & CStr(sessionsSinceLastCrash) & " session(s) ago)."
+                pdDebug.LogAction "          Even though this is a production build, debug logging has been activated as a failsafe."
+                
+            End If
+            
+        End If
+        
+    End If
+
 End Sub
 
-Public Sub InitializeDebugger()
+'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
+' this session's data, among other things, so don't attempt to use the class until this has been called!
+' Returns: TRUE if successful, FALSE otherwise.
+Public Function StartDebugger(Optional ByVal writeLogDataToFile As Boolean = False, Optional ByVal writeHeaderToo As Boolean = True, Optional ByVal initIsNormal As Boolean = True) As Boolean
     
-    Set m_LogString = New pdString
-    Set m_backupMessages = New pdStringStack
-    Set m_FSO = New pdFSO
+    If writeLogDataToFile Then
+        
+        Dim i As Long
+        
+        'First things first: we need to make sure a Debug path exists.  Otherwise, we can't write any of our debug data to file.
+        m_logPath = UserPrefs.GetDebugPath
+        
+        'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
+        If Files.PathExists(m_logPath, True) Then
+        
+            'We now know the Debug path exists.  Retrieve a relevant ID for this file.
+            m_debuggerID = GetLogID()
+            
+            'Generate a filename for this log, using that ID.
+            m_logPath = m_logPath & "DebugReport_" & m_debuggerID & ".log"
+            
+            'If a log file already exists at that location, remove it.  (Only 10 log files are allowed, so if we reach 11,
+            ' the oldest one will be overwritten.)
+            Files.FileDeleteIfExists m_logPath
+            
+            'Assemble a basic collection of relevant debug data.
+            Dim debugHeader As pdString
+            Set debugHeader = New pdString
+            
+            If writeHeaderToo Then
+                
+                debugHeader.AppendLine "**********************************************" & vbCrLf
+                debugHeader.AppendLine "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf
+                If (Not initIsNormal) Then debugHeader.AppendLine "WARNING: debugger was not initiated by default; session data may be incomplete"
+                
+                debugHeader.AppendLine "Date: " & Date
+                debugHeader.AppendLine "Time: " & Time
+                debugHeader.AppendLine "Session ID: " & OS.UniqueSessionID()
+                debugHeader.AppendLine "Compiled: " & CStr(OS.IsProgramCompiled)
+                debugHeader.AppendLine "First run: " & CStr(g_IsFirstRun) & vbCrLf
+                
+                debugHeader.AppendLine "-- SYSTEM INFORMATION --" & vbCrLf
+                
+                debugHeader.AppendLine "OS: " & OS.OSVersionAsString
+                debugHeader.AppendLine "Processor cores (logical): " & OS.LogicalCoreCount
+                debugHeader.AppendLine "Processor features: " & OS.ProcessorFeatures
+                debugHeader.AppendLine "System RAM: " & OS.RAM_SystemTotal
+                debugHeader.AppendLine "Max memory available to PhotoDemon: " & OS.RAM_Available
+                debugHeader.AppendLine "Memory load at startup: " & OS.RAM_CurrentLoad & vbCrLf
+                
+                debugHeader.AppendLine "-- PROGRAM INFORMATION -- " & vbCrLf
+                
+                debugHeader.AppendLine "Version: " & GetPhotoDemonNameAndVersion
+                debugHeader.AppendLine "Translation active: " & CStr(g_Language.TranslationActive())
+                debugHeader.AppendLine "Language in use: " & CStr(g_Language.GetCurrentLanguage())
+                debugHeader.AppendLine "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf
+                
+                debugHeader.AppendLine "-- PLUGIN INFORMATION -- " & vbCrLf
+                
+                For i = 0 To PluginManager.GetNumOfPlugins - 1
+                    debugHeader.Append PluginManager.GetPluginName(i) & ": "
+                    If PluginManager.IsPluginCurrentlyInstalled(i) Then
+                        debugHeader.Append "available"
+                    Else
+                        debugHeader.Append "MISSING"
+                    End If
+                    debugHeader.AppendLineBreak
+                Next i
+            
+            End If
+            
+            debugHeader.AppendLine vbCrLf & "**********************************************" & vbCrLf
+            debugHeader.AppendLine "-- SESSION REPORT --" & vbCrLf
+            
+            'Grab a persistent append handle to the log file
+            m_logDatatoFile = True
+            If (Not m_FSO.FileCreateAppendHandle(m_logPath, m_LogFileHandle)) Then m_LogFileHandle = 0
+            
+            'Convert the first chunk of debug text to UTF-8, then write the data to file
+            WriteDebugStringAsUTF8 debugHeader.ToString()
+            
+        'File writing is requested, but the log file folder is inaccessible
+        Else
+        
+            Debug.Print "Log path invalid.  Saved debug logs not available for this session."
+            
+            m_debuggerActive = False
+            StartDebugger = False
+            Exit Function
+            
+        End If
+        
+    End If
     
-    ReDim m_utf8Buffer(0) As Byte
+    m_debuggerActive = True
     
-    m_debuggerActive = False
-    m_logDatatoFile = False
-    m_NumLoggedEvents = 0
-    m_lastMemCheck = 0
+    'Log an initial event, to note that debug mode was successfully initiated
+    pdDebug.LogAction "Debugger initialized successfully"
     
-End Sub
+    'Perform an initial memory check; this gives us a nice baseline measurement
+    pdDebug.LogAction vbNullString, PDM_Mem_Report
+    
+    'If messages were logged prior to this class being formally initialized, dump them now
+    If (Not m_backupMessages Is Nothing) Then
+        
+        If (m_backupMessages.GetNumOfStrings > 0) Then
+        
+            pdDebug.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
+            pdDebug.LogAction "(They are presented here with their original timestamps.)"
+            
+            For i = 0 To m_backupMessages.GetNumOfStrings - 1
+                pdDebug.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
+            Next i
+            
+            pdDebug.LogAction "(End of pre-initialization data)"
+            
+        End If
+        
+        'We don't need the backup messages any more, so we are free to release them into the ether
+        m_backupMessages.ResetStack 0
+        
+    End If
+    
+    StartDebugger = True
+    
+End Function
 
 Public Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = True)
 
@@ -480,4 +477,67 @@ Public Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = Tru
     
     If m_debuggerActive Then m_debuggerActive = False
     
+End Sub
+
+'Search the debug folder for existing debug files, sort them by date, and automatically give this log a unique ID on the
+' range [0, 9].  If there are already 10 debug files present, steal the ID of the oldest file.
+Private Function GetLogID() As Long
+
+    'Start by assembling a list of existing debug files
+    Dim numFiles As Long
+    numFiles = 0
+    
+    Dim logFiles As pdStringStack
+    If m_FSO.FileFind(m_logPath & "DebugReport_*.log", logFiles) Then
+    
+        numFiles = logFiles.GetNumOfStrings()
+        
+        'logFiles contains a list of all debug logs in the current folder.  If there are already
+        ' 10 entries, we want to find the oldest file in the list, and steal its ID number.
+        If (numFiles = 10) Then
+        
+            Dim minDate As Date, minID As Long, tmpDate As Date
+            
+            'Grab the date of the first file.
+            minDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(0), PDFT_WriteTime)
+            minID = 0
+            
+            'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
+            Dim i As Long
+            For i = 1 To 9
+                tmpDate = Files.FileGetTimeAsDate(m_logPath & logFiles.GetString(i), PDFT_WriteTime)
+                If (tmpDate < minDate) Then
+                    minDate = tmpDate
+                    minID = i
+                End If
+            Next i
+            
+            'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
+            GetLogID = minID
+            pdDebug.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
+        
+        Else
+        
+            'There are not yet 10 log files.  Use whichever ID is missing, starting from position 0.
+            For i = 0 To 9
+                If (Not Files.FileExists(m_logPath & "DebugReport_" & CStr(i) & ".log")) Then
+                    GetLogID = i
+                    Exit For
+                End If
+            Next i
+            
+        End If
+    
+    'If the search function fails, start over with debug log 0
+    Else
+        GetLogID = 0
+    End If
+    
+End Function
+
+'Internal helper function that handles the "convert string to UTF-8 and append to file" part of logging
+Private Sub WriteDebugStringAsUTF8(ByRef srcString As String)
+    If Strings.UTF8FromString(srcString, m_utf8Buffer, m_utf8Size) Then
+        If (m_LogFileHandle <> 0) Then m_FSO.FileWriteData m_LogFileHandle, VarPtr(m_utf8Buffer(0)), m_utf8Size
+    End If
 End Sub

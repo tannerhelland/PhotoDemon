@@ -1202,6 +1202,7 @@ Private Sub cmdBarMini_OKClick()
                 If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
                     If UserPrefs.GenerateDebugLogs Then pdDebug.StartDebugger True, , False Else pdDebug.TerminateDebugger False
                 End If
+                
             End If
             
         'END generate debug logs

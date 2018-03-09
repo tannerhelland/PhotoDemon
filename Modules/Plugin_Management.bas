@@ -526,7 +526,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             
             'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
             ' to kill any stranded instances before starting new ones.
-            If (Not PeekLastShutdownClean) Then
+            If (Not Autosaves.PeekLastShutdownClean) Then
                 pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 ExifTool.KillStrandedExifToolInstances
             End If
