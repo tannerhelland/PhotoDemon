@@ -1013,7 +1013,7 @@ End Sub
 
 Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByVal mouseHoverY As Single = -1)
     
-    If ((Len(m_TTCaption) <> 0) And Me.AmIVisible And Me.AmIEnabled) Then
+    If ((LenB(m_TTCaption) <> 0) And Me.AmIVisible And Me.AmIEnabled) Then
         
         'Cache the hovered (x, y) values; we'll re-use these if we need to refresh the tooltip
         If (mouseHoverX <> -1) Then
