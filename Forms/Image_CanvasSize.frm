@@ -214,12 +214,12 @@ Private Sub UpdateAnchorButtons()
     FillArrowLocations m_ArrowLocations
     
     Dim dibSize As Long
-    dibSize = FixDPI(24)
+    dibSize = Interface.FixDPI(24)
                 
     'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
     For i = 0 To 8
     
-        If (Len(m_ArrowLocations(i)) <> 0) Then
+        If (LenB(m_ArrowLocations(i)) <> 0) Then
             If (StrComp(m_ArrowLocations(i), "generic_image", vbBinaryCompare) = 0) Then
                 cmdAnchor(i).AssignImage m_ArrowLocations(i), , dibSize, dibSize
             Else
@@ -299,6 +299,7 @@ End Sub
 Private Sub cmdBar_ReadCustomPresetData()
     ucResize.LockAspectRatio = False
     m_CurrentAnchor = CLng(cmdBar.RetrievePresetData("currentAnchor"))
+    UpdateAnchorButtons
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -323,10 +324,10 @@ Private Sub Form_Load()
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
     
-    'Start with a default top-left position for the anchor
+    'Update the anchor button layout
     UpdateAnchorButtons
     
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -442,7 +443,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     Message "Finished."
     
