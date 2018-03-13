@@ -492,7 +492,7 @@ End Property
 Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long = -1)
 
     'If an index was not requested, force the index to the current number of parameters.
-    If itemIndex = -1 Then itemIndex = m_numOfButtons
+    If (itemIndex = -1) Then itemIndex = m_numOfButtons
     
     'Increase the button count and resize the array to match
     m_numOfButtons = m_numOfButtons + 1
@@ -788,7 +788,7 @@ Private Sub UpdateControlLayout()
             With m_Buttons(i)
                 
                 'Again, handling branches according to the presence of a caption
-                If (Len(.btCaptionTranslated) <> 0) Then
+                If (LenB(.btCaptionTranslated) <> 0) Then
                 
                     'No image...
                     If (.btImages Is Nothing) Then
@@ -813,7 +813,7 @@ Private Sub UpdateControlLayout()
                 If (Not .btImages Is Nothing) Then
                     
                     'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
-                    If (Len(.btCaptionTranslated) <> 0) Then
+                    If (LenB(.btCaptionTranslated) <> 0) Then
                     
                         If (strWidth < buttonWidth) Then
                             .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
@@ -939,7 +939,7 @@ Private Sub RedrawBackBuffer()
                 
                 'For performance reasons, we only render each button's right-side border at this stage, and we always start
                 ' with the inactive border color.
-                If i < (m_numOfButtons - 1) Then
+                If (i < (m_numOfButtons - 1)) Then
                     GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, m_ButtonStripRect.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorder, 255, 1
                 End If
                 
@@ -967,7 +967,7 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 'Paint the button's caption, if one exists
-                If (Len(.btCaptionTranslated) <> 0) Then
+                If (LenB(.btCaptionTranslated) <> 0) Then
                 
                     If isButtonSelected Then
                         If isButtonHovered Then curColor = fontColorSelectedHover Else curColor = fontColorSelected

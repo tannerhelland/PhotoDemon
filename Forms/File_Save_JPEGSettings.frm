@@ -379,6 +379,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsCategory.AddItem "metadata", 2
     
     'Populate the "basic" options panel
+    cboSaveQuality.SetAutomaticRedraws False
     cboSaveQuality.Clear
     cboSaveQuality.AddItem " perfect (99)", 0
     cboSaveQuality.AddItem " excellent (92)", 1
@@ -387,6 +388,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     cboSaveQuality.AddItem " low (40)", 4
     cboSaveQuality.AddItem " custom quality", 5
     cboSaveQuality.ListIndex = 1
+    cboSaveQuality.SetAutomaticRedraws True, True
     
     btsCompression.AddItem "baseline", 0
     btsCompression.AddItem "optimized baseline", 1

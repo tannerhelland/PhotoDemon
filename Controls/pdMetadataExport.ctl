@@ -374,7 +374,7 @@ End Sub
 'If the parent image has metadata, we provide a bold notification to the user.  (We also retrieve the metadata presets,
 ' if any, from the parent image.)
 Private Sub EvaluatePresenceOfMetadata()
-    If (Not (m_ImageCopy Is Nothing)) Then
+    If (Not m_ImageCopy Is Nothing) Then
         If m_ImageCopy.ImgMetadata.HasMetadata Then
             lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
@@ -390,15 +390,8 @@ End Sub
 
 'Show/hide the bottom label and hyperlink, contingent on the presence of metadata in the target image
 Private Sub UpdateMainComponentVisibility()
-
-    If Not (m_ImageCopy Is Nothing) Then
-        lblTitle.Visible = True
-        hplReviewMetadata.Visible = True
-    Else
-        lblTitle.Visible = False
-        hplReviewMetadata.Visible = False
-    End If
-
+    lblTitle.Visible = (Not m_ImageCopy Is Nothing)
+    hplReviewMetadata.Visible = lblTitle.Visible
 End Sub
 
 'Show/hide any format-specific parameters.  Make sure m_DstFormat is set before calling this, obviously!

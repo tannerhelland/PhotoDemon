@@ -63,7 +63,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         
         'Due to the buffering required by the API call, uBound(listOfFiles) should ALWAYS > 0 but
         ' let's check it anyway (just to be safe)
-        If UBound(listOfFiles) > 0 Then
+        If (UBound(listOfFiles) > 0) Then
         
             'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
             For i = UBound(listOfFiles) To 0 Step -1
@@ -76,7 +76,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         End If
         
         'If multiple files were selected, we need to do some additional processing to the array
-        If UBound(listOfFiles) > 0 Then
+        If (UBound(listOfFiles) > 0) Then
         
             'The common dialog function returns a unique array. Index (0) contains the folder path (without a
             ' trailing backslash), so first things first - add a trailing backslash
@@ -257,7 +257,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '   string to the common dialog function for it to work, so some kind of name needs to be suggested.
     Dim suggestedFilename As String
     suggestedFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If (Len(suggestedFilename) = 0) Then suggestedFilename = g_Language.TranslateMessage("New image")
+    If (LenB(suggestedFilename) = 0) Then suggestedFilename = g_Language.TranslateMessage("New image")
     
     '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together the
     ' calculated filename + extension, but I like PD to be a bit smarter.  What we're going to do next is scan the default output
