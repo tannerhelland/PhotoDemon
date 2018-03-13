@@ -367,6 +367,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Because this form is resizable at run-time, we need to play some games with mouse capturing
+Private Declare Function ReleaseCapture Lib "user32" () As Long
+Private Const WM_NCLBUTTONDOWN As Long = &HA1
+Private Const HTRIGHT As Long = 11
+
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
@@ -532,7 +537,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         
             m_WeAreResponsibleForResize = True
             ReleaseCapture
-            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            VBHacks.SendMsgW Me.hWnd, WM_NCLBUTTONDOWN, hitCode, 0&
             
             'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
             ' notify any neighboring toolboxes (and/or the central canvas)

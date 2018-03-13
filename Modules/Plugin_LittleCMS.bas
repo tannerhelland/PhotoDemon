@@ -453,7 +453,7 @@ Public Function InitializeLCMS() As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim lcmsPath As String
     lcmsPath = PluginManager.GetPluginPath & "lcms2.dll"
-    m_LCMSHandle = LoadLibrary(StrPtr(lcmsPath))
+    m_LCMSHandle = VBHacks.LoadLib(lcmsPath)
     InitializeLCMS = (m_LCMSHandle <> 0)
     
     If (Not InitializeLCMS) Then
@@ -475,7 +475,7 @@ End Function
 
 'When PD closes, make sure to release our library handle
 Public Sub ReleaseLCMS()
-    If (m_LCMSHandle <> 0) Then FreeLibrary m_LCMSHandle
+    VBHacks.FreeLib m_LCMSHandle
     m_LCMSHandle = 0
     PluginManager.SetPluginEnablement CCP_LittleCMS, False
 End Sub

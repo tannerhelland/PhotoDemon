@@ -171,7 +171,7 @@ Public Sub PrepareRestOfSplash()
         'Copy the composite image onto the underlying form
         If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
         m_BackBuffer.CreateBlank m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, 24, 0
-        BitBlt m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Ensure the form has been painted at least once prior to display
         FlipBackBufferToScreen
@@ -199,7 +199,7 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     If (m_maxProgress > 0) And Me.Visible Then
     
         'Copy the splash DIB to overwrite any old drawing
-        BitBlt Me.hDC, 0, 0, m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper Me.hDC, 0, 0, m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Draw the progress line using GDI+
         Dim lineRadius As Long, lineY As Long
@@ -239,7 +239,7 @@ Private Sub Form_Paint()
 End Sub
 
 Private Sub FlipBackBufferToScreen()
-    BitBlt Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long

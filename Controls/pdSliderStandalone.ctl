@@ -1399,7 +1399,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
-    BitBlt bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
     m_SliderBackgroundDIB.FreeFromDC
     
     If (Me.Enabled And pdMain.IsProgramRunning()) Then

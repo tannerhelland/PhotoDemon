@@ -428,7 +428,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         m_Images.SetInitialAlphaPremultiplicationState True
         
         'Copy this normal-state DIB into place at the top of the sheet
-        BitBlt m_Images.GetDIBDC, 0, 0, m_ImageWidth, m_ImageHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_Images.GetDIBDC, 0, 0, m_ImageWidth, m_ImageHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Next, make a copy of the source DIB.
         Dim tmpDIB As pdDIB
@@ -439,18 +439,18 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
         
         'Copy this DIB into position #2, beneath the base DIB
-        BitBlt m_Images.GetDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_Images.GetDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
         tmpDIB.CreateFromExistingDIB srcDIB
         GrayscaleDIB tmpDIB, True
         
         'Place it into position #3, beneath the previous two DIBs
-        BitBlt m_Images.GetDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_Images.GetDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
-        If (Len(resName) <> 0) Then Set srcDIB = Nothing
+        If (LenB(resName) <> 0) Then Set srcDIB = Nothing
         m_Images.FreeFromDC
         
     'If no DIB is provided, remove any existing images

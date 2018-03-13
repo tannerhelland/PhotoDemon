@@ -39,7 +39,7 @@ Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim zLibPath As String
     zLibPath = PluginManager.GetPluginPath & "zlibwapi.dll"
-    m_ZLibHandle = LoadLibrary(StrPtr(zLibPath))
+    m_ZLibHandle = VBHacks.LoadLib(zLibPath)
     InitializeZLib = (m_ZLibHandle <> 0)
     
     If (Not InitializeZLib) Then
@@ -52,7 +52,7 @@ End Function
 'When PD closes, make sure to release our open zLib handle!
 Public Sub ReleaseZLib()
     If (m_ZLibHandle <> 0) Then
-        FreeLibrary m_ZLibHandle
+        VBHacks.FreeLib m_ZLibHandle
         m_ZLibHandle = 0
     End If
 End Sub

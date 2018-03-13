@@ -133,7 +133,8 @@ Private Const VK_XBUTTON2 As Long = &H6
 'Mouse buttons can be retrieved from various mouse messages, but for consistency's sake, we pull them straight
 ' from GetAsyncKeyState.  One thing to note about GetAsyncKeyState is that it returns the physical mouse button
 ' pressed, *without button swapping* for left-handed mouse users.  We need to check this state and manually
-' handle it, using GetSystemMetrics (which is publicly declared in PD).
+' handle it, using GetSystemMetrics().
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Const SM_SWAPBUTTON As Long = 23
 
 'Mouse capturing provides more predictable behavior, particularly on UCs
@@ -152,7 +153,9 @@ Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hIns
 Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Const GCL_HCURSOR = (-12)
+Private Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
+Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+Private Const GCL_HCURSOR As Long = (-12)
 
 'Reconstruct a full mouse movement history.  Note that this requires the MOUSEMOVEPOINT type, declared elsewhere.
 Private Enum PD_MouseResolution
@@ -168,12 +171,13 @@ Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMov
 Private Declare Function GetMessageTime Lib "user32" () As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 'Weird legacy desktop issues require us to transform points passed to/from GetMouseMovePointsEx, relative to the current monitor system
-Private Const SM_XVIRTUALSCREEN = 76
-Private Const SM_YVIRTUALSCREEN = 77
-Private Const SM_CXVIRTUALSCREEN = 78
-Private Const SM_CYVIRTUALSCREEN = 79
+Private Const SM_XVIRTUALSCREEN As Long = 76
+Private Const SM_YVIRTUALSCREEN As Long = 77
+Private Const SM_CXVIRTUALSCREEN As Long = 78
+Private Const SM_CYVIRTUALSCREEN As Long = 79
 
 'API helper functions for converting between screen and client coordinate spaces
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
@@ -181,7 +185,7 @@ Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, B
 'MSDN best practices suggest that we always retrieve the user's setting for scroll wheel sensitivity, as it may change
 ' while a program is running.  SystemParametersInfo is used for this.  Note that horizontal and vertical settings
 ' are stored separately.
-Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoW" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
+Private Declare Function SystemParametersInfoW Lib "user32" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
 Private Const SPI_GETWHEELSCROLLLINES As Long = &H68
 Private Const SPI_GETWHEELSCROLLCHARS As Long = &H6C
 
@@ -499,9 +503,9 @@ Private Function GetUserScrollSetting(ByVal directionIsVertical As Long) As Doub
 
     Dim tmpUserScrollReturn As Long
     If directionIsVertical Then
-        SystemParametersInfo SPI_GETWHEELSCROLLLINES, 0, tmpUserScrollReturn, 0
+        SystemParametersInfoW SPI_GETWHEELSCROLLLINES, 0, tmpUserScrollReturn, 0
     Else
-        SystemParametersInfo SPI_GETWHEELSCROLLCHARS, 0, tmpUserScrollReturn, 0
+        SystemParametersInfoW SPI_GETWHEELSCROLLCHARS, 0, tmpUserScrollReturn, 0
     End If
     
     'Because we're going to use this function to calculate scroll amounts, don't allow it to be zero.
@@ -509,7 +513,7 @@ Private Function GetUserScrollSetting(ByVal directionIsVertical As Long) As Doub
     ' the SystemParametersInfo call above could technically fail to return a value.)
     If (tmpUserScrollReturn = 0) Then tmpUserScrollReturn = 3
     
-    GetUserScrollSetting = CDbl(tmpUserScrollReturn) / 120
+    GetUserScrollSetting = CDbl(tmpUserScrollReturn) / 120#
 
 End Function
 

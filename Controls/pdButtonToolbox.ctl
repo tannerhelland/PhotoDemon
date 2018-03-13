@@ -272,7 +272,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         m_ButtonImages.SetInitialAlphaPremultiplicationState False
         
         'Copy the normal DIB into place at the top of the sheet
-        BitBlt m_ButtonImages.GetDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_ButtonImages.GetDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'A separate function will automatically generate "glowy hovered" and "grayscale disabled" versions for us
         GenerateVariantButtonImages

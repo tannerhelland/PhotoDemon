@@ -115,6 +115,7 @@ Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As L
 Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByVal srcBitsPointer As Long, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByVal dstBitsPointer As Long, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
 Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryW" (ByVal pMachineName As Long, ByVal ptrToBuffer As Long, ByRef pdwSize As Long) As Long
 Private Declare Function GetColorProfileHeader Lib "mscms" (ByVal pProfileHandle As Long, ByVal pHeaderBufferPointer As Long) As Long
+Private Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, ByVal dwFlags As Long) As Long
 
 'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
 Private Declare Function SetICMMode Lib "gdi32" (ByVal targetDC As Long, ByVal iEnableICM As ICM_Mode) As Long
@@ -134,6 +135,7 @@ End Enum
 Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileW" (ByVal hDC As Long, ByRef lpcbName As Long, ByVal ptrToBuffer As Long) As Long
 Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileW" (ByVal hDC As Long, ByVal ptrToFilename As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Const MONITOR_DEFAULTTONEAREST As Long = &H2
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private m_currentSystemColorProfile As String

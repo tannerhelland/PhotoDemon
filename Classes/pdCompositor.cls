@@ -144,7 +144,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         
             If (bottomLayer.GetLayerOpacity = 100) Then
                 With bottomLayer
-                    BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
             Else
                 With bottomLayer
@@ -350,7 +350,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             If (Not bottomLayer.AffineTransformsActive(True)) Then
             
                 With bottomLayer
-                    BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
                 
             'Active transforms must be made permanent prior to a merge.
@@ -956,8 +956,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
                     ' we can completely skip the resize step and simply use BitBlt (way faster)
                     If isRectZoomless And (Not srcLayer.AffineTransformsActive(True)) Then
-                        
-                        BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                        GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                         
                     'Zoom or non-destructive resize/rotate are active.  Extra work is required.
                     Else
@@ -1367,7 +1366,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                 'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
                 ' we can completely skip the resize step and simply use BitBlt (way faster)
                 If isRectZoomless And (Not srcLayer.AffineTransformsActive(True)) Then
-                    BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                    GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                     
                 'Zoom or non-destructive resize/rotate are active on this layer.  Extra work is required.
                 Else
@@ -1409,7 +1408,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             ' that around for future rendering passes, remember!)
             
             '(Also note that this temporary DIB will always exist at a correct size, c/o our parent GetCompositedRect() function.)
-            BitBlt srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, xOffsetInt, yOffsetInt, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, lodDIB.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, xOffsetInt, yOffsetInt, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, lodDIB.GetDIBDC, 0, 0, vbSrcCopy
             
             'End handling of layers with no non-scaling affine transforms
         
@@ -1501,7 +1500,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             ' that around for future rendering passes, remember!)
             
             '(Also note that this temporary DIB will always exist at a correct size, c/o our parent GetCompositedRect() function.)
-            BitBlt srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, 0, 0, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, lodDIB.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, 0, 0, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, lodDIB.GetDIBDC, 0, 0, vbSrcCopy
             
             'End handling of layers with active affine transforms
                 
@@ -1633,7 +1632,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
         ' simply use BitBlt (way faster).
         If isRectZoomless Then
-            BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+            GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
             
         'The viewport is zoomed, so extra work is required.
         Else

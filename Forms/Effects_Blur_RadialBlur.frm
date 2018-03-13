@@ -176,11 +176,11 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
         tmpDIB.CreateBlank dstWidth, srcHeight, workingDIB.GetDIBColorDepth
         
         'Bitblt the original image onto the center of the temporary canvas
-        BitBlt tmpDIB.GetDIBDC, dstX, 0, srcWidth, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper tmpDIB.GetDIBDC, dstX, 0, srcWidth, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Apply two more blts - each of these will mirror an edge section of the source image
-        BitBlt tmpDIB.GetDIBDC, 0, 0, dstX, srcHeight, workingDIB.GetDIBDC, srcWidth - dstX, 0, vbSrcCopy
-        BitBlt tmpDIB.GetDIBDC, dstX + srcWidth, 0, dstX, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, dstX, srcHeight, workingDIB.GetDIBDC, srcWidth - dstX, 0, vbSrcCopy
+        GDI.BitBltWrapper tmpDIB.GetDIBDC, dstX + srcWidth, 0, dstX, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Change the srcDIB to be the same size as this working DIB, so it can receive the fully blurred image
         srcDIB.CreateBlank tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, workingDIB.GetDIBColorDepth
@@ -198,7 +198,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             srcDIB.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, workingDIB.GetDIBColorDepth
             
             'Copy the correct chunk of the temporary DIB into the source DIB
-            BitBlt srcDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, tmpDIB.GetDIBDC, dstX, 0, vbSrcCopy
+            GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, tmpDIB.GetDIBDC, dstX, 0, vbSrcCopy
             tmpDIB.EraseDIB
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion

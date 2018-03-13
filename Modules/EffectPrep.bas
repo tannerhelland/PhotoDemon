@@ -212,7 +212,7 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
                 workingDIB.ResetDIB
             End If
             
-            BitBlt workingDIB.GetDIBDC, 0, 0, newWidth, newHeight, srcDIB.GetDIBDC, hOffset, vOffset, vbSrcCopy
+            GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, newWidth, newHeight, srcDIB.GetDIBDC, hOffset, vOffset, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
             
         End If
@@ -335,7 +335,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             
             'Crop out the relevant portion of the layer from the selection boundary.
             workingDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-            BitBlt workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
+            GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveLayer.layerDIB.GetAlphaPremultiplication
             
         Else
@@ -444,7 +444,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                 
                 'NOW we can copy over the active layer's data, within the bounding box of the active selection
-                BitBlt tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
+                GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
                 If previewTarget.ViewportFitFullImage Then
@@ -463,7 +463,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                         workingDIB.ResetDIB
                     End If
                     
-                    BitBlt workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.GetDIBDC, hOffset, vOffset, vbSrcCopy
+                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.GetDIBDC, hOffset, vOffset, vbSrcCopy
                     workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().GetAlphaPremultiplication
                 
                 End If
@@ -492,7 +492,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                         workingDIB.ResetDIB
                     End If
                     
-                    BitBlt workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, hOffset, vOffset, vbSrcCopy
+                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, hOffset, vOffset, vbSrcCopy
                     workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().GetAlphaPremultiplication
                     
                 End If
@@ -625,14 +625,14 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
             ' selection processing DIB.
             Else
-                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
+                GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
             End If
             
         'If this is *not* a preview, simply crop out the portion of the selection mask matching the current preview area.
         ' (TODO: this copy really isn't necessary; just point the array at the actual selection mask, instead!)
         Else
             selMaskCopy.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
-            BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
+            GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         End If
         
         'We now have a DIB that represents the selection mask at the same offset and size as the workingDIB.  This allows
@@ -773,7 +773,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             'Un-pad any null pixels we may have added as part of the selection interaction
             If (Not workingDIBBackup Is Nothing) Then
                 If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then workingDIBBackup.SetAlphaPremultiplication True
-                BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
                 pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
             End If
         

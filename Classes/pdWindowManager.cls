@@ -106,11 +106,8 @@ End Enum
     Private Const SW_HIDE = 0, SW_SHOWNORMAL = 1, SW_SHOWMINIMIZED = 2, SW_SHOWMAXIMIZED = 3, SW_SHOWNOACTIVATE = 4, SW_SHOW = 5, SW_MINIMIZE = 6, SW_SHOWMINNOACTIVE = 7, SW_SHOWNA = 8, SW_RESTORE = 9, SW_SHOWDEFAULT = 10, SW_FORCEMINIMIZE = 11
 #End If
 
-'GetSystemMetrics constants
-Private Const SM_CYCAPTION As Long = 4
-Private Const SM_CYSIZEFRAME As Long = 33
-
 'API calls for window positioning and tracking
+Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal bEnable As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
 Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long) As Long

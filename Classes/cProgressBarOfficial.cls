@@ -154,7 +154,7 @@ End Property
 
 Public Property Let BarColor(newBarColor As Long) ' does not apply if control is themed
     If newBarColor = -1& Then m_ForeColor = &HFF000000 Else m_ForeColor = newBarColor And &HFFFFFF
-    SendMessage m_hWnd, PBM_SETBARCOLOR, 0&, ByVal m_ForeColor
+    VBHacks.SendMsgW m_hWnd, PBM_SETBARCOLOR, 0&, m_ForeColor
 End Property
 Public Property Get BarColor() As Long
     If m_ForeColor = &HFF000000 Then BarColor = -1& Else BarColor = m_ForeColor
@@ -163,7 +163,7 @@ End Property
 
 Public Property Let BackColor(newBackColor As Long) ' does not apply if control is themed
     If newBackColor = -1& Then m_BackColor = &HFF000000 Else m_BackColor = newBackColor And &HFFFFFF
-    SendMessage m_hWnd, PBM_SETBKCOLOR, 0&, ByVal m_BackColor
+    VBHacks.SendMsgW m_hWnd, PBM_SETBKCOLOR, 0&, m_BackColor
 End Property
 Public Property Get BackColor() As Long
     If m_BackColor = &HFF000000 Then BackColor = -1& Else BackColor = m_BackColor
@@ -242,10 +242,10 @@ Public Property Let Marquee(isMarquee As Boolean)   ' toggles whether marquee mo
     If Me.Marquee = False Then
         If isMarquee = True Then
             SetWindowLong m_hWnd, GWL_STYLE, GetWindowLong(m_hWnd, GWL_STYLE) Or PBS_MARQUEE
-            SendMessage m_hWnd, PBM_SETMARQUEE, CLng(Abs(isMarquee)), ByVal m_Speed
+            VBHacks.SendMsgW m_hWnd, PBM_SETMARQUEE, CLng(Abs(isMarquee)), m_Speed
         End If
     ElseIf isMarquee = False Then
-        SendMessage m_hWnd, PBM_SETMARQUEE, CLng(Abs(isMarquee)), ByVal 0&
+        VBHacks.SendMsgW m_hWnd, PBM_SETMARQUEE, CLng(Abs(isMarquee)), 0&
         SetWindowLong m_hWnd, GWL_STYLE, (GetWindowLong(m_hWnd, GWL_STYLE) And Not PBS_MARQUEE)
     End If
     
@@ -257,7 +257,7 @@ End Property
 Public Property Let MarqueeScrollRate(newValue As Long) ' pauses or resets/restarts marquee
     If newValue <> m_Speed And newValue >= 0& Then
         m_Speed = newValue
-        If Me.Marquee Then SendMessage m_hWnd, PBM_SETMARQUEE, CLng(Abs(m_Speed > 0&)), ByVal m_Speed
+        If Me.Marquee Then VBHacks.SendMsgW m_hWnd, PBM_SETMARQUEE, CLng(Abs(m_Speed > 0&)), m_Speed
     End If
 End Property
 Public Property Get MarqueeScrollRate() As Long
@@ -265,31 +265,31 @@ Public Property Get MarqueeScrollRate() As Long
 End Property
 
 Public Property Let MarqueePaused(isPaused As Boolean) ' Vista+ only
-    SendMessage m_hWnd, PBM_SETSTATE, CLng(Abs(isPaused) * 2& + 1&), ByVal 0&
+    VBHacks.SendMsgW m_hWnd, PBM_SETSTATE, CLng(Abs(isPaused) * 2& + 1&), 0&
 End Property
 Public Property Get MarqueePaused() As Boolean
-    MarqueePaused = (SendMessage(m_hWnd, PBM_GETSTATE, 0&, ByVal 0&) = PBST_PAUSED)
+    MarqueePaused = (VBHacks.SendMsgW(m_hWnd, PBM_GETSTATE, 0&, 0&) = PBST_PAUSED)
 End Property
 
 Public Property Let Min(newValue As Long)   ' sets minimum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, newValue, ByVal Me.Max
+    VBHacks.SendMsgW m_hWnd, PBM_SETRANGE32, newValue, Me.Max
 End Property
 Public Property Get Min() As Long
-    Min = SendMessage(m_hWnd, PBM_GETRANGE, 1&, ByVal 0&)
+    Min = VBHacks.SendMsgW(m_hWnd, PBM_GETRANGE, 1&, 0&)
 End Property
 
 Public Property Let Max(newValue As Long)   ' sets maximum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, Me.Min, ByVal newValue
+    VBHacks.SendMsgW m_hWnd, PBM_SETRANGE32, Me.Min, newValue
 End Property
 Public Property Get Max() As Long
-    Max = SendMessage(m_hWnd, PBM_GETRANGE, 0&, ByVal 0&)
+    Max = VBHacks.SendMsgW(m_hWnd, PBM_GETRANGE, 0&, 0&)
 End Property
 
 Public Property Let Value(newValue As Long) ' returns/sets bar value
-    SendMessage m_hWnd, PBM_SETPOS, newValue, ByVal 0&
+    VBHacks.SendMsgW m_hWnd, PBM_SETPOS, newValue, 0&
 End Property
 Public Property Get Value() As Long
-    Value = SendMessage(m_hWnd, PBM_GETPOS, 0&, ByVal 0&)
+    Value = VBHacks.SendMsgW(m_hWnd, PBM_GETPOS, 0&, 0&)
 End Property
 
 Public Sub Refresh()                        ' redraws the control
@@ -301,19 +301,19 @@ Public Property Get hWnd() As Long          ' returns window handle
 End Property
 
 Public Property Let StepValue(newValue As Long) ' sets/returns the current step value
-    SendMessage m_hWnd, PBM_SETSTEP, newValue, ByVal 0&
+    VBHacks.SendMsgW m_hWnd, PBM_SETSTEP, newValue, 0&
 End Property
 Public Property Get StepValue() As Long
-    StepValue = SendMessage(m_hWnd, PBM_GETSTEP, 0&, ByVal 0&)
+    StepValue = VBHacks.SendMsgW(m_hWnd, PBM_GETSTEP, 0&, 0&)
     If StepValue = 0& Then StepValue = 10& ' default set by windows
 End Property
 
 Public Function StepIt(Optional ByVal IncrementBy As Long) As Long ' increments value by StepValue
     ' resets Value to StepValue if current Value + StepValue > Max
     If IncrementBy = 0& Then
-        StepIt = SendMessage(m_hWnd, PBM_STEPIT, 0&, ByVal 0&)
+        StepIt = VBHacks.SendMsgW(m_hWnd, PBM_STEPIT, 0&, 0&)
     Else
-        StepIt = SendMessage(m_hWnd, PBM_DELTAPOS, IncrementBy, ByVal 0&)
+        StepIt = VBHacks.SendMsgW(m_hWnd, PBM_DELTAPOS, IncrementBy, 0&)
     End If
 End Function
 
@@ -339,7 +339,7 @@ Private Sub pvCopyBarProperties(Horizontal As Boolean, ByVal Smooth As Boolean, 
     End If
     If m_hWnd Then
         newHwnd = m_hWnd
-        m_hWnd = oldHwnd: SendMessage newHwnd, PBM_SETRANGE32, Me.Min, ByVal Me.Max
+        m_hWnd = oldHwnd: VBHacks.SendMsgW newHwnd, PBM_SETRANGE32, Me.Min, Me.Max
         lProp = Me.Value: m_hWnd = newHwnd: Me.Value = lProp
         m_hWnd = oldHwnd: lProp = Me.StepValue: m_hWnd = newHwnd: Me.StepValue = lProp
         m_hWnd = oldHwnd: lProp = Me.Marquee: m_hWnd = newHwnd: Me.Marquee = lProp

@@ -66,7 +66,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         If (m_topDIBCopy.GetDIBWidth <> topDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight <> topDIB.GetDIBHeight) Then
             m_topDIBCopy.CreateBlank topDIB.GetDIBWidth, topDIB.GetDIBHeight, 32, 0, 0
         End If
-        BitBlt m_topDIBCopy.GetDIBDC, 0, 0, topDIB.GetDIBWidth, topDIB.GetDIBHeight, topDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper m_topDIBCopy.GetDIBDC, 0, 0, topDIB.GetDIBWidth, topDIB.GetDIBHeight, topDIB.GetDIBDC, 0, 0, vbSrcCopy
         m_topDIBCopy.SetInitialAlphaPremultiplicationState topDIB.GetAlphaPremultiplication
         
         'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass that handles several things:

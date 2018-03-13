@@ -44,7 +44,7 @@ Public Function InitializeEZTwain() As Boolean
         'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
         Dim eztPath As String
         eztPath = PluginManager.GetPluginPath & "eztw32.dll"
-        m_hLibScanner = LoadLibrary(StrPtr(eztPath))
+        m_hLibScanner = VBHacks.LoadLib(eztPath)
         InitializeEZTwain = (m_hLibScanner <> 0)
         m_ScanningAvailable = InitializeEZTwain
         
@@ -61,7 +61,7 @@ End Function
 
 'When PD closes, make sure to release our open handle!
 Public Sub ReleaseEZTwain()
-    If (m_hLibScanner <> 0) Then FreeLibrary m_hLibScanner
+    VBHacks.FreeLib m_hLibScanner
 End Sub
 
 'Return the EZTwain version number, as a string

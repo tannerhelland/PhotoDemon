@@ -1240,7 +1240,7 @@ Friend Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
     dstDIB.CreateBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 

@@ -63,7 +63,7 @@ Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim lz4Path As String
     lz4Path = pathToDLLFolder & "liblz4.dll"
-    m_Lz4Handle = LoadLibrary(StrPtr(lz4Path))
+    m_Lz4Handle = VBHacks.LoadLib(lz4Path)
     InitializeLz4 = (m_Lz4Handle <> 0)
     
     'If we initialized the library successfully, cache some lz4-specific data
@@ -79,7 +79,7 @@ End Function
 'When PD closes, make sure to release our open Lz4 handle
 Public Sub ReleaseLz4()
     If (m_Lz4Handle <> 0) Then
-        FreeLibrary m_Lz4Handle
+        VBHacks.FreeLib m_Lz4Handle
         m_Lz4Handle = 0
     End If
 End Sub

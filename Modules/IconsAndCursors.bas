@@ -32,7 +32,9 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
+Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 
 Private Enum DrawIconEx_Flags
     DI_COMPAT = &H4         'This flag is ignored

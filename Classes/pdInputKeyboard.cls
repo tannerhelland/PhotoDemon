@@ -114,6 +114,7 @@ Private m_HookedControlName As String
 
 'When a keyboard hook is active, this will be set to TRUE, and the hook ID will be a handle to the actual Windows hook object.
 Private m_HookID As Long
+Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
 'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone

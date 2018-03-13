@@ -1217,7 +1217,7 @@ Public Sub TerminateExifTool()
             m_Async.SendData cmdParams
         
             'Wait a little bit for ExifTool to receive the order and shut down on its own
-            Sleep 500
+            VBHacks.SleepAPI 500
             
             'ExifTool should be gone by now, but if it isn't, forcibly terminate it
             m_Async.TerminateChildProcess

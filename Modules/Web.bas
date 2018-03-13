@@ -15,10 +15,13 @@ Attribute VB_Name = "Web"
 
 Option Explicit
 
+Private Declare Function ShellExecuteW Lib "shell32" (ByVal hWnd As Long, ByVal ptrToOperationString As Long, ByVal ptrToFileString As Long, ByVal ptrToParameters As Long, ByVal ptrToDirectory As Long, ByVal nShowCmd As Long) As Long
+Private Const SW_SHOWNORMAL As Long = 1
+
 'Open a string as a hyperlink in the user's default browser
 Public Sub OpenURL(ByVal targetURL As String)
     Dim targetAction As String: targetAction = "Open"
-    ShellExecute FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
+    ShellExecuteW FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
 End Sub
 
 'Quick and sloppy mechanism for parsing the domain name from a URL.  Not well-tested, and used within PD

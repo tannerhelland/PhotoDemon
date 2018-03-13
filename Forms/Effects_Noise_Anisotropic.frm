@@ -463,7 +463,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         Next x
         
         'On each iteration, we must copy over the new bits to the source image
-        If i < adIterations Then BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
+        If (i < adIterations) Then GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         If (Not toPreview) Then progBarOffset = finalX * i
         
     Next i

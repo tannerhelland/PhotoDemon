@@ -190,6 +190,9 @@ Option Explicit
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+
 Private Enum PD_MOUSEEVENT
     pMouseDown = 0
     pMouseMove = 1

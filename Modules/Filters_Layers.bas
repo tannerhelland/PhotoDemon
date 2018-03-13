@@ -22,6 +22,10 @@ Attribute VB_Name = "Filters_Layers"
 
 Option Explicit
 
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
+Private Const STRETCHBLT_COLORONCOLOR As Long = 3
+Private Const STRETCHBLT_HALFTONE As Long = 4
+
 'Constants required for creating a gamma curve from .1 to 10
 Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
@@ -40,7 +44,7 @@ Public Function PadDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Bool
     srcDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
     
     'Copy the old DIB into the center of the new DIB
-    BitBlt srcDIB.GetDIBDC, paddingSize, paddingSize, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper srcDIB.GetDIBDC, paddingSize, paddingSize, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing
@@ -64,7 +68,7 @@ Public Function PadDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As 
     srcDIB.CreateBlank srcDIB.GetDIBWidth + paddingRect.Left + paddingRect.Right, srcDIB.GetDIBHeight + paddingRect.Top + paddingRect.Bottom, srcDIB.GetDIBColorDepth, 0, 0
     
     'Copy the old DIB into the center of the new DIB
-    BitBlt srcDIB.GetDIBDC, paddingRect.Left, paddingRect.Top, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper srcDIB.GetDIBDC, paddingRect.Left, paddingRect.Top, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing
@@ -2647,7 +2651,7 @@ Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     dstDIB.CreateBlank srcDIB.GetDIBWidth + hExtend * 2, srcDIB.GetDIBHeight + vExtend * 2, srcDIB.GetDIBColorDepth
     
     'Copy the valid part of the source image into the center of the destination image
-    BitBlt dstDIB.GetDIBDC, hExtend, vExtend, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+    GDI.BitBltWrapper dstDIB.GetDIBDC, hExtend, vExtend, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'We now need to fill the blank areas (borders) of the destination canvas with clamped values from the source image.  We do this
     ' by extending the nearest valid pixels across the empty area.
@@ -2656,22 +2660,22 @@ Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     SetStretchBltMode dstDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
     
     'Top, bottom
-    StretchBlt dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
-    StretchBlt dstDIB.GetDIBDC, hExtend, vExtend + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, vExtend + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
     
     'Left, right
-    StretchBlt dstDIB.GetDIBDC, 0, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
-    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
     
     'Next, the four corners
     
     'Top-left, top-right
-    StretchBlt dstDIB.GetDIBDC, 0, 0, hExtend, vExtend, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
-    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, 0, hExtend, vExtend, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
     
     'Bottom-left, bottom-right
-    StretchBlt dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
-    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
     PadDIBClampedPixels = 1
@@ -3163,7 +3167,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         Erase midImageData
         
         'Copy the contents of midDIB to the working DIB
-        BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, kernelRadius, vbSrcCopy
+        GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, kernelRadius, vbSrcCopy
         
         'Re-pad working DIB
         PadDIBClampedPixels kernelRadius, kernelRadius, srcDIB, midDIB

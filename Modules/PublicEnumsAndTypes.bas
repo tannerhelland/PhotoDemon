@@ -1,11 +1,31 @@
 Attribute VB_Name = "Public_EnumsAndTypes"
 Option Explicit
 
+'Standard WAPI types
+Public Type POINTAPI
+    x As Long
+    y As Long
+End Type
+
+Public Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
 Public Type RECTF_RB
     Left As Single
     Top As Single
     Right As Single
     Bottom As Single
+End Type
+
+Public Type winRect
+    x1 As Long
+    y1 As Long
+    x2 As Long
+    y2 As Long
 End Type
 
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
@@ -689,3 +709,13 @@ End Enum
 #If False Then
     Private Const es_None = 0, es_Antialiased = 1, es_FullyFeathered = 2
 #End If
+
+'This painting struct stores the data passed between BeginPaint and EndPaint
+Public Type PAINTSTRUCT
+    hDC As Long
+    fErase As Long
+    rcPaint As RECT
+    fRestore As Long
+    fIncUpdate As Long
+    rgbReserved(0 To 31) As Byte
+End Type

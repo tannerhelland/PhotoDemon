@@ -175,9 +175,12 @@ Private Type TagMSG
 End Type
 
 'System window handling APIs
+Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal bEnable As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
@@ -320,14 +323,14 @@ End Property
 
 'External functions can call this to fully select the text box's contents
 Friend Sub SelectAll()
-    If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
+    If (m_EditBoxHwnd <> 0) Then VBHacks.SendMsgW m_EditBoxHwnd, EM_SETSEL, 0&, -1&
 End Sub
 
 'SelLength is currently treated as read-only
 Friend Property Get SelLength() As Long
     If (m_EditBoxHwnd <> 0) Then
         Dim startPos As Long, endPos As Long, retVal As Long
-        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
+        retVal = VBHacks.SendMsgW(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), VarPtr(endPos))
         SelLength = Abs(startPos - endPos)
     End If
 End Property
@@ -337,13 +340,13 @@ End Property
 Friend Property Get SelStart() As Long
     If (m_EditBoxHwnd <> 0) Then
         Dim startPos As Long, endPos As Long, retVal As Long
-        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
+        retVal = VBHacks.SendMsgW(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), VarPtr(endPos))
         SelStart = startPos
     End If
 End Property
 
 Friend Property Let SelStart(ByVal newPosition As Long)
-    If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, ByVal newPosition
+    If (m_EditBoxHwnd <> 0) Then VBHacks.SendMsgW m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
 End Property
 
 'For performance reasons, the text is not always stored locally.  It is retrieved, as needed, from the common control instance.
@@ -380,7 +383,7 @@ Friend Property Let Text(ByRef newString As String)
     'Unfortunately, we cannot use SetWindowText here.  SetWindowText does not expand tab characters in a string,
     ' so our only option is to manually send a WM_SETTEXT message to the text box.
     If (m_EditBoxHwnd <> 0) Then
-        SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
+        VBHacks.SendMsgW m_EditBoxHwnd, WM_SETTEXT, 0&, StrPtr(newString)
     
     'If an edit box doesn't exist, cache the string locally.  (We'll automatically set it anew whenever we get around
     ' to creating the edit box.)
@@ -491,7 +494,7 @@ Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
             
             'Pass an appropriate font handle to the edit box; GDI will use this font for text rendering.
             CreateEditBoxGDIObjects
-            If (m_EditBoxFont <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+            If (m_EditBoxFont <> 0) Then VBHacks.SendMsgW m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
             
             'If the edit box had text before we killed it, restore that text now
             If (LenB(curText) <> 0) Then Me.Text = curText
@@ -603,7 +606,7 @@ Private Sub CreateEditBoxGDIObjects(Optional ByVal forceSync As Boolean = False)
     If (m_EditBoxFont <> UserControls.GetSharedGDIFont(m_FontSize)) Or RepaintRequired Or forceSync Then
         If (m_EditBoxFont <> 0) Then UserControls.ReleaseSharedGDIFontByHandle m_EditBoxFont
         m_EditBoxFont = UserControls.GetSharedGDIFont(m_FontSize)
-        If (m_EditBoxHwnd <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+        If (m_EditBoxHwnd <> 0) Then VBHacks.SendMsgW m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
     End If
 
 End Sub
@@ -760,7 +763,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     'Potential bug-fix added June 2017; manually handle IME-originating chars as well, just in case the def
     ' subclass proc fails to process them correctly.
     ElseIf (uiMsg = WM_IME_CHAR) Then
-        HandleEditBoxMsgs = SendMessage(hWnd, WM_CHAR, wParam, ByVal lParam)
+        HandleEditBoxMsgs = VBHacks.SendMsgW(hWnd, WM_CHAR, wParam, lParam)
         msgEaten = True
     
     'WM_UNICHAR messages are never sent by Windows.  However, third-party IMEs may send them.  Before allowing WM_UNICHAR
@@ -776,7 +779,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Passing an actual unicode character; forward this to our default handler
         Else
             m_CharCache = wParam
-            SendMessage hWnd, WM_CHAR, wParam, ByVal lParam
+            VBHacks.SendMsgW hWnd, WM_CHAR, wParam, lParam
             msgEaten = True
             HandleEditBoxMsgs = 0
         End If
@@ -957,7 +960,7 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
 
                 'Check for arrow keys and forward them manually.  (Also, eat these messages so no one else receives them.)
                 If (wParam = VK_LEFT) Or (wParam = VK_UP) Or (wParam = VK_RIGHT) Or (wParam = VK_DOWN) Then
-                    SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
+                    VBHacks.SendMsgW m_EditBoxHwnd, WM_KEYDOWN, wParam, (lParam And &H51111111)
                     msgEaten = True
                 End If
                 

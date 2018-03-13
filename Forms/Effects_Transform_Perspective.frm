@@ -679,7 +679,7 @@ Private Sub RedrawPreviewBox()
         If cmdBar.PreviewsAllowed Then
             Dim tmpSA As SafeArray2D
             EffectPrep.PrepImageData tmpSA, True, pdFxPreview
-            StretchBlt picDraw.hDC, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
+            GDI.StretchBltWrapper picDraw.hDC, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
         End If
     End If
     

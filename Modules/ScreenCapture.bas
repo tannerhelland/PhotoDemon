@@ -18,7 +18,6 @@ Attribute VB_Name = "ScreenCapture"
 Option Explicit
 
 'Various API calls required for screen capturing
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
@@ -93,7 +92,7 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     
     'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/2 of a second
     ' to give the message box time to disappear
-    Sleep 500
+    VBHacks.SleepAPI 500
     
     'Use the getDesktopAsDIB function to copy the requested screen contents into a temporary DIB
     Dim tmpDIB As pdDIB
@@ -162,7 +161,7 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    BitBlt dstDIB.GetDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, screenLeft, screenTop, vbSrcCopy
+    GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, screenLeft, screenTop, vbSrcCopy
     ReleaseDC screenHwnd, desktopDC
     
     'Enforce correct alpha on the result
@@ -182,7 +181,7 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL)
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    BitBlt dstDIB.GetDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
+    GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
     ReleaseDC screenHwnd, desktopDC
     
     'Enforce normal alpha on the result

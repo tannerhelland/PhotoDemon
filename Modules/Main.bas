@@ -75,7 +75,7 @@ Public Sub Main()
     'Make sure shell32 is loaded
     Dim strShellName As String
     strShellName = "shell32.dll"
-    m_hShellModule = LoadLibrary(StrPtr(strShellName))
+    m_hShellModule = VBHacks.LoadLib(strShellName)
     
     'Make sure comctl32 is loaded.  (For details on these constants, visit http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx)
     Dim iccex As InitCommonControlsExStruct
@@ -651,7 +651,7 @@ Public Sub FinalShutdown()
     pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
-    If (m_hShellModule <> 0) Then FreeLibrary m_hShellModule
+    VBHacks.FreeLib m_hShellModule
     
     pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
     pdDebug.LogAction "Final memory report", PDM_Mem_Report

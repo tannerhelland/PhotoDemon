@@ -220,7 +220,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         'pdImages(g_CurrentImage).mainDIB.createBlank newRight - newLeft, newBottom - newTop, tmpDIB.getDIBColorDepth
         
         'Copy the autocropped area to the new main DIB
-        'BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
+        'GDI.BitBltWrapper pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
     
         'Erase the temporary DIB
         tmpDIB.EraseDIB
@@ -583,7 +583,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Flip it
-        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, 0, tmpLayerRef.GetLayerHeight(False) - 1, tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, 0, tmpLayerRef.GetLayerHeight(False) - 1, tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
@@ -636,7 +636,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Mirror it
-        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, 0, -tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, 0, -tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
@@ -774,7 +774,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Rotate it by inverting both directions of a StretchBlt call
-        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, tmpLayerRef.GetLayerHeight(False) - 1, -tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
+        GDI.StretchBltWrapper tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, tmpLayerRef.GetLayerHeight(False) - 1, -tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer

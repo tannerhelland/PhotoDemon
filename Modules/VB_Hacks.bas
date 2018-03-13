@@ -42,17 +42,22 @@ Private Declare Function RemoveWindowSubclass Lib "comctl32" Alias "#412" (ByVal
 Private Declare Function DefSubclassProc Lib "comctl32" Alias "#413" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
+Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function LoadLibraryW Lib "kernel32" (ByVal lpLibFileName As Long) As Long
+Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
 Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
-Private Declare Function RtlCompareMemory Lib "ntdll" (ByVal ptrSource1 As Long, ByVal ptrSource2 As Long, ByVal Length As Long) As Long
+
 Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
+
+Private Declare Function RtlCompareMemory Lib "ntdll" (ByVal ptrSource1 As Long, ByVal ptrSource2 As Long, ByVal Length As Long) As Long
 
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
@@ -61,9 +66,11 @@ Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 
-Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
 Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (ByRef lpMsg As winMsg) As Long
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
+Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
 
 Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
@@ -80,7 +87,6 @@ Private Declare Function QueryPerformanceFrequency Lib "kernel32" (ByRef lpFrequ
 Private m_TimerFrequency As Currency
 
 'Because AddressOf doesn't work in classes, we have to jump through some hoops to allow class-based keyboard hooking
-Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private m_EditBoxRef As pdEditBoxW
 Private m_AcceleratorRef As pdAccelerator
 Private m_PDIKRef As pdInputKeyboard
@@ -329,6 +335,22 @@ Public Sub DoEventsTimersOnly()
         TranslateMessage tmpMsg
         DispatchMessage tmpMsg
     Loop
+End Sub
+
+Public Function FreeLib(ByVal hLib As Long) As Boolean
+    If (hLib = 0) Then FreeLib = True Else FreeLib = (FreeLibrary(hLib) <> 0)
+End Function
+
+Public Function LoadLib(ByRef libPathAndName As String) As Long
+    LoadLib = LoadLibraryW(StrPtr(libPathAndName))
+End Function
+
+Public Function SendMsgW(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    SendMsgW = SendMessageW(hWnd, wMsg, wParam, lParam)
+End Function
+
+Public Sub SleepAPI(ByVal sleepTimeInMS As Long)
+    Sleep sleepTimeInMS
 End Sub
 
 Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As Long

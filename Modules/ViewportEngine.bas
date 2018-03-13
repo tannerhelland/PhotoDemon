@@ -96,7 +96,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If (curPOI = poi_ReuseLast) Then curPOI = m_LastPOI Else m_LastPOI = curPOI
             
             'Flip the viewport buffer over to the canvas control.  Any additional rendering must now happen there.
-            BitBlt dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
             'Lastly, do any tool-specific rendering directly onto the canvas itself.
             
@@ -193,7 +193,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             If (m_FrontBuffer.GetDIBWidth <> srcImage.CanvasBuffer.GetDIBWidth) Or (m_FrontBuffer.GetDIBHeight <> srcImage.CanvasBuffer.GetDIBHeight) Then
                 m_FrontBuffer.CreateFromExistingDIB srcImage.CanvasBuffer
             Else
-                BitBlt m_FrontBuffer.GetDIBDC, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, srcImage.CanvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper m_FrontBuffer.GetDIBDC, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, srcImage.CanvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
             End If
             
             'Retrieve a copy of the intersected viewport rect; subsequent rendering ops may use this to optimize their operations

@@ -76,6 +76,13 @@ Public Event ItemClosed(ByVal itemIndex As Long)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'This window is resizable at run-time
+Private Const WM_NCLBUTTONDOWN As Long = &HA1
+Private Const HTLEFT As Long = 10
+Private Const HTTOP As Long = 12
+Private Const HTRIGHT As Long = 11
+Private Const HTBOTTOM As Long = 15
+
 'A collection of all currently active thumbnails; this is dynamically resized as thumbnails are added/removed.
 Private Type ImageThumbEntry
     thumbDIB As pdDIB
@@ -426,7 +433,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 'Initiate resizing, and set a form-level marker so that other functions know we're responsible for any resize-related events
                 weAreResponsibleForResize = True
                 ucSupport.NotifyMouseDragResize_Start
-                SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+                VBHacks.SendMsgW Me.hWnd, WM_NCLBUTTONDOWN, hitCode, 0&
                 
                 'After the drag operation is complete, the code will resume right here
                 ucSupport.NotifyMouseDragResize_End

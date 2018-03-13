@@ -24,6 +24,8 @@ Attribute VB_Name = "Updates"
 
 Option Explicit
 
+Private Declare Function ShellExecuteW Lib "shell32" (ByVal hWnd As Long, ByVal ptrToOperationString As Long, ByVal ptrToFileString As Long, ByVal ptrToParameters As Long, ByVal ptrToDirectory As Long, ByVal nShowCmd As Long) As Long
+
 Public Enum UpdateCheck
     UPDATE_ERROR = 0
     UPDATE_NOT_NEEDED = 1
@@ -32,10 +34,7 @@ Public Enum UpdateCheck
 End Enum
 
 #If False Then
-    Const UPDATE_ERROR = 0
-    Const UPDATE_NOT_NEEDED = 1
-    Const UPDATE_AVAILABLE = 2
-    Const UPDATE_UNAVAILABLE = 3
+    Private Const UPDATE_ERROR = 0, UPDATE_NOT_NEEDED = 1, UPDATE_AVAILABLE = 2, UPDATE_UNAVAILABLE = 3
 #End If
 
 'When patching PD itself, we make a backup copy of the update XML contents.  This file provides a second failsafe checksum reference, which is
@@ -392,7 +391,7 @@ Public Function PatchProgramFiles() As Boolean
     targetPath = UserPrefs.GetProgramPath & patchFileName
     
     Dim shellReturn As Long
-    shellReturn = ShellExecute(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
+    shellReturn = ShellExecuteW(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
     
     'ShellExecute returns a value > 32 if successful (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx)
     If (shellReturn < 32) Then

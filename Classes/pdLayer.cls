@@ -1851,7 +1851,7 @@ Friend Function CropNullPaddedLayer() As Boolean
             Dim tmpCropDIB As pdDIB
             Set tmpCropDIB = New pdDIB
             tmpCropDIB.CreateBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
-            BitBlt tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
+            GDI.BitBltWrapper tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
             tmpCropDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
             
             'Want to know what was cropped?  Use this line to report:
@@ -1908,7 +1908,7 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         tmpPaddingDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
-        BitBlt tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
         tmpPaddingDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication

@@ -727,6 +727,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'In the future, we should move this to the (far better) time-keeping helper functions provided by the VBHacks module
+Private Declare Function GetTickCount Lib "kernel32" () As Long
+
 'Current active page in the wizard
 Private m_CurrentPage As Long
 
@@ -1841,7 +1844,7 @@ Private Sub PrepareForBatchConversion()
             'If a good number of images have been processed, start estimating the amount of time remaining
             If (curBatchFile > 10) Then
             
-                timeElapsed = GetTickCount - timeStarted
+                timeElapsed = GetTickCount() - timeStarted
                 numFilesProcessed = curBatchFile + 1
                 numFilesRemaining = totalNumOfFiles - numFilesProcessed
                 timePerFile = timeElapsed / numFilesProcessed

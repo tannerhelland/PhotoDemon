@@ -279,7 +279,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
                 pdDebug.LogAction "Pausing batch process so that metadata processing can catch up..."
                 
                 Do While ExifTool.IsMetadataPipeActive
-                    Sleep 50
+                    VBHacks.SleepAPI 50
                     DoEvents
                 Loop
                 
@@ -290,7 +290,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
             srcImage.ImgMetadata.WriteAllMetadata dstPath, srcImage
             
             Do While ExifTool.IsVerificationModeActive
-                Sleep 50
+                VBHacks.SleepAPI 50
                 DoEvents
             Loop
             

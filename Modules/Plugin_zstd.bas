@@ -56,7 +56,7 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim zstdPath As String
     zstdPath = pathToDLLFolder & "libzstd.dll"
-    m_ZstdHandle = LoadLibrary(StrPtr(zstdPath))
+    m_ZstdHandle = VBHacks.LoadLib(zstdPath)
     InitializeZStd = (m_ZstdHandle <> 0)
     
     'If we initialized the library successfully, cache some zstd-specific data
@@ -73,7 +73,7 @@ End Function
 'When PD closes, make sure to release our open zstd handle
 Public Sub ReleaseZstd()
     If (m_ZstdHandle <> 0) Then
-        FreeLibrary m_ZstdHandle
+        VBHacks.FreeLib m_ZstdHandle
         m_ZstdHandle = 0
     End If
 End Sub

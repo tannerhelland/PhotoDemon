@@ -925,7 +925,7 @@ Private Sub m_WindowPainter_EraseBkgnd()
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
-        BitBlt targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+        GDI.BitBltWrapper targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
         m_BackBuffer.FreeFromDC
     End If
     
@@ -954,7 +954,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
-        BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
+        GDI.BitBltWrapper targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
         m_BackBuffer.FreeFromDC
     End If
     
@@ -1228,7 +1228,7 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
             
             Dim targetDC As Long
             targetDC = m_WindowPainter.GetPaintStructDC
-            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
         End If
     End If
@@ -1257,7 +1257,7 @@ Friend Sub RequestIDERepaint(ByVal targetDC As Long)
             Else
                 SyncBackBufferSize True
             End If
-            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
         End If
     End If
 

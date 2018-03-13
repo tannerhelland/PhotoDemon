@@ -40,6 +40,7 @@ Private Type BITMAPINFO
     bmiColors As Long
 End Type
 
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'DLL handle; if it is zero, FreeImage is not available
@@ -59,7 +60,7 @@ Public Function InitializeFreeImage() As Boolean
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim fiPath As String
     fiPath = PluginManager.GetPluginPath & "FreeImage.dll"
-    m_FreeImageHandle = LoadLibrary(StrPtr(fiPath))
+    m_FreeImageHandle = VBHacks.LoadLib(fiPath)
     InitializeFreeImage = (m_FreeImageHandle <> 0)
     
     If (Not InitializeFreeImage) Then
@@ -72,7 +73,7 @@ End Function
 Public Function ReleaseFreeImage() As Boolean
     
     If (m_FreeImageHandle <> 0) Then
-        FreeLibrary m_FreeImageHandle
+        VBHacks.FreeLib m_FreeImageHandle
         m_FreeImageHandle = 0
     End If
     
@@ -2445,7 +2446,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
         tmpDIB.CreateBlank srcWidth, srcHeight, srcDIB.GetDIBColorDepth, 0
         
         'Copy the relevant source portion of the image into the temporary DIB
-        BitBlt tmpDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.GetDIBDC, srcX, srcY, vbSrcCopy
+        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.GetDIBDC, srcX, srcY, vbSrcCopy
         
         'Create a FreeImage copy of the temporary DIB
         Dim fi_DIB As Long
@@ -2464,13 +2465,13 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
             'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
             ' onto the destination DIB; this shaves off a tiny bit of time.
             If destinationIsBlank Then
-                BitBlt dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
             Else
                 AlphaBlend dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
             
         End If
                 

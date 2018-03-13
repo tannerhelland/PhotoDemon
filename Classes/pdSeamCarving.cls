@@ -258,7 +258,7 @@ Private Function ShrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long,
             'Both the energy image and source image must have their data shifted.
             
             'Source image is easy - just use BitBlt
-            BitBlt m_SourceImage.GetDIBDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.GetDIBDC, x, rowIndex + 1, vbSrcCopy
+            GDI.BitBltWrapper m_SourceImage.GetDIBDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.GetDIBDC, x, rowIndex + 1, vbSrcCopy
             
             'Energy array must be done manually
             For y = rowIndex + 1 To finalY
@@ -639,7 +639,7 @@ Private Function ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
             'Both the energy image and source image must have their data shifted
             
             'The source image is easy - just use BitBlt
-            BitBlt m_SourceImage.GetDIBDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.GetDIBDC, columnIndex + 1, y, vbSrcCopy
+            GDI.BitBltWrapper m_SourceImage.GetDIBDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.GetDIBDC, columnIndex + 1, y, vbSrcCopy
             
             'Energy array must be done manually
             CopyMemory ByVal VarPtr(m_Energy(columnIndex, y)), ByVal VarPtr(m_Energy(columnIndex + 1, y)), finalX - columnIndex
@@ -966,7 +966,7 @@ Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             'All necessary horizontal seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
             tmpDIB.CreateBlank newWidth, srcHeight, m_SourceImage.GetDIBColorDepth
-            BitBlt tmpDIB.GetDIBDC, 0, 0, newWidth, srcHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, newWidth, srcHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
             m_SourceImage.CreateFromExistingDIB tmpDIB
             
             'Note the new width now, in case the user is also changing the vertical size of the image
@@ -1025,7 +1025,7 @@ Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             'All necessary vertical seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
             tmpDIB.CreateBlank newWidth, newHeight, m_SourceImage.GetDIBColorDepth
-            BitBlt tmpDIB.GetDIBDC, 0, 0, newWidth, newHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
+            GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, newWidth, newHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
             m_SourceImage.CreateFromExistingDIB tmpDIB
             
     

@@ -657,7 +657,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     dstY = 0
                 End If
                 
-                BitBlt tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                 tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
             
             'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
@@ -676,7 +676,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     dstY = 0
                 End If
                 
-                BitBlt tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                 tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
                 
         End Select
@@ -702,7 +702,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     End If
         
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Release the progress bar
     SetProgBarVal 0

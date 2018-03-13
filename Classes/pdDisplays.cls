@@ -79,13 +79,17 @@ Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExW" (ByVa
 Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW" (ByVal hKey As Long, ByVal lpszValueName As Long, ByVal lpReserved As Long, ByRef lpType As Long, ByVal ptrToData As Long, ByRef lpcbData As Long) As Long
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
+
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+
 Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MonitorFromPoint Lib "user32" (ByVal x As Long, ByVal y As Long, ByVal dwFlags As Long) As Long
 Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RectL, ByVal dwFlags As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Number of displays in our collection

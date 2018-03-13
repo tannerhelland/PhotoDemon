@@ -98,6 +98,7 @@ Private m_CtrlDown As Boolean, m_AltDown As Boolean, m_ShiftDown As Boolean
 
 'If the control's hook proc is active and primed, this will be set to TRUE.  (HookID is the actual Windows hook handle.)
 Private m_HookingActive As Boolean, m_HookID As Long
+Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
 'When the control is actually inside the hook procedure, this will be set to TRUE.  The hook *cannot be removed

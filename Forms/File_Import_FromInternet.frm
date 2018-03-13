@@ -94,11 +94,21 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Function HttpQueryInfoW Lib "wininet" (ByVal hHttpRequest As Long, ByVal lInfoLevel As Long, ByVal ptrSBuffer As Long, ByRef lBufferLength As Long, ByRef lIndex As Long) As Long
+Private Declare Function InternetCloseHandle Lib "wininet" (ByVal hInet As Long) As Long
+Private Declare Function InternetOpenW Lib "wininet" (ByVal lpszAgent As Long, ByVal dwAccessType As Long, ByVal lpszProxyName As Long, ByVal lpszProxyBypass As Long, ByVal dwFlags As Long) As Long
+Private Declare Function InternetOpenUrlW Lib "wininet" (ByVal hInternetSession As Long, ByVal lpszUrl As Long, ByVal lpszHeaders As Long, ByVal dwHeadersLength As Long, ByVal dwFlags As Long, ByVal dwContext As Long) As Long
+Private Declare Function InternetReadFile Lib "wininet" (ByVal hFile As Long, ByVal ptrToBuffer As Long, ByVal dwNumberOfBytesToRead As Long, ByRef lNumberOfBytesRead As Long) As Long
+
+Private Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
+Private Const INTERNET_OPEN_TYPE_PRECONFIG As Long = 0
+Private Const INTERNET_FLAG_RELOAD As Long = &H80000000
+
 'Import an image from the Internet; all that's required is a valid URL (must be prefaced with http:// or ftp://)
 Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
 
     'First things first - if an invalid URL was provided, exit immediately.
-    If Len(URL) = 0 Then
+    If (LenB(URL) = 0) Then
         Message "Image download canceled."
         Exit Function
     End If
@@ -108,7 +118,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     downloadedFilename = DownloadURLToTempFile(URL)
     
     'If the download worked, attempt to load the image.
-    If (Len(downloadedFilename) <> 0) Then
+    If (LenB(downloadedFilename) <> 0) Then
         
         Dim tmpFilename As String
         tmpFilename = Files.FileGetName(downloadedFilename)
@@ -155,7 +165,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     Dim hInternetSession As Long
     
     Message "Attempting to connect to the Internet..."
-    hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
+    hInternetSession = InternetOpenW(StrPtr(App.EXEName), INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0)
     
     If (hInternetSession = 0) Then
         If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Internet Connection Error", "PhotoDemon"
@@ -168,8 +178,8 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     Message "Verifying image URL (this may take a moment)..."
     
     Dim hUrl As Long
-    hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
-
+    hUrl = InternetOpenUrlW(hInternetSession, StrPtr(URL), 0, 0, INTERNET_FLAG_RELOAD, 0)
+    
     If (hUrl = 0) Then
         If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Online File Not Found", "PhotoDemon"
         If hInternetSession Then InternetCloseHandle hInternetSession
@@ -179,24 +189,22 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     End If
     
     'Check the size of the file to be downloaded...
-    Dim downloadSize As Long
-    Dim tmpStrBuffer As String
-    tmpStrBuffer = String$(1024, 0)
-    HttpQueryInfo ByVal hUrl, HTTP_QUERY_CONTENT_LENGTH, ByVal tmpStrBuffer, Len(tmpStrBuffer), 0&
-    downloadSize = CLng(Val(tmpStrBuffer))
+    Dim downloadSize As Long, tmpStrBuffer As String
+    tmpStrBuffer = String$(256, 0)
+    If (HttpQueryInfoW(hUrl, HTTP_QUERY_CONTENT_LENGTH, StrPtr(tmpStrBuffer), LenB(tmpStrBuffer), ByVal 0&) <> 0) Then downloadSize = Val(Strings.TrimNull(tmpStrBuffer)) Else downloadSize = 0
     SetProgBarVal 0
     
     If (downloadSize <> 0) Then SetProgBarMax downloadSize
     
     'We need a temporary file to house the file; generate it automatically, using the extension of the original file.
-    Message "Creating temporary file..."
+    pdDebug.LogAction "URL validated.  Creating temp file for the image bytes..."
     
     Dim tmpFilename As String
     tmpFilename = cFile.MakeValidWindowsFilename(Files.FileGetName(URL))
     
     'As an added convenience, replace %20 indicators in the filename with actual spaces.
     ' (TODO: move to a full-featured URL encode/decode solution here.)
-    If InStr(1, tmpFilename, "%20", vbBinaryCompare) Then tmpFilename = Replace$(tmpFilename, "%20", " ")
+    If (InStr(1, tmpFilename, "%20", vbBinaryCompare) <> 0) Then tmpFilename = Replace$(tmpFilename, "%20", " ")
     
     Dim tmpFile As String
     tmpFile = UserPrefs.GetTempPath & tmpFilename
@@ -208,24 +216,22 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     If cFile.FileCreateHandle(tmpFile, hFile, True, True, OptimizeSequentialAccess) Then
     
         'Prepare a receiving buffer (this will be used to hold chunks of the image)
-        Const DEFAULT_BUFFER_SIZE As Long = 2 ^ 18      '256k
+        Const DEFAULT_BUFFER_SIZE As Long = 2 ^ 16  '65 kb, or TCP/IP packet size upper limit
         Dim Buffer() As Byte
         ReDim Buffer(0 To DEFAULT_BUFFER_SIZE - 1) As Byte
    
-        'We will need to verify each chunk as its downloaded
-        Dim chunkOK As Boolean
-   
-        'This will track the size of each chunk
-        Dim numOfBytesRead As Long
-   
-        'This will track of how many bytes we've downloaded so far
+        'We will verify each chunk as they're downloaded
+        Dim chunkOK As Boolean, numOfBytesRead As Long
+        
+        'How many bytes of the entire file we've downloaded (so far)
         Dim totalBytesRead As Long
         totalBytesRead = 0
                 
         Do
    
             'Read the next chunk of the image
-            chunkOK = InternetReadFile(hUrl, VarPtr(Buffer(0)), DEFAULT_BUFFER_SIZE, numOfBytesRead)
+            numOfBytesRead = 0
+            chunkOK = (InternetReadFile(hUrl, VarPtr(Buffer(0)), DEFAULT_BUFFER_SIZE, numOfBytesRead) <> 0)
    
             'If something goes horribly wrong, terminate the download
             If (Not chunkOK) Then
@@ -264,9 +270,9 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
                 'Display a download update in the message area, but do not log it in the debugger (as there may be
                 ' many such notifications, and we don't want to inflate the log unnecessarily)
                 If UserPrefs.GenerateDebugLogs Then
-                    Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize, "DONOTLOG"
+                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "###,###,##0"), Format$(downloadSize, "###,###,##0"), "DONOTLOG"
                 Else
-                    Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize
+                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "###,###,##0"), Format$(downloadSize, "###,###,##0")
                 End If
                 
             End If

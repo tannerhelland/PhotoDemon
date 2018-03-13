@@ -1591,7 +1591,7 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     Dim hBrush As Long
     hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    If hBrush <> 0 Then
+    If (hBrush <> 0) Then
         GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
         ReleaseGDIPlusBrush hBrush
     End If
@@ -1618,7 +1618,7 @@ Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RectL
     Dim hBrush As Long
     hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    If hBrush <> 0 Then
+    If (hBrush <> 0) Then
         GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top
         ReleaseGDIPlusBrush hBrush
     End If

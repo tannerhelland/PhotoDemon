@@ -19,6 +19,8 @@ Option Explicit
 
 'Per its name, DeviceCapabilities is used to retrieve printer capabilities
 Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesA" (ByVal lpsDeviceName As String, ByVal lpPort As String, ByVal iIndex As Long, lpOutput As Any, ByVal lpDevMode As Long) As Long
+Private Declare Function ShellExecuteW Lib "shell32" (ByVal hWnd As Long, ByVal ptrToOperationString As Long, ByVal ptrToFileString As Long, ByVal ptrToParameters As Long, ByVal ptrToDirectory As Long, ByVal nShowCmd As Long) As Long
+Private Const SW_SHOWNORMAL As Long = 1
 
 'Constants that define printer attributes we want to request from the printer (supported paper sizes, etc)
 Private Const DC_PAPERS As Long = 2
@@ -143,7 +145,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     Dim actionName As String
     actionName = "print"
     
-    ShellExecute GetModalOwner().hWnd, StrPtr(actionName), StrPtr(tmpFilename), 0&, 0&, SW_SHOWNORMAL
+    ShellExecuteW GetModalOwner().hWnd, StrPtr(actionName), StrPtr(tmpFilename), 0&, 0&, SW_SHOWNORMAL
     
 End Sub
 

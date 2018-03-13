@@ -135,6 +135,9 @@ Private m_PDControlCount As Long
 'Dropdown boxes are problematic, because we have to play some weird window ownership games to ensure that the dropdowns
 ' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
 ' and the hWnd is cached so we can kill that window as necessary.
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long

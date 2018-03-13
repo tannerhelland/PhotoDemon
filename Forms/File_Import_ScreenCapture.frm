@@ -273,7 +273,7 @@ Private Sub Form_Load()
     
     'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
     ' get caught in the capture preview)
-    Sleep 500
+    VBHacks.SleepAPI 500
     
     'Render a preview of whichever item is currently selected
     UpdatePreview

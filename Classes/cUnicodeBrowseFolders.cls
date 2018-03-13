@@ -27,24 +27,25 @@ Option Explicit
 ' Class Instancing = MultiUse (can be created by users)
 
 '//////////////////// APIs for displaying Browse for Folder dialog \\\\\\\\\\\\\\\\\\\\\\\
-Private Declare Function SHGetPathFromIDListA Lib "shell32.dll" (ByVal pidList As Long, ByVal pszPath As String) As Long
-Private Declare Function SHGetPathFromIDListW Lib "shell32.dll" (ByVal pidList As Long, ByVal lpBuffer As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Long) As Long
 
-Private Declare Function SHBrowseForFolderA Lib "shell32.dll" (lpBrowseInfo As BrowseInfo) As Long
-Private Declare Function SHBrowseForFolderW Lib "shell32.dll" (ByVal lpBrowseInfo As Long) As Long
-Private Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal pv As Long)
-Private Declare Function SHILCreateFromPath Lib "shell32.dll" (ByVal pszPath As Long, ByRef ppidl As Long, ByRef rgflnOut As Long) As Long
+Private Declare Sub CoTaskMemFree Lib "ole32" (ByVal pv As Long)
 
-Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
-Private Declare Function IsWindowUnicode Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function lstrlenW Lib "kernel32.dll" (ByVal psString As Long) As Long
+Private Declare Function SHBrowseForFolderA Lib "shell32" (lpBrowseInfo As BrowseInfo) As Long
+Private Declare Function SHBrowseForFolderW Lib "shell32" (ByVal lpBrowseInfo As Long) As Long
+Private Declare Function SHGetPathFromIDListA Lib "shell32" (ByVal pidList As Long, ByVal pszPath As String) As Long
+Private Declare Function SHGetPathFromIDListW Lib "shell32" (ByVal pidList As Long, ByVal lpBuffer As Long) As Long
+Private Declare Function SHILCreateFromPath Lib "shell32" (ByVal pszPath As Long, ByRef ppidl As Long, ByRef rgflnOut As Long) As Long
+
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function IsWindowUnicode Lib "user32" (ByVal hWnd As Long) As Long
 
 '//// Required: API declarations needed for creating callback thunk as needed (see pvInitStructure)
-Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 '////////////////////////////////////////////////////////////////////////////
 Private Const WM_USER As Long = &H400&
 Private Const BFFM_INITIALIZED As Long = 1&
@@ -483,9 +484,9 @@ Private Function pvBrowseCallbackProc(ByVal hWnd As Long, ByVal uMsg As Long, By
             '   non-zero :: lParam is yourDesiredInitialDirectoryPath string
             If IsNumeric(m_InitPath) Then lp = 0& Else lp = 1&
             If (m_State And 1&) = 1& Then
-                Call SendMessage(hWnd, BFFM_SETSELECTIONW, lp, ByVal lpData)
+                Call SendMessageA(hWnd, BFFM_SETSELECTIONW, lp, ByVal lpData)
             Else
-                Call SendMessage(hWnd, BFFM_SETSELECTIONA, lp, ByVal lpData)
+                Call SendMessageA(hWnd, BFFM_SETSELECTIONA, lp, ByVal lpData)
             End If
 
         ' other Case BFFM_xxxx messages as desired

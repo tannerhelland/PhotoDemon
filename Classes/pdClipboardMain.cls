@@ -1859,8 +1859,7 @@ Private Sub RenderClipboard_BITMAP()
                 
                 '24-bit images can be copied as-is
                 If (m_ClipboardDIB.GetDIBColorDepth = 24) Then
-                
-                    BitBlt clipboardDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper clipboardDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, vbSrcCopy
                     
                 '32-bit images must be composited against a white background first
                 Else
@@ -1868,11 +1867,10 @@ Private Sub RenderClipboard_BITMAP()
                     'Create a 24-bpp copy of the image, then render it onto our DDB
                     Dim tmpDIB As pdDIB
                     Set tmpDIB = New pdDIB
-                    
                     tmpDIB.CreateFromExistingDIB m_ClipboardDIB
                     tmpDIB.ConvertTo24bpp
                     
-                    BitBlt clipboardDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    GDI.BitBltWrapper clipboardDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                     
                     Set tmpDIB = Nothing
                     
