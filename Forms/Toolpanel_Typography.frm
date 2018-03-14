@@ -1334,7 +1334,7 @@ Private Sub Form_Load()
         
         'Initialize the font list
         cboTextFontFace.InitializeFontList
-        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
+        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(Fonts.GetUIFontName(), vbBinaryCompare)
         
         'Draw the primary category selector
         btsCategory.AddItem "character", 0

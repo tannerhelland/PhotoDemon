@@ -280,6 +280,9 @@ Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNu
 ' (TODO: watch for relevant window messages on Win 8.1+ that may change these.)
 Private m_LogPixelsX As Long, m_LogPixelsY As Long
 
+'The name of this system's UI font is set here; all PD controls will render using this font face.
+Private m_InterfaceFontName As String
+
 'Internal font caches.  PD uses these to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
@@ -317,6 +320,22 @@ Public g_PDFontProperties() As PD_FONT_PROPERTY
 ' us for a matching font object.
 Private m_ProgramFontCollection As pdFontCollection
 
+Public Sub DetermineUIFont()
+    
+    Dim tmpFontCheck As pdFont
+    Set tmpFontCheck = New pdFont
+    
+    'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
+    ' (which some dialogs use to slightly modify their layout for better alignments).
+    If tmpFontCheck.DoesFontExist("Segoe UI") Then m_InterfaceFontName = "Segoe UI" Else m_InterfaceFontName = "Tahoma"
+    Set tmpFontCheck = Nothing
+    
+End Sub
+
+Public Function GetUIFontName() As String
+    GetUIFontName = m_InterfaceFontName
+End Function
+
 'Want to draw program text onto something?  Call this function to find out what font size is required.
 ' If you will subsequently use the returned font size for testing, you can set "cacheIfNovel = True" to automatically cache a copy
 ' of the font at the newly detected font size.
@@ -327,7 +346,7 @@ Public Function FindFontSizeSingleLine(ByRef srcString As String, ByVal pxWidth 
     
     'Add this font size+style combination to the collection
     Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, initialFontSize, isBold, isItalic, isUnderline)
+    fontIndex = m_ProgramFontCollection.AddFontToCache(Fonts.GetUIFontName(), initialFontSize, isBold, isItalic, isUnderline)
     
     'Retrieve a handle to that font
     Dim tmpFont As pdFont
@@ -338,7 +357,7 @@ Public Function FindFontSizeSingleLine(ByRef srcString As String, ByVal pxWidth 
     
     'If the caller plans to use this new font size for immediate rendering, immediately cache a copy of the font at this new size
     If cacheIfNovel And (FindFontSizeSingleLine <> initialFontSize) Then
-        m_ProgramFontCollection.AddFontToCache g_InterfaceFont, FindFontSizeSingleLine, isBold, isItalic, isUnderline
+        m_ProgramFontCollection.AddFontToCache Fonts.GetUIFontName(), FindFontSizeSingleLine, isBold, isItalic, isUnderline
     End If
     
 End Function
@@ -360,7 +379,7 @@ Public Function FindFontSizeWordWrap(ByRef srcString As String, ByVal pxWidth As
     
     'If the caller plans to use this new font size for immediate rendering, immediately cache a copy of the font at this new size
     If cacheIfNovel And (FindFontSizeWordWrap <> initialFontSize) Then
-        m_ProgramFontCollection.AddFontToCache g_InterfaceFont, FindFontSizeWordWrap, isBold, isItalic, isUnderline
+        m_ProgramFontCollection.AddFontToCache Fonts.GetUIFontName(), FindFontSizeWordWrap, isBold, isItalic, isUnderline
     End If
     
 End Function
@@ -374,7 +393,7 @@ Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBol
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, FontSize, isBold, isItalic, isUnderline)
+    fontIndex = m_ProgramFontCollection.AddFontToCache(Fonts.GetUIFontName(), FontSize, isBold, isItalic, isUnderline)
     
     'Return the handle of the newly created (and/or previously cached) pdFont object
     Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)

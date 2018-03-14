@@ -926,7 +926,7 @@ Private Sub UpdateAspectRatio()
 
     If (Not pdMain.IsProgramRunning()) Then Exit Sub
 
-    Dim wholeNumber As Double, Numerator As Double, Denominator As Double
+    Dim wholeNumber As Double, numerator As Double, denominator As Double
     
     If tudWidth.IsValid(False) And tudHeight.IsValid(False) Then
     
@@ -937,25 +937,24 @@ Private Sub UpdateAspectRatio()
         
         'Convert the floating-point aspect ratio to a fraction
         If (imgHeightPixels > 0) Then
-            ConvertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
+            ConvertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, numerator, denominator, 4, 99.9
         End If
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-        If CLng(Denominator) = 5 Then
-            Numerator = Numerator * 2
-            Denominator = Denominator * 2
+        If (CLng(denominator) = 5) Then
+            numerator = numerator * 2
+            denominator = denominator * 2
         End If
         
         'In "unknown size mode", we can't display exact dimensions for PERCENT mode, so don't even try.
         If m_UnknownSizeMode And (GetCurrentWidthUnit = MU_PERCENT) Then
-        
             lblAspectRatio(1).Caption = " " & g_Language.TranslateMessage("exact aspect ratio will vary by image")
             lblDimensions(1).Caption = " " & g_Language.TranslateMessage("exact size will vary by image")
         
         Else
         
             If (imgHeightPixels > 0) Then
-                lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+                lblAspectRatio(1).Caption = " " & numerator & ":" & denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
             End If
             
             'While we're here, also update the dimensions caption

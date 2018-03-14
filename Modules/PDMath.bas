@@ -122,7 +122,7 @@ End Function
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
 ' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal accuracy As Double = 100#)
+Public Sub ConvertToFraction(ByVal v As Double, ByRef w As Double, ByRef n As Double, ByRef d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal accuracy As Double = 100#)
 
     Const MAX_TERMS As Long = 50          'Limit to prevent infinite loop
     Const MIN_DIVISOR As Double = 1E-16      'Limit to prevent divide by zero
@@ -140,7 +140,7 @@ Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     
     If maxDenomDigits = 0 Or maxDenomDigits > 17 Then maxDenomDigits = 17
     maxDenom = 10 ^ maxDenomDigits
-    If accuracy > 100 Or accuracy < 1 Then accuracy = 100
+    If accuracy > 100# Or accuracy < 1# Then accuracy = 100
     accuracy = accuracy / 100#
     
     bIsNegative = (v < 0)
@@ -278,9 +278,7 @@ Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As PointFloat
     
     AngleBetweenTwoIntersectingLines = Acos((dx1i * dx2i + dy1i * dy2i) / (m12 * m13))
     
-    If returnResultInDegrees Then
-        AngleBetweenTwoIntersectingLines = AngleBetweenTwoIntersectingLines / PI_DIV_180
-    End If
+    If returnResultInDegrees Then AngleBetweenTwoIntersectingLines = AngleBetweenTwoIntersectingLines / PI_DIV_180
     
 End Function
 

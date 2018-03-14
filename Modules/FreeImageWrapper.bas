@@ -1293,8 +1293,8 @@ Public Type FITAG
 End Type
 
 Public Type FIRATIONAL
-   Numerator As Variant
-   Denominator As Variant
+   numerator As Variant
+   denominator As Variant
 End Type
 
 Public Type FREE_IMAGE_TAG
@@ -6424,7 +6424,7 @@ Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Mess
    strImageFormat = FreeImage_GetFormatFromFIF(Format)
    
     'Save a copy of the FreeImage error in a public string, where other functions can retrieve it
-    If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0 Then
+    If LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0 Then
         
         'See if this error already exists in the log
         Dim errorFound As Boolean

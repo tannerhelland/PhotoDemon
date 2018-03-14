@@ -682,7 +682,7 @@ Private Sub Class_Initialize()
         .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
         
         If pdMain.IsProgramRunning() Then
-            m_origFontFace = g_InterfaceFont
+            m_origFontFace = Fonts.GetUIFontName()
         Else
             m_origFontFace = "Tahoma"
         End If

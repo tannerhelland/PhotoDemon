@@ -635,7 +635,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
         
         SetGenericTextProperty ptp_Text, .GetString("TextLayerText", vbNullString)
         SetGenericTextProperty ptp_FontColor, .GetLong("TextLayerColor", 0)
-        SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", g_InterfaceFont)
+        SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", Fonts.GetUIFontName())
         SetGenericTextProperty ptp_FontSize, .GetDouble("TextLayerFontSize", 16#)
         SetGenericTextProperty ptp_FontSizeUnit, .GetLong("TextLayerFontSizeUnit", pdfu_Pixel)
         SetGenericTextProperty ptp_FontBold, .GetBool("TextLayerFontBold", False)
@@ -2131,7 +2131,7 @@ Private Sub Class_Initialize()
     m_FontSizeUnit = pdfu_Pixel
     
     'Set some default font properties
-    m_FontFace = g_InterfaceFont
+    m_FontFace = Fonts.GetUIFontName()
     m_FontSize = 16#                '16px = 12 points at 96 DPI
     
     m_HorizontalAlignment = StringAlignmentNear

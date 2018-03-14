@@ -339,13 +339,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'If Segoe UI is available, we prefer to use it instead of Tahoma.  On XP this is not guaranteed, however, so we have to check.
     perfCheck.MarkEvent "Confirm UI font exists"
-    Dim tmpFontCheck As pdFont
-    Set tmpFontCheck = New pdFont
-    
-    'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
-    ' (which some dialogs use to slightly modify their layout for better alignments).
-    If tmpFontCheck.DoesFontExist("Segoe UI") Then g_InterfaceFont = "Segoe UI" Else g_InterfaceFont = "Tahoma"
-    Set tmpFontCheck = Nothing
+    Fonts.DetermineUIFont
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     perfCheck.MarkEvent "Retrieve splash logo"

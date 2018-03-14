@@ -667,7 +667,7 @@ Private Sub ResetSettings()
                 
             'PD's font combo box is reset to the current system font
             Case "pdDropDownFont"
-                eControl.ListIndex = eControl.ListIndexByString(g_InterfaceFont)
+                eControl.ListIndex = eControl.ListIndexByString(Fonts.GetUIFontName())
             
             'Text boxes are set to 0
             Case "TextBox", "pdTextBox"

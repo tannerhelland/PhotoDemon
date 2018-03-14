@@ -170,10 +170,7 @@ Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
     FreeMenuIconCache
     
     With cMenuImage
-            
-        'Use Leandro's class to check if the current Windows install supports theming.
-        g_IsThemingEnabled = .CanWeTheme
-    
+        
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not OS.IsVistaOrLater) And (Not OS.IsProgramCompiled) Then
             Debug.Print "XP + IDE detected.  Menu icons will be disabled for this session."

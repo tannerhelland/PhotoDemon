@@ -592,7 +592,7 @@ Private Sub Form_Load()
         
         'Generate a list of fonts
         cboTextFontFace.InitializeFontList
-        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
+        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(Fonts.GetUIFontName(), vbBinaryCompare)
         
         'Antialiasing options behave slightly differently from the typography tool
         cboTextRenderingHint.Clear

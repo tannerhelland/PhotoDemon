@@ -1617,32 +1617,6 @@ Private Sub UserControl_Resize()
     If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
-Private Sub UserControl_Show()
-
-    If pdMain.IsProgramRunning() Then
-        
-        'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
-        ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
-        On Error GoTo CanvasShowError
-                
-        'TODO: see if this is still valid, since we've moved theming much earlier in the load process
-        'Now comes a bit of an odd case.  This control's _Show event happens relatively early in the load process due to it
-        ' being present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid
-        ' problems from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will
-        ' retain their default Tahoma label.
-        
-        'Convert all labels to the current interface font
-        If (LenB(g_InterfaceFont) = 0) Then
-            pdDebug.LogAction "WARNING: pdCanvas.UserControl_Show had to make a premature decision about g_InterfaceFont"
-            g_InterfaceFont = "Segoe UI"
-        End If
-        
-CanvasShowError:
-        
-    End If
-    
-End Sub
-
 'At present, the only component of the canvas that saves preferences is the image tabstrip
 Public Sub ReadUserPreferences()
     ImageStrip.ReadUserPreferences

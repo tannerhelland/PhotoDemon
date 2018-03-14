@@ -52,8 +52,7 @@ Public g_ConfirmClosingUnsaved As Boolean
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed
 ' upon program load and unload.)
-Public g_LastOpenFilter As Long
-Public g_LastSaveFilter As Long
+Public g_LastOpenFilter As Long, g_LastSaveFilter As Long
 
 'DIB that contains a 2x2 pattern of the alpha checkerboard.  Use it with CreatePatternBrush to paint the alpha
 ' checkerboard prior to rendering.
@@ -62,13 +61,6 @@ Public g_CheckerboardPattern As pdDIB
 'Copy of g_CheckerboardPattern, above, but in pd2DBrush format.  The brush is pre-built as a GDI+ texture brush,
 ' which makes it preferable for painting on 32-bpp surfaces.
 Public g_CheckerboardBrush As pd2DBrush
-
-'Is theming enabled?  (Used to handle some menu icon rendering quirks)
-Public g_IsThemingEnabled As Boolean
-
-'Render the interface using Segoe UI if available; g_InterfaceFont will be set to something else (most likely Tahoma)
-' if Segoe UI doesn't exist on this system.
-Public g_InterfaceFont As String
 
 'This g_Displays object contains data on all display devices on this system.  It includes a ton of code to assist the program
 ' with managing multiple monitors and other display-related issues.
@@ -122,8 +114,7 @@ Public g_DisableUserInput As Boolean
 'As of v6.4, PhotoDemon supports a number of performance-related preferences.  Because performance settings (obviously)
 ' affect performance-sensitive parts of the program, these preferences are cached to global variables (rather than
 ' constantly pulled on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
-Public g_ViewportPerformance As PD_PerformanceSetting
-Public g_InterfacePerformance As PD_PerformanceSetting
+Public g_ViewportPerformance As PD_PerformanceSetting, g_InterfacePerformance As PD_PerformanceSetting
 
 'As of v6.4, PhotoDemon allows the user to specify compression settings for Undo/Redo data.  By default, Undo/Redo data is
 ' uncompressed, which takes up a lot of (cheap) disk space but provides excellent performance.  The user can modify this

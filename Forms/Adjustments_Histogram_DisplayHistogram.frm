@@ -856,7 +856,7 @@ Public Sub TallyHistogramValues()
     
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
-    notifyFont.SetFontFace g_InterfaceFont
+    notifyFont.SetFontFace Fonts.GetUIFontName()
     notifyFont.SetFontSize 14
     notifyFont.SetFontColor 0
     notifyFont.SetFontBold True

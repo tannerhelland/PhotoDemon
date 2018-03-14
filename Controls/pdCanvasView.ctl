@@ -205,7 +205,7 @@ Public Sub ClearCanvas()
 
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
-        notifyFont.SetFontFace g_InterfaceFont
+        notifyFont.SetFontFace Fonts.GetUIFontName()
 
         'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
         If (Not g_Language Is Nothing) Then
