@@ -132,7 +132,7 @@ End Sub
 
 Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If (Len(histValue) <> 0) And pdMain.IsProgramRunning() And (targetDC <> 0) Then
+    If (LenB(histValue) <> 0) And pdMain.IsProgramRunning() And (targetDC <> 0) Then
         
         If pdMain.IsProgramRunning Then
         
@@ -252,6 +252,24 @@ Private Sub clrHistory_HistoryItemClicked(ByVal histIndex As Long, ByVal histVal
         
     End If
     
+End Sub
+
+'Update the color history tooltip to reflect the currently hovered color
+Private Sub clrHistory_HistoryItemMouseOver(ByVal histIndex As Long, ByVal histValue As String)
+
+    If (LenB(histValue) <> 0) Then
+    
+        Dim hoverColor As Long
+        hoverColor = Colors.ConvertSystemColor(CLng(histValue))
+        
+        'Construct hex and RGB string representations of the target color
+        Dim hexString As String, rgbString As String, indexString As String
+        hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
+        rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
+        clrHistory.AssignTooltip hexString & vbCrLf & rgbString
+        
+    End If
+
 End Sub
 
 Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
