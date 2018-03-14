@@ -410,10 +410,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
             rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", tmpPal.ColorValue.Red, tmpPal.ColorValue.Green, tmpPal.ColorValue.Blue)
             indexString = g_Language.TranslateMessage("index %1", m_PaletteItemHovered)
+            Me.AssignTooltip hexString & vbCrLf & rgbString & vbCrLf & indexString, tmpPal.ColorName
             
-            With tmpPal
-                Me.AssignTooltip hexString & vbCrLf & rgbString & vbCrLf & indexString, tmpPal.ColorName
-            End With
         End If
         
     End If

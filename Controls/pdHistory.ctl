@@ -51,6 +51,7 @@ Option Explicit
 
 Public Event HistoryItemClicked(ByVal histIndex As Long, ByVal histValue As String)
 Public Event HistoryDoesntExist(ByVal histIndex As Long, ByRef histValue As String)
+Public Event HistoryItemMouseOver(ByVal histIndex As Long, ByVal histValue As String)
 Public Event DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
 Public Event CustomWindowMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
 
@@ -405,7 +406,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     m_HistoryItemHovered = GetHistoryItemUnderMouse(x, y)
     
     If (m_HistoryItemHovered >= 0) Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
-    If (oldHoverCheck <> m_HistoryItemHovered) Then RedrawBackBuffer
+    If (oldHoverCheck <> m_HistoryItemHovered) Then
+        If ((m_HistoryItemHovered >= 0) And (m_HistoryItemHovered < m_HistoryCount)) Then RaiseEvent HistoryItemMouseOver(m_HistoryItemHovered, m_HistoryItems(m_HistoryItemHovered).ItemString)
+        RedrawBackBuffer
+    End If
     
 End Sub
 
