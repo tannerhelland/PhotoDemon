@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.330</langversion>
+<langversion>6.7.331</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -117,12 +117,6 @@
 
 <!-- END text for PublicVars.bas-->
 
-<!-- BEGIN text for PublicAPI.bas -->
-
-<!-- PublicAPI.bas contains 0 phrases. -->
-
-<!-- END text for PublicAPI.bas-->
-
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
@@ -232,7 +226,37 @@
 
 <!-- BEGIN text for DialogManager.bas -->
 
-<!-- DialogManager.bas contains 0 phrases. -->
+<phrase>
+<original>How would you like to load this image?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>Ik kan niet beslissen. Annuleer deze actie.</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -1195,11 +1219,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>Ik kan niet beslissen. Annuleer deze actie.</translation>
-</phrase>
-
-<phrase>
 <original>In the future, automatically rasterize without prompting me</original>
 <translation>In de toekomst rasteriseer je automatisch zonder dat je me het vraagt</translation>
 </phrase>
@@ -1224,7 +1243,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Pagina %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -11538,11 +11557,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>Creating temporary file</original>
-<translation>Maken van een tijdelijk bestand</translation>
-</phrase>
-
-<phrase>
 <original>Image URL verified.  Downloading image</original>
 <translation>Afbeelding URL geverifieerd. Downloaden afbeelding</translation>
 </phrase>
@@ -11605,7 +11619,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Wachten op invoer van de gebruiker</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -15249,10 +15263,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2555</phrasecount>
+<phrasecount>2559</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4615 phrases. -->
-<!-- 2060 are duplicates, so only 2555 unique phrases have been written to file. -->
-<!-- These 2555 phrases contain approximately 12394 total words. -->
+<!-- As of this build, PhotoDemon contains 4626 phrases. -->
+<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
+<!-- These 2559 phrases contain approximately 12428 total words. -->
 
 </pdData>

@@ -25,6 +25,22 @@ Begin VB.Form dialog_GenericMemory
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   479
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picIcon 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      ForeColor       =   &H80000008&
+      Height          =   720
+      Left            =   240
+      ScaleHeight     =   48
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   48
+      TabIndex        =   4
+      Top             =   360
+      Width           =   720
+   End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
       Index           =   0
@@ -48,10 +64,10 @@ Begin VB.Form dialog_GenericMemory
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   1290
-      Left            =   960
+      Left            =   1200
       Top             =   150
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   2275
       Caption         =   ""
       ForeColor       =   2105376
@@ -114,27 +130,94 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'Returns TRUE if the user checked "remember my answer"
-Public Property Get getRememberAnswerState() As Boolean
-    getRememberAnswerState = rememberMyChoice
+Public Property Get GetRememberAnswerState() As Boolean
+    GetRememberAnswerState = rememberMyChoice
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False)
+Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal sysIcon As SystemIconConstants = 0, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False, Optional ByVal resNameYesImg As String = "generic_ok", Optional ByVal resNameNoImg As String = "generic_cancel", Optional ByVal resNameCancelImg As String = vbNullString)
 
     'On the off chance that this dialog is raised during long-running processing, make a note of the cursor prior to displaying the dialog.
     ' We will restore the hourglass cursor (as necessary) when the dialog exits.
-    If Screen.MousePointer = vbHourglass Then
-        restoreCursor = True
-        Screen.MousePointer = vbNormal
+    restoreCursor = (Screen.MousePointer = vbHourglass)
+    If restoreCursor Then Screen.MousePointer = vbNormal
+    
+    'Fit the question text
+    Dim tmpFont As pdFont
+    Set tmpFont = Fonts.GetMatchingUIFont(lblExplanation.FontSize)
+    
+    Dim txtWidth As Long, txtHeight As Long
+    txtWidth = tmpFont.GetWidthOfString(questionText)
+    If (txtWidth > lblExplanation.GetWidth) Then
+        txtHeight = tmpFont.GetHeightOfWordwrapString(questionText, lblExplanation.GetWidth)
+        lblExplanation.Alignment = vbLeftJustify
     Else
-        restoreCursor = False
+        txtHeight = tmpFont.GetHeightOfString(questionText)
+        lblExplanation.Alignment = vbCenter
     End If
-
+    
+    'If the text is not long enough to require auto-fitting, reposition the label accordingly
+    If (txtHeight < lblExplanation.GetHeight) Then
+        lblExplanation.SetPositionAndSize lblExplanation.GetLeft, (cmdAnswer(0).GetTop - (txtHeight + 2)) \ 2, lblExplanation.GetWidth, txtHeight + 2
+    End If
+    
     'Automatically draw the requested icon using the system icon set
-    Dim iconY As Long
-    iconY = FixDPI(20)
-    DrawSystemIcon icon, Me.hDC, FixDPI(22), iconY
-    Me.Picture = Me.Image
+    If (sysIcon <> 0) Then
+    
+        Dim picIconSize As Long
+        picIconSize = Interface.FixDPI(56)
+        
+        picIcon.Width = picIconSize
+        picIcon.Height = picIconSize
+        picIcon.Top = (cmdAnswer(0).GetTop - picIconSize) \ 2
+        
+        Dim newLeft As Long
+        newLeft = picIcon.Left + picIconSize + Interface.FixDPI(16)
+        lblExplanation.SetPositionAndSize newLeft, lblExplanation.GetTop, cmdAnswer(0).GetLeft + cmdAnswer(0).GetWidth - newLeft, lblExplanation.GetHeight
+        
+        Dim iconDIB As pdDIB, iconSuccess As Boolean
+        
+        If (sysIcon = IDI_EXCLAMATION) Then
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_warning", iconDIB, picIconSize, picIconSize, 0)
+        ElseIf (sysIcon = IDI_QUESTION) Then
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_question", iconDIB, picIconSize, picIconSize, 0)
+        Else
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_info", iconDIB, picIconSize, picIconSize, 0)
+        End If
+        
+        If iconSuccess Then
+            picIcon.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+            iconDIB.AlphaBlendToDC picIcon.hDC
+            picIcon.Picture = picIcon.Image
+        End If
+        
+        picIcon.Visible = iconSuccess
+        
+    Else
+        picIcon.Visible = False
+        lblExplanation.SetPositionAndSize cmdAnswer(0).Left, lblExplanation.GetTop, cmdAnswer(0).GetWidth, lblExplanation.GetHeight
+    End If
+    
+    'Based on the size of the text explanation, and the presence of an icon, resize the form to match
+    If (sysIcon = 0) Then
+        
+        Dim heightDiff As Long, newTopPos As Long
+        newTopPos = Interface.FixDPI(32)
+        heightDiff = cmdAnswer(0).GetTop - (lblExplanation.GetHeight + (newTopPos * 2))
+        
+        lblExplanation.SetTop newTopPos
+        cmdAnswer(0).SetTop cmdAnswer(0).GetTop - heightDiff
+        cmdAnswer(1).SetTop cmdAnswer(1).GetTop - heightDiff
+        cmdAnswer(2).SetTop cmdAnswer(2).GetTop - heightDiff
+        chkRemember.SetTop chkRemember.GetTop - heightDiff
+        
+        If (Not g_WindowManager Is Nothing) Then
+            Dim winRect As RectL
+            g_WindowManager.GetWindowRect_API_Universal Me.hWnd, VarPtr(winRect)
+            g_WindowManager.SetSizeByHWnd Me.hWnd, winRect.Right - winRect.Left, (winRect.Bottom - winRect.Top) - heightDiff, True
+        End If
+    
+    End If
     
     'Set the default answer.  (When the form is displayed, this will be used to assign focus to the corresponding button.)
     userAnswer = defaultAnswer
@@ -148,14 +231,17 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     Me.Caption = dialogTitleText
     
     'The caller can specify whether "remember my choice" is checked by default
-    If defaultRemember Then
-        chkRemember.Value = vbChecked
-    Else
-        chkRemember.Value = vbUnchecked
-    End If
-
+    If defaultRemember Then chkRemember.Value = vbChecked Else chkRemember.Value = vbUnchecked
+    
+    'Prep button icons at load-time
+    Dim buttonIconSize As Long
+    buttonIconSize = FixDPI(32)
+    If (LenB(resNameYesImg) <> 0) Then cmdAnswer(0).AssignImage resNameYesImg, , buttonIconSize, buttonIconSize
+    If (LenB(resNameNoImg) <> 0) Then cmdAnswer(1).AssignImage resNameNoImg, , buttonIconSize, buttonIconSize
+    If (LenB(resNameCancelImg) <> 0) Then cmdAnswer(2).AssignImage resNameCancelImg, , buttonIconSize, buttonIconSize
+    
     'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
 
     'Display the form
     ShowPDDialog vbModal, Me, True
@@ -213,16 +299,6 @@ Private Sub Form_Activate()
     ' some mechanism other than clicking a button (e.g. the corner x).
     userAnswer = vbCancel
 
-End Sub
-
-Private Sub Form_Load()
-    
-    'Prep button icons at load-time
-    Dim buttonIconSize As Long
-    buttonIconSize = FixDPI(32)
-    cmdAnswer(0).AssignImage "generic_ok", , buttonIconSize, buttonIconSize
-    cmdAnswer(1).AssignImage "generic_cancel", , buttonIconSize, buttonIconSize
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

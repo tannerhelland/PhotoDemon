@@ -305,21 +305,21 @@ Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef pa
 
 End Function
 
-'Present a generic Yes/No dialog with an option to remember the current setting.  Once the option to remember has been set,
-' it cannot be unset short of using the Reset button in the Tools > Options panel.
+'Present a generic binary choice dialog (typically Yes/No/Cancel) with an option to remember the current setting.
+' Once the option to remember has been set, it cannot be unset short of using the Reset button in the Tools > Options panel.
 '
-'The caller must supply a unique "questionID" string.  This is the string used to identify this dialog in the XML file,
-' so it will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that are so similar,
+'The caller must supply a unique "questionID" string.  This is the string used to identify this dialog in the XML file;
+' it will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that are so similar,
 ' their XML-safe variants become identical.
 '
-'Prompt text, "yes button" text, "no button" text, "cancel button" text, and icon (message box style) must be passed.
-' The bottom "Remember my decision" text is universal and cannot be changed by the caller.
+'Prompt text, "yes button" text, "no button" text, "cancel button" text, "remember this decision" text, and icon
+' (message box style) must be passed.
 '
 'If the user has previously ticked the "remember my decision" box, this function should still be called, but it will simply
 ' retrieve the previous choice and silently return it.
 '
 'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
-Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal sysIcon As SystemIconConstants = 0, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False, Optional ByVal resNameYesImg As String = "generic_ok", Optional ByVal resNameNoImg As String = "generic_cancel", Optional ByVal resNameCancelImg As String = vbNullString) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -335,15 +335,13 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     'The user has not saved a previous answer.  Display the full dialog.
     Else
         
-        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, sysIcon, defaultAnswer, defaultRemember, resNameYesImg, resNameNoImg, resNameCancelImg
         
         'Retrieve the user's answer
         PromptGenericYesNoDialog = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
-        If dialog_GenericMemory.getRememberAnswerState Then
-            UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
-        End If
+        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
         
         Unload dialog_GenericMemory
         Set dialog_GenericMemory = Nothing
@@ -355,7 +353,7 @@ End Function
 'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.
 ' This is relevant for Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed
 ' those values to be stored, the user could never proceed with an operation in the future!
-Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -377,9 +375,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
         PromptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
-        If dialog_GenericMemory.getRememberAnswerState Then
-            UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
-        End If
+        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
         
         'Release the dialog form
         Unload dialog_GenericMemory
@@ -560,5 +556,35 @@ Public Function ChooseColorPanelSettings() As VbMsgBoxResult
     ChooseColorPanelSettings = dialog_ColorPanel.DialogResult
     Unload dialog_ColorPanel
     Set dialog_ColorPanel = Nothing
+
+End Function
+
+'Ask the user if they want to drag/drop the target image as a new standalone image, or a new layer in the current image.
+' (If no image is loaded, the drag/drop result will be forced to "drop as standalone image", e.g. this function will return NO.
+'  Note that CANCEL is also a viable return, one which the user needs to respect.)
+Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
+
+    If (g_OpenImageCount = 0) Then
+        PromptForDropAsNewLayer = vbNo
+    Else
+        
+        Dim questionText As String
+        questionText = g_Language.TranslateMessage("How would you like to load this image?")
+        
+        Dim yesText As String, noText As String, cancelText As String
+        yesText = g_Language.TranslateMessage("Open it as a standalone image.")
+        noText = g_Language.TranslateMessage("Add it to the current image as a new layer.")
+        cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
+        
+        Dim rememberText As String, dialogTitle As String
+        rememberText = g_Language.TranslateMessage("in the future, do this without asking me")
+        dialogTitle = "Drag and drop options"
+        
+        'Display the dialog and return the result
+        Dim questionID As String
+        questionID = g_Language.TranslateMessage("Drop as image or layer")
+        PromptForDropAsNewLayer = DialogManager.PromptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, IDI_QUESTION, vbCancel, False, "generic_image", "generic_add", "generic_cancel")
+            
+    End If
 
 End Function

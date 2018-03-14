@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3313</langversion>
+<langversion>6.8.3314</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -117,12 +117,6 @@
 
 <!-- END text for PublicVars.bas-->
 
-<!-- BEGIN text for PublicAPI.bas -->
-
-<!-- PublicAPI.bas contains 0 phrases. -->
-
-<!-- END text for PublicAPI.bas-->
-
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
@@ -232,7 +226,37 @@
 
 <!-- BEGIN text for DialogManager.bas -->
 
-<!-- DialogManager.bas contains 0 phrases. -->
+<phrase>
+<original>How would you like to load this image?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>Nemůžu se rozhodnout. Zrušit tuto akci.</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -1194,11 +1218,6 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 </phrase>
 
 <phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>Nemůžu se rozhodnout. Zrušit tuto akci.</translation>
-</phrase>
-
-<phrase>
 <original>In the future, automatically rasterize without prompting me</original>
 <translation>V budoucnu automaticky rasterizuji, aniž by mě vyvolal</translation>
 </phrase>
@@ -1223,7 +1242,7 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 <translation>Strana 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -11533,11 +11552,6 @@ Chcete uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
-<original>Creating temporary file</original>
-<translation>Vytváření dočasného souboru</translation>
-</phrase>
-
-<phrase>
 <original>Image URL verified.  Downloading image</original>
 <translation>Obrázek URL ověřen. Stažení obrázku</translation>
 </phrase>
@@ -11600,7 +11614,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Čekání na zadání uživatele</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -15242,10 +15256,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2555</phrasecount>
+<phrasecount>2559</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4615 phrases. -->
-<!-- 2060 are duplicates, so only 2555 unique phrases have been written to file. -->
-<!-- These 2555 phrases contain approximately 12394 total words. -->
+<!-- As of this build, PhotoDemon contains 4626 phrases. -->
+<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
+<!-- These 2559 phrases contain approximately 12428 total words. -->
 
 </pdData>

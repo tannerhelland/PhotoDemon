@@ -26,6 +26,10 @@ Public Enum SystemIconConstants
     IDI_WINDOWS = 32517
 End Enum
 
+#If False Then
+    Private Const IDI_APPLICATION = 32512, IDI_HAND = 32513, IDI_QUESTION = 32514, IDI_EXCLAMATION = 32515, IDI_ASTERISK = 32516, IDI_WINDOWS = 32517
+#End If
+
 Private Declare Function LoadIconW Lib "user32" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
 Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 

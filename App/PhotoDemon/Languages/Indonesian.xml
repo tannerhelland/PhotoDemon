@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.272</langversion>
+<langversion>6.6.273</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -117,12 +117,6 @@
 
 <!-- END text for PublicVars.bas-->
 
-<!-- BEGIN text for PublicAPI.bas -->
-
-<!-- PublicAPI.bas contains 0 phrases. -->
-
-<!-- END text for PublicAPI.bas-->
-
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
@@ -232,7 +226,37 @@
 
 <!-- BEGIN text for DialogManager.bas -->
 
-<!-- DialogManager.bas contains 0 phrases. -->
+<phrase>
+<original>How would you like to load this image?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>Saya tidak bisa memutuskan Batalkan tindakan ini.</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -1195,11 +1219,6 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>Saya tidak bisa memutuskan Batalkan tindakan ini.</translation>
-</phrase>
-
-<phrase>
 <original>In the future, automatically rasterize without prompting me</original>
 <translation>Ke depan, secara otomatis rasterize tanpa disuruh saya</translation>
 </phrase>
@@ -1224,7 +1243,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Halaman 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -11544,11 +11563,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Creating temporary file</original>
-<translation>membuat berkas sementara</translation>
-</phrase>
-
-<phrase>
 <original>Image URL verified.  Downloading image</original>
 <translation>URL disahkan. unduh gagal</translation>
 </phrase>
@@ -11611,7 +11625,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Menunggu input pengguna</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -15255,10 +15269,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2555</phrasecount>
+<phrasecount>2559</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4615 phrases. -->
-<!-- 2060 are duplicates, so only 2555 unique phrases have been written to file. -->
-<!-- These 2555 phrases contain approximately 12394 total words. -->
+<!-- As of this build, PhotoDemon contains 4626 phrases. -->
+<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
+<!-- These 2559 phrases contain approximately 12428 total words. -->
 
 </pdData>
