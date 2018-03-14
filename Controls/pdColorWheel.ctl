@@ -369,6 +369,20 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
     End If
     
+    'If the mouse is inside the wheel or box, update our tooltip accordingly
+    If (m_MouseInsideWheel Or m_MouseInsideBox) Then
+        
+        Dim hoverColor As Long
+        hoverColor = Colors.ConvertSystemColor(GetProposedColor())
+        
+        'Construct hex and RGB string representations of the target color
+        Dim hexString As String, rgbString As String, indexString As String
+        hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
+        rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
+        Me.AssignTooltip hexString & vbCrLf & rgbString
+        
+    End If
+    
     'Redraw the UC to match
     RedrawBackBuffer True
     
@@ -757,6 +771,30 @@ Private Sub CreateSVSquare()
     
 End Sub
 
+'Get the hypothetical color if the use clicks the mouse in its current position.  If the mouse is not in a valid location,
+' the control's current color will be returned.
+Private Function GetProposedColor() As Long
+    
+    If m_MouseDownBox Or m_MouseDownWheel Then
+        GetProposedColor = GetCurrentRGB
+    Else
+        If m_MouseInsideBox Then
+            If (m_SaturationHover <> -1) And (m_ValueHover <> -1) Then
+                GetProposedColor = GetHypotheticalRGB(m_Hue, m_SaturationHover, m_ValueHover)
+            Else
+                GetProposedColor = GetCurrentRGB
+            End If
+        Else
+            If (m_HueHover <> -1) Then
+                GetProposedColor = GetHypotheticalRGB(m_HueHover, m_Saturation, m_Value)
+            Else
+                GetProposedColor = GetCurrentRGB
+            End If
+        End If
+    End If
+            
+End Function
+
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
 Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     
@@ -887,26 +925,6 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         'Finally, if the mouse is over the hue wheel or SV box, but the mouse is *NOT* down, we want to paint a little
         ' color triangle to let the user know what color they'd get if they DID click the mouse button in this location.
         If (m_MouseInsideBox Or m_MouseInsideWheel) Then
-        
-            'Generate a color value for this position
-            Dim proposedColor As Long
-            If m_MouseDownBox Or m_MouseDownWheel Then
-                proposedColor = GetCurrentRGB
-            Else
-                If m_MouseInsideBox Then
-                    If (m_SaturationHover <> -1) And (m_ValueHover <> -1) Then
-                        proposedColor = GetHypotheticalRGB(m_Hue, m_SaturationHover, m_ValueHover)
-                    Else
-                        proposedColor = GetCurrentRGB
-                    End If
-                Else
-                    If (m_HueHover <> -1) Then
-                        proposedColor = GetHypotheticalRGB(m_HueHover, m_Saturation, m_Value)
-                    Else
-                        proposedColor = GetCurrentRGB
-                    End If
-                End If
-            End If
             
             'Paint the color in a small triangle in the corner
             Dim pcPath As pd2DPath
@@ -918,7 +936,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             pcLength = (pcLength - (wWidth * 0.5)) * (PI_HALF * 0.8)
             pcPath.AddTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
-            Drawing2D.QuickCreateSolidBrush cBrush, proposedColor
+            Drawing2D.QuickCreateSolidBrush cBrush, GetProposedColor()
             m_Painter.FillPath cSurface, cBrush, pcPath
             
             Drawing2D.QuickCreateSolidPen cPen, 1, colorPreviewBorder, 75, P2_LJ_Round, P2_LC_Round
