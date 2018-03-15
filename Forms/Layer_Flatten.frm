@@ -113,14 +113,49 @@ End Sub
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
 Private Sub Form_Load()
     
-    btsFlatten.AddItem "auto", 0
-    btsFlatten.AddItem "keep transparency", 1
-    btsFlatten.AddItem "remove transparency", 2
-    btsFlatten.ListIndex = 0
-    UpdateComponentVisibility
+    'Before loading the form, let's do something strange - grab a small copy of the image, and if it
+    ' doesn't contain any transparency, forgo showing the dialog completely.
+    Dim abandonLoad As Boolean
+    If (g_OpenImageCount > 0) Then
+        
+        Dim newWidth As Long, newHeight As Long
+        PDMath.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 256, 256, newWidth, newHeight
+        
+        Dim tmpRectF As RectF
+        With tmpRectF
+            .Left = 0
+            .Top = 0
+            .Width = newWidth
+            .Height = newHeight
+        End With
+        
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+        pdImages(g_CurrentImage).RequestThumbnail tmpDIB, 256, False, VarPtr(tmpRectF)
+        
+        abandonLoad = (Not DIBs.IsDIBTransparent(tmpDIB))
+        
+    End If
     
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    'If the target image does *not* contain meaningful alpha bytes, immediately proceed with
+    ' the flattening (as the user's transparency settings don't matter).
+    If abandonLoad Then
+        Me.Visible = False
+        Process "Flatten image", , vbNullString, UNDO_Image
+        Unload Me
+    Else
+    
+        btsFlatten.AddItem "auto", 0
+        btsFlatten.AddItem "keep transparency", 1
+        btsFlatten.AddItem "remove transparency", 2
+        btsFlatten.ListIndex = 0
+        UpdateComponentVisibility
+        
+        'Apply translations and visual themes
+        ApplyThemeAndTranslations Me
+        
+    End If
     
 End Sub
 

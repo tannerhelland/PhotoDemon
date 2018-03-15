@@ -70,18 +70,18 @@ Begin VB.Form dialog_ColorPanel
          Left            =   8280
          TabIndex        =   5
          Top             =   330
-         Width           =   495
-         _ExtentX        =   873
+         Width           =   480
+         _ExtentX        =   847
          _ExtentY        =   661
          Caption         =   "..."
       End
       Begin PhotoDemon.pdTextBox txtPaletteFile 
          Height          =   375
-         Left            =   120
+         Left            =   210
          TabIndex        =   4
          Top             =   360
-         Width           =   8055
-         _ExtentX        =   14420
+         Width           =   7980
+         _ExtentX        =   14076
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdLabel lblOptions 
