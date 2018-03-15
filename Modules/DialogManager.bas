@@ -280,7 +280,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         copyOfParamString = UserPrefs.GetPref_String("Loading", "Tone Mapping Settings", vbNullString)
         
         'Check for an empty string; if found, build a default param string
-        If (Len(copyOfParamString) = 0) Then copyOfParamString = BuildParamList("method", PDTM_DRAGO)
+        If (LenB(copyOfParamString) = 0) Then copyOfParamString = BuildParamList("method", PDTM_DRAGO)
         
         'Return "OK"
         PromptToneMapSettings = vbOK
@@ -290,16 +290,15 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
 End Function
 
 'Present an "add new preset" dialog box to the user.
-Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
+Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBar As pdCommandBar, ByRef parentForm As Form) As VbMsgBoxResult
 
     Load dialog_AddPreset
     Interface.FixPopupWindow dialog_AddPreset.hWnd, True
-    dialog_AddPreset.ShowDialog srcPresetManager, parentForm
+    dialog_AddPreset.ShowDialog srcPresetManager, srcCommandBar, parentForm
     
     PromptNewPreset = dialog_AddPreset.DialogResult
-    dstPresetName = dialog_AddPreset.newPresetName
-    
     Interface.FixPopupWindow dialog_AddPreset.hWnd, False
+    
     Unload dialog_AddPreset
     Set dialog_AddPreset = Nothing
 

@@ -989,10 +989,9 @@ Friend Function FindAllAttributeValues(ByRef sArray() As String, ByVal tagName A
     
     'Find the first occurrence of the string in the file (if any)
     Dim searchLocation As Long, endLocation As Long
-    searchLocation = 1
-    searchLocation = InStr(searchLocation, m_xmlContents, "<" & tagName & " " & attributeName & "=""", m_TextCompareMode)
+    searchLocation = InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""", m_TextCompareMode)
     
-    Do While searchLocation > 0
+    Do While (searchLocation > 0)
     
         'Make room in the target array for the new string
         tagsFound = tagsFound + 1

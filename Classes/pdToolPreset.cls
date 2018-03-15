@@ -46,8 +46,11 @@ Private Type pdPreset
 End Type
 
 'Preset collection for this tool
-Private m_NumOfPresets As Long
-Private m_ListOfPresets() As pdPreset
+Private m_NumOfPresets As Long, m_ListOfPresets() As pdPreset
+
+'When the "edit preset" window opens, we make a quick backup of all existing preset values.
+' If the user cancels the dialog, we'll restore everything back to its original state.
+Private m_BackupNumOfPresets As Long, m_BackupListOfPresets() As pdPreset
 
 'The name and (optional) description of this tool.  These values are stored in the preset file, and can be used for further validation.
 Private m_ToolName As String, m_ToolDescription As String
@@ -59,7 +62,7 @@ Private m_XMLEngine As pdXML
 Private m_PresetFilePath As String
 
 'To improve performance, this class asks the caller to specify a preset name prior to batch retrieval of all preset values.
-' This string is set to the preset's XML-safe name, as set by the beginPresetRetrieval function.
+' This string is set to the preset's XML-safe name, as set by the BeginPresetRetrieval function.
 Private m_ActivePresetName As String
 
 'The caller must specify a preset path prior to any other interactions.
@@ -89,13 +92,24 @@ Friend Sub WritePresetFile()
     m_XMLEngine.WriteXMLToFile m_PresetFilePath
 End Sub
 
+'Get the name of the last-created preset, if any
+Friend Function GetActivePresetName() As String
+    GetActivePresetName = m_ActivePresetName
+End Function
+
+'Note that no new presets have been created during this session
+Friend Sub ClearActivePresetName()
+    m_ActivePresetName = vbNullString
+End Sub
+
 'Given a pdStringStack object, fill it with a list of all available preset names.
 '
-'RETURNS: number of presets found; 0 if no presets were found, which also happens if the preset file does not exist
+'RETURNS: number of presets found.  Note that 0 is a possible return, and it will be used for misc error cases
+'         (e.g. if the preset file does not exist).
 Friend Function GetListOfPresets(ByRef dstStringStack As pdStringStack) As Long
     
     'As a convenience to the caller, initialize the string stack for them
-    Set dstStringStack = New pdStringStack
+    If (dstStringStack Is Nothing) Then Set dstStringStack = New pdStringStack Else dstStringStack.ResetStack
     
     'The XML engine will do most the heavy lifting for this task.  We pass it a String array, and it fills it with
     ' all values corresponding to the given tag name and attribute.
@@ -130,9 +144,42 @@ Friend Function DoesPresetExist(ByVal presetName As String) As Boolean
 
 End Function
 
+'Prior to modifying this preset list, I suggest calling this function.  It will create an internal backup
+' of all current XML settings.  These can be restored using the matching function, below.
+Friend Sub BackupPresetsInternally()
+
+    m_BackupNumOfPresets = m_NumOfPresets
+    Erase m_BackupListOfPresets
+    
+    If (m_NumOfPresets > 0) Then
+        ReDim m_BackupListOfPresets(0 To m_NumOfPresets - 1) As pdPreset
+        Dim i As Long
+        For i = 0 To m_NumOfPresets - 1
+            m_BackupListOfPresets(i) = m_ListOfPresets(i)
+        Next i
+    End If
+    
+End Sub
+
+'See the comments for BackupPresetsInternally(), above; this function is its sister.
+Friend Sub RestoreBackedUpPresets()
+
+    m_NumOfPresets = m_BackupNumOfPresets
+    Erase m_ListOfPresets
+    
+    If (m_NumOfPresets > 0) Then
+        ReDim m_ListOfPresets(0 To m_NumOfPresets - 1) As pdPreset
+        Dim i As Long
+        For i = 0 To m_NumOfPresets - 1
+            m_ListOfPresets(i) = m_BackupListOfPresets(i)
+        Next i
+    End If
+
+End Sub
+
 'Prior to retrieving preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset retrieval.
-Friend Sub BeginPresetRead(ByVal presetName As String)
+Friend Sub BeginPresetRead(ByRef presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -144,7 +191,7 @@ End Sub
 ' for the currently active preset (as set by beginPresetRetrieval), and store it in the destination string.
 '
 'Returns TRUE if object name exists for preset name; FALSE otherwise.
-Friend Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
+Friend Function ReadPresetValue(ByRef objectName As String, ByRef dstObjectValue As String) As Boolean
     
     'Perform a failsafe check to make sure preset retrieval has been initialized
     If (LenB(m_ActivePresetName) <> 0) Then
@@ -154,10 +201,8 @@ Friend Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue
         ReadPresetValue = (LenB(dstObjectValue) <> 0)
         
     Else
-        
         DebugNote "You can't retrieve presets without first calling beginPresetRead!"
         ReadPresetValue = False
-        
     End If
     
 End Function
@@ -169,7 +214,7 @@ End Sub
 
 'Prior to writing preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset writes.
-Friend Sub BeginPresetWrite(ByVal presetName As String)
+Friend Sub BeginPresetWrite(ByRef presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -209,9 +254,9 @@ Friend Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As Str
     
 End Sub
 
-'Counterpart to beginPresetWrite, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
+'Counterpart to beginPresetWrite, above.  This sub does nothing at present; it is here as a failsafe against future changes.
 Friend Sub EndPresetWrite()
-    m_ActivePresetName = vbNullString
+    
 End Sub
 
 'Reset the XML engine for this session.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
@@ -233,6 +278,7 @@ Private Sub Class_Initialize()
     ReDim m_ListOfPresets(0) As pdPreset
     
     Set m_XMLEngine = New pdXML
+    m_XMLEngine.SetTextCompareMode vbBinaryCompare
     
 End Sub
 

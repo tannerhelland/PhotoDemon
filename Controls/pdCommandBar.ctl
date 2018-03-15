@@ -495,31 +495,34 @@ Private Function SavePreset() As Boolean
     Message "Saving preset..."
 
     'Prompt the user for a name
-    Dim newNameReturn As VbMsgBoxResult, newPresetName As String
-    newNameReturn = DialogManager.PromptNewPreset(m_Presets, UserControl.Parent, newPresetName)
+    Dim newNameReturn As VbMsgBoxResult
+    newNameReturn = DialogManager.PromptNewPreset(m_Presets, Me, UserControl.Parent)
     
     If (newNameReturn = vbOK) Then
     
-        'Create the new preset.  Note that this will also write the preset out to file, which is important as we want to save
-        ' the user's work immediately, in case they cancel the dialog.
-        StorePreset newPresetName
-        
-        'Next, we need to update the combo box to reflect this new preset.
+        'The user may have made one or more changes to the preset object, including adding or deleting presets.
         
         'Start by disabling previews
         m_allowPreviews = False
         
-        'Reset the combo box
+        'Reset the preset names combo box to match any changes the user has made
         LoadAllPresets
         
-        'Next, set the combo box index to match the just-added preset
-        Dim i As Long
-        For i = 0 To cboPreset.ListCount - 1
-            If Strings.StringsEqual(newPresetName, Trim$(cboPreset.List(i)), True) Then
-                cboPreset.ListIndex = i
-                Exit For
-            End If
-        Next i
+        'If the user just added a preset, set the combo box index to match the preset they added
+        Dim newlyAddedPresetName As String
+        newlyAddedPresetName = m_Presets.GetActivePresetName()
+        
+        If (LenB(newlyAddedPresetName) <> 0) Then
+            Dim i As Long
+            For i = 0 To cboPreset.ListCount - 1
+                If Strings.StringsEqual(newlyAddedPresetName, Trim$(cboPreset.List(i)), True) Then
+                    cboPreset.ListIndex = i
+                    Exit For
+                End If
+            Next i
+        End If
+        
+        m_Presets.ClearActivePresetName
         
         'Re-enable previews
         m_allowPreviews = True
@@ -932,7 +935,7 @@ End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titled "presetName".
-Private Sub StorePreset(Optional ByVal presetName As String = "last-used settings")
+Public Sub StorePreset(Optional ByVal presetName As String = "last-used settings")
     
     presetName = Trim$(presetName)
     
@@ -960,15 +963,15 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
         
             'PD-specific sliders, checkboxes, option buttons, and text up/downs return a .Value property
             Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner"
-                controlValue = Str(eControl.Value)
+                controlValue = Str$(eControl.Value)
             
             'Button strips have a .ListIndex property
             Case "pdButtonStrip", "pdButtonStripVertical"
-                controlValue = Str(eControl.ListIndex)
+                controlValue = Str$(eControl.ListIndex)
             
             'Various PD controls have their own custom "value"-type properties.
             Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
-                controlValue = Str(eControl.Color)
+                controlValue = Str$(eControl.Color)
             
             Case "pdBrushSelector"
                 controlValue = eControl.Brush
@@ -981,13 +984,13 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             
             'VB scroll bars return a standard .Value property
             Case "HScrollBar", "VScrollBar"
-                controlValue = Str(eControl.Value)
+                controlValue = Str$(eControl.Value)
             
             'Listboxes and Combo Boxes return a .ListIndex property
             Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
             
                 'Note that we don't store presets for the preset combo box itself!
-                If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
+                If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str$(eControl.ListIndex)
                 
             'Text boxes will store a copy of their current text
             Case "TextBox", "pdTextBox"
@@ -995,7 +998,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
                 
             'pdTitle stores an up/down state in its .Value property
             Case "pdTitle"
-                controlValue = Str(eControl.Value)
+                controlValue = Str$(eControl.Value)
                 
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.

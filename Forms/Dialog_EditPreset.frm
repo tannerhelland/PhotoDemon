@@ -85,34 +85,32 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'The user button click from the dialog (OK/Cancel)
-Private userAnswer As VbMsgBoxResult
+Private m_userAnswer As VbMsgBoxResult
 
-'The new preset name entered in the text box
-Private presetName As String
-
-'Because this form needs to interact with a preset manager (provided by the command bar that raises the dialog),
-' we must maintain a reference to it.  This reference is initially supplied via the showDialog function.
-Private m_Presets As pdToolPreset
+'Because this form needs to interact with both the command bar that raises this dialog, and its preset manager,
+' we must maintain references to both.  These references are initially supplied via the showDialog function.
+Private m_Presets As pdToolPreset, m_CommandBar As pdCommandBar
 
 Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = userAnswer
-End Property
-
-Public Property Get newPresetName() As String
-    newPresetName = presetName
+    DialogResult = m_userAnswer
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form)
+Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBar As pdCommandBar, ByRef parentForm As Form)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
-    userAnswer = vbCancel
+    m_userAnswer = vbCancel
     
     'Make sure that a proper cursor is set
     Screen.MousePointer = 0
     
-    'Maintain a persistent reference to the source command bar
+    'Maintain a persistent reference to the source command bar and its preset manager
     Set m_Presets = srcPresetManager
+    Set m_CommandBar = srcCommandBar
+    
+    'Before making any changes to the preset object, back up its current contents
+    m_Presets.BackupPresetsInternally
+    m_Presets.ClearActivePresetName
     
     'Theme the dialog
     ApplyThemeAndTranslations Me
@@ -123,13 +121,18 @@ Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm A
 End Sub
 
 Private Sub cmdBarMini_CancelClick()
-    userAnswer = vbCancel
+    
+    m_userAnswer = vbCancel
+    
+    'Undo any changes we may have made to the parent preset object
+    m_Presets.RestoreBackedUpPresets
+    
 End Sub
 
 Private Sub cmdBarMini_OKClick()
     
     'Make sure a valid name was entered.
-    If Len(Trim$(txtName.Text)) <> 0 Then
+    If (LenB(Trim$(txtName.Text)) <> 0) Then
         
         'A valid name was entered.  See if this name already exists in the preset manager.
         If m_Presets.DoesPresetExist(Trim$(txtName.Text)) Then
@@ -143,7 +146,7 @@ Private Sub cmdBarMini_OKClick()
 
                 'If the user selects YES, continue on like normal
                 Case vbYes
-                    userAnswer = vbOK
+                    m_userAnswer = vbOK
 
                 'If the user selects NO, let them enter a new name
                 Case vbNo
@@ -155,13 +158,13 @@ Private Sub cmdBarMini_OKClick()
 
                 'If the user selects CANCEL, exit the dialog entirely
                 Case vbCancel
-                    userAnswer = vbCancel
+                    m_userAnswer = vbCancel
                 
             End Select
             
         'This preset does not exist, so no special handling is required
         Else
-            userAnswer = vbOK
+            m_userAnswer = vbOK
         End If
         
     Else
@@ -177,15 +180,19 @@ Private Sub cmdBarMini_OKClick()
         
     End If
     
-    'Store the preset name, if any, before exiting
-    presetName = Trim$(txtName.Text)
-        
+    'Note that this function may have already exited due to the results of a modal dialog.
+    
+    'If the user is okay with use proceeding, update the preset they have just entered.
+    ' (Note that this will also update our locally shared m_Presets object.)
+    If (m_userAnswer = vbOK) Then m_CommandBar.StorePreset Trim$(txtName.Text)
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release our hold on the parent command bar
     Set m_Presets = Nothing
+    Set m_CommandBar = Nothing
     Interface.ReleaseFormTheming Me
     
 End Sub
