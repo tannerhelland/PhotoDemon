@@ -569,6 +569,10 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optiona
                                     
                                     curColorName = Trim$(Strings.TrimNull(curColorName))
                                     
+                                    'Like most Adobe formats, other software may write bad names.  Remove some obvious problem chars.
+                                    If InStr(1, curColorName, vbLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbLf, vbCrLf, , , vbBinaryCompare)
+                                    If InStr(1, curColorName, vbCrLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbCrLf, vbNullString, , , vbBinaryCompare)
+                                    
                                     'Manually advance the pointer by one 16-bit word to account for the null
                                     ' string terminator we didn't retrieve.
                                     tmpChar = srcData.ReadInt()
