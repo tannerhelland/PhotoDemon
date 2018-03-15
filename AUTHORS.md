@@ -29,6 +29,7 @@ Bernhard Stockmann (http://www.gimpusers.com/tutorials/colorful-light-particle-s
 Boban Gjerasimoski (https://www.behance.net/Boban_Gjerasimoski)
 Carles P.V. (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1)
 ChenLin
+Chiahong Hong (https://github.com/ChiahongHong)
 Chrfb of deviantart.com for the original version of PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0) (http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546)
 Cody Robertson
 Dana Seaman (http://www.cyberactivex.com/) 

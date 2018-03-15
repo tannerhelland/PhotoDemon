@@ -252,6 +252,7 @@ Private Sub Form_Load()
     GenerateContributor "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1"
     GenerateContributor "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateContributor "ChenLin"
+    GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
     GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
