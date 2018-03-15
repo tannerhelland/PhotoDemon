@@ -21,13 +21,9 @@ Attribute VB_Exposed = False
 'Now that PD provides so many of its own user controls (UCs), we have to repeat a lot of UC management code.
 ' Painting, custom input handling, subclassing custom window messages - the list goes on for awhile.
 '
-'To cut down on the amount of repeat work I have to do for each unique control, I'm trying to wrap as many generic
-' UC capabilities as I can into this single class.  It then raises a boatload of events for individual UCs to
-' handle as they see fit.
-'
-'In the interim, some user controls may still implement many of these features manually.  Migrating them over is
-' a WIP, and one I hope to have done by the 7.0 release.  My prototype UC for testing has been the old ColorSelector
-' control, because it requires a lot of weird features (like captions) and the code needed an overhaul anyway.
+'To cut down on the amount of repeat work I have to do for each unique control, I've wrapped many generic
+' UC capabilities into this class.  It then raises a boatload of events for individual UCs to handle as they
+' see fit.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -158,8 +154,7 @@ Private m_RedrawRequestCount As Long
 Private m_ResizeEventsSuspended As Boolean
 
 'If the caller wants the caption rendered to a non-standard position, these values will store their requested position
-Private m_CustomCaptionRectActive As Boolean
-Private m_CustomCaptionRect As RECT
+Private m_CustomCaptionRectActive As Boolean, m_CustomCaptionRect As RECT
 
 'By design, this class can handle all caption rendering for the child.  Some controls, however, need to paint the caption in
 ' weird ways (e.g. in the middle of other paint operations).  If they require custom painting, this will be set to TRUE.
@@ -171,11 +166,14 @@ Private m_CustomCaptionPaintingActive As Boolean
 Private m_NoBackBufferMode As Boolean
 
 'This support class also manages tooltips.  Note that translations are handled automatically; the original English tooltips
-' are cached to make runtime translations possible.
-'A tooltip is active if the original, English caption string has a non-zero length.
+' are cached to make runtime translations possible.  Tooltips are considered active if the original, English caption string
+' has a non-zero length.  Note also that by default, tooltips are raised on _MouseHover events (whose delay is controlled
+' by Windows); however, in the AssignTooltip function, callers can request "immediate" tooltip behavior, in which case tips
+' will be raised immediately upon mouse entrance.
 Private m_TTX As Single, m_TTY As Single
 Private m_TTCaptionEn As String, m_TTTitleEn As String
 Private m_TTCaption As String, m_TTTitle As String
+Private m_TTImmediate As Boolean
 
 'Theme ID at the last UpdateAgainstCurrentTheme request.  If this ID has not changed, we don't need to redraw anything.
 ' (Note that this ID describes both the current *theme* and the current *language*; a change to either initiates a redraw.)
@@ -823,13 +821,17 @@ Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByV
     'Non-interactive controls get automatic cursor management from us
     If m_ControlIsNotInteractive Then m_MouseEvents.SetCursor_System IDC_ARROW
     
+    'If the caller wants immediate tooltips, raise them now
+    If m_TTImmediate Then RaiseTooltip x, y
+    
+    'Notify our parent
     RaiseEvent MouseEnter(Button, Shift, x, y)
     
 End Sub
 
 'On hover, request a tooltip (if one exists)
 Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    RaiseTooltip x, y
+    If (Not m_TTImmediate) Then RaiseTooltip x, y
 End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -982,7 +984,7 @@ End Function
 ' (IMPORTANT NOTE: per Windows rules, a parentHwnd is required.  We can't request the parent hWnd at creation time,
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
-Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
     
     If pdMain.IsProgramRunning() Then
     
@@ -999,12 +1001,15 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, O
             m_TTTitle = m_TTTitleEn
         End If
         
+        m_TTImmediate = raiseTipsImmediately
+        
         'If the tooltip is empty, release any existing tooltips
         If (LenB(m_TTCaption) = 0) Then
             HideTooltip True
         Else
-            'If a tooltip is already active, update it immediately
-            If UserControls.IsTooltipActive(m_hWnd) Then RaiseTooltip
+            'If a tooltip is already active, or if the caller wants immediate tooltip display and the mouse
+            ' is inside this control, update the existing tooltip immediately.
+            If UserControls.IsTooltipActive(m_hWnd) Or (m_TTImmediate And m_MouseInsideUC) Then RaiseTooltip
         End If
         
     End If

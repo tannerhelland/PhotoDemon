@@ -302,6 +302,7 @@ End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideWheel = False: m_MouseInsideBox = False
+    Me.AssignTooltip vbNullString, , , False
     ucSupport.RequestCursor IDC_DEFAULT
     RedrawBackBuffer
 End Sub
@@ -379,8 +380,9 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         Dim hexString As String, rgbString As String, indexString As String
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
         rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
-        Me.AssignTooltip hexString & vbCrLf & rgbString
-        
+        Me.AssignTooltip hexString & vbCrLf & rgbString, , , True
+    Else
+        Me.AssignTooltip vbNullString, , , False
     End If
     
     'Redraw the UC to match
@@ -999,6 +1001,6 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
 End Sub
