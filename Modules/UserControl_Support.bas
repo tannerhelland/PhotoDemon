@@ -895,7 +895,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     'Tooltips can include linebreaks, so all size detection needs to be multiline-aware.
     Dim dtRect As RectL
     ttFont.GetBoundaryRectOfMultilineString ttCaption, availableWidth, dtRect
-    ttCaptionWidth = dtRect.Right - dtRect.Left
+    ttCaptionWidth = dtRect.Right - dtRect.Left + 1
     If (ttCaptionWidth > availableWidth) Then
         ttCaptionWidth = availableWidth
         ttCaptionHeight = ttFont.GetHeightOfWordwrapString(ttCaption, ttCaptionWidth)
@@ -909,7 +909,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     If (LenB(ttTitle) > 0) Then
     
         Set ttFont = Fonts.GetMatchingUIFont(10, True)
-        ttTitleWidth = ttFont.GetWidthOfString(ttTitle)
+        ttTitleWidth = ttFont.GetWidthOfString(ttTitle) + 1
         
         If (ttTitleWidth > availableWidth) Then
             ttTitleWidth = availableWidth
