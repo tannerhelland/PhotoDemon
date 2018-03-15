@@ -329,7 +329,7 @@ End Sub
 
 Private Sub lstContributors_Click()
     If ((lstContributors.ListIndex < m_numOfContributors) And (lstContributors.ListIndex >= 0)) Then
-        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then Web.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
+        If (LenB(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then Web.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
     End If
 End Sub
 
@@ -390,4 +390,16 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         
     End If
     
+End Sub
+
+Private Sub lstContributors_MouseLeave()
+    lstContributors.AssignTooltip vbNullString
+End Sub
+
+Private Sub lstContributors_MouseOver(ByVal itemIndex As Long, itemTextEn As String)
+    If ((itemIndex < m_numOfContributors) And (itemIndex >= 0)) Then
+        lstContributors.AssignTooltip m_contributorList(itemIndex).ctbURL
+    Else
+        lstContributors.AssignTooltip vbNullString
+    End If
 End Sub

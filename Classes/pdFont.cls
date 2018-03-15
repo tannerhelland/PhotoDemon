@@ -302,7 +302,7 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect and expansion to multiple lines as necessary
-Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal centerVertically As Boolean = False)
+Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal centerVertically As Boolean = False, Optional ByVal preProcessAmps As Boolean = True)
     
     'Multiline text does not need ellipses, so this function is actually simpler than its single-line counterpart
     Dim srcStringLen As Long
@@ -314,20 +314,17 @@ Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     tmpRect.Right = dstX + dstWidth
     tmpRect.Bottom = dstY + dstHeight
     
-    'If the text is going to extend past the target rect, draw it with ellipses.  Note that we deliberately misrepresent the
-    ' actual length of the string here.  This is on purpose, to account for the DT_MODIFYSTRING flag above.  (If the string
-    ' is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.  As such
-    ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
-    ' buffer space as necessary.)
+    'When rendering multiline text, we want top-alignment by default (vertical centering is handled manually).
+    ' We must also specify word-breaking, and the caller can control whether ampersands are treated as control chars.
     Dim dtFlags As Long
     dtFlags = DT_WORDBREAK Or DT_TOP
-    If centerVertically Then
+    If (Not preProcessAmps) Then dtFlags = dtFlags Or DT_NOPREFIX
     
-        'Vertical centering isn't automatic when multiline text is used.  Instead, we need to manually calculate centering.
+    'Vertical centering isn't automatic when multiline text is used.  Instead, we need to manually calculate centering.
+    If centerVertically Then
         Dim tmpHeight As Single
         tmpHeight = Me.GetHeightOfWordwrapString(srcString, dstWidth)
         tmpRect.Top = dstY + (dstHeight - tmpHeight) \ 2
-        
     End If
     
     Select Case curTextAlignment
@@ -616,7 +613,7 @@ End Function
 '  is less than the width of the rectangle, the width is reduced. If there is only one line of text, DrawText
 '  modifies the right side of the rectangle so that it bounds the last character in the line. In either case,
 '  DrawText returns the height of the formatted text but does not draw the text."
-Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVal maxAllowedWidth As Long, ByRef dstRect As RectL) As Boolean
+Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVal maxAllowedWidth As Long, ByRef dstRect As RectL, Optional ByVal turnOffPrefixHandling As Boolean = False) As Boolean
 
     Dim tmpRect As RECT
     tmpRect.Left = 0
@@ -634,8 +631,13 @@ Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVa
         targetDC = curDC
     End If
     
+    'Create the magical combination of DrawText flags
+    Dim dtFlags As Long
+    dtFlags = DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_TOP
+    If turnOffPrefixHandling Then dtFlags = dtFlags Or DT_NOPREFIX
+    
     'Retrieve the string's dimensions
-    GetBoundaryRectOfMultilineString = (DrawText(targetDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP) <> 0)
+    GetBoundaryRectOfMultilineString = (DrawText(targetDC, StrPtr(srcString), Len(srcString), tmpRect, dtFlags) <> 0)
     
     With dstRect
         .Left = tmpRect.Left

@@ -174,23 +174,23 @@ Private Sub RedrawBackBuffer()
         
         Dim ttFont As pdFont
         
-        If (Len(m_Title) > 0) Then
+        If (LenB(m_Title) > 0) Then
             Set ttFont = Fonts.GetMatchingUIFont(10, True)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
             ttFont.SetTextAlignment vbLeftJustify
-            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight, m_Title
+            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight, m_Title, , False
             yOffset = yOffset + ttFont.GetHeightOfWordwrapString(m_Title, availableTextWidth) + m_TitlePadding
             ttFont.ReleaseFromDC
         End If
         
         'Finally, paint the tooltip itself
-        If (Len(m_Caption) > 0) Then
+        If (LenB(m_Caption) > 0) Then
             Set ttFont = Fonts.GetMatchingUIFont(10, False)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
             ttFont.SetTextAlignment vbLeftJustify
-            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight - yOffset, m_Caption
+            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight - yOffset, m_Caption, , False
             ttFont.ReleaseFromDC
         End If
         

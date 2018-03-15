@@ -71,6 +71,11 @@ Public Event Click()
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
 Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
+'If you want to handle something like custom tooltips, a MouseOver event helps.  (These are ultimately raised
+' by the underlying pdListBoxViewOD control.)
+Public Event MouseLeave()
+Public Event MouseOver(ByVal itemIndex As Long, ByRef itemTextEn As String)
+
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
@@ -280,6 +285,14 @@ Private Sub lbView_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
     RaiseEvent DrawListEntry(bufferDC, itemIndex, itemTextEn, itemIsSelected, itemIsHovered, ptrToRectF)
 End Sub
 
+Private Sub lbView_MouseLeave()
+    RaiseEvent MouseLeave
+End Sub
+
+Private Sub lbView_MouseOver(ByVal itemIndex As Long, itemTextEn As String)
+    RaiseEvent MouseOver(itemIndex, itemTextEn)
+End Sub
+
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
     If (vScroll.Visible <> lbView.ShouldScrollBarBeVisible) Then vScroll.Visible = lbView.ShouldScrollBarBeVisible
@@ -474,5 +487,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
+    lbView.AssignTooltip newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
 End Sub

@@ -53,6 +53,10 @@ Public Event Click()
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
 Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
+'If you want to handle something like custom tooltips, a MouseOver event helps
+Public Event MouseLeave()
+Public Event MouseOver(ByVal itemIndex As Long, ByRef itemTextEn As String)
+
 'It also relays some events from the list box management class
 Public Event ScrollMaxChanged(ByVal newMax As Long)
 Public Event ScrollValueChanged(ByVal newValue As Long)
@@ -254,6 +258,7 @@ End Sub
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseLeave Button, Shift, x, y
     UpdateMousePosition -100, -100
+    RaiseEvent MouseLeave
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -266,7 +271,12 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    If listSupport.ListIndexHovered >= 0 Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    If (listSupport.ListIndexHovered >= 0) Then
+        ucSupport.RequestCursor IDC_HAND
+        RaiseEvent MouseOver(listSupport.ListIndexHovered, listSupport.List(listSupport.ListIndexHovered))
+    Else
+        ucSupport.RequestCursor IDC_DEFAULT
+    End If
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
