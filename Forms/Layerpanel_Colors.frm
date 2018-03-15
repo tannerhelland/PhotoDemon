@@ -371,7 +371,10 @@ Private Sub VerifyPanelUserPrefs(Optional ByVal forceRefresh As Boolean = False)
     
     m_RenderMode = UserPrefs.GetPref_Long("Tools", "ColorPanelStyle", cpm_Wheels)
     m_PaletteFile = UserPrefs.GetPref_String("Tools", "ColorPanelPaletteFile")
-    If (LenB(m_PaletteFile) <> 0) Then palSelector.PaletteFile = m_PaletteFile
+    If (LenB(m_PaletteFile) <> 0) Then
+        palSelector.PaletteFile = m_PaletteFile
+        palSelector.PaletteGroup = UserPrefs.GetPref_Long("Tools", "ColorPanelPaletteGroup", 0)
+    End If
     
     'If the palette file is invalid, we'll revert to the standard mode
     If (m_RenderMode = cpm_Palette) And (Not palSelector.IsPaletteValid) Then m_RenderMode = cpm_Wheels

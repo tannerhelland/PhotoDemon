@@ -106,7 +106,9 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
     
     Me.Reset
     
+    'Fail on some obvious problem cases
     If (LenB(srcFile) = 0) Then Exit Function
+    If (Not Files.FileExists(srcFile)) Then Exit Function
     
     'Branch according to format; on failure, attempt the next mechanism.
     ' (Note that we manually reset our palette collection between attempts, in case a load routine failed

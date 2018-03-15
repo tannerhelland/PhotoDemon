@@ -5,7 +5,7 @@ Begin VB.Form dialog_ColorPanel
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color panel settings"
-   ClientHeight    =   3525
+   ClientHeight    =   4155
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9045
@@ -21,7 +21,7 @@ Begin VB.Form dialog_ColorPanel
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   235
+   ScaleHeight     =   277
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
@@ -40,13 +40,13 @@ Begin VB.Form dialog_ColorPanel
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   2790
+      Top             =   3420
       Width           =   9045
       _ExtentX        =   15954
       _ExtentY        =   1296
    End
    Begin PhotoDemon.pdContainer pnlOptions 
-      Height          =   1335
+      Height          =   2055
       Index           =   1
       Left            =   120
       TabIndex        =   3
@@ -54,6 +54,17 @@ Begin VB.Form dialog_ColorPanel
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   2355
+      Begin PhotoDemon.pdDropDown cboPalettes 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   6
+         Top             =   960
+         Width           =   8655
+         _ExtentX        =   15266
+         _ExtentY        =   1296
+         Caption         =   "palettes in this file (%1)"
+         FontSizeCaption =   10
+      End
       Begin PhotoDemon.pdButton cmdPaletteChoose 
          Height          =   375
          Left            =   8280
@@ -66,22 +77,22 @@ Begin VB.Form dialog_ColorPanel
       End
       Begin PhotoDemon.pdTextBox txtPaletteFile 
          Height          =   375
-         Left            =   0
+         Left            =   120
          TabIndex        =   4
          Top             =   360
-         Width           =   8175
+         Width           =   8055
          _ExtentX        =   14420
          _ExtentY        =   661
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   255
          Index           =   0
-         Left            =   0
+         Left            =   120
          Top             =   0
-         Width           =   8775
+         Width           =   8655
          _ExtentX        =   15478
          _ExtentY        =   450
-         Caption         =   "palette to use:"
+         Caption         =   "palette to use"
       End
    End
    Begin PhotoDemon.pdContainer pnlOptions 
@@ -135,6 +146,14 @@ Public Sub ShowDialog()
     btsStyle.AddItem "palette", 1
     btsStyle.ListIndex = UserPrefs.GetPref_Long("Tools", "ColorPanelStyle", 0)
     txtPaletteFile.Text = UserPrefs.GetPref_String("Tools", "ColorPanelPaletteFile")
+    
+    'If the palette file is valid, update the group list to match
+    If UpdatePaletteGroups() Then
+        Dim curPaletteGroup As Long
+        curPaletteGroup = UserPrefs.GetPref_Long("Tools", "ColorPanelPaletteGroup", -1)
+        If (curPaletteGroup >= 0) And (curPaletteGroup < cboPalettes.ListCount) Then cboPalettes.ListIndex = curPaletteGroup
+    End If
+    
     UpdateVisiblePanel
     
     'Apply any custom styles to the form
@@ -156,9 +175,25 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     
-    'Write these preferences to file before exiting
-    UserPrefs.SetPref_Long "Tools", "ColorPanelStyle", btsStyle.ListIndex
-    If (btsStyle.ListIndex = 1) Then UserPrefs.SetPref_String "Tools", "ColorPanelPaletteFile", txtPaletteFile.Text
+    'We need to write all preferences to PD's central user prefs manager before exiting
+    
+    'First, if the user selected "palette" color mode, we need to validate their selected palette
+    ' before attempting to load it in the main window.
+    Dim finalStyle As Long
+    finalStyle = btsStyle.ListIndex
+    If (finalStyle = 1) Then
+        Dim tmpPalette As pdPalette
+        Set tmpPalette = New pdPalette
+        If (Not tmpPalette.LoadPaletteFromFile(txtPaletteFile.Text)) Then finalStyle = 0
+    End If
+    
+    UserPrefs.SetPref_Long "Tools", "ColorPanelStyle", finalStyle
+    
+    'Palette mode requires a few other preferences; we can ignore these if palette mode isn't being used
+    If (finalStyle = 1) Then
+        UserPrefs.SetPref_String "Tools", "ColorPanelPaletteFile", txtPaletteFile.Text
+        UserPrefs.SetPref_String "Tools", "ColorPanelPaletteGroup", cboPalettes.ListIndex
+    End If
     
     m_CmdBarAnswer = vbOK
     Me.Hide
@@ -167,12 +202,45 @@ End Sub
 
 Private Sub cmdPaletteChoose_Click()
     Dim srcPaletteFile As String
-    If Palettes.DisplayPaletteLoadDialog(vbNullString, srcPaletteFile) Then txtPaletteFile.Text = srcPaletteFile
+    If Palettes.DisplayPaletteLoadDialog(vbNullString, srcPaletteFile) Then
+        txtPaletteFile.Text = srcPaletteFile
+        UpdatePaletteGroups
+    End If
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
+Private Function UpdatePaletteGroups() As Boolean
+
+    Dim tmpPalette As pdPalette
+    Set tmpPalette = New pdPalette
+    If tmpPalette.LoadPaletteFromFile(txtPaletteFile.Text) Then
+        
+        If (Not g_Language Is Nothing) Then cboPalettes.Caption = g_Language.TranslateMessage("palettes in this file (%1)", tmpPalette.GetPaletteGroupCount)
+        
+        cboPalettes.SetAutomaticRedraws False
+        cboPalettes.Clear
+        
+        Dim i As Long
+        For i = 1 To tmpPalette.GetPaletteGroupCount
+            cboPalettes.AddItem tmpPalette.GetPaletteName(i - 1), i - 1
+        Next i
+        
+        cboPalettes.ListIndex = 0
+        cboPalettes.SetAutomaticRedraws True, True
+        cboPalettes.Visible = True
+        
+        UpdatePaletteGroups = True
+        
+    'If palette validation failed, clear various display bits
+    Else
+        'cboPalettes.Caption = g_Language.TranslateMessage("no valid palettes found")
+        cboPalettes.Visible = False
+    End If
+        
+End Function
 
 Private Sub UpdateVisiblePanel()
     
@@ -180,5 +248,27 @@ Private Sub UpdateVisiblePanel()
     For i = 0 To btsStyle.ListCount - 1
         pnlOptions(i).Visible = (i = btsStyle.ListIndex)
     Next i
+    
+    'Resize the form depending on the open panel
+    If (Not g_WindowManager Is Nothing) Then
+        
+        Dim curWinRect As winRect, curClientRect As winRect
+        g_WindowManager.GetWindowRect_API Me.hWnd, curWinRect
+        g_WindowManager.GetClientWinRect Me.hWnd, curClientRect
+        
+        Dim ncHeight As Long
+        ncHeight = (curWinRect.y2 - curWinRect.y1) - (curClientRect.y2 - curClientRect.y1) + cmdBar.GetHeight + Interface.FixDPI(8)
+        
+        If (btsStyle.ListIndex = 0) Then
+            g_WindowManager.SetSizeByHWnd Me.hWnd, curWinRect.x2 - curWinRect.x1, ncHeight + (btsStyle.GetHeight + btsStyle.GetTop * 2), True
+        
+        ElseIf (btsStyle.ListIndex = 1) Then
+            g_WindowManager.SetSizeByHWnd Me.hWnd, curWinRect.x2 - curWinRect.x1, ncHeight + (pnlOptions(1).GetTop + pnlOptions(1).GetHeight + btsStyle.GetTop), True
+            
+        End If
+    End If
+    
+    'Ensure the listed palette group data is valid
+    UpdatePaletteGroups
     
 End Sub

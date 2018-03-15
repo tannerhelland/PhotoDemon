@@ -201,7 +201,7 @@ Attribute Value.VB_UserMemId = 0
 End Property
 
 Public Property Let Value(ByVal newValue As CheckBoxConstants)
-    If m_Value <> newValue Then
+    If (m_Value <> newValue) Then
         m_Value = newValue
         RedrawBackBuffer
         RaiseEvent Click
