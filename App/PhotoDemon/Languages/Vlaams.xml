@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.331</langversion>
+<langversion>6.7.332</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4065,13 +4065,13 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Verlaag rood</translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdColorVariants.ctl-->
 
 <!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdColorWheel.ctl contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdColorWheel.ctl-->
 
@@ -7992,6 +7992,11 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>palettes in this file (%1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>palette to use</original>
 <translation></translation>
 </phrase>
@@ -8006,7 +8011,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation></translation>
 </phrase>
 
-<!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorPanel.frm-->
 
@@ -13120,7 +13125,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Colors.frm-->
 
@@ -15263,10 +15268,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2559</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4626 phrases. -->
-<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
-<!-- These 2559 phrases contain approximately 12428 total words. -->
+<!-- As of this build, PhotoDemon contains 4646 phrases. -->
+<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12432 total words. -->
 
 </pdData>

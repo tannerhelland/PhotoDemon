@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3314</langversion>
+<langversion>6.8.3315</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4061,13 +4061,13 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation>minskat antal röda</translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdColorVariants.ctl-->
 
 <!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdColorWheel.ctl contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdColorWheel.ctl-->
 
@@ -7988,6 +7988,11 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
+<original>palettes in this file (%1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>palette to use</original>
 <translation></translation>
 </phrase>
@@ -8002,7 +8007,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation></translation>
 </phrase>
 
-<!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorPanel.frm-->
 
@@ -13115,7 +13120,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Colors.frm-->
 
@@ -15258,10 +15263,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2559</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4626 phrases. -->
-<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
-<!-- These 2559 phrases contain approximately 12428 total words. -->
+<!-- As of this build, PhotoDemon contains 4646 phrases. -->
+<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12432 total words. -->
 
 </pdData>

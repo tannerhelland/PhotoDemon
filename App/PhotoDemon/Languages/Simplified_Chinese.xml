@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3410</langversion>
+<langversion>7.0.3411</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4056,13 +4056,13 @@ or the File > Open and File > Import menus.</original>
 <translation>降低红色</translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdColorVariants.ctl-->
 
 <!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdColorWheel.ctl contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdColorWheel.ctl-->
 
@@ -7981,6 +7981,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>palettes in this file (%1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>palette to use</original>
 <translation></translation>
 </phrase>
@@ -7995,7 +8000,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation></translation>
 </phrase>
 
-<!-- Dialog_ColorPanel.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorPanel.frm-->
 
@@ -13107,7 +13112,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Colors.frm-->
 
@@ -15246,10 +15251,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2559</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4626 phrases. -->
-<!-- 2067 are duplicates, so only 2559 unique phrases have been written to file. -->
-<!-- These 2559 phrases contain approximately 12428 total words. -->
+<!-- As of this build, PhotoDemon contains 4646 phrases. -->
+<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12432 total words. -->
 
 </pdData>
