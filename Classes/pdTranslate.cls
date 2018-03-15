@@ -112,11 +112,11 @@ End Sub
 
 'External functions can request the current language, which may then be used to request translations from
 ' 3rd-party plugins (specifically, ExifTool).
-Friend Function GetCurrentLanguage() As String
+Friend Function GetCurrentLanguage(Optional ByVal getLocaleToo As Boolean = False) As String
     If TranslationActive Then
-        GetCurrentLanguage = Left$(m_AvailableLanguages(m_currentLanguage).langID, 2)
+        If getLocaleToo Then GetCurrentLanguage = m_AvailableLanguages(m_currentLanguage).langID Else GetCurrentLanguage = Left$(m_AvailableLanguages(m_currentLanguage).langID, 2)
     Else
-        GetCurrentLanguage = "en"
+        If getLocaleToo Then GetCurrentLanguage = "en-US" Else GetCurrentLanguage = "en"
     End If
 End Function
 

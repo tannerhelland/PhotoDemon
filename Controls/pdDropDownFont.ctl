@@ -516,11 +516,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
         calcLeft = tmpRectF.Left + 4 + fontNameWidth + FixDPI(32)
         calcLeftAlternate = tmpRectF.Left + 4 + ((tmpRectF.Left + tmpRectF.Width) - tmpRectF.Left - 8) * 0.5
         
-        If calcLeft > calcLeftAlternate Then
-            .Left = calcLeftAlternate
-        Else
-            .Left = calcLeft
-        End If
+        If (calcLeft > calcLeftAlternate) Then .Left = calcLeftAlternate Else .Left = calcLeft
         
         'Right/top/bottom are all self-explanatory
         .Right = tmpRectF.Left + tmpRectF.Width - COMBO_PADDING_HORIZONTAL
@@ -710,9 +706,10 @@ Private Sub UserControl_Initialize()
     'Create demo strings, to be rendered in the drop-down using the current font face
     m_Text_Default = "AaBbCc 123"
     m_Text_EN = "Sample"
-    m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
     m_Text_Arabic = ChrW(&H639) & ChrW(&H64A) & ChrW(&H646) & ChrW(&H629)
     m_Text_Hebrew = ChrW(&H5D3) & ChrW(&H5D5) & ChrW(&H5BC) & ChrW(&H5D2) & ChrW(&H5DE) & ChrW(&H5B8) & ChrW(&H5D4)
+    
+    'CJK char previews are handled specially, in UpdateAgainstCurrentTheme - look there for details.
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -1188,13 +1185,47 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+    
     If ucSupport.ThemeUpdateRequired Then
+                
+        'For CJK chars (which are one shared group in OpenType), we try to customize the sample indicator
+        ' to the currently active language.  Default to Simplified Chinese if the language engine is unavailable.
+        If (g_Language Is Nothing) Then
+            m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
+        Else
+            
+            'Retrieve the user's current language setting, and use that to guide our sample chars
+            Dim curLocale As String
+            curLocale = g_Language.GetCurrentLanguage(True)
+            
+            Select Case LCase$(curLocale)
+                
+                Case "ja-jp"
+                    m_Text_CJK = ChrW(&H8A66) & ChrW(&H6599)
+                    
+                Case "ko-kr"
+                    m_Text_CJK = ChrW(&HACAC) & ChrW(&HBCF8)
+                    
+                Case "zh-tw"
+                    m_Text_CJK = ChrW(&H7BC4) & ChrW(&H4F8B)
+                    
+                'All others default to simplified Chinese
+                Case Else
+                    m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
+                    
+            End Select
+            
+        
+        End If
+        
         UpdateColorList
+        
         listSupport.UpdateAgainstCurrentTheme
         If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbPrimary.UpdateAgainstCurrentTheme
     End If
+    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
