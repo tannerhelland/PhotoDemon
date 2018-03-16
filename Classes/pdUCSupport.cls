@@ -135,6 +135,7 @@ Private m_CaptionRect As RECT
 ' this manually, we track it for them.  (Obviously, this value is only valid if they've specifically requested mouse tracking.)
 ' Same goes for mouse buttons.
 Private m_MouseInsideUC As Boolean, m_MouseButtonState As Long
+Private m_LastMouseX As Single, m_LastMouseY As Single
 
 'Controls can register themselves as "non-interactive".  This is useful for things like pdSlider, which is really
 ' just a glorified container for a pdSliderStandalone and pdSpinner combination.  "Non-interactive" controls have their
@@ -818,6 +819,9 @@ Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByV
     m_MouseInsideUC = True
     HideTooltip True
     
+    m_LastMouseX = x
+    m_LastMouseY = y
+    
     'Non-interactive controls get automatic cursor management from us
     If m_ControlIsNotInteractive Then m_MouseEvents.SetCursor_System IDC_ARROW
     
@@ -842,12 +846,17 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    m_LastMouseX = x
+    m_LastMouseY = y
+    
     If (Not m_MouseInsideUC) Then
         m_MouseInsideUC = True
         RaiseEvent MouseEnter(Button, Shift, x, y)
     Else
         RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
     End If
+    
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
@@ -1009,7 +1018,7 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, O
         Else
             'If a tooltip is already active, or if the caller wants immediate tooltip display and the mouse
             ' is inside this control, update the existing tooltip immediately.
-            If UserControls.IsTooltipActive(m_hWnd) Or (m_TTImmediate And m_MouseInsideUC) Then RaiseTooltip
+            If UserControls.IsTooltipActive(m_hWnd) Or (m_TTImmediate And m_MouseInsideUC) Then RaiseTooltip m_LastMouseX, m_LastMouseY
         End If
         
     End If

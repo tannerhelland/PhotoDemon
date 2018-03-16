@@ -146,6 +146,7 @@ Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal 
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
+
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 
 'To better manage resources, we also track how many API windows we've created/destroyed during this session
@@ -210,6 +211,7 @@ Private Const WS_EX_NOACTIVATE As Long = &H8000000
 Private Const WS_EX_TOOLWINDOW As Long = &H80
 Private Const WS_EX_WINDOWEDGE As Long = &H100
 Private Const WS_EX_TOPMOST As Long = &H8
+
 Private m_TTActive As Boolean, m_TTOwner As Long, m_TTHwnd As Long
 Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long
 Private m_TTRectCopy As RectL, m_LastTTPosition As TT_SIDE
@@ -973,59 +975,100 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
                 ttRect.Left = srcControlRect.Left - (PD_TT_EXTERNAL_PADDING + ttRect.Width)
         End Select
         
-    Else
-    
-        'Our goal is to position the tooltip as close to the mouse pointer as possible, while also positioning
-        ' it outside the control rectangle (so that we don't obscure the control's contents.)
+        'Note that we still need to ensure the tooltip does *not* lie off-screen.  We will handle this in a
+        ' subsequent step.
         
-        'Start by figuring out which edge is closest to the current mouse position.  The passed mouse x/y ratios
-        ' make this simple. (Each mouse value is a value [0, 1] instead of a hard-coded coordinate.)
-        Dim mouseScreenPos As POINTAPI
-        mouseScreenPos.x = mouseX
-        mouseScreenPos.y = mouseY
-        If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetClientToScreen ownerHwnd, mouseScreenPos
-        
-        Dim ttPositions(0 To 3) As TT_Sort
-        ttPositions(0).ttDistance = srcControlRect.Right - mouseScreenPos.x
-        ttPositions(0).ttSide = TTS_Right
-        ttPositions(1).ttDistance = mouseScreenPos.x - srcControlRect.Left
-        ttPositions(1).ttSide = TTS_Left
-        ttPositions(2).ttDistance = srcControlRect.Bottom - mouseScreenPos.y
-        ttPositions(2).ttSide = TTS_Bottom
-        ttPositions(3).ttDistance = mouseScreenPos.y - srcControlRect.Top
-        ttPositions(3).ttSide = TTS_Top
+    End If
     
-        'Sort all distances from least to most.  We want to position the tooltip as close to the cursor as
-        ' physically possible, but if that position is unavailable (due to lying off-screen), we'll try the
-        ' next-closest position.
-        Dim i As Long, j As Long, tmpSort As TT_Sort
-        For i = 0 To 3
-        For j = 0 To 3
-            If (ttPositions(j).ttDistance < ttPositions(i).ttDistance) And (j > i) Then
-                tmpSort = ttPositions(i)
-                ttPositions(i) = ttPositions(j)
-                ttPositions(j) = tmpSort
+    'Our goal is to position the tooltip as close to the mouse pointer as possible, while also positioning
+    ' it outside the control rectangle (so that we don't obscure the control's contents.)
+    
+    'Start by figuring out which edge is closest to the current mouse position.  The passed mouse x/y ratios
+    ' make this simple. (Each mouse value is a value [0, 1] instead of a hard-coded coordinate.)
+    Dim mouseScreenPos As POINTAPI
+    mouseScreenPos.x = mouseX
+    mouseScreenPos.y = mouseY
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetClientToScreen ownerHwnd, mouseScreenPos
+    
+    Dim ttPositions(0 To 3) As TT_Sort
+    ttPositions(0).ttDistance = srcControlRect.Right - mouseScreenPos.x
+    ttPositions(0).ttSide = TTS_Right
+    ttPositions(1).ttDistance = mouseScreenPos.x - srcControlRect.Left
+    ttPositions(1).ttSide = TTS_Left
+    ttPositions(2).ttDistance = srcControlRect.Bottom - mouseScreenPos.y
+    ttPositions(2).ttSide = TTS_Bottom
+    ttPositions(3).ttDistance = mouseScreenPos.y - srcControlRect.Top
+    ttPositions(3).ttSide = TTS_Top
+
+    'Sort all distances from least to most.  We want to position the tooltip as close to the cursor as
+    ' physically possible, but if that position is unavailable (due to lying off-screen), we'll try the
+    ' next-closest position.
+    Dim i As Long, j As Long, tmpSort As TT_Sort
+    For i = 0 To 3
+    For j = 0 To 3
+        If (ttPositions(j).ttDistance < ttPositions(i).ttDistance) And (j > i) Then
+            tmpSort = ttPositions(i)
+            ttPositions(i) = ttPositions(j)
+            ttPositions(j) = tmpSort
+        End If
+    Next j
+    Next i
+    
+    'If the tooltip is already visible, shift its current position to the "top" of the list.
+    ' (If the newly resized tooltip lies off-screen in its current position, we will still need to
+    '  move through the list to find a better position for it - we just want to ensure that its
+    '  current position is tried *first*.)
+    If ttAlreadyVisible Then
+    
+        For i = 1 To 3
+            
+            If (ttPositions(i).ttSide = m_LastTTPosition) Then
+                
+                tmpSort = ttPositions(0)
+                ttPositions(0) = ttPositions(i)
+                
+                If (i = 1) Then
+                    ttPositions(1) = tmpSort
+                Else
+                    For j = 1 To i - 1
+                        ttPositions(j) = ttPositions(j + 1)
+                    Next j
+                    ttPositions(i) = tmpSort
+                End If
+                
+                Exit For
+            
             End If
-        Next j
+            
         Next i
+    
+    End If
+    
+    'If the tooltip is already visible, we want to "skip" our first attempt at positioning (because we're
+    ' already using the tooltip's current position) - however, we still want to perform failsafe checks against
+    ' things like "is the tooltip partially off-screen".
+    Dim skipFirstPosition As Boolean
+    skipFirstPosition = ttAlreadyVisible
+    
+    'By default, attempt to position the tooltip at the position nearest the cursor.
+    ' (If this fails, we'll try again at the next-nearest position.)
+    Dim ttIndex As Long
+    ttIndex = 0
         
-        'By default, attempt to position the tooltip at the position nearest the cursor.
-        ' (If this fails, we'll try again at the next-nearest position.)
-        Dim ttIndex As Long
-        ttIndex = 0
+    Do
         
-        Do
-            
-            m_LastTTPosition = ttPositions(ttIndex).ttSide
-            
-            'If we try all four tooltip positions, and all four fail, resort to the nearest position.
-            ' (This should never happen, but better safe than sorry!)
-            Dim failsafePosition As Boolean
-            failsafePosition = (ttIndex > 3)
-            If failsafePosition Then ttIndex = 0
-            
-            'Based on the current position (top/bottom/right/left), figure out where the top/left position
-            ' of the tooltip should lie.
+        m_LastTTPosition = ttPositions(ttIndex).ttSide
+        
+        'If we try all four tooltip positions, and all four fail, resort to the nearest position.
+        ' (This should never happen, but better safe than sorry!)
+        Dim failsafePosition As Boolean
+        failsafePosition = (ttIndex > 3)
+        If failsafePosition Then ttIndex = 0
+        
+        'Based on the current position (top/bottom/right/left), figure out where the top/left position
+        ' of the tooltip should lie.
+        If (Not skipFirstPosition) Then
+        
             Select Case ttPositions(ttIndex).ttSide
                 Case TTS_Top
                     ttRect.Top = srcControlRect.Top - (PD_TT_EXTERNAL_PADDING + ttRect.Height)
@@ -1040,49 +1083,52 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
                 Case TTS_Left
                     ttRect.Left = srcControlRect.Left - (PD_TT_EXTERNAL_PADDING + ttRect.Width)
             End Select
-        
-            'Next, make sure that the tooltip lies on-screen.  (For this to work, we need to know the
-            ' current screen dimensions; pdDisplays is used for this.)
-            Dim hMonitor As Long
-            hMonitor = g_Displays.GetHMonitorFromRectL(srcControlRect)
             
-            Dim monitorRect As RectL
-            g_Displays.GetDisplayByHandle(hMonitor).GetWorkingRect monitorRect
-            
-            Dim positionFailed As Boolean: positionFailed = False
-            Select Case ttPositions(ttIndex).ttSide
-                Case TTS_Top
-                    positionFailed = (ttRect.Top < monitorRect.Top)
-                Case TTS_Bottom
-                    positionFailed = ((ttRect.Top + ttRect.Height) > monitorRect.Bottom)
-                Case TTS_Right
-                    positionFailed = ((ttRect.Left + ttRect.Width) > monitorRect.Right)
-                Case TTS_Left
-                    positionFailed = (ttRect.Left < monitorRect.Left)
-            End Select
-            
-            If positionFailed And (Not failsafePosition) Then ttIndex = ttIndex + 1
-            
-        'Attempt to position on another side, as necessary
-        Loop While positionFailed And (Not failsafePosition)
-        
-        'The tooltip's primary dimension has been properly set.  Next, calculate its secondary dimension.
-        ' (Ideally, the secondary dimension is centered relative to the mouse hover position.  If this results in an
-        '  off-screen tooltip, we automatically nudge it on-screen.)
-        Select Case ttPositions(ttIndex).ttSide
-            Case TTS_Top, TTS_Bottom
-                ttRect.Left = mouseScreenPos.x - ttRect.Width \ 2
-                If (ttRect.Left < monitorRect.Left) Then ttRect.Left = monitorRect.Left
-                If (ttRect.Left + ttRect.Width > monitorRect.Right) Then ttRect.Left = monitorRect.Right - ttRect.Width
-                
-            Case TTS_Right, TTS_Left
-                ttRect.Top = mouseScreenPos.y - ttRect.Height \ 2
-                If (ttRect.Top < monitorRect.Top) Then ttRect.Top = monitorRect.Top
-                If (ttRect.Top + ttRect.Height > monitorRect.Bottom) Then ttRect.Top = monitorRect.Bottom - ttRect.Height
-                
-        End Select
+        Else
+            skipFirstPosition = False
+        End If
     
-    End If
+        'Next, make sure that the tooltip lies on-screen.  (For this to work, we need to know the
+        ' current screen dimensions; pdDisplays is used for this.)
+        Dim hMonitor As Long
+        hMonitor = g_Displays.GetHMonitorFromRectL(srcControlRect)
+        
+        Dim monitorRect As RectL
+        g_Displays.GetDisplayByHandle(hMonitor).GetWorkingRect monitorRect
+        
+        Dim positionFailed As Boolean: positionFailed = False
+        Select Case ttPositions(ttIndex).ttSide
+            Case TTS_Top
+                positionFailed = (ttRect.Top < monitorRect.Top)
+            Case TTS_Bottom
+                positionFailed = ((ttRect.Top + ttRect.Height) > monitorRect.Bottom)
+            Case TTS_Right
+                positionFailed = ((ttRect.Left + ttRect.Width) > monitorRect.Right)
+            Case TTS_Left
+                positionFailed = (ttRect.Left < monitorRect.Left)
+        End Select
+        
+        If positionFailed And (Not failsafePosition) Then ttIndex = ttIndex + 1
+        
+    'Attempt to position on another side, as necessary
+    Loop While positionFailed And (Not failsafePosition)
+        
+    'The tooltip's primary dimension has been properly set.  Next, calculate its secondary dimension.
+    ' (Ideally, the secondary dimension is centered relative to the mouse hover position.  If this results in an
+    ' off-screen tooltip, we automatically nudge it on-screen.)  Note that we can skip the position calculation
+    ' if the tooltip is already visible - but we still need to check for "is it off-screen?"
+    Select Case ttPositions(ttIndex).ttSide
+        Case TTS_Top, TTS_Bottom
+            If (Not ttAlreadyVisible) Then ttRect.Left = mouseScreenPos.x - ttRect.Width \ 2
+            If (ttRect.Left < monitorRect.Left) Then ttRect.Left = monitorRect.Left
+            If (ttRect.Left + ttRect.Width > monitorRect.Right) Then ttRect.Left = monitorRect.Right - ttRect.Width
+            
+        Case TTS_Right, TTS_Left
+            If (Not ttAlreadyVisible) Then ttRect.Top = mouseScreenPos.y - ttRect.Height \ 2
+            If (ttRect.Top < monitorRect.Top) Then ttRect.Top = monitorRect.Top
+            If (ttRect.Top + ttRect.Height > monitorRect.Bottom) Then ttRect.Top = monitorRect.Bottom - ttRect.Height
+            
+    End Select
     
     'We have now calculated the tooltip position.  Time to display it!
     
@@ -1124,11 +1170,11 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
         .Bottom = ttRect.Top + ttRect.Height
     End With
     
-    'As the last step before showing the tooltip, we need to notify the tooltip form of the tooltip caption and/or title.
-    ' It will cache these values and prepare internal rendering structs to match.
+    'As the last step before showing the tooltip, we need to notify the tooltip form of the tooltip caption
+    ' and/or title.  It will cache these values and prepare internal rendering structs to match.
     tool_Tooltip.NotifyTooltipSettings ttCaption, ttTitle, PD_TT_INTERNAL_PADDING, PD_TT_TITLE_PADDING
     
-    'We are finally ready to display the tooltip; we also notify the window of its changed window style bits
+    'We are finally ready to display the tooltip!
     If ttAlreadyVisible Then
         With ttRect
             SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
