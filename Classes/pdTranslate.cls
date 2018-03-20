@@ -735,7 +735,7 @@ Private Sub PreProcessText(ByRef srcString As String)
     srcString = Trim$(srcString)
     
     '2) Check for a trailing "..."
-    If Right$(srcString, 3) = "..." Then
+    If (Right$(srcString, 3) = "...") Then
         m_hasDotDotDot = True
         srcString = Left$(srcString, Len(srcString) - 3)
     Else
@@ -743,7 +743,7 @@ Private Sub PreProcessText(ByRef srcString As String)
     End If
     
     '3) Check for a trailing colon ":"
-    If Right$(srcString, 1) = ":" Then
+    If (Right$(srcString, 1) = ":") Then
         m_hasTrailingColon = True
         srcString = Left$(srcString, Len(srcString) - 1)
     Else
@@ -825,11 +825,7 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
         'Retrieve the <translation> tag inside this phrase tag
         origCaption = m_XMLEngine.GetUniqueTag_String("translation", vbNullString, phraseLocation)
         PostProcessText origCaption
-        If (Len(origCaption) <> 0) Then
-            GetTranslationTagFromCaption = origCaption
-        Else
-            GetTranslationTagFromCaption = vbNullString
-        End If
+        If (LenB(origCaption) <> 0) Then GetTranslationTagFromCaption = origCaption Else GetTranslationTagFromCaption = vbNullString
         
     Else
         GetTranslationTagFromCaption = vbNullString

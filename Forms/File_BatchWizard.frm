@@ -80,6 +80,54 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6780
+      Index           =   4
+      Left            =   3300
+      TabIndex        =   24
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin VB.PictureBox picBatchProgress 
+         Appearance      =   0  'Flat
+         BackColor       =   &H8000000D&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   375
+         Left            =   240
+         ScaleHeight     =   25
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   629
+         TabIndex        =   25
+         Top             =   3120
+         Width           =   9435
+      End
+      Begin PhotoDemon.pdLabel lblBatchProgress 
+         Height          =   645
+         Left            =   285
+         Top             =   2400
+         Width           =   9435
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   2
+         Caption         =   "(batch conversion process will appear here at run-time)"
+         ForeColor       =   -2147483640
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTimeRemaining 
+         Height          =   645
+         Left            =   240
+         Top             =   3720
+         Width           =   9435
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   2
+         Caption         =   ""
+         ForeColor       =   -2147483640
+         Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
       Index           =   3
       Left            =   3300
       TabIndex        =   8
@@ -651,42 +699,6 @@ Begin VB.Form FormBatchWizard
          Value           =   0
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6780
-      Index           =   4
-      Left            =   3300
-      TabIndex        =   24
-      Top             =   660
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   11959
-      Begin VB.PictureBox picBatchProgress 
-         Appearance      =   0  'Flat
-         BackColor       =   &H8000000D&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   240
-         ScaleHeight     =   25
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   629
-         TabIndex        =   25
-         Top             =   3120
-         Width           =   9435
-      End
-      Begin PhotoDemon.pdLabel lblBatchProgress 
-         Height          =   645
-         Left            =   285
-         Top             =   2400
-         Width           =   9435
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Alignment       =   2
-         Caption         =   "(batch conversion process will appear here at run-time)"
-         ForeColor       =   -2147483640
-         Layout          =   1
-      End
-   End
 End
 Attribute VB_Name = "FormBatchWizard"
 Attribute VB_GlobalNameSpace = False
@@ -703,22 +715,22 @@ Attribute VB_Exposed = False
 'PhotoDemon's batch process wizard is one of its most unique features.  It integrates tightly with PD's
 ' macro recorder, which allows any combination of actions to be applied to any set of images.  Neat stuff!
 '
-'The current batch wizard is broken into four steps.
+'The current batch wizard is broken into four stages:
 '
-'1) Select which photo editing operations (if any) to apply to these images.  This step is optional;
-'    if no photo editing actions are selected, only format conversion and/or renaming will be applied.
+'1) Select the photo editing operations (if any) that will be applied.  This step is optional;
+'    if no photo editing actions are selected, you can still convert images between formats and/or
+'    batch rename them, without actually changing their pixel contents.
 '
-'2) Build the batch list, e.g. the list of files to be processed.  This is currently the most complicated
-'    page of the wizard, but it allows some nice features, like constructing a list of images from any
-'    number of source directories.  (Many batch tools limit you to just one source folder, ugh.)
+'2) Assemble the list of files to be processed.  The list can be built from any number of files or folders,
+'    and several different input methods are supported.
 '
-'3) Select output file format.  There are two choices: retain original format (with limitations, e.g.
-'    read-only formats like manufacturer-specific RAW files will be saved as JPEGS), or save to some new
-'    format.  If a new format is selected, PD's standard export dialogs are available to set whatever
-'    export parameters the user wants.
+'3) Select output file format.  There are two choices: retain original format (with limitations,
+'    e.g. read-only formats like manufacturer-specific RAW files will be saved as JPEGs), or export to
+'    some new format.  If a new format is selected, PD's standard export dialogs are available to set
+'    precise export parameters (e.g. JPEG quality).
 '
-'4) Choose where the new images will go and how they will be named.  This includes a number of basic
-'    renaming options.
+'4) Choose where the exported images will be saved and how they will be named.  This includes a number
+'    of basic renaming options.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -727,17 +739,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'In the future, we should move this to the (far better) time-keeping helper functions provided by the VBHacks module
-Private Declare Function GetTickCount Lib "kernel32" () As Long
-
-'Current active page in the wizard
+'Currently active page in the wizard
 Private m_CurrentPage As Long
 
-'Has the current list of images been saved?
+'Has the current list of images been saved?  (We check this if the wizard is exited prematurely, so the user can
+' have a chance to save their existing settings.)
 Private m_ImageListSaved As Boolean
-
-'Current list of image format parameters
-Private m_FormatParams As String
 
 'The path to the image currently rendered to the "image preview" box.  (We cache this to optimize redraws; if the
 ' path hasn't changed since the last request, we do not redraw the preview.)
@@ -751,7 +758,8 @@ Private m_wordForBatchList As String, m_wordForItem As String, m_wordForItems As
 'We maintain folder paths locally, in case the user wants to add multiple folders in succession
 Private m_LastBatchFolder As String
 
-'While we're processing the list (for example, when removing items automatically), we want to ignore any events raised by the list
+'While we're processing the list (for example, when removing items automatically), we want to ignore any events raised
+' by the underlying list UI.
 Private m_ListBusy As Boolean
 
 'Export settings were overhauled for 7.0's release.  Batch processing now uses the same export dialogs as PD's regular
@@ -769,13 +777,13 @@ Private Sub btsPhotoOps_Click(ByVal buttonIndex As Long)
     UpdatePhotoOpVisibility
 End Sub
 
+'Enable/disable previewing the currently selected image.  (This is helpful for camera folders full of names like "DSC1234".)
 Private Sub chkEnablePreview_Click()
     
     picPreview.Picture = LoadPicture(vbNullString)
         
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     If CBool(chkEnablePreview) Then
-        
         If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex), True
         
     'If the user is disabling previews, clear the picture box and display a notice
@@ -789,11 +797,12 @@ Private Sub chkEnablePreview_Click()
     
 End Sub
 
-'By default, neither case-related option button is selected.  Default to lowercase when the RenameCase checkbox is used.
+'By default, neither case-related export option is selected.  Default to lowercase when the RenameCase checkbox is used.
 Private Sub chkRenameCase_Click()
     If (Not optCase(0).Value) And (Not optCase(1).Value) Then optCase(0).Value = True
 End Sub
 
+'Set output image format
 Private Sub cmbOutputFormat_Click()
     
     'If this format doesn't support export settings, hide the "set export settings" button
@@ -811,6 +820,7 @@ Private Sub cmbOutputFormat_Click()
     
 End Sub
 
+'Show a sample of the non-intuitive "how to fit resized image in canvas" option
 Private Sub cmbResizeFit_Click()
     
     'Display a sample image of the selected resize method
@@ -867,14 +877,15 @@ Private Sub cmdAddFiles_Click()
     
 End Sub
 
+'Add entire folders to the current batch list
 Private Sub cmdAddFolders_Click()
     
-    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
+    If (LenB(m_LastBatchFolder) = 0) Then m_LastBatchFolder = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
     
     Dim folderPath As String
     folderPath = Files.PathBrowseDialog(Me.hWnd, m_LastBatchFolder)
     
-    If (Len(folderPath) <> 0) Then
+    If (LenB(folderPath) <> 0) Then
         
         m_LastBatchFolder = folderPath
         
@@ -909,11 +920,9 @@ Private Sub cmdCancel_Click()
     If (m_CurrentPage = picContainer.Count - 1) Then
         
         If (Macros.GetMacroStatus <> MacroSTOP) Then
-        
             Dim msgReturn As VbMsgBoxResult
             msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbYesNoCancel Or vbExclamation, "Cancel batch processing")
             If (msgReturn = vbYes) Then Macros.SetMacroStatus MacroCANCEL
-            
         Else
             Unload Me
         End If
@@ -924,6 +933,8 @@ Private Sub cmdCancel_Click()
     
 End Sub
 
+'Are we allowed to exit the dialog?  Some conditions may result in modal UI prompts (e.g. "do you want to save your
+' current settings before exiting?")  If the user CANCELS a modal UI dialog, the exit process must be aborted.
 Private Function AllowedToExit() As Boolean
     
     AllowedToExit = True
@@ -931,34 +942,28 @@ Private Function AllowedToExit() As Boolean
     'If the user has created a list of images to process and they attempt to exit without saving the list,
     ' give them a chance to save it.
     If (m_CurrentPage < picContainer.Count - 1) Then
-    
         If (Not m_ImageListSaved) Then
-        
             If (lstFiles.ListCount > 0) Then
+            
                 Dim msgReturn As VbMsgBoxResult
                 msgReturn = PDMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbExclamation Or vbYesNoCancel, "Unsaved image list")
                 
                 Select Case msgReturn
-                    
                     Case vbYes
-                        If SaveCurrentBatchList() Then AllowedToExit = True Else AllowedToExit = False
-                    
+                        AllowedToExit = SaveCurrentBatchList()
                     Case vbNo
                         AllowedToExit = True
-                    
                     Case vbCancel
                         AllowedToExit = False
-                            
                 End Select
                 
             End If
-            
         End If
-        
     End If
     
 End Function
 
+'Raise an appropriate settings dialog for the selected export format
 Private Sub cmdExportSettings_Click()
     
     'Convert the current dropdown index into a PD format constant
@@ -970,16 +975,16 @@ Private Sub cmdExportSettings_Click()
         
         'The saving module will now raise a dialog specific to the selected format.  If successful, it will fill
         ' the passed settings and metadata strings with XML data describing the user's settings.
-        If Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata) Then
-            m_ExportSettingsSet = True
-             
+        m_ExportSettingsSet = Saving.GetExportParamsFromDialog(Nothing, saveFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata)
+        
         'If the user cancels the dialog, exit immediately
-        Else
+        If (Not m_ExportSettingsSet) Then
             m_ExportSettingsSet = False
             m_ExportSettingsFormat = vbNullString
             m_ExportSettingsMetadata = vbNullString
         End If
     
+    'Formats that do not support export settings do not need to raise a dialog at all
     Else
         m_ExportSettingsSet = True
         m_ExportSettingsFormat = vbNullString
@@ -988,7 +993,7 @@ Private Sub cmdExportSettings_Click()
     
 End Sub
 
-'Load a list of images (previously saved from within PhotoDemon) to the batch list
+'Load a list of images (previously saved from within PhotoDemon) into the current batch list
 Private Sub cmdLoadList_Click()
     
     Dim sFile As String
@@ -1030,41 +1035,38 @@ Private Sub cmdLoadList_Click()
                     'If the user has already created a list of files to process, ask if they want to replace or append
                     ' the loaded entries to their current list.
                     If (lstFiles.ListCount > 0) Then
+                        Dim msgReturn As VbMsgBoxResult
+                        msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel Or vbInformation, "Batch process notification")
+                        If (msgReturn = vbCancel) Then Exit Sub
+                    End If
+                                
+                    Screen.MousePointer = vbHourglass
                 
-                    Dim msgReturn As VbMsgBoxResult
-                    msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel Or vbInformation, "Batch process notification")
+                    'Now that everything is in place, load the entries from the previously saved file
+                    Dim numOfEntries As Long
+                    numOfEntries = CLng(fileLines(1))
                     
-                    If msgReturn = vbCancel Then Exit Sub
+                    lstFiles.SetAutomaticRedraws False
                     
-                End If
-                            
-                Screen.MousePointer = vbHourglass
-            
-                'Now that everything is in place, load the entries from the previously saved file
-                Dim numOfEntries As Long
-                numOfEntries = CLng(fileLines(1))
-                
-                lstFiles.SetAutomaticRedraws False
-                
-                Dim i As Long
-                For i = 2 To numOfEntries + 1
-                    If Files.FileExists(fileLines(i)) Then lstFiles.AddItem fileLines(i)
-                Next i
-                
-                lstFiles.SetAutomaticRedraws True, True
-                
-                'Note that the current list has NOT been saved
-                m_ImageListSaved = False
-    
-                'Enable the "remove all images" button if at least one image exists in the processing list
-                If (lstFiles.ListCount > 0) Then
-                    If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
-                    If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
-                End If
-                
-                UpdateBatchListCount
-                
-                Screen.MousePointer = vbDefault
+                    Dim i As Long
+                    For i = 2 To numOfEntries + 1
+                        If Files.FileExists(fileLines(i)) Then lstFiles.AddItem fileLines(i)
+                    Next i
+                    
+                    lstFiles.SetAutomaticRedraws True, True
+                    
+                    'Note that the current list has NOT been saved
+                    m_ImageListSaved = False
+        
+                    'Enable the "remove all images" button if at least one image exists in the processing list
+                    If (lstFiles.ListCount > 0) Then
+                        If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
+                        If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
+                    End If
+                    
+                    UpdateBatchListCount
+                    
+                    Screen.MousePointer = vbDefault
                         
                 Else
                     PDMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation Or vbOKOnly, "Invalid list file"
@@ -1081,8 +1083,8 @@ Private Sub cmdLoadList_Click()
             Exit Sub
         End If
         
-        'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in this exact state
-        ' so close enough!)
+        'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in its
+        ' current state so close enough!)
         m_ImageListSaved = True
         
     End If
@@ -1101,7 +1103,7 @@ End Sub
 Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
     
     'Before doing anything else, see if the user is on the final step.  If they are, initiate the batch conversion.
-    If moveForward And m_CurrentPage = picContainer.Count - 2 Then
+    If moveForward And (m_CurrentPage = picContainer.Count - 2) Then
         m_CurrentPage = picContainer.Count - 1
         UpdateWizardText
         PrepareForBatchConversion
@@ -1124,7 +1126,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
                 End If
                 
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
-                If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (Len(txtMacro.Text) = 0)) Then
+                If CBool(chkActions(2)) And (Strings.StringsEqual(txtMacro.Text, g_Language.TranslateMessage("no macro selected")) Or (LenB(txtMacro.Text) = 0)) Then
                     PDMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation Or vbOKOnly, "No macro file selected"
                     txtMacro.SelectAll
                     Exit Sub
@@ -1200,9 +1202,9 @@ End Sub
 'Used to display unique text for each page of the wizard.  The value of m_currentPage is used to determine what text to display.
 Private Sub UpdateWizardText()
 
-    Dim sideText As String
-    sideText = "(description forthcoming)"
-
+    Dim sideText As pdString
+    Set sideText = New pdString
+    
     Select Case m_CurrentPage
         
         'Step 1: choose what photo editing you will apply to each image
@@ -1210,51 +1212,64 @@ Private Sub UpdateWizardText()
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 1: select the photo editing action(s) to apply to each image")
             
-            sideText = g_Language.TranslateMessage("Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a ""batch process"".")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Note: a ""macro"" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the ""Tools -> Macros -> Record new macro"" menu in the main PhotoDemon window.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the next step, you will select the images you want to process.")
+            sideText.AppendLine g_Language.TranslateMessage("Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a ""batch process"".")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("Note: a ""macro"" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the ""Tools -> Macros -> Record new macro"" menu in the main PhotoDemon window.")
+            sideText.AppendLineBreak
+            sideText.Append g_Language.TranslateMessage("In the next step, you will select the images you want to process.")
             
         'Step 2: add images to list
         Case 1
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 2: prepare the batch list (the list of images to be processed)")
             
-            sideText = g_Language.TranslateMessage("You can add files to the batch list in two ways:")
-            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("1) By manually adding one or more image file(s) using a standard Open Image dialog.")
-            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the next step, you will choose how you want the processed images saved.")
+            sideText.AppendLine g_Language.TranslateMessage("You can add files to the batch list in two ways:")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("1) By manually adding one or more image file(s) using a standard Open Image dialog.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.")
+            sideText.AppendLineBreak
+            sideText.Append g_Language.TranslateMessage("In the next step, you will choose how you want the processed images saved.")
         
         'Step 3: choose the output image format
         Case 2
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 3: choose a destination image format")
             
-            sideText = g_Language.TranslateMessage("PhotoDemon needs to know which format to use when saving the images in your batch list.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If ""keep images in their original format"" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the final step, you will choose how you want the saved files to be named.")
+            sideText.AppendLine g_Language.TranslateMessage("PhotoDemon needs to know which format to use when saving the images in your batch list.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("If ""keep images in their original format"" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)")
+            sideText.AppendLineBreak
+            sideText.Append g_Language.TranslateMessage("In the final step, you will choose how you want the saved files to be named.")
             
         'Step 4: choose where processed images will be placed and named
         Case 3
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 4: provide a destination folder and any renaming options")
             
-            sideText = g_Language.TranslateMessage("In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("For your convenience, a number of standard renaming options are also provided.  Note that all items under ""additional rename options"" are optional.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Finally, if two or more images in the batch list have the same filename, and the ""original filenames"" option is selected, such files will automatically be given unique filenames upon saving (e.g. ""original-filename (2)"").")
+            sideText.AppendLine g_Language.TranslateMessage("In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("For your convenience, a number of standard renaming options are also provided.  Note that all items under ""additional rename options"" are optional.")
+            sideText.AppendLineBreak
+            sideText.Append g_Language.TranslateMessage("Finally, if two or more images in the batch list have the same filename, and the ""original filenames"" option is selected, such files will automatically be given unique filenames upon saving (e.g. ""original-filename (2)"").")
         
         'Step 5: process!
         Case 4
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 5: wait for batch processing to finish")
             
-            sideText = g_Language.TranslateMessage("Batch processing is now underway.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Once the batch processor has processed several images, it will display an estimated time remaining.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("You can cancel batch processing at any time by pressing the ""Cancel"" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.")
+            sideText.AppendLine g_Language.TranslateMessage("Batch processing is now underway.")
+            sideText.AppendLineBreak
+            sideText.AppendLine g_Language.TranslateMessage("Once the batch processor has processed several images, it will display an estimated time remaining.")
+            sideText.AppendLineBreak
+            sideText.Append g_Language.TranslateMessage("You can cancel batch processing at any time by pressing the ""Cancel"" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.")
             
     End Select
     
-    lblExplanation(0).Caption = sideText
+    lblExplanation(0).Caption = sideText.ToString()
     
 End Sub
 
@@ -1269,10 +1284,8 @@ Private Sub cmdRemove_Click()
         If (prevListIndex < lstFiles.ListCount) Then lstFiles.ListIndex = prevListIndex Else lstFiles.ListIndex = lstFiles.ListCount - 1
     
         'And if all files were removed, disable actions that require at least one image
-        If (lstFiles.ListCount = 0) Then
-            cmdRemoveAll.Enabled = False
-            cmdSaveList.Enabled = False
-        End If
+        cmdRemoveAll.Enabled = (lstFiles.ListCount > 0)
+        cmdSaveList.Enabled = (lstFiles.ListCount > 0)
         
     End If
     
@@ -1281,7 +1294,8 @@ Private Sub cmdRemove_Click()
     
     'Update the label that displays the number of items in the list
     UpdateBatchListCount
-            
+    
+    'If user preferences allow, update the current image preview
     If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex)
             
 End Sub
@@ -1329,7 +1343,7 @@ Private Function SaveCurrentBatchList() As Boolean
         UserPrefs.SetPref_String "Batch Process", "List Folder", listPath
         
         'Assemble the output string, which basically just contains the currently selected list of files.
-        Dim outputText As pdString 'As String
+        Dim outputText As pdString
         Set outputText = New pdString
         
         outputText.AppendLine "<PHOTODEMON BATCH CONVERSION LIST>"
@@ -1384,11 +1398,7 @@ Private Sub cmdRemoveFolder_Click()
                 removeFile = Strings.StringsEqual(testPath, srcPath, True)
             End If
             
-            If removeFile Then
-                lstFiles.RemoveItem i
-            Else
-                i = i + 1
-            End If
+            If removeFile Then lstFiles.RemoveItem i Else i = i + 1
             
         Loop
         
@@ -1409,7 +1419,6 @@ Private Sub cmdSaveList_Click()
     'Before attempting to save, make sure at least one image has been placed in the list
     If (lstFiles.ListCount = 0) Then
         PDMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation Or vbOKOnly, "Empty image list"
-        
     Else
         SaveCurrentBatchList
         m_ImageListSaved = True
@@ -1456,7 +1465,7 @@ Private Sub cmdSelectOutputPath_Click()
     Dim tString As String
     tString = PathBrowseDialog(FormBatchWizard.hWnd)
     
-    If (Len(tString) <> 0) Then
+    If (LenB(tString) <> 0) Then
         txtOutputPath.Text = Files.PathAddBackslash(tString)
     
         'Save this new directory as the default path for future usage
@@ -1474,26 +1483,28 @@ Private Sub Form_Load()
     'Populate all photo-editing-action-related combo boxes, tooltip, and options
         
         'Yes/No for photo edits
-            btsPhotoOps.AddItem "no", 0
-            btsPhotoOps.AddItem "yes", 1
-            btsPhotoOps.ListIndex = 0
-            UpdatePhotoOpVisibility
+        btsPhotoOps.AddItem "no", 0
+        btsPhotoOps.AddItem "yes", 1
+        btsPhotoOps.ListIndex = 0
+        UpdatePhotoOpVisibility
             
         'Resize fit types
-            If pdMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-            cmbResizeFit.Clear
-            cmbResizeFit.AddItem "stretching to fit", 0
-            cmbResizeFit.AddItem "fit inclusively", 1
-            cmbResizeFit.AddItem "fit exclusively", 2
-            cmbResizeFit.ListIndex = 0
+        If pdMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+        cmbResizeFit.Clear
+        cmbResizeFit.AddItem "stretching to fit", 0
+        cmbResizeFit.AddItem "fit inclusively", 1
+        cmbResizeFit.AddItem "fit exclusively", 2
+        cmbResizeFit.ListIndex = 0
         
         'For convenience, change the default resize width and height to the current screen resolution
-            ucResize.SetInitialDimensions Screen.Width / TwipsPerPixelXFix, Screen.Height / TwipsPerPixelYFix
+        If (Not g_Displays Is Nothing) Then
+            If (Not g_Displays.PrimaryDisplay Is Nothing) Then ucResize.SetInitialDimensions g_Displays.PrimaryDisplay.GetWidth, g_Displays.PrimaryDisplay.GetHeight
+        End If
             
         'By default, select "apply no photo editing actions"
-            For i = 0 To chkActions.Count - 1
-                chkActions(i).Value = vbUnchecked
-            Next i
+        For i = 0 To chkActions.Count - 1
+            chkActions(i).Value = vbUnchecked
+        Next i
                 
     'Populate all file-format-related combo boxes, tooltips, and options
         m_ExportSettingsSet = False
@@ -1524,7 +1535,7 @@ Private Sub Form_Load()
         
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
     Dim btnIconSize As Long
-    btnIconSize = FixDPI(32)
+    btnIconSize = Interface.FixDPI(32)
     cmdNext.AssignImage "generic_next", , btnIconSize, btnIconSize
     cmdPrevious.AssignImage "generic_previous", , btnIconSize, btnIconSize
     
@@ -1573,13 +1584,8 @@ Private Sub lstFiles_Click()
         Dim targetFile As String
         targetFile = lstFiles.List(lstFiles.ListIndex)
         
-        If Files.FileExists(targetFile) Then
-            cmdRemove.Enabled = True
-            UpdatePreview targetFile
-        Else
-            cmdRemove.Enabled = False
-            lstFiles.RemoveItem lstFiles.ListIndex
-        End If
+        cmdRemove.Enabled = Files.FileExists(targetFile)
+        If cmdRemove.Enabled Then UpdatePreview targetFile Else lstFiles.RemoveItem lstFiles.ListIndex
         
     End If
     
@@ -1596,7 +1602,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         'Use PD's central load function to load a copy of the requested image
         Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
         Dim loadSuccessful As Boolean: loadSuccessful = False
-        If (Len(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB, False, False, True)
+        If (LenB(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB, False, False, True)
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then
@@ -1646,7 +1652,6 @@ Private Sub PrepareForBatchConversion()
     Dim i As Long
     
     picContainer(picContainer.Count - 1).Visible = True
-    
     For i = 0 To picContainer.Count - 2
         picContainer(i).Visible = False
     Next i
@@ -1680,15 +1685,16 @@ Private Sub PrepareForBatchConversion()
     'Let's also give the user an estimate of how long this is going to take.  We estimate time by determining an
     ' approximate "time-per-image" value, then multiplying that by the number of images remaining.  The progress bar
     ' will display this, automatically updated, as each image is completed.
-    Dim timeStarted As Double, timeElapsed As Double, timeRemaining As Double, timePerFile As Double
-    Dim numFilesProcessed As Long, numFilesRemaining As Long
-    Dim minutesRemaining As Long, secondsRemaining As Long
     Dim timeMsg As String
+    timeMsg = vbNullString
+    
     Dim lastTimeCalculation As Long
     lastTimeCalculation = &H7FFFFFFF
     
-    timeStarted = GetTickCount
-    timeMsg = vbNullString
+    Dim timeStarted As Currency
+    VBHacks.GetHighResTime timeStarted
+    
+    Dim numFilesTimeNotUpdated As Long
     
     'This is where the fun begins.  Loop through every file in the list, and process them one-by-one using the options requested
     ' by the user.
@@ -1701,7 +1707,8 @@ Private Sub PrepareForBatchConversion()
         tmpFilename = lstFiles.List(curBatchFile)
         
         'Give the user a progress update
-        BatchConvertMessage g_Language.TranslateMessage("Processing image # %1 of %2. %3", (curBatchFile + 1), totalNumOfFiles, timeMsg)
+        BatchConvertMessage g_Language.TranslateMessage("Processing image # %1 of %2", (curBatchFile + 1), totalNumOfFiles)
+        
         sysProgBar.Value = curBatchFile
         sysProgBar.Refresh
         
@@ -1722,10 +1729,8 @@ Private Sub PrepareForBatchConversion()
                 If (btsPhotoOps.ListIndex = 1) Then
                 
                     'If the user has requested automatic lighting fixes, apply it now
-                    If CBool(chkActions(0)) Then
-                        Process "White balance", , TextSupport.BuildParamList("threshold", "0.1"), UNDO_Layer
-                    End If
-                
+                    If CBool(chkActions(0)) Then Process "Auto correct lighting", , , UNDO_Layer
+                    
                     'If the user has requested an image resize, apply it now
                     If CBool(chkActions(1)) Then
                         
@@ -1782,14 +1787,12 @@ Private Sub PrepareForBatchConversion()
                 
                 'Replace spaces with underscores if requested
                 If CBool(chkRenameSpaces) Then
-                    If InStr(1, tmpFilename, " ") Then
-                        tmpFilename = Replace(tmpFilename, " ", "_")
-                    End If
+                    If (InStr(1, tmpFilename, " ") <> 0) Then tmpFilename = Replace$(tmpFilename, " ", "_")
                 End If
                 
                 'Change the full filename's case if requested
                 If CBool(chkRenameCase) Then
-                    If optCase(0) Then tmpFilename = LCase(tmpFilename) Else tmpFilename = UCase(tmpFilename)
+                    If optCase(0) Then tmpFilename = LCase$(tmpFilename) Else tmpFilename = UCase$(tmpFilename)
                 End If
                 
                 'Attach a proper image format file extension and save format ID number based off the user's
@@ -1797,8 +1800,6 @@ Private Sub PrepareForBatchConversion()
                 
                 'Possibility 1: use original file format
                 If optFormat(0) Then
-                    
-                    m_FormatParams = vbNullString
                     
                     'See if this image's file format is supported by the export engine
                     If (g_ImageFormats.GetIndexOfOutputPDIF(pdImages(g_CurrentImage).GetCurrentFileFormat) = -1) Then
@@ -1841,53 +1842,9 @@ Private Sub PrepareForBatchConversion()
             
             End If
             
-            'If a good number of images have been processed, start estimating the amount of time remaining
-            If (curBatchFile > 10) Then
+            'Update our running time estimate
+            If UpdateTimeEstimate(timeMsg, curBatchFile + 1, totalNumOfFiles - (curBatchFile + 1), timeStarted, lastTimeCalculation, numFilesTimeNotUpdated) Then BatchTimeMessage timeMsg
             
-                timeElapsed = GetTickCount() - timeStarted
-                numFilesProcessed = curBatchFile + 1
-                numFilesRemaining = totalNumOfFiles - numFilesProcessed
-                timePerFile = timeElapsed / numFilesProcessed
-                timeRemaining = timePerFile * numFilesRemaining
-                
-                'Convert timeRemaining to seconds (it is currently in milliseconds)
-                timeRemaining = timeRemaining / 1000#
-                
-                minutesRemaining = Int(timeRemaining / 60#)
-                secondsRemaining = Int(timeRemaining) Mod 60
-                
-                'Only update the time remaining message if it is LESS than our previous result, the seconds are a multiple
-                ' of 5, or there is 0 minutes remaining (in which case we can display an exact seconds estimate).
-                If (timeRemaining < lastTimeCalculation) And ((secondsRemaining Mod 5 = 0) Or (minutesRemaining = 0)) Then
-                
-                    lastTimeCalculation = timeRemaining
-                
-                    'This lets us format our time nicely (e.g. "minute" vs "minutes")
-                    Select Case minutesRemaining
-                        'No minutes remaining - only seconds
-                        Case 0
-                            timeMsg = g_Language.TranslateMessage("Estimated time remaining") & ": "
-                        Case 1
-                            timeMsg = g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
-                            timeMsg = timeMsg & " " & g_Language.TranslateMessage("minute") & " "
-                        Case Else
-                            timeMsg = g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
-                            timeMsg = timeMsg & " " & g_Language.TranslateMessage("minutes") & " "
-                    End Select
-                    
-                    Select Case secondsRemaining
-                        Case 1
-                            timeMsg = timeMsg & "1 " & g_Language.TranslateMessage("second")
-                        Case Else
-                            timeMsg = timeMsg & secondsRemaining & " " & g_Language.TranslateMessage("seconds")
-                    End Select
-                
-                End If
-
-            ElseIf (curBatchFile > 20) And (totalNumOfFiles > 50) Then
-                timeMsg = g_Language.TranslateMessage("Estimating time remaining") & "..."
-            End If
-        
         End If
                 
     'Carry on
@@ -1904,6 +1861,7 @@ Private Sub PrepareForBatchConversion()
     sysProgBar.Value = sysProgBar.Max
     sysProgBar.Refresh
     BatchConvertMessage g_Language.TranslateMessage("%1 files were successfully processed!", totalNumOfFiles)
+    BatchTimeMessage vbNullString
     
     'Finally, there is no longer any need for the user to save their batch list, as the batch process is complete.
     m_ImageListSaved = True
@@ -1921,19 +1879,9 @@ MacroCanceled:
     sysProgBar.Refresh
     
     Dim cancelMsg As String
-    cancelMsg = g_Language.TranslateMessage("Batch conversion canceled.") & " " & curBatchFile & " "
-    
-    'Properly display "image" or "images" depending on how many files were processed
-    If (curBatchFile <> 1) Then
-        cancelMsg = cancelMsg & g_Language.TranslateMessage("images were")
-    Else
-        cancelMsg = cancelMsg & g_Language.TranslateMessage("image was")
-    End If
-    
-    cancelMsg = cancelMsg & " "
-    cancelMsg = cancelMsg & g_Language.TranslateMessage("processed before cancelation. Last processed image was ""%1"".", lstFiles.List(curBatchFile))
-    
+    cancelMsg = g_Language.TranslateMessage("Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was ""%2"".", curBatchFile, lstFiles.List(curBatchFile))
     BatchConvertMessage cancelMsg
+    BatchTimeMessage vbNullString
     
     'Change the "Cancel" button to "Exit"
     cmdCancel.Caption = g_Language.TranslateMessage("Exit")
@@ -1942,19 +1890,65 @@ MacroCanceled:
     
 End Sub
 
-'Display a progress update to the user
-Private Sub BatchConvertMessage(ByVal newMessage As String)
+'Update the current "time remaining" estimate
+Private Function UpdateTimeEstimate(ByRef dstMessage As String, ByVal numFilesProcessed As Long, ByVal numFilesRemaining As Long, ByVal timeStarted As Currency, ByRef lastTimeCalculation As Long, ByRef numFilesTimeNotUpdated As Long) As Boolean
+    
+    UpdateTimeEstimate = True
+    
+    Dim timeElapsed As Double, timeRemaining As Double, timePerFile As Double
+    Dim minutesRemaining As Long, secondsRemaining As Long
+    
+    If (numFilesProcessed >= 10) Then
+        
+        timeElapsed = VBHacks.GetTimerDifferenceNow(timeStarted)
+        timePerFile = timeElapsed / numFilesProcessed
+        timeRemaining = timePerFile * numFilesRemaining
+        
+        minutesRemaining = Int(timeRemaining / 60#)
+        secondsRemaining = Int(timeRemaining) Mod 60
+        If (minutesRemaining > 10) Then secondsRemaining = (secondsRemaining \ 5) * 5
+        
+        'If there are a *ton* of images left to process, reduce our update frequency to minimize
+        ' the potential for very poor time estimates.
+        Dim okToUpdate As Boolean
+        okToUpdate = (numFilesRemaining < 250) Or ((numFilesProcessed Mod 5) = 0)
+        
+        'Normally, we only want to update the screen if our current time estimate is less than our previous
+        ' time estimates.  (We do this because it's frustrating if time estimates jump around instead of
+        ' keeping a steady downward trend.)  However, if many images pass and our time estimates are still
+        ' too low, then we concede defeat and update the screen accordingly.
+        If okToUpdate Then
+            If (timeRemaining < lastTimeCalculation) Or (numFilesTimeNotUpdated > 4) Then
+                numFilesTimeNotUpdated = 0
+                lastTimeCalculation = timeRemaining
+                dstMessage = g_Language.TranslateMessage("Estimated time remaining: %1:%2", minutesRemaining, Format$(secondsRemaining, "00"))
+            Else
+                numFilesTimeNotUpdated = numFilesTimeNotUpdated + 1
+                UpdateTimeEstimate = False
+            End If
+        Else
+            UpdateTimeEstimate = False
+        End If
+
+    Else
+        dstMessage = g_Language.TranslateMessage("Estimating time remaining...")
+    End If
+            
+End Function
+
+'Display time and progress updates to the user
+Private Sub BatchConvertMessage(ByRef newMessage As String)
     lblBatchProgress.Caption = newMessage
     lblBatchProgress.RequestRefresh
 End Sub
 
+Private Sub BatchTimeMessage(ByRef newMessage As String)
+    lblTimeRemaining.Caption = newMessage
+    lblTimeRemaining.RequestRefresh
+End Sub
+
 Private Sub UpdatePhotoOpVisibility()
-    If (btsPhotoOps.ListIndex = 0) Then
-        lblExplanation(1).Visible = True
-        picPhotoEdits.Visible = False
-    Else
-        lblExplanation(1).Visible = False
-        picPhotoEdits.Visible = True
-    End If
+    lblExplanation(1).Visible = (btsPhotoOps.ListIndex = 0)
+    picPhotoEdits.Visible = (btsPhotoOps.ListIndex <> 0)
 End Sub
 

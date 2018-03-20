@@ -112,6 +112,17 @@ Friend Sub SetWorkingRect(ByRef srcRect As RectL)
     m_WorkingRect = srcRect
 End Sub
 
+'Get Width/Height, with failsafe check for "inside IDE" possibility
+Friend Function GetWidth() As Long
+    GetWidth = m_MonitorRect.Right - m_MonitorRect.Left
+    If (GetWidth = 0) Then GetWidth = Screen.Width / Screen.TwipsPerPixelX
+End Function
+
+Friend Function GetHeight() As Long
+    GetHeight = m_MonitorRect.Bottom - m_MonitorRect.Top
+    If (GetHeight = 0) Then GetHeight = Screen.Height / Screen.TwipsPerPixelY
+End Function
+
 Friend Property Get IsPrimary() As Boolean
     IsPrimary = m_Primary
 End Property
