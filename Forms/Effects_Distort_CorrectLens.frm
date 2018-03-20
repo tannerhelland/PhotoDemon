@@ -131,7 +131,7 @@ Begin VB.Form FormLensCorrect
          _ExtentY        =   1270
          Caption         =   "quality"
          Min             =   1
-         Max             =   5
+         Max             =   3
          Value           =   2
          NotchPosition   =   2
          NotchValueCustom=   2
@@ -268,7 +268,7 @@ Begin VB.Form FormLensCorrect
          _ExtentY        =   1270
          Caption         =   "quality"
          Min             =   1
-         Max             =   5
+         Max             =   3
          Value           =   2
          NotchPosition   =   2
          NotchValueCustom=   2
@@ -322,7 +322,7 @@ End Sub
 
 Private Sub UpdateOptionsPanel()
     Dim i As Long
-    For i = pnlMode.lBound To pnlMode.UBound
+    For i = pnlMode.lBound To pnlMode.ubound
         pnlMode(i).Visible = (i = btsOptions.ListIndex)
     Next i
 End Sub
