@@ -664,7 +664,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
                 If Strings.StringsNotEqual(.ME_Name, "-", False) Then
                 
                     'Update the actual caption text
-                    If (Len(.ME_TextEn) <> 0) Then
+                    If (LenB(.ME_TextEn) <> 0) Then
                     
                         .ME_TextTranslated = g_Language.TranslateMessage(.ME_TextEn)
                     
@@ -718,7 +718,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     
     'With all menu captions updated, we now need to relay those changes to the underlying API menu struct
     For i = 0 To m_NumOfMenus - 1
-        If (Len(m_Menus(i).ME_TextFinal) <> 0) Then UpdateMenuText_ByIndex i
+        If (LenB(m_Menus(i).ME_TextFinal) <> 0) Then UpdateMenuText_ByIndex i
     Next i
     
     'Some special menus must be dealt with now; note that some menus are already handled by dedicated callers

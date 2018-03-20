@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.336</langversion>
+<langversion>6.7.337</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -2708,12 +2708,6 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4403,6 +4397,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10991,6 +10991,11 @@ Los archivos reparados se han guardado en la carpeta de destino. Los archivos no
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(proceso de conversión por lotes aparecerá aquí en tiempo de ejecución)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Seleccione una carpeta de destino</translation>
 </phrase>
@@ -11161,11 +11166,6 @@ Los archivos reparados se han guardado en la carpeta de destino. Los archivos no
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(proceso de conversión por lotes aparecerá aquí en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Avances desactivados</translation>
 </phrase>
@@ -11222,6 +11222,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <phrase>
 <original>Invalid list file</original>
 <translation>No válida archivo de lista</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>ninguna macro seleccionada</translation>
 </phrase>
 
 <phrase>
@@ -11435,11 +11440,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>ninguna macro seleccionada</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>si PhotoDemon no admite el formato original de la imagen, se utilizará un formato estándar</translation>
 </phrase>
@@ -11470,33 +11470,8 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Procesamiento de imagen # %1 de %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Tiempo restante estimado</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>minuto</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>acta</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>segundo</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Estimación de tiempo restante</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11510,26 +11485,21 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>La conversión por lotes cancelado.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>imágenes eran</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>la imagen era</translation>
+<original>Estimating time remaining</original>
+<translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>procesado antes de la cancelación. Última imagen procesada era " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14107,26 +14077,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Borrar el archivo de idioma</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>iniciar un nuevo archivo de idioma desde cero</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>editar un archivo de idioma existente</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>archivos de idioma disponibles actualmente</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>por ejemplo "1.0.0". Por favor use el formato Major.Minor.Revision.</translation>
 </phrase>
@@ -14219,6 +14169,26 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Iniciar traducción automática de todas las frases que faltan</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Borrar el archivo de idioma</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>iniciar un nuevo archivo de idioma desde cero</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>editar un archivo de idioma existente</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>archivos de idioma disponibles actualmente</translation>
 </phrase>
 
 <phrase>
@@ -14458,16 +14428,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Por favor espere mientras el archivo de idioma se valida</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Validación de éxito! Cargando todas las frases y la preparación de motor de traducción</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(guardado)</translation>
 </phrase>
@@ -14507,7 +14467,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <translation>guardado automáticamente en</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15296,10 +15256,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

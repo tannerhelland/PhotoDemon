@@ -168,8 +168,8 @@ Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 ' us of both TRUE and FALSE states.
 Private m_NetworkAccessActive As Boolean
 
-'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).  We track the
-' last requested state internally, in case we need to internally refresh the status bar for some reason.
+'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).
+' We track the last requested state internally, in case we need to internally refresh the status bar for some reason.
 Private m_LastEnabledState As Boolean
 
 'The status bar includes a few different separator lines.  These lines are tracked in an array, which simplifies their
@@ -579,12 +579,17 @@ Public Sub FitMessageArea()
     
     'Move the message label into position (right-aligned, with a slight margin)
     Dim newLeft As Long
-    newLeft = m_LinePositions(2) + FixDPI(7)
+    If m_LastEnabledState Then
+        newLeft = m_LinePositions(2)
+        If m_NetworkAccessActive Then newLeft = newLeft + Interface.FixDPI(28) Else newLeft = newLeft + Interface.FixDPI(7)
+    Else
+        If m_NetworkAccessActive Then newLeft = Interface.FixDPI(28) Else newLeft = 0
+    End If
     If (lblMessages.GetLeft <> newLeft) Then lblMessages.SetLeft newLeft
     
     'If the message label will overflow other elements of the status bar, shrink it as necessary
     Dim newMessageArea As Long
-    newMessageArea = (bWidth - lblMessages.GetLeft) - FixDPI(12)
+    newMessageArea = (bWidth - lblMessages.GetLeft) - Interface.FixDPI(12)
     
     If (newMessageArea < 0) Then
         lblMessages.Visible = False
@@ -624,9 +629,7 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
+    If g_ProgramShuttingDown And (g_Themer Is Nothing) Then Exit Sub
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long, bufferDC As Long
@@ -645,9 +648,7 @@ Private Sub RedrawBackBuffer()
             If m_LastEnabledState Then
                 sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
             Else
-                If m_NetworkAccessActive Then
-                    sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
-                End If
+                sbIconNetwork.AlphaBlendToDC bufferDC, , FixDPI(8), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
             End If
         End If
         

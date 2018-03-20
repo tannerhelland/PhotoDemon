@@ -56,24 +56,25 @@ Public Enum PD_ControlType
     pdct_PaletteUI = 35
     pdct_PenSelector = 36
     pdct_Preview = 37
-    pdct_RadioButton = 38
-    pdct_Resize = 39
-    pdct_ScrollBar = 40
-    pdct_Slider = 41
-    pdct_SliderStandalone = 42
-    pdct_Spinner = 43
-    pdct_StatusBar = 44
-    pdct_Strip = 45
-    pdct_TextBox = 46
-    pdct_Title = 47
+    pdct_ProgressBar = 38
+    pdct_RadioButton = 39
+    pdct_Resize = 40
+    pdct_ScrollBar = 41
+    pdct_Slider = 42
+    pdct_SliderStandalone = 43
+    pdct_Spinner = 44
+    pdct_StatusBar = 45
+    pdct_Strip = 46
+    pdct_TextBox = 47
+    pdct_Title = 48
 End Enum
 
 #If False Then
     Private Const pdct_Accelerator = 0, pdct_BrushSelector = 1, pdct_Button = 2, pdct_ButtonStrip = 3, pdct_ButtonStripVertical = 4, pdct_ButtonToolbox = 5, pdct_Canvas = 6, pdct_CanvasView = 7, pdct_CheckBox = 8, pdct_ColorDepth = 9
     Private Const pdct_ColorSelector = 10, pdct_ColorVariants = 11, pdct_ColorWheel = 12, pdct_CommandBar = 13, pdct_CommandBarMini = 14, pdct_Container = 15, pdct_Download = 16, pdct_DropDown = 17, pdct_DropDownFont = 18, pdct_FxPreviewCtl = 19
     Private Const pdct_GradientSelector = 20, pdct_History = 21, pdct_Hyperlink = 22, pdct_ImageStrip = 23, pdct_Label = 24, pdct_LayerList = 25, pdct_LayerListInner = 26, pdct_ListBox = 27, pdct_ListBoxOD = 28, pdct_ListBoxView = 29
-    Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_PaletteUI = 35, pdct_PenSelector = 36, pdct_Preview = 37, pdct_RadioButton = 38, pdct_Resize = 39
-    Private Const pdct_ScrollBar = 40, pdct_Slider = 41, pdct_SliderStandalone = 42, pdct_Spinner = 43, pdct_StatusBar = 44, pdct_Strip = 45, pdct_TextBox = 46, pdct_Title = 47
+    Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_PaletteUI = 35, pdct_PenSelector = 36, pdct_Preview = 37, pdct_ProgressBar = 38, pdct_RadioButton = 39
+    Private Const pdct_Resize = 40, pdct_ScrollBar = 41, pdct_Slider = 42, pdct_SliderStandalone = 43, pdct_Spinner = 44, pdct_StatusBar = 45, pdct_Strip = 46, pdct_TextBox = 47, pdct_Title = 48
 #End If
 
 Public Type PD_LISTITEM
@@ -776,6 +777,8 @@ Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
             GetNameOfControlType = "pdPenSelector"
         Case pdct_Preview
             GetNameOfControlType = "pdPreview"
+        Case pdct_ProgressBar
+            GetNameOfControlType = "pdProgressBar"
         Case pdct_RadioButton
             GetNameOfControlType = "pdRadioButton"
         Case pdct_Resize

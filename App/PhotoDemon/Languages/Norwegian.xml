@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3316</langversion>
+<langversion>6.8.3317</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2709,12 +2709,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4404,6 +4398,12 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10992,6 +10992,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Batch konverteringsprosessen  vil vises her ved kjøring)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Velg målmappe</translation>
 </phrase>
@@ -11162,11 +11167,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Batch konverteringsprosessen  vil vises her ved kjøring)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>previews deaktivert</translation>
 </phrase>
@@ -11223,6 +11223,11 @@ Would du lagre din batch liste før du avslutter?</translation>
 <phrase>
 <original>Invalid list file</original>
 <translation>Ugyldig liste fil</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>ingen makro valgt</translation>
 </phrase>
 
 <phrase>
@@ -11436,11 +11441,6 @@ Would du lagre din batch liste før du avslutter?</translation>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>ingen makro valgt</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>hvis PhotoDemon ikke støtter et bilde opprinnelige format, vil et standardformat  brukes</translation>
 </phrase>
@@ -11471,33 +11471,8 @@ Would du lagre din batch liste før du avslutter?</translation>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Behandler bilde # %1 av %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Beregnet tid som gjenstår </translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>minutt</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>minutter</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>sekund</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Beregning gjenværende  tid</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11511,26 +11486,21 @@ Would du lagre din batch liste før du avslutter?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Batch konvertering avbrutt.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>bildene var</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>bildet var</translation>
+<original>Estimating time remaining</original>
+<translation>Beregning gjenværende  tid</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>behandlet før avslutningen. Siste behandlet bildet var « %1».</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14108,26 +14078,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Slett valgt språkfil</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>starte en ny språkfil fra scratch</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>redigere en eksisterende språkfil</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>språkfiler  tilgjengelige</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>f.eks "1.0.0". Vennligst bruk Major.Minor.Revision format.</translation>
 </phrase>
@@ -14220,6 +14170,26 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Initiere automatisk oversettelse av alle mangler setninger</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Slett valgt språkfil</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>starte en ny språkfil fra scratch</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>redigere en eksisterende språkfil</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>språkfiler  tilgjengelige</translation>
 </phrase>
 
 <phrase>
@@ -14459,16 +14429,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Vennligst vent mens språkfilen  er validert</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Validering vellykket! Legge alle setninger og forbereder oversettelse motor</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(Lagret)</translation>
 </phrase>
@@ -14508,7 +14468,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Automatisk lagring på</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15296,10 +15256,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

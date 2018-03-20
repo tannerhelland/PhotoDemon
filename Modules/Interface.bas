@@ -1192,12 +1192,8 @@ Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form,
     FormWait.lblWaitTitle.Caption = waitTitle
     FormWait.lblWaitTitle.Visible = True
     
-    If (Len(descriptionText) <> 0) Then
-        FormWait.lblWaitDescription.Caption = descriptionText
-        FormWait.lblWaitDescription.Visible = True
-    Else
-        FormWait.lblWaitDescription.Visible = False
-    End If
+    FormWait.lblWaitDescription.Caption = descriptionText
+    FormWait.lblWaitDescription.Visible = (LenB(descriptionText) <> 0)
     
     Screen.MousePointer = vbHourglass
     
@@ -1366,6 +1362,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             ElseIf (TypeOf eControl Is pdDropDownFont) Then
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdPaletteUI) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdProgressBar) Then
                 isPDControl = True
             End If
             
@@ -2072,18 +2070,18 @@ End Sub
 Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False)
     
     If FormMain.Visible Then
-    
-        FormMain.UpdateAgainstCurrentTheme
+        
+        FormMain.UpdateAgainstCurrentTheme useDoEvents
         
         'Resync the interface to redraw any remaining text and/or buttons
         Interface.SyncInterfaceToCurrentImage
+        If useDoEvents Then DoEvents
         
         'Redraw any/all toolbars as well
         toolbar_Toolbox.UpdateAgainstCurrentTheme
         toolbar_Toolbox.ResetToolButtonStates
         toolbar_Options.UpdateAgainstCurrentTheme
         toolbar_Layers.UpdateAgainstCurrentTheme
-        
         If useDoEvents Then DoEvents
         
     End If

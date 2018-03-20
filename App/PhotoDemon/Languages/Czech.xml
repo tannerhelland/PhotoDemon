@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3316</langversion>
+<langversion>6.8.3317</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2706,12 +2706,6 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4400,6 +4394,12 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10987,6 +10987,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(V běhu se zde objeví proces převodu dávky)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Vyberte cílovou složku</translation>
 </phrase>
@@ -11157,11 +11162,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(V běhu se zde objeví proces převodu dávky)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Náhledy byly zakázány</translation>
 </phrase>
@@ -11218,6 +11218,11 @@ Chcete uložit seznam dávky před ukončením?</translation>
 <phrase>
 <original>Invalid list file</original>
 <translation>Neplatný soubor seznamu</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>Není vybráno žádné makro</translation>
 </phrase>
 
 <phrase>
@@ -11431,11 +11436,6 @@ Chcete uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>Není vybráno žádné makro</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>Pokud aplikace PhotoDemon nepodporuje původní formát obrázku, použije se standardní formát</translation>
 </phrase>
@@ -11466,33 +11466,8 @@ Chcete uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Zpracování obrázku # %1 z %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Odhadovaný zbývající čas</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>minuta</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>minut</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>druhý</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Odhad zbývajícího času</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11506,26 +11481,21 @@ Chcete uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Dávková konverze byla zrušena.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>Obrázky byly</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>Obraz byl</translation>
+<original>Estimating time remaining</original>
+<translation>Odhad zbývajícího času</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>Zpracovány před zrušením. Poslední zpracovaný snímek byl " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14103,26 +14073,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Odstranit vybraný jazykový soubor</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>Spusťte nový soubor jazyka od začátku</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Upravte stávající jazykový soubor</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>Aktuálně dostupné jazykové soubory</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>např. "1.0.0". Použijte formát Major.Minor.Revision.</translation>
 </phrase>
@@ -14215,6 +14165,26 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Spusťte automatický překlad všech chybových frází</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Odstranit vybraný jazykový soubor</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>Spusťte nový soubor jazyka od začátku</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Upravte stávající jazykový soubor</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>Aktuálně dostupné jazykové soubory</translation>
 </phrase>
 
 <phrase>
@@ -14452,16 +14422,6 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Počkejte, dokud je jazykový soubor ověřen</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Ověření úspěšné! Načítání všech frází a příprava překladacího stroje</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(uložen)</translation>
 </phrase>
@@ -14501,7 +14461,7 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 <translation>Automatické uložení</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15291,10 +15251,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

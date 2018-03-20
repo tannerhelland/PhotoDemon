@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3316</langversion>
+<langversion>6.8.3317</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2707,12 +2707,6 @@ Upišite numeričku vrijednost.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4401,6 +4395,12 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10988,6 +10988,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Proces pretvorbe serije pojavit će se ovdje u vrijeme pokretanja)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Odaberite odredišnu mapu</translation>
 </phrase>
@@ -11158,11 +11163,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Proces pretvorbe serije pojavit će se ovdje u vrijeme pokretanja)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Pregledi su onemogućeni</translation>
 </phrase>
@@ -11219,6 +11219,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Invalid list file</original>
 <translation>Nevažeća datoteka popisa</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>Nema odabrane makronaredbe</translation>
 </phrase>
 
 <phrase>
@@ -11432,11 +11437,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>Nema odabrane makronaredbe</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>Ako PhotoDemon ne podržava originalni format slike, upotrijebit će se standardni format</translation>
 </phrase>
@@ -11467,33 +11467,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Obrada slike # %1 od %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Preostalo procijenjeno vrijeme</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>minuta</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>minuta</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>drugi</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Procjena preostalog vremena</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11507,26 +11482,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Konverzija serija otkazana je.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>Slike su bile</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>Slika je bila</translation>
+<original>Estimating time remaining</original>
+<translation>Procjena preostalog vremena</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>Obraditi prije otkazivanja. Posljednja obrada slike bila je " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14104,26 +14074,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Izbriši odabranu jezičnu datoteku</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>Započnite novu jezičnu datoteku od nule</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Urediti postojeću jezičnu datoteku</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>Jezične datoteke trenutno dostupne</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>npr "1.0.0." Molimo koristite format Major.Minor.Revision.</translation>
 </phrase>
@@ -14216,6 +14166,26 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Pokrenite automatsko prevođenje svih nedostajućih fraza</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Izbriši odabranu jezičnu datoteku</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>Započnite novu jezičnu datoteku od nule</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Urediti postojeću jezičnu datoteku</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>Jezične datoteke trenutno dostupne</translation>
 </phrase>
 
 <phrase>
@@ -14455,16 +14425,6 @@ To nastavite, preuzmite novu kopiju PhotoDemona iz photodemon.org.</translation>
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Pričekajte dok je jezična datoteka potvrđena</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Validacija je uspješna! Učitavanje svih fraza i priprema prijevoda</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(Spremljene)</translation>
 </phrase>
@@ -14504,7 +14464,7 @@ To nastavite, preuzmite novu kopiju PhotoDemona iz photodemon.org.</translation>
 <translation>Autosaved na</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15294,10 +15254,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

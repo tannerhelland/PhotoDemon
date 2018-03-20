@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.36</langversion>
+<langversion>1.0.37</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2706,12 +2706,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4400,6 +4394,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10988,6 +10988,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(बैच रूपांतरण प्रक्रिया यहां रन-टाइम पर दिखाई जाएगी)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>गंतव्य फ़ोल्डर चुनें</translation>
 </phrase>
@@ -11158,11 +11163,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(बैच रूपांतरण प्रक्रिया यहां रन-टाइम पर दिखाई जाएगी)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>पूर्वावलोकन अक्षम हैं</translation>
 </phrase>
@@ -11219,6 +11219,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Invalid list file</original>
 <translation>अमान्य सूची फ़ाइल</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>कोई मैक्रो चयनित नहीं</translation>
 </phrase>
 
 <phrase>
@@ -11432,11 +11437,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>कोई मैक्रो चयनित नहीं</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>यदि PhotoDemon किसी छवि के मूल प्रारूप का समर्थन नहीं करता है, तो एक मानक प्रारूप का उपयोग किया जाएगा</translation>
 </phrase>
@@ -11467,33 +11467,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>प्रोसेसिंग छवि %2 में से %1  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>बचा हुआ अनुमानित समय</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>मिनट</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>मिनट</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>दूसरा</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>अनुमानित शेष शेष</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11507,26 +11482,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>बैच रूपांतरण रद्द</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>चित्र थे</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>छवि थी</translation>
+<original>Estimating time remaining</original>
+<translation>अनुमानित शेष शेष</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>रद्द करने से पहले संसाधित अंतिम संसाधित छवि " %1" थी</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14104,26 +14074,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>चयनित भाषा फ़ाइल हटाएं</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>खरोंच से एक नई भाषा फ़ाइल शुरू करें</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>एक मौजूदा भाषा फ़ाइल संपादित करें</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>भाषा फाइल वर्तमान में उपलब्ध है</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>जैसे "1.0.0"। कृपया Major.Minor.Revision प्रारूप का उपयोग करें।</translation>
 </phrase>
@@ -14216,6 +14166,26 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>सभी लापता वाक्यांशों का स्वत: अनुवाद प्रारंभ करें</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>चयनित भाषा फ़ाइल हटाएं</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>खरोंच से एक नई भाषा फ़ाइल शुरू करें</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>एक मौजूदा भाषा फ़ाइल संपादित करें</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>भाषा फाइल वर्तमान में उपलब्ध है</translation>
 </phrase>
 
 <phrase>
@@ -14455,16 +14425,6 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>कृपया प्रतीक्षा करें जब तक भाषा फ़ाइल मान्य नहीं हो</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>मान्यकरण सफल! सभी वाक्यांशों को लोड करना और अनुवाद इंजन तैयार करना</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(बचाया)</translation>
 </phrase>
@@ -14504,7 +14464,7 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 <translation>स्वत: सहेजे गए पर</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15293,10 +15253,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

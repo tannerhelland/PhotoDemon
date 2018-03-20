@@ -33,16 +33,10 @@ Begin VB.Form FormLanguageEditor
       _ExtentY        =   1085
       Caption         =   "&Previous"
    End
-   Begin VB.Timer tmrProgBar 
-      Enabled         =   0   'False
-      Interval        =   50
-      Left            =   14760
-      Top             =   120
-   End
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
       Left            =   11880
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   8310
       Width           =   1725
       _ExtentX        =   3043
@@ -52,7 +46,7 @@ Begin VB.Form FormLanguageEditor
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
       Left            =   13860
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   8310
       Width           =   1365
       _ExtentX        =   2408
@@ -83,108 +77,7 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
-      Index           =   0
-      Left            =   3480
-      TabIndex        =   6
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdListBox lstLanguages 
-         Height          =   4575
-         Left            =   840
-         TabIndex        =   26
-         Top             =   1560
-         Width           =   10695
-         _ExtentX        =   18865
-         _ExtentY        =   8070
-      End
-      Begin PhotoDemon.pdButton cmdDeleteLanguage 
-         Height          =   615
-         Left            =   8400
-         TabIndex        =   10
-         Top             =   6360
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "Delete selected language file"
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   0
-         Top             =   120
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "start a new language file from scratch"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   1
-         Top             =   600
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "edit an existing language file:"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   840
-         Top             =   1200
-         Width           =   10650
-         _ExtentX        =   18785
-         _ExtentY        =   503
-         Caption         =   "language files currently available"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
       Index           =   1
-      Left            =   3480
-      TabIndex        =   18
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin VB.PictureBox picProgBar 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   495
-         Left            =   0
-         ScaleHeight     =   33
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   785
-         TabIndex        =   20
-         TabStop         =   0   'False
-         Top             =   3000
-         Width           =   11775
-      End
-      Begin PhotoDemon.pdLabel lblPleaseWait 
-         Height          =   405
-         Left            =   0
-         Top             =   2400
-         Width           =   11760
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Alignment       =   2
-         Caption         =   "please wait..."
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
-      Index           =   2
       Left            =   3480
       TabIndex        =   11
       Top             =   720
@@ -394,7 +287,7 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
-      Index           =   3
+      Index           =   2
       Left            =   3480
       TabIndex        =   8
       Top             =   720
@@ -404,7 +297,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdListBox lstPhrases 
          Height          =   5175
          Left            =   240
-         TabIndex        =   25
+         TabIndex        =   23
          Top             =   360
          Width           =   4455
          _ExtentX        =   7858
@@ -413,7 +306,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdDropDown cboPhraseFilter 
          Height          =   375
          Left            =   240
-         TabIndex        =   24
+         TabIndex        =   22
          Top             =   6000
          Width           =   4455
          _ExtentX        =   7858
@@ -518,12 +411,76 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdButton cmdAutoTranslate 
          Height          =   615
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   20
          Top             =   6600
          Width           =   4455
          _ExtentX        =   7858
          _ExtentY        =   1085
          Caption         =   "Initiate auto-translation of all missing phrases"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   7455
+      Index           =   0
+      Left            =   3480
+      TabIndex        =   6
+      Top             =   720
+      Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdListBox lstLanguages 
+         Height          =   4575
+         Left            =   840
+         TabIndex        =   24
+         Top             =   1560
+         Width           =   10695
+         _ExtentX        =   18865
+         _ExtentY        =   8070
+      End
+      Begin PhotoDemon.pdButton cmdDeleteLanguage 
+         Height          =   615
+         Left            =   8400
+         TabIndex        =   10
+         Top             =   6360
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "Delete selected language file"
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   0
+         Top             =   120
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "start a new language file from scratch"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   1
+         Top             =   600
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "edit an existing language file:"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   840
+         Top             =   1200
+         Width           =   10650
+         _ExtentX        =   18785
+         _ExtentY        =   503
+         Caption         =   "language files currently available"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.Line Line1 
@@ -538,7 +495,7 @@ Begin VB.Form FormLanguageEditor
       BackColor       =   &H00C0C0C0&
       Height          =   900
       Left            =   0
-      TabIndex        =   23
+      TabIndex        =   21
       Top             =   8220
       Width           =   15375
    End
@@ -611,9 +568,6 @@ Private m_xmlLoaded As Boolean
 
 'The current wizard page
 Private m_WizardPage As Long
-
-'System progress bar control (used on the "please wait" screen)
-Private sysProgBar As cProgressBarOfficial
 
 'A Google Translate interface, which we use to auto-populate missing translations
 Private m_AutoTranslate As clsGoogleTranslate
@@ -906,26 +860,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 Exit Sub
             End If
             
-            'Display the "please wait" panel
-            For i = 0 To picContainer.Count - 1
-                picContainer(i).Visible = (i = 1)
-            Next i
-            
-            'Force a refresh of the visible container picture boxes
-            picContainer(1).Refresh
-            DoEvents
-            
-            'Prepare a marquee-style system progress bar
-            Set sysProgBar = New cProgressBarOfficial
-            sysProgBar.CreateProgressBar picProgBar.hWnd, 0, 0, picProgBar.ScaleWidth, picProgBar.ScaleHeight, True, True, True, True
-            sysProgBar.Max = 100
-            sysProgBar.Min = 0
-            sysProgBar.Value = 0
-            sysProgBar.Marquee = True
-            sysProgBar.Value = 0
-
-            'Turn on the progress bar timer, which is used to move the marquee progress bar
-            tmrProgBar.Enabled = True
+            'Show a brief hourglass while we load and validate the source language file
             Screen.MousePointer = vbHourglass
                         
             'If they want to start a new language file from scratch, set the load path to the MASTER English language file (which is
@@ -948,7 +883,6 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
                     Screen.MousePointer = vbDefault
-                    tmrProgBar.Enabled = False
                     PDMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Master language file missing"
                     Unload Me
                 End If
@@ -969,21 +903,17 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
                     Screen.MousePointer = vbDefault
-                    tmrProgBar.Enabled = False
                     PDMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly Or vbExclamation, "Language file could not be loaded"
                     Unload Me
                 End If
             
             End If
             
-            'Advance to the next page
+            'Reset the mouse pointer
             Screen.MousePointer = vbDefault
-            tmrProgBar.Enabled = False
-            Set sysProgBar = Nothing
-            m_WizardPage = m_WizardPage + 1
             
         'The second page is the metadata editing page.
-        Case 2
+        Case 1
         
             'When leaving the metadata page, automatically copy all text box entries into the metadata holder
             With m_curLanguage
@@ -1010,7 +940,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             PerformAutosave
         
         'The third page is the phrase editing page.  This is the most important page in the wizard.
-        Case 3
+        Case 2
         
             If moveForward Then
                 
@@ -1056,10 +986,8 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         m_WizardPage = m_WizardPage + 1
     Else
         m_WizardPage = m_WizardPage - 1
-        If (m_WizardPage = 1) Then m_WizardPage = 0
     End If
     
-        
     'We can now apply any entrance-timed panel changes
     Select Case m_WizardPage
     
@@ -1069,11 +997,8 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             'Fill the available languages list box with any language files on this system
             PopulateAvailableLanguages
         
-        '"Please wait" panel
-        Case 1
-        
         'Metadata editor
-        Case 2
+        Case 1
         
             'When entering the metadata page, automatically fill all boxes with the currently stored metadata entries
             With m_curLanguage
@@ -1096,7 +1021,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             End With
         
         'Phrase editor
-        Case 3
+        Case 2
         
             'If an XML file was successfully loaded, add its contents to the list box
             If (Not m_xmlLoaded) Then
@@ -1127,11 +1052,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     End If
     
     'Finally, change the top title caption and left-hand help text to match the current step
-    If (m_WizardPage < 1) Then
-        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
-    Else
-        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage)
-    End If
+    lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
     lblWizardTitle.Caption = lblWizardTitle.Caption & " "
     
     Dim helpText As String
@@ -1147,7 +1068,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.")
             If Not OS.IsProgramCompiled Then helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(For best results, do not use this editor in the IDE!)")
             
-        Case 2
+        Case 1
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("add language metadata")
             
             helpText = g_Language.TranslateMessage("In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.")
@@ -1155,7 +1076,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)")
             
-        Case 3
+        Case 2
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("translate all phrases")
             
             helpText = g_Language.TranslateMessage("This final step allows you to edit existing translations, and add missing ones.")
@@ -1215,8 +1136,6 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         'Validate the language file's contents
         If m_XMLEngine.IsPDDataType("Translation") And m_XMLEngine.ValidateLoadedXMLData("phrase") Then
         
-            lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
-            
             'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
             ' the rest of PD, the language editor now uses binary comparison mode exclusively.
             m_XMLEngine.SetTextCompareMode vbBinaryCompare
@@ -1224,8 +1143,6 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
             If m_XMLEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
-            
-                lblPleaseWait.Caption = g_Language.TranslateMessage("Validation successful!  Loading all phrases and preparing translation engine...")
                 
                 m_NumOfPhrases = UBound(phraseLocations) + 1
                 ReDim m_AllPhrases(0 To m_NumOfPhrases - 1) As Phrase
@@ -1245,9 +1162,6 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                     If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, vbNullString)
                     If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, vbNullString)
                     m_AllPhrases(i).ListBoxEntry = tmpString
-                    
-                    'I don't like using DoEvents, but we need a way to refresh the progress bar.
-                    If (i And 3) = 0 Then DoEvents
                     
                 Next i
                 
@@ -1314,22 +1228,7 @@ Private Sub lstPhrases_Click()
 End Sub
 
 Private Sub optBaseLanguage_Click(Index As Integer)
-
-    If lstLanguages.ListIndex >= 0 Then
-        cmdDeleteLanguage.Enabled = True
-    Else
-        cmdDeleteLanguage.Enabled = False
-    End If
-
-End Sub
-
-Private Sub tmrProgBar_Timer()
-    
-    sysProgBar.Value = sysProgBar.Value + 1
-    If sysProgBar.Value = sysProgBar.Max Then sysProgBar.Value = sysProgBar.Min
-    
-    sysProgBar.Refresh
-    
+    cmdDeleteLanguage.Enabled = (lstLanguages.ListIndex >= 0)
 End Sub
 
 'The phrase list box label will automatically be updated with the current count of list items

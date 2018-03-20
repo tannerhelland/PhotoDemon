@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3412</langversion>
+<langversion>7.0.3413</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2701,12 +2701,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4395,6 +4389,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10981,6 +10981,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>（批量转换过程中运行时会出现在这里）</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>选择目录文件夹</translation>
 </phrase>
@@ -11151,11 +11156,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>（批量转换过程中运行时会出现在这里）</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>关闭预览</translation>
 </phrase>
@@ -11211,6 +11211,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Invalid list file</original>
 <translation>无效的列表文件</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>没有选择宏</translation>
 </phrase>
 
 <phrase>
@@ -11424,11 +11429,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>没有选择宏</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>如果PhotoDemon不支持的图像的原始格式，一个将用标准格式</translation>
 </phrase>
@@ -11459,33 +11459,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>正在处理图像 #%1/%2.%3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>估计剩余时间</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>分钟</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>分钟</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>秒</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>估计剩余时间</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11499,26 +11474,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>批量转换取消。</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>图像进行</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>图像是</translation>
+<original>Estimating time remaining</original>
+<translation>估计剩余时间</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>取消之前处理。最后处理的图像是 %1</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14095,26 +14065,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>&D 删除语言文件</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>建立一个新的语言文件</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>编辑已经存在的语言文件</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>可用的语言文件</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>例如“1.0.0”，请使用Major.Minor.Revision格式。</translation>
 </phrase>
@@ -14207,6 +14157,26 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>启动自动翻译的所有缺失词组</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>&D 删除语言文件</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>建立一个新的语言文件</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>编辑已经存在的语言文件</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>可用的语言文件</translation>
 </phrase>
 
 <phrase>
@@ -14444,16 +14414,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>请稍候，正在验证语言文件</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>验证成功！正在加载所有的短语和预备的翻译引擎（可能需要几分钟，请稍候）</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(已保存)</translation>
 </phrase>
@@ -14493,7 +14453,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>自动保存于</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15281,10 +15241,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.24</langversion>
+<langversion>1.0.25</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2706,12 +2706,6 @@ P数値を入力してください。</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4400,6 +4394,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10987,6 +10987,11 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>（バッチ変換プロセスは実行時にここに表示されます）</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>コピー先フォルダを選択</translation>
 </phrase>
@@ -11157,11 +11162,6 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>（バッチ変換プロセスは実行時にここに表示されます）</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>プレビューが無効になっている</translation>
 </phrase>
@@ -11218,6 +11218,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Invalid list file</original>
 <translation>無効なリストファイル</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>マクロが選択されていない</translation>
 </phrase>
 
 <phrase>
@@ -11431,11 +11436,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>マクロが選択されていない</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>PhotoDemonがイメージの元のフォーマットをサポートしていない場合は、標準フォーマットが使用されます</translation>
 </phrase>
@@ -11466,33 +11466,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>％2のうち％1画像を処理しています。 ％3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>推定残り時間</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>分</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>分</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>二番目</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>残り時間の見積もり</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11506,26 +11481,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>バッチ変換がキャンセルされました。</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>画像は</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>イメージは</translation>
+<original>Estimating time remaining</original>
+<translation>残り時間の見積もり</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>キャンセルの前に処理されます。 最後に処理された画像は "％1"でした。</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14103,26 +14073,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>選択した言語ファイルを削除する</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>新しい言語ファイルを一から始める</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>既存の言語ファイルを編集する</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>現在利用可能な言語ファイル</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>例えば "1.0.0"。 Major.Minor.Revision形式を使用してください。</translation>
 </phrase>
@@ -14215,6 +14165,26 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>不足しているフレーズの自動翻訳を開始する</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>選択した言語ファイルを削除する</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>新しい言語ファイルを一から始める</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>既存の言語ファイルを編集する</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>現在利用可能な言語ファイル</translation>
 </phrase>
 
 <phrase>
@@ -14454,16 +14424,6 @@ To引き続き、photemonの新しいコピーをphotodemon.orgからダウン�
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>言語ファイルが検証されている間お待ちください</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>検証が成功しました！ すべてのフレーズを読み込んで翻訳エンジンを準備する</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>（保存された）</translation>
 </phrase>
@@ -14503,7 +14463,7 @@ To引き続き、photemonの新しいコピーをphotodemon.orgからダウン�
 <translation>自動保存された</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15292,10 +15252,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

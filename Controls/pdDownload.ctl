@@ -347,7 +347,7 @@ End Sub
 'Call this to see if all downloads are complete.  If they are, a "FinishedAllItems" event will be raised.
 Public Sub CheckAllDownloadsComplete()
 
-    If m_NumOfFilesFinishedDownloading = m_NumOfFiles Then
+    If (m_NumOfFilesFinishedDownloading = m_NumOfFiles) Then
     
         'All files have finished downloading.  Check to see if any failed.
         Dim allFilesSuccessful As Boolean
@@ -355,7 +355,7 @@ Public Sub CheckAllDownloadsComplete()
         
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
-            If m_DownloadList(i).CurrentStatus <> PDS_DOWNLOAD_COMPLETE Then
+            If (m_DownloadList(i).CurrentStatus <> PDS_DOWNLOAD_COMPLETE) Then
                 allFilesSuccessful = False
                 Exit For
             End If
@@ -374,17 +374,11 @@ Public Function WasDownloadSuccessful(ByVal itemKey As String) As Boolean
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
     
-    If itemKey >= 0 Then
+    If (itemKey >= 0) Then
     
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)
-        
-            If (.CurrentStatus = PDS_DOWNLOAD_COMPLETE) And (UBound(.DataBytes) >= LBound(.DataBytes)) Then
-                WasDownloadSuccessful = True
-            Else
-                WasDownloadSuccessful = False
-            End If
-        
+            WasDownloadSuccessful = (.CurrentStatus = PDS_DOWNLOAD_COMPLETE) And (UBound(.DataBytes) >= LBound(.DataBytes))
         End With
     
     Else
@@ -450,6 +444,8 @@ End Sub
 'Use this sub to reset everything to its virgin state.
 Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
     
+    On Error GoTo ResetError
+    
     'Cancel any downloads currently in progress
     Dim i As Long
     If (m_NumOfFiles > 0) Then
@@ -468,6 +464,8 @@ Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
         Next i
     
     End If
+    
+ResetError:
     
     'Reset all tracking variables
     m_NumOfFiles = 0
@@ -564,7 +562,7 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     AddToQueue = True
     Exit Function
     
-addToQueueFailure:
+AddToQueueFailure:
 
     AddToQueue = False
     m_LastErrorNumber = Err.Number
@@ -650,7 +648,7 @@ End Sub
 Public Function StartDownloadingByIndex(ByVal keyIndex As Long) As Boolean
 
     'This function actually makes use of error tracking, as .AsyncRead may throw errors for various Internet issues.
-    On Error GoTo startDownloadingFailure
+    On Error GoTo StartDownloadingFailure
     
     If (keyIndex >= 0) And (keyIndex < m_NumOfFiles) Then
         
@@ -679,7 +677,7 @@ Public Function StartDownloadingByIndex(ByVal keyIndex As Long) As Boolean
     
 'UserControl.AsyncRead may throw errors for various Internet issues.  Rather than raise errors, we simply return FALSE,
 ' and the caller can choose to retrieve more specific error information as necessary.
-startDownloadingFailure:
+StartDownloadingFailure:
 
     StartDownloadingByIndex = False
     m_LastErrorNumber = Err.Number

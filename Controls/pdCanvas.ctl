@@ -25,25 +25,20 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
-   Begin VB.PictureBox picProgressBar 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00E0E0E0&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdProgressBar mainProgBar 
       Height          =   255
-      Left            =   0
-      ScaleHeight     =   17
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   886
-      TabIndex        =   0
-      Top             =   6975
+      Left            =   360
+      TabIndex        =   6
+      Top             =   6600
       Visible         =   0   'False
-      Width           =   13290
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   450
    End
    Begin PhotoDemon.pdImageStrip ImageStrip 
       Height          =   990
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   600
       Visible         =   0   'False
       Width           =   990
@@ -53,7 +48,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdStatusBar StatusBar 
       Height          =   345
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   7350
       Width           =   13290
       _ExtentX        =   23442
@@ -62,7 +57,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdCanvasView CanvasView 
       Height          =   4935
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   600
       Width           =   4575
       _ExtentX        =   8281
@@ -71,7 +66,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
       Left            =   5040
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
@@ -84,7 +79,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
@@ -96,7 +91,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
       Left            =   5040
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   600
       Visible         =   0   'False
       Width           =   255
@@ -491,9 +486,29 @@ Public Function GetStatusBarHeight() As Long
     GetStatusBarHeight = StatusBar.GetHeight
 End Function
 
-Public Function GetProgBarReference() As PictureBox
-    Set GetProgBarReference = picProgressBar
+Public Sub ProgBar_SetVisibility(ByVal newVisibility As Boolean)
+    mainProgBar.Visible = newVisibility
+End Sub
+
+Public Function ProgBar_GetMax() As Double
+    ProgBar_GetMax = mainProgBar.Max
 End Function
+
+Public Sub ProgBar_SetMax(ByVal newMax As Double)
+    mainProgBar.Max = newMax
+End Sub
+
+Public Function ProgBar_GetValue() As Double
+    ProgBar_GetValue = mainProgBar.Value
+End Function
+
+Public Sub ProgBar_SetValue(ByVal newValue As Double)
+    mainProgBar.Value = newValue
+End Sub
+
+'Public Function GetProgBarReference() As pdProgressBar
+'    Set GetProgBarReference = UserControl.mainProgBar
+'End Function
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -1594,7 +1609,7 @@ Public Sub AlignCanvasView()
     '...and the progress bar placeholder.  (Note that it doesn't need a special rect - we always just position it
     ' above the status bar.)
     With statusBarRect
-        picProgressBar.Move .Left, .Top - picProgressBar.Height, .Width, picProgressBar.Height
+        mainProgBar.SetPositionAndSize .Left, .Top - mainProgBar.GetHeight, .Width, mainProgBar.GetHeight
     End With
     
     '...And finally, the image tabstrip (as relevant)
@@ -1985,6 +2000,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme
         ImageStrip.UpdateAgainstCurrentTheme
+        mainProgBar.UpdateAgainstCurrentTheme
         
         'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
         Dim centerButtonIconSize As Long

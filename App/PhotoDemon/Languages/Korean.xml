@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.1</langversion>
+<langversion>1.0.2</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2705,12 +2705,6 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4399,6 +4393,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10986,6 +10986,11 @@ Repaired 파일이 대상 폴더에 저장되었습니다. 복구되지 않은 �
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(일괄 변환 프로세스가 런타임에 여기에 나타납니다)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>대상 폴더 선택</translation>
 </phrase>
@@ -11156,11 +11161,6 @@ Repaired 파일이 대상 폴더에 저장되었습니다. 복구되지 않은 �
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(일괄 변환 프로세스가 런타임에 여기에 나타납니다)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>미리보기 사용 중지됨</translation>
 </phrase>
@@ -11217,6 +11217,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>Invalid list file</original>
 <translation>잘못된 목록 파일</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>매크로가 선택되지 않았습니다.</translation>
 </phrase>
 
 <phrase>
@@ -11430,11 +11435,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>매크로가 선택되지 않았습니다.</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>PhotoDemon이 이미지의 원래 형식을 지원하지 않으면 표준 형식이 사용됩니다</translation>
 </phrase>
@@ -11465,33 +11465,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>처리중인 이미지 #  %1/ %2. %삼</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>예상 남은 시간</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>분</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>의사록</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>둘째</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>예상 남은 시간</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11505,26 +11480,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>일괄 변환이 취소되었습니다.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>이미지는</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>이전 이미지</translation>
+<original>Estimating time remaining</original>
+<translation>예상 남은 시간</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>취소하기 전에 처리됩니다. 마지막으로 처리 된 이미지는 " %1"입니다.</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14102,26 +14072,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>선택한 언어 파일 삭제</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>처음부터 새로운 언어 파일을 시작한다.</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>기존 언어 파일 편집</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>현재 사용 가능한 언어 파일</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>예: "1.0.0". Major.Minor.Revision 형식을 사용하십시오.</translation>
 </phrase>
@@ -14214,6 +14164,26 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>누락 된 모든 문구의 자동 번역 시작</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>선택한 언어 파일 삭제</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>처음부터 새로운 언어 파일을 시작한다.</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>기존 언어 파일 편집</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>현재 사용 가능한 언어 파일</translation>
 </phrase>
 
 <phrase>
@@ -14453,16 +14423,6 @@ To 계속 하시겠습니까? photodemon.org에서 PhotoDemon의 새 복사본�
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>언어 파일의 유효성을 검사하는 동안 잠시 기다려주십시오.</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>유효성 검사가 성공적으로 완료되었습니다! 모든 구문로드 및 번역 엔진 준비</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(저장 됨)</translation>
 </phrase>
@@ -14502,7 +14462,7 @@ To 계속 하시겠습니까? photodemon.org에서 PhotoDemon의 새 복사본�
 <translation>자동 저장 됨</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15291,10 +15251,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.129</langversion>
+<langversion>1.0.130</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2709,12 +2709,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4404,6 +4398,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10992,6 +10992,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Изберете папка дестинација</translation>
 </phrase>
@@ -11162,11 +11167,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>оневозможени прегледи</translation>
 </phrase>
@@ -11223,6 +11223,11 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>Invalid list file</original>
 <translation>Невалидна датотека со листа</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>не е избрана макро</translation>
 </phrase>
 
 <phrase>
@@ -11436,11 +11441,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>не е избрана макро</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>ако PhotoDemon не поддржува оригиналниот формат на сликата, стандарден формат, ќе се користи</translation>
 </phrase>
@@ -11471,33 +11471,8 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Обработка на сликата %1 %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Останатите Проценето време</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>минути</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>минути</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>вториот</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Проценка на преостанатото време</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11511,26 +11486,21 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Серија конверзија откажани.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>слики биле</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>сликата е</translation>
+<original>Estimating time remaining</original>
+<translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>обработи пред отказ. Последните преработени сликата е " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14108,26 +14078,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Избришете избраниот јазик на датотека</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>започнете нова јазична датотека од нула</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Уредување постоечки јазична датотека</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>јазик датотеки во моментов на располагање</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>на пример, "1.0.0". Ве молиме користете Major.Minor.Revision формат.</translation>
 </phrase>
@@ -14220,6 +14170,26 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Иницирање на авто-преведувачки на сите исчезнати фрази</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Избришете избраниот јазик на датотека</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>започнете нова јазична датотека од нула</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Уредување постоечки јазична датотека</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>јазик датотеки во моментов на располагање</translation>
 </phrase>
 
 <phrase>
@@ -14459,16 +14429,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Почекајте додека јазична датотека е потврдена</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Валидација успешна! Вчитување на сите фрази и подготовка превод на моторот</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(Спаси)</translation>
 </phrase>
@@ -14508,7 +14468,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Автоматско зачувување на</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15298,10 +15258,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

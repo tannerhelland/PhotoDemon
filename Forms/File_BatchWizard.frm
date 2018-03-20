@@ -87,27 +87,22 @@ Begin VB.Form FormBatchWizard
       Width           =   9855
       _ExtentX        =   17383
       _ExtentY        =   11959
-      Begin VB.PictureBox picBatchProgress 
-         Appearance      =   0  'Flat
-         BackColor       =   &H8000000D&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   375
+      Begin PhotoDemon.pdProgressBar pbBatch 
+         Height          =   495
          Left            =   240
-         ScaleHeight     =   25
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   629
          TabIndex        =   25
-         Top             =   3120
+         Top             =   3000
          Width           =   9435
+         _ExtentX        =   16642
+         _ExtentY        =   873
       End
       Begin PhotoDemon.pdLabel lblBatchProgress 
          Height          =   645
-         Left            =   285
+         Left            =   240
          Top             =   2400
          Width           =   9435
-         _ExtentX        =   0
-         _ExtentY        =   0
+         _ExtentX        =   16642
+         _ExtentY        =   1138
          Alignment       =   2
          Caption         =   "(batch conversion process will appear here at run-time)"
          ForeColor       =   -2147483640
@@ -116,7 +111,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdLabel lblTimeRemaining 
          Height          =   645
          Left            =   240
-         Top             =   3720
+         Top             =   3840
          Width           =   9435
          _ExtentX        =   0
          _ExtentY        =   0
@@ -766,9 +761,6 @@ Private m_ListBusy As Boolean
 ' save functions.  To make sure the user actually sets export settings before progressing, we use this tracker.
 Private m_ExportSettingsSet As Boolean, m_ExportSettingsFormat As String, m_ExportSettingsMetadata As String
 
-'System progress bar control
-Private sysProgBar As cProgressBarOfficial
-
 'This dialog interacts with a lot of file-system bits.  This module-level pdFSO object is initialized at Form_Load(),
 ' and can be used wherever convenient.
 Private m_FSO As pdFSO
@@ -887,8 +879,6 @@ Private Sub cmdAddFolders_Click()
     
     If (LenB(folderPath) <> 0) Then
         
-        m_LastBatchFolder = folderPath
-        
         Dim listOfFiles As pdStringStack
         If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, CBool(chkAddSubfoldersToo.Value), False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
                 
@@ -908,6 +898,10 @@ Private Sub cmdAddFolders_Click()
             cmdRemoveAll.Enabled = (lstFiles.ListCount > 0)
             cmdSaveList.Enabled = (lstFiles.ListCount > 0)
             
+            'Save this folder as the last-used folder
+            m_LastBatchFolder = folderPath
+            UserPrefs.SetPref_String "Paths", "Open Image", folderPath
+            
         End If
         
     End If
@@ -923,6 +917,7 @@ Private Sub cmdCancel_Click()
             Dim msgReturn As VbMsgBoxResult
             msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbYesNoCancel Or vbExclamation, "Cancel batch processing")
             If (msgReturn = vbYes) Then Macros.SetMacroStatus MacroCANCEL
+            pbBatch.Visible = False
         Else
             Unload Me
         End If
@@ -1675,12 +1670,8 @@ Private Sub PrepareForBatchConversion()
     If (Not Files.PathExists(outputPath)) Then Files.PathCreate outputPath, True
     
     'Prepare the progress bar, which will keep the user updated on our progress.
-    Set sysProgBar = New cProgressBarOfficial
-    sysProgBar.CreateProgressBar picBatchProgress.hWnd, 0, 0, picBatchProgress.ScaleWidth, picBatchProgress.ScaleHeight, True, True, True, True
-    sysProgBar.Max = totalNumOfFiles
-    sysProgBar.Min = 0
-    sysProgBar.Value = 0
-    sysProgBar.Refresh
+    pbBatch.Max = totalNumOfFiles
+    pbBatch.Value = 0
     
     'Let's also give the user an estimate of how long this is going to take.  We estimate time by determining an
     ' approximate "time-per-image" value, then multiplying that by the number of images remaining.  The progress bar
@@ -1708,9 +1699,7 @@ Private Sub PrepareForBatchConversion()
         
         'Give the user a progress update
         BatchConvertMessage g_Language.TranslateMessage("Processing image # %1 of %2", (curBatchFile + 1), totalNumOfFiles)
-        
-        sysProgBar.Value = curBatchFile
-        sysProgBar.Refresh
+        pbBatch.Value = curBatchFile
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
         If Files.FileExists(tmpFilename) Then
@@ -1858,8 +1847,7 @@ Private Sub PrepareForBatchConversion()
     cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     'Max out the progess bar and display a success message
-    sysProgBar.Value = sysProgBar.Max
-    sysProgBar.Refresh
+    pbBatch.Value = pbBatch.Max
     BatchConvertMessage g_Language.TranslateMessage("%1 files were successfully processed!", totalNumOfFiles)
     BatchTimeMessage vbNullString
     
@@ -1875,8 +1863,7 @@ MacroCanceled:
     Screen.MousePointer = vbDefault
     
     'Reset the progress bar
-    sysProgBar.Value = 0
-    sysProgBar.Refresh
+    pbBatch.Value = 0
     
     Dim cancelMsg As String
     cancelMsg = g_Language.TranslateMessage("Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was ""%2"".", curBatchFile, lstFiles.List(curBatchFile))

@@ -403,6 +403,13 @@
 				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
 			</PDPreview>
 			
+			<PDProgressBar>
+				<Background>GrayUltralight</Background>
+				<Border>GrayDefault</Border>
+				<MarqueeHighlight>AccentUltradark</MarqueeHighlight>
+				<Progress>AccentDefault</Progress>
+			</PDProgressBar>
+			
 			<PDRadioButton>
 				<Background>BackgroundDefault</Background>
 				<ButtonBorder>GrayDefault</ButtonBorder>

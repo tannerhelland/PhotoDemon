@@ -968,7 +968,7 @@ Friend Sub UndoTranslations(ByRef srcForm As Form)
     newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If (Len(newString) <> 0) Then
+    If (LenB(newString) <> 0) Then
         If (Not g_WindowManager Is Nothing) Then
             g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
         Else

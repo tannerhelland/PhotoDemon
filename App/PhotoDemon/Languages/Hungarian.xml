@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3316</langversion>
+<langversion>6.8.3317</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2697,12 +2697,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4390,6 +4384,12 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10974,6 +10974,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Kötegelt konvertálási folyamat itt jelennek meg futási időben)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Select célmappát</translation>
 </phrase>
@@ -11144,11 +11149,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Kötegelt konvertálási folyamat itt jelennek meg futási időben)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Bemutatók tiltva</translation>
 </phrase>
@@ -11205,6 +11205,11 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 <phrase>
 <original>Invalid list file</original>
 <translation>Érvénytelen listafájlt</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>nincs makró kiválasztott</translation>
 </phrase>
 
 <phrase>
@@ -11418,11 +11423,6 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>nincs makró kiválasztott</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>ha PhotoDemon nem támogatja a kép eredeti méret, szabványos formátumot kell használni</translation>
 </phrase>
@@ -11453,33 +11453,8 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Kép feldolgozása %1 %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Becsült hátralévő idő</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>perc</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>percek</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>második</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Hátralévő idő becslése</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11493,26 +11468,21 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Batch konverzió elmarad.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>képek voltak</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>kép volt</translation>
+<original>Estimating time remaining</original>
+<translation>Hátralévő idő becslése</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>feldolgozott törlés előtt. Az utolsó feldolgozott kép volt: " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14090,26 +14060,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Törli a kiválasztott nyelvi fájl</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>kezdeni egy új nyelvi fájl a semmiből</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>szerkesztése meglévő nyelvi fájl</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>nyelvi fájlokat a jelenleg rendelkezésre álló</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>például. "1.0.0." Használja Major.Minor.Revision formátumban.</translation>
 </phrase>
@@ -14202,6 +14152,26 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Megindítja az automatikus fordítása minden hiányzó kifejezések</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Törli a kiválasztott nyelvi fájl</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>kezdeni egy új nyelvi fájl a semmiből</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>szerkesztése meglévő nyelvi fájl</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>nyelvi fájlokat a jelenleg rendelkezésre álló</translation>
 </phrase>
 
 <phrase>
@@ -14436,16 +14406,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Kérem várjon, amíg a nyelvi fájl érvényesített</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Ellenőrzés sikeres volt! Betöltése minden kifejezéseket és előkészítése fordítóprogram</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(mentett)</translation>
 </phrase>
@@ -14485,7 +14445,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>automatikusan ment a</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15275,10 +15235,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

@@ -225,8 +225,8 @@ Friend Sub LoadDefaultPDTheme()
     
     'Load the preferred XML file, and if it fails, fall back to PD's default theme
     Dim themeLoadedCorrectly As Boolean: themeLoadedCorrectly = False
-    If (Len(themeFilename) <> 0) Then
-        If (Len(accentFilename) <> 0) Then
+    If (LenB(themeFilename) <> 0) Then
+        If (LenB(accentFilename) <> 0) Then
             themeLoadedCorrectly = Me.LoadThemeFile(themeFilename, accentFilename)
         Else
             themeLoadedCorrectly = Me.LoadThemeFile(themeFilename)

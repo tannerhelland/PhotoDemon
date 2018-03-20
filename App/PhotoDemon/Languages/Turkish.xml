@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3316</langversion>
+<langversion>6.8.3317</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2705,12 +2705,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4398,6 +4392,12 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10984,6 +10984,11 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Toplu dönüştürme işlemi çalışma anında burada görünecek)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Seçin hedef klasör</translation>
 </phrase>
@@ -11154,11 +11159,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Toplu dönüştürme işlemi çalışma anında burada görünecek)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>önizlemeleri devre dışı</translation>
 </phrase>
@@ -11215,6 +11215,11 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 <phrase>
 <original>Invalid list file</original>
 <translation>Geçersiz listesi dosyası</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>Seçili makro</translation>
 </phrase>
 
 <phrase>
@@ -11428,11 +11433,6 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>Seçili makro</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>PhotoDemon bir görüntünün orijinal biçimini desteklemiyorsa, standart bir format kullanılacaktır</translation>
 </phrase>
@@ -11463,33 +11463,8 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>İşleme görüntü #% %2 1.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Tahmini kalan süre</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>dakika</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>dakika</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>ikinci</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Kalan süre tahmin</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11503,26 +11478,21 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Toplu dönüştürme iptal edildi.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>görüntüler vardı</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>görüntü oldu</translation>
+<original>Estimating time remaining</original>
+<translation>Kalan süre tahmin</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>iptalden önce işlendi. Son işlenen görüntü " %1" idi.</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14100,26 +14070,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>seçilen dil dosyasını silin</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>Sıfırdan yeni bir dil dosyası başlatmak</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Varolan dil dosyasını düzenlemek</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>mevcut dil dosyaları</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>Örneğin. "1.0.0". Major.Minor.Revision biçimini kullanın.</translation>
 </phrase>
@@ -14212,6 +14162,26 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Tüm eksik cümleleri otomatik çeviri başlatmak</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>seçilen dil dosyasını silin</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>Sıfırdan yeni bir dil dosyası başlatmak</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Varolan dil dosyasını düzenlemek</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>mevcut dil dosyaları</translation>
 </phrase>
 
 <phrase>
@@ -14446,16 +14416,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>dil dosyası valide lütfen bekleyin</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Doğrulama başarılı! Tüm ifadeler yükleniyor ve çeviri motoru hazırlanıyor</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(Kayıtlı)</translation>
 </phrase>
@@ -14495,7 +14455,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>üzerinde otomatik olarak kaydetme</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15285,10 +15245,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>

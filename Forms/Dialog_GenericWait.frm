@@ -27,24 +27,14 @@ Begin VB.Form FormWait
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
-   Begin VB.Timer tmrProgBar 
-      Interval        =   50
-      Left            =   8880
-      Top             =   120
-   End
-   Begin VB.PictureBox picProgBar 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdProgressBar pbMarquee 
       Height          =   495
       Left            =   120
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   585
       TabIndex        =   0
       Top             =   840
       Width           =   8775
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdLabel lblWaitTitle 
       Height          =   405
@@ -80,26 +70,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-'System progress bar control
-Private sysProgBar As cProgressBarOfficial
-
 Private WithEvents m_ModalUnloadCheck As pdTimer
 Attribute m_ModalUnloadCheck.VB_VarHelpID = -1
 
 Private Sub Form_Load()
 
-    Set sysProgBar = New cProgressBarOfficial
-    sysProgBar.CreateProgressBar picProgBar.hWnd, 0, 0, picProgBar.ScaleWidth, picProgBar.ScaleHeight, True, True, True, True
-    sysProgBar.Max = 100
-    sysProgBar.Min = 0
-    sysProgBar.Value = 0
-    sysProgBar.Marquee = True
-    sysProgBar.Value = 0
-    
     Interface.ApplyThemeAndTranslations Me
-    
-    'Turn on the progress bar timer, which is used to move the marquee progress bar.
-    tmrProgBar.Enabled = True
+    pbMarquee.MarqueeMode = True
     
     Set m_ModalUnloadCheck = New pdTimer
     m_ModalUnloadCheck.Interval = 16
@@ -113,7 +90,6 @@ Private Sub Form_Unload(Cancel As Integer)
         m_ModalUnloadCheck.StopTimer
         Set m_ModalUnloadCheck = Nothing
     End If
-    tmrProgBar.Enabled = False
     
     Interface.ReleaseFormTheming Me
     
@@ -131,10 +107,3 @@ Private Sub m_ModalUnloadCheck_Timer()
     End If
     
 End Sub
-
-Private Sub tmrProgBar_Timer()
-    sysProgBar.Value = sysProgBar.Value + 1
-    If sysProgBar.Value = sysProgBar.Max Then sysProgBar.Value = sysProgBar.Min
-    sysProgBar.Refresh
-End Sub
-

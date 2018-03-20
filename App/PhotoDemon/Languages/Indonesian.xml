@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.275</langversion>
+<langversion>6.6.276</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2710,12 +2710,6 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
-<!-- BEGIN text for cProgressBarOfficial.cls -->
-
-<!-- cProgressBarOfficial.cls contains 0 phrases. -->
-
-<!-- END text for cProgressBarOfficial.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -4405,6 +4399,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <!-- pdPreview.ctl contains 0 phrases. -->
 
 <!-- END text for pdPreview.ctl-->
+
+<!-- BEGIN text for pdProgressBar.ctl -->
+
+<!-- pdProgressBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdProgressBar.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -10998,6 +10998,11 @@ R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki t
 </phrase>
 
 <phrase>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(proses penukaran kumpulan akan muncul di sini pada jangka masa)</translation>
+</phrase>
+
+<phrase>
 <original>Select destination folder</original>
 <translation>Pilih folder destinasi</translation>
 </phrase>
@@ -11168,11 +11173,6 @@ R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki t
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(proses penukaran kumpulan akan muncul di sini pada jangka masa)</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>preview dilumpuhkan</translation>
 </phrase>
@@ -11229,6 +11229,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <phrase>
 <original>Invalid list file</original>
 <translation>Fail senarai tidak sah</translation>
+</phrase>
+
+<phrase>
+<original>no macro selected</original>
+<translation>tidak makro dipilih</translation>
 </phrase>
 
 <phrase>
@@ -11442,11 +11447,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>no macro selected</original>
-<translation>tidak makro dipilih</translation>
-</phrase>
-
-<phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
 <translation>jika PhotoDemon tidak menyokong format asal imej ini, format yang standard akan digunakan</translation>
 </phrase>
@@ -11477,33 +11477,8 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Processing image # %1 of %2. %3</original>
-<translation>Pemprosesan imej # %1 daripada %2.  %3</translation>
-</phrase>
-
-<phrase>
-<original>Estimated time remaining</original>
-<translation>Anggaran masa yang tinggal</translation>
-</phrase>
-
-<phrase>
-<original>minute</original>
-<translation>minit</translation>
-</phrase>
-
-<phrase>
-<original>minutes</original>
-<translation>minit</translation>
-</phrase>
-
-<phrase>
-<original>second</original>
-<translation>kedua</translation>
-</phrase>
-
-<phrase>
-<original>Estimating time remaining</original>
-<translation>Menganggarkan masa yang tinggal</translation>
+<original>Processing image # %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11517,26 +11492,21 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled.</original>
-<translation>Penukaran Batch dibatalkan.</translation>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>images were</original>
-<translation>imej adalah</translation>
+<original>Estimated time remaining: %1:%2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>image was</original>
-<translation>imej adalah</translation>
+<original>Estimating time remaining</original>
+<translation>Menganggarkan masa yang tinggal</translation>
 </phrase>
 
-<phrase>
-<original>processed before cancelation. Last processed image was "%1".</original>
-<translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
-</phrase>
-
-<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14114,26 +14084,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Delete selected language file</original>
-<translation>Padam fail bahasa dipilih</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>memulakan fail bahasa baru dari awal</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>mengedit fail bahasa yang sedia ada</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>fail bahasa kini boleh didapati</translation>
-</phrase>
-
-<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>mis "1.0.0". Sila gunakan format Major.Minor.Revision.</translation>
 </phrase>
@@ -14226,6 +14176,26 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Memulakan auto-terjemahan semua frasa hilang</translation>
+</phrase>
+
+<phrase>
+<original>Delete selected language file</original>
+<translation>Padam fail bahasa dipilih</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>memulakan fail bahasa baru dari awal</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>mengedit fail bahasa yang sedia ada</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>fail bahasa kini boleh didapati</translation>
 </phrase>
 
 <phrase>
@@ -14465,16 +14435,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>Please wait while the language file is validated</original>
-<translation>Sila tunggu sementara fail bahasa disahkan</translation>
-</phrase>
-
-<phrase>
-<original>Validation successful!  Loading all phrases and preparing translation engine</original>
-<translation>Pengesahan berjaya! Memuatkan semua frasa dan menyediakan enjin penterjemahan</translation>
-</phrase>
-
-<phrase>
 <original>(saved)</original>
 <translation>(disimpan)</translation>
 </phrase>
@@ -14514,7 +14474,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>disimpan secara automatik pada</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 137 phrases. 59 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15304,10 +15264,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2566</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4664 phrases. -->
-<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
-<!-- These 2566 phrases contain approximately 12449 total words. -->
+<!-- As of this build, PhotoDemon contains 4641 phrases. -->
+<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 12428 total words. -->
 
 </pdData>
