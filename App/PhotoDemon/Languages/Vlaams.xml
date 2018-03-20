@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.332</langversion>
+<langversion>6.7.333</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4103,6 +4103,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>last-used settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply this action to the current image.</original>
 <translation>Pas deze actie toe op de huidige afbeelding</translation>
 </phrase>
@@ -4157,7 +4162,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Eerder opgeslagen voorinstellingen kunnen hier worden geselecteerd. Je kan de huidige instellingen als een nieuwe voorinstelling opslaan door te klikken op de knop "Voorinstelling opslaan" aan de rechterkant.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8034,13 +8039,33 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>Voeg nieuwe vooraf ingestelde</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>voer een naam voor deze preset</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>(geef een naam op)</translation>
 </phrase>
 
 <phrase>
@@ -8054,11 +8079,6 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>(geef een naam op)</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>Vul een naam in voor deze preset.</translation>
 </phrase>
@@ -8068,7 +8088,17 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Naam voorinstelling nodig</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -13087,7 +13117,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>verwijder transparantie</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -15268,10 +15298,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4646 phrases. -->
-<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12432 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

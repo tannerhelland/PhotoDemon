@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3315</langversion>
+<langversion>6.8.3316</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4103,6 +4103,11 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
+<original>last-used settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply this action to the current image.</original>
 <translation>Aplicar esta ação para a imagem atual.</translation>
 </phrase>
@@ -4157,7 +4162,7 @@ or os menus File> Open e File> Import.</translation>
 <translation>Presets salvos anteriormente podem ser selecionados aqui. Você pode salvar as configurações atuais como uma nova predefinição clicando no botão Salvar predefinição na direita.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8034,13 +8039,33 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>Adicionar nova predefinição</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>digite um nome para esta predefinição</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>(Digite o nome aqui)</translation>
 </phrase>
 
 <phrase>
@@ -8054,11 +8079,6 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>(Digite o nome aqui)</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>Digite um nome para esta predefinição.</translation>
 </phrase>
@@ -8068,7 +8088,17 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Nome predefinido necessário</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -13086,7 +13116,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>remover a transparência</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -15267,10 +15297,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4646 phrases. -->
-<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12432 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

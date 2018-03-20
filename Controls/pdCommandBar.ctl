@@ -113,13 +113,13 @@ Attribute VB_Exposed = False
 '
 'This command bar control encapsulates a huge variety of functionality: some obvious, some not.  Tasks this control
 ' performs for its parent dialog includes:
-' - Validating the contents of all numeric controls when OK is pressed
+' - Validating the contents of all UI elements when OK is pressed
 ' - Hiding and unloading the parent form when OK is pressed and all controls succesfully validate
 ' - Unloading the parent when Cancel is pressed
 ' - Saving/loading last-used settings for all standard controls on the parent
-' - Automatically resetting control values if no last-used settings are found
-' - When Reset is pressed, all standard controls will be reset using an elegant system (described in cmdReset comments)
-' - Saving and loading user-created presets
+' - Automatically resetting control values if no last-used settings exist
+' - When Reset is pressed, all standard controls are reset using an elegant system (described in cmdReset comments)
+' - Saving, loading, and otherwise managing user-created presets
 ' - Randomizing all standard controls when Randomize is pressed
 ' - Suspending effect previewing while operations are being performed, and requesting new previews when relevant
 '
@@ -207,8 +207,7 @@ Private m_userAllowsPreviews As Boolean
 'When a tool dialog needs to read or write custom preset data (e.g. the Curves dialog, with its unique Curves
 ' user control), we use these variables to store all custom data supplied to us.
 Private m_numCustomPresetEntries As Long
-Private m_customPresetNames() As String
-Private m_customPresetData() As String
+Private m_customPresetNames() As String, m_customPresetData() As String
 
 'If a parent dialog wants to suspend auto-load of last-used settings (e.g. the Resize dialog, because last-used
 ' settings will be some other image's dimensions), this bool will be set to TRUE
@@ -227,6 +226,9 @@ Private m_ParentAvailable As Boolean
 
 'As of March 2015, presets are now handled by a separate class.  This greatly simplifies the complexity of this user control.
 Private m_Presets As pdToolPreset
+
+'Individual preset values are parsed using PD's high-performance XML parser
+Private m_Params As pdParamXML
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -493,7 +495,7 @@ End Sub
 Private Function SavePreset() As Boolean
 
     Message "Saving preset..."
-
+    
     'Prompt the user for a name
     Dim newNameReturn As VbMsgBoxResult
     newNameReturn = DialogManager.PromptNewPreset(m_Presets, Me, UserControl.Parent)
@@ -858,7 +860,7 @@ Private Sub UserControl_Show()
     'When the control is first made visible, rebuild individual tooltips using a custom solution
     ' (which allows for linebreaks and theming).
     If pdMain.IsProgramRunning() Then
-                
+        
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         m_parentToolName = Replace$(UserControl.Parent.Name, "Form", vbNullString, , , vbTextCompare)
         
@@ -935,12 +937,29 @@ End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titled "presetName".
-Public Sub StorePreset(Optional ByVal presetName As String = "last-used settings")
+Public Sub StorePreset(Optional ByVal srcPresetName As String = "last-used settings")
     
-    presetName = Trim$(presetName)
+    'Make sure PD's built-in "last-used settings" text is properly translated
+    If (Not g_Language Is Nothing) And Strings.StringsEqual(srcPresetName, "last-used settings", True) Then srcPresetName = g_Language.TranslateMessage("last-used settings")
+    srcPresetName = Trim$(srcPresetName)
     
-    'Initialize a new preset write with the preset manager
-    m_Presets.BeginPresetWrite presetName
+    'An external function handles the actual XML assembly.
+    m_Presets.AddPreset srcPresetName, GetPresetParamString(srcPresetName)
+    
+    'Because the user may still cancel the dialog, we want to request an XML file dump immediately,
+    ' so the recently added preset won't be lost.
+    m_Presets.WritePresetFile
+    
+End Sub
+
+'Record the current value of all UI objects on our parent dialog, and return their combined value as an XML string.
+' An optional preset name can be passed; note that this gets embedded in the XML, as well.
+Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "last-used settings") As String
+
+    'Initialize a param handler and initialize it with the passed preset name
+    If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+    m_Params.Reset
+    If (LenB(srcPresetName) <> 0) Then m_Params.AddParam "fullPresetName", srcPresetName, True
     
     Dim controlName As String, controlType As String, controlValue As String
     
@@ -1025,7 +1044,7 @@ Public Sub StorePreset(Optional ByVal presetName As String = "last-used settings
         If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
         
         'If the control value still has a non-zero length, add it now
-        If (LenB(controlValue) <> 0) Then m_Presets.WritePresetValue controlName, controlValue
+        If (LenB(controlValue) <> 0) Then m_Params.AddParam controlName, controlValue
         
     'Continue with the next control on the parent dialog
     Next eControl
@@ -1042,19 +1061,14 @@ Public Sub StorePreset(Optional ByVal presetName As String = "last-used settings
         'Loop through all custom data, and add it one-at-a-time to the preset object
         Dim i As Long
         For i = 0 To m_numCustomPresetEntries - 1
-            m_Presets.WritePresetValue "custom:" & m_customPresetNames(i), m_customPresetData(i)
+            m_Params.AddParam "custom:" & m_customPresetNames(i), m_customPresetData(i)
         Next i
     
     End If
     
-    'We have now added all relevant values to the XML file.  Turn off preset write mode.
-    m_Presets.EndPresetWrite
-    
-    'Because the user may still cancel the dialog, we want to request an XML file dump immediately, so
-    ' this preset is not lost.
-    m_Presets.WritePresetFile
-    
-End Sub
+    GetPresetParamString = m_Params.GetParamString()
+
+End Function
 
 'This function is called when the user wants to add new preset data to the current preset
 Public Function AddPresetData(ByVal presetName As String, ByVal presetData As String)
@@ -1072,43 +1086,30 @@ Public Function AddPresetData(ByVal presetName As String, ByVal presetData As St
     
 End Function
 
-'Inside the ReadCustomPresetData event, the caller can call this function to retrieve any custom preset data from the active preset.
-Public Function RetrievePresetData(ByVal m_customPresetName As String) As String
+'Inside the ReadCustomPresetData event, the caller can call this function to retrieve any custom preset data from
+' the active preset.
+Public Function RetrievePresetData(ByRef m_customPresetName As String) As String
     
-    'For this function, we ignore the boolean return of .retrievePresetValue, and simply let the caller deal with blank strings
-    ' if they occur.
-    m_Presets.ReadPresetValue "custom:" & m_customPresetName, RetrievePresetData
+    'For this function, we ignore the boolean return of .retrievePresetValue, and simply let the caller deal with
+    ' blank strings if they occur.
+    If (Not m_Params Is Nothing) Then RetrievePresetData = m_Params.GetString("custom:" & m_customPresetName)
     
 End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
 ' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
-Private Function LoadPreset(Optional ByVal presetName As String = "last-used settings", Optional ByVal loadEverything As Boolean = True) As Boolean
+Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used settings", Optional ByVal loadEverything As Boolean = True) As Boolean
     
     'Start by asking the preset engine if the requested preset even exists in the file
     Dim presetExists As Boolean
-    presetExists = m_Presets.DoesPresetExist(presetName)
-    
-    'If the preset doesn't exist, look for an un-translated version of the name
-    If (Not presetExists) Then
-    
-        presetName = Trim$(presetName)
-        
-        Dim originalEnglishName As String
-        originalEnglishName = g_Language.RestoreMessage(presetName)
-        
-        If Strings.StringsNotEqual(presetName, originalEnglishName, False) Then
-            presetName = originalEnglishName
-            presetExists = m_Presets.DoesPresetExist(presetName)
-        End If
-        
-    End If
+    presetExists = m_Presets.DoesPresetExist(srcPresetName)
     
     'If the preset exists, continue with the load process
     If presetExists Then
         
-        'Initiate preset retrieval
-        m_Presets.BeginPresetRead presetName
+        'Copy this preset's XML into a local param evaluator
+        If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+        m_Params.SetParamString m_Presets.GetPresetXML(srcPresetName)
         
         'Loading preset values involves (potentially) changing the value of every single object on this form.  To prevent each
         ' of these changes from triggering a full preview redraw, we forcibly suspend previews now.
@@ -1131,7 +1132,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                 If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
                 
                 'See if a preset exists for this control and this particular preset
-                If m_Presets.ReadPresetValue(controlName, controlValue) Then
+                If m_Params.GetStringEx(controlName, controlValue) Then
                     
                     'A value for this control exists, and it has been retrieved into controlValue.  We sort handling of this value
                     ' by control type, as different controls require different input values (bool, int, etc).
@@ -1229,9 +1230,6 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
         ' does not directly correspond to a traditional control, like the Curves dialog which supports custom curve point data)
         RaiseEvent ReadCustomPresetData
         
-        'With all preset data successfully loaded, we can reset the preset manager.
-        m_Presets.EndPresetRead
-        
         'Re-enable previews
         m_allowPreviews = True
         
@@ -1257,17 +1255,17 @@ Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
     cboPreset.Clear
     
     'We always add one blank entry to the preset combo box, which is selected by default
-    cboPreset.AddItem " ", 0, True
+    cboPreset.AddItem " ", 0
 
     'Query the preset manager for any available presets.  If found, it will return the number of available presets
     Dim listOfPresets As pdStringStack
-    If m_Presets.GetListOfPresets(listOfPresets) > 0 Then
+    If (m_Presets.GetListOfPresets(listOfPresets) > 0) Then
         
-        'Add all discovered presets to the combo box.  Note that we do not use a traditional stack pop here, as that would cause
-        ' the preset order to be reversed!
+        'Add all discovered presets to the combo box.  Note that we do not use a traditional stack pop here,
+        ' as that would cause the preset order to be reversed!
         Dim i As Long
         For i = 0 To listOfPresets.GetNumOfStrings - 1
-            cboPreset.AddItem " " & listOfPresets.GetString(i), i + 1
+            cboPreset.AddItem " " & listOfPresets.GetString(i), i + 1, (i = 0) And (listOfPresets.GetNumOfStrings > 1)
         Next i
         
     End If

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.0</langversion>
+<langversion>1.0.1</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4098,6 +4098,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>last-used settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply this action to the current image.</original>
 <translation>이 작업을 현재 이미지에 적용하십시오.</translation>
 </phrase>
@@ -4152,7 +4157,7 @@ or the File > Open and File > Import menus.</original>
 <translation>이전에 저장된 사전 설정을 여기에서 선택할 수 있습니다. 오른쪽의 미리 설정 저장 버튼을 클릭하여 현재 설정을 새 사전 설정으로 저장할 수 있습니다.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8028,13 +8033,33 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>새 사전 설정 추가</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>이 프리셋의 이름을 입력하십시오.</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>(여기에 이름을 입력하십시오)</translation>
 </phrase>
 
 <phrase>
@@ -8048,11 +8073,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>(여기에 이름을 입력하십시오)</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>이 사전 설정의 이름을 입력하십시오.</translation>
 </phrase>
@@ -8062,7 +8082,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>프리셋 이름 필요</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -13081,7 +13111,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>투명도 제거</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -15261,10 +15291,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4646 phrases. -->
-<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12432 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

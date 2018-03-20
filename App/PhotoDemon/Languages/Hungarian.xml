@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3315</langversion>
+<langversion>6.8.3316</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4089,6 +4089,11 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>last-used settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply this action to the current image.</original>
 <translation>Alkalmazza ezt a műveletet az aktuális képet.</translation>
 </phrase>
@@ -4143,7 +4148,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>Korábban mentett beállításokat lehet kiválasztani itt. Ön tudja menteni az aktuális beállításokat egy új előre kattintva Save Preset gombra a jobb oldalon.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8017,13 +8022,33 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>Új előre</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>adjon meg egy nevet a beállított</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>(Írja be a nevet itt)</translation>
 </phrase>
 
 <phrase>
@@ -8037,11 +8062,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>(Írja be a nevet itt)</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>Kérjük, adjon meg egy nevet a beállított.</translation>
 </phrase>
@@ -8051,7 +8071,17 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Előre név szükséges</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -13069,7 +13099,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>távolítsa el az átláthatóság</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -15245,10 +15275,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4646 phrases. -->
-<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12432 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

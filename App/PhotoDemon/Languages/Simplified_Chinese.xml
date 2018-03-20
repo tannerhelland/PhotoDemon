@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3411</langversion>
+<langversion>7.0.3412</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4094,6 +4094,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>last-used settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply this action to the current image.</original>
 <translation>套用这个动作对当前图像。</translation>
 </phrase>
@@ -4148,7 +4153,7 @@ or the File > Open and File > Import menus.</original>
 <translation>以前保存的预设可以选择在这里。你可以保存当前设置为一个新的预设通过单击“保存预设右边的按钮。</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8023,13 +8028,33 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>添加新的预设</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>为此预设输入一个名字</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>（在此处输入名称）</translation>
 </phrase>
 
 <phrase>
@@ -8043,11 +8068,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>（在此处输入名称）</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>请为这个预设输入一个名称。</translation>
 </phrase>
@@ -8057,7 +8077,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>要求预置名称</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -13074,7 +13104,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>移除透明度</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -15251,10 +15281,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4646 phrases. -->
-<!-- 2086 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12432 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

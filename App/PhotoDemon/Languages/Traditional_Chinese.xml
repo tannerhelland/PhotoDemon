@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.1</langversion>
+<langversion>7.0.3</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -117,12 +117,6 @@
 
 <!-- END text for PublicVars.bas-->
 
-<!-- BEGIN text for PublicAPI.bas -->
-
-<!-- PublicAPI.bas contains 0 phrases. -->
-
-<!-- END text for PublicAPI.bas-->
-
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
@@ -232,7 +226,37 @@
 
 <!-- BEGIN text for DialogManager.bas -->
 
-<!-- DialogManager.bas contains 0 phrases. -->
+<phrase>
+<original>How would you like to load this image?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Open it as a standalone image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add it to the current image as a new layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation>我不知道如何決定，取消此操作。</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do this without asking me</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Drop as image or layer</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -1189,11 +1213,6 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>I can't decide.  Cancel this action.</original>
-<translation>我不知道如何決定，取消此操作。</translation>
-</phrase>
-
-<phrase>
 <original>In the future, automatically rasterize without prompting me</original>
 <translation>以後自動點陣化，不用提醒我</translation>
 </phrase>
@@ -1218,7 +1237,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>頁 %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1557,7 +1576,47 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- BEGIN text for Palettes.bas -->
 
-<!-- Palettes.bas contains 0 phrases. -->
+<phrase>
+<original>All supported palettes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Swatch</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Color Table</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Swatch Exchange</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GIMP Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PaintShop Pro Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -1566,6 +1625,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for Debug.bas -->
+
+<!-- Debug.bas contains 0 phrases. -->
+
+<!-- END text for Debug.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -2535,6 +2600,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for UserPrefs.bas -->
+
+<!-- UserPrefs.bas contains 0 phrases. -->
+
+<!-- END text for UserPrefs.bas-->
+
 <!-- BEGIN text for VB_Hacks.bas -->
 
 <!-- VB_Hacks.bas contains 0 phrases. -->
@@ -2767,12 +2838,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdDIB.cls-->
 
-<!-- BEGIN text for pdDebug.cls -->
-
-<!-- pdDebug.cls contains 0 phrases. -->
-
-<!-- END text for pdDebug.cls-->
-
 <!-- BEGIN text for pdDictionary.cls -->
 
 <!-- pdDictionary.cls contains 0 phrases. -->
@@ -2900,6 +2965,18 @@ Please enter a numeric value.</original>
 <!-- pdInputMouse.cls contains 0 phrases. -->
 
 <!-- END text for pdInputMouse.cls-->
+
+<!-- BEGIN text for pdKDTree.cls -->
+
+<!-- pdKDTree.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTree.cls-->
+
+<!-- BEGIN text for pdKDTreeNode.cls -->
+
+<!-- pdKDTreeNode.cls contains 0 phrases. -->
+
+<!-- END text for pdKDTreeNode.cls-->
 
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
@@ -3380,6 +3457,23 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPackager2.cls-->
 
+<!-- BEGIN text for pdPalette.cls -->
+
+<phrase>
+<original>palette exported by PhotoDemon %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPalette.cls-->
+
+<!-- BEGIN text for pdPaletteChild.cls -->
+
+<!-- pdPaletteChild.cls contains 0 phrases. -->
+
+<!-- END text for pdPaletteChild.cls-->
+
 <!-- BEGIN text for pdParamXML.cls -->
 
 <!-- pdParamXML.cls contains 0 phrases. -->
@@ -3397,12 +3491,6 @@ Please enter a numeric value.</original>
 <!-- pdPixelIterator.cls contains 0 phrases. -->
 
 <!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for pdPreferences.cls -->
-
-<!-- pdPreferences.cls contains 0 phrases. -->
-
-<!-- END text for pdPreferences.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -3936,13 +4024,13 @@ or the File > Open and File > Import menus.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdColorVariants.ctl-->
 
 <!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdColorWheel.ctl contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdColorWheel.ctl-->
 
@@ -3971,6 +4059,11 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Preset save canceled.</original>
 <translation>已取消儲存預設集。</translation>
+</phrase>
+
+<phrase>
+<original>last-used settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4028,7 +4121,7 @@ or the File > Open and File > Import menus.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -4247,6 +4340,17 @@ or the File > Open and File > Import menus.</original>
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdNewOld.ctl-->
+
+<!-- BEGIN text for pdPaletteUI.ctl -->
+
+<phrase>
+<original>index %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdPaletteUI.ctl-->
 
 <!-- BEGIN text for pdPenSelector.ctl -->
 
@@ -4783,6 +4887,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Count unique colors</original>
 <translation>計算唯一色彩</translation>
 </phrase>
@@ -4933,13 +5042,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Flatten image</original>
-<translation>影像平面化</translation>
+<original>Merge visible layers</original>
+<translation>合併可見圖層</translation>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>合併可見圖層</translation>
+<original>Flatten image</original>
+<translation>影像平面化</translation>
 </phrase>
 
 <phrase>
@@ -5798,6 +5907,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Reset all toolboxes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Next image</original>
 <translation>下一個影像</translation>
 </phrase>
@@ -6362,7 +6476,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation></translation>
 </phrase>
 
-<!-- MainWindow.frm contains 549 phrases. 185 were duplicates of existing phrases, so only 364 new phrases were written to file. -->
+<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7789,23 +7903,18 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>Restore selected autosaves</original>
-<translation>還原所選的自動儲存</translation>
+<original>Attempt to recover</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all autosaves</original>
-<translation>捨棄所有自動儲存</translation>
+<original>Discard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>Warning</original>
-<translation>警告</translation>
 </phrase>
 
 <phrase>
@@ -7833,9 +7942,40 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>無法使用預覽</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
+
+<!-- BEGIN text for Dialog_ColorPanel.frm (dialog_ColorPanel) -->
+
+<phrase>
+<original>Color panel settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file (%1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to use</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wheels + history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Dialog_ColorPanel.frm-->
 
 <!-- BEGIN text for Dialog_ColorSelector.frm (dialog_ColorSelector) -->
 
@@ -7856,13 +7996,33 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <!-- BEGIN text for Dialog_EditPreset.frm (dialog_AddPreset) -->
 
 <phrase>
-<original>Add new preset</original>
-<translation>新增預設集</translation>
+<original>Saved presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>saved presets for this tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
 <translation>輸入預設集名稱</translation>
+</phrase>
+
+<phrase>
+<original>(no saved presets)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(enter name here)</original>
+<translation>(在此輸入名稱)</translation>
 </phrase>
 
 <phrase>
@@ -7876,11 +8036,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>(enter name here)</original>
-<translation>(在此輸入名稱)</translation>
-</phrase>
-
-<phrase>
 <original>Please enter a name for this preset.</original>
 <translation>請為預設集輸入一個名稱</translation>
 </phrase>
@@ -7890,7 +8045,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>必須輸入預設集名稱</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit existing presets</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -8160,7 +8325,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation></translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -10286,6 +10451,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>dithering</original>
 <translation></translation>
 </phrase>
@@ -10293,6 +10468,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>reduce color bleed</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>基礎設定</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>進階設定</translation>
 </phrase>
 
 <phrase>
@@ -10307,6 +10492,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>from file</original>
 <translation></translation>
 </phrase>
 
@@ -10340,7 +10535,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>%1 (%2 colors)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING!  Palette file invalid.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -10740,6 +10945,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>選擇目標資料夾</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>小寫</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>大寫</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>其他重新命名選項</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>輸出影像至此資料夾</translation>
+</phrase>
+
+<phrase>
 <original>set export settings for this format</original>
 <translation></translation>
 </phrase>
@@ -10852,66 +11117,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>選擇目標資料夾</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>小寫</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>大寫</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>其他重新命名選項</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>輸出影像至此資料夾</translation>
 </phrase>
 
 <phrase>
@@ -11276,7 +11481,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 192 phrases. 81 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11338,11 +11543,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Creating temporary file</original>
-<translation>建立暫存檔</translation>
-</phrase>
-
-<phrase>
 <original>Image URL verified.  Downloading image</original>
 <translation>影像網址已驗證。下載影像</translation>
 </phrase>
@@ -11401,7 +11601,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>等待使用者輸入</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12084,16 +12284,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>basic settings</original>
-<translation>基礎設定</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>進階設定</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>中繼資料設定</translation>
 </phrase>
@@ -12193,7 +12383,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>最佳化設定減少檔案 %1 大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12317,8 +12507,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright %1 2001-2018 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon %1 2001-2018 著作權屬 Tanner Helland 與參與貢獻者</translation>
+<original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12874,7 +13064,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>移除透明度</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Flatten.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Flatten.frm-->
 
@@ -12912,7 +13102,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Colors.frm-->
 
@@ -14304,6 +14494,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>generate debug logs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation></translation>
 </phrase>
@@ -14638,7 +14833,32 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation></translation>
 </phrase>
 
@@ -14673,6 +14893,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximize quality</original>
 <translation>最大品質</translation>
 </phrase>
@@ -14693,7 +14918,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.</original>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
 <translation></translation>
 </phrase>
 
@@ -14703,7 +14928,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)</original>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
 <translation></translation>
 </phrase>
 
@@ -14812,6 +15037,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
 <translation></translation>
 </phrase>
@@ -14828,6 +15058,16 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>reading not accurate inside IDE</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
 <translation></translation>
 </phrase>
 
@@ -14876,7 +15116,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 164 phrases. 43 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14993,10 +15233,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2524</phrasecount>
+<phrasecount>2566</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4558 phrases. -->
-<!-- 2034 are duplicates, so only 2524 unique phrases have been written to file. -->
-<!-- These 2524 phrases contain approximately 12127 total words. -->
+<!-- As of this build, PhotoDemon contains 4664 phrases. -->
+<!-- 2098 are duplicates, so only 2566 unique phrases have been written to file. -->
+<!-- These 2566 phrases contain approximately 12449 total words. -->
 
 </pdData>

@@ -2,8 +2,8 @@ VERSION 5.00
 Begin VB.Form dialog_AddPreset 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Add new preset"
-   ClientHeight    =   1950
+   Caption         =   " Saved presets"
+   ClientHeight    =   4440
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   6735
@@ -19,41 +19,112 @@ Begin VB.Form dialog_AddPreset
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   130
+   ScaleHeight     =   296
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   449
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.pdButtonStrip btsOptions 
+      Height          =   735
+      Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   1296
+      FontSize        =   12
+   End
    Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   1
-      Top             =   1200
+      TabIndex        =   0
+      Top             =   3690
       Width           =   6735
       _ExtentX        =   11880
       _ExtentY        =   1323
       DontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.pdTextBox txtName 
-      Height          =   375
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   2535
+      Index           =   1
       Left            =   120
-      TabIndex        =   0
-      Top             =   600
+      TabIndex        =   4
+      Top             =   1080
       Width           =   6495
       _ExtentX        =   11456
-      _ExtentY        =   661
-      FontSize        =   11
+      _ExtentY        =   4471
+      Begin PhotoDemon.pdButton cmdMove 
+         Height          =   615
+         Index           =   0
+         Left            =   240
+         TabIndex        =   7
+         Top             =   1800
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   1085
+      End
+      Begin PhotoDemon.pdButton cmdDelete 
+         Height          =   615
+         Left            =   2370
+         TabIndex        =   6
+         Top             =   1800
+         Width           =   4125
+         _ExtentX        =   7276
+         _ExtentY        =   1085
+         Caption         =   "delete preset"
+      End
+      Begin PhotoDemon.pdListBox lstPresets 
+         Height          =   1695
+         Left            =   120
+         TabIndex        =   5
+         Top             =   0
+         Width           =   6375
+         _ExtentX        =   11245
+         _ExtentY        =   2355
+         Caption         =   "saved presets for this tool"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdButton cmdMove 
+         Height          =   615
+         Index           =   1
+         Left            =   1305
+         TabIndex        =   8
+         Top             =   1800
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   1085
+      End
    End
-   Begin PhotoDemon.pdLabel lblName 
-      Height          =   375
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   2535
+      Index           =   0
       Left            =   120
-      Top             =   150
-      Width           =   6465
-      _ExtentX        =   11404
-      _ExtentY        =   661
-      Caption         =   "enter a name for this preset"
-      FontSize        =   11
+      TabIndex        =   2
+      Top             =   1080
+      Width           =   6495
+      _ExtentX        =   11456
+      _ExtentY        =   4471
+      Begin PhotoDemon.pdTextBox txtName 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   3
+         Top             =   405
+         Width           =   6135
+         _ExtentX        =   10821
+         _ExtentY        =   661
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdLabel lblName 
+         Height          =   375
+         Left            =   135
+         Top             =   15
+         Width           =   6345
+         _ExtentX        =   11192
+         _ExtentY        =   661
+         Caption         =   "enter a name for this preset"
+         FontSize        =   11
+      End
    End
 End
 Attribute VB_Name = "dialog_AddPreset"
@@ -112,12 +183,53 @@ Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBa
     m_Presets.BackupPresetsInternally
     m_Presets.ClearActivePresetName
     
+    'Populate the "existing presets" list, if any exist
+    UpdatePresetList
+    
+    UpdateEditButtons
+    
     'Theme the dialog
     ApplyThemeAndTranslations Me
+    
+    'Set focus to the text entry box
+    txtName.Text = vbNullString
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI txtName.hWnd
     
     'Display the dialog
     Me.Show vbModal, parentForm
     
+End Sub
+
+'Populate the "existing presets" list, if any exist
+Private Sub UpdatePresetList()
+    
+    lstPresets.Clear
+    
+    Dim tmpStack As pdStringStack, numOfItems As Long, numValidItems As Long
+    numOfItems = m_Presets.GetListOfPresets(tmpStack)
+    numValidItems = 0
+    
+    If (numOfItems > 0) Then
+        
+        Dim i As Long, tmpString As String
+        For i = 0 To numOfItems - 1
+            tmpString = tmpStack.GetString(i)
+            If (LenB(Trim$(tmpString)) > 0) Then
+                If Strings.StringsNotEqual(tmpString, "last-used settings", True) And Strings.StringsNotEqual(tmpString, g_Language.TranslateMessage("last-used settings"), True) Then
+                    lstPresets.AddItem tmpString
+                    numValidItems = numValidItems + 1
+                End If
+            End If
+        Next i
+    
+    End If
+    
+    If (numValidItems = 0) Then lstPresets.AddItem "(no saved presets)"
+    
+End Sub
+
+Private Sub btsOptions_Click(ByVal buttonIndex As Long)
+    UpdateVisiblePanel
 End Sub
 
 Private Sub cmdBarMini_CancelClick()
@@ -131,60 +243,114 @@ End Sub
 
 Private Sub cmdBarMini_OKClick()
     
-    'Make sure a valid name was entered.
-    If (LenB(Trim$(txtName.Text)) <> 0) Then
-        
-        'A valid name was entered.  See if this name already exists in the preset manager.
-        If m_Presets.DoesPresetExist(Trim$(txtName.Text)) Then
-        
-            'This name already exists.  Ask the user if an overwrite is okay.
-            Dim msgReturn As VbMsgBoxResult
-            msgReturn = PDMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel Or vbExclamation, "Overwrite existing preset")
+    'If the user is adding a preset, make sure a valid name was entered.
+    If (btsOptions.ListIndex = 0) Then
+    
+        If (LenB(Trim$(txtName.Text)) <> 0) And (Strings.StringsNotEqual(txtName.Text, g_Language.TranslateMessage("(enter name here)"), True)) Then
             
-            'Based on the user's answer to the confirmation message box, continue or exit
-            Select Case msgReturn
-
-                'If the user selects YES, continue on like normal
-                Case vbYes
-                    m_userAnswer = vbOK
-
-                'If the user selects NO, let them enter a new name
-                Case vbNo
-                    txtName.Text = g_Language.TranslateMessage("(enter name here)")
-                    txtName.SetFocus
-                    txtName.SelectAll
-                    cmdBarMini.DoNotUnloadForm
-                    Exit Sub
-
-                'If the user selects CANCEL, exit the dialog entirely
-                Case vbCancel
-                    m_userAnswer = vbCancel
+            'A valid name was entered.  See if this name already exists in the preset manager.
+            If m_Presets.DoesPresetExist(Trim$(txtName.Text)) Then
+            
+                'This name already exists.  Ask the user if an overwrite is okay.
+                Dim msgReturn As VbMsgBoxResult
+                msgReturn = PDMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel Or vbExclamation, "Overwrite existing preset")
                 
-            End Select
+                'Based on the user's answer to the confirmation message box, continue or exit
+                Select Case msgReturn
+    
+                    'If the user selects YES, continue on like normal
+                    Case vbYes
+                        m_userAnswer = vbOK
+                        
+                    'If the user selects NO, let them enter a new name
+                    Case vbNo
+                        txtName.Text = g_Language.TranslateMessage("(enter name here)")
+                        txtName.SetFocus
+                        txtName.SelectAll
+                        cmdBarMini.DoNotUnloadForm
+                        Exit Sub
+    
+                    'If the user selects CANCEL, exit the dialog entirely
+                    Case vbCancel
+                        m_userAnswer = vbCancel
+                    
+                End Select
+                
+            'This preset does not exist, so no special handling is required
+            Else
+                m_userAnswer = vbOK
+            End If
             
-        'This preset does not exist, so no special handling is required
+            'If the user is okay with us proceeding, update the preset they have just entered.
+            ' (Note that this will also update our locally shared m_Presets object.)
+            If (m_userAnswer = vbOK) Then m_CommandBar.StorePreset Trim$(txtName.Text)
+            
         Else
-            m_userAnswer = vbOK
+            
+            PDMsgBox "Please enter a name for this preset.", vbInformation Or vbOKOnly, "Preset name required"
+            
+            txtName.Text = g_Language.TranslateMessage("(enter name here)")
+            txtName.SetFocus
+            txtName.SelectAll
+            
+            cmdBarMini.DoNotUnloadForm
+            Exit Sub
+            
         End If
-        
+    
+    'If the user is *not* adding a new preset, there is nothing to validate.
     Else
+        m_userAnswer = vbOK
+    End If
+    
+    'Note that this function may have exited prematurely due to the results of a modal dialog.
+    If (m_userAnswer = vbOK) Then m_Presets.WritePresetFile
+    
+End Sub
+
+Private Sub cmdDelete_Click()
+    If (lstPresets.ListIndex >= 0) Then
+        Dim backupIndex As Long
+        backupIndex = lstPresets.ListIndex
+        m_Presets.DeletePreset lstPresets.List(lstPresets.ListIndex)
+        UpdatePresetList
+        If (backupIndex < lstPresets.ListCount) Then
+            If Strings.StringsNotEqual(lstPresets.List(backupIndex), g_Language.TranslateMessage("(no saved presets)"), True) Then lstPresets.ListIndex = backupIndex
+        Else
+            If Strings.StringsNotEqual(lstPresets.List(lstPresets.ListCount - 1), g_Language.TranslateMessage("(no saved presets)"), True) Then lstPresets.ListIndex = lstPresets.ListCount - 1
+        End If
+        UpdateEditButtons
+    End If
+End Sub
+
+Private Sub cmdMove_Click(Index As Integer)
+    
+    If m_Presets.MovePreset(lstPresets.List(lstPresets.ListIndex), (Index = 0)) Then
         
-        PDMsgBox "Please enter a name for this preset.", vbInformation Or vbOKOnly, "Preset name required"
+        'Maintain the current listindex
+        Dim backupIndex As Long
+        backupIndex = lstPresets.ListIndex
+        UpdatePresetList
+        If (Index = 0) Then lstPresets.ListIndex = backupIndex - 1 Else lstPresets.ListIndex = backupIndex + 1
         
-        txtName.Text = g_Language.TranslateMessage("(enter name here)")
-        txtName.SetFocus
-        txtName.SelectAll
-        
-        cmdBarMini.DoNotUnloadForm
-        Exit Sub
+        'Movement may result in the up and/or down buttons being deactivated
+        UpdateEditButtons
         
     End If
     
-    'Note that this function may have already exited due to the results of a modal dialog.
+End Sub
+
+Private Sub Form_Load()
     
-    'If the user is okay with use proceeding, update the preset they have just entered.
-    ' (Note that this will also update our locally shared m_Presets object.)
-    If (m_userAnswer = vbOK) Then m_CommandBar.StorePreset Trim$(txtName.Text)
+    btsOptions.AddItem "add new preset", 0
+    btsOptions.AddItem "edit existing presets", 1
+    btsOptions.ListIndex = 0
+    UpdateVisiblePanel
+    
+    Dim dibSize As Long
+    dibSize = Interface.FixDPI(38)
+    cmdMove(0).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_UP, dibSize)
+    cmdMove(1).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWN, dibSize)
     
 End Sub
 
@@ -195,4 +361,21 @@ Private Sub Form_Unload(Cancel As Integer)
     Set m_CommandBar = Nothing
     Interface.ReleaseFormTheming Me
     
+End Sub
+
+Private Sub lstPresets_Click()
+    UpdateEditButtons
+End Sub
+
+Private Sub UpdateVisiblePanel()
+    Dim i As Long
+    For i = 0 To btsOptions.ListCount - 1
+        pnlOptions(i).Visible = (i = btsOptions.ListIndex)
+    Next i
+End Sub
+
+Private Sub UpdateEditButtons()
+    cmdDelete.Enabled = (lstPresets.ListIndex >= 0) And Strings.StringsNotEqual(lstPresets.List(lstPresets.ListIndex), g_Language.TranslateMessage("(no saved presets)"), True)
+    cmdMove(0).Enabled = (lstPresets.ListIndex > 0)
+    cmdMove(1).Enabled = (lstPresets.ListIndex < lstPresets.ListCount - 1) And (lstPresets.ListIndex >= 0)
 End Sub

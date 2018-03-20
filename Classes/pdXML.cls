@@ -674,6 +674,17 @@ Friend Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
 End Function
 
+Friend Function GetUniqueTag_StringEx(ByRef tagName As String, ByRef tagAttribute As String, ByRef tagAttributeValue As String, Optional ByVal defaultReturn As String = vbNullString, Optional ByVal searchLocation As Long = 1) As String
+    
+    Dim tagStart As Long, tagEnd As Long
+    If GetTagCharacterRange(tagStart, tagEnd, tagName, tagAttribute, tagAttributeValue, searchLocation) Then
+        GetUniqueTag_StringEx = Mid$(m_xmlContents, tagStart, tagEnd - tagStart)
+    Else
+        GetUniqueTag_StringEx = defaultReturn
+    End If
+        
+End Function
+
 Friend Function GetUniqueTag_Long(ByRef tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As Long
     
     Dim tmpString As String
@@ -826,23 +837,21 @@ End Function
 
 'Return the valid range (character positions) of a given XML block.  Start and End position Long values must be provided by the caller.
 ' Unlike other functions, this returns a TRUE if successful; FALSE otherwise.
-Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByVal tagName As String, Optional ByVal tagAttribute As String = vbNullString, Optional ByVal tagAttributeValue As String = vbNullString, Optional ByVal searchStartPosition As Long = 1) As Boolean
-
-    Dim searchLocation As Long
-    searchLocation = InStr(searchStartPosition, m_xmlContents, "<" & tagName & " ", m_TextCompareMode)
-    
-    Dim attributeLocation As Long
+Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosition As Long, ByRef tagName As String, Optional ByRef tagAttribute As String = vbNullString, Optional ByRef tagAttributeValue As String = vbNullString, Optional ByVal searchStartPosition As Long = 1) As Boolean
     
     Dim tagFound As Boolean
     tagFound = False
+    
+    Dim searchLocation As Long
+    searchLocation = InStr(searchStartPosition, m_xmlContents, "<" & tagName & " ", m_TextCompareMode)
         
     'Run a loop, finding matching tag entries as we go.
-    Do While searchLocation > 0
+    Do While (searchLocation > 0)
     
         'Search location is now pointing at the location of the next tagName occurrence in the XML file.
         
         'If a matching attribute wasn't specified, exit now.
-        If Len(tagAttribute) = 0 Then
+        If (LenB(tagAttribute) = 0) Then
             tagFound = True
             Exit Do
         
@@ -851,14 +860,17 @@ Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosit
             
             'Within this tag, see if the attribute matches the one supplied by the user.  (It's assumed than an attribute tag
             ' exists, and is distinct from other occurrences in the file.)
+            Dim attributeLocation As Long
             attributeLocation = InStr(searchLocation, m_xmlContents, tagAttribute, m_TextCompareMode)
             
             'From the attribute location, we know the value has to appear immediately following tagAttribute=", so look for it there
-            If StrComp(tagAttributeValue, Mid$(m_xmlContents, attributeLocation + Len(tagAttribute) + 2, Len(tagAttributeValue)), m_TextCompareMode) = 0 Then
+            If (StrComp(tagAttributeValue, Mid$(m_xmlContents, attributeLocation + Len(tagAttribute) + 2, Len(tagAttributeValue)), m_TextCompareMode) = 0) Then
                 
                 'A match was found!  Mark this tag location and exit.
                 tagFound = True
-                searchLocation = attributeLocation + 5
+                
+                'The + 4 is used because there are four extra characters, two before the attribute value and two after (=",">)
+                searchLocation = attributeLocation + Len(tagAttribute) + Len(tagAttributeValue) + 4
                 Exit Do
                 
             End If
@@ -876,13 +888,9 @@ Friend Function GetTagCharacterRange(ByRef startPosition As Long, ByRef endPosit
         'We now have a start position.  Calculate a matching end position.
         endPosition = InStr(searchLocation, m_xmlContents, "</" & tagName & ">", m_TextCompareMode)
         
-        If endPosition > 0 Then
-            startPosition = searchLocation
-            GetTagCharacterRange = True
-        Else
-            GetTagCharacterRange = False
-        End If
-    
+        GetTagCharacterRange = (endPosition > 0)
+        If GetTagCharacterRange Then startPosition = searchLocation
+        
     'The requested tag could not be located.  Return FALSE.
     Else
         GetTagCharacterRange = False

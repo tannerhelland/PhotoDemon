@@ -169,6 +169,11 @@ Friend Function GetString(ByRef paramName As String, Optional ByVal defaultRetur
     If (Not GetParamValue(paramName, GetString, nameGuaranteedXMLSafe)) Then GetString = defaultReturn
 End Function
 
+'If you want to combine "DoesParamExist" and "GetString", use this function
+Friend Function GetStringEx(ByRef paramName As String, ByRef dstParamValue As String, Optional ByVal defaultReturn As String = vbNullString) As Boolean
+    GetStringEx = GetParamValue(paramName, dstParamValue)
+End Function
+
 Friend Function GetVariant(ByRef paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
