@@ -873,12 +873,16 @@ Private Sub RedrawBackBuffer()
             editBoxBorderColor = m_Colors.RetrieveColor(PDS_TextBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
         End If
         
-        upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-        upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-        upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-        downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
-        downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
-        downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+        'If this control received focus from keyboard events, we want to render some elements differently.
+        Dim gotKeyFocus As Boolean
+        gotKeyFocus = m_HasFocus And (Not m_MouseOverUpButton) And (Not m_MouseOverDownButton)
+        
+        upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton Or gotKeyFocus)
+        upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton Or gotKeyFocus)
+        upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton Or gotKeyFocus)
+        downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton Or gotKeyFocus)
+        downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton Or gotKeyFocus)
+        downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton Or gotKeyFocus)
         resetButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
         resetButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
         resetButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
@@ -916,7 +920,7 @@ Private Sub RedrawBackBuffer()
         
         'If the spin buttons are active, we can paint the edit box rectangle immediately.  (If they are NOT active,
         ' and we attempt to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
-        If (m_MouseOverUpButton Or m_MouseOverDownButton) Then
+        If (m_MouseOverUpButton Or m_MouseOverDownButton Or gotKeyFocus) Then
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
             m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
@@ -924,11 +928,11 @@ Private Sub RedrawBackBuffer()
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
         ' hover border appears over the top of any neighboring UI elements.  (This is the reason for the ugly if/then blocks.)
         Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single, resetButtonBorderWidth As Single
-        If m_MouseOverUpButton Then upButtonBorderWidth = 2# Else upButtonBorderWidth = 1#
-        If m_MouseOverDownButton Then downButtonBorderWidth = 2# Else downButtonBorderWidth = 1#
+        If m_MouseOverUpButton Or gotKeyFocus Then upButtonBorderWidth = 2# Else upButtonBorderWidth = 1#
+        If m_MouseOverDownButton Or gotKeyFocus Then downButtonBorderWidth = 2# Else downButtonBorderWidth = 1#
         If m_MouseOverResetButton Then resetButtonBorderWidth = 2# Else resetButtonBorderWidth = 1#
         
-        If m_MouseOverUpButton Then
+        If m_MouseOverUpButton Or gotKeyFocus Then
             If (resetButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
@@ -942,7 +946,7 @@ Private Sub RedrawBackBuffer()
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
             End If
         Else
-            If m_MouseOverDownButton Then
+            If m_MouseOverDownButton Or gotKeyFocus Then
                 If (resetButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect

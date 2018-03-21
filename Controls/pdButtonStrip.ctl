@@ -959,11 +959,6 @@ Private Sub RedrawBackBuffer()
                         End If
                     End If
                     
-                    'If this button has received focus via keyboard, paint it with a special interior border
-                    If i = m_FocusRectActive Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorSelectedBorder, 255, 1
-                    End If
-                    
                 End If
                 
                 'Paint the button's caption, if one exists
@@ -1019,11 +1014,16 @@ Private Sub RedrawBackBuffer()
         
         'In normal coloring mode, the hover rect is drawn last; because it's chunkier than normal borders, we must ensure that it overlaps
         ' neighboring buttons correctly.
-        If (m_ButtonHoverIndex >= 0) And (m_ColoringMode = CM_DEFAULT) Then
+        If ((m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0)) And (m_ColoringMode = CM_DEFAULT) Then
         
-            'Color changes when the active button is hovered, to indicate no change will be made.
-            If (m_ButtonHoverIndex = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
-            With m_Buttons(m_ButtonHoverIndex).btBounds
+            'Color changes when the active button is hovered, or when we have keyboard focus and the user is attempting
+            ' to change the active button via arrow keys.
+            If (m_ButtonHoverIndex = m_ButtonIndex) Or (m_FocusRectActive = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            
+            Dim targetIndex As Long
+            If (m_ButtonHoverIndex >= 0) Then targetIndex = m_ButtonHoverIndex Else targetIndex = m_FocusRectActive
+            
+            With m_Buttons(targetIndex).btBounds
                 GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
             End With
             

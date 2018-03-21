@@ -230,6 +230,17 @@ Public Sub DisplayColorSelection()
     
 End Sub
 
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    markEventHandled = False
+    
+    If Me.Enabled And (vkCode = VK_SPACE) Then
+        DisplayColorSelection
+        markEventHandled = True
+    End If
+    
+End Sub
+
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
     
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
@@ -280,10 +291,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -305,7 +318,8 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
-    ucSupport.RequestExtraFunctionality True
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_SPACE
     ucSupport.RequestCaptionSupport
     
     'This class needs to redraw itself when the primary window color changes.  Request notifications from the program-wide color change wMsg.
@@ -474,7 +488,7 @@ Private Sub RedrawBackBuffer()
         End If
         
         'If either button is hovered, trace it with a bold, colored outline
-        If m_MouseInPrimaryButton Then
+        If m_MouseInPrimaryButton Or ucSupport.DoIHaveFocus Then
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_PrimaryColorRect.Left, m_PrimaryColorRect.Top, m_PrimaryColorRect.Right, m_PrimaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter
         ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_SecondaryColorRect.Left, m_SecondaryColorRect.Top, m_SecondaryColorRect.Right, m_SecondaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter

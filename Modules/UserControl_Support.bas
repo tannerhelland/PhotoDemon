@@ -251,11 +251,7 @@ Public Function ForwardFocusToNewControl(ByRef sourceControl As Object, ByVal fo
         Const MAX_INDEX As Long = 99999
         
         'Forward and back focus checks require different search strategies
-        If focusDirectionForward Then
-            newIndex = MAX_INDEX
-        Else
-            newIndex = myIndex
-        End If
+        If focusDirectionForward Then newIndex = MAX_INDEX Else newIndex = myIndex
         
         Dim Ctl As Control, targetControl As Control
         For Each Ctl In sourceControl.Parent.Controls

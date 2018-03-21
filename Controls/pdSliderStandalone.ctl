@@ -544,6 +544,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
 End Function
 
 Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
@@ -552,6 +553,7 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -1408,8 +1410,8 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         Dim thumbFillColor As Long, thumbBorderColor As Long
         trackHighlightColor = m_Colors.RetrieveColor(PDSS_TrackFill, True, m_MouseDown, m_MouseOverSlider)
         trackJumpIndicatorColor = m_Colors.RetrieveColor(PDSS_TrackJumpIndicator, True, m_MouseDown, m_MouseOverSliderTrack)
-        thumbFillColor = m_Colors.RetrieveColor(PDSS_ThumbFill, True, m_MouseDown, m_MouseOverSlider)
-        thumbBorderColor = m_Colors.RetrieveColor(PDSS_ThumbBorder, True, m_MouseDown, m_MouseOverSlider)
+        thumbFillColor = m_Colors.RetrieveColor(PDSS_ThumbFill, True, m_MouseDown, m_MouseOverSlider Or ucSupport.DoIHaveFocus)
+        thumbBorderColor = m_Colors.RetrieveColor(PDSS_ThumbBorder, True, m_MouseDown, m_MouseOverSlider Or ucSupport.DoIHaveFocus)
         
         'Retrieve the current slider x/y position.  (Floating-point values are used for sub-pixel positioning.)
         Dim relevantSliderPosX As Single, relevantSliderPosY As Single
@@ -1445,19 +1447,20 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         
         'Finally, draw the thumb
         If (m_KnobStyle = DefaultKnobStyle) Then
+        
             Drawing2D.QuickCreateSolidBrush cBrush, thumbFillColor
             m_Painter.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
             'Draw the edge (exterior) circle around the slider.
             Dim sliderWidth As Single
-            If m_MouseOverSlider Then sliderWidth = 2.5 Else sliderWidth = 1.5
+            If m_MouseOverSlider Or ucSupport.DoIHaveFocus Then sliderWidth = 2.5 Else sliderWidth = 1.5
             Drawing2D.QuickCreateSolidPen cPen, sliderWidth, thumbBorderColor
             m_Painter.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
         ElseIf (m_KnobStyle = SquareStyle) Then
             
             Dim cPenTop As pd2DPen
-            Drawing2D.QuickCreatePairOfUIPens cPen, cPenTop, m_MouseOverSlider
+            Drawing2D.QuickCreatePairOfUIPens cPen, cPenTop, m_MouseOverSlider Or ucSupport.DoIHaveFocus
             
             Dim tmpRectF As RectF
             GetKnobRectF tmpRectF

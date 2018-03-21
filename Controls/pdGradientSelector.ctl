@@ -165,6 +165,17 @@ Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, By
     If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    markEventHandled = False
+    
+    If Me.Enabled And (vkCode = VK_SPACE) Then
+        RaiseGradientDialog
+        markEventHandled = True
+    End If
+    
+End Sub
+
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
     
     'Enter/Esc get reported directly to the system key handler.  Note that we track the return, because TRUE
@@ -208,10 +219,12 @@ Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -247,7 +260,8 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
-    ucSupport.RequestExtraFunctionality True
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_SPACE
     ucSupport.RequestCaptionSupport
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
@@ -366,8 +380,8 @@ Private Sub RedrawBackBuffer()
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long
-        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect)
-        If m_MouseInsideGradientRect Then outlineWidth = 3 Else outlineWidth = 1
+        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect Or ucSupport.DoIHaveFocus)
+        If m_MouseInsideGradientRect Or ucSupport.DoIHaveFocus Then outlineWidth = 3 Else outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
        
     End If

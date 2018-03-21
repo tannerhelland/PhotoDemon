@@ -464,15 +464,15 @@ Private Sub RedrawBackBuffer()
     
     'Populate colors from the master theme object
     Dim radioColorBorder As Long, radioColorFill As Long, txtColor As Long
-    radioColorBorder = m_Colors.RetrieveColor(PDRB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    radioColorBorder = m_Colors.RetrieveColor(PDRB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     radioColorFill = m_Colors.RetrieveColor(PDRB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    txtColor = m_Colors.RetrieveColor(PDRB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    txtColor = m_Colors.RetrieveColor(PDRB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     
     If pdMain.IsProgramRunning() Then
         
         'Draw the radio button border
         Dim borderWidth As Single
-        If m_MouseInsideClickableRect Then borderWidth = 3# Else borderWidth = 1.5
+        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3# Else borderWidth = 1.5
         With m_RadioButtonRect
             GDI_Plus.GDIPlusDrawCircleToDC bufferDC, .Left + .Width / 2, .Top + .Height / 2, .Width / 2, radioColorBorder, 255, borderWidth, True
         End With

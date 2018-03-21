@@ -892,15 +892,10 @@ Private Sub RedrawBackBuffer()
                         If (Not isButtonHovered) Then GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right, .btBounds.Bottom + 1, btnColorSelectedBorder, 255, 1
                     End If
                     
-                    'If this button has received focus via keyboard, paint it with a special interior border
-                    If (i = m_FocusRectActive) Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 3, .btBounds.Bottom - 2, btnColorSelectedBorder, 255, 1
-                    End If
-                    
                 End If
                 
                 'Paint the button's caption, if one exists
-                If (Len(.btCaptionTranslated) <> 0) Then
+                If (LenB(.btCaptionTranslated) <> 0) Then
                 
                     If isButtonSelected Then
                         If isButtonHovered Then curColor = fontColorSelectedHover Else curColor = fontColorSelected
@@ -952,12 +947,17 @@ Private Sub RedrawBackBuffer()
         
         'The hover rect (if any) is drawn last; because it's chunkier than normal borders, we must ensure that it overlaps
         ' neighboring buttons correctly.
-        If (m_ButtonHoverIndex >= 0) Then
+        If (m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0) Then
         
-            'Color changes when the active button is hovered, to indicate no change will be made.
-            If (m_ButtonHoverIndex = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
-            With m_Buttons(m_ButtonHoverIndex).btBounds
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right, .Bottom + 1, curColor, 255, 3, False, GP_LJ_Miter
+            'Color changes when the active button is hovered, or when we have keyboard focus and the user is attempting
+            ' to change the active button via arrow keys.
+            If (m_ButtonHoverIndex = m_ButtonIndex) Or (m_FocusRectActive = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            
+            Dim targetIndex As Long
+            If (m_ButtonHoverIndex >= 0) Then targetIndex = m_ButtonHoverIndex Else targetIndex = m_FocusRectActive
+            
+            With m_Buttons(targetIndex).btBounds
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
             End With
             
         End If

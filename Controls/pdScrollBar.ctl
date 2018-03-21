@@ -121,9 +121,6 @@ Public Event LostFocusAPI()
 'If the mouse is currently INSIDE the control, this will be set to TRUE; this affects control rendering
 Private m_MouseInsideUC As Boolean
 
-'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
-Private m_FocusRectActive As Boolean
-
 'The scrollbar's orientation is cached at creation time, in case subsequent functions need it
 Private m_OrientationHorizontal As Boolean
 
@@ -464,15 +461,8 @@ End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
 Private Sub ucSupport_GotFocusAPI()
-    
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If (Not m_MouseInsideUC) Then
-        m_FocusRectActive = True
-        RedrawBackBuffer
-    End If
-    
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
-    
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
@@ -491,18 +481,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub MakeLostFocusUIChanges()
-    
-    'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Or m_MouseInsideUC Then
-        m_FocusRectActive = False
-        m_MouseInsideUC = False
-        m_MouseOverUpButton = False
-        m_MouseOverDownButton = False
-        m_MouseOverThumb = False
-        m_MouseOverTrack = False
-        RedrawBackBuffer
-    End If
-    
+    m_MouseInsideUC = False
+    m_MouseOverUpButton = False
+    m_MouseOverDownButton = False
+    m_MouseOverThumb = False
+    m_MouseOverTrack = False
+    RedrawBackBuffer
 End Sub
 
 'A few key events are also handled
@@ -840,7 +824,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
     
     m_MouseInsideUC = False
-    m_FocusRectActive = False
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -1020,8 +1003,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         Dim upButtonFillColor As Long, downButtonFillColor As Long
         Dim upButtonArrowColor As Long, downButtonArrowColor As Long
         
-        thumbBorderColor = m_Colors.RetrieveColor(PDS_ThumbBorder, enabledState, m_MouseDownThumb, m_MouseOverThumb)
-        thumbFillColor = m_Colors.RetrieveColor(PDS_ThumbFill, enabledState, m_MouseDownThumb, m_MouseOverThumb)
+        thumbBorderColor = m_Colors.RetrieveColor(PDS_ThumbBorder, enabledState, m_MouseDownThumb, m_MouseOverThumb Or ucSupport.DoIHaveFocus)
+        thumbFillColor = m_Colors.RetrieveColor(PDS_ThumbFill, enabledState, m_MouseDownThumb, m_MouseOverThumb Or ucSupport.DoIHaveFocus)
         upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
         upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
         upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)

@@ -430,10 +430,10 @@ Private Sub RedrawBackBuffer()
     
     'Populate colors from the master theme object
     Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long, txtColor As Long
-    chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     chkBoxColorFill = m_Colors.RetrieveColor(PDCB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    txtColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    txtColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     
     If pdMain.IsProgramRunning() Then
         
@@ -458,7 +458,7 @@ Private Sub RedrawBackBuffer()
         
         'Draw the checkbox border.  (Note that it has variable width, contingent on MouseOver status.)
         Dim borderWidth As Single
-        If m_MouseInsideClickableRect Then borderWidth = 3 Else borderWidth = 1
+        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3 Else borderWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , borderWidth, , GP_LJ_Miter
         
     End If

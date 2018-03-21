@@ -657,14 +657,14 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     'If our owner has requested a custom backcolor, it takes precedence (but only if the button is inactive)
     If m_UseCustomBackColor And (Not considerActive) Then
         btnColorFill = m_BackColor
-        If ucSupport.IsMouseInside Then
+        If ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus Then
             btnColorBorder = m_Colors.RetrieveColor(PDTB_Border, Me.Enabled, False, True)
         Else
             btnColorBorder = btnColorFill
         End If
     Else
-        btnColorFill = m_Colors.RetrieveColor(PDTB_ButtonFill, Me.Enabled, considerActive, ucSupport.IsMouseInside)
-        btnColorBorder = m_Colors.RetrieveColor(PDTB_Border, Me.Enabled, considerActive, ucSupport.IsMouseInside)
+        btnColorFill = m_Colors.RetrieveColor(PDTB_ButtonFill, Me.Enabled, considerActive, ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
+        btnColorBorder = m_Colors.RetrieveColor(PDTB_Border, Me.Enabled, considerActive, ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus)
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
@@ -691,7 +691,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
                         btImage_Pressed.FreeFromDC
                     End If
                 Else
-                    If ucSupport.IsMouseInside Then
+                    If ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus Then
                         m_ButtonImages.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, m_ButtonHeight, m_ButtonWidth, m_ButtonHeight
                     Else
                         m_ButtonImages.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, 0, m_ButtonWidth, m_ButtonHeight
