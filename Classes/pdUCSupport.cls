@@ -1212,7 +1212,16 @@ End Sub
 ' contents change (as this class has no way of being auto-notified).
 Friend Sub RequestBufferColorManagement(ByVal ptrToSrcRectF As Long)
     Dim tmpRectF As RectF
-    CopyMemory_Strict VarPtr(tmpRectF), ptrToSrcRectF, 16&
+    If (ptrToSrcRectF <> 0) Then
+        CopyMemory_Strict VarPtr(tmpRectF), ptrToSrcRectF, 16&
+    Else
+        With tmpRectF
+            .Left = 0!
+            .Top = 0!
+            .Width = Me.GetBackBufferWidth()
+            .Height = Me.GetBackBufferHeight()
+        End With
+    End If
     ColorManagement.ApplyDisplayColorManagement_RectF m_BackBuffer, tmpRectF, , False
 End Sub
 
