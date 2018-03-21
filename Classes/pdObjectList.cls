@@ -315,7 +315,7 @@ Private Function GetSortKeyFromRect(ByRef srcRect As winRect, ByVal screenWidth 
         sortX = srcRect.x1
         sortY = srcRect.y1 + ((srcRect.y2 - srcRect.y1) \ 2)
         
-    'If this control is taller than 80 pixels, it is probably a very large element like a preview box
+    'If this control is taller than our pixel threshold, it is probably a very large element like a preview box
     ' or a custom-built control (like the Curves dialog).  Sort it by its top-left corner only.
     Else
     
@@ -324,14 +324,14 @@ Private Function GetSortKeyFromRect(ByRef srcRect As winRect, ByVal screenWidth 
     
     End If
     
-    'When sorting on-screen elements, we clamp y-coordinates to their nearest multiple of 8.  This helps
+    'When sorting on-screen elements, we clamp y-coordinates to their nearest multiple of 12.  This helps
     ' address the case where nearby elements vary in top-position by only a few pixels, as is necessary
     ' to maintain an appearance of center-line alignment (e.g. again refer to command bars, where the
     ' "preset names" dropdown sits just slightly below the neighboring buttons, because it is slightly
     ' shorter vertically than the button images).  To ensure such controls are still sorted in normal
     ' LTR order, instead of being treated as "on the next line", we clamp their controls to a fixed
     ' multiple of 8.
-    Const MAX_VERTICAL_DISTANCE As Long = 8
+    Const MAX_VERTICAL_DISTANCE As Long = 12
     GetSortKeyFromRect = sortX + (Int((sortY + (MAX_VERTICAL_DISTANCE \ 2)) \ MAX_VERTICAL_DISTANCE) * MAX_VERTICAL_DISTANCE * screenWidth)
     
 End Function
