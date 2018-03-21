@@ -1351,6 +1351,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdPreview) Then
                 isPDControl = True
+            ElseIf (TypeOf eControl Is pdPictureBox) Then
+                isPDControl = True
             ElseIf (TypeOf eControl Is pdMetadataExport) Then
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdNewOld) Then

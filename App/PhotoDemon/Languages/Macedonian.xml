@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.130</langversion>
+<langversion>1.0.131</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4393,6 +4393,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7956,11 +7962,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>пронајдени записи автоматско зачувување</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>пронајдени податоци за автоматско зачувување. Дали сакате да го направите?</translation>
 </phrase>
@@ -7985,7 +7986,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Преглед не е достапен</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8487,13 +8488,23 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>нормализира</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>изложеност</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>белата точка</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>нормализира</translation>
 </phrase>
 
 <phrase>
@@ -8509,11 +8520,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <phrase>
 <original>color correction</original>
 <translation>корекција на бои</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>белата точка</translation>
 </phrase>
 
 <phrase>
@@ -8561,7 +8567,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>целиот спектар</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15262,6 +15268,6 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

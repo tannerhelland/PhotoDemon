@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.37</langversion>
+<langversion>1.0.38</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4389,6 +4389,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7952,11 +7958,6 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>स्वत: सहेजना प्रविष्टियां मिलीं</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>स्वत: सहेजना डेटा मिला क्या आप इसे पुनर्स्थापित करना चाहेंगे?</translation>
 </phrase>
@@ -7981,7 +7982,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>पूर्वावलोकन उपलब्ध नहीं</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8483,13 +8484,23 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>सामान्य</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>अनावरण</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>सफेद बिंदु</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>सामान्य</translation>
 </phrase>
 
 <phrase>
@@ -8505,11 +8516,6 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <phrase>
 <original>color correction</original>
 <translation>रंग सुधार</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>सफेद बिंदु</translation>
 </phrase>
 
 <phrase>
@@ -8557,7 +8563,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>पूर्ण स्पेक्ट्रम</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15257,6 +15263,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

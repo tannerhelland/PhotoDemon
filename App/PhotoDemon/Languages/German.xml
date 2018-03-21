@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.220</langversion>
+<langversion>7.2.262</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -228,17 +228,17 @@
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation></translation>
+<translation>Wie möchten Sie dieses Bild laden?</translation>
 </phrase>
 
 <phrase>
 <original>Open it as a standalone image.</original>
-<translation></translation>
+<translation>Es als eigenständiges Bild öffnen.</translation>
 </phrase>
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation></translation>
+<translation>Es dem aktuellen Bild als einen neuen Layer hinzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -248,12 +248,12 @@
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation></translation>
+<translation>In Zukunft dies tun, ohne mich zu fragen</translation>
 </phrase>
 
 <phrase>
 <original>Drop as image or layer</original>
-<translation></translation>
+<translation>Als Bild oder Layer ablegen</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -4099,7 +4099,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>last-used settings</original>
-<translation></translation>
+<translation>Zuletzt verwendete Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -4393,6 +4393,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- pdPenSelector.ctl contains 0 phrases. -->
 
 <!-- END text for pdPenSelector.ctl-->
+
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
 
 <!-- BEGIN text for pdPreview.ctl -->
 
@@ -7957,11 +7963,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>Autosave-Einträge gefunden</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>Autosave-Daten gefunden. Möchten Sie diese wiederherstellen?</translation>
 </phrase>
@@ -7986,7 +7987,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Vorschau nicht verfügbar</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -7999,7 +8000,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation></translation>
+<translation>Paletten in dieser Datei (%1)</translation>
 </phrase>
 
 <phrase>
@@ -8041,17 +8042,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Saved presets</original>
-<translation></translation>
+<translation>Gespeicherte Presets</translation>
 </phrase>
 
 <phrase>
 <original>delete preset</original>
-<translation></translation>
+<translation>Preset löschen</translation>
 </phrase>
 
 <phrase>
 <original>saved presets for this tool</original>
-<translation></translation>
+<translation>Gespeicherte Presets für dieses Tool</translation>
 </phrase>
 
 <phrase>
@@ -8061,7 +8062,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>(no saved presets)</original>
-<translation></translation>
+<translation>(keine gespeicherten Presets)</translation>
 </phrase>
 
 <phrase>
@@ -8091,12 +8092,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>add new preset</original>
-<translation></translation>
+<translation>Neues Preset hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>edit existing presets</original>
-<translation></translation>
+<translation>Vorhandene Presets bearbeiten</translation>
 </phrase>
 
 <!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -8488,13 +8489,23 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>Normalisieren</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>Belichtung</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>Weißpunkt</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>Normalisieren</translation>
 </phrase>
 
 <phrase>
@@ -8510,11 +8521,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <phrase>
 <original>color correction</original>
 <translation>Farbkorrektur</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>Weißpunkt</translation>
 </phrase>
 
 <phrase>
@@ -8562,7 +8568,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Vollständiges Spektrum</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -14515,7 +14521,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>generate debug logs</original>
-<translation></translation>
+<translation>Debug-Logs generieren</translation>
 </phrase>
 
 <phrase>
@@ -14854,22 +14860,22 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation></translation>
+<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu mehreren Metadatenkopien in einer einzelnen Datei führt. PhotoDemon kann Duplikateinträge automatisch für Sie lösen.</translation>
 </phrase>
 
 <phrase>
 <original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation></translation>
+<translation>Das JPEG-Format bietet keine Möglichkeit, JPEG-Qualitätseinstellungen innerhalb Bilddateien zu speichern. PhotoDemon kann dies durch Inferieren von Qualitätseinstellungen aus anderen Metadaten (wie Quantisierungstabellen) umgehen.</translation>
 </phrase>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation></translation>
+<translation>Einige Kamerahersteller speichern proprietäre Metadaten-Tags innerhalb Bilddateien. Diese Tags sind normalerweise nicht für Menschen nützlich, aber PhotoDemon kann versuchen, sie trotzdem zu extrahieren.</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation></translation>
+<translation>Standardmäßig werden große Binär-Tags (wie Bild-Thumbnails) nicht verarbeitet. Stattdessen gibt PhotoDemon einfach die Größe der eingebetteten Daten an. Wenn Sie diese Daten benötigen, kann PhotoDemon diese zur weiteren Analyse manuell in Base64 konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -14879,7 +14885,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation></translation>
+<translation>Standardmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
 </phrase>
 
 <phrase>
@@ -14894,7 +14900,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
 </phrase>
 
 <phrase>
@@ -14914,7 +14920,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation></translation>
+<translation>Die EXIF-Spezifikation fragt Programme ab, sich selbst korrekt als Ursprungs-Software zu identifizieren, wenn Bilddateien exportiert werden. Für mehr Privatsphäre können Sie dieses Verhalten aussetzen.</translation>
 </phrase>
 
 <phrase>
@@ -14939,7 +14945,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation></translation>
+<translation>PhotoDemon generiert viele Thumbnail-Bilder, insbesondere wenn Bilder mehrere Layer enthalten. Die Thumbnail-Qualität kann verringert werden, um die Performance zu verbessern.</translation>
 </phrase>
 
 <phrase>
@@ -14949,7 +14955,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation></translation>
+<translation>Niedrige Kompressionseinstellungen erfordern mehr Speicherplatz, Rückgängig-machen-/Wiederherstellen-Operationen sind aber schneller. Hohe Kompressionseinstellungen erfordern weniger Speicherplatz, Rückgängig-machen-/Wiederherstellen-Operationen werden aber langsamer sein. Rückgängig-machen-Daten werden beim Schließen von Bildern gelöscht, so wirkt sich diese Einstellung nur auf den Speicherplatz aus, während BIlder aktiv bearbeitet werden.</translation>
 </phrase>
 
 <phrase>
@@ -15029,12 +15035,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation>Stabile, Beta- und Entwicklerreleases</translation>
+<translation>Stabile, Beta- und Entwickler-Releases</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten zur Unterstützung von PhotoDemon ist das Testen neuer Releases. Standardmäßig werden Ihnen stabile und Beta-Versionen zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen immer Zugriff auf die neuesten Programmverbesserungen, allerdings mit dem Risiko von Programmfehlern.)</translation>
+<translation>Eine der besten Möglichkeiten zur Unterstützung von PhotoDemon ist das Testen neuer Releases. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen immer Zugriff auf die neuesten Programmverbesserungen, allerdings mit dem Risiko von Programmfehlern.)</translation>
 </phrase>
 
 <phrase>
@@ -15062,7 +15068,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation></translation>
+<translation>In Entwickler-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Fehler stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird Entwicklern helfen, Ihr Problem zu lösen.</translation>
 </phrase>
 
 <phrase>
@@ -15087,12 +15093,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation></translation>
+<translation>Klicken Sie hier, um einen neuen temporären Ordner auszuwählen.</translation>
 </phrase>
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation></translation>
+<translation>Dieser Button setzt alle Einstellungen von PhotoDemon zurück. Wenn sich das Programm unerwartet verhält, kann dies das Problem möglicherweise lösen.</translation>
 </phrase>
 
 <phrase>
@@ -15261,6 +15267,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

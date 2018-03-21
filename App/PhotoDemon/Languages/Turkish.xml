@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3317</langversion>
+<langversion>6.8.3318</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4387,6 +4387,12 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7949,11 +7955,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>kaydetme girişleri bulundu</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>Otomatik kaydetme veri bulunamadı. Bunu geri yüklemek ister misiniz?</translation>
 </phrase>
@@ -7978,7 +7979,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>kullanılamaz Ön</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8480,13 +8481,23 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>normalleştirmek</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>poz</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>beyaz nokta</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>normalleştirmek</translation>
 </phrase>
 
 <phrase>
@@ -8502,11 +8513,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <phrase>
 <original>color correction</original>
 <translation>Renk düzeltmesi</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>beyaz nokta</translation>
 </phrase>
 
 <phrase>
@@ -8554,7 +8560,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>tam spektrum</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15249,6 +15255,6 @@ If yamalı vardır.</translation>
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

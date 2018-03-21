@@ -25,21 +25,13 @@ Begin VB.Form dialog_IDEWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picWarning 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picWarning 
       Height          =   615
       Left            =   330
-      ScaleHeight     =   41
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   41
-      TabIndex        =   2
       Top             =   240
       Width           =   615
+      _ExtentX        =   873
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   750
@@ -133,6 +125,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Theme-specific icons are fully supported
+Private m_warningDIB As pdDIB
+
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
@@ -143,15 +138,12 @@ End Property
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
     
-    'Draw a warning icon
+    'Prep a warning icon
     Dim warningIconSize As Long
-    warningIconSize = FixDPI(32)
-    Dim warningDIB As pdDIB
-    If IconsAndCursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
-        picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-        warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
-        picWarning.Picture = picWarning.Image
-    Else
+    warningIconSize = Interface.FixDPI(32)
+    
+    If Not IconsAndCursors.LoadResourceToDIB("generic_warning", m_warningDIB, warningIconSize, warningIconSize, 0) Then
+        Set m_warningDIB = Nothing
         picWarning.Visible = False
     End If
     
@@ -181,4 +173,9 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub picWarning_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
+    If (Not m_warningDIB Is Nothing) Then m_warningDIB.AlphaBlendToDC targetDC, , (ctlWidth - m_warningDIB.GetDIBWidth) \ 2, (ctlHeight - m_warningDIB.GetDIBHeight) \ 2
 End Sub

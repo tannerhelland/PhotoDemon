@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.337</langversion>
+<langversion>6.7.338</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -4392,6 +4392,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7955,11 +7961,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>entradas de autoguardado encontradas</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>Encontraron los datos de guardado automático. ¿Le gustaría restaurar?</translation>
 </phrase>
@@ -7984,7 +7985,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Previsualización no disponible</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8486,13 +8487,23 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>normalizar</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>exposición</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>punto blanco</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>normalizar</translation>
 </phrase>
 
 <phrase>
@@ -8508,11 +8519,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>color correction</original>
 <translation>corrección de color</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>punto blanco</translation>
 </phrase>
 
 <phrase>
@@ -8560,7 +8566,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>espectro completo</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15260,6 +15266,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

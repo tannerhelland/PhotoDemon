@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.276</langversion>
+<langversion>6.6.277</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -4394,6 +4394,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7962,11 +7968,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>penyertaan autosimpan didapati</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>Data autosimpan dijumpai. Adakah anda ingin mengembalikannya?</translation>
 </phrase>
@@ -7991,7 +7992,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Preview tidak terdapat</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8493,13 +8494,23 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>menormalkan</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>pendedahan</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>titik putih</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>menormalkan</translation>
 </phrase>
 
 <phrase>
@@ -8515,11 +8526,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <phrase>
 <original>color correction</original>
 <translation>pembetulan warna</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>titik putih</translation>
 </phrase>
 
 <phrase>
@@ -8567,7 +8573,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>spektrum penuh</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15268,6 +15274,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

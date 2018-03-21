@@ -25,10 +25,18 @@ Begin VB.Form dialog_MsgBox
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdPictureBox picIcon 
+      Height          =   615
+      Left            =   240
+      Top             =   1080
+      Width           =   615
+      _ExtentX        =   1085
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.pdContainer pnlBase 
       Height          =   750
       Left            =   0
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   5400
       Width           =   9015
       _ExtentX        =   15901
@@ -37,7 +45,7 @@ Begin VB.Form dialog_MsgBox
          Height          =   510
          Index           =   0
          Left            =   7440
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   120
          Width           =   1365
          _ExtentX        =   2910
@@ -47,7 +55,7 @@ Begin VB.Form dialog_MsgBox
          Height          =   510
          Index           =   1
          Left            =   5880
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   120
          Width           =   1365
          _ExtentX        =   2910
@@ -57,29 +65,12 @@ Begin VB.Form dialog_MsgBox
          Height          =   510
          Index           =   2
          Left            =   4320
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   120
          Width           =   1365
          _ExtentX        =   2910
          _ExtentY        =   1323
       End
-   End
-   Begin VB.PictureBox picIcon 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      Height          =   615
-      Left            =   330
-      ScaleHeight     =   41
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   41
-      TabIndex        =   0
-      Top             =   240
-      Visible         =   0   'False
-      Width           =   615
    End
    Begin PhotoDemon.pdLabel lblMsg 
       Height          =   4725
@@ -144,6 +135,9 @@ End Enum
 
 'Parsing flags is obnoxious in VB, so we cache button and icon settings when the dialog is initialized
 Private m_CurButtons As PD_MB_Buttons, m_CurIcon As PD_MB_Icons
+
+'Similarly, we cache the relevant icon, as necessary
+Private m_iconDIB As pdDIB
 
 'Local list of themable colors.  BY DESIGN, this is an exact copy of the command bar color set.  (This dialog is meant to
 ' mimic that one as much as possible.)
@@ -264,32 +258,23 @@ Private Sub SetIconVisibility(ByVal pButtons As VbMsgBoxStyle, ByRef iconActive 
         
         dpiIconSize = Interface.FixDPI(48)
         
-        Dim iconDIB As pdDIB, iconFound As Boolean
+        Dim iconFound As Boolean
         
         If (m_CurIcon = mb_Error) Then
-            iconFound = IconsAndCursors.LoadResourceToDIB("generic_cancel", iconDIB, dpiIconSize, dpiIconSize, 0)
+            iconFound = IconsAndCursors.LoadResourceToDIB("generic_cancel", m_iconDIB, dpiIconSize, dpiIconSize, 0)
         ElseIf (m_CurIcon = mb_Warning) Then
-            iconFound = IconsAndCursors.LoadResourceToDIB("generic_warning", iconDIB, dpiIconSize, dpiIconSize, 0)
+            iconFound = IconsAndCursors.LoadResourceToDIB("generic_warning", m_iconDIB, dpiIconSize, dpiIconSize, 0)
         ElseIf (m_CurIcon = mb_Information) Then
-            iconFound = IconsAndCursors.LoadResourceToDIB("generic_info", iconDIB, dpiIconSize, dpiIconSize, 0)
+            iconFound = IconsAndCursors.LoadResourceToDIB("generic_info", m_iconDIB, dpiIconSize, dpiIconSize, 0)
         End If
         
         If iconFound Then
-            
-            'Size and color the destination picture box to match
-            picIcon.Width = dpiIconSize
-            picIcon.Height = dpiIconSize
-            picIcon.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-            
-            'Render the icon and make the picture box visible
-            iconDIB.AlphaBlendToDC picIcon.hDC, , 0, 0
-            picIcon.Picture = picIcon.Image
-            picIcon.Refresh
+            picIcon.SetSize dpiIconSize, dpiIconSize
             picIcon.Visible = True
-            
         Else
             picIcon.Visible = False
             m_CurIcon = mb_None
+            Set m_iconDIB = Nothing
             iconActive = False
         End If
         
@@ -298,7 +283,7 @@ Private Sub SetIconVisibility(ByVal pButtons As VbMsgBoxStyle, ByRef iconActive 
     'If an icon is active, position it accordingly on the underlying form.  (Note that we must deal with horizontal
     ' positioning later, after we solve where the damn string fits.)
     If iconActive Then
-        picIcon.Top = dpiIconSize
+        picIcon.SetTop dpiIconSize
     Else
         picIcon.Visible = False
     End If
@@ -345,7 +330,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     ' this obviously depends on whether or not an icon is active.
     Dim stringLeft As Long
     stringLeft = Interface.FixDPI(16)
-    If iconActive Then stringLeft = stringLeft + picIcon.Left + picIcon.Width
+    If iconActive Then stringLeft = stringLeft + picIcon.GetLeft + picIcon.GetWidth
     
     'We also want to know some basic metrics of the dialog itself, specifically how large we are allowed to
     ' physically make it.
@@ -412,7 +397,7 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
         
         'If this line only wraps once (e.g. it's just a long-ish sentence), and an icon is being displayed,
         ' we still need to see if the icon height is larger than the wrapped line height.
-        If iconActive Then formHeight = picIcon.Top * 2 + dpiIconSize Else formHeight = 0
+        If iconActive Then formHeight = picIcon.GetTop * 2 + dpiIconSize Else formHeight = 0
         formHeight = PDMath.Max2Int(formHeight, stringHeight + FixDPI(32) * 2)
         
         'Use the calculated form height to determine the string's position
@@ -429,14 +414,14 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
         
         'If the icon is active, we'll use it to size the form (instead of the string itself)
         If iconActive Then
-            formHeight = picIcon.Top * 2 + dpiIconSize
+            formHeight = picIcon.GetTop * 2 + dpiIconSize
         Else
             formHeight = stringHeight + FixDPI(32) * 2
         End If
         
         'Similarly, if an icon is active, we want to center the message relative to the icon
         If iconActive Then
-            stringTop = picIcon.Top + (dpiIconSize - stringHeight) \ 2
+            stringTop = picIcon.GetTop + (dpiIconSize - stringHeight) \ 2
         Else
             stringTop = (formHeight - stringHeight) \ 2
         End If
@@ -548,4 +533,10 @@ End Sub
 
 Private Sub MsgBoxWarning(ByVal funcName As String, ByVal errMsg As String)
     pdDebug.LogAction "WARNING!  dialog_MsgBox." & funcName & " reported: " & errMsg
+End Sub
+
+'Render the icon when requested
+Private Sub picIcon_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
+    If (Not m_iconDIB Is Nothing) Then m_iconDIB.AlphaBlendToDC targetDC, , 0, 0
 End Sub

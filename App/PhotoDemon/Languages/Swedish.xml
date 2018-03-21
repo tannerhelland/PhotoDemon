@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3317</langversion>
+<langversion>6.8.3318</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4389,6 +4389,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7952,11 +7958,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>Autospara entries found</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>Autosave data hittad. Vill du återställa den?</translation>
 </phrase>
@@ -7981,7 +7982,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Förhandsgranskning är inte tillgängligt</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8483,13 +8484,23 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>normalisera</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>exponering</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>vitpunkt</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>normalisera</translation>
 </phrase>
 
 <phrase>
@@ -8505,11 +8516,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <phrase>
 <original>color correction</original>
 <translation>färgkorrigering</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>vitpunkt</translation>
 </phrase>
 
 <phrase>
@@ -8557,7 +8563,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>fullt spektrum</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15257,6 +15263,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

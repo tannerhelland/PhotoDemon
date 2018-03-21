@@ -25,21 +25,13 @@ Begin VB.Form dialog_GenericMemory
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   479
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picIcon 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      Height          =   720
+   Begin PhotoDemon.pdPictureBox picIcon 
+      Height          =   735
       Left            =   240
-      ScaleHeight     =   48
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   48
-      TabIndex        =   4
       Top             =   360
-      Width           =   720
+      Width           =   735
+      _ExtentX        =   1296
+      _ExtentY        =   1296
    End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
@@ -124,6 +116,9 @@ Private rememberMyChoice As Boolean
 'We want to temporarily suspend an hourglass cursor if necessary
 Private restoreCursor As Boolean
 
+'Icon used in the dialog, if any
+Private m_iconDIB As pdDIB
+
 'Returns yes/no/cancel
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -167,30 +162,25 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
         Dim picIconSize As Long
         picIconSize = Interface.FixDPI(56)
         
-        picIcon.Width = picIconSize
-        picIcon.Height = picIconSize
-        picIcon.Top = (cmdAnswer(0).GetTop - picIconSize) \ 2
+        picIcon.SetWidth picIconSize
+        picIcon.SetHeight picIconSize
+        picIcon.SetTop (cmdAnswer(0).GetTop - picIconSize) \ 2
         
         Dim newLeft As Long
-        newLeft = picIcon.Left + picIconSize + Interface.FixDPI(16)
+        newLeft = picIcon.GetLeft + picIconSize + Interface.FixDPI(16)
         lblExplanation.SetPositionAndSize newLeft, lblExplanation.GetTop, cmdAnswer(0).GetLeft + cmdAnswer(0).GetWidth - newLeft, lblExplanation.GetHeight
         
-        Dim iconDIB As pdDIB, iconSuccess As Boolean
+        Dim iconSuccess As Boolean
         
         If (sysIcon = IDI_EXCLAMATION) Then
-            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_warning", iconDIB, picIconSize, picIconSize, 0)
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_warning", m_iconDIB, picIconSize, picIconSize, 0)
         ElseIf (sysIcon = IDI_QUESTION) Then
-            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_question", iconDIB, picIconSize, picIconSize, 0)
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_question", m_iconDIB, picIconSize, picIconSize, 0)
         Else
-            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_info", iconDIB, picIconSize, picIconSize, 0)
+            iconSuccess = IconsAndCursors.LoadResourceToDIB("generic_info", m_iconDIB, picIconSize, picIconSize, 0)
         End If
         
-        If iconSuccess Then
-            picIcon.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-            iconDIB.AlphaBlendToDC picIcon.hDC
-            picIcon.Picture = picIcon.Image
-        End If
-        
+        If (Not iconSuccess) Then Set m_iconDIB = Nothing
         picIcon.Visible = iconSuccess
         
     Else
@@ -303,4 +293,9 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub picIcon_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
+    If (Not m_iconDIB Is Nothing) Then m_iconDIB.AlphaBlendToDC targetDC
 End Sub

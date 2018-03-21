@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.4</langversion>
+<langversion>7.0.5</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -4352,6 +4352,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7913,11 +7919,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation></translation>
 </phrase>
@@ -7942,7 +7943,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>無法使用預覽</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8444,13 +8445,23 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>normalize</original>
+<original>tone-mapping operator</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>曝光</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>亮部區塊</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8466,11 +8477,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <phrase>
 <original>color correction</original>
 <translation>色彩校正</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>亮部區塊</translation>
 </phrase>
 
 <phrase>
@@ -8518,7 +8524,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>完整光譜</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15197,6 +15203,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>

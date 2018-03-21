@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.2</langversion>
+<langversion>1.0.3</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4388,6 +4388,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdPenSelector.ctl-->
 
+<!-- BEGIN text for pdPictureBox.ctl -->
+
+<!-- pdPictureBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdPictureBox.ctl-->
+
 <!-- BEGIN text for pdPreview.ctl -->
 
 <!-- pdPreview.ctl contains 0 phrases. -->
@@ -7950,11 +7956,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>autosave entries found</original>
-<translation>항목 자동 저장</translation>
-</phrase>
-
-<phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
 <translation>데이터를 자동 저장했습니다. 복원 하시겠습니까?</translation>
 </phrase>
@@ -7979,7 +7980,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>미리보기를 사용할 수 없음</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -8481,13 +8482,23 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>정상화하다</translation>
+<original>tone-mapping operator</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>exposure</original>
 <translation>노출</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>흰 점</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>정상화하다</translation>
 </phrase>
 
 <phrase>
@@ -8503,11 +8514,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <phrase>
 <original>color correction</original>
 <translation>색 보정</translation>
-</phrase>
-
-<phrase>
-<original>white point</original>
-<translation>흰 점</translation>
 </phrase>
 
 <phrase>
@@ -8555,7 +8561,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>전체 스펙트럼</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -15255,6 +15261,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- As of this build, PhotoDemon contains 4641 phrases. -->
 <!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12428 total words. -->
+<!-- These 2558 phrases contain approximately 12427 total words. -->
 
 </pdData>
