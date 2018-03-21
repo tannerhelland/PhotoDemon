@@ -1969,15 +1969,15 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Is the current thumbnail dirty?  If so, regenerate it.
     If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentLayerThumbSize) Then UpdateInternalThumbnail thumbnailSize
     
+    'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
+    ' aspect ratio and center the image on the thumbnail.
+    Dim thumbWidth As Long, thumbHeight As Long, thumbLeft As Single, thumbTop As Single
+    PDMath.ConvertAspectRatio m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, thumbnailSize, thumbnailSize, thumbWidth, thumbHeight
+        
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     If thumbIsSquare Then
     
-        'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
-        ' aspect ratio and center the image on the thumbnail.
-        Dim thumbWidth As Long, thumbHeight As Long, thumbLeft As Single, thumbTop As Single
-        PDMath.ConvertAspectRatio m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, thumbnailSize, thumbnailSize, thumbWidth, thumbHeight
-        
         'If the image is wider than it is tall, center the thumbnail vertically
         If (thumbWidth > thumbHeight) Then
             thumbLeft = 0!
@@ -2003,9 +2003,23 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
     ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
     Else
+        
         Dim tmpRectF As RectF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+        If (ptrToRectF <> 0) Then
+            CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+        Else
+            With tmpRectF
+                .Left = 0!
+                .Top = 0!
+                .Width = thumbWidth
+                .Height = thumbHeight
+            End With
+            If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB Else dstThumbnailDIB.ResetDIB 0
+            dstThumbnailDIB.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
+        End If
+        
         GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_LayerThumbnail, 0!, 0!, m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
+        
     End If
     
     dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
