@@ -417,8 +417,8 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_NewItemRect
         
         Dim oldItemBorderWidth As Single
-        If m_OldItemIsHovered Then oldItemBorderWidth = 3# Else oldItemBorderWidth = 1#
-        Drawing2D.QuickCreateSolidPen cPen, oldItemBorderWidth, m_Colors.RetrieveColor(PDNO_Border, Me.Enabled, , m_OldItemIsHovered), 100#
+        If m_OldItemIsHovered Or ucSupport.DoIHaveFocus Then oldItemBorderWidth = 3# Else oldItemBorderWidth = 1#
+        Drawing2D.QuickCreateSolidPen cPen, oldItemBorderWidth, m_Colors.RetrieveColor(PDNO_Border, Me.Enabled, , m_OldItemIsHovered Or ucSupport.DoIHaveFocus), 100#
         m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_OldItemRect
         
         Set cSurface = Nothing: Set cPen = Nothing

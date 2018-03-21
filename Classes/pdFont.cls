@@ -196,7 +196,7 @@ Friend Sub DrawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     
     'Use the client rectangle to determine a width and height midpoint for the target DC
     Dim halfDCWidth As Long, halfDCHeight As Long
-    If winClientRect.x2 = 0 Then
+    If (winClientRect.x2 = 0) Then
         halfDCWidth = customWidth \ 2
         halfDCHeight = customHeight \ 2
     Else

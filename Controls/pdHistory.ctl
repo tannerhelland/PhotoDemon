@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Automatic History control
 'Copyright 2016-2018 by Tanner Helland
 'Created: 16/October/16
-'Last updated: 27/October/16
-'Last update: add "rows" property, which allows for cramming more history blocks into a small space
+'Last updated: 21/March/18
+'Last update: add support for keyboard nav
 '
 'This control is currently used in the color selection dialog.  It provides a semi-owner-drawn mechanism
 ' for displaying an interactive "history" of items selected by the user (in the color selection dialog, for example,
@@ -79,6 +79,9 @@ Private m_NumHistoryRows As Long, m_NumHistoryColumns As Long
 
 'If a history item is hovered, this will be set to some value >= 0
 Private m_HistoryItemHovered As Long
+
+'If the control has focus, the currently selected index is stored here; -1 means "nothing has been selected"
+Private m_LastItemClicked As Long
 
 '2D painting support classes
 Private m_Painter As pd2DPainter
@@ -353,8 +356,46 @@ Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, By
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
-    RaiseEvent GotFocusAPI
+    m_LastItemClicked = 0
     RedrawBackBuffer
+    RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    markEventHandled = False
+        
+    If (vkCode = VK_LEFT) Then
+        m_LastItemClicked = m_LastItemClicked - 1
+        If (m_LastItemClicked < 0) Then m_LastItemClicked = m_HistoryCount - 1
+        markEventHandled = True
+    ElseIf (vkCode = VK_RIGHT) Then
+        m_LastItemClicked = m_LastItemClicked + 1
+        If (m_LastItemClicked >= m_HistoryCount) Then m_LastItemClicked = 0
+        markEventHandled = True
+    ElseIf (vkCode = VK_UP) Then
+        m_LastItemClicked = m_LastItemClicked - m_NumHistoryColumns
+        If (m_LastItemClicked < 0) Then
+            m_LastItemClicked = m_LastItemClicked + m_HistoryCount
+            If (m_LastItemClicked >= m_HistoryCount) Then m_LastItemClicked = m_HistoryCount - 1
+        End If
+        markEventHandled = True
+    ElseIf (vkCode = VK_DOWN) Then
+        m_LastItemClicked = m_LastItemClicked + m_NumHistoryColumns
+        If (m_LastItemClicked >= m_HistoryCount) Then
+            m_LastItemClicked = m_LastItemClicked - m_HistoryCount
+            If (m_LastItemClicked < 0) Then m_LastItemClicked = 0
+        End If
+        markEventHandled = True
+    ElseIf (vkCode = VK_SPACE) Then
+        If (m_LastItemClicked >= 0) And (m_LastItemClicked < m_HistoryCount) Then
+            RaiseEvent HistoryItemClicked(m_LastItemClicked, m_HistoryItems(m_LastItemClicked).ItemString)
+            RedrawBackBuffer
+        End If
+    End If
+    
+    If markEventHandled Then RedrawBackBuffer
+
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
@@ -367,8 +408,9 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
-    RaiseEvent LostFocusAPI
+    m_LastItemClicked = -1
     RedrawBackBuffer
+    RaiseEvent LostFocusAPI
 End Sub
 
 'Only left clicks raise Click() events
@@ -377,11 +419,11 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
         
         'Start by seeing if the mouse is inside the history portion of the control
-        Dim clickedIndex As Long
-        clickedIndex = GetHistoryItemUnderMouse(x, y)
+        m_LastItemClicked = GetHistoryItemUnderMouse(x, y)
         
-        If ((clickedIndex >= 0) And (clickedIndex < m_HistoryCount)) Then
-            RaiseEvent HistoryItemClicked(clickedIndex, m_HistoryItems(clickedIndex).ItemString)
+        If ((m_LastItemClicked >= 0) And (m_LastItemClicked < m_HistoryCount)) Then
+            RaiseEvent HistoryItemClicked(m_LastItemClicked, m_HistoryItems(m_LastItemClicked).ItemString)
+            RedrawBackBuffer
         End If
         
     End If
@@ -418,14 +460,16 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub UserControl_Initialize()
-        
+    
     m_HistoryCount = 0
     m_HistoryItemHovered = -1
-        
+    m_LastItemClicked = -1
+    
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
-    ucSupport.RequestExtraFunctionality True
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_SPACE
     ucSupport.RequestCaptionSupport
     
     'Prep painting classes
@@ -672,14 +716,26 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
                 End With
             Next i
             
-            'Finally, if one of the history items is currently hovered, paint it with a chunky, highlighted border
+            'Finally, if one of the history items is currently hovered or selected, paint it with a
+            ' chunky, highlighted border
+            Dim cOuterPen As pd2DPen
+            Drawing2D.QuickCreatePairOfUIPens cOuterPen, cPen, True
+            
+            'Last-clicked item is only highlighted if the control has focus
+            If ucSupport.DoIHaveFocus Then
+                If (m_LastItemClicked >= 0) Then
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_LastItemClicked).ItemRect
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_LastItemClicked).ItemRect
+                End If
+            End If
+            
+            'Hovered entries are always highlighted
             If (m_HistoryItemHovered >= 0) Then
-                Dim cOuterPen As pd2DPen
-                Drawing2D.QuickCreatePairOfUIPens cOuterPen, cPen, True
                 m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
-                Set cOuterPen = Nothing
             End If
+                
+            Set cOuterPen = Nothing
             
         End If
         
