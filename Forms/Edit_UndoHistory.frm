@@ -204,13 +204,20 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     If (itemIndex + 1) = m_curUndoIndex Then drawString = "* "
     drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).processID)
     
-    'Render the thumbnail for this entry
+    'Render the thumbnail for this entry, and note that the thumbnail is *not* guaranteed to be square.
+    
+    Dim thumbNewWidth As Long, thumbNewHeight As Long, thumbMax As Long
+    thumbMax = Interface.FixDPI(UNDO_THUMB_SMALL)
+    PDMath.ConvertAspectRatio m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, thumbMax, thumbMax, thumbNewWidth, thumbNewHeight
+    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + FixDPI(4) + (thumbMax - thumbNewWidth) \ 2, offsetY + (FixDPI(BLOCKHEIGHT) - thumbMax) \ 2 + (thumbMax - thumbNewHeight) \ 2, thumbNewWidth, thumbNewHeight, m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
+    'GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + FixDPI(4), offsetY + (FixDPI(BLOCKHEIGHT) - FixDPI(UNDO_THUMB_SMALL)) \ 2, FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
+    
+    'Figure out how much space the thumbnail has taken; we'll shift text to the left of this
     Dim thumbWidth As Long
     thumbWidth = offsetX + FixDPI(4) + FixDPI(UNDO_THUMB_SMALL)
-    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + FixDPI(4), offsetY + (FixDPI(BLOCKHEIGHT) - FixDPI(UNDO_THUMB_SMALL)) \ 2, FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
     
     'Render the title text
-    If (Len(drawString) <> 0) Then
+    If (LenB(drawString) <> 0) Then
         m_TitleFont.AttachToDC bufferDC
         m_TitleFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
         m_TitleFont.ReleaseFromDC
@@ -219,7 +226,7 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     'Below that, add the description text (if any)
     drawString = GetStringForUndoType(m_undoEntries(itemIndex).undoType, m_undoEntries(itemIndex).undoLayerID)
     
-    If (Len(drawString) <> 0) Then
+    If (LenB(drawString) <> 0) Then
         mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
         m_DescriptionFont.AttachToDC bufferDC
         m_DescriptionFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString

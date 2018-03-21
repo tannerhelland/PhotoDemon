@@ -118,7 +118,6 @@ Public parentPDImage As pdImage
 Private Const PD_UNDO_VERSION_ID As Long = 64
 
 'The size of the Undo/Redo Thumbnail
-Private Const UNDO_THUMB_SMALL As Long = 48
 Private Const UNDO_THUMB_LARGE As Long = 128
 
 'Certain parts of the Undo/Redo header are written out to persistent files.  For example, a full copy of the current
@@ -248,22 +247,22 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     Select Case processType
     
         Case UNDO_Nothing
-            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
         
         Case UNDO_Everything
-            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
             
         Case UNDO_Image, UNDO_Image_VectorSafe
-            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
         
         Case UNDO_ImageHeader
-            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
         
         Case UNDO_Layer, UNDO_Layer_VectorSafe
-            parentPDImage.GetLayerByID(targetLayerID).RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.GetLayerByID(targetLayerID).RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
         
         Case UNDO_LayerHeader
-            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize, False
         
         Case UNDO_Selection
             parentPDImage.MainSelection.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize

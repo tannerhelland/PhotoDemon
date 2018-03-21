@@ -5,7 +5,7 @@ Begin VB.Form dialog_AutosaveWarning
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Autosave data detected"
-   ClientHeight    =   6975
+   ClientHeight    =   5565
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9165
@@ -21,31 +21,23 @@ Begin VB.Form dialog_AutosaveWarning
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   465
+   ScaleHeight     =   371
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   611
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picWarning 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picWarning 
       Height          =   615
       Left            =   240
-      ScaleHeight     =   41
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   49
-      TabIndex        =   4
       Top             =   240
       Width           =   735
+      _ExtentX        =   1296
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdListBox lstAutosaves 
-      Height          =   3450
+      Height          =   2730
       Left            =   240
-      TabIndex        =   3
-      Top             =   2400
+      TabIndex        =   1
+      Top             =   1830
       Width           =   3615
       _ExtentX        =   6376
       _ExtentY        =   6085
@@ -54,55 +46,29 @@ Begin VB.Form dialog_AutosaveWarning
       Height          =   735
       Left            =   1800
       TabIndex        =   0
-      Top             =   6060
+      Top             =   4740
       Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
       Caption         =   "Attempt to recover"
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00808080&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FFFFFF&
-      Height          =   3405
+   Begin PhotoDemon.pdPictureBox picPreview 
+      Height          =   2730
       Left            =   3960
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   330
-      TabIndex        =   1
-      Top             =   2430
+      Top             =   1830
       Width           =   4980
+      _ExtentX        =   8784
+      _ExtentY        =   4815
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   735
       Left            =   5400
       TabIndex        =   2
-      Top             =   6060
+      Top             =   4740
       Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
       Caption         =   "Discard"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   240
-      Top             =   2040
-      Width           =   8730
-      _ExtentX        =   15399
-      _ExtentY        =   503
-      Caption         =   "autosave entries found:"
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblWarning 
       Height          =   645
@@ -129,13 +95,6 @@ Begin VB.Form dialog_AutosaveWarning
       FontSize        =   12
       ForeColor       =   2105376
       Layout          =   1
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      X1              =   16
-      X2              =   595
-      Y1              =   120
-      Y2              =   120
    End
 End
 Attribute VB_Name = "dialog_AutosaveWarning"
@@ -169,6 +128,9 @@ Private userAnswer As VbMsgBoxResult
 Private m_numOfXMLFound As Long
 Private m_XmlEntries() As AutosaveXML
 
+'Theme-specific icons are fully supported
+Private m_warningDIB As pdDIB
+
 'When this dialog finally closes, the calling function can use this sub to retrieve the entries the user wants saved.
 Friend Sub FillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
     
@@ -188,15 +150,12 @@ End Property
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
     
-    'Draw a warning icon
+    'Prep a warning icon
     Dim warningIconSize As Long
-    warningIconSize = FixDPI(32)
-    Dim warningDIB As pdDIB
-    If IconsAndCursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
-        picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-        warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
-        picWarning.Picture = picWarning.Image
-    Else
+    warningIconSize = Interface.FixDPI(32)
+    
+    If Not IconsAndCursors.LoadResourceToDIB("generic_warning", m_warningDIB, warningIconSize, warningIconSize, 0) Then
+        Set m_warningDIB = Nothing
         picWarning.Visible = False
     End If
     
@@ -236,7 +195,7 @@ Private Sub cmdCancel_Click()
 
 End Sub
 
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     userAnswer = vbYes
     Me.Hide
 End Sub
@@ -252,14 +211,9 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     If tmpDIB.CreateFromFile(srcImagePath) Then
-        tmpDIB.RenderToPictureBox picPreview
+        picPreview.copyDIB tmpDIB, , True, , True, , True
     Else
-        picPreview.Picture = LoadPicture(vbNullString)
-        Dim strToPrint As String
-        strToPrint = g_Language.TranslateMessage("Preview not available")
-        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
-        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
-        picPreview.Print strToPrint
+        picPreview.PaintText g_Language.TranslateMessage("Preview not available")
     End If
     
 End Sub
@@ -299,4 +253,9 @@ Private Sub lstAutosaves_Click()
     previewPath = m_XmlEntries(lstAutosaves.ListIndex).xmlPath & ".pdasi"
     UpdatePreview previewPath
     
+End Sub
+
+Private Sub picWarning_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
+    If (Not m_warningDIB Is Nothing) Then m_warningDIB.AlphaBlendToDC targetDC, , (ctlWidth - m_warningDIB.GetDIBWidth) \ 2, (ctlHeight - m_warningDIB.GetDIBHeight) \ 2
 End Sub
