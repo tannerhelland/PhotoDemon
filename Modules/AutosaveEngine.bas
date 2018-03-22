@@ -3,9 +3,8 @@ Attribute VB_Name = "Autosaves"
 'Image Autosave Handler
 'Copyright 2014-2018 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 09/March/18
-'Last update: previous session crashes now notify pdDebug; it may choose to activate the debugger, even in stable builds,
-'             as a failsafe.
+'Last updated: 22/March/18
+'Last update: improve detection of original file format
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -35,6 +34,8 @@ Public Type AutosaveXML
     xmlPath As String
     parentImageID As Long
     friendlyName As String
+    currentFormat As PD_IMAGE_FORMAT
+    originalFormat As PD_IMAGE_FORMAT
     originalPath As String
     originalSessionID As String
     undoStackHeight As Long
@@ -202,6 +203,8 @@ Public Function SaveableImagesPresent() As Long
                     .xmlPath = chkFile
                     .friendlyName = xmlEngine.GetUniqueTag_String("friendlyName")
                     .originalPath = xmlEngine.GetUniqueTag_String("originalPath")
+                    .originalFormat = xmlEngine.GetUniqueTag_Long("originalFormat", PDIF_PDI)
+                    .currentFormat = xmlEngine.GetUniqueTag_Long("currentFormat", PDIF_PDI)
                     .originalSessionID = xmlEngine.GetUniqueTag_String("OriginalSessionID")
                     .parentImageID = xmlEngine.GetUniqueTag_Long("imageID", -1)
                     .undoNumAtLastSave = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave", 0)
@@ -410,6 +413,10 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             pdImages(g_CurrentImage).ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
             pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(fullXMLList(i).friendlyName, True)
             pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(fullXMLList(i).friendlyName)
+            
+            'Attempt to set its filetype.  (We rely on the file extension for this.)
+            pdImages(g_CurrentImage).SetOriginalFileFormat fullXMLList(i).originalFormat
+            pdImages(g_CurrentImage).SetCurrentFileFormat fullXMLList(i).currentFormat
             
             'Mark the image as unsaved
             pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave

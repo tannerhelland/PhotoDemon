@@ -728,7 +728,7 @@ failedDataWrite:
     
 End Function
 
-'Sister function to writeExternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
+'Sister function to WriteExternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
 ' If the function fails, it will return FALSE.
 '
 'In the event that you have already loaded the XML data yourself (or have compiled it manually), I have added an optional parameter.
@@ -770,7 +770,7 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
         If (Not sourceIsUndoFile) Then
-        
+            
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
             Me.SetOriginalColorDepth xmlEngine.GetUniqueTag_Long("originalColorDepth")

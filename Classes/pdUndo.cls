@@ -513,7 +513,7 @@ Friend Sub RestoreUndoData()
     If (m_UndoNum = m_UndoNumAtLastSave_Flat) Or (m_UndoNum = m_UndoNumAtLastSave_PDI) Then
     
         'In the special case of m_UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If (Len(parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
+        If (LenB(parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
             
             If (parentPDImage.GetCurrentFileFormat = PDIF_PDI) Then
                 parentPDImage.SetSaveState True, pdSE_SavePDI
@@ -1151,6 +1151,8 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
     
     xmlEngine.WriteTag "friendlyName", friendlyName
     xmlEngine.WriteTag "originalPath", parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    xmlEngine.WriteTag "originalFormat", parentPDImage.GetOriginalFileFormat()
+    xmlEngine.WriteTag "currentFormat", parentPDImage.GetCurrentFileFormat()
     xmlEngine.WriteBlankLine
     
     'Write out the size of the current Undo stack, including the Max and Total values

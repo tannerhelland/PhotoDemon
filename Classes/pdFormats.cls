@@ -545,7 +545,7 @@ End Function
 Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputPDIF = PDIF_PDI Then
+    If (outputPDIF = PDIF_PDI) Then
         IsColorDepthSupported = True
         Exit Function
     End If
@@ -806,7 +806,7 @@ End Function
 Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Long
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputPDIF = PDIF_PDI Then
+    If (outputPDIF = PDIF_PDI) Then
         GetClosestColorDepth = desiredColorDepth
         Exit Function
     End If
