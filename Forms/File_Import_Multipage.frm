@@ -105,7 +105,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
-'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
+'The ShowDialog routine presents the user with the form.
 Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.

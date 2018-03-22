@@ -1385,7 +1385,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
             Dim i As Long
             For i = 0 To UBound(pdImages)
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).imageID <> curImageID Then FullPDImageUnload i
+                    If (pdImages(i).imageID <> curImageID) Then CanvasManager.FullPDImageUnload i
                 End If
             Next i
     
@@ -1688,7 +1688,7 @@ End Function
 ' RELAY: the actual cursor request needs to be passed to pdCanvasView, and we need to make sure its MouseEnter event also calls this.
 Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
     
-    If ((Not pdMain.IsProgramRunning()) Or g_ProgramShuttingDown) Then Exit Sub
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Some cursor functions operate on a POI basis
     Dim curPOI As PD_PointOfInterest

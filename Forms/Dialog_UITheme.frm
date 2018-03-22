@@ -135,7 +135,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = m_CmdBarAnswer
 End Property
 
-'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
+'The ShowDialog routine presents the user with the form.
 Public Sub ShowDialog()
     
     'Provide a default answer (in case the user closes the dialog via some means other than the command bar)

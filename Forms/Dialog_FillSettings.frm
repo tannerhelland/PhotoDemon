@@ -68,8 +68,8 @@ Begin VB.Form dialog_FillSettings
       Index           =   0
       Left            =   120
       Top             =   120
-      Width           =   9375
-      _ExtentX        =   16536
+      Width           =   12015
+      _ExtentX        =   21193
       _ExtentY        =   556
       Caption         =   "preview"
       FontSize        =   12

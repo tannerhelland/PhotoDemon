@@ -442,7 +442,7 @@ Public Type RectF
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
-Public Type SafeArrayBounD
+Public Type SafeArrayBound
     cElements As Long
     lBound   As Long
 End Type
@@ -453,7 +453,7 @@ Public Type SafeArray2D
     cbElements As Long
     cLocks     As Long
     pvData     As Long
-    Bounds(1)  As SafeArrayBounD
+    Bounds(1)  As SafeArrayBound
 End Type
 
 Public Type SafeArray1D

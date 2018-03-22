@@ -311,11 +311,6 @@ End Sub
 ' that separately.  This simply uses whatever's been previously cached.
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDNI_Background, Me.Enabled))
@@ -364,6 +359,7 @@ Private Sub RedrawBackBuffer()
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
             ' in image coordinate space
             Dim viewportRect As RectF
+            If (pdImages(g_CurrentImage).ImgViewport Is Nothing) Then Exit Sub
             pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage viewportRect
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the

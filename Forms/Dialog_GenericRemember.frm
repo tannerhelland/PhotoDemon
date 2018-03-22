@@ -129,7 +129,7 @@ Public Property Get GetRememberAnswerState() As Boolean
     GetRememberAnswerState = rememberMyChoice
 End Property
 
-'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
+'The ShowDialog routine presents the user with the form.
 Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal sysIcon As SystemIconConstants = 0, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False, Optional ByVal resNameYesImg As String = "generic_ok", Optional ByVal resNameNoImg As String = "generic_cancel", Optional ByVal resNameCancelImg As String = vbNullString)
 
     'On the off chance that this dialog is raised during long-running processing, make a note of the cursor prior to displaying the dialog.

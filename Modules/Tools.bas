@@ -171,7 +171,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.SetRedrawSuspension False
     
     'Request the scroll-specific viewport pipeline stage
-    ViewportEngine.Stage2_CompositeAllLayers srcImage, FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers srcImage, FormMain.MainCanvas(0)
     
 End Sub
 
@@ -552,8 +552,8 @@ Public Sub InitializeToolsDependentOnImage()
             Set pdImages(g_CurrentImage).ScratchLayer = Nothing
             
             'As a failsafe, restore default mouse settings, which may have been modified by various paintbrush tools
-            FormMain.mainCanvas(0).SetMouseInput_AutoDrop True
-            FormMain.mainCanvas(0).SetMouseInput_HighRes False
+            FormMain.MainCanvas(0).SetMouseInput_AutoDrop True
+            FormMain.MainCanvas(0).SetMouseInput_HighRes False
             
         End If
     End If
@@ -564,6 +564,11 @@ End Sub
 ' currently active layer.  (Note that you also need to call this whenever a new tool panel is selected, as the newly
 ' loaded panel will reflect default values otherwise.)
 Public Sub SyncToolOptionsUIToCurrentLayer()
+    
+    'Failsafe checks
+    If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    If (Not pdImages(g_CurrentImage).IsActive) Then Exit Sub
+    If (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then Exit Sub
     
     'Before doing anything else, make sure canvas tool operations are allowed.  (They are disallowed if no images
     ' are loaded, for example.)

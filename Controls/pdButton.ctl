@@ -608,11 +608,6 @@ End Sub
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth

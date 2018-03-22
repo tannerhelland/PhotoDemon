@@ -518,11 +518,6 @@ End Sub
 ' that don't require a resize (e.g. gain/lose focus), this function should be used.
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))

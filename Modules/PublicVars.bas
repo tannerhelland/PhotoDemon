@@ -66,12 +66,10 @@ Public g_CheckerboardBrush As pd2DBrush
 ' with managing multiple monitors and other display-related issues.
 Public g_Displays As pdDisplays
 
-'If the user attempts to close the program while multiple unsaved images are present, these values allow us to count
-' a) how many unsaved images are present
-' b) if the user wants to deal with all the images (if the "Repeat this action..." box is checked on the unsaved
-'     image confirmation prompt) in the same fashion
-' c) what the user's preference is for dealing with all the unsaved images
-Public g_NumOfUnsavedImages As Long
+'If the user attempts to close the program while multiple unsaved images are present, these values tell us...
+' 1) if the user wants to deal with all unsaved images (e.g. if the "Repeat this action..." box was checked
+'     on the "unsaved image confirmation" dialog)
+' 2) what the user wants us to do with the various remaining unsaved images (e.g. save vs discard)
 Public g_DealWithAllUnsavedImages As Boolean
 Public g_HowToDealWithAllUnsavedImages As VbMsgBoxResult
 

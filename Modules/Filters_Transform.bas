@@ -664,8 +664,8 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Rotating image clockwise..."
     
-    Dim copyDIB As pdDIB
-    Set copyDIB = New pdDIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
@@ -704,13 +704,13 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
+        tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
         tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDI_Plus.GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
@@ -801,8 +801,8 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Rotating image counter-clockwise..."
     
-    Dim copyDIB As pdDIB
-    Set copyDIB = New pdDIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
@@ -841,13 +841,13 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
+        tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
         tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDI_Plus.GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True

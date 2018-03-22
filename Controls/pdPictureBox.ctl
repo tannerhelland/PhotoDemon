@@ -172,7 +172,12 @@ Public Sub PaintText(ByRef srcString As String, Optional ByVal FontSize As Singl
 End Sub
 
 'For convenience, if you need a DIB painted in a centered position, use this function; we take care of the rest
-Public Sub copyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False, Optional ByVal useNeutralBackground As Boolean = False, Optional ByVal drawBorderAroundImage As Boolean = False, Optional ByVal drawBorderAroundControl As Boolean = True)
+Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False, Optional ByVal useNeutralBackground As Boolean = False, Optional ByVal drawBorderAroundImage As Boolean = False, Optional ByVal drawBorderAroundControl As Boolean = True)
+    
+    If (srcDIB Is Nothing) Then
+        pdDebug.LogAction "WARNING!  pdPictureBox.CopyDIB received a null DIB; copy abandoned."
+        Exit Sub
+    End If
     
     Dim dstWidth As Double, dstHeight As Double
     dstWidth = Me.GetWidth

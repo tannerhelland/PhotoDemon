@@ -2699,30 +2699,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True
     
-    'Before exiting QueryUnload, attempt to unload all open images.  If any of them cancel shutdown, postpone the
-    ' program-wide shutdown as well
-    Dim i As Long
-    If (g_NumOfImagesLoaded > 0) Then
-    
-        For i = 0 To UBound(pdImages)
-            If Not (pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then
-                
-                    'This image is active and so is its parent form.  Ask the master image handler to unload it.
-                    ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
-                    '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
-                    CanvasManager.FullPDImageUnload i, True
-                    
-                    'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
-                    If (Not g_ProgramShuttingDown) Then
-                        Cancel = True
-                        Exit Sub
-                    End If
-                    
-                End If
-            End If
-        Next i
-        
+    'An external function handles unloading.  If it fails, we will also cancel our unload.
+    Cancel = (Not CanvasManager.CloseAllImages())
+    If Cancel Then
+        g_ProgramShuttingDown = False
+        If (g_OpenImageCount <> 0) Then Message vbNullString
     End If
     
 End Sub
@@ -4057,6 +4038,15 @@ Private Sub MnuStylize_Click(Index As Integer)
 End Sub
 
 Private Sub MnuTest_Click()
+    
+    Dim i As Long
+    For i = LBound(pdImages) To UBound(pdImages)
+        If (Not pdImages(i) Is Nothing) Then
+            ActivatePDImage i, "test"
+            Process "Invert RGB", , , UNDO_Layer
+        End If
+    Next i
+    ActivatePDImage 0, "finished"
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
 End Sub

@@ -44,13 +44,14 @@ Begin VB.Form dialog_ExportWebP
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdDropDown cboSaveQuality 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6120
       TabIndex        =   2
-      Top             =   2400
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   2040
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "image compression ratio"
    End
    Begin PhotoDemon.pdSlider sltQuality 
       Height          =   405
@@ -92,18 +93,6 @@ Begin VB.Form dialog_ExportWebP
       FontSize        =   8
       ForeColor       =   4210752
       Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   360
-      Index           =   0
-      Left            =   6000
-      Top             =   2040
-      Width           =   5850
-      _ExtentX        =   10319
-      _ExtentY        =   635
-      Caption         =   "image compression ratio"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "dialog_ExportWebP"

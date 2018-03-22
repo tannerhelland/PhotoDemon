@@ -301,9 +301,6 @@ End Sub
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown And (g_Themer Is Nothing) Then Exit Sub
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDPB_Background))

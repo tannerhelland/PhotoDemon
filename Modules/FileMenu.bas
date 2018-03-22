@@ -301,7 +301,7 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         ' As such, we need to suggest an appropriate format.
         
         'Start with the most obvious criteria: does the image have multiple layers?  If so, PDI is best.
-        If srcImage.GetNumOfLayers > 1 Then
+        If (srcImage.GetNumOfLayers > 1) Then
             GetSuggestedSaveFormatAndExtension = PDIF_PDI
         Else
         
@@ -383,15 +383,7 @@ End Function
 
 'Close the active image
 Public Sub MenuClose()
-    
-    'Just in case, reset the "user is trying to close all images" flag
-    g_ClosingAllImages = False
-    FullPDImageUnload g_CurrentImage
-    
-    'Reset any relevant parameters
-    g_ClosingAllImages = False
-    g_DealWithAllUnsavedImages = False
-
+    CanvasManager.FullPDImageUnload g_CurrentImage
 End Sub
 
 'Close all active images
@@ -401,47 +393,11 @@ Public Sub MenuCloseAll()
     ' of "Unsaved changes" dialog to display.
     g_ClosingAllImages = True
     
-    Dim numOfImagesToUnload As Long, numImagesActuallyUnloaded As Long
-    numImagesActuallyUnloaded = 0
-    numOfImagesToUnload = g_OpenImageCount
+    'An external function handles the actual closing process
+    If (Not CanvasManager.CloseAllImages()) Then Message vbNullString
     
-    'Loop through each image object and close their associated forms.  Note that we want to start from the current image and
-    ' work our way down.
-    Dim i As Long, startingIndex As Long
-    startingIndex = g_CurrentImage
-    i = startingIndex
-    
-    Dim keepUnloading As Boolean: keepUnloading = True
-    
-    Do
-    
-        If (Not pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then
-                numImagesActuallyUnloaded = numImagesActuallyUnloaded + 1
-                Message "Unloading image %1 of %2", numImagesActuallyUnloaded, numOfImagesToUnload
-                FullPDImageUnload i, False
-            End If
-        End If
-        
-        'If the user presses "cancel" at some point in the unload chain, obey their request immediately
-        ' (e.g. stop unloading images)
-        If (Not g_ClosingAllImages) Then
-            If (g_OpenImageCount <> 0) Then Message vbNullString
-            Exit Do
-            
-        'If the unload process hasn't been canceled, move to the next image
-        Else
-        
-            i = i + 1
-            If (i > UBound(pdImages)) Then i = LBound(pdImages)
-            If (i = startingIndex) Then keepUnloading = False
-        
-        End If
-    
-    Loop While keepUnloading
-    
-    'Redraw the screen to match the new program state
-    SyncInterfaceToCurrentImage
+    'Redraw the screen to match any program state changes
+    Interface.SyncInterfaceToCurrentImage
     
     'Reset the "closing all images" flags
     g_ClosingAllImages = False

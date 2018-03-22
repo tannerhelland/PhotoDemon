@@ -90,7 +90,7 @@ Public Property Get paramValue() As Double
     paramValue = userValue
 End Property
 
-'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
+'The ShowDialog routine presents the user with the form.
 Public Sub ShowDialog(ByVal typeOfDialog As SelectionDialogType)
     
     'Based on the type of dialog requested, rebuild the dialog's text

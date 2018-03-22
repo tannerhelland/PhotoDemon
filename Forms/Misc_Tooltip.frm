@@ -116,7 +116,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Resize()
-    If (Not pdMain.IsProgramRunning()) And (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint False
+    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint False
 End Sub
 
 Public Sub NotifyTooltipSettings(ByRef ttCaption As String, ByRef ttTitle As String, ByVal internalPadding As Single, ByVal titlePadding As Single)
@@ -143,11 +143,6 @@ End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer()
-    
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If pdMain.IsProgramRunning() Then

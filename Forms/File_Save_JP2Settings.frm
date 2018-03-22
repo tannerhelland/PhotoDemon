@@ -63,13 +63,14 @@ Begin VB.Form dialog_ExportJP2
       _ExtentX        =   0
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSaveQuality 
-         Height          =   375
-         Left            =   240
+         Height          =   735
+         Left            =   120
          TabIndex        =   6
-         Top             =   1680
-         Width           =   6375
-         _ExtentX        =   11245
-         _ExtentY        =   661
+         Top             =   1320
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   1296
+         Caption         =   "image compression ratio"
       End
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
@@ -111,18 +112,6 @@ Begin VB.Form dialog_ExportJP2
          FontSize        =   8
          ForeColor       =   4210752
          Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   360
-         Index           =   0
-         Left            =   0
-         Top             =   1320
-         Width           =   5850
-         _ExtentX        =   10319
-         _ExtentY        =   635
-         Caption         =   "image compression ratio"
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
    Begin PhotoDemon.pdContainer picContainer 

@@ -878,11 +878,6 @@ End Sub
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
-    'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Figure out which background color to use.  This is normally determined by theme, but individual buttons also allow
     ' a custom .BackColor property (important if this instance lies atop a non-standard background, like a command bar).
     Dim finalBackColor As Long

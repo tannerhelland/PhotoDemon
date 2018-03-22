@@ -147,7 +147,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
-'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
+'The ShowDialog routine presents the user with the form.
 Public Sub ShowDialog()
     
     'Prep a warning icon

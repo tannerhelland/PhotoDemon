@@ -34,10 +34,9 @@ Public Function ChoosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Op
 End Function
 
 'Present a dialog box to confirm the closing of an unsaved image
-Public Function ConfirmClose(ByVal formID As Long) As VbMsgBoxResult
+Public Function ConfirmClose(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long, ByRef unsavedImageIDs As pdStack) As VbMsgBoxResult
     Load dialog_UnsavedChanges
-    dialog_UnsavedChanges.formID = formID
-    dialog_UnsavedChanges.ShowDialog FormMain
+    dialog_UnsavedChanges.ShowDialog srcImageID, numOfUnsavedImages, unsavedImageIDs
     ConfirmClose = dialog_UnsavedChanges.DialogResult
     Unload dialog_UnsavedChanges
     Set dialog_UnsavedChanges = Nothing

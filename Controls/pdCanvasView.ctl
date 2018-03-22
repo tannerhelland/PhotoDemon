@@ -195,7 +195,7 @@ Public Sub ClearCanvas()
     bHeight = ucSupport.GetBackBufferHeight
         
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() And (Not g_ProgramShuttingDown) Then
+    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() Then
         
         Dim placeholderImageSize As Long
         placeholderImageSize = 256
@@ -303,10 +303,10 @@ Public Sub RequestCursor_Resource(ByVal pngResourceName As String, Optional ByVa
     ucSupport.RequestCursor_Resource pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
-'External functions can request an immediate redraw.  Please don't abuse this - it should really only be used when some
-' UI element needs to be updated independent of PD's normal refresh cycles.
+'External functions can request an immediate redraw.  Please don't abuse this - it should really only be used
+' when a UI element needs to be updated independent of PD's normal refresh cycles.
 Public Sub RequestRedraw(Optional ByVal repaintImmediately As Boolean = False)
-    If (Not g_ProgramShuttingDown) Then RedrawBackBuffer repaintImmediately
+    RedrawBackBuffer repaintImmediately
 End Sub
 
 'For some tool actions, it may be helpful to move the cursor for the user.  Call this function to forcibly set a cursor position.

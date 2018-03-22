@@ -1389,11 +1389,6 @@ End Function
 ' this function.
 Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = False)
     
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim finalBackColor As Long, bufferDC As Long
     finalBackColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)

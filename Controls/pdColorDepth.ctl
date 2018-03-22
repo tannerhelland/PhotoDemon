@@ -673,17 +673,10 @@ End Sub
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     If pdMain.IsProgramRunning() Then
-        
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True, g_Themer.GetGenericUIColor(UI_Background))
-        
     End If
     
     'Paint the final result to the screen, as relevant

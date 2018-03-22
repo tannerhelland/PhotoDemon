@@ -675,11 +675,6 @@ End Sub
 ' may need to be redrawn under certain circumstances.
 Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean = False)
     
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDP_Background))

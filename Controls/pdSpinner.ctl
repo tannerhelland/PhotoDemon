@@ -839,11 +839,6 @@ End Sub
 'Redraw the spin button area of the control
 Private Sub RedrawBackBuffer()
     
-    'We can improve shutdown performance by ignoring redraw requests when the program is going down
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim finalBackColor As Long
     finalBackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled)

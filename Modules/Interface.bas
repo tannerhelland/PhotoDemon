@@ -1419,7 +1419,7 @@ Public Sub ReleaseFormTheming(ByRef srcForm As Form)
 End Sub
 
 'Given a pdImage object, generate an appropriate caption for the main PhotoDemon window.
-Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
+Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appendPDInfo As Boolean = True) As String
 
     Dim captionBase As String
     Dim appendFileFormat As Boolean: appendFileFormat = False
@@ -1471,14 +1471,18 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     End If
     
     'Append the current PhotoDemon version number and exit
-    If (Len(captionBase) <> 0) Then
-        GetWindowCaption = captionBase & "  -  " & Updates.GetPhotoDemonNameAndVersion()
-    Else
-        GetWindowCaption = Updates.GetPhotoDemonNameAndVersion()
+    If appendPDInfo Then
+        
+        If (LenB(captionBase) <> 0) Then
+            GetWindowCaption = captionBase & "  -  " & Updates.GetPhotoDemonNameAndVersion()
+        Else
+            GetWindowCaption = Updates.GetPhotoDemonNameAndVersion()
+        End If
+        
+        'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
+        If (Not OS.IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
+        
     End If
-    
-    'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
-    If (Not OS.IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
 
 End Function
 
