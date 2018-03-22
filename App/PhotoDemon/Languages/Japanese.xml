@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.26</langversion>
+<langversion>1.0.27</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -141,6 +141,11 @@
 <!-- BEGIN text for CanvasManager.bas -->
 
 <phrase>
+<original>Unloading image %1 of %2</original>
+<translation>イメージ％1 /％2をアンロードしています</translation>
+</phrase>
+
+<phrase>
 <original>Closing image</original>
 <translation>画像を閉じる</translation>
 </phrase>
@@ -150,7 +155,7 @@
 <translation>完成しました。</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for CanvasManager.bas-->
 
@@ -384,11 +389,6 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 </phrase>
 
 <phrase>
-<original>Unloading image %1 of %2</original>
-<translation>イメージ％1 /％2をアンロードしています</translation>
-</phrase>
-
-<phrase>
 <original>Background</original>
 <translation>バックグラウンド</translation>
 </phrase>
@@ -408,7 +408,7 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 <translation>画像が大きすぎます</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -6520,7 +6520,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>アルファチャンネルを削除</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8650,6 +8650,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>images with unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save the image before closing it</original>
 <translation>画像を閉じる前に保存してください</translation>
 </phrase>
@@ -8704,6 +8709,11 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 </phrase>
 
 <phrase>
+<original>unnamed image %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>保存していない画像</translation>
 </phrase>
@@ -8713,7 +8723,7 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <translation>保存していないすべての画像に対してこの操作を繰り返します（合計％1）</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -12094,6 +12104,11 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
+<original>image compression ratio</original>
+<translation>画像圧縮率</translation>
+</phrase>
+
+<phrase>
 <original>high quality, large file</original>
 <translation>高品質、大容量ファイル</translation>
 </phrase>
@@ -12101,11 +12116,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <phrase>
 <original>low quality, small file</original>
 <translation>低品質、小さなファイル</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>画像圧縮率</translation>
 </phrase>
 
 <phrase>
@@ -12138,7 +12148,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>カスタム比率（X：1）</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -15256,12 +15266,18 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4641 phrases. -->
-<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4647 phrases. -->
+<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12433 total words. -->
 
 </pdData>

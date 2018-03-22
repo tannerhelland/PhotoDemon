@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.131</langversion>
+<langversion>1.0.132</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -141,6 +141,11 @@
 <!-- BEGIN text for CanvasManager.bas -->
 
 <phrase>
+<original>Unloading image %1 of %2</original>
+<translation>Истовар датотеката %1 %2</translation>
+</phrase>
+
+<phrase>
 <original>Closing image</original>
 <translation>затворање на сликата</translation>
 </phrase>
@@ -150,7 +155,7 @@
 <translation>Завршена.</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for CanvasManager.bas-->
 
@@ -384,11 +389,6 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Unloading image %1 of %2</original>
-<translation>Истовар датотеката %1 %2</translation>
-</phrase>
-
-<phrase>
 <original>Background</original>
 <translation>позадина</translation>
 </phrase>
@@ -408,7 +408,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Сликата е преголема</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -6525,7 +6525,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8655,6 +8655,11 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
+<original>images with unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save the image before closing it</original>
 <translation>Зачувај ја сликата пред затворање</translation>
 </phrase>
@@ -8709,6 +8714,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
+<original>unnamed image %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>Повторете ја постапката за двете незачувани слики</translation>
 </phrase>
@@ -8718,7 +8728,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Повторете ја постапката за сите незачувани слики ( %1 во вкупно)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -12099,6 +12109,11 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>image compression ratio</original>
+<translation>сооднос на сликата за компресија</translation>
+</phrase>
+
+<phrase>
 <original>high quality, large file</original>
 <translation>висок квалитет, голема датотека</translation>
 </phrase>
@@ -12106,11 +12121,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>low quality, small file</original>
 <translation>низок квалитет, мал фајл</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>сооднос на сликата за компресија</translation>
 </phrase>
 
 <phrase>
@@ -12143,7 +12153,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>сооднос обичај (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -15262,12 +15272,18 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4641 phrases. -->
-<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4647 phrases. -->
+<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12433 total words. -->
 
 </pdData>

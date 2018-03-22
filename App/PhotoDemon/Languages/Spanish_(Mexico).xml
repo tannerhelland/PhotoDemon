@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.338</langversion>
+<langversion>6.7.339</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -141,6 +141,11 @@
 <!-- BEGIN text for CanvasManager.bas -->
 
 <phrase>
+<original>Unloading image %1 of %2</original>
+<translation>Descarga de imagen %1 de %2</translation>
+</phrase>
+
+<phrase>
 <original>Closing image</original>
 <translation>imagen de Clausura</translation>
 </phrase>
@@ -150,7 +155,7 @@
 <translation>Terminado.</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for CanvasManager.bas-->
 
@@ -385,11 +390,6 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 </phrase>
 
 <phrase>
-<original>Unloading image %1 of %2</original>
-<translation>Descarga de imagen %1 de %2</translation>
-</phrase>
-
-<phrase>
 <original>Background</original>
 <translation>fondo</translation>
 </phrase>
@@ -409,7 +409,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <translation>Imagen demasiado grande</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -6524,7 +6524,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8654,6 +8654,11 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
+<original>images with unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save the image before closing it</original>
 <translation>Guarda la imagen antes de cerrarlo</translation>
 </phrase>
@@ -8708,6 +8713,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
+<original>unnamed image %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>Repita esta acción para ambas imágenes no guardadas</translation>
 </phrase>
@@ -8717,7 +8727,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Repita esta acción para todas las imágenes que no haya guardado ( %1 en total)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -12098,6 +12108,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
+<original>image compression ratio</original>
+<translation>relación de compresión de imagen</translation>
+</phrase>
+
+<phrase>
 <original>high quality, large file</original>
 <translation>alta calidad, archivos de gran tamaño</translation>
 </phrase>
@@ -12105,11 +12120,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <phrase>
 <original>low quality, small file</original>
 <translation>baja calidad, pequeño archivo</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>relación de compresión de imagen</translation>
 </phrase>
 
 <phrase>
@@ -12142,7 +12152,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Relación personalizada (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -15260,12 +15270,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4641 phrases. -->
-<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4647 phrases. -->
+<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12433 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.3</langversion>
+<langversion>1.0.4</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -141,6 +141,11 @@
 <!-- BEGIN text for CanvasManager.bas -->
 
 <phrase>
+<original>Unloading image %1 of %2</original>
+<translation>이미지  %1/ %2 언로드</translation>
+</phrase>
+
+<phrase>
 <original>Closing image</original>
 <translation>이미지 닫기</translation>
 </phrase>
@@ -150,7 +155,7 @@
 <translation>끝마친.</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for CanvasManager.bas-->
 
@@ -384,11 +389,6 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 </phrase>
 
 <phrase>
-<original>Unloading image %1 of %2</original>
-<translation>이미지  %1/ %2 언로드</translation>
-</phrase>
-
-<phrase>
 <original>Background</original>
 <translation>배경</translation>
 </phrase>
@@ -408,7 +408,7 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 <translation>이미지가 너무 큼</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -6519,7 +6519,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8649,6 +8649,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>images with unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save the image before closing it</original>
 <translation>이미지를 닫기 전에 저장하십시오.</translation>
 </phrase>
@@ -8703,6 +8708,11 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
+<original>unnamed image %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>저장되지 않은 이미지 모두에 대해이 작업을 반복하십시오.</translation>
 </phrase>
@@ -8712,7 +8722,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>저장되지 않은 모든 이미지에 대해이 작업을 반복하십시오 (총  %1)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -12093,6 +12103,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>image compression ratio</original>
+<translation>이미지 압축 비율</translation>
+</phrase>
+
+<phrase>
 <original>high quality, large file</original>
 <translation>고품질, 대용량 파일</translation>
 </phrase>
@@ -12100,11 +12115,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>low quality, small file</original>
 <translation>낮은 품질, 작은 파일</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>이미지 압축 비율</translation>
 </phrase>
 
 <phrase>
@@ -12137,7 +12147,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>맞춤 비율 (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -15255,12 +15265,18 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4641 phrases. -->
-<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4647 phrases. -->
+<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12433 total words. -->
 
 </pdData>

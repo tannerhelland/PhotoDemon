@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.38</langversion>
+<langversion>1.0.39</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -141,6 +141,11 @@
 <!-- BEGIN text for CanvasManager.bas -->
 
 <phrase>
+<original>Unloading image %1 of %2</original>
+<translation> %2 में %1 की छवि उतारने</translation>
+</phrase>
+
+<phrase>
 <original>Closing image</original>
 <translation>छवि बंद करना</translation>
 </phrase>
@@ -150,7 +155,7 @@
 <translation>ख़त्म होना।</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for CanvasManager.bas-->
 
@@ -385,11 +390,6 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Unloading image %1 of %2</original>
-<translation> %2 में %1 की छवि उतारने</translation>
-</phrase>
-
-<phrase>
 <original>Background</original>
 <translation>पृष्ठभूमि</translation>
 </phrase>
@@ -409,7 +409,7 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <translation>छवि बहुत बड़ी है</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- FileMenu.bas contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for FileMenu.bas-->
 
@@ -6521,7 +6521,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>अल्फा चैनल निकालें</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 552 phrases. 186 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8651,6 +8651,11 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 </phrase>
 
 <phrase>
+<original>images with unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save the image before closing it</original>
 <translation>इसे बंद करने से पहले छवि को सहेजें</translation>
 </phrase>
@@ -8705,6 +8710,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 </phrase>
 
 <phrase>
+<original>unnamed image %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>दोनों सहेजे न गए छवियों के लिए इस कार्रवाई को दोहराएं</translation>
 </phrase>
@@ -8714,7 +8724,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>सभी असुरक्षित छवियों (कुल में %1) के लिए इस क्रिया को दोहराएं</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -12095,6 +12105,11 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>image compression ratio</original>
+<translation>छवि संपीड़न अनुपात</translation>
+</phrase>
+
+<phrase>
 <original>high quality, large file</original>
 <translation>उच्च गुणवत्ता, बड़ी फ़ाइल</translation>
 </phrase>
@@ -12102,11 +12117,6 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>low quality, small file</original>
 <translation>कम गुणवत्ता, छोटी फ़ाइल</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>छवि संपीड़न अनुपात</translation>
 </phrase>
 
 <phrase>
@@ -12139,7 +12149,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>कस्टम अनुपात (एक्स: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -15257,12 +15267,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2560</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4641 phrases. -->
-<!-- 2083 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4647 phrases. -->
+<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
+<!-- These 2560 phrases contain approximately 12433 total words. -->
 
 </pdData>

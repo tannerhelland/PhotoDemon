@@ -60,7 +60,6 @@ Public Sub MenuInvert()
     Dim imageData() As Byte
     Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -68,33 +67,38 @@ Public Sub MenuInvert()
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
+    Dim tmpSA1D As SafeArray1D, pxData As Long, pxStride As Long
+    workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, initY
+    pxData = tmpSA1D.pvData
+    pxStride = tmpSA1D.cElements
+    
+    'Images are always 32-bpp
+    initX = initX * 4
+    finalX = finalX * 4
+    
     'After all that work, the Invert code itself is very small and unexciting!
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
-        imageData(quickVal, y) = 255 Xor imageData(quickVal, y)
-        imageData(quickVal + 1, y) = 255 Xor imageData(quickVal + 1, y)
-        imageData(quickVal + 2, y) = 255 Xor imageData(quickVal + 2, y)
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
+        tmpSA1D.pvData = pxData + pxStride * y
+    For x = initX To finalX Step 4
+        imageData(x) = 255 Xor imageData(x)
+        imageData(x + 1) = 255 Xor imageData(x + 1)
+        imageData(x + 2) = 255 Xor imageData(x + 2)
     Next x
-        
+        If (y And progBarCheck) = 0 Then
+            If Interface.UserPressedESC() Then Exit For
+            ProgressBars.SetProgBarVal y
+        End If
+    Next y
+    
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
