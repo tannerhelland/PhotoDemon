@@ -653,14 +653,19 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         
     'At present, the only post-processing supplied by this function is limited to:
     ' 1) Rare PNG chunks that the color-management system is unable to handle on its own
-    ' 2) Multipage TIFFs that may have per-page information stored (like page names)
-    ' 3) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can)
+    ' 2) Precise palette color count of 8-bpp PNG images (because FreeImage always assumes
+    '    palettes have 256 colors, which is both stupid and obnoxious).
+    ' 3) Multipage TIFFs that may have per-page information stored (like page names)
+    ' 4) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can)
     
     'Because of this, we only need to proceed if the image meets some very specific criteria.
     If ppMayBeNeeded Then
         
         'Check for PNGs that do not possess an ICC profile
         ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+        
+        'Check for 8-bpp PNGs
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).HasOriginalPalette())
         
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
         If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
@@ -828,6 +833,33 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 
             'END gAMA chunk handling
             End If
+            
+            'Next, if this PNG file has a palette, we want to retrieve its byte-specific size.
+            If DoesTagExistFullName("PNG:Palette", relevantTagIndex, vbBinaryCompare) Then
+                
+                Dim tagStr As String
+                tagStr = GetTagValue("PNG:Palette", vbBinaryCompare)
+                
+                'tagStr now looks something like "(Binary data 747 bytes, use -b option to extract)".
+                ' Look for the position of the numeric bytes identifier.
+                Dim bytePos As Long, targetStr As String
+                targetStr = "(Binary data "
+                bytePos = InStr(1, tagStr, targetStr, vbBinaryCompare)
+                If (bytePos > 0) Then
+                    Dim palSize As Long
+                    targetStr = Trim$(Right$(tagStr, Len(tagStr) - Len(targetStr)))
+                    On Error GoTo PalSizeNotANumber
+                    palSize = CLng(Left$(targetStr, InStr(1, targetStr, " ", vbBinaryCompare)))
+                End If
+                
+                'The palette size is 3x too big (because there's one byte for each of R/G/B)
+                palSize = (palSize \ 3)
+                If (palSize <> 0) Then pdImages(parentImageID).NotifyOriginalPaletteCount palSize
+                pdDebug.LogAction "NOTE: ExifTool was used to update the actual palette count of this PNG (" & CStr(palSize) & ")"
+                
+            End If
+            
+PalSizeNotANumber:
                 
         'END PNG TAGS
         End If
