@@ -482,6 +482,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         newImage.SetOriginalFileFormat PDIF_UNKNOWN
         newImage.SetCurrentFileFormat PDIF_UNKNOWN
         newImage.SetOriginalColorDepth 32
+        newImage.SetOriginalGrayscale False
         
         'Similarly, because this image does not exist on the user's hard-drive, we want to force use of a full Save As dialog
         ' in the future.  (PD detects this state if a pdImage object does not supply an on-disk location)

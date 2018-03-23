@@ -250,6 +250,25 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
+    ' Retrieve grayscale status, if any
+    '****************************************************************************
+    
+    If (Not targetImage Is Nothing) Then
+        
+        Dim imgLikelyGrayscale As Boolean: imgLikelyGrayscale = False
+        
+        If (fi_DataType = FIT_BITMAP) Then
+            imgLikelyGrayscale = (FreeImage_GetColorType(fi_hDIB) = FIC_MINISBLACK) Or (FreeImage_GetColorType(fi_hDIB) = FIC_MINISWHITE)
+        Else
+            imgLikelyGrayscale = (fi_DataType = FIT_UINT16) Or (fi_DataType = FIT_INT16) Or (fi_DataType = FIT_UINT32) Or (fi_DataType = FIT_INT32) Or (fi_DataType = FIT_FLOAT) Or (fi_DataType = FIT_DOUBLE)
+        End If
+        
+        targetImage.SetOriginalGrayscale imgLikelyGrayscale
+        
+    End If
+    
+    
+    '****************************************************************************
     ' Copy/transform the FreeImage object into the destination pdDIB object
     '****************************************************************************
     
