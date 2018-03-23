@@ -214,7 +214,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         Exit Function
     End If
     
-        
+    
     '****************************************************************************
     ' Retrieve generic metadata, like color depth and resolution (if available)
     '****************************************************************************
@@ -234,6 +234,19 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     If FreeImage_HasICCProfile(fi_hDIB) Then FI_LoadICCProfile fi_hDIB, dstDIB
+    
+    
+    '****************************************************************************
+    ' If the image has a palette, retrieve it
+    '****************************************************************************
+    
+    If (Not targetImage Is Nothing) And (fi_BPP <= 8) And (fi_DataType = FIT_BITMAP) Then
+        Dim srcPalette() As RGBQuad, numOfColors As Long
+        If Outside_FreeImageV3.FreeImage_GetPalette_ByTanner(fi_hDIB, srcPalette, numOfColors) Then
+            targetImage.SetOriginalPalette srcPalette, numOfColors
+            FI_DebugMsg "Image palette cached locally (" & numOfColors & " colors)"
+        End If
+    End If
     
     
     '****************************************************************************

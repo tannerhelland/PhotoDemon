@@ -101,6 +101,36 @@ Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad, Optional ByVal
     
 End Function
 
+Friend Function CreateFromPaletteArray(ByRef srcPalette() As RGBQuad, ByVal numColors As Long) As Boolean
+    
+    CreateFromPaletteArray = False
+    
+    If (numColors > 0) Then
+        
+        Me.Reset
+        
+        Dim i As Long
+        For i = 0 To numColors - 1
+            m_Palettes(m_NumOfGroups).AddColor srcPalette(i)
+        Next i
+        
+        m_Palettes(m_NumOfGroups).SetPaletteFilename vbNullString
+        m_Palettes(m_NumOfGroups).SetPaletteName "internal"
+        m_NumOfGroups = m_NumOfGroups + 1
+        
+        CreateFromPaletteArray = True
+        
+    End If
+
+End Function
+
+Friend Sub SetNewPaletteCount(Optional ByVal newPaletteSize As Long = 256, Optional ByVal palGroupIndex As Long = 0)
+    Dim okayToProceed As Boolean
+    okayToProceed = (palGroupIndex >= 0) And (palGroupIndex <= UBound(m_Palettes)) And (m_NumOfGroups > 0)
+    If okayToProceed Then okayToProceed = (Not m_Palettes(palGroupIndex) Is Nothing)
+    If okayToProceed Then m_Palettes(palGroupIndex).SetNumOfColors newPaletteSize
+End Sub
+
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
 Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     

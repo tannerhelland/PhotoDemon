@@ -50,8 +50,7 @@ Public imageID As Long
 Private m_IsActive As Boolean
 
 'Image dimensions
-Public Width As Long
-Public Height As Long
+Public Width As Long, Height As Long
 
 'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
 ' public variables we previously used.  Currently stored values include, but are not limited to:
@@ -89,11 +88,11 @@ Public ImgViewport As pdViewport
 
 'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
 ' use the m_DPI value, which will return the average resolution of the two.
-Private m_XResolution As Double
-Private m_YResolution As Double
+Private m_XResolution As Double, m_YResolution As Double
 Private m_DPI As Double
 
-'Current index of the associated zoom combo box; this is stored locally so zoom is preserved when switching images
+'Current index of the associated zoom combo box; this is stored locally so zoom is preserved when switching
+' between images.
 Private m_ZoomIndex As Long
 
 'Each pdImage stores two file format constants:
@@ -106,7 +105,11 @@ Private m_originalFileFormat As PD_IMAGE_FORMAT, m_currentFileFormat As PD_IMAGE
 
 'Original color depth (expressed as a standard BPP value, most commonly 32)
 Private m_OriginalColorDepth As Long
-    
+
+'Original palette, if any.  As you can imagine, this is only relevant if m_OriginalColorDepth is <= 8, so you must
+' *always* check for a null object, as many pdImage instances won't initialize this at all.
+Private m_OrigPalette As pdPalette
+
 'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
 Private m_hasBeenSavedPDI As Boolean, m_hasBeenSavedFlat As Boolean
 
@@ -196,6 +199,27 @@ End Function
 
 Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
     m_OriginalColorDepth = origColorDepth
+End Sub
+
+'Functions related to storage/retrieval of this image's original palette, if any.
+Friend Function HasOriginalPalette() As Boolean
+    HasOriginalPalette = (Not m_OrigPalette Is Nothing)
+End Function
+
+Friend Function GetOriginalPalette(ByRef dstPalette As pdPalette) As Boolean
+    GetOriginalPalette = Me.HasOriginalPalette()
+    If GetOriginalPalette Then Set dstPalette = m_OrigPalette
+End Function
+
+Friend Sub SetOriginalPalette(ByRef srcQuads() As RGBQuad, ByVal palSize As Long)
+    If (palSize > 0) Then
+        Set m_OrigPalette = New pdPalette
+        m_OrigPalette.CreateFromPaletteArray srcQuads, palSize
+    End If
+End Sub
+
+Friend Sub NotifyOriginalPaletteCount(ByVal newPalSize As Long)
+    If (Not m_OrigPalette Is Nothing) Then m_OrigPalette.SetNewPaletteCount newPalSize
 End Sub
 
 Friend Function GetOriginalFileFormat() As PD_IMAGE_FORMAT

@@ -252,7 +252,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                     End If
                 End If
             
-            'WebP currently supports only 24-bpp and 32-bpp modes, and 32-bpp is forcibly disallowed if alpha is present
+            'WebP currently supports only 24-bpp and 32-bpp modes, and 32-bpp is forcibly disallowed if alpha is not present
             ' (due to the way the FreeImage encoder works, at least - I have no idea if this is to spec or not).
             Case PDIF_WEBP
                 If (currentAlphaStatus = PDAS_NoAlpha) Then
@@ -717,13 +717,13 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     'Some combinations of parameters invalidate other parameters.  Calculate any overrides now.
     Dim gifForceGrayscale As Boolean
-    If StrComp(LCase$(gifColorMode), "gray", vbBinaryCompare) = 0 Then gifForceGrayscale = True Else gifForceGrayscale = False
-    If StrComp(LCase$(gifColorMode), "auto", vbBinaryCompare) = 0 Then gifColorCount = 256
+    gifForceGrayscale = Strings.StringsEqual(gifColorMode, "gray", True)
+    If Strings.StringsEqual(gifColorMode, "auto", True) Then gifColorCount = 256
     
     Dim desiredAlphaStatus As PD_ALPHA_STATUS
     desiredAlphaStatus = PDAS_BinaryAlpha
-    If StrComp(LCase$(gifAlphaMode), "none", vbBinaryCompare) = 0 Then desiredAlphaStatus = PDAS_NoAlpha
-    If StrComp(LCase$(gifAlphaMode), "bycolor", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(gifAlphaMode, "none", True) Then desiredAlphaStatus = PDAS_NoAlpha
+    If Strings.StringsEqual(gifAlphaMode, "bycolor", True) Then
         desiredAlphaStatus = PDAS_NewAlphaFromColor
         gifAlphaCutoff = gifAlphaColor
     End If

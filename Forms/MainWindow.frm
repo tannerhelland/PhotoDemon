@@ -1595,6 +1595,22 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
 
+Private Sub MnuTest_Click()
+    
+'    Dim i As Long
+'    For i = LBound(pdImages) To UBound(pdImages)
+'        If (Not pdImages(i) Is Nothing) Then
+'            ActivatePDImage i, "test"
+'            Process "Invert RGB", , , UNDO_Layer
+'        End If
+'    Next i
+'
+'    ActivatePDImage 0, "finished"
+    
+    'Want to test a new dialog?  Call it here, using a line like the following:
+    'showPDDialog vbModal, FormToTest
+End Sub
+
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
@@ -4035,20 +4051,6 @@ Private Sub MnuStylize_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-Private Sub MnuTest_Click()
-    
-    Dim i As Long
-    For i = LBound(pdImages) To UBound(pdImages)
-        If (Not pdImages(i) Is Nothing) Then
-            ActivatePDImage i, "test"
-            Process "Invert RGB", , , UNDO_Layer
-        End If
-    Next i
-    ActivatePDImage 0, "finished"
-    'Want to test a new dialog?  Call it here, using a line like the following:
-    'showPDDialog vbModal, FormToTest
 End Sub
 
 'All tool menu items are launched from here

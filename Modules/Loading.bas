@@ -160,7 +160,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     
     pdDebug.LogAction "Determining filetype..."
-    If Not (targetImage Is Nothing) Then targetImage.SetOriginalFileFormat FIF_UNKNOWN
+    targetImage.SetOriginalFileFormat FIF_UNKNOWN
     
     Dim srcFileExtension As String
     srcFileExtension = UCase$(Files.FileGetExtension(srcFile))

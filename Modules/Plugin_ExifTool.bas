@@ -698,7 +698,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
         'We want to *write* a new file, but instead of using "-w" (which only takes an extension argument),
         ' use "-o" which lets us specify the full output path.
         Dim tmpFilename As String
-        If (Len(dstFilename) = 0) Then
+        If (LenB(dstFilename) = 0) Then
             tmpFilename = Files.RequestTempFile()
             tmpFilename = tmpFilename & ".icc"
         Else

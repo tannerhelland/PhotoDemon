@@ -3701,6 +3701,38 @@ Public Function FreeImage_HasICCProfile(ByVal Bitmap As Long) As Boolean
 
 End Function
 
+'ADDED BY TANNER:
+Public Function FreeImage_GetPalette_ByTanner(ByVal fiHandle As Long, ByRef dstQuad() As RGBQuad, ByRef numOfColors As Long) As Boolean
+
+    On Error GoTo GetPaletteFailure
+    
+    FreeImage_GetPalette_ByTanner = False
+    
+    'Validate handle
+    If (fiHandle = 0) Then Exit Function
+    
+    'Validate color count
+    numOfColors = FreeImage_GetColorsUsed(fiHandle)
+    If (numOfColors = 0) Then Exit Function
+    
+    'Validate palette handle
+    Dim palHandle As Long
+    palHandle = FreeImage_GetPalette(fiHandle)
+    If (palHandle = 0) Then Exit Function
+    
+    'If we're still here, we have what we need to populate the RGB quad array
+    FreeImage_GetPalette_ByTanner = True
+    ReDim dstQuad(0 To numOfColors - 1) As RGBQuad
+    CopyMemory ByVal VarPtr(dstQuad(0)), ByVal palHandle, numOfColors * 4
+    
+    Exit Function
+    
+GetPaletteFailure:
+    pdDebug.LogAction "WARNING!  FreeImage.FreeImage_GetPalette_ByTanner failed unexpectedly.", PDM_External_Lib
+    FreeImage_GetPalette_ByTanner = False
+    
+End Function
+
 ' Image color depth conversion wrapper
 
 Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQuad()

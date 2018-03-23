@@ -981,7 +981,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         ' TODO: preferences or prompt for how to handle such files??
         numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
         imageHasMultiplePages = (numOfPages > 1)
-        freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB)
+        freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB, , , dstImage)
         CascadeLoadGenericImage = (freeImage_Return = PD_SUCCESS)
         
         'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),

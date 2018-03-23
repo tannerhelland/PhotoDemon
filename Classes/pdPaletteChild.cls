@@ -103,7 +103,7 @@ Friend Function DoesPaletteUseColorNames() As Boolean
         
         Dim i As Long
         For i = 0 To Me.GetNumOfColors - 1
-            DoesPaletteUseColorNames = (Len(m_Palette(i).ColorName) <> 0)
+            DoesPaletteUseColorNames = (LenB(m_Palette(i).ColorName) <> 0)
             If DoesPaletteUseColorNames Then Exit Function
         Next i
         
@@ -116,6 +116,11 @@ End Function
 Friend Function GetNumOfColors() As Long
     GetNumOfColors = m_NumOfColors
 End Function
+
+Friend Sub SetNumOfColors(ByVal newNum As Long)
+    If (newNum > UBound(m_Palette) + 1) Then ReDim Preserve m_Palette(0 To newNum - 1) As PDPaletteEntry
+    m_NumOfColors = newNum
+End Sub
 
 Friend Function GetPaletteColor(ByVal palIndex As Long) As RGBQuad
     GetPaletteColor = m_Palette(palIndex).ColorValue
