@@ -269,6 +269,15 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
+    ' Retrieve alpha transparency presence, if any
+    '****************************************************************************
+    
+    If (Not targetImage Is Nothing) Then
+        targetImage.SetOriginalAlpha FreeImage_IsTransparent(fi_hDIB)
+    End If
+    
+    
+    '****************************************************************************
     ' Copy/transform the FreeImage object into the destination pdDIB object
     '****************************************************************************
     
@@ -335,9 +344,9 @@ FreeImageV5_Error:
     
 End Function
 
-'Given a valid handle to a FreeImage object (and/or multipage object, as relevant), get the FreeImage object into a pdDIB object.
-' While this sounds simple, it really isn't, primarily because we have to deal with all possible color depths, alpha-channel
-' encodings, ICC profile behaviors, etc.
+'Given a valid handle to a FreeImage object (and/or multipage object, as relevant), get the FreeImage object
+' into a pdDIB object.  While this sounds simple, it really isn't, primarily because we have to deal with so
+' many possible color depths, alpha-channel'encodings, ICC profile behaviors, etc.
 '
 'RETURNS: PD_SUCCESS if successful; some other code if the load fails.  Review debug messages for additional info.
 Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDIB As Long, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_DataType As FREE_IMAGE_TYPE, ByRef specialClipboardHandlingRequired As Boolean, ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByRef multiDibIsDetached As Boolean = False) As PD_OPERATION_OUTCOME

@@ -103,12 +103,12 @@ Private m_ZoomIndex As Long
 '    this will state "JPG" (while original file format is still "BMP").
 Private m_originalFileFormat As PD_IMAGE_FORMAT, m_currentFileFormat As PD_IMAGE_FORMAT
 
-'Original color depth (expressed as a standard BPP value, most commonly 32) and whether the original image was
-' saved in a grayscale format.
-Private m_OriginalColorDepth As Long, m_OriginalGrayscale As Boolean
+'Original color depth (expressed as a standard BPP value, most commonly 32), whether the original image was
+' saved in a grayscale format, and whether the original image contained alpha data.
+Private m_OriginalColorDepth As Long, m_OriginalGrayscale As Boolean, m_OriginalAlpha As Boolean
 
-'Original palette, if any.  As you can imagine, this is only relevant if m_OriginalColorDepth is <= 8, so you must
-' *always* check for a null object, as many pdImage instances won't initialize this at all.
+'Original palette, if any.  As you can imagine, this is only relevant if m_OriginalColorDepth is <= 8,
+' so you must *always* check for a null object, as many pdImage instances won't initialize this object.
 Private m_OrigPalette As pdPalette
 
 'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
@@ -208,6 +208,14 @@ End Function
 
 Friend Sub SetOriginalGrayscale(ByVal origGrayscale As Boolean)
     m_OriginalGrayscale = origGrayscale
+End Sub
+
+Friend Function GetOriginalAlpha() As Boolean
+    GetOriginalAlpha = m_OriginalAlpha
+End Function
+
+Friend Sub SetOriginalAlpha(ByVal origAlpha As Boolean)
+    m_OriginalAlpha = origAlpha
 End Sub
 
 'Functions related to storage/retrieval of this image's original palette, if any.

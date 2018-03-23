@@ -969,6 +969,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         dstImage.SetDPI 96, 96
         dstImage.SetOriginalColorDepth 32
         dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
     End If
     
     'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
