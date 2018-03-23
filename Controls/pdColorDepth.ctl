@@ -72,22 +72,6 @@ Begin VB.UserControl pdColorDepth
       _ExtentY        =   1296
       Caption         =   "color format"
    End
-   Begin PhotoDemon.pdSlider sldAlphaCutoff 
-      Height          =   735
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   840
-      Width           =   3375
-      _ExtentX        =   5953
-      _ExtentY        =   1296
-      Caption         =   "transparency cut-off"
-      Max             =   254
-      SliderTrackStyle=   1
-      Value           =   64
-      GradientColorRight=   1703935
-      NotchPosition   =   2
-      NotchValueCustom=   64
-   End
    Begin PhotoDemon.pdSlider sldColorCount 
       Height          =   735
       Left            =   0
@@ -113,6 +97,22 @@ Begin VB.UserControl pdColorDepth
       _ExtentY        =   1296
       Caption         =   "transparent color"
       curColor        =   16711935
+   End
+   Begin PhotoDemon.pdSlider sldAlphaCutoff 
+      Height          =   735
+      Left            =   3600
+      TabIndex        =   0
+      Top             =   840
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   1296
+      Caption         =   "transparency cut-off"
+      Max             =   254
+      SliderTrackStyle=   1
+      Value           =   64
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   64
    End
 End
 Attribute VB_Name = "pdColorDepth"
@@ -239,6 +239,8 @@ Public Function GetAllSettings() As String
             outputColorModel = "Color"
         Case 2
             outputColorModel = "Gray"
+        Case 3
+            outputColorModel = "Original"
     End Select
     cParams.AddParam "ColorDepth_ColorModel", outputColorModel
     
@@ -309,6 +311,8 @@ Public Sub SetAllSettings(ByVal newSettings As String)
         cboColorModel.ListIndex = 1
     ElseIf ParamsEqual(srcParam, "Gray") Then
         cboColorModel.ListIndex = 2
+    ElseIf ParamsEqual(srcParam, "Original") Then
+        cboColorModel.ListIndex = 3
     Else
         cboColorModel.ListIndex = 0
     End If
@@ -469,6 +473,7 @@ Private Sub UserControl_Initialize()
     cboColorModel.AddItem "auto", 0
     cboColorModel.AddItem "color", 1
     cboColorModel.AddItem "grayscale", 2
+    cboColorModel.AddItem "original file settings", 3
     cboColorModel.ListIndex = 0
     
     cboDepthColor.AddItem "HDR", 0
@@ -527,6 +532,11 @@ Private Sub UpdateColorDepthVisibility()
         Case 2
             cboDepthColor.Visible = False
             cboDepthGrayscale.Visible = True
+            
+        'Original file
+        Case 3
+            cboDepthColor.Visible = False
+            cboDepthGrayscale.Visible = False
     
     End Select
 
@@ -547,6 +557,18 @@ Private Sub UpdateColorDepthOptions()
     'Other modes do not expose palette settings
     Else
         sldColorCount.Visible = False
+    End If
+    
+    'Alpha options are hidden when the "use original file settings" option is used
+    If (cboColorModel.ListIndex = 3) Then
+        cboAlphaModel.Visible = False
+        sldAlphaCutoff.Visible = False
+        clsAlphaColor.Visible = False
+        clsComposite.Visible = False
+        RaiseEvent ColorSelectionRequired(False)
+    Else
+        cboAlphaModel.Visible = True
+        UpdateTransparencyOptions
     End If
     
     ReflowColorPanel
@@ -629,6 +651,7 @@ Private Sub ReflowColorPanel()
     End If
     
     If clsComposite.Visible Then
+        If sldColorCount.Visible And (cboAlphaModel.ListIndex <> 4) Then yOffset = sldColorCount.GetTop
         clsComposite.SetTop yOffset
         yOffset = yOffset + clsComposite.GetHeight + yPadding
     End If
@@ -649,7 +672,7 @@ Private Sub UpdateControlLayout()
     
     'A lot of controls on this dialog sit "side-by-side", so set their width proportionally.
     Dim halfWidth As Long, uiItemWidth As Long, pxPadding As Long
-    pxPadding = FixDPI(4)
+    pxPadding = Interface.FixDPI(4)
     halfWidth = bWidth \ 2
     uiItemWidth = halfWidth - pxPadding * 2
     
@@ -662,8 +685,8 @@ Private Sub UpdateControlLayout()
     sldColorCount.SetPositionAndSize pxPadding, sldColorCount.GetTop, uiItemWidth, sldColorCount.GetHeight
     
     sldAlphaCutoff.SetPositionAndSize halfWidth + pxPadding, sldAlphaCutoff.GetTop, uiItemWidth, sldAlphaCutoff.GetHeight
-    clsAlphaColor.SetPositionAndSize halfWidth + pxPadding, clsAlphaColor.GetTop, uiItemWidth, clsAlphaColor.GetHeight
-    clsComposite.SetPositionAndSize halfWidth + pxPadding, clsComposite.GetTop, uiItemWidth, clsComposite.GetHeight
+    clsAlphaColor.SetPositionAndSize halfWidth + pxPadding, clsAlphaColor.GetTop, uiItemWidth, cboDepthColor.GetHeight
+    clsComposite.SetPositionAndSize halfWidth + pxPadding, clsComposite.GetTop, uiItemWidth, cboDepthColor.GetHeight
     
     'As such, just repaint the control for now
     RedrawBackBuffer
