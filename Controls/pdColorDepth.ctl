@@ -473,7 +473,7 @@ Private Sub UserControl_Initialize()
     cboColorModel.AddItem "auto", 0
     cboColorModel.AddItem "color", 1
     cboColorModel.AddItem "grayscale", 2
-    cboColorModel.AddItem "original file settings", 3
+    'cboColorModel.AddItem "original file settings", 3      'This feature is not fully implemented yet!  TODO 7.2
     cboColorModel.ListIndex = 0
     
     cboDepthColor.AddItem "HDR", 0

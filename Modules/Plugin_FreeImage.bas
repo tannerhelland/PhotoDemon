@@ -2709,7 +2709,7 @@ End Function
 ' "auto-convert to best depth" heuristics *prior* to calling this function!
 '
 'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong.
-Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal finalBackColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
+Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal finalBackColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, Optional ByRef srcPalette As pdPalette = Nothing) As Long
     
     'If FreeImage is not enabled, exit immediately
     If (Not g_ImageFormats.FreeImageEnabled) Then
@@ -2929,13 +2929,23 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                 'Walk down the list of valid outputs, starting at the low end
                 If (outputColorDepth <= 8) Then
                     
+                    'If the caller wants us to use a palette that *they* have supplied, we need to honor that now.
+                    Dim srcQuads() As RGBQuad, srcColorCount As Long
+                    If (Not srcPalette Is Nothing) Then
+                        If srcPalette.CopyPaletteToArray(srcQuads) Then srcColorCount = UBound(srcQuads) + 1
+                    End If
+                    
                     'FreeImage supports a new "lossless" quantization method that is perfect for images that already
                     ' have 256 colors or less.  This method is basically just a hash table, and it lets us avoid
                     ' lossy quantization if at all possible.
-                    If (paletteCount = 256) Then
+                    If (paletteCount = 256) And (srcPalette Is Nothing) Then
                         tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_LFPQUANT)
                     Else
-                        tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, FIQ_LFPQUANT, paletteCount)
+                        If (srcPalette Is Nothing) Then
+                            tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, FIQ_LFPQUANT, paletteCount)
+                        Else
+                            tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, FIQ_LFPQUANT, srcColorCount, srcColorCount, VarPtr(srcQuads(0)))
+                        End If
                     End If
                     
                     '0 means the image has > 256 colors, and must be quantized via lossy means
@@ -2943,15 +2953,22 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                         
                         If (quantMethod = FIQ_LFPQUANT) Then quantMethod = FIQ_WUQUANT
                         
-                        'If we're going straight to 4-bits, ignore the user's palette count in favor of a 16-color one.
-                        If (outputColorDepth = 4) Then
-                            tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, False, 16)
+                        'If the caller has specified which palette to use, honor that now
+                        If (Not srcPalette Is Nothing) Then
+                            tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, FIQ_NNQUANT, srcColorCount, srcColorCount, VarPtr(srcQuads(0)))
                         Else
-                            If (paletteCount = 256) Then
-                                tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, quantMethod)
+                        
+                            'If we're going straight to 4-bits, ignore an optimal palette count in favor of a 16-color one.
+                            If (outputColorDepth = 4) Then
+                                tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, False, 16)
                             Else
-                                tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, quantMethod, paletteCount)
+                                If (paletteCount = 256) Then
+                                    tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, quantMethod)
+                                Else
+                                    tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, quantMethod, paletteCount)
+                                End If
                             End If
+                            
                         End If
                         
                     End If

@@ -809,12 +809,22 @@ Private Sub UpdatePreviewSource()
         Dim newPaletteSize As Long
         newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
         
+        'If the image is in "use original settings" mode, we will need to forcibly overwrite various
+        ' settings to match the original file's settings.)
+        Dim useOrigMode As Boolean
+        useOrigMode = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Original"), "Original")
+        
         'Convert the text-only descriptors of color depth into a meaningful bpp value
         Dim newColorDepth As Long
         
         If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Auto") Then
             newColorDepth = 32
         Else
+            
+            If useOrigMode Then
+                newColorDepth = m_SrcImage.GetOriginalColorDepth()
+                forceGrayscale = m_SrcImage.GetOriginalGrayscale()
+            End If
             
             'HDR modes do not need to be previewed, so we forcibly downsample them here
             If forceGrayscale Then
@@ -840,25 +850,43 @@ Private Sub UpdatePreviewSource()
         'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
         
-        If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
-            desiredAlphaMode = PDAS_ComplicatedAlpha
-            If (newColorDepth = 24) Then newColorDepth = 32
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
-            desiredAlphaMode = PDAS_NoAlpha
-            If (newColorDepth = 32) Then newColorDepth = 24
-            desiredAlphaCutoff = 0
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
-            desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-            If (newColorDepth = 24) Then newColorDepth = 32
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
-            desiredAlphaMode = PDAS_NewAlphaFromColor
-            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
-            If (newColorDepth = 24) Then newColorDepth = 32
+        If useOrigMode Then
+            
+            If m_SrcImage.GetOriginalAlpha Then
+                desiredAlphaMode = PDAS_ComplicatedAlpha
+                If (newColorDepth = 24) Then newColorDepth = 32
+            Else
+                desiredAlphaMode = PDAS_NoAlpha
+                If (newColorDepth = 32) Then newColorDepth = 24
+            End If
+            
+        Else
+        
+            If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
+                desiredAlphaMode = PDAS_ComplicatedAlpha
+                If (newColorDepth = 24) Then newColorDepth = 32
+            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
+                desiredAlphaMode = PDAS_NoAlpha
+                If (newColorDepth = 32) Then newColorDepth = 24
+                desiredAlphaCutoff = 0
+            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
+                desiredAlphaMode = PDAS_BinaryAlpha
+                desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+                If (newColorDepth = 24) Then newColorDepth = 32
+            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
+                desiredAlphaMode = PDAS_NewAlphaFromColor
+                desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
+                If (newColorDepth = 24) Then newColorDepth = 32
+            End If
+            
         End If
         
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("ColorDepth_CompositeColor", vbWhite), forceGrayscale, newPaletteSize, , True)
+        
+        'In "use original file settings" mode, we need to steal a palette copy from the source image
+        Dim tmpPalette As pdPalette
+        If (useOrigMode And m_SrcImage.HasOriginalPalette) Then m_SrcImage.GetOriginalPalette tmpPalette
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("ColorDepth_CompositeColor", vbWhite), forceGrayscale, newPaletteSize, , True, , tmpPalette)
         
     End If
     
