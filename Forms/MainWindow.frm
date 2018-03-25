@@ -134,12 +134,20 @@ Begin VB.Form FormMain
          Index           =   11
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "Export"
          Index           =   12
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   0
+         End
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "-"
+         Index           =   13
       End
       Begin VB.Menu MnuFile 
          Caption         =   "&Batch operations"
-         Index           =   13
+         Index           =   14
          Begin VB.Menu MnuBatch 
             Caption         =   "Process..."
             Index           =   0
@@ -151,19 +159,19 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuFile 
          Caption         =   "-"
-         Index           =   14
-      End
-      Begin VB.Menu MnuFile 
-         Caption         =   "&Print..."
          Index           =   15
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "&Print..."
          Index           =   16
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "E&xit"
+         Caption         =   "-"
          Index           =   17
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "E&xit"
+         Index           =   18
       End
    End
    Begin VB.Menu MnuEditTop 
@@ -3378,24 +3386,27 @@ Private Sub MnuFile_Click(Index As Integer)
             'TODO: figure out correct Undo behavior for REVERT action
             Process "Revert", False, , UNDO_Nothing
         
-        '<separator>
+        'Export
         Case 12
         
-        'Batch top-level menu
+        '<separator>
         Case 13
         
-        '<separator>
+        'Batch top-level menu
         Case 14
         
-        'Print
+        '<separator>
         Case 15
+        
+        'Print
+        Case 16
             Process "Print", True
             
         '<separator>
-        Case 16
+        Case 17
         
         'Exit
-        Case 17
+        Case 18
             Process "Exit program", True
         
     

@@ -128,7 +128,6 @@ End Enum
 
 Private m_CommonMenuText() As String
 
-
 'Early in the PD load process, we initialize the default set of menus.  In the future, it may be nice to let
 ' users customize this to match their favorite software (e.g. PhotoShop), but that's a ways off as I've yet to
 ' build a menu control capable of that level of customization support.
@@ -156,14 +155,15 @@ Public Sub InitializeMenus()
     AddMenuItem "Save copy (&lossless)", "file_savecopy", 0, 9, , "file_savedup"
     AddMenuItem "Save &as...", "file_saveas", 0, 10, , "file_saveas"
     AddMenuItem "Revert", "file_revert", 0, 11
-    AddMenuItem "-", "-", 0, 12
-    AddMenuItem "&Batch operations", "file_batch", 0, 13
-        AddMenuItem "Process...", "file_batch_process", 0, 13, 0, "file_batch"
-        AddMenuItem "Repair...", "file_batch_repair", 0, 13, 1, "file_repair"
-    AddMenuItem "-", "-", 0, 14
-    AddMenuItem "&Print...", "file_print", 0, 15, , "file_print"
-    AddMenuItem "-", "-", 0, 16
-    AddMenuItem "E&xit", "file_quit", 0, 17
+    AddMenuItem "Export", "file_export", 0, 12
+    AddMenuItem "-", "-", 0, 13
+    AddMenuItem "&Batch operations", "file_batch", 0, 14
+        AddMenuItem "Process...", "file_batch_process", 0, 14, 0, "file_batch"
+        AddMenuItem "Repair...", "file_batch_repair", 0, 14, 1, "file_repair"
+    AddMenuItem "-", "-", 0, 15
+    AddMenuItem "&Print...", "file_print", 0, 16, , "file_print"
+    AddMenuItem "-", "-", 0, 17
+    AddMenuItem "E&xit", "file_quit", 0, 18
     
     
     'Edit menu

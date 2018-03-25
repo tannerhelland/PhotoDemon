@@ -624,6 +624,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = newState
                 FormMain.MnuFile(9).Enabled = newState      'Save as
                 FormMain.MnuFile(10).Enabled = newState     'Save copy
+                FormMain.MnuFile(12).Enabled = newState     'Export
             End If
             
         'Close (and Close All)
@@ -694,7 +695,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 FormMain.MnuLayerTop.Enabled = newState
                 FormMain.MnuAdjustmentsTop.Enabled = newState
                 FormMain.MnuEffectsTop.Enabled = newState
-                FormMain.MnuFile(15).Enabled = newState     'File -> Print
+                FormMain.MnuFile(16).Enabled = newState     'File -> Print
             End If
             
         'Macro (within the Tools menu)

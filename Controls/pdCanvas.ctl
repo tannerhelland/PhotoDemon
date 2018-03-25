@@ -1305,7 +1305,7 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         ' Use our own enablement heuristics for these.
         
         'Open in Explorer only works if the image is currently on-disk
-        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (Len(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) > 0)
+        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (LenB(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) > 0)
         
         'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
         ' in the Window menu
