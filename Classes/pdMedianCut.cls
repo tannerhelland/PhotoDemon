@@ -222,9 +222,9 @@ Friend Sub GetVariance(ByRef dstRV As Single, ByRef dstGV As Single, ByRef dstBV
         
         'This stack contains a single color entry, which is okay; that just means it is unsplittable
         If (m_NumOfColors <= 1) Then
-            dstRV = 0#
-            dstGV = 0#
-            dstBV = 0#
+            dstRV = 0!
+            dstGV = 0!
+            dstBV = 0!
         Else
             Dim tmpDivisor As Double
             tmpDivisor = 1# / (CDbl(m_pxVarCount - 1))
@@ -485,6 +485,13 @@ Private Sub UpdateVarianceTrackers()
         ' but the image contains less than n colors - meaning stacks cannot be split.  That's okay!
         'Debug.Print "WARNING!  m_NumOfColors = 0"
     End If
+    
+    'Variance can end up being quite small (due to rounding errors), so if it falls below a certain threshold,
+    ' treat this stack as if it only contains *1* color.
+    If (m_VarianceR < 0.00001) Then m_VarianceR = 0#
+    If (m_VarianceG < 0.00001) Then m_VarianceG = 0#
+    If (m_VarianceB < 0.00001) Then m_VarianceB = 0#
+    If (m_VarianceR = 0) And (m_VarianceG = 0) And (m_VarianceB = 0) Then m_NumOfColors = 1
     
     'Calculate medians as necessary
     If (m_QuantizeMode = pdqs_VarPlusMedian) Then
