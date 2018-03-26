@@ -79,7 +79,7 @@ End Enum
     Private Const pdqs_MinMax = 0, pdqs_Variance = 1, pdqs_VarPlusMedian = 2
 #End If
 
-'As a performance optimzation, quantize mode must be specified prior to actually adding pixels to the stack.
+'As a performance optimization, quantize mode must be specified prior to actually adding pixels to the stack.
 ' This allows us to calculate statistical data "as we go".
 Private m_QuantizeMode As PD_QuantizeMode
 
@@ -221,7 +221,7 @@ Friend Sub GetVariance(ByRef dstRV As Single, ByRef dstGV As Single, ByRef dstBV
         If (Not m_VarianceUpToDate) Then UpdateVarianceTrackers
         
         'This stack contains a single color entry, which is okay; that just means it is unsplittable
-        If (m_pxVarCount <= 1) Then
+        If (m_NumOfColors <= 1) Then
             dstRV = 0#
             dstGV = 0#
             dstBV = 0#
@@ -367,17 +367,19 @@ Friend Sub GetAverageColor(ByRef r As Long, ByRef g As Long, ByRef b As Long)
         
             If (Not m_VarianceUpToDate) Then UpdateVarianceTrackers
             
-            r = Int(m_MeanR)
-            g = Int(m_MeanG)
-            b = Int(m_MeanB)
+            r = Int(m_MeanR + 0.5)
+            g = Int(m_MeanG + 0.5)
+            b = Int(m_MeanB + 0.5)
             
         ElseIf (m_QuantizeMode = pdqs_VarPlusMedian) Then
             
             If (Not m_VarianceUpToDate) Then UpdateVarianceTrackers
             
-            r = m_MedianR
-            g = m_MedianG
-            b = m_MedianB
+            'Even though we split according to the median value, we still report average color
+            ' using mean values.  (Specifically, *weighted* mean values.)
+            r = Int(m_MeanR + 0.5)
+            g = Int(m_MeanG + 0.5)
+            b = Int(m_MeanB + 0.5)
             
         End If
         
@@ -422,9 +424,8 @@ Private Sub UpdateVarianceTrackers()
         If (m_NumOfColors > 1) Then
             
             Dim tmpRed As Double, tmpGreen As Double, tmpBlue As Double
-            
-            Dim myCount As Double, combinedCount As Double, dPxCount As Double
             Dim dDeltaR As Double, dDeltaG As Double, dDeltaB As Double
+            Dim myCount As Double, combinedCount As Double, dPxCount As Double
             
             For i = 1 To m_NumOfColors - 1
                 
@@ -461,13 +462,13 @@ Private Sub UpdateVarianceTrackers()
                     m_OldMeanR = m_MeanR
                     m_OldMeanG = m_MeanG
                     m_OldMeanB = m_MeanB
-                    m_pxVarCount = m_pxVarCount + .Count
+                    m_pxVarCount = m_pxVarCount + myCount
                     
                     'Also update the histograms as necessary
                     If (m_QuantizeMode = pdqs_VarPlusMedian) Then
-                        rHist(.Red) = rHist(.Red) + .Count
-                        gHist(.Green) = gHist(.Green) + .Count
-                        bHist(.Blue) = bHist(.Blue) + .Count
+                        rHist(.Red) = rHist(.Red) + myCount
+                        gHist(.Green) = gHist(.Green) + myCount
+                        bHist(.Blue) = bHist(.Blue) + myCount
                     End If
                     
                 End With
@@ -491,37 +492,38 @@ Private Sub UpdateVarianceTrackers()
         'Ignore stacks with only one color
         If (m_NumOfColors > 1) Then
         
-            Dim medCutoff As Long
-            medCutoff = m_pxVarCount \ 2
-            
+            Dim histSort(0 To 255) As Long
             Dim curCount As Long, curIndex As Long
             
-            curCount = 0: curIndex = 0
+            curCount = 0: curIndex = -1
             Do
-                curCount = curCount + rHist(curIndex)
                 curIndex = curIndex + 1
-            Loop While (curCount < medCutoff)
-            m_MedianR = curIndex - 1
+                If (rHist(curIndex) <> 0) Then
+                    histSort(curCount) = curIndex
+                    curCount = curCount + 1
+                End If
+            Loop While (curIndex < 255)
+            m_MedianR = histSort((curCount - 1) \ 2)
             
-            curCount = 0: curIndex = 0
+            curCount = 0: curIndex = -1
             Do
-                curCount = curCount + gHist(curIndex)
                 curIndex = curIndex + 1
-            Loop While (curCount < medCutoff)
-            m_MedianG = curIndex - 1
+                If (gHist(curIndex) <> 0) Then
+                    histSort(curCount) = curIndex
+                    curCount = curCount + 1
+                End If
+            Loop While (curIndex < 255)
+            m_MedianG = histSort((curCount - 1) \ 2)
             
-            curCount = 0: curIndex = 0
+            curCount = 0: curIndex = -1
             Do
-                curCount = curCount + bHist(curIndex)
                 curIndex = curIndex + 1
-            Loop While (curCount < medCutoff)
-            m_MedianB = curIndex - 1
-            
-            'Failsafe index check
-            'Debug.Print "r", m_MedianR, m_MeanR, "g", m_MedianG, m_MeanG, "b", m_MedianB, m_MeanB
-            'If (m_MedianR > 255) Then m_MedianR = Int(m_MeanR)
-            'If (m_MedianG > 255) Then m_MedianG = Int(m_MeanG)
-            'If (m_MedianB > 255) Then m_MedianB = Int(m_MeanB)
+                If (bHist(curIndex) <> 0) Then
+                    histSort(curCount) = curIndex
+                    curCount = curCount + 1
+                End If
+            Loop While (curIndex < 255)
+            m_MedianB = histSort((curCount - 1) \ 2)
             
         Else
             m_MedianR = m_Colors(0).Red
