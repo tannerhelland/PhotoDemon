@@ -2051,10 +2051,10 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         avgSample = 1# / numOfPixels
         
         For y = initY To finalY
-            dstImageData(xStride, y) = Int(bTotals(y) * avgSample)
-            dstImageData(xStride + 1, y) = Int(gTotals(y) * avgSample)
-            dstImageData(xStride + 2, y) = Int(rTotals(y) * avgSample)
-            dstImageData(xStride + 3, y) = Int(aTotals(y) * avgSample)
+            dstImageData(xStride, y) = Int(bTotals(y) * avgSample + 0.5)
+            dstImageData(xStride + 1, y) = Int(gTotals(y) * avgSample + 0.5)
+            dstImageData(xStride + 2, y) = Int(rTotals(y) * avgSample + 0.5)
+            dstImageData(xStride + 3, y) = Int(aTotals(y) * avgSample + 0.5)
         Next y
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
@@ -2216,10 +2216,10 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             xStride = x * 4
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(xStride) = bTotals(x) * avgSample
-            dstImageData(xStride + 1) = gTotals(x) * avgSample
-            dstImageData(xStride + 2) = rTotals(x) * avgSample
-            dstImageData(xStride + 3) = aTotals(x) * avgSample
+            dstImageData(xStride) = Int(bTotals(x) * avgSample + 0.5)
+            dstImageData(xStride + 1) = Int(gTotals(x) * avgSample + 0.5)
+            dstImageData(xStride + 2) = Int(rTotals(x) * avgSample + 0.5)
+            dstImageData(xStride + 3) = Int(aTotals(x) * avgSample + 0.5)
     
         Next x
         
