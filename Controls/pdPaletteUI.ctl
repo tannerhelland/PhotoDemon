@@ -151,7 +151,7 @@ Public Property Get PaletteFile() As String
     If (Not m_Palette Is Nothing) Then PaletteFile = m_Palette.GetPaletteFilename Else PaletteFile = vbNullString
 End Property
 
-Public Property Let PaletteFile(ByVal newFile As String)
+Public Property Let PaletteFile(ByRef newFile As String)
     
     Dim oldPaletteFile As String
     oldPaletteFile = Me.PaletteFile
@@ -182,6 +182,31 @@ Public Property Let PaletteFile(ByVal newFile As String)
     End If
     
 End Property
+
+'You don't have to create palettes from files; use this to do it from an existing pdPalette object
+Public Function SetPDPalette(ByRef srcPalette As pdPalette) As Boolean
+    
+    If (Not srcPalette Is Nothing) Then
+        
+        Set m_Palette = srcPalette
+        
+        'Whenever the palette file changes, we need to make sure various palette indices are valid
+        ' against the *new* file.
+        m_ChildPaletteIndex = 0
+        m_PaletteItemHovered = -1
+        m_PaletteItemSelected = 0
+        
+        'Reset our color lookup object; it will need to be re-created against the new group
+        Set m_ColorLookup = Nothing
+        UpdateControlLayout
+        
+        SetPDPalette = True
+            
+    Else
+        pdDebug.LogAction "WARNING!  pdPaletteUI.SetPDPalette was passed a null palette!"
+    End If
+    
+End Function
 
 Public Property Get PaletteGroup() As Long
     PaletteGroup = m_ChildPaletteIndex
@@ -310,7 +335,9 @@ Public Sub CreateFromXML(ByRef srcXML As String)
     cXML.SetParamString srcXML
     
     With cXML
-        Me.PaletteFile = .GetString("palette-filename", vbNullString, True)
+        Dim srcPalFile As String
+        srcPalFile = .GetString("palette-filename", vbNullString, True)
+        If (LenB(srcPalFile) <> 0) Then Me.PaletteFile = srcPalFile
         Me.PaletteGroup = .GetLong("palette-group", 0)
         Me.PaletteIndex = .GetLong("palette-index", 0)
     End With
@@ -393,6 +420,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     End If
     
     If (oldHoverCheck <> m_PaletteItemHovered) Then
+        
         RedrawBackBuffer
         
         'Dynamically update our tooltip with this color's name, if any
@@ -424,6 +452,8 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub UserControl_Initialize()
+    
+    m_PaletteItemHovered = -1
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport

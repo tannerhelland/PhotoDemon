@@ -1603,6 +1603,18 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
 
+Private Sub MnuFileExport_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Export palette
+        Case 0
+            Process "Export palette", True
+    
+    End Select
+
+End Sub
+
 Private Sub MnuTest_Click()
     
 '    Dim i As Long

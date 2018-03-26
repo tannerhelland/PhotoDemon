@@ -20,6 +20,21 @@ Attribute VB_Name = "Palettes"
 
 Option Explicit
 
+'Do *not* change the order of this enum unless you also change the order of common dialog filters in the
+' Load/Save palette functions.  Those indices need to match 1:1 to this enum.
+Public Enum PD_PaletteFormat
+    pdpf_AdobeColorSwatch = 0
+    pdpf_AdobeColorTable = 1
+    pdpf_AdobeSwatchExchange = 2
+    pdpf_GIMP = 3
+    pdpf_PSP = 4
+    pdpf_PaintDotNet = 5
+End Enum
+
+#If False Then
+    Private Const pdpf_AdobeColorSwatch = 0, pdpf_AdobeColorTable = 1, pdpf_AdobeSwatchExchange = 2, pdpf_GIMP = 3, pdpf_PSP = 4, pdpf_PaintDotNet = 5
+#End If
+
 'Used for more accurate color distance comparisons (using human eye sensitivity as a rough guide, while staying in
 ' the sRGB space for performance reasons)
 Private Const CUSTOM_WEIGHT_RED As Single = 0.299
@@ -77,7 +92,7 @@ End Type
 'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
 ' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
 ' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~50,000 pixels.
-Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256) As Boolean
+Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
@@ -99,9 +114,9 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     ReDim pxStack(0 To numOfColors - 1) As pdMedianCut
     Set pxStack(0) = New pdMedianCut
     
-    'Note that PD actually supports quite a few different quantization methods.  At present, only the
-    ' highest-quality "variance + median split" algorithm is used, however.
-    pxStack(0).SetQuantizeMode pdqs_VarPlusMedian
+    'Note that PD actually supports quite a few different quantization methods.  At present, we use a technique
+    ' that's a good compromise between performance and quality.
+    pxStack(0).SetQuantizeMode quantMode
     
     For y = 0 To finalY
     For x = 0 To finalX Step pxSize
@@ -120,55 +135,42 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         Dim maxVariance As Single, mvIndex As Long
         Dim i As Long
         
+        Dim rVariance As Single, gVariance As Single, bVariance As Single, netVariance As Single
+        
         'With the initial stack constructed, we can now start partitioning it into smaller stacks based on variance
         Do
         
             'Reset maximum variance (because we need to calculate it anew)
-            maxVariance = 0#
-            
-            Dim rVariance As Single, gVariance As Single, bVariance As Single, netVariance As Single
+            maxVariance = 0!
             
             'Find the largest total variance in the current stack collection
             For i = 0 To stackCount - 1
             
                 pxStack(i).GetVariance rVariance, gVariance, bVariance
                 
-                'There are actually two ways to handle this problem.  We can find the net variance (e.g. the
-                ' block with the most varied set of colors), or we can find the block with the most varied
-                ' *channel* (e.g. if two channels are identical, but the third is hugely varied, treat that
-                ' block as the highest variance).
-                '
-                'I don't have a theoretical framework for determining the better of these two solutions,
-                ' but a large amount of trial-and-error leads me to believe that it's best to split according
-                ' to net variance.  (Note that the block will still be split along its single channel
-                ' with highest variance, regardless.)
                 netVariance = rVariance + gVariance + bVariance
                 If (netVariance > maxVariance) Then
                     mvIndex = i
                     maxVariance = netVariance
                 End If
                 
-                'Per-channel formula follows:
-                'If (rVariance > maxVariance) Then
-                '    maxVariance = rVariance
-                '    mvIndex = i
-                'End If
-                'If (gVariance > maxVariance) Then
-                '    maxVariance = gVariance
-                '    mvIndex = i
-                'End If
-                'If (bVariance > maxVariance) Then
-                '    maxVariance = bVariance
-                '    mvIndex = i
-                'End If
-                
             Next i
             
-            'Ask the stack with the largest variance to split itself in half.  (Note that the stack object
-            ' itself will figure out which axis is most appropriate for splitting.)
+            'Ask the stack with the largest net variance to split itself in half.  (Note that the stack object
+            ' itself decides which axis is most appropriate for splitting; typically this is the axis - channel -
+            ' with the largest variance.)
             'Debug.Print "Largest variance was " & maxVariance & ", found in stack #" & mvIndex & " (total stack count is " & stackCount & ")"
-            pxStack(mvIndex).Split pxStack(stackCount)
-            stackCount = stackCount + 1
+            If (maxVariance > 0) Then
+                pxStack(mvIndex).Split pxStack(stackCount)
+                stackCount = stackCount + 1
+            
+            'All current stacks only contain a single color, meaning this image contains fewer unique colors
+            ' than the target number of colors the user requested.  That's okay!  Exit now, and use the colors
+            ' we've discovered as the optimal palette.
+            Else
+                numOfColors = stackCount
+                Exit Do
+            End If
         
         'Continue splitting stacks until we arrive at the desired number of colors.  (Each stack represents
         ' one color in the final palette.)
@@ -179,7 +181,6 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         ' you could also request the most "populous" color; this would preserve precise tones from the image,
         ' but rarely-appearing colors would never influence the final output.  Trade-offs!
         Dim newR As Long, newG As Long, newB As Long
-        
         ReDim dstPalette(0 To numOfColors - 1) As RGBQuad
         For i = 0 To numOfColors - 1
             pxStack(i).GetAverageColor newR, newG, newB
@@ -1204,15 +1205,16 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     'Disable user input until the dialog closes
     Interface.DisableUserInput
     
-    Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("All supported palettes") & "|*.aco;*.act;*.ase;*.gpl;*.pal;*.psppalette;*.txt|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Color Swatch") & " (.aco)|*.aco|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("Adobe Swatch Exchange") & " (.ase)|*.ase|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal, .psppalette)|*.pal;*.psppalette|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("Paint.NET Palette") & " (.txt)|*.txt|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
+    Dim cdFilter As pdString
+    Set cdFilter = New pdString
+    cdFilter.Append g_Language.TranslateMessage("All supported palettes") & "|*.aco;*.act;*.ase;*.gpl;*.pal;*.psppalette;*.txt|"
+    cdFilter.Append g_Language.TranslateMessage("Adobe Color Swatch") & " (.aco)|*.aco|"
+    cdFilter.Append g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
+    cdFilter.Append g_Language.TranslateMessage("Adobe Swatch Exchange") & " (.ase)|*.ase|"
+    cdFilter.Append g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
+    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal, .psppalette)|*.pal;*.psppalette|"
+    cdFilter.Append g_Language.TranslateMessage("Paint.NET Palette") & " (.txt)|*.txt|"
+    cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Select a palette")
@@ -1224,7 +1226,7 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     Dim sFile As String
     sFile = srcFilename
     
-    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, UserPrefs.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter.ToString(), 1, UserPrefs.GetPalettePath, cdTitle, , GetModalOwner().hWnd) Then
     
         'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
         ' as they require.
@@ -1243,4 +1245,167 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     'Re-enable user input
     Interface.EnableUserInput
     
+End Function
+
+'Display PD's generic palette export dialog.  All supported palette filetypes will be available to the user.
+Public Function DisplayPaletteSaveDialog(ByRef srcImage As pdImage, ByRef dstFilename As String, ByRef dstFormat As PD_PaletteFormat) As Boolean
+    
+    DisplayPaletteSaveDialog = False
+    
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
+    
+    'Prior to showing the "save palette" dialog, we need to determine three things:
+    ' 1) An initial folder
+    ' 2) What palette format to suggest
+    ' 3) What filename to suggest (*without* a file extension)
+    ' 4) What filename + extension to suggest, based on the results of 2 and 3
+    
+    'Each of these will be handled in turn
+    
+    '1) Determine an initial folder.  This is easy - just grab the last "palette" path from the preferences file.
+    '   (The preferences engine will automatically pass us PD's local palette folder if no "last path" entry exists.)
+    Dim initialSaveFolder As String
+    initialSaveFolder = UserPrefs.GetPalettePath
+    
+    '2) What palette format to suggest.  After building the export palette list, retrieve the last-used palette
+    '   format index from the user prefs file.
+    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Set cdFilter = New pdString
+    Set cdFilterExtensions = New pdString
+    
+    cdFilter.Append g_Language.TranslateMessage("Adobe Color Swatch") & " (.aco)|*.aco|"
+    cdFilterExtensions.Append ".aco|"
+    cdFilter.Append g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
+    cdFilterExtensions.Append ".act|"
+    cdFilter.Append g_Language.TranslateMessage("Adobe Swatch Exchange") & " (.ase)|*.ase|"
+    cdFilterExtensions.Append ".ase|"
+    cdFilter.Append g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
+    cdFilterExtensions.Append ".gpl|"
+    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal)|*.pal|"
+    cdFilterExtensions.Append ".pal|"
+    cdFilter.Append g_Language.TranslateMessage("Paint.NET Palette") & " (.txt)|*.txt|"
+    cdFilterExtensions.Append ".txt"
+    
+    Dim cdIndex As PD_PaletteFormat
+    cdIndex = UserPrefs.GetPref_Long("Saving", "Palette Format", pdpf_AdobeSwatchExchange) + 1
+    
+    '3) What palette name to suggest.  At present, we just reuse the current image's name.
+    Dim palFileName As String
+    palFileName = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(palFileName) = 0) Then palFileName = g_Language.TranslateMessage("New palette")
+    palFileName = initialSaveFolder & palFileName
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export palette")
+    
+    'Prep a common dialog interface
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
+    If saveDialog.GetSaveFileName(palFileName, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetPalettePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+    
+        'Update preferences
+        UserPrefs.SetPref_Long "Saving", "Palette Format", cdIndex - 1
+        UserPrefs.SetPalettePath Files.FileGetPath(palFileName)
+        
+        'Notify the caller of the new settings
+        dstFilename = palFileName
+        dstFormat = cdIndex - 1
+        DisplayPaletteSaveDialog = True
+        
+    End If
+    
+    'Re-enable user input
+    Interface.EnableUserInput
+    
+End Function
+
+Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional ByVal exportParams As String = vbNullString) As Boolean
+    
+    'At present, a source image is *required*
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Start by getting a destination filename and palette format from the user
+    Dim dstFilename As String, dstFormat As PD_PaletteFormat
+    If Palettes.DisplayPaletteSaveDialog(srcImage, dstFilename, dstFormat) Then
+    
+        'Before exporting, we need to get export preferences for the current format.  (Some formats support
+        ' additional custom features; others do not.)
+        
+        'Disable user input until the next dialog closes
+        Interface.DisableUserInput
+        
+        Dim exportSettings As String
+        If (DialogManager.PromptPaletteSettings(srcImage, dstFormat, dstFilename, exportSettings) = vbOK) Then
+            
+            Message "Exporting palette..."
+            
+            'Parse settings and perform the actual export
+            Dim cParams As pdParamXML
+            Set cParams = New pdParamXML
+            cParams.SetParamString exportSettings
+            
+            Dim cPalette As pdPalette
+            Set cPalette = New pdPalette
+            
+            Dim numColors As Long, optColors As Long
+            Dim palName As String
+            
+            With cParams
+            
+                'Before retrieving the actual palette, retrieve the number of colors we need to use.
+                ' (If we have to generate an optimal palette, we want to know this in advance.)
+                numColors = .GetLong("numColors", -1)
+                If (numColors <= 0) Then
+                    If (dstFormat = pdpf_PaintDotNet) Then optColors = 96 Else optColors = 256
+                Else
+                    optColors = numColors
+                End If
+                
+                If (.GetLong("srcPalette", 0) = 1) And srcImage.HasOriginalPalette Then
+                    srcImage.GetOriginalPalette cPalette
+                    If (optColors < cPalette.GetPaletteColorCount()) Then cPalette.SetNewPaletteCount optColors
+                Else
+                    Dim tmpDIB As pdDIB, tmpQuads() As RGBQuad
+                    srcImage.GetCompositedImage tmpDIB, False
+                    If Palettes.GetOptimizedPalette(tmpDIB, tmpQuads, optColors, pdqs_Variance) Then
+                        cPalette.CreateFromPaletteArray tmpQuads, UBound(tmpQuads) + 1
+                    End If
+                End If
+                
+                'Palette name won't always be used, but retrieve and set it anyway
+                palName = .GetString("palName", vbNullString)
+                cPalette.SetPaletteName palName
+                
+                'The actual export is handled by the palette object itself!
+                If (cPalette.GetPaletteColorCount() > 0) Then
+                
+                    If (dstFormat = pdpf_AdobeColorSwatch) Then
+                        ExportCurrentImagePalette = cPalette.SavePaletteAdobeSwatch(dstFilename)
+                    ElseIf (dstFormat = pdpf_AdobeColorTable) Then
+                        ExportCurrentImagePalette = cPalette.SavePaletteAdobeColorTable(dstFilename)
+                    ElseIf (dstFormat = pdpf_AdobeSwatchExchange) Then
+                        ExportCurrentImagePalette = cPalette.SavePaletteAdobeSwatchExchange(dstFilename)
+                    ElseIf (dstFormat = pdpf_GIMP) Then
+                        ExportCurrentImagePalette = cPalette.SavePaletteGIMP(dstFilename)
+                    ElseIf (dstFormat = pdpf_PaintDotNet) Then
+                        ExportCurrentImagePalette = cPalette.SavePalettePaintDotNet(dstFilename)
+                    ElseIf (dstFormat = pdpf_PSP) Then
+                        ExportCurrentImagePalette = cPalette.SavePalettePaintShopPro(dstFilename)
+                    End If
+                    
+                End If
+                
+            End With
+        
+        End If
+        
+        'Re-enable user input
+        Interface.EnableUserInput
+    
+    End If
+    
+    Message "Finished."
+
 End Function

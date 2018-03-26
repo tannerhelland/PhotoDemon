@@ -132,7 +132,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
     Dim cXMLParams As pdParamXML
     Set cXMLParams = New pdParamXML
-    If (Len(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
+    If (LenB(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
     
     'Next, we need to check for actions that may require us to rasterize one or more vector layers before proceeding.
     ' The process for checking this is rather involved, so we offload it to a separate function.
@@ -1280,7 +1280,11 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
             Interface.NotifyImageChanged g_CurrentImage
         End If
         Process_FileMenu = True
-        
+    
+    ElseIf Strings.StringsEqual(processID, "Export palette", True) Then
+        Palettes.ExportCurrentImagePalette pdImages(g_CurrentImage)
+        Process_FileMenu = True
+    
     ElseIf Strings.StringsEqual(processID, "Batch wizard", True) Then
         Interface.ShowPDDialog vbModal, FormBatchWizard
         Process_FileMenu = True

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.263</langversion>
+<langversion>7.2.285</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -317,7 +317,7 @@
 
 <phrase>
 <original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Dieses Dateiformat unterstützt keine Metadaten. Verarbeitung der Metadaten übersprungen.</translation>
+<translation>Dieses Dateiformat unterstützt keine Metadaten. Metadaten-Verarbeitung übersprungen.</translation>
 </phrase>
 
 <phrase>
@@ -1643,7 +1643,22 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Eine Palette auswählen</translation>
 </phrase>
 
-<!-- Palettes.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>New palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exporting palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2032,7 +2047,7 @@ Beschreibung: %2
 
 <phrase>
 <original>resize quality</original>
-<translation>Qualität der Größenveränderung</translation>
+<translation>Qualitätsgröße ändern</translation>
 </phrase>
 
 <phrase>
@@ -2474,7 +2489,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Selection resize complete.</original>
-<translation>Größenveränderung der Auswahl fertiggestellt.</translation>
+<translation>Auswahl-Größenänderung fertiggestellt.</translation>
 </phrase>
 
 <phrase>
@@ -2519,7 +2534,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Resize selection</original>
-<translation>Auswahlgröße verändern</translation>
+<translation>Auswahlgröße ändern</translation>
 </phrase>
 
 <phrase>
@@ -2572,7 +2587,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Resize layer (on-canvas)</original>
-<translation>Größe des Layers verändern (auf Leinwand)</translation>
+<translation>Layer-Größe ändern (auf Leinwand)</translation>
 </phrase>
 
 <phrase>
@@ -3571,6 +3586,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- END text for pdSelection.cls-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- BEGIN text for pdStream.cls -->
 
 <!-- pdStream.cls contains 0 phrases. -->
@@ -3806,7 +3827,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Shifttaste: Seitenverhältnis des Layers erhalten</translation>
+<translation>Shifttaste: Seitenverhältnis des Layers beibehalten</translation>
 </phrase>
 
 <phrase>
@@ -3894,11 +3915,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>transparency cut-off</original>
-<translation>Transparenz Cut-off</translation>
-</phrase>
-
-<phrase>
 <original>palette size</original>
 <translation>Palettengröße</translation>
 </phrase>
@@ -3906,6 +3922,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>transparent color</original>
 <translation>Transparente Farbe</translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation>Transparenz Cut-off</translation>
 </phrase>
 
 <phrase>
@@ -4447,17 +4468,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Seitenverhältnis erhalten (manchmal Einschränkungsproportionen benannt). Verwenden Sie diese Option, um die Größe eines Bildes zu verändern, während die Breite und Höhe synchron bleiben.</translation>
+<translation>Seitenverhältnis beibehalten (manchmal Einschränkungsproportionen benannt). Verwenden Sie diese Option, um die Größe eines Bildes zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation>Seitenverhältnis erhalten</translation>
+<translation>Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Ändern Sie die Maßeinheit, die verwendet wird, um die Bilfgröße zu verändern.</translation>
+<translation>Ändern Sie die Maßeinheit, die zur Größenänderung des Bildes verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -4632,7 +4653,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Resize image</original>
-<translation>Bildgröße verändern</translation>
+<translation>Bildgröße ändern</translation>
 </phrase>
 
 <phrase>
@@ -4742,6 +4763,16 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>Close all</original>
 <translation>Alles schließen</translation>
+</phrase>
+
+<phrase>
+<original>Export</original>
+<translation>Export</translation>
+</phrase>
+
+<phrase>
+<original>Palette</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4856,12 +4887,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Resize</original>
-<translation>Größe verändern</translation>
+<translation>Größenänderung</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>Inhaltsabhängige Größenveränderung</translation>
+<translation>Inhaltsabhängige Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -5147,11 +5178,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>Save current selection</original>
 <translation>Aktuelle Auswahl speichern</translation>
-</phrase>
-
-<phrase>
-<original>Export</original>
-<translation>Export</translation>
 </phrase>
 
 <phrase>
@@ -6016,7 +6042,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation>Eine neue Version von PhotoDemon ist verfügbar. Das Update wird im Hintergrund automatisch verarbeitet</translation>
+<translation>Eine neue Version von PhotoDemon ist verfügbar. Das Update wird automatisch im Hintergrund verarbeitet.</translation>
 </phrase>
 
 <phrase>
@@ -6199,12 +6225,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Resize layer</original>
-<translation>Layer in Größe verändern</translation>
+<translation>Layer-Größe ändern</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation>Inhaltsabhängige Größenveränderung des Layers</translation>
+<translation>Inhaltsabhängige Layer-Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -6363,7 +6389,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>Inhaltsabhängige Größenveränderung des Bildes</translation>
+<translation>Inhaltsabhängige Bild-Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -6526,7 +6552,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6706,7 +6732,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>preserve luminance</original>
-<translation>Luminanz erhalten</translation>
+<translation>Luminanz beibehalten</translation>
 </phrase>
 
 <phrase>
@@ -6814,7 +6840,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>preserve existing saturation</original>
-<translation>Vorhandene Sättigung erhalten</translation>
+<translation>Vorhandene Sättigung beibehalten</translation>
 </phrase>
 
 <phrase>
@@ -7356,7 +7382,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>keep all colors in sync</original>
-<translation>Alle Farben synchron behalten</translation>
+<translation>Alle Farben in Sync halten</translation>
 </phrase>
 
 <phrase>
@@ -8490,7 +8516,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>tone-mapping operator</original>
-<translation></translation>
+<translation>Tone-Mapping-Operator</translation>
 </phrase>
 
 <phrase>
@@ -8657,7 +8683,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>images with unsaved changes</original>
-<translation></translation>
+<translation>Bilder mit ungesicherten Änderungen</translation>
 </phrase>
 
 <phrase>
@@ -8716,7 +8742,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>unnamed image %1</original>
-<translation></translation>
+<translation>Unbenanntes Bild %1</translation>
 </phrase>
 
 <phrase>
@@ -9247,7 +9273,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>Beide Dimensionen synchron behalten</translation>
+<translation>Beide Dimensionen in Sync halten</translation>
 </phrase>
 
 <phrase>
@@ -10549,7 +10575,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>preserve white and black</original>
-<translation>Weiß und Schwarz erhalten</translation>
+<translation>Weiß und Schwarz beibehalten</translation>
 </phrase>
 
 <phrase>
@@ -10950,7 +10976,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Verarbeitung der Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
+<translation>Verarbeitet wird Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
 </phrase>
 
 <phrase>
@@ -11098,7 +11124,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize image by</original>
-<translation>Bildgröße verändern nach</translation>
+<translation>Bildgröße ändern nach</translation>
 </phrase>
 
 <phrase>
@@ -11113,7 +11139,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize images</original>
-<translation>Bildgrößen verändern</translation>
+<translation>Bildgrößen ändern</translation>
 </phrase>
 
 <phrase>
@@ -11487,7 +11513,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation></translation>
+<translation>Verarbeitet wird Bild # %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -11502,12 +11528,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation></translation>
+<translation>Batch-Konvertierung abgebrochen. %1 Bild(er) wurde(n) vor der Löschung verarbeitet. Zuletzt verarbeitetes Bild war "%2".</translation>
 </phrase>
 
 <phrase>
 <original>Estimated time remaining: %1:%2</original>
-<translation></translation>
+<translation>Geschätzte verbleibende Zeit: %1:%2</translation>
 </phrase>
 
 <phrase>
@@ -12557,7 +12583,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Resize Canvas</original>
-<translation>Leinwandgröße verändern</translation>
+<translation>Leinwandgröße ändern</translation>
 </phrase>
 
 <phrase>
@@ -12573,17 +12599,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>Hinweis: Diese Operation wird das Bild vereinen, bevor es in der Größe verändert wird.</translation>
+<translation>Hinweis: Diese Operation wird das Bild vereinen, bevor es in der Größe geändert wird.</translation>
 </phrase>
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation>Inhaltsabhängige Größenveränderung-Engine wird initialisiert</translation>
+<translation>Inhaltsabhängige Größenänderungs-Engine wird initialisiert</translation>
 </phrase>
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation>Inhaltsabhängige Größenveränderung wird angewendet</translation>
+<translation>Inhaltsabhängige Größenänderung wird angewendet</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12855,7 +12881,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>Bei Änderung des Seitenverhältnisses Bild auf neue Größe anpassen von</translation>
+<translation>Wenn Seitenverhältnis verändert wird, Bild auf neue Größe anpassen durch</translation>
 </phrase>
 
 <phrase>
@@ -12935,7 +12961,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>Resampling beeinflusst die Qualität eines in der Größe veränderten Bildes. Für eine gute Zusammenfassung der Resampling-Verfahren schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
+<translation>Resampling beeinflusst die Qualität eines in der Größe geänderten Bildes. Für eine gute Zusammenfassung der Resampling-Verfahren schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
 </phrase>
 
 <phrase>
@@ -12945,17 +12971,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Streckung auftreten. PhotoDemon kann dies vermeiden, indem leere Rahmungen oder Zuschneidung sattdessen verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Streckung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Zuschneidung verwendet werden.</translation>
 </phrase>
 
 <phrase>
 <original>Resizing image</original>
-<translation>Größe des Bildes wird verändert</translation>
+<translation>Bildgröße wird geändert</translation>
 </phrase>
 
 <phrase>
 <original>Resizing layer</original>
-<translation>Größe des Layers wird verändert</translation>
+<translation>Layer-Größe wird geändert</translation>
 </phrase>
 
 <!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -13419,7 +13445,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>Bildlayer verschieben und in Größe verändern</translation>
+<translation>Bildlayer verschieben und in Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -13678,7 +13704,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>show resize nodes</original>
-<translation>In Größe veränderte Nodes zeigen</translation>
+<translation>Größenänderungs-Nodes zeigen</translation>
 </phrase>
 
 <phrase>
@@ -14219,7 +14245,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>Textpassage %1 von %2 wird verarbeitet</translation>
+<translation>Verarbeitet wird Textpassage %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -15271,18 +15297,53 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdStack.cls -->
+<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
 
-<!-- pdStack.cls contains 0 phrases. -->
+<phrase>
+<original>Palette export options</original>
+<translation></translation>
+</phrase>
 
-<!-- END text for pdStack.cls-->
+<phrase>
+<original>palette name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette contents</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>original embedded palette</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Palette.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for File_Export_Palette.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4647 phrases. -->
-<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12433 total words. -->
+<!-- As of this build, PhotoDemon contains 4680 phrases. -->
+<!-- 2109 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 12457 total words. -->
 
 </pdData>

@@ -90,6 +90,10 @@ Friend Function GetPaletteName(Optional ByVal palGroupIndex As Long = 0) As Stri
     If (m_NumOfGroups > 0) Then GetPaletteName = m_Palettes(palGroupIndex).GetPaletteName Else GetPaletteName = vbNullString
 End Function
 
+Friend Sub SetPaletteName(ByVal newPaletteName As String, Optional ByVal palGroupIndex As Long = 0)
+    If (m_NumOfGroups > 0) Then m_Palettes(palGroupIndex).SetPaletteName newPaletteName
+End Sub
+
 Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad, Optional ByVal palGroupIndex As Long = 0) As Boolean
     
     'Because this function involves unsafe memcpy behavior, we try to perform comprehensive validation
@@ -120,6 +124,8 @@ Friend Function CreateFromPaletteArray(ByRef srcPalette() As RGBQuad, ByVal numC
         
         CreateFromPaletteArray = True
         
+    Else
+        InternalProblem "WARNING!  pdPalette.CreateFromPaletteArray() was psased an invalid number of colors (" & numColors & ")"
     End If
 
 End Function
@@ -130,6 +136,10 @@ Friend Sub SetNewPaletteCount(Optional ByVal newPaletteSize As Long = 256, Optio
     If okayToProceed Then okayToProceed = (Not m_Palettes(palGroupIndex) Is Nothing)
     If okayToProceed Then m_Palettes(palGroupIndex).SetNumOfColors newPaletteSize
 End Sub
+
+Friend Function GetPaletteAsString() As String
+
+End Function
 
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
 Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean

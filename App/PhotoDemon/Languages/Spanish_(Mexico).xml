@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.339</langversion>
+<langversion>6.7.340</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -1641,7 +1641,22 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>New palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exporting palette</original>
+<translation></translation>
+</phrase>
+
+<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3569,6 +3584,12 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for pdSelection.cls-->
 
+<!-- BEGIN text for pdStack.cls -->
+
+<!-- pdStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStack.cls-->
+
 <!-- BEGIN text for pdStream.cls -->
 
 <!-- pdStream.cls contains 0 phrases. -->
@@ -3892,11 +3913,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>transparency cut-off</original>
-<translation>corte de transparencia</translation>
-</phrase>
-
-<phrase>
 <original>palette size</original>
 <translation>tamaño de paleta</translation>
 </phrase>
@@ -3904,6 +3920,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <phrase>
 <original>transparent color</original>
 <translation>color transparente</translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation>corte de transparencia</translation>
 </phrase>
 
 <phrase>
@@ -4743,6 +4764,16 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>Export</original>
+<translation>exportación</translation>
+</phrase>
+
+<phrase>
+<original>Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Batch operations</original>
 <translation>Operaciones por lotes</translation>
 </phrase>
@@ -5145,11 +5176,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <phrase>
 <original>Save current selection</original>
 <translation>Guardar selección actual</translation>
-</phrase>
-
-<phrase>
-<original>Export</original>
-<translation>exportación</translation>
 </phrase>
 
 <phrase>
@@ -6524,7 +6550,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 553 phrases. 187 were duplicates of existing phrases, so only 366 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15270,18 +15296,53 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdStack.cls -->
+<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
 
-<!-- pdStack.cls contains 0 phrases. -->
+<phrase>
+<original>Palette export options</original>
+<translation></translation>
+</phrase>
 
-<!-- END text for pdStack.cls-->
+<phrase>
+<original>palette name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette contents</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>original embedded palette</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Palette.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for File_Export_Palette.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4647 phrases. -->
-<!-- 2087 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 12433 total words. -->
+<!-- As of this build, PhotoDemon contains 4680 phrases. -->
+<!-- 2109 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 12457 total words. -->
 
 </pdData>

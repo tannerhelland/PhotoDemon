@@ -1312,7 +1312,7 @@ End Function
 '
 'This function always preserves aspect ratio, and it will return the original image if the image is smaller than the number of
 ' pixels requested.  This simplifies outside functions, as you can always call this function prior to running heuristics.
-Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal numOfPixels As Long) As Boolean
+Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal numOfPixels As Long, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
 
     If (Not srcDIB Is Nothing) Then
         
@@ -1344,7 +1344,7 @@ Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdD
             newWidth = aspectRatio * newHeight
             
             dstDIB.CreateBlank newWidth, newHeight, 32, 0, 0
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_HighQualityBicubic, , True, , True
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpolationType, , True, , True
             
             ResizeDIBByPixelCount = True
         

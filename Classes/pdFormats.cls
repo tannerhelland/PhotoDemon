@@ -396,7 +396,7 @@ Friend Sub GenerateOutputFormats()
     For x = 0 To numOfOutputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If x <> 0 Then
+        If (x <> 0) Then
             m_CommonDialogOutputs = m_CommonDialogOutputs & "|" & outputDescriptions(x) & "|*." & outputExtensions(x)
             m_cdOutputDefaultExtensions = m_cdOutputDefaultExtensions & "|." & outputExtensions(x)
         Else

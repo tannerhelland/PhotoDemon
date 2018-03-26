@@ -124,6 +124,19 @@ Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptPaletteSettings(ByRef srcImage As pdImage, ByVal palFormat As PD_PaletteFormat, ByRef dstFilename As String, ByRef dstFormatParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportPalette
+    dialog_ExportPalette.ShowDialog srcImage, palFormat, dstFilename
+    
+    PromptPaletteSettings = dialog_ExportPalette.GetDialogResult
+    dstFormatParams = dialog_ExportPalette.GetFormatParams
+    
+    Unload dialog_ExportPalette
+    Set dialog_ExportPalette = Nothing
+    
+End Function
+
 Public Function PromptPNGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportPNG
