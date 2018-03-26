@@ -521,7 +521,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     
         'Resize the target DIB to a smaller size
         Dim smallDIB As pdDIB
-        DIBs.ResizeDIBByPixelCount workingDIB, smallDIB, 50000
+        DIBs.ResizeDIBByPixelCount workingDIB, smallDIB, 500000
         
         'Generate an optimal palette
         Palettes.GetOptimizedPalette smallDIB, finalPalette, paletteSize
