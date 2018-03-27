@@ -137,10 +137,6 @@ Friend Sub SetNewPaletteCount(Optional ByVal newPaletteSize As Long = 256, Optio
     If okayToProceed Then m_Palettes(palGroupIndex).SetNumOfColors newPaletteSize
 End Sub
 
-Friend Function GetPaletteAsString() As String
-
-End Function
-
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
 Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
@@ -150,44 +146,65 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
     If (LenB(srcFile) = 0) Then Exit Function
     If (Not Files.FileExists(srcFile)) Then Exit Function
     
-    'Branch according to format; on failure, attempt the next mechanism.
-    ' (Note that we manually reset our palette collection between attempts, in case a load routine failed
-    '  mid-way through a load attempt.)
-    
-    'Look for Adobe's basic color table format
-    If (Not LoadPaletteFromFile) Then LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, removeDuplicateColors, retainOriginalColorOrder)
-    
-    'Look for Adobe color swatches next
-    If (Not LoadPaletteFromFile) Then
-        Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, removeDuplicateColors, retainOriginalColorOrder)
-    End If
-    
-    'Look for the new-ish Adobe swatch exchange fromat next
-    If (Not LoadPaletteFromFile) Then
-        Me.Reset
-        LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, removeDuplicateColors, retainOriginalColorOrder)
-    End If
-    
-    'Look for GIMP palettes next.  Note that GIMP palettes are supposed to have the .gpl extension,
-    ' but for whatever reason, some users stick to .txt.  As such, this function will attempt to parse
-    ' *anything* it's handed.  It may throw up debug messages about string conversion errors if the
-    ' source file is binary, but these issues are handled safely.
-    If (Not LoadPaletteFromFile) Then
-        Me.Reset
-        LoadPaletteFromFile = LoadPaletteGIMP(srcFile, removeDuplicateColors, retainOriginalColorOrder)
-    End If
-    
-    'Look for PaintShop Pro palettes next
-    If (Not LoadPaletteFromFile) Then
-        Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, removeDuplicateColors, retainOriginalColorOrder)
-    End If
-    
-    'Look for Paint.NET palettes next
-    If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then
-        Me.Reset
-        LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, removeDuplicateColors, retainOriginalColorOrder)
+    'All Load_XYZ functions operate on a pdStream object.  Load the target file into a pdStream, and then pass *that*
+    ' to subsequent load functions.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, srcFile) Then
+        
+        'Although we parse files using pdStream, note that we still pass the source filename (and path) to all
+        ' load functions.  Many palette formats are primitive, and they may require validation against things like
+        ' a precise file size - and this is easier to do via filename than stream.
+        
+        'Branch according to format; on failure, attempt the next mechanism.
+        ' (Note that we manually reset our palette collection between attempts, in case a load routine failed
+        '  mid-way through a load attempt.)
+        
+        'Look for Adobe's basic color table format
+        If (Not LoadPaletteFromFile) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
+        'Look for Adobe color swatches next
+        If (Not LoadPaletteFromFile) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
+        'Look for the new-ish Adobe swatch exchange fromat next
+        If (Not LoadPaletteFromFile) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
+        'Look for GIMP palettes next.  Note that GIMP palettes are supposed to have the .gpl extension,
+        ' but for whatever reason, some users stick to .txt.  As such, this function will attempt to parse
+        ' *anything* it's handed.  It may throw up debug messages about string conversion errors if the
+        ' source file is binary, but these issues are handled safely.
+        If (Not LoadPaletteFromFile) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPaletteGIMP(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
+        'Look for PaintShop Pro palettes next
+        If (Not LoadPaletteFromFile) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
+        'Look for Paint.NET palettes next
+        If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then
+            Me.Reset
+            LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
     End If
     
     'If all palette parsers failed, reset our internals
@@ -196,57 +213,63 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
 End Function
 
 'Given a valid path to a Photoshop-format .act file (Adobe Color Table), return an array of RGBQuad entries
-Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPaletteAdobeColorTable(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadACTData
     
-    'Test file extension (as a failsafe)
-    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True) Then
+    If (srcStream Is Nothing) Then Exit Function
     
-        'Because ACT files don't have a header, we must test byte length.  They are only allowed to be
-        ' 768 or 772 bytes, per the spec at http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_pgfId-1070626
-        If (Files.FileLenW(srcFile) = 768) Or (Files.FileLenW(srcFile) = 772) Then
+    'Reset the stream pointer and perform some basic validation checks
+    srcStream.SetPosition 0, FILE_BEGIN
+    Dim passedValidation As Boolean: passedValidation = True
+    
+    'If this palette came from file, test file extension (as a failsafe)
+    If (LenB(srcFile) <> 0) Then passedValidation = Strings.StringsEqual(Files.FileGetExtension(srcFile), "act", True)
+    
+    'Because ACT files don't have a header, we must test byte length.  They are only allowed to be
+    ' 768 or 772 bytes, per the spec at http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_pgfId-1070626
+    If passedValidation Then passedValidation = (srcStream.GetStreamSize() = 768) Or (srcStream.GetStreamSize() = 772)
         
-            'File size and extension match.  Start retrieving colors!
-            Dim srcBytes() As Byte
-            If Files.FileLoadAsByteArray(srcFile, srcBytes) Then
-                
-                Dim i As Long, tmpQuad As RGBQuad
-                For i = 0 To 255
-                    With tmpQuad
-                        .Red = srcBytes(i * 3)
-                        .Green = srcBytes(i * 3 + 1)
-                        .Blue = srcBytes(i * 3 + 2)
-                        .Alpha = 255
-                    End With
-                    m_Palettes(m_NumOfGroups).AddColor tmpQuad
-                Next i
-                
-                'In a 772-byte file, the last four bytes supposedly use two bytes for the number of colors to use,
-                ' and another two bytes for a transparent index.  In my testing, these last four bytes are frequently
-                ' all set to zero, which makes the "number of colors to use" indicator useless. As such, we don't
-                ' currently use bytes; instead, we manually remove duplicate entries from the final palette, which is
-                ' a "good enough" way to figure out how many intentional colors are in the palette.
-                
-                'If original color order is not required, we can sort the palette prior to removing
-                ' duplicate palette entries; this makes the process much faster.
-                If removeDuplicateColors Then
-                    If retainOriginalColorOrder Then
-                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
-                    Else
-                        m_Palettes(m_NumOfGroups).SortFixedOrder
-                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
-                    End If
+    'File size and/or extension match closely enough to attempt a load.  Start retrieving colors!
+    If passedValidation Then
+        
+        Dim srcBytes() As Byte
+        If (srcStream.ReadBytes(srcBytes, srcStream.GetStreamSize(), True) = srcStream.GetStreamSize()) Then
+        
+            Dim i As Long, tmpQuad As RGBQuad
+            For i = 0 To 255
+                With tmpQuad
+                    .Red = srcBytes(i * 3)
+                    .Green = srcBytes(i * 3 + 1)
+                    .Blue = srcBytes(i * 3 + 2)
+                    .Alpha = 255
+                End With
+                m_Palettes(m_NumOfGroups).AddColor tmpQuad
+            Next i
+            
+            'In a 772-byte file, the last four bytes supposedly use two bytes for the number of colors to use,
+            ' and another two bytes for a transparent index.  In my testing, these last four bytes are frequently
+            ' all set to zero, which makes the "number of colors to use" indicator useless. As such, we don't
+            ' currently use bytes; instead, we manually remove duplicate entries from the final palette, which is
+            ' a "good enough" way to figure out how many intentional colors are in the palette.
+            
+            'If original color order is not required, we can sort the palette prior to removing
+            ' duplicate palette entries; this makes the process much faster.
+            If removeDuplicateColors Then
+                If retainOriginalColorOrder Then
+                    m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                Else
+                    m_Palettes(m_NumOfGroups).SortFixedOrder
+                    m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
                 End If
-                
-                'If we haven't errored out, consider this a successful parse
-                m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
-                m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
-                m_NumOfGroups = m_NumOfGroups + 1
-                LoadPaletteAdobeColorTable = True
-                
             End If
-        
+            
+            'If we haven't errored out, consider this a successful parse
+            m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
+            m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
+            m_NumOfGroups = m_NumOfGroups + 1
+            LoadPaletteAdobeColorTable = True
+            
         End If
         
     End If
@@ -259,253 +282,254 @@ BadACTData:
 End Function
 
 'Given a valid path to a Photoshop-format .aco file (Adobe Photoshop Swatch), return an array of RGBQuad entries
-Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
     
-    'This function references the Adobe spec frequently, particularly for things like magic numbers.  Here is the
-    ' link I used (good as of Jan '18): http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_31265
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'Reset the stream pointer and perform some basic validation checks
+    srcStream.SetPosition 0, FILE_BEGIN
+    Dim passedValidation As Boolean: passedValidation = True
     
     'ACO files contain no validation entries in their header, so we use the file extension as initial validation.
     ' (We also check file size to ensure that the file is large enough to contain at least one color entry.
     ' The "magic number" file size is calculated using data from the spec.)
-    If (Strings.StringsEqual(Files.FileGetExtension(srcFile), "aco", True) And (Files.FileLenW(srcFile) >= 14)) Then
+    If (LenB(srcFile) <> 0) Then passedValidation = (Strings.StringsEqual(Files.FileGetExtension(srcFile), "aco", True) And (Files.FileLenW(srcFile) >= 14))
+    
+    'This function references the Adobe spec frequently, particularly for things like magic numbers.  Here is the
+    ' link I used (good as of Jan '18): http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_31265
+    If passedValidation Then
         
-        'Retrieve the file as a pdStream object (which makes traversal *much* easier).
-        Dim srcData As pdStream
-        If Files.FileLoadAsPDStream(srcFile, srcData) Then
+        'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
+        ' _BE suffixed retrieval functions from the pdStream object.
+        
+        'Note also that per the spec, swatch files are just long lists of 16-bit words.  This makes
+        ' traversal straightforward.
+        
+        'Start by ensuring that the initial version number is good.  It needs to be 1 or 2; I've seen 3rd-parties
+        ' state that "0" is also an option, but the official Adobe spec doesn't allow this, and I haven't encountered
+        ' any palettes "in the wild" that do this, so we require "1" or "2" for now.
+        Dim curSwatchVersion As Integer
+        curSwatchVersion = srcStream.ReadInt_BE()
+        If (curSwatchVersion <= 0) Or (curSwatchVersion > 2) Then InternalProblem "ACO file reported bad version number (" & CStr(curSwatchVersion) & ")"
+        
+        Dim dualSwatchFile As Boolean
             
-            'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
-            ' _BE suffixed retrieval functions from the pdStream object.
+        'Now comes something kinda strange.  The spec says that Version 2 swatches should always include a full
+        ' Version 1 swatch, followed by an identical Version 2 swatch (plus the features Version 2 allows).
+        ' This means that files *should* always start with a version 1 swatch, but as usual, there are swatch
+        ' writers that ignore this and just dump a version 2 swatch into the file.  To cover both cases,
+        ' we loop our check.
+        Do While (curSwatchVersion = 1) Or (curSwatchVersion = 2)
             
-            'Note also that per the spec, swatch files are just long lists of 16-bit words.  This makes
-            ' traversal straightforward.
-            
-            'Start by ensuring that the initial version number is good.  It needs to be 1 or 2; I've seen 3rd-parties
-            ' state that "0" is also an option, but the official Adobe spec doesn't allow this, and I haven't encountered
-            ' any palettes "in the wild" that do this, so we require "1" or "2" for now.
-            Dim curSwatchVersion As Integer
-            curSwatchVersion = srcData.ReadInt_BE()
-            If (curSwatchVersion <= 0) Or (curSwatchVersion > 2) Then InternalProblem "ACO file reported bad version number (" & CStr(curSwatchVersion) & ")"
-            
-            Dim dualSwatchFile As Boolean
-            
-            'Now comes something kinda strange.  The spec says that Version 2 swatches should always include a full
-            ' Version 1 swatch, followed by an identical Version 2 swatch (plus the features Version 2 allows).
-            ' This means that files *should* always start with a version 1 swatch, but as usual, there are swatch
-            ' writers that ignore this and just dump a version 2 swatch into the file.  To cover both cases,
-            ' we loop our check.
-            Do While (curSwatchVersion = 1) Or (curSwatchVersion = 2)
+            'Read the number of colors stored in the file
+            Dim numOfColors As Long
+            numOfColors = srcStream.ReadIntUnsigned_BE()
+            If (numOfColors > 0) Then
                 
-                'Read the number of colors stored in the file
-                Dim numOfColors As Long
-                numOfColors = srcData.ReadIntUnsigned_BE()
-                If (numOfColors > 0) Then
+                'Because this may be a combo swatch (with a v2 swatch following a v1 version), we always want
+                ' to manually reset the current palette object before loading colors to it.  Otherwise, we risk
+                ' ending up with two of every color!
+                If dualSwatchFile Then Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
+                
+                Dim i As Long, j As Long
+                For i = 0 To numOfColors - 1
                     
-                    'Because this may be a combo swatch (with a v2 swatch following a v1 version), we always want
-                    ' to manually reset the current palette object before loading colors to it.  Otherwise, we risk
-                    ' ending up with two of every color!
-                    If dualSwatchFile Then Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
+                    'We now want to retrieve each color in turn.  Color swatches use a standardized 10-byte format,
+                    ' comprised of five unsigned 16-bit entries:
+                    ' 1) Color space (an internal Adobe enum)
+                    ' 2) w, x, y, z values, which must be post-processed differently depending on (1)
+                        
+                    'Start by retrieving the color space
+                    Dim curSpace As AdobeSwatchColorSpace
+                    curSpace = srcStream.ReadInt_BE()
                     
-                    Dim i As Long, j As Long
-                    For i = 0 To numOfColors - 1
+                    'A dummy int can be used to advance the file pointer
+                    Dim dummyInt As Integer, tmpQuad As RGBQuad, colorGood As Boolean
+                    
+                    colorGood = False
+                    
+                    Select Case curSpace
+                    
+                        Case ASCS_RGB
+                            
+                            'RGB constants are stored as 16-bit unsigned ints, plus an empty two bytes at the end.
+                            ' (PD downconverts the 16-bit ints to 8-bit.)
+                            Dim r As Long, g As Long, b As Long
+                            r = srcStream.ReadIntUnsigned_BE()
+                            g = srcStream.ReadIntUnsigned_BE()
+                            b = srcStream.ReadIntUnsigned_BE()
+                            dummyInt = srcStream.ReadInt()
+                            
+                            'Downconvert the 16-bit entries to 8-bit
+                            r = (r \ 257)
+                            g = (g \ 257)
+                            b = (b \ 257)
+                            
+                            'Failsafe checks
+                            If (r > 255) Then r = 255
+                            If (g > 255) Then g = 255
+                            If (b > 255) Then b = 255
+                            
+                            With tmpQuad
+                                .Red = r
+                                .Green = g
+                                .Blue = b
+                                .Alpha = 255
+                            End With
+                            
+                            colorGood = True
+                            
+                        Case ASCS_CMYK
+                            Dim c As Single, m As Single, y As Single, k As Single
+                            c = srcStream.ReadIntUnsigned_BE()
+                            m = srcStream.ReadIntUnsigned_BE()
+                            y = srcStream.ReadIntUnsigned_BE()
+                            k = srcStream.ReadIntUnsigned_BE()
+                            
+                            'Downconvert the 16-bit entries to 8-bit and invert
+                            c = 255! - (c / 257!)
+                            m = 255! - (m / 257!)
+                            y = 255! - (y / 257!)
+                            k = 255! - (k / 257!)
+                            
+                            'Convert these to RGB literals using an entirely different spec as our guide
+                            ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
+                            r = 255 - PDMath.Min2Int(255, Int(c + k + 0.5!))
+                            g = 255 - PDMath.Min2Int(255, Int(m + k + 0.5!))
+                            b = 255 - PDMath.Min2Int(255, Int(y + k + 0.5!))
+                            
+                            'Failsafe checks
+                            If (r > 255) Then r = 255 Else If (r < 0) Then r = 0
+                            If (g > 255) Then g = 255 Else If (g < 0) Then g = 0
+                            If (b > 255) Then b = 255 Else If (b < 0) Then b = 0
+                            
+                            With tmpQuad
+                                .Red = r
+                                .Green = g
+                                .Blue = b
+                                .Alpha = 255
+                            End With
+                            
+                            colorGood = True
                         
-                        'We now want to retrieve each color in turn.  Color swatches use a standardized 10-byte format,
-                        ' comprised of five unsigned 16-bit entries:
-                        ' 1) Color space (an internal Adobe enum)
-                        ' 2) w, x, y, z values, which must be post-processed differently depending on (1)
-                            
-                        'Start by retrieving the color space
-                        Dim curSpace As AdobeSwatchColorSpace
-                        curSpace = srcData.ReadInt_BE()
+                        'Grayscale is inexplicably stored on the range [0, 10000]
+                        Case ASCS_Gray
                         
-                        'A dummy int can be used to advance the file pointer
-                        Dim dummyInt As Integer, tmpQuad As RGBQuad, colorGood As Boolean
+                            g = srcStream.ReadIntUnsigned_BE()
+                            dummyInt = srcStream.ReadInt()
+                            dummyInt = srcStream.ReadInt()
+                            dummyInt = srcStream.ReadInt()
                         
-                        colorGood = False
+                            'Translate gray into a usable RGB space
+                            g = CLng(CStr(g) / 39.0625)
+                            
+                            'Failsafe checks
+                            If (g > 255) Then g = 255
+                            
+                            With tmpQuad
+                                .Red = g
+                                .Green = g
+                                .Blue = g
+                                .Alpha = 255
+                            End With
+                            
+                            colorGood = True
+                            
+                        'These two spaces could be implemented without too much trouble, but I don't currently have
+                        ' swatches available to test their correctness:
+                        'Case ASCS_HSB
+                        'Case ASCS_Lab
                         
-                        Select Case curSpace
+                        'All other color spaces are undocumented and unsupported
+                        Case Else
+                            InternalProblem "Adobe Swatch color space is unsupported (" & CStr(curSpace) & ")"
+                            
+                            'Advance the pointer to the next color
+                            srcStream.SetPosition 8, FILE_CURRENT
+                    
+                    End Select
                         
-                            Case ASCS_RGB
-                                
-                                'RGB constants are stored as 16-bit unsigned ints, plus an empty two bytes at the end.
-                                ' (PD downconverts the 16-bit ints to 8-bit.)
-                                Dim r As Long, g As Long, b As Long
-                                r = srcData.ReadIntUnsigned_BE()
-                                g = srcData.ReadIntUnsigned_BE()
-                                b = srcData.ReadIntUnsigned_BE()
-                                dummyInt = srcData.ReadInt()
-                                
-                                'Downconvert the 16-bit entries to 8-bit
-                                r = (r \ 257)
-                                g = (g \ 257)
-                                b = (b \ 257)
-                                
-                                'Failsafe checks
-                                If (r > 255) Then r = 255
-                                If (g > 255) Then g = 255
-                                If (b > 255) Then b = 255
-                                
-                                With tmpQuad
-                                    .Red = r
-                                    .Green = g
-                                    .Blue = b
-                                    .Alpha = 255
-                                End With
-                                
-                                colorGood = True
-                                
-                            Case ASCS_CMYK
-                                Dim c As Single, m As Single, y As Single, k As Single
-                                c = srcData.ReadIntUnsigned_BE()
-                                m = srcData.ReadIntUnsigned_BE()
-                                y = srcData.ReadIntUnsigned_BE()
-                                k = srcData.ReadIntUnsigned_BE()
-                                
-                                'Downconvert the 16-bit entries to 8-bit and invert
-                                c = 255! - (c / 257!)
-                                m = 255! - (m / 257!)
-                                y = 255! - (y / 257!)
-                                k = 255! - (k / 257!)
-                                
-                                'Convert these to RGB literals using an entirely different spec as our guide
-                                ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
-                                r = 255 - PDMath.Min2Int(255, Int(c + k + 0.5!))
-                                g = 255 - PDMath.Min2Int(255, Int(m + k + 0.5!))
-                                b = 255 - PDMath.Min2Int(255, Int(y + k + 0.5!))
-                                
-                                'Failsafe checks
-                                If (r > 255) Then r = 255 Else If (r < 0) Then r = 0
-                                If (g > 255) Then g = 255 Else If (g < 0) Then g = 0
-                                If (b > 255) Then b = 255 Else If (b < 0) Then b = 0
-                                
-                                With tmpQuad
-                                    .Red = r
-                                    .Green = g
-                                    .Blue = b
-                                    .Alpha = 255
-                                End With
-                                
-                                colorGood = True
-                            
-                            'Grayscale is inexplicably stored on the range [0, 10000]
-                            Case ASCS_Gray
-                            
-                                g = srcData.ReadIntUnsigned_BE()
-                                dummyInt = srcData.ReadInt()
-                                dummyInt = srcData.ReadInt()
-                                dummyInt = srcData.ReadInt()
-                            
-                                'Translate gray into a usable RGB space
-                                g = CLng(CStr(g) / 39.0625)
-                                
-                                'Failsafe checks
-                                If (g > 255) Then g = 255
-                                
-                                With tmpQuad
-                                    .Red = g
-                                    .Green = g
-                                    .Blue = g
-                                    .Alpha = 255
-                                End With
-                                
-                                colorGood = True
-                                
-                            'These two spaces could be implemented without too much trouble, but I don't currently have
-                            ' swatches available to test their correctness:
-                            'Case ASCS_HSB
-                            'Case ASCS_Lab
-                            
-                            'All other color spaces are undocumented and unsupported
-                            Case Else
-                                InternalProblem "Adobe Swatch color space is unsupported (" & CStr(curSpace) & ")"
-                                
-                                'Advance the pointer to the next color
-                                srcData.SetPosition 8, FILE_CURRENT
+                    'If this is a v2 swatch, the color definition is followed by a color name.  Names are actually
+                    ' very similar to BSTRs: prefaced by a 4-byte length field, representing the number of characters
+                    ' in the string (not bytes), followed by the string of Unicode values, two bytes per character.
+                    ' (Again, these are big-endian however, so we need to manually reverse all bytes as we go.)
+                    If (curSwatchVersion = 2) Then
                         
-                        End Select
+                        'Retrieve the color size
+                        Dim colorLen As Long, srcColorName As String
+                        colorLen = srcStream.ReadLong_BE()
+                        
+                        'If the length is non-zero, resize the string to match
+                        If (colorLen > 0) Then
+                        
+                            srcColorName = String$(colorLen, 0)
                             
-                        'If this is a v2 swatch, the color definition is followed by a color name.  Names are actually
-                        ' very similar to BSTRs: prefaced by a 4-byte length field, representing the number of characters
-                        ' in the string (not bytes), followed by the string of Unicode values, two bytes per character.
-                        ' (Again, these are big-endian however, so we need to manually reverse all bytes as we go.)
-                        If (curSwatchVersion = 2) Then
+                            'Retrieve each character in turn, then add it to the string
+                            Dim tmpChar As Long
+                            For j = 1 To colorLen
+                                tmpChar = srcStream.ReadIntUnsigned_BE()
+                                Mid$(srcColorName, j, 1) = ChrW(tmpChar)
+                            Next j
                             
-                            'Retrieve the color size
-                            Dim colorLen As Long, srcColorName As String
-                            colorLen = srcData.ReadLong_BE()
+                            srcColorName = Strings.TrimNull(srcColorName)
                             
-                            'If the length is non-zero, resize the string to match
-                            If (colorLen > 0) Then
-                            
-                                srcColorName = String$(colorLen, 0)
-                                
-                                'Retrieve each character in turn, then add it to the string
-                                Dim tmpChar As Long
-                                For j = 1 To colorLen
-                                    tmpChar = srcData.ReadIntUnsigned_BE()
-                                    Mid$(srcColorName, j, 1) = ChrW(tmpChar)
-                                Next j
-                                
-                                srcColorName = Strings.TrimNull(srcColorName)
-                                
-                            Else
-                                srcColorName = vbNullString
-                            End If
-                            
-                            'If we were able to retrieve RGBA components, add both this color and its name
-                            ' to the running collection.
-                            If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
-                            
-                        'On v1 swatches, color names are not supported; just add the RGBA components
                         Else
-                            If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad
+                            srcColorName = vbNullString
                         End If
                         
-                    Next i
-                    
-                    'Make sure at least one valid color was found
-                    If (m_Palettes(m_NumOfGroups).GetNumOfColors() > 0) Then
+                        'If we were able to retrieve RGBA components, add both this color and its name
+                        ' to the running collection.
+                        If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
                         
-                        'If original color order is not required, we can sort the palette prior to removing
-                        ' duplicate palette entries; this makes the process much faster.
-                        If removeDuplicateColors Then
-                            If retainOriginalColorOrder Then
-                                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
-                            Else
-                                m_Palettes(m_NumOfGroups).SortFixedOrder
-                                m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
-                            End If
-                        End If
-                        
-                        'If we haven't errored out, consider this a successful parse
-                        m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
-                        m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
-                        m_NumOfGroups = m_NumOfGroups + 1
-                        LoadPaletteAdobeSwatch = True
-                        
+                    'On v1 swatches, color names are not supported; just add the RGBA components
+                    Else
+                        If colorGood Then m_Palettes(m_NumOfGroups).AddColor tmpQuad
                     End If
+                    
+                Next i
                 
-                Else
-                    InternalProblem "ACO file reported empty palette (" & CStr(numOfColors) & ")"
+                'Make sure at least one valid color was found
+                If (m_Palettes(m_NumOfGroups).GetNumOfColors() > 0) Then
+                    
+                    'If original color order is not required, we can sort the palette prior to removing
+                    ' duplicate palette entries; this makes the process much faster.
+                    If removeDuplicateColors Then
+                        If retainOriginalColorOrder Then
+                            m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                        Else
+                            m_Palettes(m_NumOfGroups).SortFixedOrder
+                            m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                        End If
+                    End If
+                    
+                    'If we haven't errored out, consider this a successful parse
+                    m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
+                    m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
+                    m_NumOfGroups = m_NumOfGroups + 1
+                    LoadPaletteAdobeSwatch = True
+                    
                 End If
-                
-                'If we haven't reached the end of the file, this is a hybrid swatch (where a v2 swatch follows the
-                ' existing v1 version).  If the version 2 swatch validates, let's erase our existing swatch data and
-                ' use the v2 entries instead.  (They *should* be identical, but better safe than sorry.)
-                If (srcData.GetPosition < srcData.GetStreamSize) Then
-                    curSwatchVersion = srcData.ReadInt_BE()
-                    dualSwatchFile = True
-                    m_NumOfGroups = m_NumOfGroups - 1
-                Else
-                    curSwatchVersion = 0
-                    dualSwatchFile = False
-                End If
-                
-            'If a v2 swatch follows the v1 swatch, retrieve it next
-            Loop
             
-        End If
+            Else
+                InternalProblem "ACO file reported empty palette (" & CStr(numOfColors) & ")"
+            End If
+            
+            'If we haven't reached the end of the file, this is a hybrid swatch (where a v2 swatch follows the
+            ' existing v1 version).  If the version 2 swatch validates, let's erase our existing swatch data and
+            ' use the v2 entries instead.  (They *should* be identical, but better safe than sorry.)
+            If (srcStream.GetPosition < srcStream.GetStreamSize) Then
+                curSwatchVersion = srcStream.ReadInt_BE()
+                dualSwatchFile = True
+                m_NumOfGroups = m_NumOfGroups - 1
+            Else
+                curSwatchVersion = 0
+                dualSwatchFile = False
+            End If
+            
+        'If a v2 swatch follows the v1 swatch, retrieve it next
+        Loop
         
     End If
     
@@ -518,315 +542,316 @@ BadSwatchData:
 End Function
 
 'Given a valid path to a modern ASE file (Adobe Swatch Exchange), extract and process all swatches inside the file.
-Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo BadSwatchData
+    
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'Reset the stream pointer and perform some basic validation checks
+    srcStream.SetPosition 0, FILE_BEGIN
+    Dim passedValidation As Boolean: passedValidation = True
+    
+    'ASE files contain a proper validation entry in their header, so we'll start by checking the file extension,
+    ' then proceed with a more detailed validation.  (Note that we also double-check file length, to ensure that a
+    ' full header exists in the file.)
+    If (LenB(srcFile) <> 0) Then passedValidation = Strings.StringsEqual(Files.FileGetExtension(srcFile), "ase", True)
+    If passedValidation Then passedValidation = (srcStream.GetStreamSize() >= 12)
     
     'Adobe has not publicly documented the ASE format, which means we have to rely on reverse-engineering to decode
     ' the format.  Several links proved very useful in this regard; thank you to each of them:
     ' http://www.selapa.net/swatches/colors/fileformats.php#adobe_ase
     ' https://www.cyotek.com/blog/reading-adobe-swatch-exchange-ase-files-using-csharp
-    
-    'ASE files contain a proper validation entry in their header, so we'll start by checking the file extension,
-    ' then proceed with a more detailed validation.  (Note that we also double-check file length, to ensure that a
-    ' full header exists in the file.)
-    If (Strings.StringsEqual(Files.FileGetExtension(srcFile), "ase", True) And (Files.FileLenW(srcFile) >= 12)) Then
+    If passedValidation Then
         
-        'Retrieve the file as a pdStream object (which makes traversal *much* easier).
-        Dim srcData As pdStream
-        If Files.FileLoadAsPDStream(srcFile, srcData) Then
+        'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
+        ' many _BE suffixed retrieval functions from the pdStream object.
+        
+        'Start by checking the first four chars for the required "ASEF" descriptor.
+        Dim headerValidated As Boolean
+        headerValidated = Strings.StringsEqual(srcStream.ReadString_ASCII(4), "ASEF", False)
+        
+        'If the header validated correctly, we also need to verify the file's version number.  Version is
+        ' defined as major/minor, two 16-bit integers.  (The only supported version is 1.0.)
+        If headerValidated Then headerValidated = (srcStream.ReadInt_BE() = 1)
+        If headerValidated Then headerValidated = (srcStream.ReadInt_BE() = 0)
+        
+        'If all validation checks have passed, we have one final one to perform before proceeding.
+        ' The next entry is a 4-byte integer defining the number of blocks in the file.  Blocks come in
+        ' three types: group start, group end, and color entry.
+        Dim numOfBlocks As Long
+        If headerValidated Then
+            numOfBlocks = srcStream.ReadLong_BE()
+            headerValidated = (numOfBlocks > 0)
+        End If
+        
+        'If the file contains a non-zero block count, let's parse it for color data!
+        If headerValidated Then
             
-            'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
-            ' many _BE suffixed retrieval functions from the pdStream object.
+            'One frustration with the ASE format is that the number of colors stored in the swatch is not
+            ' reported in advance.  The only way to know this is to actually parse each block in turn.
             
-            'Start by checking the first four chars for the required "ASEF" descriptor.
-            Dim headerValidated As Boolean
-            headerValidated = Strings.StringsEqual(srcData.ReadString_ASCII(4), "ASEF", False)
-            
-            'If the header validated correctly, we also need to verify the file's version number.  Version is
-            ' defined as major/minor, two 16-bit integers.  (The only supported version is 1.0.)
-            If headerValidated Then headerValidated = (srcData.ReadInt_BE() = 1)
-            If headerValidated Then headerValidated = (srcData.ReadInt_BE() = 0)
-            
-            'If all validation checks have passed, we have one final one to perform before proceeding.
-            ' The next entry is a 4-byte integer defining the number of blocks in the file.  Blocks come in
-            ' three types: group start, group end, and color entry.
-            Dim numOfBlocks As Long
-            If headerValidated Then
-                numOfBlocks = srcData.ReadLong_BE()
-                headerValidated = (numOfBlocks > 0)
-            End If
-            
-            'If the file contains a non-zero block count, let's parse it for color data!
-            If headerValidated Then
+            'Iterate through all blocks.  We may skip certain block types as they are not currently useful
+            ' (or even decodable, in the case of 3rd-party extensions).
+            Dim i As Long, j As Long
+            For i = 1 To numOfBlocks
                 
-                'One frustration with the ASE format is that the number of colors stored in the swatch is not
-                ' reported in advance.  The only way to know this is to actually parse each block in turn.
+                'Start by retrieving block type and length.  IMPORTANTLY!  Note that block length does
+                ' *not* include the six bytes required for the block type and length descriptors - it only
+                ' defines the block length *following* those six bytes.
+                Dim blockType As Long, blockLength As Long
+                blockType = srcStream.ReadIntUnsigned_BE()
+                blockLength = srcStream.ReadLong_BE()
                 
-                'Iterate through all blocks.  We may skip certain block types as they are not currently useful
-                ' (or even decodable, in the case of 3rd-party extensions).
-                Dim i As Long, j As Long
-                For i = 1 To numOfBlocks
+                'Group end blocks have zero-length, by design.  We process them implicitly (whenever a
+                ' new group is encountered or the file ends), so we can ignore them here.
+                If (blockLength > 0) Then
+                
+                    'Because we're going to be poking around inside this block, let's make a note of the
+                    ' current stream pointer position.  We can use this (plus the block length) to properly
+                    ' align the stream pointer after processing this block, regardless of how much block data
+                    ' we actually retrieve/use.
+                    Dim blockStreamPointer As Long
+                    blockStreamPointer = srcStream.GetPosition()
                     
-                    'Start by retrieving block type and length.  IMPORTANTLY!  Note that block length does
-                    ' *not* include the six bytes required for the block type and length descriptors - it only
-                    ' defines the block length *following* those six bytes.
-                    Dim blockType As Long, blockLength As Long
-                    blockType = srcData.ReadIntUnsigned_BE()
-                    blockLength = srcData.ReadLong_BE()
+                    Dim curGroupName As String, curColorName As String, nameLength As Long, tmpChar As Long
+                    Dim numGroupsFound As Long
                     
-                    'Group end blocks have zero-length, by design.  We process them implicitly (whenever a
-                    ' new group is encountered or the file ends), so we can ignore them here.
-                    If (blockLength > 0) Then
+                    'Next, split processing according to block type.
+                    Select Case blockType
+                        
+                        'Color descriptor
+                        Case 1
+                        
+                            'Color descriptors start with this color's name.  For additional details, see the
+                            ' "Group start" case below, as it contains full details on name parsing.
+                            nameLength = srcStream.ReadIntUnsigned_BE()
+                            If (nameLength > 0) Then
+                            
+                                curColorName = String$(nameLength, 0)
+                                
+                                For j = 1 To nameLength - 1
+                                    tmpChar = srcStream.ReadIntUnsigned_BE()
+                                    Mid$(curColorName, j, 1) = ChrW(tmpChar)
+                                Next j
+                                
+                                curColorName = Trim$(Strings.TrimNull(curColorName))
+                                
+                                'Like most Adobe formats, other software may write bad names.  Remove some obvious problem chars.
+                                If InStr(1, curColorName, vbLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbLf, vbCrLf, , , vbBinaryCompare)
+                                If InStr(1, curColorName, vbCrLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbCrLf, vbNullString, , , vbBinaryCompare)
+                                
+                                'Manually advance the pointer by one 16-bit word to account for the null
+                                ' string terminator we didn't retrieve.
+                                tmpChar = srcStream.ReadInt()
+                                
+                            End If
+                            
+                            'Next is a 4-byte ASCII string defining the current color space.  It may contain
+                            ' several different values.
+                            Dim colorSpaceName As String
+                            colorSpaceName = UCase$(Trim$(srcStream.ReadString_ASCII(4)))
+                            
+                            Dim tmpQuad As RGBQuad
+                            Dim r As Single, g As Single, b As Single
+                            Dim c As Single, m As Single, y As Single, k As Single
+                            
+                            Select Case colorSpaceName
+                                
+                                'To handle CMYK correctly, we'd actually want to load up a proper CMYK ICC profile
+                                ' and manually translate all colors via that profile.  Because Adobe's EULA only
+                                ' allows its CMYK profiles to ship as standalone files (never bundled with software),
+                                ' I'd need to use a public domain one, like the one helpfully provided by Graeme Gill
+                                ' of Argyll CMS fame:
+                                ' https://sourceforge.net/p/lcms/mailman/message/32755884/
+                                ' www.argyllcms.com/cmyk.icm
+                                
+                                'This is the CMYK profile Krita ships, and it's likely to perform much better than
+                                ' the "dummy" CMYK transform we currently use.  That said, shipping full profiles is
+                                ' still on my to-do list, so until that time, this is marked as TODO.
+                                Case "CMYK"
+                                
+                                    'CMYK values are stored as four single-precision floats.
+                                    c = srcStream.ReadFloat_BE()
+                                    m = srcStream.ReadFloat_BE()
+                                    y = srcStream.ReadFloat_BE()
+                                    k = srcStream.ReadFloat_BE()
+                                    
+                                    'Convert these to RGB literals using an entirely different spec as our guide
+                                    ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
+                                    r = 1! - PDMath.Min2Float_Single(1!, c + k)
+                                    g = 1! - PDMath.Min2Float_Single(1!, m + k)
+                                    b = 1! - PDMath.Min2Float_Single(1!, y + k)
+                                    
+                                    'Failsafe checks for HDR spaces
+                                    If (r > 1!) Then r = 1! Else If (r < 0!) Then r = 0!
+                                    If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
+                                    If (b > 1!) Then b = 1! Else If (b < 0!) Then b = 0!
+                                    
+                                    'Rounding must be used to arrive at identical values as palettes exported via
+                                    ' Photoshop to formats that use integer RGB values.
+                                    With tmpQuad
+                                        .Red = Int(r * 255! + 0.5!)
+                                        .Green = Int(g * 255! + 0.5!)
+                                        .Blue = Int(b * 255! + 0.5!)
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
+                                    
+                                Case "RGB"
+                                
+                                    'To make our life harder, RGB values are stored as three single-precision floats.
+                                    ' Unfortunately, the floats are stored as big-endian values (ugh).  So don't
+                                    ' forget to convert them!
+                                    r = srcStream.ReadFloat_BE()
+                                    g = srcStream.ReadFloat_BE()
+                                    b = srcStream.ReadFloat_BE()
+                                    
+                                    'Failsafe checks for HDR spaces
+                                    If (r > 1!) Then r = 1! Else If (r < 0!) Then r = 0!
+                                    If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
+                                    If (b > 1!) Then b = 1! Else If (b < 0!) Then b = 0!
+                                    
+                                    'Rounding must be used to arrive at identical values as palettes exported via
+                                    ' Photoshop to formats that use integer RGB values.
+                                    With tmpQuad
+                                        .Red = Int(r * 255! + 0.5!)
+                                        .Green = Int(g * 255! + 0.5!)
+                                        .Blue = Int(b * 255! + 0.5!)
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
+                                    
+                                'I need LAB swatches for testing!
+                                Case "LAB"
+                                
+                                Case "Gray"
+                                
+                                    'Gray is identical to RGB, but (obviously) only one value is stored.
+                                    g = srcStream.ReadFloat_BE()
+                                    If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
+                                    
+                                    With tmpQuad
+                                        .Red = Int(g * 255! + 0.5!)
+                                        .Green = .Red
+                                        .Blue = .Red
+                                        .Alpha = 255
+                                    End With
+                                    
+                                    m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
+                            
+                            End Select
+                            
+                            '/End color block parsing
+                            
+                        'Group start.  This block is *optional* and not provided by all swatches!
+                        Case &HC001&
+                            
+                            'If this is *not* the first group we've found in this file, we need to manually
+                            ' create a new palette instance here.
+                            If (numGroupsFound > 0) Then
+                                m_NumOfGroups = m_NumOfGroups + 1
+                                ReDim Preserve m_Palettes(0 To m_NumOfGroups) As pdPaletteChild
+                                Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
+                            End If
+                            
+                            'Start by retrieving the length of the name, *in WCHARS*, not bytes.  Note also that
+                            ' the length *includes* a null terminator, which we don't need to process.
+                            nameLength = srcStream.ReadIntUnsigned_BE()
+                            
+                            'Next, retrieve the string, and manually remove 1 from its length (as VB will add
+                            ' its own null-pointer at the end of the BSTR).  Note also that we can't rely on
+                            ' convenient WAPI functions here, because the string chars are big-endian.
+                            If (nameLength > 0) Then
+                            
+                                curGroupName = String$(nameLength, 0)
+                                
+                                'Retrieve each character in turn, then add it to the string
+                                For j = 1 To nameLength - 1
+                                    tmpChar = srcStream.ReadIntUnsigned_BE()
+                                    Mid$(curGroupName, j, 1) = ChrW(tmpChar)
+                                Next j
+                                
+                            End If
+                            
+                            'Note that we don't need to synchronize the stream pointer here, because we forcibly
+                            ' reset it after processing this block.
+                            
+                            'Assign this name to the current group.
+                            m_Palettes(m_NumOfGroups).SetPaletteName Trim$(Strings.TrimNull(curGroupName))
+                            
+                            'Note that we've found a group in this file
+                            numGroupsFound = numGroupsFound + 1
+                        
+                        'Group end; this has already been handled, above (because group end blocks are zero-length)
+                        Case &HC002&
+                        
+                        'Some other block type.  This is not strictly prohibited by the spec, and apparently some
+                        ' ASE writers use custom blocks to store metadata.  We have no way to understand these,
+                        ' so just ignore 'em.
+                        Case Else
                     
-                        'Because we're going to be poking around inside this block, let's make a note of the
-                        ' current stream pointer position.  We can use this (plus the block length) to properly
-                        ' align the stream pointer after processing this block, regardless of how much block data
-                        ' we actually retrieve/use.
-                        Dim blockStreamPointer As Long
-                        blockStreamPointer = srcData.GetPosition()
-                        
-                        Dim curGroupName As String, curColorName As String, nameLength As Long, tmpChar As Long
-                        Dim numGroupsFound As Long
-                        
-                        'Next, split processing according to block type.
-                        Select Case blockType
-                            
-                            'Color descriptor
-                            Case 1
-                            
-                                'Color descriptors start with this color's name.  For additional details, see the
-                                ' "Group start" case below, as it contains full details on name parsing.
-                                nameLength = srcData.ReadIntUnsigned_BE()
-                                If (nameLength > 0) Then
-                                
-                                    curColorName = String$(nameLength, 0)
-                                    
-                                    For j = 1 To nameLength - 1
-                                        tmpChar = srcData.ReadIntUnsigned_BE()
-                                        Mid$(curColorName, j, 1) = ChrW(tmpChar)
-                                    Next j
-                                    
-                                    curColorName = Trim$(Strings.TrimNull(curColorName))
-                                    
-                                    'Like most Adobe formats, other software may write bad names.  Remove some obvious problem chars.
-                                    If InStr(1, curColorName, vbLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbLf, vbCrLf, , , vbBinaryCompare)
-                                    If InStr(1, curColorName, vbCrLf, vbBinaryCompare) Then curColorName = Replace$(curColorName, vbCrLf, vbNullString, , , vbBinaryCompare)
-                                    
-                                    'Manually advance the pointer by one 16-bit word to account for the null
-                                    ' string terminator we didn't retrieve.
-                                    tmpChar = srcData.ReadInt()
-                                    
-                                End If
-                                
-                                'Next is a 4-byte ASCII string defining the current color space.  It may contain
-                                ' several different values.
-                                Dim colorSpaceName As String
-                                colorSpaceName = UCase$(Trim$(srcData.ReadString_ASCII(4)))
-                                
-                                Dim tmpQuad As RGBQuad
-                                Dim r As Single, g As Single, b As Single
-                                Dim c As Single, m As Single, y As Single, k As Single
-                                
-                                Select Case colorSpaceName
-                                    
-                                    'To handle CMYK correctly, we'd actually want to load up a proper CMYK ICC profile
-                                    ' and manually translate all colors via that profile.  Because Adobe's EULA only
-                                    ' allows its CMYK profiles to ship as standalone files (never bundled with software),
-                                    ' I'd need to use a public domain one, like the one helpfully provided by Graeme Gill
-                                    ' of Argyll CMS fame:
-                                    ' https://sourceforge.net/p/lcms/mailman/message/32755884/
-                                    ' www.argyllcms.com/cmyk.icm
-                                    
-                                    'This is the CMYK profile Krita ships, and it's likely to perform much better than
-                                    ' the "dummy" CMYK transform we currently use.  That said, shipping full profiles is
-                                    ' still on my to-do list, so until that time, this is marked as TODO.
-                                    Case "CMYK"
-                                    
-                                        'CMYK values are stored as four single-precision floats.
-                                        c = srcData.ReadFloat_BE()
-                                        m = srcData.ReadFloat_BE()
-                                        y = srcData.ReadFloat_BE()
-                                        k = srcData.ReadFloat_BE()
-                                        
-                                        'Convert these to RGB literals using an entirely different spec as our guide
-                                        ' (https://web.archive.org/web/20090909133852/http://partners.adobe.com/public/developer/en/ps/psrefman.pdf)
-                                        r = 1! - PDMath.Min2Float_Single(1!, c + k)
-                                        g = 1! - PDMath.Min2Float_Single(1!, m + k)
-                                        b = 1! - PDMath.Min2Float_Single(1!, y + k)
-                                        
-                                        'Failsafe checks for HDR spaces
-                                        If (r > 1!) Then r = 1! Else If (r < 0!) Then r = 0!
-                                        If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
-                                        If (b > 1!) Then b = 1! Else If (b < 0!) Then b = 0!
-                                        
-                                        'Rounding must be used to arrive at identical values as palettes exported via
-                                        ' Photoshop to formats that use integer RGB values.
-                                        With tmpQuad
-                                            .Red = Int(r * 255! + 0.5!)
-                                            .Green = Int(g * 255! + 0.5!)
-                                            .Blue = Int(b * 255! + 0.5!)
-                                            .Alpha = 255
-                                        End With
-                                        
-                                        m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
-                                        
-                                    Case "RGB"
-                                    
-                                        'To make our life harder, RGB values are stored as three single-precision floats.
-                                        ' Unfortunately, the floats are stored as big-endian values (ugh).  So don't
-                                        ' forget to convert them!
-                                        r = srcData.ReadFloat_BE()
-                                        g = srcData.ReadFloat_BE()
-                                        b = srcData.ReadFloat_BE()
-                                        
-                                        'Failsafe checks for HDR spaces
-                                        If (r > 1!) Then r = 1! Else If (r < 0!) Then r = 0!
-                                        If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
-                                        If (b > 1!) Then b = 1! Else If (b < 0!) Then b = 0!
-                                        
-                                        'Rounding must be used to arrive at identical values as palettes exported via
-                                        ' Photoshop to formats that use integer RGB values.
-                                        With tmpQuad
-                                            .Red = Int(r * 255! + 0.5!)
-                                            .Green = Int(g * 255! + 0.5!)
-                                            .Blue = Int(b * 255! + 0.5!)
-                                            .Alpha = 255
-                                        End With
-                                        
-                                        m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
-                                        
-                                    'I need LAB swatches for testing!
-                                    Case "LAB"
-                                    
-                                    Case "Gray"
-                                    
-                                        'Gray is identical to RGB, but (obviously) only one value is stored.
-                                        g = srcData.ReadFloat_BE()
-                                        If (g > 1!) Then g = 1! Else If (g < 0!) Then g = 0!
-                                        
-                                        With tmpQuad
-                                            .Red = Int(g * 255! + 0.5!)
-                                            .Green = .Red
-                                            .Blue = .Red
-                                            .Alpha = 255
-                                        End With
-                                        
-                                        m_Palettes(m_NumOfGroups).AddColor tmpQuad, curColorName
-                                
-                                End Select
-                                
-                                '/End color block parsing
-                                
-                            'Group start.  This block is *optional* and not provided by all swatches!
-                            Case &HC001&
-                                
-                                'If this is *not* the first group we've found in this file, we need to manually
-                                ' create a new palette instance here.
-                                If (numGroupsFound > 0) Then
-                                    m_NumOfGroups = m_NumOfGroups + 1
-                                    ReDim Preserve m_Palettes(0 To m_NumOfGroups) As pdPaletteChild
-                                    Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
-                                End If
-                                
-                                'Start by retrieving the length of the name, *in WCHARS*, not bytes.  Note also that
-                                ' the length *includes* a null terminator, which we don't need to process.
-                                nameLength = srcData.ReadIntUnsigned_BE()
-                                
-                                'Next, retrieve the string, and manually remove 1 from its length (as VB will add
-                                ' its own null-pointer at the end of the BSTR).  Note also that we can't rely on
-                                ' convenient WAPI functions here, because the string chars are big-endian.
-                                If (nameLength > 0) Then
-                                
-                                    curGroupName = String$(nameLength, 0)
-                                    
-                                    'Retrieve each character in turn, then add it to the string
-                                    For j = 1 To nameLength - 1
-                                        tmpChar = srcData.ReadIntUnsigned_BE()
-                                        Mid$(curGroupName, j, 1) = ChrW(tmpChar)
-                                    Next j
-                                    
-                                End If
-                                
-                                'Note that we don't need to synchronize the stream pointer here, because we forcibly
-                                ' reset it after processing this block.
-                                
-                                'Assign this name to the current group.
-                                m_Palettes(m_NumOfGroups).SetPaletteName Trim$(Strings.TrimNull(curGroupName))
-                                
-                                'Note that we've found a group in this file
-                                numGroupsFound = numGroupsFound + 1
-                            
-                            'Group end; this has already been handled, above (because group end blocks are zero-length)
-                            Case &HC002&
-                            
-                            'Some other block type.  This is not strictly prohibited by the spec, and apparently some
-                            ' ASE writers use custom blocks to store metadata.  We have no way to understand these,
-                            ' so just ignore 'em.
-                            Case Else
-                        
-                        End Select
-                        
-                        'Because different block types are processed differently, and some may not manually read to
-                        ' the end of a block, forcibly reset the stream pointer using known-good values.
-                        srcData.SetPosition blockStreamPointer, FILE_BEGIN
-                        srcData.SetPosition blockLength, FILE_CURRENT
+                    End Select
                     
+                    'Because different block types are processed differently, and some may not manually read to
+                    ' the end of a block, forcibly reset the stream pointer using known-good values.
+                    srcStream.SetPosition blockStreamPointer, FILE_BEGIN
+                    srcStream.SetPosition blockLength, FILE_CURRENT
+                
+                End If
+                
+            Next i
+            
+            'Make sure at least one valid color was found
+            If (m_Palettes(0).GetNumOfColors() > 0) Then
+                
+                'Unlike other palette files, we now need to loop through all child palettes (as there may be
+                ' multiple ones) and assign proper values to each!
+                m_NumOfGroups = m_NumOfGroups + 1
+                
+                For i = 0 To m_NumOfGroups - 1
+                    
+                    If (Not m_Palettes(i) Is Nothing) Then
+                    
+                        m_Palettes(i).SetPaletteFilename srcFile
+                        
+                        'If original color order is not required, we can sort the palette prior to removing
+                        ' duplicate palette entries; this makes the process much faster.
+                        If removeDuplicateColors Then
+                            If retainOriginalColorOrder Then
+                                m_Palettes(i).FindAndRemoveDuplicates
+                            Else
+                                m_Palettes(i).SortFixedOrder
+                                m_Palettes(i).FindAndRemoveDuplicates_Fast
+                            End If
+                        End If
+                        
                     End If
                     
                 Next i
-                
-                'Make sure at least one valid color was found
-                If (m_Palettes(0).GetNumOfColors() > 0) Then
                     
-                    'Unlike other palette files, we now need to loop through all child palettes (as there may be
-                    ' multiple ones) and assign proper values to each!
-                    m_NumOfGroups = m_NumOfGroups + 1
-                    
-                    For i = 0 To m_NumOfGroups - 1
-                        
-                        If (Not m_Palettes(i) Is Nothing) Then
-                        
-                            m_Palettes(i).SetPaletteFilename srcFile
-                            
-                            'If original color order is not required, we can sort the palette prior to removing
-                            ' duplicate palette entries; this makes the process much faster.
-                            If removeDuplicateColors Then
-                                If retainOriginalColorOrder Then
-                                    m_Palettes(i).FindAndRemoveDuplicates
-                                Else
-                                    m_Palettes(i).SortFixedOrder
-                                    m_Palettes(i).FindAndRemoveDuplicates_Fast
-                                End If
-                            End If
-                            
-                        End If
-                        
-                    Next i
-                        
-                    'If this swatch file contained only one group, and that group didn't have a name,
-                    ' substitute the filename as the palette name.
-                    If (m_NumOfGroups = 1) Then
-                        If (LenB(m_Palettes(0).GetPaletteName) = 0) Then m_Palettes(0).SetPaletteName Files.FileGetName(srcFile, True)
-                    End If
-                    
-                    'If we haven't errored out, consider this a successful parse
-                    LoadPaletteAdobeSwatchExchange = True
-                    
-                Else
-                    InternalProblem "LoadPaletteAdobeSwatchExchange() reports no valid colors found.  This palette may use an unsupported color space."
-                    LoadPaletteAdobeSwatchExchange = False
+                'If this swatch file contained only one group, and that group didn't have a name,
+                ' substitute the filename as the palette name.
+                If (m_NumOfGroups = 1) Then
+                    If (LenB(m_Palettes(0).GetPaletteName) = 0) Then m_Palettes(0).SetPaletteName Files.FileGetName(srcFile, True)
                 End If
                 
-            'Header did not validate
+                'If we haven't errored out, consider this a successful parse
+                LoadPaletteAdobeSwatchExchange = True
+                
             Else
-                InternalProblem "LoadPaletteAdobeSwatchExchange() reports that this file failed basic validation."
+                InternalProblem "LoadPaletteAdobeSwatchExchange() reports no valid colors found.  This palette may use an unsupported color space."
                 LoadPaletteAdobeSwatchExchange = False
             End If
             
-        'File could not be loaded; there is likely an accompanying file system error.
+        'Header did not validate
+        Else
+            InternalProblem "LoadPaletteAdobeSwatchExchange() reports that this file failed basic validation."
+            LoadPaletteAdobeSwatchExchange = False
         End If
-    
+        
     'Bad file extension; for security reasons, do not attempt to load.
     End If
     
@@ -839,15 +864,19 @@ BadSwatchData:
 End Function
 
 'Given a valid path to a GIMP-format .gpl file, return an array of RGBQuad entries
-Private Function LoadPaletteGIMP(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPaletteGIMP(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
     
     On Error GoTo InvalidPalette
     
-    'Dump the full file into a VB string
-    Dim rawFileString As String
-    LoadPaletteGIMP = Files.FileLoadAsString(srcFile, rawFileString, True)
+    If (srcStream Is Nothing) Then Exit Function
     
-    If LoadPaletteGIMP Then
+    'Because GIMP palettes are just text files, it's easier to parse them as strings
+    srcStream.SetPosition 0, FILE_BEGIN
+    
+    Dim rawFileString As String
+    rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize())
+    
+    If (LenB(rawFileString) <> 0) Then
     
         'GIMP palette files always start with the text "GIMP Palette"
         If Strings.StringsEqual(Left$(rawFileString, 12), "GIMP Palette", True) Then
@@ -985,19 +1014,26 @@ End Function
 
 'Paint.NET palettes are just text files with a list of hex chars.  Unlike other palette formats,
 ' they *do* support alpha values.
-Private Function LoadPalettePaintDotNet(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPalettePaintDotNet(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
 
     On Error GoTo BadPaintDotNetPalette
     
-    'Paint.NET palettes don't have a header for guaranteed byte length.  Instead, we simply look for valid
-    ' ARGB hex descriptors inside a plain text file.
-    If Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True) Then
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'Paint.NET palettes don't provide an easy validation method, so if this palette came from a file, test its
+    ' file extension before continuing.
+    Dim failsafeCheck As Boolean: failsafeCheck = True
+    If (LenB(srcFile) <> 0) Then failsafeCheck = Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)
+    
+    If failsafeCheck Then
         
-        'Dump the full file into a string
+        'Because Paint.NET palettes are just text files, it's easier to parse them as strings
+        srcStream.SetPosition 0, FILE_BEGIN
+        
         Dim rawFileString As String
-        LoadPalettePaintDotNet = Files.FileLoadAsString(srcFile, rawFileString, True)
+        rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize())
         
-        If LoadPalettePaintDotNet Then
+        If (LenB(rawFileString) <> 0) Then
             
             'FYI: Paint.NET palettes are technically limited to 96 colors...
             ' (https://www.getpaint.net/doc/latest/WorkingWithPalettes.html)
@@ -1084,20 +1120,28 @@ End Function
  
 'PaintShop Pro palettes use multiple extensions, but all are just text files with a line-delimited list of
 ' RGB triples.
-Private Function LoadPalettePaintShopPro(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Private Function LoadPalettePaintShopPro(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
 
     On Error GoTo BadPaintShopProPalette
     
-    'PaintShop Pro palettes have a very basic header, and they use the standardized file extensions
-    ' ".pal" (old format) and ".psppalette" (new format).  To my knowledge, the file contents themselves
-    ' are identical for both formats.
-    If (Strings.StringsEqual(Files.FileGetExtension(srcFile), "pal", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "psppalette", True)) Then
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'PaintShop Pro palettes have a very basic header, and they use the standardized file extensions ".pal" (old format)
+    ' and ".psppalette" (new format).  To my knowledge, the file contents themselves are identical for both formats -
+    ' but as a failsafe, let's at least make sure that file extension is okay.  (Obviously, this check is only relevant
+    ' if this palette is coming directly from a file.)
+    Dim failsafeCheck As Boolean: failsafeCheck = True
+    If (LenB(srcFile) <> 0) Then failsafeCheck = (Strings.StringsEqual(Files.FileGetExtension(srcFile), "pal", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "psppalette", True))
+    
+    If failsafeCheck Then
         
-        'Dump the full file into a string
+        'Because PSP palettes are just text files, it's easier to parse them as strings
+        srcStream.SetPosition 0, FILE_BEGIN
+        
         Dim rawFileString As String
-        LoadPalettePaintShopPro = Files.FileLoadAsString(srcFile, rawFileString, True)
+        rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize())
         
-        If LoadPalettePaintShopPro Then
+        If (LenB(rawFileString) <> 0) Then
             
             'FYI: PaintShop Pro palettes are technically limited to 16 or 256 colors...
             ' (https://www.codeproject.com/articles/31964/palettes-you-ve-gotta-love-them)

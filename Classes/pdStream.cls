@@ -572,6 +572,30 @@ Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
 
 End Function
 
+'Read a series of multi-byte values from the stream, and treat the chars as if they are string bytes with
+' unknown encoding.  Heuristics will be used to attempt to distinguish between common encodings.
+' (This function is useful when you've wrapped a pdStream around a text file of unknown encoding, and you
+' want to parse its contents using the full suite of generic string functions.)
+'
+'Regardless of original encoding, a proper BSTR will be returned.  If the requested length is invalid
+' (i.e. it extends beyond the end of the stream), a partial string will be returned.
+Friend Function ReadString_UnknownEncoding(ByVal numOfBytes As Long) As String
+    
+    If m_Open Then
+        
+        Dim tmpBytes() As Byte, trueByteCount As Long
+        trueByteCount = Me.ReadBytes(tmpBytes, numOfBytes, True)
+        
+        If (trueByteCount > 0) Then
+            If (Not Strings.StringFromMysteryBytes(tmpBytes, ReadString_UnknownEncoding, True)) Then ReadString_UnknownEncoding = vbNullString
+        Else
+            ReadString_UnknownEncoding = vbNullString
+        End If
+        
+    End If
+
+End Function
+
 'Reduce the buffer to its exact size.  This is *strongly* discouraged if you intend on writing more data to the stream,
 ' as extra allocations are guaranteed after a trim.
 '
