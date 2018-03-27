@@ -867,7 +867,7 @@ Private Function HandleMouseDown(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal 
     m_CaptureCounter = m_CaptureCounter + 1
     
     'If we have not captured the mouse, capture it now
-    If ((m_CaptureCounter = 1) And (Not m_DoNotCaptureOnButtonPress) And (Not m_MouseHasBeenCaptured)) Then
+    If ((m_CaptureCounter >= 1) And (Not m_DoNotCaptureOnButtonPress) And (Not m_MouseHasBeenCaptured)) Then
         SetCapture m_hWnd
         m_MouseHasBeenCaptured = True
     End If

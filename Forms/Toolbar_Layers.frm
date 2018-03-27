@@ -301,7 +301,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         m_MouseEvents.SetCursor_System IDC_SIZEWE
         
         If (Button And vbLeftButton <> 0) Then
-        
+            
             m_WeAreResponsibleForResize = True
             ReleaseCapture
             VBHacks.SendMsgW Me.hWnd, WM_NCLBUTTONDOWN, HTLEFT, 0&
