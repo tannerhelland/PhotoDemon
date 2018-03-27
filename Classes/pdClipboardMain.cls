@@ -1223,7 +1223,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                 If (cFiles.GetNumOfStrings > 0) Then
                     
                     DragDrop_FileList = True
-                    Debug.Print "starting load"
+                    
                     If (g_OpenImageCount > 0) And loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
                             Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
@@ -1231,7 +1231,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     Else
                         Loading.LoadMultipleImageFiles cFiles
                     End If
-                    Debug.Print "ending load"
+                    
                 End If
                 
             '/End failsafe check for wchar strings

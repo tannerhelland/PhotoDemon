@@ -1626,6 +1626,17 @@ Private Sub MnuTest_Click()
 '    Next i
 '
 '    ActivatePDImage 0, "finished"
+
+    'Try appending multiple palettes together, then saving the result as a single ASE
+    Dim cPal As pdPalette
+    Set cPal = New pdPalette
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Bears.gpl", , , False
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\PSP\Fire.pal", , , False
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\Material Palette.ase", , , False
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Paint.NET\Metal tones.txt", , , False
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Swatch\Web Safe Colors.aco", , , False
+    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Color Table\CGA-16+Transp.act", , , False
+    cPal.SavePaletteAdobeSwatchExchange "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\append_test.ase"
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest

@@ -105,13 +105,18 @@ Friend Function CopyPaletteToArray(ByRef dstPalette() As RGBQuad, Optional ByVal
     
 End Function
 
-Friend Function CreateFromPaletteArray(ByRef srcPalette() As RGBQuad, ByVal numColors As Long) As Boolean
+Friend Function CreateFromPaletteArray(ByRef srcPalette() As RGBQuad, ByVal numColors As Long, Optional ByVal resetBeforeLoading As Boolean = True) As Boolean
     
     CreateFromPaletteArray = False
     
     If (numColors > 0) Then
         
-        Me.Reset
+        If resetBeforeLoading Then
+            Me.Reset
+        Else
+            If (m_NumOfGroups <= UBound(m_Palettes)) Then ReDim Preserve m_Palettes(0 To m_NumOfGroups + 1) As pdPaletteChild
+            If (m_Palettes(m_NumOfGroups) Is Nothing) Then Set m_Palettes(m_NumOfGroups) = New pdPaletteChild
+        End If
         
         Dim i As Long
         For i = 0 To numColors - 1
@@ -138,9 +143,19 @@ Friend Sub SetNewPaletteCount(Optional ByVal newPaletteSize As Long = 256, Optio
 End Sub
 
 'Given a path to a supported palette file, return TRUE if the file can be successfully parsed for palette data; FALSE otherwise
-Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal removeDuplicateColors As Boolean = True, Optional ByVal retainOriginalColorOrder As Boolean = True, Optional ByVal resetBeforeLoading As Boolean = True) As Boolean
     
-    Me.Reset
+    'Ensure we have an empty palette available for loading
+    If resetBeforeLoading Or (m_NumOfGroups = 0) Then
+        Me.Reset
+    Else
+        If (m_NumOfGroups >= UBound(m_Palettes)) Then ReDim Preserve m_Palettes(0 To m_NumOfGroups + 1) As pdPaletteChild
+        If (m_Palettes(m_NumOfGroups) Is Nothing) Then Set m_Palettes(m_NumOfGroups) = New pdPaletteChild Else m_Palettes(m_NumOfGroups).Reset
+    End If
+    
+    'Track our current group count; we'll reset to this value if a load operation fails
+    Dim startIndex As Long
+    startIndex = m_NumOfGroups
     
     'Fail on some obvious problem cases
     If (LenB(srcFile) = 0) Then Exit Function
@@ -162,21 +177,24 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
         
         'Look for Adobe's basic color table format
         If (Not LoadPaletteFromFile) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPaletteAdobeColorTable(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
         
         'Look for Adobe color swatches next
         If (Not LoadPaletteFromFile) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPaletteAdobeSwatch(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
         
         'Look for the new-ish Adobe swatch exchange fromat next
         If (Not LoadPaletteFromFile) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPaletteAdobeSwatchExchange(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
@@ -186,21 +204,24 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
         ' *anything* it's handed.  It may throw up debug messages about string conversion errors if the
         ' source file is binary, but these issues are handled safely.
         If (Not LoadPaletteFromFile) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPaletteGIMP(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
         
         'Look for PaintShop Pro palettes next
         If (Not LoadPaletteFromFile) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPalettePaintShopPro(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
         
         'Look for Paint.NET palettes next
         If (Not LoadPaletteFromFile) And (Strings.StringsEqual(Files.FileGetExtension(srcFile), "txt", True)) Then
-            Me.Reset
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
             LoadPaletteFromFile = LoadPalettePaintDotNet(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
             If LoadPaletteFromFile Then cStream.StopStream True
         End If
@@ -548,6 +569,11 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
     
     If (srcStream Is Nothing) Then Exit Function
     
+    'As the swatch exchange loader may load multiple palettes (ASE files can contain embedded "groups"), we need to make
+    ' a note of our initial group index; this will serve as our base for loading the file
+    Dim baseIndex As Long
+    baseIndex = m_NumOfGroups
+    
     'Reset the stream pointer and perform some basic validation checks
     srcStream.SetPosition 0, FILE_BEGIN
     Dim passedValidation As Boolean: passedValidation = True
@@ -787,6 +813,13 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
                         
                         'Group end; this has already been handled, above (because group end blocks are zero-length)
                         Case &HC002&
+                            
+                            'Make sure that the currently-loaded group contains at least one valid color.  If it doesn't,
+                            ' we want to reset this group and reuse it.
+                            If (m_Palettes(m_NumOfGroups).GetNumOfColors <= 0) Then
+                                m_Palettes(m_NumOfGroups).Reset
+                                m_NumOfGroups = m_NumOfGroups - 1
+                            End If
                         
                         'Some other block type.  This is not strictly prohibited by the spec, and apparently some
                         ' ASE writers use custom blocks to store metadata.  We have no way to understand these,
@@ -804,14 +837,14 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
                 
             Next i
             
-            'Make sure at least one valid color was found
-            If (m_Palettes(0).GetNumOfColors() > 0) Then
+            'Make sure at least one valid palette was loaded
+            If (m_NumOfGroups > baseIndex) Then
                 
                 'Unlike other palette files, we now need to loop through all child palettes (as there may be
                 ' multiple ones) and assign proper values to each!
                 m_NumOfGroups = m_NumOfGroups + 1
                 
-                For i = 0 To m_NumOfGroups - 1
+                For i = baseIndex To m_NumOfGroups - 1
                     
                     If (Not m_Palettes(i) Is Nothing) Then
                     
@@ -834,8 +867,8 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
                     
                 'If this swatch file contained only one group, and that group didn't have a name,
                 ' substitute the filename as the palette name.
-                If (m_NumOfGroups = 1) Then
-                    If (LenB(m_Palettes(0).GetPaletteName) = 0) Then m_Palettes(0).SetPaletteName Files.FileGetName(srcFile, True)
+                If ((m_NumOfGroups - baseIndex) = 1) Then
+                    If (LenB(m_Palettes(m_NumOfGroups - 1).GetPaletteName) = 0) Then m_Palettes(m_NumOfGroups - 1).SetPaletteName Files.FileGetName(srcFile, True)
                 End If
                 
                 'If we haven't errored out, consider this a successful parse
