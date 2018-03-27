@@ -772,16 +772,13 @@ End Function
 'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.
 ' Unlike the various ReadXYZ() functions, this function does *not* modify the current stream pointer.
 '
-'NOTE: for file-backed streams, *if* the stream was opened in read-only mode, this function is still valid.  If the file
-' stream is opened in read/write mode, this function *cannot be used*.
+'NOTE: for file-backed streams, this function *cannot currently be used*.
 '
-'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream is file-backed,
-' and the stream was opened with read/write access.  (Memory-mapped access is currently only supported for read-only access,
-' for performance reasons.)
+'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream is file-backed.
 '
 'IMPORTANT NOTE: adding data to the buffer may force it to allocate new memory, invalidating all previously returned
-' pointers.  You must use the return of this function immediately, as its correctness is not guaranteed after any other
-' class functions are called.
+' pointers.  You must use the return of this function immediately, as its correctness is not guaranteed after any
+' other functions are called.
 Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1) As Long
 
     If (peekPosition < 0) Then peekPosition = Me.GetPosition()

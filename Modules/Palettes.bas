@@ -1353,7 +1353,7 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
             Dim palName As String
             
             With cParams
-            
+                
                 'Before retrieving the actual palette, retrieve the number of colors we need to use.
                 ' (If we have to generate an optimal palette, we want to know this in advance.)
                 numColors = .GetLong("numColors", -1)
@@ -1369,9 +1369,7 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
                 Else
                     Dim tmpDIB As pdDIB, tmpQuads() As RGBQuad
                     srcImage.GetCompositedImage tmpDIB, False
-                    If Palettes.GetOptimizedPalette(tmpDIB, tmpQuads, optColors, pdqs_Variance) Then
-                        cPalette.CreateFromPaletteArray tmpQuads, UBound(tmpQuads) + 1
-                    End If
+                    If Palettes.GetOptimizedPalette(tmpDIB, tmpQuads, optColors, pdqs_Variance) Then cPalette.CreateFromPaletteArray tmpQuads, UBound(tmpQuads) + 1
                 End If
                 
                 'Palette name won't always be used, but retrieve and set it anyway
@@ -1386,7 +1384,31 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
                     ElseIf (dstFormat = pdpf_AdobeColorTable) Then
                         ExportCurrentImagePalette = cPalette.SavePaletteAdobeColorTable(dstFilename)
                     ElseIf (dstFormat = pdpf_AdobeSwatchExchange) Then
+                        
+                        'ASE is a unique format is it supports multiple embedded palettes, and we allow the
+                        ' user to overwrite *OR* append this palette to an existing file, if any.
+                        Dim tmpPalette As pdPalette
+                        If (.GetLong("embedPaletteASE", 0) = 1) And Files.FileExists(dstFilename) Then
+                        
+                            'The user wants us to merge this palette with the existing file.  Yay?
+                            
+                            'Start by retrieving the current file; if this fails, we'll default to just writing
+                            ' the current palette as-is.
+                            Set tmpPalette = New pdPalette
+                            If tmpPalette.LoadPaletteFromFile(dstFilename, False) Then
+                            
+                                'The palette appears to have loaded okay.  Append this palette to the end of it,
+                                ' and if that works, swap palette references.
+                                If tmpPalette.AppendExistingPalette(cPalette) Then Set cPalette = tmpPalette
+                                
+                            End If
+                            
+                        Else
+                            'Standard behavior: overwrite the target file.  We don't need to do anything here.
+                        End If
+                        
                         ExportCurrentImagePalette = cPalette.SavePaletteAdobeSwatchExchange(dstFilename)
+                        
                     ElseIf (dstFormat = pdpf_GIMP) Then
                         ExportCurrentImagePalette = cPalette.SavePaletteGIMP(dstFilename)
                     ElseIf (dstFormat = pdpf_PaintDotNet) Then

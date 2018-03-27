@@ -135,6 +135,43 @@ Friend Function CreateFromPaletteArray(ByRef srcPalette() As RGBQuad, ByVal numC
 
 End Function
 
+'Want to merge two separate pdPalette objects?  This will take care of it for you, regardless of the palette group count in
+' either object.
+Friend Function AppendExistingPalette(ByRef srcPalette As pdPalette) As Boolean
+    
+    AppendExistingPalette = False
+    
+    On Error GoTo AppendFailure
+    
+    Dim okToCopy As Boolean
+    okToCopy = (Not srcPalette Is Nothing)
+    If okToCopy Then okToCopy = (srcPalette.GetPaletteGroupCount() > 0)
+    
+    If okToCopy Then
+        
+        'Loop through all source palettes, and add them one-at-a-time to this one
+        Dim i As Long
+        For i = 0 To srcPalette.GetPaletteGroupCount() - 1
+            If (m_NumOfGroups >= UBound(m_Palettes)) Then ReDim Preserve m_Palettes(0 To m_NumOfGroups + 1) As pdPaletteChild
+            Set m_Palettes(m_NumOfGroups) = srcPalette.ChildPalette(i)
+            m_NumOfGroups = m_NumOfGroups + 1
+        Next i
+        
+        AppendExistingPalette = True
+        
+    Else
+        InternalProblem "WARNING!  pdPalette.AppendExistingPalette() was passed a null source palette."
+    End If
+    
+    Exit Function
+
+AppendFailure:
+
+    AppendExistingPalette = False
+    InternalProblem "WARNING!  pdPalette.AppendExistingPalette() experienced error #" & Err.Number & ": " & Err.Description
+
+End Function
+
 Friend Sub SetNewPaletteCount(Optional ByVal newPaletteSize As Long = 256, Optional ByVal palGroupIndex As Long = 0)
     Dim okayToProceed As Boolean
     okayToProceed = (palGroupIndex >= 0) And (palGroupIndex <= UBound(m_Palettes)) And (m_NumOfGroups > 0)
@@ -1479,10 +1516,10 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
     'As usual, pdStream saves the day by making it very easy to stream arbitrary bytes out to file
     Dim dstData As pdStream
     Set dstData = New pdStream
-    SavePaletteAdobeSwatchExchange = dstData.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, , , OptimizeSequentialAccess)
+    SavePaletteAdobeSwatchExchange = dstData.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite)
     
     If SavePaletteAdobeSwatchExchange Then
-    
+        
         'Owing to their Mac heritage, Adobe files store everything as big-endian.  As such, we'll be using
         ' many _BE suffixed write functions with the pdStream object.
                 
@@ -1493,7 +1530,7 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
         ' (The only currently supported version is 1.0.)
         dstData.WriteInt_BE 1
         dstData.WriteInt_BE 0
-                
+        
         ' The next entry is a 4-byte integer defining the number of blocks in the file.  Blocks come in
         ' three types: group start, group end, and color entry.  We can figure out this number by counting
         ' each unique group as two blocks (start/end) plus one block for each color in each palette.
@@ -1501,7 +1538,7 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
         Dim i As Long, j As Long
         For i = 0 To Me.GetPaletteGroupCount() - 1
             If (Me.GetPaletteGroupCount > 0) Or (LenB(m_Palettes(i).GetPaletteName) <> 0) Then numOfBlocks = numOfBlocks + 2
-            numOfBlocks = numOfBlocks + m_Palettes(i).GetNumOfColors
+            numOfBlocks = numOfBlocks + m_Palettes(i).GetNumOfColors()
         Next i
         
         dstData.WriteLong_BE numOfBlocks
@@ -1600,8 +1637,11 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
             End If
             
         Next i
-    
-        'That's everything!
+        
+        'Write the finished palette to file!
+        SavePaletteAdobeSwatchExchange = Files.FileCreateFromPtr(dstData.Peek_PointerOnly(0), dstData.GetStreamSize(), dstFile)
+        
+        'Free the underlying stream object
         dstData.StopStream
         
     End If

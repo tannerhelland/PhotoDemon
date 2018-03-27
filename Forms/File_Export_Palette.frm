@@ -23,6 +23,16 @@ Begin VB.Form dialog_ExportPalette
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   730
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsTargetFile 
+      Height          =   1050
+      Left            =   4560
+      TabIndex        =   6
+      Top             =   3960
+      Width           =   6255
+      _ExtentX        =   11033
+      _ExtentY        =   1852
+      Caption         =   "target palette file"
+   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   255
       Index           =   0
@@ -59,14 +69,14 @@ Begin VB.Form dialog_ExportPalette
       NotchValueCustom=   256
    End
    Begin PhotoDemon.pdButtonStrip btsColorCount 
-      Height          =   975
+      Height          =   1050
       Left            =   4560
       TabIndex        =   3
       Top             =   1200
       Width           =   6255
       _ExtentX        =   11033
-      _ExtentY        =   1720
-      Caption         =   "palette size"
+      _ExtentY        =   1852
+      Caption         =   "palette color count"
    End
    Begin PhotoDemon.pdPaletteUI palPreview 
       Height          =   5655
@@ -79,13 +89,13 @@ Begin VB.Form dialog_ExportPalette
       Caption         =   "palette contents"
    End
    Begin PhotoDemon.pdButtonStrip btsPalette 
-      Height          =   975
+      Height          =   1050
       Left            =   4560
       TabIndex        =   1
       Top             =   120
       Width           =   6255
       _ExtentX        =   11033
-      _ExtentY        =   1720
+      _ExtentY        =   1852
       Caption         =   "palette to export"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -209,6 +219,11 @@ Private Sub Form_Load()
     btsColorCount.AddItem "custom", 1
     btsColorCount.ListIndex = 0
     
+    btsTargetFile.AddItem "overwrite", 0
+    btsTargetFile.AddItem "append", 1
+    btsTargetFile.AssignTooltip "Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the ""append"" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified."
+    btsTargetFile.ListIndex = 0
+    
     cmdBar.MarkPreviewStatus True
     
 End Sub
@@ -257,12 +272,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing, Optional ByV
     
     'Reflow the available interface options and update the preview
     ReflowInterface
+    cmdBar.MarkPreviewStatus True
     UpdatePreview True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    
-    cmdBar.MarkPreviewStatus True
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -317,6 +331,17 @@ Private Sub ReflowInterface()
     Else
         lblTitle(0).Visible = False
         txtPaletteName.Visible = False
+    End If
+    
+    'ASE palettes are unique in supporting multiple palettes within a single file.  To make it easier
+    ' to save a bunch of palettes to a single file, let's offer an overwrite vs merge feature when
+    ' saving to an existing ASE file.
+    If (m_DstFormat = pdpf_AdobeSwatchExchange) And (Files.FileExists(m_DstFilename)) Then
+        btsTargetFile.SetTop yOffset
+        btsTargetFile.Visible = True
+        yOffset = yOffset + btsTargetFile.GetHeight + ctlPadding
+    Else
+        btsTargetFile.Visible = False
     End If
     
 End Sub
@@ -383,6 +408,7 @@ Private Function GetCurrentParamString() As String
         'Some settings, like embedded palette name, are only supported by certain formats, but we
         ' always pass the name - the encoder will deal with this.
         .AddParam "palName", txtPaletteName.Text
+        .AddParam "embedPaletteASE", btsTargetFile.ListIndex
         
     End With
     

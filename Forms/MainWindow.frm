@@ -1581,8 +1581,8 @@ Attribute VB_Exposed = False
 'Primary PhotoDemon Window
 'Copyright 2002-2018 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 26/October/17
-'Last update: add hotkey handling for tool selection
+'Last updated: 27/March/18
+'Last update: new export menu items added
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
 ' parameters to other, more interesting sections of the program.
@@ -1627,17 +1627,17 @@ Private Sub MnuTest_Click()
 '
 '    ActivatePDImage 0, "finished"
 
-    'Try appending multiple palettes together, then saving the result as a single ASE
-    Dim cPal As pdPalette
-    Set cPal = New pdPalette
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Bears.gpl", , , False
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\PSP\Fire.pal", , , False
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\Material Palette.ase", , , False
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Paint.NET\Metal tones.txt", , , False
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Swatch\Web Safe Colors.aco", , , False
-    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Color Table\CGA-16+Transp.act", , , False
-    cPal.SavePaletteAdobeSwatchExchange "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\append_test.ase"
-    
+'    'Try appending multiple palettes together, then saving the result as a single ASE
+'    Dim cPal As pdPalette
+'    Set cPal = New pdPalette
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Bears.gpl", , , False
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\PSP\Fire.pal", , , False
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\Material Palette.ase", , , False
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Paint.NET\Metal tones.txt", , , False
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Swatch\Web Safe Colors.aco", , , False
+'    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Color Table\CGA-16+Transp.act", , , False
+'    cPal.SavePaletteAdobeSwatchExchange "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\append_test.ase"
+'
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.7</langversion>
+<langversion>7.0.9</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -15241,12 +15241,22 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>target palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>palette name</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette color count</original>
 <translation></translation>
 </phrase>
 
@@ -15270,16 +15280,31 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- File_Export_Palette.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>overwrite</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>append</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4680 phrases. -->
-<!-- 2109 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12457 total words. -->
+<!-- As of this build, PhotoDemon contains 4684 phrases. -->
+<!-- 2108 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 12506 total words. -->
 
 </pdData>
