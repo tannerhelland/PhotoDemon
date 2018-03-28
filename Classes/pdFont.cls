@@ -738,7 +738,7 @@ Friend Sub DeleteCurrentFont()
         'If the font is inside a DC, remove it (otherwise we can't delete it)
         If (curDC <> 0) Then
             pdDebug.LogAction "HEY!  Font was not removed from DC - please do that before deleting it!"
-            ReleaseFromDC
+            Me.ReleaseFromDC
         End If
         
         If (DeleteObject(curFont) = 0) Then

@@ -320,6 +320,12 @@ Public g_PDFontProperties() As PD_FONT_PROPERTY
 ' us for a matching font object.
 Private m_ProgramFontCollection As pdFontCollection
 
+'To improve compile-time performance, we cache a dummy font object.  This object is ignored at run-time,
+' but during compile-time, we return it for all GetMatchingUIFont() calls instead of using a more
+' sophisticated caching system (as the cache gets thrashed by VB instantiating and destroying compile-time
+' objects willy-nilly).
+Private m_DummyFont As pdFont
+
 Public Sub DetermineUIFont()
     
     Dim tmpFontCheck As pdFont
@@ -368,7 +374,7 @@ End Function
 Public Function FindFontSizeWordWrap(ByRef srcString As String, ByVal pxWidth As Long, ByVal pxHeight As Long, ByVal initialFontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False, Optional ByVal cacheIfNovel As Boolean = True) As Single
     
     'Inside the designer, we need to make sure the font collection exists
-    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
+    If (m_ProgramFontCollection Is Nothing) Then InitProgramFontCollection
     
     'Retrieve a handle to a matching pdFont object
     Dim tmpFont As pdFont
@@ -386,17 +392,37 @@ End Function
 
 'Want direct access to a UI font instance?  Get one here.  Note that only size, bold, italic, and underline are currently matched,
 ' as PD doesn't use strikethrough fonts anywhere.
-Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
+Public Function GetMatchingUIFont(ByVal srcFontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
     If (m_ProgramFontCollection Is Nothing) Then InitProgramFontCollection
     
-    'Add this font size+style combination to the collection, as necessary
-    Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(Fonts.GetUIFontName(), FontSize, isBold, isItalic, isUnderline)
-    
-    'Return the handle of the newly created (and/or previously cached) pdFont object
-    Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
+    'During compile-time, we don't need access to all of PD's font features.  Just return a dummy UI font
+    ' unless the program is actually running
+    If pdMain.IsProgramRunning Then
+
+        'Add this font size+style combination to the collection, as necessary
+        Dim fontIndex As Long
+        fontIndex = m_ProgramFontCollection.AddFontToCache(m_InterfaceFontName, srcFontSize, isBold, isItalic, isUnderline)
+
+        'Return the handle of the newly created (and/or previously cached) pdFont object
+        Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
+
+    Else
+        If (m_DummyFont Is Nothing) Then
+            VBHacks.EnableHighResolutionTimers
+            Set m_DummyFont = New pdFont
+            m_DummyFont.SetFontPropsAllAtOnce m_InterfaceFontName, srcFontSize, False, False, False
+            m_DummyFont.CreateFontObject
+        Else
+            If (srcFontSize <> m_DummyFont.GetFontSize) Then
+                m_DummyFont.DeleteCurrentFont
+                m_DummyFont.SetFontSize srcFontSize
+                m_DummyFont.CreateFontObject
+            End If
+        End If
+        Set GetMatchingUIFont = m_DummyFont
+    End If
     
 End Function
 

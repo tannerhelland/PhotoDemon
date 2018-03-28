@@ -49,22 +49,22 @@ Private m_CurrentCacheMode As FONT_CACHE_MODE
 
 'Size of the font collection.  This is the maximum number of fonts this class is allowed to cache.  For scrollable
 ' UI elements with variable font faces (e.g. font dropdowns), this should be at least 3x the size of the dropped list;
-' that gives us some breathing room to re-cache fonts during mousewheel events.
+' that gives us some breathing room to cache new fonts during mousewheel events.
 Private Const DEFAULT_CACHE_SIZE As Long = 24
 Private m_CacheSize As Long
 
 'Pointer to the current font index.  This will rotate around to 0 after the cache is filled.
 Private m_FontPointer As Long
 
-'Once the cache has been completely filled, this will be set to TRUE.  A full cache will start using font access times
+'Once the cache has been completely filled, this will be set to TRUE.  A full cache starts using font access times
 ' to determine which fonts are dumped from the cache.
 Private m_CacheIsFull As Boolean
 
-'Actual collection
+'Actual font collection
 Private m_FontCollection() As pdFont
 
-'List of font creation times.  If/when the font collection hits its maximum size, we'll start clearing out the oldest
-' fonts first
+'If/when the font collection hits its maximum size, we clear out the oldest fonts first when making room for
+' new fonts.  (This is most relevant for font dropdowns, which consume an enormous amount of font objects.)
 Private m_FontAccessTimes() As Currency
 
 'This class can (optionally) manage extended font properties as well, like which scripts are supported by a given font.
@@ -82,14 +82,14 @@ Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     fontIndex = DoesFontExist(fontName, FontSize, isBold, isItalic, isUnderline)
     
     'If this font already exists in our collection, don't recreate it; instead, return its current index.
-    ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to fontname matches only.
-    '                  Call SetCacheMode() if you want to match fonts by alternate criteria.
+    ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to font-name matching only.
+    '                  Call SetCacheMode() if you want to match fonts by additional criteria.
     If (fontIndex >= 0) Then
     
         AddFontToCache = fontIndex
         
-        'Also, update the font's access time.  (Oldest fonts are dumped from the cache first, on the assumption that
-        ' they are needed less than new fonts.)
+        'Also, update the font's access time.  (Oldest fonts are dumped from the cache first, on the assumption
+        ' that they are needed less than new fonts.)
         m_FontAccessTimes(fontIndex) = OS.GetSystemTimeAsCurrency()
         
     Else
@@ -131,11 +131,11 @@ Friend Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         'Create the font object
         m_FontCollection(m_FontPointer).CreateFontObject
         
-        'If extended font caching is active, retrieve those values now
-        If m_ExtendedPropertiesActive Then Uniscribe.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
-        
         'Update this font's access time
         m_FontAccessTimes(m_FontPointer) = OS.GetSystemTimeAsCurrency()
+        
+        'If extended font caching is active, retrieve those values now
+        If m_ExtendedPropertiesActive Then Uniscribe.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
         
         'Return this index
         AddFontToCache = m_FontPointer
@@ -159,7 +159,7 @@ End Function
 '
 'Returns a value >= 0 if the font exists; the exact value is the index of the font in the collection.
 'Returns -1 if the font does not exist.
-Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize As Single = 0#, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Long
+Private Function DoesFontExist(ByRef fontName As String, Optional ByVal srcFontSize As Single = 0!, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Long
     
     '-1 means the requested font does not exist.  If the requested font *does* exist, this will be set to a non-zero value.
     DoesFontExist = -1
@@ -169,65 +169,63 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
     
         If (Not m_FontCollection(i) Is Nothing) Then
             
-            With m_FontCollection(i)
-            
-                'How we match fonts depends on the current cache mode
-                Select Case m_CurrentCacheMode
+            'How we match fonts depends on the current cache mode
+            Select Case m_CurrentCacheMode
                 
-                    Case FCM_NameOnly
-                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
-                            DoesFontExist = i
-                            Exit For
-                        End If
-                    
-                    Case FCM_SizeOnly
-                        If (FontSize = .GetFontSize) Then
-                            DoesFontExist = i
-                            Exit For
-                        End If
-                    
-                    Case FCM_NameAndSize
-                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
-                            If (FontSize = m_FontCollection(i).GetFontSize) Then
-                                DoesFontExist = i
-                                Exit For
+                'Size and style is the most common check in PD, because UI fonts all share the same name
+                ' (so we can skip name checks completely, improving performance).
+                Case FCM_SizeAndStyle
+                    If (srcFontSize = m_FontCollection(i).GetFontSize) Then
+                        If (isBold = m_FontCollection(i).GetFontBold) Then
+                            If (isItalic = m_FontCollection(i).GetFontItalic) Then
+                                If (isUnderline = m_FontCollection(i).GetFontUnderline) Then
+                                    DoesFontExist = i
+                                    Exit For
+                                End If
                             End If
                         End If
+                    End If
                     
-                    Case FCM_SizeAndStyle
-                        If (FontSize = .GetFontSize) Then
-                            If (isBold = .GetFontBold) Then
-                                If (isItalic = .GetFontItalic) Then
-                                    If (isUnderline = .GetFontUnderline) Then
+                Case FCM_NameOnly
+                    If Strings.StringsEqual(fontName, m_FontCollection(i).GetFontFace, False) Then
+                        DoesFontExist = i
+                        Exit For
+                    End If
+                
+                Case FCM_SizeOnly
+                    If (srcFontSize = m_FontCollection(i).GetFontSize) Then
+                        DoesFontExist = i
+                        Exit For
+                    End If
+                
+                Case FCM_NameAndSize
+                    If Strings.StringsEqual(fontName, m_FontCollection(i).GetFontFace, False) Then
+                        If (srcFontSize = m_FontCollection(i).GetFontSize) Then
+                            DoesFontExist = i
+                            Exit For
+                        End If
+                    End If
+                    
+                Case FCM_NameAndSizeAndStyle
+                    If Strings.StringsEqual(fontName, m_FontCollection(i).GetFontFace, False) Then
+                        If (srcFontSize = m_FontCollection(i).GetFontSize) Then
+                            If (isBold = m_FontCollection(i).GetFontBold) Then
+                                If (isItalic = m_FontCollection(i).GetFontItalic) Then
+                                    If (isUnderline = m_FontCollection(i).GetFontUnderline) Then
                                         DoesFontExist = i
                                         Exit For
                                     End If
                                 End If
                             End If
                         End If
-                        
-                    Case FCM_NameAndSizeAndStyle
-                        If Strings.StringsEqual(fontName, .GetFontFace, False) Then
-                            If (FontSize = m_FontCollection(i).GetFontSize) Then
-                                If (isBold = .GetFontBold) Then
-                                    If (isItalic = .GetFontItalic) Then
-                                        If (isUnderline = .GetFontUnderline) Then
-                                            DoesFontExist = i
-                                            Exit For
-                                        End If
-                                    End If
-                                End If
-                            End If
-                        End If
-                
-                End Select
+                    End If
             
-            End With
+            End Select
             
         End If
         
     Next i
-        
+    
 End Function
 
 'Given an index into the collection (returned by AddFontToCache, presumably), return the corresponding GDI font handle of that
@@ -342,7 +340,7 @@ Private Sub Class_Terminate()
     
         Dim i As Long
         For i = LBound(m_FontCollection) To UBound(m_FontCollection)
-            If Not (m_FontCollection(i) Is Nothing) Then
+            If (Not m_FontCollection(i) Is Nothing) Then
                 m_FontCollection(i).DeleteCurrentFont
                 Set m_FontCollection(i) = Nothing
             End If

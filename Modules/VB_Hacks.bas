@@ -315,9 +315,19 @@ Public Function GetTimeDiffNowAsString(ByRef startTime As Currency) As String
     GetTimeDiffNowAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"
 End Function
 
+Public Function GetTotalTimeAsString(ByRef netTime As Currency) As String
+    Dim tmpDouble As Double
+    tmpDouble = netTime * m_TimerFrequency
+    GetTotalTimeAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"
+End Function
+
 Public Sub GetHighResTime(ByRef dstTime As Currency)
     QueryPerformanceCounter dstTime
 End Sub
+
+Public Function GetHighResTimeEx() As Currency
+    QueryPerformanceCounter GetHighResTimeEx
+End Function
 
 Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToCompare As Long) As Boolean
     Dim bytesEqual As Long
