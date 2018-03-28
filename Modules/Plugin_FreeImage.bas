@@ -2747,9 +2747,9 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
             
             Else
                 'Expand to full RGBA color depths as necessary.
-                If outputColorDepth = 16 Then
+                If (outputColorDepth = 16) Then
                     outputColorDepth = 64
-                ElseIf outputColorDepth = 32 Then
+                ElseIf (outputColorDepth = 32) Then
                     outputColorDepth = 128
                 End If
             End If

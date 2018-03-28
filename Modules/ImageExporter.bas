@@ -167,13 +167,17 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                         If isMonochrome Then
                             AutoDetectOutputColorDepth = 1
                         Else
+                            'Subsequent FreeImage testing in March 2018 shows that 4-bit PNG output may get
+                            ' converted to 4-bit grayscale.  There may be a way to avoid this, but I don't know
+                            ' it at present; as such, I'm suspending 4-bpp output until further notice.
+                            
                             'I'm debating whether to provide 4-bpp as an output depth.  It has limited usage, and there
                             ' are complications with binary alpha... this is marked as TODO for now
-                            If (uniqueColorCount <= 16) Then
-                                AutoDetectOutputColorDepth = 4
-                            Else
+                            'If (uniqueColorCount <= 16) Then
+                            '    AutoDetectOutputColorDepth = 4
+                            'Else
                                 AutoDetectOutputColorDepth = 8
-                            End If
+                            'End If
                         End If
                     End If
                 End If
