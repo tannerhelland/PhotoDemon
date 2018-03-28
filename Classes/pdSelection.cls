@@ -632,7 +632,7 @@ End Sub
 'Request a redraw of the selection mask.  We must do this when loading an Undo or Redo request after the image size has
 ' been changed; otherwise, OOB errors can occur (because the selection mask will be a different size than the image).
 Friend Sub RequestNewMask()
-
+    
     If (Not m_parentPDImage Is Nothing) Then
         
         UpdateInternalCoords
@@ -649,7 +649,7 @@ Friend Sub RequestNewMask()
         End If
         
     End If
-
+    
 End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
@@ -1794,8 +1794,8 @@ Private Sub CreateSelectionMask()
         m_SelMask.ResetDIB maskBackOpacity
     End If
     
-    'We use pd2D for as much of the actual selection rendering as we can.  (The plan is still to migrate this code to dedicated
-    ' per-shape child classes, but for now, this at least gives us a clean way to standardize all our rendering.)
+    'We use pd2D for as much of the actual selection rendering as we can.  (The plan is still to migrate this code
+    ' to dedicated per-shape child classes, but for now, this gives us a clean way to standardize rendering.)
     Dim dstSurface As pd2DSurface
     Set dstSurface = New pd2DSurface
     
@@ -1825,8 +1825,8 @@ Private Sub CreateSelectionMask()
     ' the selection outline.  (For bordered selections, note that we also generate a matching pd2DPath object, which is
     ' then used to determine selection boundaries (which vary due to pen mitre settings).)
     Dim backBrush As pd2DBrush, foreBrush As pd2DBrush
-    Drawing2D.QuickCreateSolidBrush backBrush, maskBackColor, CSng(maskBackOpacity) / 2.55
-    Drawing2D.QuickCreateSolidBrush foreBrush, maskForeColor, CSng(maskForeOpacity) / 2.55
+    Drawing2D.QuickCreateSolidBrush backBrush, maskBackColor, CSng(maskBackOpacity) / 2.55!
+    Drawing2D.QuickCreateSolidBrush foreBrush, maskForeColor, CSng(maskForeOpacity) / 2.55!
     
     Dim maskPen As pd2DPen, maskPath As pd2DPath
     If (Me.GetSelectionProperty_Long(sp_Area) = sa_Border) Then
@@ -1997,18 +1997,23 @@ Private Sub CreateSelectionMask()
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
         Case ss_Polygon
             
-            'Start by storing the current polygon in a path object
-            Dim polyPath As pd2DPath
-            Set polyPath = New pd2DPath
-            polyPath.SetFillRule P2_FR_Winding
-            polyPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, (GetSelectionProperty_Float(sp_PolygonCurvature) > 0#), GetSelectionProperty_Float(sp_PolygonCurvature)
-            
-            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                m_Painter.FillPath dstSurface, foreBrush, polyPath
-                m_Bounds = polyPath.GetPathBoundariesF()
-            Else
-                m_Painter.DrawPath dstSurface, maskPen, polyPath
-                m_Bounds = polyPath.GetPathBoundariesF(maskPen)
+            'Don't create a polygon mask until at least *2* points exist!
+            If (m_NumOfPolygonPoints > 1) Then
+                
+                'Start by storing the current polygon in a path object
+                Dim polyPath As pd2DPath
+                Set polyPath = New pd2DPath
+                polyPath.SetFillRule P2_FR_Winding
+                polyPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, (GetSelectionProperty_Float(sp_PolygonCurvature) > 0#), GetSelectionProperty_Float(sp_PolygonCurvature)
+                
+                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    m_Painter.FillPath dstSurface, foreBrush, polyPath
+                    m_Bounds = polyPath.GetPathBoundariesF()
+                Else
+                    m_Painter.DrawPath dstSurface, maskPen, polyPath
+                    m_Bounds = polyPath.GetPathBoundariesF(maskPen)
+                End If
+                
             End If
             
             'To ensure clipping is correct, make sure our corner coordinates match our boundary coordinates
@@ -2017,19 +2022,24 @@ Private Sub CreateSelectionMask()
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
         ' then fill it as if it represents an arbitrary region.
         Case ss_Lasso
-        
-            'Start by storing the current polygon in a path object
-            Dim lassoPath As pd2DPath
-            Set lassoPath = New pd2DPath
-            lassoPath.SetFillRule P2_FR_Winding
-            lassoPath.AddPolygon m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, (GetSelectionProperty_Float(sp_SmoothStroke) > 0#), GetSelectionProperty_Float(sp_SmoothStroke)
             
-            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                m_Painter.FillPath dstSurface, foreBrush, lassoPath
-                m_Bounds = lassoPath.GetPathBoundariesF()
-            Else
-                m_Painter.DrawPath dstSurface, maskPen, lassoPath
-                m_Bounds = lassoPath.GetPathBoundariesF(maskPen)
+            'Don't create a lasso mask until at least *2* points exist!
+            If (m_NumOfLassoPoints > 1) Then
+            
+                'Start by storing the current polygon in a path object
+                Dim lassoPath As pd2DPath
+                Set lassoPath = New pd2DPath
+                lassoPath.SetFillRule P2_FR_Winding
+                lassoPath.AddPolygon m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, (GetSelectionProperty_Float(sp_SmoothStroke) > 0#), GetSelectionProperty_Float(sp_SmoothStroke)
+                
+                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    m_Painter.FillPath dstSurface, foreBrush, lassoPath
+                    m_Bounds = lassoPath.GetPathBoundariesF()
+                Else
+                    m_Painter.DrawPath dstSurface, maskPen, lassoPath
+                    m_Bounds = lassoPath.GetPathBoundariesF(maskPen)
+                End If
+            
             End If
             
             'To ensure clipping is correct, make sure our corner coordinates match our boundary coordinates
@@ -2814,7 +2824,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 Dim numOfRenderPoints As Long
                 If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
                 
-                If (numOfRenderPoints > 0) Then
+                If (numOfRenderPoints > 1) Then
                 
                     'Convert the lasso or polygon array to viewport coordinate space
                     Dim tmpViewportSpace() As PointFloat

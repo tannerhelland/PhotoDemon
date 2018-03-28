@@ -767,11 +767,6 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     'Make sure interactions with this canvas are allowed
     If (Not Me.IsCanvasInteractionAllowed()) Then Exit Sub
     
-    'Because VB does not allow an user control to receive focus if it contains controls that can receive focus, the arrow buttons
-    ' can behave unpredictably (for example, if the zoom box has focus, and the user clicks on the canvas, the canvas will not
-    ' receive focus and arrow key presses will continue to interact with the zoom box instead of the viewport)
-    ' (NOTE: this should be fixed as of 6.6, as a dedicated picture box is now used for rendering)
-    
     'Note whether a selection is active when mouse interactions began
     m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn)
     
