@@ -1603,18 +1603,6 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
 
-Private Sub MnuFileExport_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Export palette
-        Case 0
-            Process "Export palette", True
-    
-    End Select
-
-End Sub
-
 Private Sub MnuTest_Click()
     
 '    Dim i As Long
@@ -1637,7 +1625,7 @@ Private Sub MnuTest_Click()
 '    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Swatch\Web Safe Colors.aco", , , False
 '    cPal.LoadPaletteFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\Adobe Color Table\CGA-16+Transp.act", , , False
 '    cPal.SavePaletteAdobeSwatchExchange "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\Palettes\ASE\append_test.ase"
-'
+    
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
 End Sub
@@ -3435,6 +3423,18 @@ Private Sub MnuFile_Click(Index As Integer)
     
     End Select
     
+End Sub
+
+Private Sub MnuFileExport_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Export palette
+        Case 0
+            Process "Export palette", True
+    
+    End Select
+
 End Sub
 
 Private Sub MnuFitOnScreen_Click()

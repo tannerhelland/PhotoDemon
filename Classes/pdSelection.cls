@@ -1704,12 +1704,25 @@ Friend Sub LockRelease()
     m_IsLocked = False
 End Sub
 
-'For polygon and lasso selection, it reduces risk to reset a few custom trackers when a selection is erased.
+'When a selection is erased, we can free up some internal tracking metrics.  If we don't do this, immediately starting a
+' new selection of identical type (e.g. removing a polygon selection, starting a polygon selection) may result in some
+' bits of the previous selection getting reused.
 Friend Sub EraseCustomTrackers()
+    
     m_NumOfLassoPoints = 0
     m_NumOfPolygonPoints = 0
     m_PolygonClosed = False
     m_LassoClosed = False
+    
+    m_FinalOutlineIsReady = False
+    Set m_FinalOutline = Nothing
+    
+    m_OverlayIsReady = False
+    m_LastOverlayCache = vbNullString
+    m_ViewportOverlay.ResetDIB 0
+    
+    m_IsMaskReady = False
+    
 End Sub
 
 'Create a selection mask based on the current selection type.  A few items to note:
@@ -1997,8 +2010,8 @@ Private Sub CreateSelectionMask()
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
         Case ss_Polygon
             
-            'Don't create a polygon mask until at least *2* points exist!
-            If (m_NumOfPolygonPoints > 1) Then
+            'Don't create a polygon mask until at least *3* points exist!
+            If (m_NumOfPolygonPoints > 2) Then
                 
                 'Start by storing the current polygon in a path object
                 Dim polyPath As pd2DPath
@@ -2772,7 +2785,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Final task: rendering the actual overlay onto the destination viewport.  If rendering and viewport settings haven't
     ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
     ' so speedy during paint ops).
-    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width, imgViewportRectL.Height, 0, 0, imgViewportRectL.Width, imgViewportRectL.Height
+    If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width, imgViewportRectL.Height, 0, 0, imgViewportRectL.Width, imgViewportRectL.Height
     
 End Sub
 
@@ -2833,7 +2846,6 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     Dim tmpX As Double, tmpY As Double
                     
                     Dim i As Long
-                    
                     For i = 0 To numOfRenderPoints - 1
                         
                         If (m_SelectionShape = ss_Polygon) Then
@@ -2858,6 +2870,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     ' the first row and column of pixels in the image).
                     m_FinalOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
                     
+                Else
+                    Set m_FinalOutline = Nothing
                 End If
                 
             End If
@@ -3020,7 +3034,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Final task: rendering the final overlay onto the destination viewport.  If rendering and viewport settings haven't
     ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
     ' so speedy during paint ops).
-    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
+    If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
     
     'Timing reports:
     'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
