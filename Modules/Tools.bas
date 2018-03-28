@@ -500,7 +500,7 @@ End Sub
 ' tool operations (e.g. "no open images", "main form locked").
 Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True, Optional ByVal checkMainWindowEnabled As Boolean = True) As Boolean
 
-    'Start with a few failsafe checks
+    CanvasToolsAllowed = False
     
     'Make sure an image is loaded and active
     If (g_OpenImageCount > 0) Then
@@ -516,11 +516,8 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
                 CanvasToolsAllowed = True
             End If
             
-        Else
-            CanvasToolsAllowed = False
         End If
-    Else
-        CanvasToolsAllowed = False
+    
     End If
     
 End Function

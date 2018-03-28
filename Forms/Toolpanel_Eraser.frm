@@ -138,8 +138,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Eraser Tool Panel
 'Copyright 2016-2018 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 24/August/17
-'Last update: first build (although most settings were copied over from the paintbrush tool)
+'Last updated: 28/March/18
+'Last update: forcibly set scratch layer alpha mode to "normal"; otherwise, switching from a paintbrush in
+'             "locked" alpha mode will cause this tool to inherit that "locked" setting, preventing the
+'             eraser from working at all!
 '
 'This form includes all user-editable settings for the "eraser" canvas tool.
 '
@@ -235,6 +237,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushHardness sltBrushSetting(2).Value
     Paintbrush.SetBrushFlow sltBrushSetting(3).Value
     Paintbrush.SetBrushBlendMode BL_ERASE
+    Paintbrush.SetBrushAlphaMode LA_NORMAL
     If (btsSpacing.ListIndex = 0) Then Paintbrush.SetBrushSpacing 0# Else Paintbrush.SetBrushSpacing sldSpacing.Value
 End Sub
 
