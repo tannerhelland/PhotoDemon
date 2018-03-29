@@ -404,6 +404,9 @@ End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
+    'Ignore all mouse events while the user is interacting with the canvas
+    If FormMain.MainCanvas(0).IsMouseDown(pdLeftButton Or pdRightButton) Then Exit Sub
+    
     'We require a few mouse movements to fire before doing anything; otherwise this function will fire constantly.
     m_MouseDistanceTraveled = m_MouseDistanceTraveled + 1
     

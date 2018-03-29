@@ -509,7 +509,10 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-
+    
+    'Ignore all mouse events while the user is interacting with the canvas
+    If FormMain.MainCanvas(0).IsMouseDown(pdLeftButton Or pdRightButton) Then Exit Sub
+    
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.
     Dim mouseInResizeTerritory As Boolean
